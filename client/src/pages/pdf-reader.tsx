@@ -783,6 +783,8 @@ export default function PDFReaderPage() {
           totalChunks,
           lastChunkIndex: Math.max(...Array.from(newChecked), 0),
         }),
+      }).then(() => {
+        queryClient.invalidateQueries({ queryKey: ['/api/files'] });
       }).catch(() => {});
     }
   };
@@ -1396,6 +1398,8 @@ export default function PDFReaderPage() {
             totalChunks,
             lastChunkIndex: Math.max(...Array.from(newChecked), 0),
           }),
+        }).then(() => {
+          queryClient.invalidateQueries({ queryKey: ['/api/files'] });
         }).catch(() => {});
       }
       return newChecked;
@@ -1447,6 +1451,7 @@ export default function PDFReaderPage() {
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ listened: true, lastChunkIndex: chunksRef.current.length, totalChunks: chunksRef.current.length }),
             });
+            queryClient.invalidateQueries({ queryKey: ['/api/files'] });
           } catch (e) {
             console.error('Failed to mark file as listened:', e);
           }
@@ -1572,6 +1577,8 @@ export default function PDFReaderPage() {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ lastChunkIndex: savedChunk, totalChunks: totalChunks })
+      }).then(() => {
+        queryClient.invalidateQueries({ queryKey: ['/api/files'] });
       }).catch(e => console.error('Failed to save progress:', e));
     }
 

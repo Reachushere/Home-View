@@ -3118,6 +3118,7 @@ export default function Dashboard() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/semester"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/semesters"] });
       setIsCoursesDialogOpen(false);
       toast({ title: "Schedule saved", description: "Course schedule has been updated." });
     },
@@ -5097,8 +5098,9 @@ export default function Dashboard() {
     queryKey: ["/api/files"],
     retry: 2,
     retryDelay: 1000,
-    staleTime: 5 * 60 * 1000,
-    refetchInterval: 5 * 60 * 1000,
+    staleTime: 30 * 1000,
+    refetchInterval: 60 * 1000,
+    refetchOnWindowFocus: 'always',
   });
 
   // OneDrive files for files flyout
@@ -8200,8 +8202,11 @@ export default function Dashboard() {
 
     const handleVisibilityChange = () => {
       const now = Date.now();
-      if (document.visibilityState === 'visible' && now - lastSyncRef.current >= ACTIVE_INTERVAL) {
-        doAutoSync();
+      if (document.visibilityState === 'visible') {
+        if (now - lastSyncRef.current >= ACTIVE_INTERVAL) {
+          doAutoSync();
+        }
+        refreshFileCounts();
       }
       setupInterval();
     };
@@ -18146,7 +18151,7 @@ export default function Dashboard() {
                 if (hasFullWeekTasks) {
                   return (
                     <div key={course.name} className="w-full flex-shrink-0 flex" style={{ borderBottom: `1.5px dotted ${courseData.color}dd` }}>
-                      <div className="px-1 py-0.5 text-[10px] font-bold tracking-wide flex items-center justify-center text-white cursor-pointer hover:brightness-110 flex-shrink-0" onClick={() => { const cd = courseData; const code = cd.name.split(' - ')[0]?.trim(); const cName = cd.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code })); }} style={{ background: course.label, overflow: 'hidden', minWidth: 0, width: `${gridSizes.courseColumnWidth}px` }} data-testid={`course-row-label-${course.name}`}>
+                      <div className="px-1 py-0.5 text-[10px] font-bold tracking-wide flex items-center justify-center text-white cursor-pointer hover:brightness-110 flex-shrink-0" onClick={() => { const cd = courseData; const code = cd.name.split(' - ')[0]?.trim(); const cName = cd.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code })); }} style={{ background: course.label, overflow: 'hidden', minWidth: 0, width: `${gridSizes.timeColumnWidth}px` }} data-testid={`course-row-label-${course.name}`}>
                         {course.name}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -18617,7 +18622,7 @@ export default function Dashboard() {
                                   onClick={() => setEditingTask(task)}
                                   title={`Prep Day - ${task.title}`}
                                 >
-                                  {(() => { const totalPrepDays = differenceInCalendarDays(prepDueDate, prepStartDate); const showCount = totalPrepDays > 3; const daysLeft = showCount ? differenceInCalendarDays(prepDueDate, cellDate) : 0; const prepUrgent = showCount && daysLeft <= 2; const prepColor = prepUrgent ? '#ff3b3b' : '#ffffff'; return <span className="flex flex-col items-center justify-center whitespace-nowrap font-bold shrink-0" style={{ backgroundColor: '#6b7280', color: prepColor, letterSpacing: showCount ? '0.5px' : '1px', padding: showCount ? '0px 3px 0 2px' : '1px 3px 0 2px', fontSize: showCount ? '7px' : '8px', WebkitTextStroke: prepUrgent ? '0.15px #ff3b3b' : '0.15px #ffffff', alignSelf: 'stretch', lineHeight: showCount ? '1.1' : undefined, marginTop: showCount ? '-1px' : undefined, minWidth: '30px' }}><span style={{ marginTop: showCount ? '1px' : undefined, fontFamily: "'Orbitron', sans-serif" }}>PREP</span>{showCount && <span style={{ color: prepColor, fontSize: '8px', fontWeight: 550, WebkitTextStroke: '0', letterSpacing: '0.3px', lineHeight: '1', marginTop: '0px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>{daysLeft}d</span>}</span>; })()}
+                                  {(() => { const totalPrepDays = differenceInCalendarDays(prepDueDate, prepStartDate); const showCount = totalPrepDays > 3; const daysLeft = showCount ? differenceInCalendarDays(prepDueDate, cellDate) : 0; const prepUrgent = showCount && daysLeft <= 2; const prepColor = prepUrgent ? '#ff3b3b' : '#ffffff'; return <span className="flex flex-col items-center justify-center whitespace-nowrap font-bold shrink-0" style={{ backgroundColor: '#6b7280', color: prepColor, letterSpacing: showCount ? '0.5px' : '1px', padding: showCount ? '0px 3px 0 2px' : '1px 3px 0 2px', fontSize: showCount ? '7px' : '8px', WebkitTextStroke: prepUrgent ? '0.15px #ff3b3b' : '0.15px #ffffff', alignSelf: 'stretch', lineHeight: showCount ? '1.1' : undefined, marginTop: showCount ? '-1px' : undefined, minWidth: '30px' }}><span style={{ marginTop: showCount ? '1px' : undefined, fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>PREP</span>{showCount && <span style={{ color: prepColor, fontSize: '8px', fontWeight: 550, WebkitTextStroke: '0', letterSpacing: '0.3px', lineHeight: '1', marginTop: '0px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>{daysLeft}d</span>}</span>; })()}
                                   <span className="truncate pl-[3px] py-0.5 flex-1 min-w-0" style={{ fontSize: '9px', transform: 'translateY(1px)', color: '#000000' }}>{task.title}</span>
                                 </div>
                               </div>
@@ -19087,7 +19092,7 @@ export default function Dashboard() {
                         >
                           {isPrepEvent ? (
                             <>
-                              <span className="flex items-center whitespace-nowrap font-bold shrink-0 rounded-l" style={{ backgroundColor: '#6b7280', color: '#ffffff', letterSpacing: '1px', padding: '1px 3px 0 2px', fontSize: '8px', WebkitTextStroke: '0.15px #ffffff', alignSelf: 'stretch', fontFamily: "'Orbitron', sans-serif" }}>PREP</span>
+                              <span className="flex items-center whitespace-nowrap font-bold shrink-0 rounded-l" style={{ backgroundColor: '#6b7280', color: '#ffffff', letterSpacing: '1px', padding: '1px 3px 0 2px', fontSize: '8px', WebkitTextStroke: '0.15px #ffffff', alignSelf: 'stretch', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>PREP</span>
                               <span className="truncate font-bold flex-1 min-w-0 pl-1">{displayTitle}</span>
                             </>
                           ) : (
