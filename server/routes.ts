@@ -6605,7 +6605,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           catWashPlaybackState.wordIndex = 0;
         }
 
-        if (chunksPlayedSinceLastPrompt >= ATTENTION_INTERVAL && i > startChunk + 2) {
+        if (chunksPlayedSinceLastPrompt >= ATTENTION_INTERVAL) {
           console.log(`[Nest Playback] Attention prompt after ${chunksPlayedSinceLastPrompt} chunks`);
           const promptPath = await generateAndSaveTTSAudio("Bryn, are you paying attention?", `nest-attention-${Date.now()}`, voice);
           await playOnNestSpeaker(`${appUrl}${promptPath}`);
@@ -6681,6 +6681,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           }
 
           chunksPlayedSinceLastPrompt++;
+          console.log(`[Nest Playback] Chunk ${i + 1} done, chunksPlayedSinceLastPrompt=${chunksPlayedSinceLastPrompt}`);
 
           if (fileId) {
             const existingFile = await storage.getFile(fileId);
