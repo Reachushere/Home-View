@@ -1098,7 +1098,7 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  const [weatherData, setWeatherData] = useState<{ code: number; temp: number; windSpeed: number; isDay: boolean; daily?: { date: string; high: number; low: number; weatherCode?: number }[] } | null>(null);
+  const [weatherData, setWeatherData] = useState<{ code: number; temp: number; windSpeed: number; isDay: boolean; sunrise?: string; sunset?: string; daily?: { date: string; high: number; low: number; weatherCode?: number; sunrise?: string; sunset?: string }[] } | null>(null);
   const [pollenData, setPollenData] = useState<{ tree: { value: number; level: string }; grass: { value: number; level: string }; weed: { value: number; level: string }; overall: { value: number; level: string }; aqi: number } | null>(null);
   const [weatherAlerts, setWeatherAlerts] = useState<{ title: string; summary: string; type: string }[]>([]);
   const weatherParticles = useMemo(() => Array.from({ length: 70 }, () => ({
@@ -1121,12 +1121,18 @@ export default function Dashboard() {
             high: Math.round(data.daily.temperature_2m_max[i]),
             low: Math.round(data.daily.temperature_2m_min[i]),
             weatherCode: data.daily.weather_code?.[i] ?? undefined,
+            sunrise: data.daily.sunrise?.[i] ?? undefined,
+            sunset: data.daily.sunset?.[i] ?? undefined,
           })) : [];
+          const todayStr = new Date().toISOString().split('T')[0];
+          const todayDaily = daily.find((d: any) => d.date === todayStr);
           setWeatherData({
             code: data.current.weather_code,
             temp: data.current.temperature_2m,
             windSpeed: data.current.wind_speed_10m,
             isDay: data.current.is_day === 1,
+            sunrise: todayDaily?.sunrise,
+            sunset: todayDaily?.sunset,
             daily,
           });
         }
@@ -21333,9 +21339,17 @@ export default function Dashboard() {
               <span style={{ whiteSpace: 'nowrap' }}>Homework Progress</span>
             </h4>
             {weatherData && (
-              <div className="flex items-center gap-1.5 mr-1" style={{ flexShrink: 0 }}>
-                <span className="text-[9px] font-medium" style={{ color: 'rgba(255,255,255,1)' }} data-testid="homework-weather-temp">{Math.round(weatherData.temp)}°C</span>
-                <span className="text-[9px]" style={{ color: 'rgba(255,255,255,1)' }} data-testid="homework-weather-desc">{(() => { const WMO: Record<number, string> = {0:'Clear',1:'Mostly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Rime Fog',51:'Lt Drizzle',53:'Drizzle',55:'Hvy Drizzle',61:'Lt Rain',63:'Rain',65:'Hvy Rain',66:'Frzg Rain',67:'Hvy Frzg Rain',71:'Lt Snow',73:'Snow',75:'Hvy Snow',77:'Snow Grains',80:'Lt Showers',81:'Showers',82:'Hvy Showers',85:'Lt Snow Shwrs',86:'Hvy Snow Shwrs',95:'T-Storm',96:'T-Storm Hail',99:'Svr T-Storm'}; return WMO[weatherData.code] || ''; })()}</span>
+              <div className="flex flex-col items-end mr-1" style={{ flexShrink: 0, gap: '1px' }}>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[9px] font-medium" style={{ color: 'rgba(255,255,255,1)' }} data-testid="homework-weather-temp">{Math.round(weatherData.temp)}°C</span>
+                  <span className="text-[9px]" style={{ color: 'rgba(255,255,255,1)' }} data-testid="homework-weather-desc">{(() => { const WMO: Record<number, string> = {0:'Clear',1:'Mostly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Rime Fog',51:'Lt Drizzle',53:'Drizzle',55:'Hvy Drizzle',61:'Lt Rain',63:'Rain',65:'Hvy Rain',66:'Frzg Rain',67:'Hvy Frzg Rain',71:'Lt Snow',73:'Snow',75:'Hvy Snow',77:'Snow Grains',80:'Lt Showers',81:'Showers',82:'Hvy Showers',85:'Lt Snow Shwrs',86:'Hvy Snow Shwrs',95:'T-Storm',96:'T-Storm Hail',99:'Svr T-Storm'}; return WMO[weatherData.code] || ''; })()}</span>
+                </div>
+                {(weatherData.sunrise || weatherData.sunset) && (
+                  <div className="flex items-center gap-1.5" style={{ lineHeight: 1 }}>
+                    {weatherData.sunrise && <span className="text-[7.5px]" style={{ color: 'rgba(255,255,255,0.7)' }} data-testid="homework-sunrise">☀↑ {(() => { const t = new Date(weatherData.sunrise); const h = t.getHours(); const m = t.getMinutes(); const ampm = h >= 12 ? 'PM' : 'AM'; return `${h === 0 ? 12 : h > 12 ? h - 12 : h}:${m.toString().padStart(2, '0')} ${ampm}`; })()}</span>}
+                    {weatherData.sunset && <span className="text-[7.5px]" style={{ color: 'rgba(255,255,255,0.7)' }} data-testid="homework-sunset">☽↓ {(() => { const t = new Date(weatherData.sunset); const h = t.getHours(); const m = t.getMinutes(); const ampm = h >= 12 ? 'PM' : 'AM'; return `${h === 0 ? 12 : h > 12 ? h - 12 : h}:${m.toString().padStart(2, '0')} ${ampm}`; })()}</span>}
+                  </div>
+                )}
               </div>
             )}
             <div ref={homeworkSpacerRef} style={{ width: '0px', height: '100%', minHeight: '14px', backgroundColor: 'transparent', flexShrink: 0, marginRight: '4px', marginLeft: '0px' }} />

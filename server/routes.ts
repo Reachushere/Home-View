@@ -1625,7 +1625,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       if (weatherCache.data && now - weatherCache.timestamp < 15 * 60 * 1000) {
         return res.json(weatherCache.data);
       }
-      const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=43.6275&longitude=-79.3962&current=weather_code,temperature_2m,wind_speed_10m,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=America/Toronto&forecast_days=10&past_days=7');
+      const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=43.6275&longitude=-79.3962&current=weather_code,temperature_2m,wind_speed_10m,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=America/Toronto&forecast_days=10&past_days=7');
       const data = await response.json();
       weatherCache.data = data;
       weatherCache.timestamp = now;
