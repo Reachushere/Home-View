@@ -17819,7 +17819,7 @@ export default function Dashboard() {
                   if (!alreadyExists) allDisplayCourses.push(sc);
                 }
                 const filteredCourses = allDisplayCourses;
-                const minThreeTaskHeight = 3 * 20 + 4; // 64px minimum (3 tasks)
+                const minThreeTaskHeight = 3 * 22 + 8; // 74px minimum (3 tasks with gaps and padding)
                 const maxCourseRowHeight = minThreeTaskHeight;
                 return (
               <div ref={courseRowsRef} data-testid="course-rows-container" style={{ borderTop: '1px solid black', marginTop: '-2px' }}>
