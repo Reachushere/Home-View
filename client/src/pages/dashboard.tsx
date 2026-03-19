@@ -21173,7 +21173,7 @@ export default function Dashboard() {
               </div>
             )}
             {weatherData && (weatherData.sunrise || weatherData.sunset) && (
-              <div style={{ position: 'absolute', right: '16px', top: '2px', display: 'flex', alignItems: 'center', gap: '6px', lineHeight: 1 }}>
+              <div style={{ position: 'absolute', left: '5px', top: '2px', display: 'flex', alignItems: 'center', gap: '6px', lineHeight: 1 }}>
                 {weatherData.sunrise && <span className="text-[10px]" data-testid="homework-sunrise"><span style={{ color: '#FFFF00' }}>☀↑</span><span style={{ color: 'rgba(255,255,255,1)', position: 'relative', top: '1px' }}> {(() => { const t = new Date(weatherData.sunrise); const h = t.getHours(); const m = t.getMinutes(); const ampm = h >= 12 ? 'PM' : 'AM'; return `${h === 0 ? 12 : h > 12 ? h - 12 : h}:${m.toString().padStart(2, '0')} ${ampm}`; })()}</span></span>}
                 {weatherData.sunset && <span className="text-[10px]" data-testid="homework-sunset"><span style={{ color: '#FFFF00' }}>☽↓</span><span style={{ color: 'rgba(255,255,255,1)', position: 'relative', top: '1px' }}> {(() => { const t = new Date(weatherData.sunset); const h = t.getHours(); const m = t.getMinutes(); const ampm = h >= 12 ? 'PM' : 'AM'; return `${h === 0 ? 12 : h > 12 ? h - 12 : h}:${m.toString().padStart(2, '0')} ${ampm}`; })()}</span></span>}
               </div>
