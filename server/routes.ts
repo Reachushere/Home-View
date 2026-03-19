@@ -4097,7 +4097,10 @@ html,body{height:100%;overflow:hidden;background:transparent}
       if (auth !== '5747') {
         return res.status(401).json({ error: 'Unauthorized' });
       }
-      const rawBody = (body && typeof body === 'string' && body.trim()) ? body.trim() : null;
+      let rawBody = (body && typeof body === 'string' && body.trim()) ? body.trim() : null;
+      if (rawBody) {
+        rawBody = rawBody.replace(/^ticker\s+item\s+/i, '').trim();
+      }
       const subjectText = (subject && typeof subject === 'string') ? subject.replace(/^ticker\s*/i, '').trim() : null;
       const messageBody = rawBody || subjectText;
       if (!messageBody) {
