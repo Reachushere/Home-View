@@ -4014,9 +4014,9 @@ export default function Dashboard() {
   };
 
   const courseRowBg = (id: string): string | undefined => {
-    if (checkedCourses[id]) return 'rgba(16,185,129,0.06)';
-    if (isSectionFulfilledForCourse(id) || isActiveInOtherLevel(id) || isCourseGreyedOut(id)) return 'rgba(0,0,0,0.02)';
-    if (inProgressCourses[id] || isL2InProgressFromL1(id)) return 'rgba(245,158,11,0.06)';
+    if (checkedCourses[id]) return 'rgba(16,185,129,0.12)';
+    if (isSectionFulfilledForCourse(id) || isActiveInOtherLevel(id) || isCourseGreyedOut(id)) return 'rgba(0,0,0,0.04)';
+    if (inProgressCourses[id] || isL2InProgressFromL1(id)) return 'rgba(245,158,11,0.12)';
     return undefined;
   };
   const courseRowClass = (id: string) => {
