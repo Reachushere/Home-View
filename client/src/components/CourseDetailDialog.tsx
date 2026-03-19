@@ -198,13 +198,37 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
   const [isParsingSyllabus, setIsParsingSyllabus] = useState(false);
   const [syllabusData, setSyllabusData] = useState<any>(null);
   const [syllabusItemStates, setSyllabusItemStates] = useState<Record<number, { accepted: boolean | null; editing: boolean; edits: any }>>({});
-  const [syllabusObjectPath, setSyllabusObjectPath] = useState<string>(() => {
-    try {
-      const saved = localStorage.getItem('courseSyllabusPaths');
-      const parsed = saved ? JSON.parse(saved) : {};
-      return parsed[courseInfo.courseCode] || '';
-    } catch { return ''; }
-  });
+  const [syllabusObjectPath, setSyllabusObjectPath] = useState<string>('');
+
+  useEffect(() => {
+    fetch('/api/syllabus/paths')
+      .then(r => r.json())
+      .then(paths => {
+        if (paths[courseInfo.courseCode]) {
+          setSyllabusObjectPath(paths[courseInfo.courseCode]);
+        } else {
+          try {
+            const saved = localStorage.getItem('courseSyllabusPaths');
+            const local = saved ? JSON.parse(saved) : {};
+            if (local[courseInfo.courseCode]) {
+              setSyllabusObjectPath(local[courseInfo.courseCode]);
+              fetch('/api/syllabus/paths', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ courseCode: courseInfo.courseCode, objectPath: local[courseInfo.courseCode] }),
+              }).catch(() => {});
+            }
+          } catch {}
+        }
+      })
+      .catch(() => {
+        try {
+          const saved = localStorage.getItem('courseSyllabusPaths');
+          const local = saved ? JSON.parse(saved) : {};
+          if (local[courseInfo.courseCode]) setSyllabusObjectPath(local[courseInfo.courseCode]);
+        } catch {}
+      });
+  }, [courseInfo.courseCode]);
   const [showSyllabusViewer, setShowSyllabusViewer] = useState(false);
   const [syllabusViewerUrl, setSyllabusViewerUrl] = useState<string>('');
   const [weekStyleChoice, setWeekStyleChoice] = useState<string | null>(null);
@@ -599,12 +623,13 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
       const parsed = await parseResp.json();
       setSyllabusData(parsed);
 
+      setSyllabusObjectPath(uploadResult.objectPath);
       try {
-        const saved = localStorage.getItem('courseSyllabusPaths');
-        const paths = saved ? JSON.parse(saved) : {};
-        paths[courseInfo.courseCode] = uploadResult.objectPath;
-        localStorage.setItem('courseSyllabusPaths', JSON.stringify(paths));
-        setSyllabusObjectPath(uploadResult.objectPath);
+        await fetch('/api/syllabus/paths', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ courseCode: courseInfo.courseCode, objectPath: uploadResult.objectPath }),
+        });
       } catch {}
 
       const allItems = [

@@ -8,7 +8,7 @@ import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { db } from "./db";
 import { sql, eq } from "drizzle-orm";
-import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, COURSES, type RepeatType, type RepeatIntervalUnit, type InsertTask, type FileRecord, degreeTrackingData, feedbackNotes, insertFeedbackNoteSchema } from "@shared/schema";
+import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, COURSES, type RepeatType, type RepeatIntervalUnit, type InsertTask, type FileRecord, degreeTrackingData, feedbackNotes, insertFeedbackNoteSchema, appState } from "@shared/schema";
 import { z } from "zod";
 import { LIBERAL_STUDIES_COURSES, OPEN_ELECTIVE_COURSES } from "@shared/electiveCourses";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
@@ -11789,6 +11789,37 @@ document.body.removeChild(a);
     } catch (err) {
       console.error("ICS parse error:", err);
       res.status(500).json({ error: "Failed to parse ICS file" });
+    }
+  });
+
+  app.get("/api/syllabus/paths", async (_req, res) => {
+    try {
+      const row = await db.select().from(appState).where(eq(appState.key, 'courseSyllabusPaths')).limit(1);
+      const paths = row.length > 0 ? JSON.parse(row[0].value) : {};
+      res.json(paths);
+    } catch (err: any) {
+      console.error("Error getting syllabus paths:", err);
+      res.json({});
+    }
+  });
+
+  app.post("/api/syllabus/paths", async (req, res) => {
+    try {
+      const { courseCode, objectPath } = req.body;
+      if (!courseCode || !objectPath) return res.status(400).json({ error: "courseCode and objectPath required" });
+      const row = await db.select().from(appState).where(eq(appState.key, 'courseSyllabusPaths')).limit(1);
+      const paths = row.length > 0 ? JSON.parse(row[0].value) : {};
+      paths[courseCode] = objectPath;
+      const value = JSON.stringify(paths);
+      if (row.length > 0) {
+        await db.update(appState).set({ value, updatedAt: new Date() }).where(eq(appState.key, 'courseSyllabusPaths'));
+      } else {
+        await db.insert(appState).values({ key: 'courseSyllabusPaths', value });
+      }
+      res.json({ success: true });
+    } catch (err: any) {
+      console.error("Error saving syllabus path:", err);
+      res.status(500).json({ error: err.message });
     }
   });
 
