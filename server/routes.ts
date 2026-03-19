@@ -3499,6 +3499,112 @@ html,body{height:100%;overflow:hidden;background:transparent}
     }
   });
 
+  app.post("/api/onedrive/ensure-semester-folders", async (req, res) => {
+    try {
+      const { semesterId } = req.body;
+      let semester: any;
+      if (semesterId) {
+        const allSemesters = await storage.getAllSemesterSettings();
+        semester = allSemesters.find((s: any) => s.id === semesterId);
+      } else {
+        semester = await storage.getActiveSemesterSettings();
+      }
+      if (!semester) return res.status(404).json({ error: "Semester not found" });
+
+      const { createOneDriveFolder } = await import("./onedrive");
+      const semType = getSemesterTypeFolder(semester.semesterType);
+      const startDate = semester.semesterStartDate ? new Date(semester.semesterStartDate) : new Date();
+      const year = startDate.getFullYear();
+      const basePath = `/School/1. TMU/Courses/${year}`;
+      const semFolder = semType;
+
+      await createOneDriveFolder(basePath, semFolder);
+      const semPath = `${basePath}/${semFolder}`;
+
+      const numWeeks = 13;
+      const results: string[] = [];
+
+      for (let i = 1; i <= 3; i++) {
+        const code = ((semester as any)[`course${i}Code`] || '').replace(/\s/g, '');
+        if (!code) continue;
+        const name = (semester as any)[`course${i}Name`] || '';
+        const folderName = name ? `${code} - ${name}` : code;
+        await createOneDriveFolder(semPath, folderName);
+        const coursePath = `${semPath}/${folderName}`;
+
+        for (let week = 1; week <= numWeeks; week++) {
+          await createOneDriveFolder(coursePath, `Week ${week}`);
+          const weekPath = `${coursePath}/Week ${week}`;
+          await createOneDriveFolder(weekPath, "Module");
+          await createOneDriveFolder(weekPath, "Reading");
+        }
+        results.push(folderName);
+      }
+
+      console.log(`[OneDrive] Ensured semester folders for ${semester.semesterName}: ${results.join(', ')}`);
+      res.json({ success: true, folders: results });
+    } catch (err: any) {
+      console.error("Error ensuring semester folders:", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post("/api/onedrive/rename-course-folder", async (req, res) => {
+    try {
+      const { semesterId, courseIndex, oldCode, oldName, newCode, newName } = req.body;
+      if (!courseIndex || (!newCode && !newName)) {
+        return res.status(400).json({ error: "Missing courseIndex, newCode, or newName" });
+      }
+
+      let semester: any;
+      if (semesterId) {
+        const allSemesters = await storage.getAllSemesterSettings();
+        semester = allSemesters.find((s: any) => s.id === semesterId);
+      } else {
+        semester = await storage.getActiveSemesterSettings();
+      }
+      if (!semester) return res.status(404).json({ error: "Semester not found" });
+
+      const { renameOneDriveFolder, createOneDriveFolder, checkOneDriveFolderExists } = await import("./onedrive");
+      const semType = getSemesterTypeFolder(semester.semesterType);
+      const startDate = semester.semesterStartDate ? new Date(semester.semesterStartDate) : new Date();
+      const year = startDate.getFullYear();
+      const semPath = `/School/1. TMU/Courses/${year}/${semType}`;
+
+      const effectiveOldCode = (oldCode || '').replace(/\s/g, '');
+      const effectiveNewCode = (newCode || '').replace(/\s/g, '');
+      const oldFolderName = oldName ? `${effectiveOldCode} - ${oldName}` : effectiveOldCode;
+      const newFolderName = newName ? `${effectiveNewCode} - ${newName}` : effectiveNewCode;
+
+      if (oldFolderName === newFolderName) {
+        return res.json({ success: true, action: 'no_change' });
+      }
+
+      const oldPath = `${semPath}/${oldFolderName}`;
+      const oldExists = await checkOneDriveFolderExists(oldPath);
+
+      if (oldExists) {
+        const result = await renameOneDriveFolder(oldPath, newFolderName);
+        console.log(`[OneDrive] Renamed folder: ${oldFolderName} → ${newFolderName}: ${JSON.stringify(result)}`);
+        res.json({ success: true, action: 'renamed', from: oldFolderName, to: newFolderName, ...result });
+      } else {
+        await createOneDriveFolder(semPath, newFolderName);
+        const coursePath = `${semPath}/${newFolderName}`;
+        for (let week = 1; week <= 13; week++) {
+          await createOneDriveFolder(coursePath, `Week ${week}`);
+          const weekPath = `${coursePath}/Week ${week}`;
+          await createOneDriveFolder(weekPath, "Module");
+          await createOneDriveFolder(weekPath, "Reading");
+        }
+        console.log(`[OneDrive] Created new folder structure: ${newFolderName} (old '${oldFolderName}' not found)`);
+        res.json({ success: true, action: 'created', folder: newFolderName });
+      }
+    } catch (err: any) {
+      console.error("Error renaming course folder:", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   app.post("/api/onedrive/create-semester-folders", async (req, res) => {
     try {
       const { semesterName, semesterFolder, year, courses, numWeeks } = req.body;

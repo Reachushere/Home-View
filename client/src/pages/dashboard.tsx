@@ -2948,20 +2948,65 @@ export default function Dashboard() {
   };
   
   const saveCourses = (data: { courses: Array<{ name: string; color: string; colorEnd?: string; professor: string; professorEmail?: string }> }) => {
+    const prevCourses = coursesData?.courses || [];
     setCoursesData(data);
     localStorage.setItem('coursesData', JSON.stringify(data));
     saveDegreeToServer('coursesData', data);
     setIsCoursesDialogOpen(false);
     toast({ title: "Courses saved", description: "Your courses have been updated." });
-    const colorPayload: Record<string, string | null> = {};
+    const semPayload: Record<string, string | null> = {};
     for (let i = 0; i < 3; i++) {
       const course = data.courses[i];
+      const prefix = `course${i + 1}`;
       if (course) {
-        colorPayload[`course${i + 1}Color`] = course.color || null;
-        colorPayload[`course${i + 1}ColorEnd`] = course.colorEnd || null;
+        semPayload[`${prefix}Color`] = course.color || null;
+        semPayload[`${prefix}ColorEnd`] = course.colorEnd || null;
+        const parts = course.name.split(' - ');
+        const code = (parts[0] || '').trim();
+        const name = parts.slice(1).join(' - ').trim();
+        semPayload[`${prefix}Code`] = code || null;
+        semPayload[`${prefix}Name`] = course.name || null;
+        semPayload[`${prefix}Professor`] = course.professor || null;
+        semPayload[`${prefix}ProfessorEmail`] = course.professorEmail || null;
+      } else {
+        semPayload[`${prefix}Color`] = null;
+        semPayload[`${prefix}ColorEnd`] = null;
+        semPayload[`${prefix}Code`] = null;
+        semPayload[`${prefix}Name`] = null;
       }
     }
-    fetch('/api/semester', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(colorPayload) }).catch(() => {});
+    fetch('/api/semester', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(semPayload) })
+      .then(() => {
+        queryClient.invalidateQueries({ queryKey: ["/api/semester"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/semesters"] });
+      })
+      .catch(() => {});
+
+    for (let i = 0; i < 3; i++) {
+      const newCourse = data.courses[i];
+      const oldCourse = prevCourses[i];
+      if (!newCourse?.name?.trim()) continue;
+      const newParts = newCourse.name.split(' - ');
+      const newCode = (newParts[0] || '').trim();
+      const newName = newParts.slice(1).join(' - ').trim();
+      const oldParts = (oldCourse?.name || '').split(' - ');
+      const oldCode = (oldParts[0] || '').trim();
+      const oldName = oldParts.slice(1).join(' - ').trim();
+      if (newCode && (newCode !== oldCode || newName !== oldName)) {
+        fetch('/api/onedrive/rename-course-folder', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            courseIndex: i + 1,
+            oldCode: oldCode || newCode,
+            oldName: oldName,
+            newCode,
+            newName,
+          }),
+        }).catch(() => {});
+      }
+    }
   };
 
   const saveSemesterScheduleMutation = useMutation({
@@ -8053,10 +8098,24 @@ export default function Dashboard() {
       });
       return apiRequest("POST", "/api/semester", payload);
     },
-    onSuccess: () => {
+    onSuccess: async (response: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/semester"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/semesters"] });
       queryClient.invalidateQueries({ queryKey: ["/api/weeks"] });
       setIsNewSemesterDialogOpen(false);
+      try {
+        const created = await response.json();
+        if (created?.id) {
+          fetch('/api/onedrive/ensure-semester-folders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ semesterId: created.id }),
+          }).then(() => {
+            console.log('[Semester] OneDrive folders created for new semester');
+          }).catch((e: any) => console.warn('[Semester] Failed to create OneDrive folders:', e.message));
+        }
+      } catch {}
     },
   });
 
@@ -24916,6 +24975,8 @@ function CoursesForm({
     if (courseIndex >= 0 && courseIndex < 3) {
       const schedulePayload: Record<string, any> = {
         semesterType: courseData.semesterType,
+        [`${prefix}Code`]: courseData.courseCode || null,
+        [`${prefix}Name`]: fullName || null,
         [`${prefix}DeliveryMode`]: courseData.deliveryMode || null,
         [`${prefix}ClassDay`]: courseData.classDay || null,
         [`${prefix}ClassDay2`]: courseData.classDay2 || null,
@@ -24926,6 +24987,19 @@ function CoursesForm({
         [`${prefix}EndDate`]: courseData.endDate ? new Date(courseData.endDate).toISOString() : null,
       };
       onSaveSemesterSchedule(schedulePayload);
+
+      fetch('/api/onedrive/rename-course-folder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          courseIndex: courseIndex + 1,
+          oldCode: courseData.courseCode,
+          oldName: '',
+          newCode: courseData.courseCode,
+          newName: courseData.courseName,
+        }),
+      }).catch(() => {});
     }
 
     if (courseData.reminders && courseData.reminders.length > 0) {

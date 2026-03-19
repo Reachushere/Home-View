@@ -132,6 +132,32 @@ export async function createOneDriveFolder(parentPath: string, folderName: strin
   }
 }
 
+export async function renameOneDriveFolder(folderPath: string, newName: string): Promise<{ renamed: boolean; error?: string }> {
+  const client = await getOneDriveClient();
+  try {
+    const encodedPath = encodeURIComponent(folderPath).replace(/%2F/g, '/');
+    await client.api(`/me/drive/root:${encodedPath}`).patch({ name: newName });
+    return { renamed: true };
+  } catch (error: any) {
+    if (error.statusCode === 404) {
+      return { renamed: false, error: 'Folder not found' };
+    }
+    console.error(`Error renaming folder "${folderPath}" to "${newName}":`, error.message || error);
+    return { renamed: false, error: error.message };
+  }
+}
+
+export async function checkOneDriveFolderExists(folderPath: string): Promise<boolean> {
+  const client = await getOneDriveClient();
+  try {
+    const encodedPath = encodeURIComponent(folderPath).replace(/%2F/g, '/');
+    await client.api(`/me/drive/root:${encodedPath}`).get();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 // Search for files
 export async function searchOneDriveFiles(query: string) {
   const client = await getOneDriveClient();
