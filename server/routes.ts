@@ -1929,7 +1929,16 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
           const logoHtml = logoInfo
             ? `<img src="/api/ticker-assets/${logoInfo.file}" class="t-logo" style="height:${logoInfo.height}px"/>`
             : `<span style="font-size:11px;font-weight:700;padding:0 4px;border-radius:3px;background:#555;color:#fff">${item.source}</span>`;
-          tickerItems += `<span class="t-item"><a href="${escapedLink}" target="_blank">${logoHtml}<span class="t-sep">|</span><span class="t-headline">${escapedTitle}</span></a></span>`;
+          let timeAgoHtml = '';
+          if (item.publishedAt) {
+            const diff = Date.now() - new Date(item.publishedAt).getTime();
+            const mins = Math.floor(diff / 60000);
+            if (mins >= 0) {
+              const ago = mins < 60 ? `${mins}m` : mins < 1440 ? `${Math.floor(mins / 60)}h` : `${Math.floor(mins / 1440)}d`;
+              timeAgoHtml = `<span style="font-size:16px;color:rgba(255,255,255,0.6);margin-left:6px">${ago}</span>`;
+            }
+          }
+          tickerItems += `<span class="t-item"><a href="${escapedLink}" target="_blank">${logoHtml}<span class="t-sep">|</span><span class="t-headline">${escapedTitle}</span>${timeAgoHtml}</a></span>`;
         }
       }
 
@@ -2022,7 +2031,7 @@ html,body{height:100%;overflow:hidden;background:transparent}
         { source: 'Fox News', url: 'https://moxie.foxnews.com/google-publisher/politics.xml', count: 3 },
       ];
 
-      const results: { title: string; source: string; link: string }[] = [];
+      const results: { title: string; source: string; link: string; publishedAt?: string }[] = [];
 
       await Promise.allSettled(feeds.map(async (feed) => {
         try {
@@ -2040,16 +2049,19 @@ html,body{height:100%;overflow:hidden;background:transparent}
           for (const item of items) {
             const titleMatch = item.match(/<title[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/title>/is);
             const linkMatch = item.match(/<link[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/link>/is);
+            const pubDateMatch = item.match(/<pubDate[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/pubDate>/is);
             if (titleMatch?.[1]) {
               let title = titleMatch[1].replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&apos;/g, "'").replace(/&#(\d+);/g, (_, n) => String.fromCharCode(parseInt(n))).replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCharCode(parseInt(n, 16))).trim();
               title = title.replace(/\s*-\s*(CTV News|Google News)$/i, '').trim();
               const sportsFilter = /\b(NFL|NBA|NHL|MLB|CFL|MLS|FIFA|UEFA|NASCAR|PGA|ATP|WTA|Premier League|Super Bowl|Stanley Cup|World Series|World Cup|touchdown|quarterback|hockey|soccer|baseball|basketball|football score|playoff|championship game|draft pick|free agent signing|free agent|trade deadline|hat trick|grand slam|home run|Raptors|Maple Leafs|Blue Jays|Argonauts|Toronto FC|Canadiens|Senators|Oilers|Canucks|Flames|Jets|Bruins|Lakers|Warriors|Yankees|Dodgers|Chiefs|Eagles|coach|roster|medal|Olympic|athletics|tennis|boxing|UFC|MMA|wrestling|cricket|golf|curling|skiing|snowboard|goalie|goaltender|defenseman|striker|midfielder|pitcher|outfielder|inning|shutout|penalty shot|power play|slapshot|offseason|All-Star|all-star game|MVP|signing|signed.*deal|contract extension)\b/i;
               const junkFilter = /^LIVE:|^WATCH:|^BREAKING:?\s*$|^Video:|^Photos:|^Gallery:|News Live$|Live Stream|Full Episode/i;
               if (title && title !== feed.source && title !== 'Google News' && title !== 'MS NOW' && !sportsFilter.test(title) && !junkFilter.test(title)) {
+                const publishedAt = pubDateMatch?.[1]?.trim() ? new Date(pubDateMatch[1].trim()).toISOString() : undefined;
                 results.push({
                   title,
                   source: feed.source,
                   link: linkMatch?.[1]?.trim() || '',
+                  ...(publishedAt && !isNaN(new Date(publishedAt).getTime()) ? { publishedAt } : {}),
                 });
               }
             }

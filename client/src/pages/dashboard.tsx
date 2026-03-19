@@ -322,7 +322,7 @@ const TICKER_LOGO_MAP: Record<string, { src: string; height: number }> = {
   'Fox News': { src: foxNewsLogoPath, height: 72 },
 };
 
-function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; link: string; source: string }> }) {
+function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; link: string; source: string; publishedAt?: string }> }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const rootRef = useRef<any>(null);
   const prevHeadlinesKeyRef = useRef<string>('');
@@ -364,7 +364,16 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
         ? `<img src="${logoInfo.src}" alt="${item.source}" class="rounded-sm" style="height:${logoInfo.height}px;width:auto;min-width:${logoInfo.height}px;object-fit:contain;vertical-align:middle" />`
         : `<span class="text-[11px] font-bold px-1 py-0 rounded bg-gray-600 text-white">${item.source}</span>`;
       const safeTitle = item.title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-      return `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 mx-4 no-underline hover:underline" data-testid="news-headline-${i}">${logoHtml}<span class="text-white/85 mx-1 text-[13px]" style="line-height:1;vertical-align:middle;font-weight:300">|</span><span class="text-[13px] text-white/90">${safeTitle}</span></a>`;
+      let timeAgoHtml = '';
+      if (item.publishedAt) {
+        const diff = Date.now() - new Date(item.publishedAt).getTime();
+        const mins = Math.floor(diff / 60000);
+        if (mins >= 0) {
+          const ago = mins < 60 ? `${mins}m` : mins < 1440 ? `${Math.floor(mins / 60)}h` : `${Math.floor(mins / 1440)}d`;
+          timeAgoHtml = `<span class="text-[11px]" style="color:rgba(255,255,255,0.6);margin-left:4px">${ago}</span>`;
+        }
+      }
+      return `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 mx-4 no-underline hover:underline" data-testid="news-headline-${i}">${logoHtml}<span class="text-white/85 mx-1 text-[13px]" style="line-height:1;vertical-align:middle;font-weight:300">|</span><span class="text-[13px] text-white/90">${safeTitle}</span>${timeAgoHtml}</a>`;
     }).join('')}</div></div></div>`;
     containerRef.current.innerHTML = html;
     requestAnimationFrame(() => {
@@ -1057,7 +1066,7 @@ export default function Dashboard() {
       el.style.transition = val ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out';
     });
   }, []);
-  const [newsHeadlines, setNewsHeadlines] = useState<{ title: string; source: string; link: string }[]>([]);
+  const [newsHeadlines, setNewsHeadlines] = useState<{ title: string; source: string; link: string; publishedAt?: string }[]>([]);
 
   useEffect(() => {
     const fetchNews = async () => {
