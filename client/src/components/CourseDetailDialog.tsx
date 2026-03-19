@@ -1351,8 +1351,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                       <Paperclip
                         className="h-3.5 w-3.5 text-white cursor-pointer hover:opacity-70 transition-opacity"
                         onClick={() => {
-                          setSyllabusViewerUrl(`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`);
-                          setShowSyllabusViewer(true);
+                          window.open(`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`, '_blank');
                         }}
                         data-testid="button-view-syllabus-edit"
                       />
@@ -1464,8 +1463,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                   <div className="flex justify-end">
                     <button
                       onClick={() => {
-                        setSyllabusViewerUrl(`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`);
-                        setShowSyllabusViewer(true);
+                        window.open(`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`, '_blank');
                       }}
                       className="h-6 px-2 text-[9px] bg-emerald-600/40 hover:bg-emerald-600/60 text-white border border-emerald-400/40 rounded-md flex items-center gap-1 transition-colors whitespace-nowrap"
                       data-testid="button-view-syllabus"
