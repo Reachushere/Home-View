@@ -21156,7 +21156,7 @@ export default function Dashboard() {
               </div>
             );
           })()}
-          <div style={{ padding: '0 8px', height: '48px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 42, overflow: 'visible' }}>
+          <div style={{ padding: '0 8px', height: '42px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 42, overflow: 'visible' }}>
             <div style={{ position: 'absolute', top: '15px', left: 0, right: 0, height: '0.25px', backgroundColor: '#ffffff' }} />
             <span className="text-xs font-medium text-white" style={{ position: 'absolute', left: '14px', top: '33px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Homework Progress</span>
             <span className="text-xs font-medium text-white" style={{ position: 'absolute', left: '161px', top: '33px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Upcoming Assignments</span>
@@ -21551,7 +21551,7 @@ export default function Dashboard() {
               }
             }
             return '14px';
-          })(), paddingTop: '8px', paddingBottom: '0px', overflowY: 'auto', scrollbarWidth: 'none', position: 'relative' }} ref={homeworkScrollRef}>
+          })(), paddingBottom: '0px', overflowY: 'auto', scrollbarWidth: 'none', position: 'relative' }} ref={homeworkScrollRef}>
             {isLoading ? (
               <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
             ) : (
@@ -21563,7 +21563,7 @@ export default function Dashboard() {
                   data-testid="hw-group-bar-handle"
                 />
                 {/* Today Section */}
-                <div data-homework-section="today" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 0 6px 0', marginTop: '-8px' }}>
+                <div data-homework-section="today" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 0 6px 0' }}>
                   <span className="text-[12px]" style={{ color: '#ffffff' }}>Today</span>
                   <span className="text-[11px]" style={{ color: '#ffffff' }}>({dueTodayTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', justifyContent: 'flex-end', marginLeft: 'auto', flexShrink: 0, width: '42px' }}>
