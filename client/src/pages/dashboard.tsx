@@ -2346,7 +2346,7 @@ export default function Dashboard() {
     const saved = localStorage.getItem('colorSettings');
     const defaults = {
       boxBackground: '#ffffff',
-      headerBar: '#1a3a5c',
+      headerBar: '#164a72',
       mainBackground: '#3a8bbf',
       boxGlassEffect: true,
       boxTransparency: 20,
@@ -2355,18 +2355,20 @@ export default function Dashboard() {
       mainBackgroundGradientEnd: '#164a72',
       todayCellBackground: '#d4d4d4',
       currentHourRowBackground: '#d4d4d4',
-      todayCurrentHourCellBackground: '#1a3a5c',
+      todayCurrentHourCellBackground: '#164a72',
       backgroundPhoto: null as string | null
     };
     // Force migration V16: slightly less frosted than original 35
-    const migrationV20 = localStorage.getItem('colorSettingsMigrationV20');
-    if (!migrationV20) {
+    const migrationV22 = localStorage.getItem('colorSettingsMigrationV22');
+    if (!migrationV22) {
       localStorage.removeItem('colorSettings');
       localStorage.removeItem('colorSettingsMigrationV17');
       localStorage.removeItem('colorSettingsMigrationV18');
       localStorage.removeItem('colorSettingsMigrationV18b');
       localStorage.removeItem('colorSettingsMigrationV19');
-      localStorage.setItem('colorSettingsMigrationV20', 'done');
+      localStorage.removeItem('colorSettingsMigrationV20');
+      localStorage.removeItem('colorSettingsMigrationV21');
+      localStorage.setItem('colorSettingsMigrationV22', 'done');
       return defaults;
     }
     const migrationDone = localStorage.getItem('colorSettingsMigrationV17');
@@ -3691,8 +3693,8 @@ export default function Dashboard() {
         if (data.colorSettings) {
           setColorSettings(prev => {
             const merged = { ...prev, ...data.colorSettings };
-            if (merged.headerBar === '#160502') merged.headerBar = '#1a3a5c';
-            if (merged.todayCurrentHourCellBackground === '#160502') merged.todayCurrentHourCellBackground = '#1a3a5c';
+            if (merged.headerBar === '#160502' || merged.headerBar === '#1a3a5c' || merged.headerBar === '#0f2540') merged.headerBar = '#164a72';
+            if (merged.todayCurrentHourCellBackground === '#160502' || merged.todayCurrentHourCellBackground === '#1a3a5c' || merged.todayCurrentHourCellBackground === '#0f2540') merged.todayCurrentHourCellBackground = '#164a72';
             localStorage.setItem('colorSettings', JSON.stringify(merged));
             return merged;
           });
