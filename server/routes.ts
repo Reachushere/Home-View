@@ -3857,6 +3857,19 @@ html,body{height:100%;overflow:hidden;background:transparent}
 
   // ============= END ONEDRIVE ROUTES =============
 
+  // ============= GMAIL / D2L ANNOUNCEMENTS =============
+  app.get("/api/announcements", async (req, res) => {
+    try {
+      const { fetchD2LAnnouncements } = await import("./gmail");
+      const maxResults = parseInt(req.query.limit as string) || 20;
+      const announcements = await fetchD2LAnnouncements(maxResults);
+      res.json(announcements);
+    } catch (err: any) {
+      console.error("Error fetching announcements:", err.message);
+      res.status(500).json({ error: err.message, announcements: [] });
+    }
+  });
+
   // GET /api/calendar/list - List all available Google calendars for selection
   app.get("/api/calendar/list", async (_req, res) => {
     try {
