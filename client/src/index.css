@@ -446,6 +446,24 @@ button[role="combobox"] > span {
   }
 }
 
+.course-cell-scroll {
+  overflow-y: auto !important;
+}
+.course-cell-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.course-cell-scroll::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 2px;
+}
+.course-cell-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 2px;
+}
+.course-cell-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
 .animate-reminder-pulse {
   animation: reminder-red-pulse 5s ease-in-out infinite;
   z-index: 20;
