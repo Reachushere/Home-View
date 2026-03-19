@@ -19,6 +19,8 @@ import globalLogoPath from "@assets/Global_White_1773536754594.png";
 import cbcLogoPath from "@assets/cbc-news-logo-black-and-white_1773536865600.png";
 import msnbcLogoPath from "@assets/MSNBC_1773536950584.png";
 import tmuBoxesLogo from "@assets/TMU_Boxes_1773894223753.png";
+import d2lTickerLabel from "@assets/D2L_1773894837014.png";
+import newsTickerLabel from "@assets/News_1773894837015.png";
 import zoomLogoPath from "@assets/Zoom_1773653841562.png";
 import wifiLogoPath from "@assets/Wifi_1773656687145.png";
 import politicoLogoPath from "@assets/Politico_1773537080711.png";
@@ -349,7 +351,7 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
     if (renderedRef.current && headlinesKey === prevHeadlinesKeyRef.current) return;
     prevHeadlinesKeyRef.current = headlinesKey;
     renderedRef.current = true;
-    const html = `<div class="fixed left-0 right-0 z-[9998] overflow-hidden" style="bottom:0;height:38px;background:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(20,20,30,0.9) 50%,rgba(0,0,0,0.85) 100%);border-top:1px solid rgba(255,255,255,0.15)" data-testid="news-ticker"><div class="flex items-center h-full whitespace-nowrap news-ticker-scroll" style="position:relative">${headlines.map((item, i) => {
+    const html = `<div class="fixed left-0 right-0 z-[9998] overflow-hidden flex" style="bottom:0;height:38px;background:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(20,20,30,0.9) 50%,rgba(0,0,0,0.85) 100%);border-top:1px solid rgba(255,255,255,0.15)" data-testid="news-ticker"><div class="flex-shrink-0 flex items-center justify-center" style="height:38px;width:auto"><img src="${newsTickerLabel}" alt="NEWS" style="height:38px;width:auto;object-fit:contain" /></div><div class="flex-1 overflow-hidden relative h-full"><div class="flex items-center h-full whitespace-nowrap news-ticker-scroll" style="position:relative">${headlines.map((item, i) => {
       if (item.source === '_ALERT_') {
         const safeTitle = item.title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
         return `<span class="inline-flex items-center gap-1.5 mx-4" style="animation:tickerAlertBlink 1s ease-in-out infinite" data-testid="weather-alert-${i}"><img src="${weatherAlertLogoPath}" alt="Weather Alert" class="rounded-sm" style="height:28px;width:auto;object-fit:contain" /><span class="text-[13px] font-bold" style="color:#ff4444;text-shadow:0 0 6px rgba(255,68,68,0.5)">${safeTitle}</span><span class="text-white/20 mx-2">|</span></span>`;
@@ -364,7 +366,7 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
         : `<span class="text-[11px] font-bold px-1 py-0 rounded bg-gray-600 text-white">${item.source}</span>`;
       const safeTitle = item.title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
       return `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 mx-4 no-underline hover:underline" data-testid="news-headline-${i}">${logoHtml}<span class="text-white/85 mx-1 text-[13px]" style="line-height:1;vertical-align:middle;font-weight:300">|</span><span class="text-[13px] text-white/90">${safeTitle}</span></a>`;
-    }).join('')}</div></div>`;
+    }).join('')}</div></div></div>`;
     containerRef.current.innerHTML = html;
     requestAnimationFrame(() => {
       const scrollEl = containerRef.current?.querySelector('.news-ticker-scroll') as HTMLElement | null;
@@ -11887,48 +11889,53 @@ export default function Dashboard() {
       </div>
 
       {/* D2L Announcement Ticker - fixed at very top of page, matches bottom news ticker style */}
-      <div className="fixed left-0 right-0 z-[9999] overflow-hidden" style={{ top: 0, height: '38px', background: 'linear-gradient(90deg, rgba(0,0,0,0.85) 0%, rgba(20,20,30,0.9) 50%, rgba(0,0,0,0.85) 100%)', borderBottom: '1px solid rgba(255,255,255,0.15)' }} data-testid="announcement-ticker">
-        {thisWeekAnnouncements.length > 0 ? (
-          <div ref={(el) => {
-            if (!el) return;
-            requestAnimationFrame(() => {
-              const contentWidth = el.scrollWidth;
-              const screenWidth = window.innerWidth;
-              const totalTravel = screenWidth + contentWidth;
-              const speed = 65;
-              const duration = totalTravel / speed;
-              el.style.setProperty('--ticker-start', `${screenWidth}px`);
-              el.style.setProperty('--ticker-end', `-${contentWidth}px`);
-              el.style.animation = `tickerScroll ${duration}s linear infinite`;
-            });
-          }} className="flex items-center h-full whitespace-nowrap" style={{ position: 'relative' }}>
-            {[...thisWeekAnnouncements, ...thisWeekAnnouncements].map((a: any, i: number) => {
-              const timeAgo = (() => {
-                const diff = Date.now() - new Date(a.receivedAt || a.date).getTime();
-                const mins = Math.floor(diff / 60000);
-                if (mins < 60) return `${mins}m ago`;
-                const hrs = Math.floor(mins / 60);
-                if (hrs < 24) return `${hrs}h ago`;
-                const days = Math.floor(hrs / 24);
-                return `${days}d ago`;
-              })();
-              return (
-                <span key={`${a.id}-${i}`} className="inline-flex items-center gap-1.5 mx-4" data-testid={`announcement-${a.id}-${i}`}>
-                  <img src={tmuBoxesLogo} alt="TMU" className="rounded-sm" style={{ height: '42px', width: 'auto', minWidth: '42px', objectFit: 'contain', verticalAlign: 'middle' }} />
-                  <span className="text-[13px] font-bold tracking-wide uppercase" style={{ color: '#6DB3F2' }}>{a.courseName}</span>
-                  <span className="text-white/85 mx-1 text-[13px]" style={{ lineHeight: '1', verticalAlign: 'middle', fontWeight: 300 }}>|</span>
-                  <span className="text-[13px] text-white/90">{a.subject}</span>
-                  <span className="text-[11px] text-white/40 ml-1">{timeAgo}</span>
-                </span>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="flex items-center justify-center h-full">
-            <img src={tmuBoxesLogo} alt="TMU" className="rounded-sm" style={{ height: '42px', width: 'auto', objectFit: 'contain' }} />
-            <span className="text-[13px] text-white/40 ml-2">No announcements</span>
-          </div>
-        )}
+      <div className="fixed left-0 right-0 z-[9999] overflow-hidden flex" style={{ top: 0, height: '38px', background: 'linear-gradient(90deg, rgba(0,0,0,0.85) 0%, rgba(20,20,30,0.9) 50%, rgba(0,0,0,0.85) 100%)', borderBottom: '1px solid rgba(255,255,255,0.15)' }} data-testid="announcement-ticker">
+        <div className="flex-shrink-0 flex items-center justify-center" style={{ height: '38px', width: 'auto' }}>
+          <img src={d2lTickerLabel} alt="D2L" style={{ height: '38px', width: 'auto', objectFit: 'contain' }} />
+        </div>
+        <div className="flex-1 overflow-hidden relative h-full">
+          {thisWeekAnnouncements.length > 0 ? (
+            <div ref={(el) => {
+              if (!el) return;
+              requestAnimationFrame(() => {
+                const contentWidth = el.scrollWidth;
+                const screenWidth = window.innerWidth;
+                const totalTravel = screenWidth + contentWidth;
+                const speed = 65;
+                const duration = totalTravel / speed;
+                el.style.setProperty('--ticker-start', `${screenWidth}px`);
+                el.style.setProperty('--ticker-end', `-${contentWidth}px`);
+                el.style.animation = `tickerScroll ${duration}s linear infinite`;
+              });
+            }} className="flex items-center h-full whitespace-nowrap" style={{ position: 'relative' }}>
+              {[...thisWeekAnnouncements, ...thisWeekAnnouncements].map((a: any, i: number) => {
+                const timeAgo = (() => {
+                  const diff = Date.now() - new Date(a.receivedAt || a.date).getTime();
+                  const mins = Math.floor(diff / 60000);
+                  if (mins < 60) return `${mins}m ago`;
+                  const hrs = Math.floor(mins / 60);
+                  if (hrs < 24) return `${hrs}h ago`;
+                  const days = Math.floor(hrs / 24);
+                  return `${days}d ago`;
+                })();
+                return (
+                  <span key={`${a.id}-${i}`} className="inline-flex items-center gap-1.5 mx-4" data-testid={`announcement-${a.id}-${i}`}>
+                    <img src={tmuBoxesLogo} alt="TMU" className="rounded-sm" style={{ height: '42px', width: 'auto', minWidth: '42px', objectFit: 'contain', verticalAlign: 'middle' }} />
+                    <span className="text-[13px] font-bold tracking-wide uppercase" style={{ color: '#6DB3F2' }}>{a.courseName}</span>
+                    <span className="text-white/85 mx-1 text-[13px]" style={{ lineHeight: '1', verticalAlign: 'middle', fontWeight: 300 }}>|</span>
+                    <span className="text-[13px] text-white/90">{a.subject}</span>
+                    <span className="text-[11px] text-white/40 ml-1">{timeAgo}</span>
+                  </span>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="flex items-center justify-center h-full">
+              <img src={tmuBoxesLogo} alt="TMU" className="rounded-sm" style={{ height: '42px', width: 'auto', objectFit: 'contain' }} />
+              <span className="text-[13px] text-white/40 ml-2">No announcements</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Top pill tab - centered to page, outside pill container to avoid transform issues */}
