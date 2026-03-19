@@ -11698,13 +11698,17 @@ export default function Dashboard() {
           <div 
             style={{ 
               marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
-              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+              background: hasUnackedReminders
+                ? 'linear-gradient(180deg, #FF9494 0%, #FF0000 100%)'
+                : 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
               
-              border: '1.5px solid rgba(255,255,255,0.35)',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+              border: hasUnackedReminders ? '1.5px solid rgba(220, 38, 38, 0.8)' : '1.5px solid rgba(255,255,255,0.35)',
+              boxShadow: hasUnackedReminders
+                ? '0 0 12px rgba(220, 38, 38, 0.6), inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3)'
+                : '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
             }}
-            className="pill-button-hover"
+            className={`pill-button-hover ${hasUnackedReminders ? 'animate-pill-reminder' : ''}`}
             onClick={() => { if (!isTodoFlyoutOpen) bringFlyoutToFront('todo'); setIsTodoFlyoutOpen(!isTodoFlyoutOpen); }}
             data-testid="honeycomb-todo-header"
             title="Reminders"
@@ -12042,10 +12046,10 @@ export default function Dashboard() {
         }}
       >
         <svg width="84" height="25" viewBox="0 0 84 25" style={{ display: 'block' }}>
-          <path d="M0,0 L84,0 L84,9 Q75,9 75,14 L75,13 Q75,25 63,25 L21,25 Q9,25 9,13 L9,14 Q9,9 0,9 Z" fill={hasUnackedReminders ? "rgba(220, 38, 38, 0.5)" : "rgba(255,255,255,0.18)"} stroke={hasUnackedReminders ? "rgba(220, 38, 38, 0.8)" : "rgba(255,255,255,0.35)"} strokeWidth="1.5" />
+          <path d="M0,0 L84,0 L84,9 Q75,9 75,14 L75,13 Q75,25 63,25 L21,25 Q9,25 9,13 L9,14 Q9,9 0,9 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
         </svg>
-        <div className={hasUnackedReminders ? "animate-pill-reminder" : ""} style={{ position: 'absolute', left: '50%', top: '6px', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', borderRadius: '50%', width: '20px', height: '20px' }}>
-          {hasUnackedReminders ? <Bell className="h-[13px] w-[13px]" strokeWidth={2.5} style={{ color: '#dc2626', filter: 'drop-shadow(0 0 2px rgba(220, 38, 38, 0.8))' }} /> : <LayoutGrid className="h-[13px] w-[13px]" strokeWidth={2.5} style={{ color: 'rgba(255,255,255,0.8)', filter: 'drop-shadow(0 0 1px rgba(255,255,255,0.3))' }} />}
+        <div style={{ position: 'absolute', left: '50%', top: '6px', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', borderRadius: '50%', width: '20px', height: '20px' }}>
+          <LayoutGrid className="h-[13px] w-[13px]" strokeWidth={2.5} style={{ color: 'rgba(255,255,255,0.8)', filter: 'drop-shadow(0 0 1px rgba(255,255,255,0.3))' }} />
         </div>
       </div>
 

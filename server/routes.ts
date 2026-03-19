@@ -4061,15 +4061,16 @@ html,body{height:100%;overflow:hidden;background:transparent}
   const tickerExpirations = new Map<number, NodeJS.Timeout>();
   app.post('/api/webhook/ticker', async (req, res) => {
     try {
-      const { emailId, body, auth } = req.body;
+      const { emailId, body, subject, auth } = req.body;
       if (auth !== '5747') {
         return res.status(401).json({ error: 'Unauthorized' });
       }
-      if (!body || typeof body !== 'string') {
-        return res.status(400).json({ error: 'Missing body' });
+      const rawBody = (body && typeof body === 'string' && body.trim()) ? body.trim() : null;
+      const subjectText = (subject && typeof subject === 'string') ? subject.replace(/^ticker\s*/i, '').trim() : null;
+      const messageBody = rawBody || subjectText;
+      if (!messageBody) {
+        return res.status(400).json({ error: 'Missing body and subject' });
       }
-
-      const messageBody = body.trim();
       const { command, target, expireMinutes } = parseTickerCommand(messageBody);
 
       if (command === 'clear') {
