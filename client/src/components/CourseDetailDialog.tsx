@@ -674,6 +674,12 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
           body: JSON.stringify({ courseCode: courseInfo.courseCode, objectPath: uploadResult.objectPath }),
         });
       } catch {}
+      try {
+        const saved = localStorage.getItem('courseSyllabusPaths');
+        const local = saved ? JSON.parse(saved) : {};
+        local[courseInfo.courseCode] = uploadResult.objectPath;
+        localStorage.setItem('courseSyllabusPaths', JSON.stringify(local));
+      } catch {}
 
       const allItems = [
         ...(parsed.items || []).map((item: any, i: number) => ({ ...item, _idx: i, _source: 'item' })),
@@ -1323,7 +1329,17 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                   </div>
                   <div className="flex items-center gap-1.5">
                     {syllabusObjectPath && (
-                      <Paperclip className="h-3.5 w-3.5 text-white" data-testid="icon-syllabus-attached" />
+                      <button
+                        onClick={() => {
+                          setSyllabusViewerUrl(`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`);
+                          setShowSyllabusViewer(true);
+                        }}
+                        className="h-6 px-2 text-[9px] bg-emerald-600/40 hover:bg-emerald-600/60 text-white border border-emerald-400/40 rounded-md flex items-center gap-1 transition-colors whitespace-nowrap"
+                        data-testid="button-view-syllabus-edit"
+                      >
+                        <Paperclip className="h-3 w-3" />
+                        View Syllabus
+                      </button>
                     )}
                     {syllabusObjectPath && (
                       <button
@@ -1335,13 +1351,17 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                               headers: { 'Content-Type': 'application/json' },
                               body: JSON.stringify({ courseCode: courseInfo.courseCode, objectPath: '' }),
                             });
+                            const saved = localStorage.getItem('courseSyllabusPaths');
+                            const local = saved ? JSON.parse(saved) : {};
+                            delete local[courseInfo.courseCode];
+                            localStorage.setItem('courseSyllabusPaths', JSON.stringify(local));
                           } catch {}
                           toast({ title: "Syllabus removed" });
                         }}
-                        className="hover:opacity-70 transition-opacity"
+                        className="h-6 px-1.5 text-[9px] bg-red-600/30 hover:bg-red-600/50 text-white border border-red-400/30 rounded-md flex items-center gap-1 transition-colors"
                         data-testid="button-delete-syllabus"
                       >
-                        <Trash2 className="h-3.5 w-3.5 text-white" />
+                        <Trash2 className="h-3 w-3" />
                       </button>
                     )}
                     <label className={`cursor-pointer ${syllabusObjectPath ? 'opacity-40 pointer-events-none' : ''}`} data-testid="button-upload-syllabus">

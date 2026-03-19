@@ -45,6 +45,8 @@ Publishing preference: Always publish with mobile-ready compatibility enabled.
 - **File Management**: Uploads to object storage, URL pasting, and a dedicated files page.
 - **Calendar Integration**: .ics file generation for tasks and integration with Google Calendar events.
 - **Degree Tracking**: Elective course management with dropdowns, GPA calculation, and functionality to upload and parse course list files to update tasks.
+- **Syllabus Upload & Parsing**: Upload PDF syllabus per course via CourseDetailDialog. Uses OpenAI to extract assignments, deadlines, grading breakdown, policies, and week numbering style. Review UI shows parsed items with accept/decline/edit controls. Syllabus paths stored in `app_state` table (key `courseSyllabusPaths`) and localStorage fallback. View Syllabus button available in both edit and view modes.
+- **OneDrive Folder Generation**: Auto-creates semester/course/week folder structure on OneDrive. `generateWeekFolderNames()` handles reading week detection by aligning dates to Monday, producing "Reading Week - STUDY" folder without incrementing week numbers. Supports Winter (13 weeks + reading) and Spring/Summer (first_half, second_half, full) term structures.
 
 ### Design Patterns
 - **Type Safety**: End-to-end TypeScript with shared types.

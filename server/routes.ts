@@ -6281,7 +6281,11 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         if (readingWeekStart && !readingWeekInserted) {
           const rwStart = new Date(readingWeekStart);
           rwStart.setHours(0, 0, 0, 0);
-          if (wStart.getTime() >= rwStart.getTime() && wStart.getTime() < rwStart.getTime() + 7 * 86400000) {
+          const rwDay = rwStart.getDay();
+          if (rwDay === 0) rwStart.setDate(rwStart.getDate() + 1);
+          else if (rwDay === 6) rwStart.setDate(rwStart.getDate() + 2);
+          else if (rwDay !== 1) rwStart.setDate(rwStart.getDate() - (rwDay - 1));
+          if (wStart.getTime() === rwStart.getTime()) {
             weeks.push(`Reading Week - STUDY`);
             weekStart.setDate(weekStart.getDate() + 7);
             readingWeekInserted = true;
