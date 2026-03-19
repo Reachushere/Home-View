@@ -2346,7 +2346,7 @@ export default function Dashboard() {
     const saved = localStorage.getItem('colorSettings');
     const defaults = {
       boxBackground: '#ffffff',
-      headerBar: '#071e38',
+      headerBar: '#051729',
       mainBackground: '#3a8bbf',
       boxGlassEffect: true,
       boxTransparency: 20,
@@ -2355,7 +2355,7 @@ export default function Dashboard() {
       mainBackgroundGradientEnd: '#164a72',
       todayCellBackground: '#d4d4d4',
       currentHourRowBackground: '#d4d4d4',
-      todayCurrentHourCellBackground: '#071e38',
+      todayCurrentHourCellBackground: '#051729',
       backgroundPhoto: null as string | null
     };
     // Force migration V16: slightly less frosted than original 35
@@ -3702,8 +3702,8 @@ export default function Dashboard() {
         if (data.colorSettings) {
           setColorSettings(prev => {
             const merged = { ...prev, ...data.colorSettings };
-            if (['#160502','#1a3a5c','#0f2540','#164a72','#0e3356','#0a2744'].includes(merged.headerBar)) merged.headerBar = '#071e38';
-            if (['#160502','#1a3a5c','#0f2540','#164a72','#0e3356','#0a2744'].includes(merged.todayCurrentHourCellBackground)) merged.todayCurrentHourCellBackground = '#071e38';
+            if (['#160502','#1a3a5c','#0f2540','#164a72','#0e3356','#0a2744','#071e38'].includes(merged.headerBar)) merged.headerBar = '#051729';
+            if (['#160502','#1a3a5c','#0f2540','#164a72','#0e3356','#0a2744','#071e38'].includes(merged.todayCurrentHourCellBackground)) merged.todayCurrentHourCellBackground = '#051729';
             localStorage.setItem('colorSettings', JSON.stringify(merged));
             return merged;
           });
@@ -21165,7 +21165,7 @@ export default function Dashboard() {
               <span style={{ whiteSpace: 'nowrap', marginLeft: '10px' }}>Homework Progress</span>
             </h4>
             {weatherData && (
-              <div className="flex items-center gap-1.5" style={{ flexShrink: 0, marginTop: '-21px' }}>
+              <div className="flex items-center gap-1.5" style={{ flexShrink: 0, marginTop: '-25px' }}>
                 <span className="text-[10.5px] font-medium" style={{ color: 'rgba(255,255,255,1)' }} data-testid="homework-weather-temp">{Math.round(weatherData.temp)}°C</span>
                 <span className="text-[10.5px]" style={{ color: 'rgba(255,255,255,1)' }} data-testid="homework-weather-desc">{(() => { const WMO: Record<number, string> = {0:'Clear',1:'Mostly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Rime Fog',51:'Lt Drizzle',53:'Drizzle',55:'Hvy Drizzle',61:'Lt Rain',63:'Rain',65:'Hvy Rain',66:'Frzg Rain',67:'Hvy Frzg Rain',71:'Lt Snow',73:'Snow',75:'Hvy Snow',77:'Snow Grains',80:'Lt Showers',81:'Showers',82:'Hvy Showers',85:'Lt Snow Shwrs',86:'Hvy Snow Shwrs',95:'T-Storm',96:'T-Storm Hail',99:'Svr T-Storm'}; return WMO[weatherData.code] || ''; })()}</span>
               </div>
