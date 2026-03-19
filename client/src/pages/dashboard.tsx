@@ -10800,7 +10800,7 @@ export default function Dashboard() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginLeft: '2px' }}>
                 {(() => {
                   const prepDaysNum = prepDaysText === 'today' ? 0 : prepDaysText === 'now' ? -1 : Number(prepDaysText);
-                  const showPrepFirst = prepDaysText && nextPrep && prepDaysNum < diffDays;
+                  const showPrepFirst = prepDaysText && nextPrep && prepDaysNum < diffDays && diffDays > 0;
                   
                   const isDueZero = diffDays === 0;
                   const dueLine = (
@@ -10842,7 +10842,7 @@ export default function Dashboard() {
                 )}
                 {(() => {
                   const prepDaysNum2 = prepDaysText === 'today' ? 0 : prepDaysText === 'now' ? -1 : Number(prepDaysText);
-                  const showPrepFirst2 = prepDaysText && nextPrep && prepDaysNum2 < diffDays;
+                  const showPrepFirst2 = prepDaysText && nextPrep && prepDaysNum2 < diffDays && diffDays > 0;
                   if (!showPrepFirst2) return null;
                   const isDueZero2 = diffDays === 0;
                   return (
