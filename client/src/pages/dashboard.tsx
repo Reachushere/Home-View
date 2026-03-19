@@ -8660,8 +8660,9 @@ export default function Dashboard() {
   // Also include full-week MODULE tasks that span today (startDate <= today <= dueDate)
   const dueTodayTasks = allTasks.filter(t => {
     if (t.isMissed || t.isCompleted) return false;
-    if (isCASL101Finished(t)) return false; // Auto-hide finished CASL101 tasks
+    if (isCASL101Finished(t)) return false;
     if (!t.dueDate) return false;
+    if (/module/i.test(t.title || '')) return false;
     
     // Check if task is due today
     if (isSameDay(new Date(t.dueDate), today)) return true;
@@ -8693,6 +8694,7 @@ export default function Dashboard() {
     if (t.isMissed || t.isCompleted) return false;
     if (isCASL101Finished(t)) return false;
     if (!t.dueDate) return false;
+    if (/module/i.test(t.title || '')) return false;
     const dueDate = new Date(t.dueDate);
     const dueDateLocal = startOfDay(dueDate);
     if (dueDateLocal <= startOfDay(today)) return false;
