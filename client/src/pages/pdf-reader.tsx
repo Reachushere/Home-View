@@ -134,16 +134,20 @@ export default function PDFReaderPage() {
       }
     };
     enterFullscreen();
+    setTimeout(() => enterFullscreen(), 500);
+    setTimeout(() => enterFullscreen(), 1500);
+    setTimeout(() => {
+      document.body.click();
+      enterFullscreen();
+    }, 2000);
     const onInteraction = () => {
       enterFullscreen();
-      document.removeEventListener('touchstart', onInteraction);
-      document.removeEventListener('click', onInteraction);
     };
-    document.addEventListener('touchstart', onInteraction, { once: true });
-    document.addEventListener('click', onInteraction, { once: true });
+    document.addEventListener('touchstart', onInteraction);
+    document.addEventListener('click', onInteraction);
     const recheckInterval = setInterval(() => {
       if (!document.fullscreenElement) enterFullscreen();
-    }, 3000);
+    }, 2000);
     let wakeLock: any = null;
     const requestWakeLock = async () => {
       try {
@@ -153,10 +157,18 @@ export default function PDFReaderPage() {
       } catch {}
     };
     requestWakeLock();
+    const handleVisChange = () => {
+      if (!document.hidden) {
+        enterFullscreen();
+        requestWakeLock();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisChange);
     return () => {
       clearInterval(recheckInterval);
       document.removeEventListener('touchstart', onInteraction);
       document.removeEventListener('click', onInteraction);
+      document.removeEventListener('visibilitychange', handleVisChange);
       if (wakeLock) wakeLock.release().catch(() => {});
     };
   }, [fullscreenParam, catWashFollow]);

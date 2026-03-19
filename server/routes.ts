@@ -5142,14 +5142,14 @@ html,body{height:100%;overflow:hidden;background:transparent}
   // POST /api/tts - Generate speech from text using OpenAI
   app.post("/api/tts", async (req, res) => {
     try {
-      const { text, voice = "alloy" } = req.body;
+      const { text, voice = "echo" } = req.body;
       
       if (!text || typeof text !== "string") {
         return res.status(400).json({ message: "Text is required" });
       }
       
       const validVoices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"] as const;
-      const selectedVoice = validVoices.includes(voice) ? voice : "alloy";
+      const selectedVoice = validVoices.includes(voice) ? voice : "echo";
       
       let normalizedText = cleanTextForTTS(text);
       
@@ -5206,7 +5206,7 @@ html,body{height:100%;overflow:hidden;background:transparent}
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       const validVoices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"] as const;
-      const selectedVoice = validVoices.includes(voice as any) ? voice : "nova";
+      const selectedVoice = validVoices.includes(voice as any) ? voice : "echo";
 
       const cleanedText = cleanTextForTTS(text);
       console.log(`[TTS Speaker] Generating OpenAI audio (${cleanedText.length} chars, voice: ${selectedVoice})`);
@@ -6596,6 +6596,17 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   setTimeout(async () => {
     try {
       const allFiles = await storage.getFiles();
+      const voiceMigrationDone = globalThis.__voiceMigrationDone;
+      if (!voiceMigrationDone) {
+        const filesWithPrep = allFiles.filter((f: any) => f.preparedAudioPaths);
+        if (filesWithPrep.length > 0) {
+          console.log(`[AudioPrep] One-time: clearing ${filesWithPrep.length} pre-generated audio caches (voice migration to echo+slowPace)`);
+          for (const f of filesWithPrep) {
+            try { await storage.updateFile(f.id, { preparedAudioPaths: null }); } catch {}
+          }
+        }
+        (globalThis as any).__voiceMigrationDone = true;
+      }
       const unprepared = allFiles.filter((f: any) => !f.preparedAudioPaths && !f.listened);
       if (unprepared.length > 0) {
         const semesterSettings = await storage.getActiveSemesterSettings();
