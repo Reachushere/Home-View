@@ -1200,7 +1200,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     <span className="text-white whitespace-nowrap">Professor:</span>
                     <span className="text-white truncate">{courseInfo.professor || "Not set"}</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 justify-end">
                     <Mail className="h-3 w-3 text-white flex-shrink-0" />
                     <span className="text-white whitespace-nowrap">Email:</span>
                     {courseInfo.professorEmail ? (
@@ -1258,7 +1258,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     <ExternalLink className="h-2.5 w-2.5 ml-auto flex-shrink-0" />
                   </a>
                 )}
-                {syllabusObjectPath && (
+                {syllabusObjectPath ? (
                   <button
                     onClick={() => {
                       setSyllabusViewerUrl(`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`);
@@ -1271,6 +1271,45 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     <span>View Syllabus</span>
                     <ExternalLink className="h-2.5 w-2.5 ml-auto flex-shrink-0 text-emerald-400/60" />
                   </button>
+                ) : (
+                  <label className="flex items-center gap-1.5 text-[10px] text-white hover:text-white/80 bg-white/5 border border-white/15 rounded px-2 py-1.5 mt-1 w-full transition-colors hover:bg-white/10 cursor-pointer">
+                    <input
+                      type="file"
+                      accept=".pdf"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        try {
+                          setIsParsingPdf(true);
+                          const result = await uploadFile(file, `syllabus/${courseInfo.courseCode}_${file.name}`);
+                          if (result?.objectPath) {
+                            setSyllabusObjectPath(result.objectPath);
+                            await fetch('/api/syllabus/paths', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ courseCode: courseInfo.courseCode, objectPath: result.objectPath }),
+                            });
+                          }
+                          const formData = new FormData();
+                          formData.append('file', file);
+                          formData.append('courseCode', courseInfo.courseCode);
+                          const resp = await fetch('/api/syllabus/parse', { method: 'POST', body: formData });
+                          if (resp.ok) {
+                            const data = await resp.json();
+                            setSyllabusData(data);
+                          }
+                        } catch (err: any) {
+                          toast({ title: "Error", description: err.message || "Failed to upload syllabus.", variant: "destructive" });
+                        } finally {
+                          setIsParsingPdf(false);
+                        }
+                      }}
+                      data-testid="input-upload-syllabus-inline"
+                    />
+                    <Upload className="h-3 w-3 text-white/50" />
+                    <span className="text-white/60">Upload Syllabus PDF</span>
+                  </label>
                 )}
               </>
             )}
