@@ -13232,7 +13232,7 @@ export default function Dashboard() {
               const dayName = dayNames[dt.getDay()];
               return `${dayName}: ${Math.round(d.high)}°/${Math.round(d.low)}°`;
             });
-            items.push({ title: `<img src="${cnTowerPath}" class="inline-block align-middle" style="height:0.85em;width:auto;margin-right:4px" /><b>3-DAY FORECAST</b>  |  ${forecastParts.join('  •  ')}`, source: '_FORECAST_', link: '' });
+            items.push({ title: `<img src="${cnTowerPath}" style="height:11px;width:auto;display:inline-block;vertical-align:middle;margin-right:4px" /><b>3-DAY FORECAST</b>  |  ${forecastParts.join('  •  ')}`, source: '_FORECAST_', link: '' });
             const briefParts: string[] = [];
             const todayD = weatherData.daily[0];
             const tomorrowD = weatherData.daily[1];
