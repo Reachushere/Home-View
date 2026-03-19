@@ -1022,16 +1022,16 @@ export default function Dashboard() {
         requestAnimationFrame(() => {
           el.style.transition = 'transform 0.3s ease-in-out';
           el.style.transform = 'translateX(-50%) translateY(0px)';
-          setIsPillMenuOpen(true);
+          startTransition(() => setIsPillMenuOpen(true));
         });
       });
     } else {
       setSidePillIdle(false);
-      setIsPillMenuOpen(true);
+      startTransition(() => setIsPillMenuOpen(true));
     }
   }, [sidePillIdle]);
   const closeSidePill = useCallback(() => {
-    setIsPillMenuOpen(false);
+    startTransition(() => setIsPillMenuOpen(false));
   }, []);
   useEffect(() => {
     if (!isPillMenuOpen && sidePillMounted) {
@@ -1050,7 +1050,7 @@ export default function Dashboard() {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         setSidePillMounted(true);
-        setIsPillMenuOpen(true);
+        startTransition(() => setIsPillMenuOpen(true));
       });
     });
     const sideTimeout = setTimeout(() => {
@@ -1229,7 +1229,7 @@ export default function Dashboard() {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         setTopPillMounted(true);
-        setIsTopPillOpen(true);
+        startTransition(() => setIsTopPillOpen(true));
       });
     });
     topPillTimeoutRef.current = setTimeout(() => {
@@ -4206,7 +4206,7 @@ export default function Dashboard() {
     const name = elective?.trim() ? elective : info.name;
     setIsSettingsPanelOpen(false);
     setOpenedCourseFromDegreeTracking(true);
-    setSelectedCertCourse({ courseCode: code, courseName: name, certKey });
+    startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: name, certKey }));
   };
 
   const buildCourseInfoForCert = () => {
@@ -11187,7 +11187,7 @@ export default function Dashboard() {
                 startTransition(() => {
                   setDraftPriorityBoth({ ...coursePlayPriority });
                   setSchoolCoursesOpenSource('pill');
-                  setIsSchoolCoursesDialogOpen(true);
+                  startTransition(() => setIsSchoolCoursesDialogOpen(true));
                 });
               }}
             >
@@ -11213,7 +11213,7 @@ export default function Dashboard() {
               title="Degree Tracking"
               onClick={() => {
                 triggerButtonGlow('settings');
-                setIsSettingsPanelOpen(true);
+                startTransition(() => setIsSettingsPanelOpen(true));
                 const currentSemCodes = semesterSettings ? [1,2,3].map(i => (semesterSettings as any)[`course${i}Code`]).filter(Boolean) : [];
                 const activeCourses = coursesData.courses.filter(c => {
                   const code = c.name.split(' - ')[0];
@@ -12113,7 +12113,7 @@ export default function Dashboard() {
 
       {/* Settings Panel Popup - Degree Tracking */}
       {isSettingsPanelOpen && (
-        <div className="fixed inset-0 z-[10001] bg-black/50" onClick={() => setIsSettingsPanelOpen(false)} />
+        <div className="fixed inset-0 z-[10001] bg-black/50" onClick={() => startTransition(() => setIsSettingsPanelOpen(false))} />
       )}
       {isSettingsPanelOpen && (
         <div 
@@ -12134,7 +12134,7 @@ export default function Dashboard() {
                 startTransition(() => {
                   setDraftPriorityBoth({ ...coursePlayPriority });
                   setSchoolCoursesOpenSource('degree');
-                  setIsSchoolCoursesDialogOpen(true);
+                  startTransition(() => setIsSchoolCoursesDialogOpen(true));
                 });
               }}
               data-testid="button-degree-courses"
@@ -12755,7 +12755,7 @@ export default function Dashboard() {
                   variant="outline"
                   className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 w-[110px]"
                   style={{ fontSize: '12px', marginRight: '5px' }}
-                  onClick={() => setIsSettingsPanelOpen(false)}
+                  onClick={() => startTransition(() => setIsSettingsPanelOpen(false))}
                   data-testid="button-cancel-settings-panel"
                 >
                   Cancel
@@ -12774,7 +12774,7 @@ export default function Dashboard() {
                     saveDegreeToServer('checkedCourses', checkedCourses);
                     saveDegreeToServer('courseGrades', courseGrades);
                     toast({ title: "Settings saved", description: "Your progress has been saved." });
-                    setIsSettingsPanelOpen(false);
+                    startTransition(() => setIsSettingsPanelOpen(false));
                   }}
                   data-testid="button-save-settings-panel"
                 >
@@ -12916,12 +12916,12 @@ export default function Dashboard() {
             courseInfo={info}
             certificateName={certName}
             onClose={() => {
-              setSelectedCertCourse(null);
+              startTransition(() => setSelectedCertCourse(null));
               if (isSchoolCoursesDialogOpen) {
                 // School Courses dialog is still open underneath, just go back to it
               } else if (openedCourseFromDegreeTracking) {
                 setOpenedCourseFromDegreeTracking(false);
-                setIsSettingsPanelOpen(true);
+                startTransition(() => setIsSettingsPanelOpen(true));
               }
             }}
             onSaveCourseInfo={(updates) => {
@@ -13106,11 +13106,11 @@ export default function Dashboard() {
                 return cCode !== courseCode.replace(/\s/g, '');
               });
               saveCourses({ courses: updatedCourses });
-              setSelectedCertCourse(null);
+              startTransition(() => setSelectedCertCourse(null));
               toast({ title: "Course deleted", description: `${courseCode} has been removed.` });
             }}
             onOpenEditTask={(task) => {
-              setSelectedCertCourse(null);
+              startTransition(() => setSelectedCertCourse(null));
               setTimeout(() => {
                 setEditingTask(task);
               }, 150);
@@ -15407,7 +15407,7 @@ export default function Dashboard() {
                       startTransition(() => {
                         setShowRankCoursesReminder(false);
                         setDraftPriorityBoth({ ...coursePlayPriority });
-                        setIsSchoolCoursesDialogOpen(true);
+                        startTransition(() => setIsSchoolCoursesDialogOpen(true));
                       });
                     }}
                     data-testid="button-rank-courses-now"
@@ -15510,7 +15510,7 @@ export default function Dashboard() {
                       </div>
                       <div
                         className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity"
-                        onClick={() => { setIsSchoolDialogOpen(false); setTimeout(() => { setDraftPriorityBoth({ ...coursePlayPriority }); setIsSchoolCoursesDialogOpen(true); }, 200); }}
+                        onClick={() => { setIsSchoolDialogOpen(false); setTimeout(() => { setDraftPriorityBoth({ ...coursePlayPriority }); startTransition(() => setIsSchoolCoursesDialogOpen(true)); }, 200); }}
                         data-testid="button-past-courses"
                       >
                         <span className="text-[10px] text-white/70 font-bold">ALL COURSES</span>
@@ -15634,7 +15634,7 @@ export default function Dashboard() {
                             className="flex-shrink-0 p-0.5 rounded hover:bg-white/10 cursor-pointer"
                             onClick={(e) => {
                               e.stopPropagation();
-                              setSelectedCertCourse({ courseCode, courseName: courseName !== courseCode ? courseName : courseCode, certKey: courseCode });
+                              startTransition(() => setSelectedCertCourse({ courseCode, courseName: courseName !== courseCode ? courseName : courseCode, certKey: courseCode }));
                             }}
                             data-testid={`button-edit-course-${index}`}
                           >
@@ -15804,8 +15804,8 @@ export default function Dashboard() {
                   className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setIsSchoolCoursesDialogOpen(false);
-                    setTimeout(() => setIsSettingsPanelOpen(true), 100);
+                    startTransition(() => setIsSchoolCoursesDialogOpen(false));
+                    setTimeout(() => startTransition(() => setIsSettingsPanelOpen(true)), 100);
                   }}
                   data-testid="button-courses-degree-tracking"
                 >
@@ -15820,7 +15820,7 @@ export default function Dashboard() {
                     variant="outline"
                     className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-7 px-4"
                     style={{ background: 'rgba(10,15,30,0.85)', boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '11px' }}
-                    onClick={() => { setIsSchoolCoursesDialogOpen(false); setTimeout(() => setIsNewCourseWizardOpen(true), 200); }}
+                    onClick={() => { startTransition(() => setIsSchoolCoursesDialogOpen(false)); setTimeout(() => setIsNewCourseWizardOpen(true), 200); }}
                     data-testid="button-new-course-school-courses"
                   >
                     <Plus className="h-3 w-3 mr-1" />
@@ -15958,7 +15958,7 @@ export default function Dashboard() {
                         }}
                         onClick={() => {
                           const certKey = pastEntry?.certKey || semCourse.code;
-                          setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey });
+                          startTransition(() => setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey }));
                         }}
                         data-testid={`school-course-${semCourse.code}`}
                       >
@@ -15976,7 +15976,7 @@ export default function Dashboard() {
                           onClick={(e) => {
                             e.stopPropagation();
                             const certKey = pastEntry?.certKey || semCourse.code;
-                            setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey });
+                            startTransition(() => setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey }));
                           }}
                           data-testid={`button-edit-course-${semCourse.code}`}
                         >
@@ -16004,7 +16004,7 @@ export default function Dashboard() {
                             : dm === 'online' ? <img src={wifiLogoPath} alt="Online" style={{ width: '13px', height: 'auto', opacity: 0.9 }} /> : null;
                         })()}
                         </div>
-                        <span className="text-[10px] truncate min-w-0 flex-1 cursor-pointer hover:underline" style={{ marginLeft: '14px' }} onClick={(e) => { e.stopPropagation(); const certKey = pastEntry?.certKey || semCourse.code; setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey }); }} data-testid={`course-name-click-${semCourse.code}`}><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
+                        <span className="text-[10px] truncate min-w-0 flex-1 cursor-pointer hover:underline" style={{ marginLeft: '14px' }} onClick={(e) => { e.stopPropagation(); const certKey = pastEntry?.certKey || semCourse.code; startTransition(() => setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey })); }} data-testid={`course-name-click-${semCourse.code}`}><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
                         <div className="flex items-center gap-1 flex-shrink-0">
                           {(() => {
                             const profName = currentCourse?.professor || profInfo.professor;
@@ -16315,7 +16315,7 @@ export default function Dashboard() {
                   variant="outline"
                   size="sm"
                   className="text-[10px] border-white/30 hover:bg-white/10"
-                  onClick={() => { setIsRemainingCoursesDialogOpen(false); setTimeout(() => setIsSettingsPanelOpen(true), 200); }}
+                  onClick={() => { setIsRemainingCoursesDialogOpen(false); setTimeout(() => startTransition(() => setIsSettingsPanelOpen(true)), 200); }}
                   data-testid="button-open-degree-tracker"
                 >
                   Open Degree Tracker
@@ -18080,7 +18080,7 @@ export default function Dashboard() {
                 if (hasFullWeekTasks) {
                   return (
                     <div key={course.name} className="w-full flex-shrink-0 flex" style={{ borderBottom: `1.5px dotted ${courseData.color}dd` }}>
-                      <div className="px-1 py-0.5 text-[10px] font-bold tracking-wide flex items-center justify-center text-white cursor-pointer hover:brightness-110 flex-shrink-0" onClick={() => { const cd = courseData; const code = cd.name.split(' - ')[0]?.trim(); const cName = cd.name.split(' - ').slice(1).join(' - ').trim(); setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code }); }} style={{ background: course.label, overflow: 'hidden', minWidth: 0, width: `${gridSizes.courseColumnWidth}px` }} data-testid={`course-row-label-${course.name}`}>
+                      <div className="px-1 py-0.5 text-[10px] font-bold tracking-wide flex items-center justify-center text-white cursor-pointer hover:brightness-110 flex-shrink-0" onClick={() => { const cd = courseData; const code = cd.name.split(' - ')[0]?.trim(); const cName = cd.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code })); }} style={{ background: course.label, overflow: 'hidden', minWidth: 0, width: `${gridSizes.courseColumnWidth}px` }} data-testid={`course-row-label-${course.name}`}>
                         {course.name}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -18282,7 +18282,7 @@ export default function Dashboard() {
                 
                 return (
                 <div key={course.name} ref={el => { courseRowRefs.current[courseIdx] = el; }} className="grid w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${maxCourseRowHeight}px`, maxHeight: `${maxCourseRowHeight}px`, overflow: 'hidden' }}>
-                  <div className="px-1 py-0.5 text-[8px] font-medium tracking-wide flex flex-col items-center justify-center text-white relative leading-tight cursor-pointer hover:brightness-110" onClick={() => { const code = courseData.name.split(' - ')[0]?.trim(); const cName = courseData.name.split(' - ').slice(1).join(' - ').trim(); setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code }); }} style={{ background: course.label, borderBottom: `1.5px dotted ${courseData.color}dd`, overflow: 'hidden', minWidth: 0 }} data-testid={`course-row-label-${course.name}`}>
+                  <div className="px-1 py-0.5 text-[8px] font-medium tracking-wide flex flex-col items-center justify-center text-white relative leading-tight cursor-pointer hover:brightness-110" onClick={() => { const code = courseData.name.split(' - ')[0]?.trim(); const cName = courseData.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code })); }} style={{ background: course.label, borderBottom: `1.5px dotted ${courseData.color}dd`, overflow: 'hidden', minWidth: 0 }} data-testid={`course-row-label-${course.name}`}>
                     {(() => {
                       const code = course.name.split(' - ')[0];
                       const fullName = course.name.split(' - ').slice(1).join(' - ');
