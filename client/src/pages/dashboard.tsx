@@ -21141,7 +21141,7 @@ export default function Dashboard() {
                 })}
                 {(isClear || isPartlyCloudy) && weatherData.isDay && (
                   <div className="absolute" style={{
-                    top: '0px', right: '6px', width: '18px', height: '18px',
+                    top: '-2px', right: '8px', width: '18px', height: '18px',
                     borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,220,80,0.9) 0%, rgba(255,200,50,0.4) 50%, transparent 70%)',
                     boxShadow: '0 0 12px rgba(255,200,50,0.4)',
                     zIndex: 1,
