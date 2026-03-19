@@ -13232,6 +13232,24 @@ export default function Dashboard() {
               return `${dayName}: ${Math.round(d.high)}°/${Math.round(d.low)}°`;
             });
             items.push({ title: `📅 <b>3-DAY FORECAST</b>  |  ${forecastParts.join('  •  ')}`, source: '_FORECAST_', link: '' });
+            const briefParts: string[] = [];
+            const todayD = weatherData.daily[0];
+            const tomorrowD = weatherData.daily[1];
+            const day3D = weatherData.daily[2];
+            const wmoShort = (c: number) => ({ 0:'clear',1:'mostly clear',2:'partly cloudy',3:'overcast',45:'foggy',48:'foggy',51:'light drizzle',53:'drizzle',55:'heavy drizzle',61:'light rain',63:'rain',65:'heavy rain',66:'freezing rain',67:'heavy freezing rain',71:'light snow',73:'snow',75:'heavy snow',77:'snow grains',80:'light showers',81:'showers',82:'heavy showers',85:'light snow showers',86:'heavy snow showers',95:'thunderstorms',96:'thunderstorms with hail',99:'severe thunderstorms' }[c] || 'mixed conditions');
+            const todayDesc = wmoShort(todayD.weatherCode || weatherData.code);
+            briefParts.push(`Currently ${Math.round(weatherData.temp)}° and ${todayDesc}. Today's high ${Math.round(todayD.high)}°, low ${Math.round(todayD.low)}°.`);
+            if (tomorrowD) {
+              const tmrDesc = wmoShort(tomorrowD.weatherCode || 0);
+              const tmrName = dayNames[new Date(tomorrowD.date + 'T12:00:00').getDay()];
+              briefParts.push(`${tmrName}: ${tmrDesc}, ${Math.round(tomorrowD.high)}°/${Math.round(tomorrowD.low)}°.`);
+            }
+            if (day3D) {
+              const d3Desc = wmoShort(day3D.weatherCode || 0);
+              const d3Name = dayNames[new Date(day3D.date + 'T12:00:00').getDay()];
+              briefParts.push(`${d3Name}: ${d3Desc}, ${Math.round(day3D.high)}°/${Math.round(day3D.low)}°.`);
+            }
+            items.push({ title: `📝 <b>FORECAST BRIEF</b>  |  ${briefParts.join('  ')}`, source: '_FORECAST_', link: '' });
           }
           return items;
         })() : []),
