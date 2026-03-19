@@ -11850,10 +11850,14 @@ document.body.removeChild(a);
   app.post("/api/syllabus/paths", async (req, res) => {
     try {
       const { courseCode, objectPath } = req.body;
-      if (!courseCode || !objectPath) return res.status(400).json({ error: "courseCode and objectPath required" });
+      if (!courseCode) return res.status(400).json({ error: "courseCode required" });
       const row = await db.select().from(appState).where(eq(appState.key, 'courseSyllabusPaths')).limit(1);
       const paths = row.length > 0 ? JSON.parse(row[0].value) : {};
-      paths[courseCode] = objectPath;
+      if (objectPath) {
+        paths[courseCode] = objectPath;
+      } else {
+        delete paths[courseCode];
+      }
       const value = JSON.stringify(paths);
       if (row.length > 0) {
         await db.update(appState).set({ value, updatedAt: new Date() }).where(eq(appState.key, 'courseSyllabusPaths'));

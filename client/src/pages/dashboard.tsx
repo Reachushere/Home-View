@@ -4273,6 +4273,17 @@ export default function Dashboard() {
     if (!matchedCourse && saved.color) color = saved.color;
     if (!matchedCourse && saved.colorEnd) colorEnd = saved.colorEnd;
 
+    if (!courseType && certKey) {
+      const ckUpper = certKey.toUpperCase();
+      if (ckUpper.includes('OPEN') || ckUpper.includes('ECN')) {
+        courseType = 'open_elective';
+      } else if (ckUpper.includes('LIBERAL') || ckUpper.includes('LIB')) {
+        courseType = 'liberal_studies';
+      } else {
+        courseType = 'core';
+      }
+    }
+
     return {
       courseCode,
       courseName,
@@ -13092,7 +13103,10 @@ export default function Dashboard() {
               toast({ title: "Course deleted", description: `${courseCode} has been removed.` });
             }}
             onOpenEditTask={(task) => {
-              setEditingTask(task);
+              setSelectedCertCourse(null);
+              setTimeout(() => {
+                setEditingTask(task);
+              }, 150);
             }}
             semesterStart={semStart || new Date()}
             readingWeekStart={readingWeekStart}

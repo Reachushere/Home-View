@@ -1181,13 +1181,35 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <label className="cursor-pointer" data-testid="button-upload-syllabus">
+                    {syllabusObjectPath && (
+                      <Paperclip className="h-3.5 w-3.5 text-white" data-testid="icon-syllabus-attached" />
+                    )}
+                    {syllabusObjectPath && (
+                      <button
+                        onClick={async () => {
+                          setSyllabusObjectPath('');
+                          try {
+                            await fetch('/api/syllabus/paths', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ courseCode: courseInfo.courseCode, objectPath: '' }),
+                            });
+                          } catch {}
+                          toast({ title: "Syllabus removed" });
+                        }}
+                        className="hover:opacity-70 transition-opacity"
+                        data-testid="button-delete-syllabus"
+                      >
+                        <Trash2 className="h-3.5 w-3.5 text-white" />
+                      </button>
+                    )}
+                    <label className={`cursor-pointer ${syllabusObjectPath ? 'opacity-40 pointer-events-none' : ''}`} data-testid="button-upload-syllabus">
                       <input
                         type="file"
                         accept=".pdf"
                         className="hidden"
                         onChange={handleUploadSyllabus}
-                        disabled={isParsingSyllabus || isUploading}
+                        disabled={isParsingSyllabus || isUploading || !!syllabusObjectPath}
                       />
                       <div className={`h-6 px-2 text-[9px] bg-emerald-600/30 hover:bg-emerald-600/50 text-white border border-emerald-400/30 rounded-md flex items-center gap-1 transition-colors whitespace-nowrap ${isParsingSyllabus || isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
                         {isParsingSyllabus ? <Loader2 className="h-3 w-3 animate-spin" /> : <FileText className="h-3 w-3" />}
@@ -1276,58 +1298,19 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     <ExternalLink className="h-2.5 w-2.5 ml-auto flex-shrink-0" />
                   </a>
                 )}
-                {syllabusObjectPath ? (
-                  <button
-                    onClick={() => {
-                      setSyllabusViewerUrl(`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`);
-                      setShowSyllabusViewer(true);
-                    }}
-                    className="flex items-center gap-1.5 text-[10px] text-white hover:text-white/80 bg-emerald-600/15 border border-emerald-400/25 rounded px-2 py-1.5 mt-1 w-full transition-colors hover:bg-emerald-600/25"
-                    data-testid="button-view-syllabus"
-                  >
-                    <FileText className="h-3 w-3 text-emerald-400" />
-                    <span>View Syllabus</span>
-                    <ExternalLink className="h-2.5 w-2.5 ml-auto flex-shrink-0 text-emerald-400/60" />
-                  </button>
-                ) : (
-                  <label className="flex items-center gap-1.5 text-[10px] text-white hover:text-white/80 bg-white/5 border border-white/15 rounded px-2 py-1.5 mt-1 w-full transition-colors hover:bg-white/10 cursor-pointer">
-                    <input
-                      type="file"
-                      accept=".pdf"
-                      className="hidden"
-                      onChange={async (e) => {
-                        const file = e.target.files?.[0];
-                        if (!file) return;
-                        try {
-                          setIsParsingPdf(true);
-                          const result = await uploadFile(file, `syllabus/${courseInfo.courseCode}_${file.name}`);
-                          if (result?.objectPath) {
-                            setSyllabusObjectPath(result.objectPath);
-                            await fetch('/api/syllabus/paths', {
-                              method: 'POST',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({ courseCode: courseInfo.courseCode, objectPath: result.objectPath }),
-                            });
-                          }
-                          const formData = new FormData();
-                          formData.append('file', file);
-                          formData.append('courseCode', courseInfo.courseCode);
-                          const resp = await fetch('/api/syllabus/parse', { method: 'POST', body: formData });
-                          if (resp.ok) {
-                            const data = await resp.json();
-                            setSyllabusData(data);
-                          }
-                        } catch (err: any) {
-                          toast({ title: "Error", description: err.message || "Failed to upload syllabus.", variant: "destructive" });
-                        } finally {
-                          setIsParsingPdf(false);
-                        }
+                {syllabusObjectPath && (
+                  <div className="mt-1">
+                    <button
+                      onClick={() => {
+                        setSyllabusViewerUrl(`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`);
+                        setShowSyllabusViewer(true);
                       }}
-                      data-testid="input-upload-syllabus-inline"
-                    />
-                    <Upload className="h-3 w-3 text-white/50" />
-                    <span className="text-white/60">Upload Syllabus PDF</span>
-                  </label>
+                      className="text-[10px] text-white underline hover:text-white/70 transition-colors"
+                      data-testid="button-view-syllabus"
+                    >
+                      View Syllabus
+                    </button>
+                  </div>
                 )}
               </>
             )}
