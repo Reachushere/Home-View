@@ -2367,6 +2367,14 @@ export default function Dashboard() {
       localStorage.setItem('colorSettingsMigrationV17', 'done');
       return migrated;
     }
+    const migrationV18 = localStorage.getItem('colorSettingsMigrationV18');
+    if (!migrationV18) {
+      const existing = saved ? JSON.parse(saved) : {};
+      const migrated = { ...defaults, ...existing, headerBar: '#1a3a5c', todayCurrentHourCellBackground: '#1a3a5c' };
+      localStorage.setItem('colorSettings', JSON.stringify(migrated));
+      localStorage.setItem('colorSettingsMigrationV18', 'done');
+      return migrated;
+    }
     if (saved) {
       const parsed = JSON.parse(saved);
       return { ...defaults, ...parsed };
