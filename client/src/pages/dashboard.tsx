@@ -11591,7 +11591,7 @@ export default function Dashboard() {
             data-testid="honeycomb-todo-header"
             title="Reminders"
           >
-            <Bell style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
+            <ListChecks style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
           </div>
 
           {/* Bell Button (moved from bottom pill) */}
