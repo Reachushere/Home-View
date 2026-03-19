@@ -21357,7 +21357,7 @@ export default function Dashboard() {
                     </div>
                   ) : (
                     <>
-                      <div className="flex-1 flex flex-col justify-center cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '4px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'visible', position: 'relative' }} onClick={pd.handlePlayModule} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayModule(); }}>
+                      <div className="flex-1 flex flex-col justify-center cursor-pointer" style={{ paddingLeft: '7px', paddingRight: '4px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'visible', position: 'relative' }} onClick={pd.handlePlayModule} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayModule(); }}>
                         {!pd.moduleP.hasFiles && (
                           <>
                             <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px' }}>
@@ -21371,13 +21371,13 @@ export default function Dashboard() {
                             <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px' }}>
                               <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', width: '36px', display: 'inline-block' }}>Module</span>
                               {pd.moduleUnread > 0 && pd.moduleP.percent < 100 && (
-                                <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10 }}>
+                                <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, marginLeft: '2px' }}>
                                   {pd.moduleUnread}
                                 </div>
                               )}
                             </div>
                             <div className="flex items-center gap-[5px]">
-                              <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', flex: 1, marginRight: '46px' }}>
+                              <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', flex: 1, marginRight: '46px', marginLeft: '3px' }}>
                                 {pd.moduleP.percent > 0 && (
                                   <div className="h-full rounded-full" style={{ width: `${pd.moduleP.percent}%`, backgroundColor: getProgressColor(pd.moduleP.percent) }} />
                                 )}
@@ -21390,7 +21390,7 @@ export default function Dashboard() {
                           </>
                         )}
                       </div>
-                      <div className="flex-1 flex flex-col justify-center cursor-pointer" style={{ paddingLeft: '4px', paddingRight: '4px', overflow: 'visible', position: 'relative' }} onClick={pd.handlePlayReading} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayReading(); }}>
+                      <div className="flex-1 flex flex-col justify-center cursor-pointer" style={{ paddingLeft: '7px', paddingRight: '4px', overflow: 'visible', position: 'relative' }} onClick={pd.handlePlayReading} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayReading(); }}>
                         {!pd.readingP.hasFiles && (
                           <>
                             <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px' }}>
@@ -21404,13 +21404,13 @@ export default function Dashboard() {
                             <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px' }}>
                               <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', width: '36px', display: 'inline-block' }}>Reading</span>
                               {pd.readingUnread > 0 && pd.readingP.percent < 100 && (
-                                <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10 }}>
+                                <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, marginLeft: '2px' }}>
                                   {pd.readingUnread}
                                 </div>
                               )}
                             </div>
                             <div className="flex items-center gap-[5px]">
-                              <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', flex: 1, marginRight: '46px' }}>
+                              <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', flex: 1, marginRight: '46px', marginLeft: '3px' }}>
                                 {pd.readingP.percent > 0 && (
                                   <div className="h-full rounded-full" style={{ width: `${pd.readingP.percent}%`, backgroundColor: getProgressColor(pd.readingP.percent) }} />
                                 )}
