@@ -417,7 +417,7 @@ function cleanTextForTTS(text: string): string {
 
   cleanedText = cleanedText
     .replace(/x{3,}/gi, '')
-    .replace(/\b(?:AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT)(?:[,;\s/]+(?:AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT)){2,}\b/g, '');
+    .replace(/\b(?:AB|BC|MB|NB|NL|NS|ON|PE|QC|SK)(?:[,;\s/]+(?:AB|BC|MB|NB|NL|NS|ON|PE|QC|SK)){2,}\b/g, '');
 
   // Final cleanup
   let result = cleanedText
