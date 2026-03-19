@@ -21093,7 +21093,7 @@ export default function Dashboard() {
           {/* Scroll to bottom (double chevron down) — moved down 5px to 24px */}
           <div
             className="absolute z-50 hover:bg-white/20 rounded-full flex items-center justify-center cursor-pointer"
-            style={{ right: '-18px', bottom: '24px', width: '18px', height: '18px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
+            style={{ right: '-18px', bottom: '31px', width: '18px', height: '18px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
             onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollTo({ top: homeworkScrollRef.current.scrollHeight, behavior: 'smooth' }); } }}
             data-testid="button-homework-scroll-to-bottom"
           >
