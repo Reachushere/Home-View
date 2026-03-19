@@ -1911,7 +1911,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
               briefParts.push(`${DAYS[bdt.getDay()]}: ${bDesc}, ${Math.round(wxRes.daily.temperature_2m_max[bi])}°/${Math.round(wxRes.daily.temperature_2m_min[bi])}°.`);
             }
           }
-          tickerItems += `<span class="t-item"><span class="t-forecast"><img src="/newspaper-icon.png" style="height:1.2em;width:auto;display:inline-block;vertical-align:middle;margin-right:4px;filter:invert(1)" /> <b>FORECAST BRIEF</b></span> <span class="t-data" style="color:rgba(255,255,255,0.95)"> |  ${briefParts.join('  ')}</span></span>`;
+          tickerItems += `<span class="t-item"><span class="t-forecast"><img src="/newspaper-icon.png" style="height:1.2em;width:auto;display:inline-block;vertical-align:middle;margin-right:4px;" /> <b>FORECAST BRIEF</b></span> <span class="t-data" style="color:rgba(255,255,255,0.95)"> |  ${briefParts.join('  ')}</span></span>`;
         }
       }
 
