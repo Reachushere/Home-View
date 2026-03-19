@@ -26051,8 +26051,16 @@ function TaskForm({
 
   const createMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
+      // For REMINDER tasks, auto-set due date to tomorrow 9am if not provided
+      let effectiveDueDate = data.dueDate;
+      if (!effectiveDueDate && data.type === 'reminder') {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(9, 0, 0, 0);
+        effectiveDueDate = tomorrow.toISOString();
+      }
       // For MODULE tasks, automatically set startDate to Sunday and dueDate to Friday of current week
-      let finalDueDate = new Date(data.dueDate);
+      let finalDueDate = new Date(effectiveDueDate);
       let finalStartDate: Date | null = null;
       
       if (data.type === "module" && !task) {
@@ -26128,6 +26136,12 @@ function TaskForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.dueDate && formData.type === 'reminder') {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(9, 0, 0, 0);
+      formData.dueDate = format(tomorrow, "yyyy-MM-dd'T'HH:mm");
+    }
     const isLinkedRecurring = task && ((task.repeatType && task.repeatType !== 'none') || !!task.parentTaskId);
     const hasSameTitleSiblings = task && !isLinkedRecurring && allTasks.filter(t => t.id !== task.id && t.title === task.title && t.courseName === task.courseName && !t.isCompleted).length > 0;
     if (task && onRecurringEdit && (isLinkedRecurring || (hasSameTitleSiblings && formData.title !== task.title))) {
