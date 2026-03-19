@@ -11920,8 +11920,10 @@ export default function Dashboard() {
                 })();
                 return (
                   <span key={`${a.id}-${i}`} className="inline-flex items-center gap-1.5 mx-4" data-testid={`announcement-${a.id}-${i}`}>
-                    <span style={{ display: 'inline-block', height: '15px', overflow: 'hidden', verticalAlign: 'middle' }}><img src={tmuBoxesLogo} alt="TMU" style={{ height: '18px', width: 'auto', objectFit: 'contain', marginTop: '-1px' }} /></span>
-                    <span className="text-[13px] font-bold tracking-wide uppercase" style={{ color: '#6DB3F2' }}>{a.courseName}</span>
+                    <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', verticalAlign: 'middle' }}>
+                      <img src={tmuBoxesLogo} alt="TMU" style={{ height: '28px', width: 'auto', objectFit: 'contain' }} />
+                      <span className="font-bold" style={{ position: 'absolute', color: '#ffffff', fontSize: '6px', letterSpacing: '0.5px', textAlign: 'center', lineHeight: '1', textShadow: '0 0 2px rgba(0,0,0,0.5)', left: '1px', top: '50%', transform: 'translateY(-50%)' }}>{a.courseName}</span>
+                    </span>
                     <span className="text-white/85 mx-1 text-[13px]" style={{ lineHeight: '1', verticalAlign: 'middle', fontWeight: 300 }}>|</span>
                     <span className="text-[13px] text-white/90">{a.subject}</span>
                     <span className="text-[11px] text-white/40 ml-1">{timeAgo}</span>
@@ -11931,7 +11933,9 @@ export default function Dashboard() {
             </div>
           ) : (
             <div className="flex items-center justify-center h-full">
-              <span style={{ display: 'inline-block', height: '15px', overflow: 'hidden' }}><img src={tmuBoxesLogo} alt="TMU" style={{ height: '18px', width: 'auto', objectFit: 'contain', marginTop: '-1px' }} /></span>
+              <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                <img src={tmuBoxesLogo} alt="TMU" style={{ height: '28px', width: 'auto', objectFit: 'contain' }} />
+              </span>
               <span className="text-[13px] text-white/40 ml-2">No announcements</span>
             </div>
           )}
