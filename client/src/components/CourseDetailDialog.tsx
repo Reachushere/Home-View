@@ -1376,12 +1376,12 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             ) : (
               <>
                 <div className="grid grid-cols-[1fr_1fr] gap-x-4 gap-y-1.5 text-[10px]">
-                  <div className="flex items-center gap-1.5" style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center' }}>
+                  <div className="flex items-center gap-1.5" style={{ display: 'grid', gridTemplateColumns: '12px 58px 1fr', gap: '6px', alignItems: 'center' }}>
                     <User className="h-3 w-3 text-white flex-shrink-0" />
                     <span className="text-white whitespace-nowrap">Professor:</span>
                     <span className="text-white truncate">{courseInfo.professor || "Not set"}</span>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '12px 58px 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end' }}>
                     <Mail className="h-3 w-3 text-white flex-shrink-0" style={{ justifySelf: 'start' }} />
                     <span className="text-white whitespace-nowrap" style={{ justifySelf: 'start' }}>Email:</span>
                     {courseInfo.professorEmail ? (
@@ -1392,24 +1392,24 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                       <span className="text-white" style={{ justifySelf: 'end' }}>Not set</span>
                     )}
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '12px 58px 1fr', gap: '6px', alignItems: 'center' }}>
                     {courseInfo.deliveryMode === "virtual" ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '38px', height: 'auto', filter: 'brightness(0) invert(1)' }} /> : courseInfo.deliveryMode === "online" ? <img src={wifiLogoPath} alt="Online" style={{ width: '14px', height: 'auto' }} /> : <Globe className="h-3 w-3 text-white" />}
                     <span className="text-white">Mode:</span>
                     <span className="text-white">{deliveryLabel}</span>
                   </div>
                   {courseInfo.courseType && (
-                    <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '12px 58px 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end' }}>
                       <BookOpen className="h-3 w-3 text-white" style={{ justifySelf: 'start' }} />
                       <span className="text-white whitespace-nowrap" style={{ justifySelf: 'start' }}>Type:</span>
                       <span className="text-white" style={{ justifySelf: 'end' }}>{courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Open Elective" : "Liberal Studies"}</span>
                     </div>
                   )}
-                  <div className="col-span-2" style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center' }}>
+                  <div className="col-span-2" style={{ display: 'grid', gridTemplateColumns: '12px 58px 1fr', gap: '6px', alignItems: 'center' }}>
                     <GraduationCap className="h-3 w-3 text-white flex-shrink-0" />
                     <span className="text-white">Certificate:</span>
                     <span className="text-white text-[9px]">{certificateName || certificateType || '—'}</span>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '12px 58px 1fr', gap: '6px', alignItems: 'center' }}>
                     <Calendar className="h-3 w-3 text-white flex-shrink-0" />
                     <span className="text-white">Schedule:</span>
                     <span className="text-white capitalize">
@@ -1419,7 +1419,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     </span>
                   </div>
                   {courseInfo.deliveryMode === "online" && (
-                    <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '12px 58px 1fr', gap: '6px', alignItems: 'center' }}>
                       <Clock className="h-3 w-3 text-white flex-shrink-0" />
                       <span className="text-white">Modules:</span>
                       <span className="text-white">Weekly (change every Saturday)</span>
