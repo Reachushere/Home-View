@@ -18272,7 +18272,7 @@ export default function Dashboard() {
                 }
                 
                 return (
-                <div key={course.name} ref={el => { courseRowRefs.current[courseIdx] = el; }} className="grid w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
+                <div key={course.name} ref={el => { courseRowRefs.current[courseIdx] = el; }} className="grid w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${maxCourseRowHeight}px` }}>
                   <div className="px-1 py-0.5 text-[8px] font-medium tracking-wide flex flex-col items-center justify-center text-white relative leading-tight cursor-pointer hover:brightness-110" onClick={() => { const code = courseData.name.split(' - ')[0]?.trim(); const cName = courseData.name.split(' - ').slice(1).join(' - ').trim(); setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code }); }} style={{ background: course.label, borderBottom: `1.5px dotted ${courseData.color}dd`, overflow: 'hidden', minWidth: 0 }} data-testid={`course-row-label-${course.name}`}>
                     {(() => {
                       const code = course.name.split(' - ')[0];
@@ -18432,7 +18432,7 @@ export default function Dashboard() {
                       <div 
                         key={dayIdx} 
                         className="relative flex flex-col pt-0.5"
-                        style={{ backgroundColor: cellHasScroll ? 'transparent' : cellBgActual, padding: '2px 1px 2px 1px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, minWidth: 0 }}
+                        style={{ backgroundColor: cellBgActual, padding: '2px 1px 2px 1px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, minWidth: 0 }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
                           e.preventDefault();
@@ -18447,7 +18447,7 @@ export default function Dashboard() {
                         }}
                       >
                         <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', borderLeft: '1px solid rgba(0,0,0,0.12)', zIndex: 5, pointerEvents: 'none' }} />
-                        <div className={`flex flex-col gap-0.5${slottedItems.filter(s => s !== null).length > 3 ? ' course-cell-scroll' : ''}`} style={{ overflowY: slottedItems.filter(s => s !== null).length > 3 ? 'auto' : 'visible', overflowX: 'visible', ...(slottedItems.filter(s => s !== null).length > 3 ? { maxHeight: `${maxCourseRowHeight - 4}px` } : {}) }}>
+                        <div className={`flex flex-col gap-0.5${cellHasScroll ? ' course-cell-scroll' : ''}`} style={{ overflowY: cellHasScroll ? 'auto' : 'visible', overflowX: 'visible', ...(cellHasScroll ? { flex: '1 1 0', minHeight: 0 } : {}) }}>
                         {/* Course-associated projects */}
                         {allProjects.filter(proj => {
                           if (!proj.courseName) return false;
