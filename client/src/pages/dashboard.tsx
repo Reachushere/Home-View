@@ -21062,11 +21062,6 @@ export default function Dashboard() {
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round"><polyline points="17 10 12 5 7 10" /><polyline points="17 19 12 14 7 19" /></svg>
           </div>
-          {/* Top separator — 10px above top of up chevron */}
-          <div
-            className="absolute z-50"
-            style={{ right: '-14px', bottom: '99px', width: '9px', height: '1px', background: 'rgba(255,255,255,0.3)', pointerEvents: 'none', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
-          />
           {/* Page up (single chevron up) — stacked above page down */}
           <div
             className="absolute z-50 hover:bg-white/20 rounded-full flex items-center justify-center cursor-pointer"
@@ -21085,12 +21080,7 @@ export default function Dashboard() {
           >
             <ChevronDown style={{ width: '14px', height: '14px', color: 'white' }} strokeWidth={2.5} />
           </div>
-          {/* Bottom separator — 10px below bottom of page-down chevron */}
-          <div
-            className="absolute z-50"
-            style={{ right: '-14px', bottom: '42px', width: '9px', height: '1px', background: 'rgba(255,255,255,0.3)', pointerEvents: 'none', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
-          />
-          {/* Scroll to bottom (double chevron down) — 10px below bottom separator */}
+          {/* Scroll to bottom (double chevron down) */}
           <div
             className="absolute z-50 hover:bg-white/20 rounded-full flex items-center justify-center cursor-pointer"
             style={{ right: '-18px', bottom: '13px', width: '18px', height: '18px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
