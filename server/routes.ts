@@ -6037,17 +6037,19 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       }
 
       let weekNum = 1;
-      for (let i = 0; i < 14 && weekNum <= 13; i++) {
+      let readingWeekInserted = false;
+      for (let i = 0; weekNum <= 13; i++) {
         const wStart = new Date(weekStart);
         const wEnd = new Date(wStart);
         wEnd.setDate(wEnd.getDate() + 4);
 
-        if (readingWeekStart) {
+        if (readingWeekStart && !readingWeekInserted) {
           const rwStart = new Date(readingWeekStart);
           rwStart.setHours(0, 0, 0, 0);
           if (wStart.getTime() >= rwStart.getTime() && wStart.getTime() < rwStart.getTime() + 7 * 86400000) {
             weeks.push(`Reading Week - STUDY`);
             weekStart.setDate(weekStart.getDate() + 7);
+            readingWeekInserted = true;
             continue;
           }
         }
@@ -6057,6 +6059,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         weeks.push(`Week ${weekNum} - ${startStr}-${endStr}`);
         weekNum++;
         weekStart.setDate(weekStart.getDate() + 7);
+        if (i > 20) break;
       }
       return weeks;
     }
