@@ -28,6 +28,7 @@ import rawStoryLogoPath from "@assets/Raw_Story_1773607642361.png";
 import abcNewsLogoPath from "@assets/ABC_1773609250051.png";
 import weatherAlertLogoPath from "@assets/Weather_Alert_1773608511887.png";
 import bbcNewsLogoPath from "@assets/BBC_1773609711103.png";
+import cnTowerPath from "@assets/CN_1773896738796.png";
 import foxNewsLogoPath from "@assets/Fox_News_1773610204651.png";
 import dashboardBg from "@assets/BG2_1769977873184.jpg";
 import celebrationAnimoji from "@assets/Animoji_1769350617739.webp";
@@ -13231,7 +13232,7 @@ export default function Dashboard() {
               const dayName = dayNames[dt.getDay()];
               return `${dayName}: ${Math.round(d.high)}°/${Math.round(d.low)}°`;
             });
-            items.push({ title: `📅 <b>3-DAY FORECAST</b>  |  ${forecastParts.join('  •  ')}`, source: '_FORECAST_', link: '' });
+            items.push({ title: `<img src="${cnTowerPath}" class="inline-block align-middle" style="height:0.85em;width:auto;margin-right:4px" /><b>3-DAY FORECAST</b>  |  ${forecastParts.join('  •  ')}`, source: '_FORECAST_', link: '' });
             const briefParts: string[] = [];
             const todayD = weatherData.daily[0];
             const tomorrowD = weatherData.daily[1];
