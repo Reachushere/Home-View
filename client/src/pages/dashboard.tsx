@@ -13093,7 +13093,7 @@ export default function Dashboard() {
             }}
             onOpenEditTask={(task) => {
               setSelectedCertCourse(null);
-              setTimeout(() => setEditingTask(task), 50);
+              setTimeout(() => setEditingTask(task), 150);
             }}
             semesterStart={semStart || new Date()}
             readingWeekStart={readingWeekStart}

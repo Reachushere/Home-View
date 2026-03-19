@@ -864,7 +864,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
         <div className="flex-1 min-w-0">
           <div
             className={`text-[10px] font-medium truncate flex items-center gap-1 cursor-pointer hover:underline ${task.isCompleted ? "line-through text-white/50" : "text-white"}`}
-            onClick={() => onOpenEditTask?.(task)}
+            onClick={(e) => { e.stopPropagation(); e.preventDefault(); if (onOpenEditTask) onOpenEditTask(task); }}
             data-testid={`link-edit-task-${task.id}`}
           >
             {task.title}
