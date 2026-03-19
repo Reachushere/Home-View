@@ -21682,9 +21682,9 @@ export default function Dashboard() {
                               )}
                             </div>
                             <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
-                              <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
+                              <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil === 0 ? 'Today' : `${daysUntil} day${daysUntil === 1 ? '' : 's'}`}</span>
                               <div style={{ width: '48px', position: 'relative', height: '3px' }}>
-                                <div className="rounded-full transition-opacity duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
+                                <div className="rounded-full transition-opacity duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${daysUntil === 0 ? 48 : Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: daysUntil === 0 ? '#ef4444' : progressColor, opacity: 0.9 }} />
                               </div>
                             </div>
                             
