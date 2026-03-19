@@ -11925,7 +11925,7 @@ export default function Dashboard() {
                     <span key={`${a.id}-${i}`} className="inline-flex items-center gap-1.5 mx-8" data-testid={`announcement-${a.id}-${i}`}>
                       <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', verticalAlign: 'middle' }}>
                         <img src={tmuBoxesLogo} alt="TMU" style={{ height: '27px', width: 'auto', objectFit: 'contain' }} />
-                        <span className="font-bold" style={{ position: 'absolute', color: '#ffffff', fontSize: '8px', letterSpacing: '0.5px', textAlign: 'center', lineHeight: '1', textShadow: '0 0 2px rgba(0,0,0,0.5)', left: '50%', top: '50%', transform: 'translate(calc(-50% + 3px), calc(-50% + 2px))' }}>{(a.courseName || '').replace(/\s+/g, '')}</span>
+                        <span className="font-bold" style={{ position: 'absolute', color: '#ffffff', fontSize: '8px', letterSpacing: '0.5px', textAlign: 'center', lineHeight: '1', textShadow: '0 0 2px rgba(0,0,0,0.5)', left: '50%', top: '50%', transform: 'translate(calc(-50% + 2px), calc(-50% + 3px))' }}>{(a.courseName || '').replace(/\s+/g, '')}</span>
                       </span>
                       <span className="text-white/85 mx-1 text-[13px]" style={{ lineHeight: '1', verticalAlign: 'middle', fontWeight: 300 }}>|</span>
                       <span className="text-[13px] text-white/90 font-medium">{a.subject}</span>
