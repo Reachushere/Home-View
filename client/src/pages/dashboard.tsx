@@ -18273,15 +18273,6 @@ export default function Dashboard() {
                         </>
                       );
                     })()}
-                    {(() => {
-                      const cCode = course.name.split(' - ')[0]?.trim().replace(/\s/g, '');
-                      let dm = courseDeliveryModes[cCode] || '';
-                      if (!dm) {
-                        try { const cd = localStorage.getItem('certCourseData'); if (cd) { const sd = JSON.parse(cd); dm = sd[cCode]?.deliveryMode || ''; } } catch {}
-                      }
-                      return dm === 'virtual' ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '29px', height: 'auto', marginTop: '3px', filter: 'brightness(0) invert(1)', opacity: 0.9 }} />
-                        : dm === 'online' ? <img src={wifiLogoPath} alt="Online" style={{ width: '14px', height: 'auto', marginTop: '3px', opacity: 0.9 }} /> : null;
-                    })()}
                   </div>
                   {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: course.bg, borderBottom: `1.5px dotted ${courseData.color}dd` }} />}
                   {(() => {
