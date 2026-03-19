@@ -21107,42 +21107,62 @@ export default function Dashboard() {
               <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => { const v = Math.max(0, prev - 2); localStorage.setItem('calendarReduction', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => { const v = Math.max(0, prev - 2); localStorage.setItem('calendarReduction', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▶</span></div>
             </div>
           </div>
-          {/* Scroll to top (double chevron up) — 10px above top separator */}
-          <div
-            className="absolute z-50 hover:bg-white/20 rounded-full flex items-center justify-center cursor-pointer"
-            style={{ right: '-18px', bottom: '120px', width: '18px', height: '18px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
-            onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); } }}
-            data-testid="button-homework-scroll-to-top"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round"><polyline points="17 10 12 5 7 10" /><polyline points="17 19 12 14 7 19" /></svg>
-          </div>
-          {/* Page up (single chevron up) — stacked above page down */}
-          <div
-            className="absolute z-50 hover:bg-white/20 rounded-full flex items-center justify-center cursor-pointer"
-            style={{ right: '-18px', bottom: '71px', width: '18px', height: '18px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
-            onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollBy({ top: -homeworkScrollRef.current.clientHeight, behavior: 'smooth' }); } }}
-            data-testid="button-homework-scroll-top"
-          >
-            <ChevronUp style={{ width: '14px', height: '14px', color: 'white' }} strokeWidth={2.5} />
-          </div>
-          {/* Page down (single chevron down) — 10px above bottom separator */}
-          <div
-            className="absolute z-50 hover:bg-white/20 rounded-full flex items-center justify-center cursor-pointer"
-            style={{ right: '-18px', bottom: '53px', width: '18px', height: '18px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
-            onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollBy({ top: homeworkScrollRef.current.clientHeight, behavior: 'smooth' }); } }}
-            data-testid="button-homework-scroll-bottom"
-          >
-            <ChevronDown style={{ width: '14px', height: '14px', color: 'white' }} strokeWidth={2.5} />
-          </div>
-          {/* Scroll to bottom (double chevron down) */}
-          <div
-            className="absolute z-50 hover:bg-white/20 rounded-full flex items-center justify-center cursor-pointer"
-            style={{ right: '-18px', bottom: '13px', width: '18px', height: '18px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
-            onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollTo({ top: homeworkScrollRef.current.scrollHeight, behavior: 'smooth' }); } }}
-            data-testid="button-homework-scroll-to-bottom"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" style={{ transform: 'rotate(180deg)' }}><polyline points="17 10 12 5 7 10" /><polyline points="17 19 12 14 7 19" /></svg>
-          </div>
+          {(() => {
+            const semTabs: Array<{ letter: string; year: string; semLabel: string }> = [];
+            for (let y = 2026; y <= 2029; y++) {
+              if (y === 2026) {
+                semTabs.push({ letter: 'W', year: String(y).slice(2), semLabel: 'Winter ' + y });
+                semTabs.push({ letter: 'S', year: String(y).slice(2), semLabel: 'Spring/Summer ' + y });
+                semTabs.push({ letter: 'F', year: String(y).slice(2), semLabel: 'Fall ' + y });
+              } else if (y === 2029) {
+                semTabs.push({ letter: 'W', year: String(y).slice(2), semLabel: 'Winter ' + y });
+                semTabs.push({ letter: 'S', year: String(y).slice(2), semLabel: 'Spring/Summer ' + y });
+              } else {
+                semTabs.push({ letter: 'W', year: String(y).slice(2), semLabel: 'Winter ' + y });
+                semTabs.push({ letter: 'S', year: String(y).slice(2), semLabel: 'Spring/Summer ' + y });
+                semTabs.push({ letter: 'F', year: String(y).slice(2), semLabel: 'Fall ' + y });
+              }
+            }
+            const currentSemLabel = hwWeeklyTimeline[0]?.semLabel || null;
+            return (
+              <div
+                className="absolute z-50"
+                style={{ right: '-21px', top: '30px', bottom: '10px', flexDirection: 'column', justifyContent: 'flex-start', gap: '3px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex' }}
+              >
+                {semTabs.map((tab, i) => {
+                  const isActive = currentSemLabel === tab.semLabel;
+                  return (
+                    <div
+                      key={tab.semLabel}
+                      className="cursor-pointer"
+                      style={{ position: 'relative', width: '21px', height: '42px', flexShrink: 0 }}
+                      onClick={() => {
+                        if (!homeworkScrollRef.current) return;
+                        const idx = hwWeeklyTimeline.findIndex(w => w.semLabel === tab.semLabel);
+                        if (idx < 0) return;
+                        const sectionIds = ['thisweek', 'nextweek', 'twoweeks', 'threeweeks'];
+                        const sectionId = idx < 4 ? sectionIds[idx] : 'threeweeks';
+                        const el = homeworkScrollRef.current!.querySelector(`[data-homework-section="${sectionId}"]`);
+                        if (el) {
+                          const scrollContainer = homeworkScrollRef.current!;
+                          const elTop = (el as HTMLElement).offsetTop - scrollContainer.offsetTop;
+                          scrollContainer.scrollTo({ top: elTop - 4, behavior: 'smooth' });
+                        }
+                      }}
+                      data-testid={`semester-tab-${tab.letter.toLowerCase()}${tab.year}`}
+                      title={tab.semLabel}
+                    >
+                      <svg width="21" height="42" viewBox="0 0 21 42" style={{ display: 'block' }}>
+                        <path d="M21,0 L21,42 L13,42 Q13,37.5 8,37.5 L7.5,37.5 Q0,37.5 0,31.5 L0,10.5 Q0,4.5 7.5,4.5 L8,4.5 Q13,4.5 13,0 Z" fill={isActive ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)'} stroke="rgba(255,255,255,0.35)" strokeWidth="1" />
+                        <text x="9" y="19" textAnchor="middle" fill="white" fontSize="9" fontWeight="bold" fontFamily="system-ui">{tab.letter}</text>
+                        <text x="9" y="32" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="7.5" fontWeight="600" fontFamily="system-ui">{tab.year}</text>
+                      </svg>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })()}
           <div className="absolute inset-0 rounded-[12px] overflow-hidden flex flex-col" style={{ pointerEvents: 'auto' }}>
           {/* Weather Overlay */}
           {weatherData && (() => {
