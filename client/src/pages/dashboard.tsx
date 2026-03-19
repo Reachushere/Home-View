@@ -11909,8 +11909,7 @@ export default function Dashboard() {
               });
             }} className="flex items-center h-full whitespace-nowrap" style={{ position: 'relative' }}>
               {(() => {
-                const items = thisWeekAnnouncements.length >= 3 ? thisWeekAnnouncements : [...thisWeekAnnouncements, ...thisWeekAnnouncements, ...thisWeekAnnouncements].slice(0, Math.max(thisWeekAnnouncements.length * 2, 4));
-                return items.map((a: any, i: number) => {
+                return thisWeekAnnouncements.map((a: any, i: number) => {
                   const timeAgo = (() => {
                     const diff = Date.now() - new Date(a.receivedAt || a.date).getTime();
                     const mins = Math.floor(diff / 60000);
