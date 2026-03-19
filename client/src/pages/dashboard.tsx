@@ -4014,9 +4014,17 @@ export default function Dashboard() {
   };
 
   const courseRowBg = (id: string): string | undefined => {
-    if (checkedCourses[id]) return 'rgba(16,185,129,0.12)';
     if (isSectionFulfilledForCourse(id) || isActiveInOtherLevel(id) || isCourseGreyedOut(id)) return 'rgba(0,0,0,0.04)';
-    if (inProgressCourses[id] || isL2InProgressFromL1(id)) return 'rgba(245,158,11,0.12)';
+    const codeNorm = id.replace(/^L\d_/, '');
+    const gradient = getCourseGradientColors(codeNorm);
+    const lightHex = gradient.end.startsWith('#') ? gradient.end : '#9ca3af';
+    const rgb = hexToRgb(lightHex);
+    const darken = 0.80;
+    const r = Math.round(rgb.r * darken);
+    const g = Math.round(rgb.g * darken);
+    const b = Math.round(rgb.b * darken);
+    if (checkedCourses[id]) return `rgba(${r},${g},${b},0.18)`;
+    if (inProgressCourses[id] || isL2InProgressFromL1(id)) return `rgba(${r},${g},${b},0.15)`;
     return undefined;
   };
   const courseRowClass = (id: string) => {
