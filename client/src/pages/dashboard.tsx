@@ -21453,7 +21453,7 @@ export default function Dashboard() {
                           style={{
                             lineHeight: '1.3',
                             marginBottom: '1px',
-                            opacity: isSelectedWeek ? 1 : 0.45,
+                            opacity: 1,
                           }}
                           onMouseEnter={() => {
                             setHoveredCountdownTaskId(t.id);
