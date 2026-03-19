@@ -360,7 +360,7 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
         return `<span class="inline-flex items-center gap-1.5 mx-4" style="animation:tickerAlertBlink 1s ease-in-out infinite" data-testid="weather-alert-${i}"><img src="${weatherAlertLogoPath}" alt="Weather Alert" class="rounded-sm" style="height:28px;width:auto;object-fit:contain" /><span class="text-[13px] font-bold" style="color:#ff4444;text-shadow:0 0 6px rgba(255,68,68,0.5)">${safeTitle}</span><span class="text-white/20 mx-2">|</span></span>`;
       }
       if (item.source === '_FORECAST_' || item.source === '_FORECAST_NOSEP_') {
-        const forecastHtml = item.title.replace(/(<b>[^<]*<\/b>:?|(?:Toronto Forecast|3-Day Forecast|Forecast Brief|Pollen):?)/, '<span style="color:rgb(0,255,0);text-shadow:0 0 4px rgba(0,255,0,0.3)">$1</span>');
+        const forecastHtml = item.title.replace(/(<b>[^<]*<\/b>:?|(?:Toronto Forecast|3-Day Forecast:|Forecast Brief:|Pollen):?)/, '<span style="color:rgb(0,255,0);text-shadow:0 0 4px rgba(0,255,0,0.3)">$1</span>');
         const sep = item.source === '_FORECAST_' ? '<span class="text-white/20 mx-2">|</span>' : '';
         return `<span class="inline-flex items-center gap-1.5 mx-4" data-testid="weather-forecast-${i}"><span class="text-[13px] text-white/95">${forecastHtml}</span>${sep}</span>`;
       }
@@ -13234,7 +13234,7 @@ export default function Dashboard() {
               const dayName = dayNames[dt.getDay()];
               return `${dayName}: ${Math.round(d.high)}°/${Math.round(d.low)}°`;
             });
-            items.push({ title: `<img src="${forecastIconPath}" style="height:20px;width:auto;display:inline-block;vertical-align:middle;margin-left:3px;margin-right:9px" />3-Day Forecast  |  ${forecastParts.join('  •  ')}`, source: '_FORECAST_', link: '' });
+            items.push({ title: `<img src="${forecastIconPath}" style="height:20px;width:auto;display:inline-block;vertical-align:middle;margin-left:3px;margin-right:9px" />3-Day Forecast: ${forecastParts.join('  •  ')}`, source: '_FORECAST_', link: '' });
             const briefParts: string[] = [];
             const todayD = weatherData.daily[0];
             const tomorrowD = weatherData.daily[1];
@@ -13252,7 +13252,7 @@ export default function Dashboard() {
               const d3Name = dayNames[new Date(day3D.date + 'T12:00:00').getDay()];
               briefParts.push(`${d3Name}: ${d3Desc}, ${Math.round(day3D.high)}°/${Math.round(day3D.low)}°.`);
             }
-            items.push({ title: `<img src="${newspaperIconPath}" style="height:22px;width:auto;display:inline-block;vertical-align:middle;margin-right:9px" />Forecast Brief  |  ${briefParts.join('  ')}`, source: '_FORECAST_NOSEP_', link: '' });
+            items.push({ title: `<img src="${newspaperIconPath}" style="height:22px;width:auto;display:inline-block;vertical-align:middle;margin-right:9px" />Forecast Brief: ${briefParts.join('  ')}`, source: '_FORECAST_NOSEP_', link: '' });
           }
           return items;
         })() : []),
@@ -18289,12 +18289,30 @@ export default function Dashboard() {
                       return false;
                     }) || []).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
                     const taskSlotMap = new Map<number, number>();
-                    const taskIntervals = courseWeekTasks.map(t => {
+                    const recurringGroups = new Map<string, typeof courseWeekTasks>();
+                    courseWeekTasks.forEach(t => {
+                      const key = t.title;
+                      if (!recurringGroups.has(key)) recurringGroups.set(key, []);
+                      recurringGroups.get(key)!.push(t);
+                    });
+                    const taskIntervals: { id: number; start: number; end: number; span: number; groupIds?: number[] }[] = [];
+                    const groupedTaskIds = new Set<number>();
+                    recurringGroups.forEach((tasks, title) => {
+                      if (tasks.length >= 2 && tasks.every(t => !t.startDate || isSameDay(startOfDay(new Date(t.startDate)), startOfDay(new Date(t.dueDate))))) {
+                        const days = tasks.map(t => Math.max(0, Math.floor((startOfDay(new Date(t.dueDate)).getTime() - cwWeekStart.getTime()) / (1000 * 60 * 60 * 24))));
+                        const minDay = Math.min(...days);
+                        const maxDay = Math.max(...days);
+                        taskIntervals.push({ id: tasks[0].id, start: minDay, end: maxDay, span: maxDay - minDay, groupIds: tasks.map(t => t.id) });
+                        tasks.forEach(t => groupedTaskIds.add(t.id));
+                      }
+                    });
+                    courseWeekTasks.forEach(t => {
+                      if (groupedTaskIds.has(t.id)) return;
                       const dueDay = Math.floor((startOfDay(new Date(t.dueDate)).getTime() - cwWeekStart.getTime()) / (1000 * 60 * 60 * 24));
                       const startDay = t.startDate
                         ? Math.floor((startOfDay(new Date(t.startDate)).getTime() - cwWeekStart.getTime()) / (1000 * 60 * 60 * 24))
                         : dueDay;
-                      return { id: t.id, start: Math.max(0, startDay), end: Math.max(0, dueDay), span: Math.max(0, dueDay) - Math.max(0, startDay) };
+                      taskIntervals.push({ id: t.id, start: Math.max(0, startDay), end: Math.max(0, dueDay), span: Math.max(0, dueDay) - Math.max(0, startDay) });
                     });
                     taskIntervals.sort((a, b) => b.span - a.span || a.start - b.start);
                     const slotOccupancy: Set<number>[] = [];
@@ -18315,8 +18333,35 @@ export default function Dashboard() {
                         slotOccupancy[assignedSlot].add(d);
                       }
                       taskSlotMap.set(interval.id, assignedSlot);
+                      if (interval.groupIds) {
+                        interval.groupIds.forEach(gid => taskSlotMap.set(gid, assignedSlot));
+                      }
                     }
                     const totalSlots = slotOccupancy.length || courseWeekTasks.length;
+
+                    const recurringSpans = new Map<number, { firstDayIdx: number; lastDayIdx: number; title: string }>();
+                    const titleSlotGroups = new Map<string, number[]>();
+                    courseWeekTasks.forEach(t => {
+                      const slot = taskSlotMap.get(t.id);
+                      if (slot === undefined) return;
+                      const key = `${t.title}:::${slot}`;
+                      if (!titleSlotGroups.has(key)) titleSlotGroups.set(key, []);
+                      titleSlotGroups.get(key)!.push(t.id);
+                    });
+                    titleSlotGroups.forEach((taskIds, key) => {
+                      if (taskIds.length < 2) return;
+                      const tasks = taskIds.map(id => courseWeekTasks.find(t => t.id === id)!).filter(Boolean);
+                      const dayIndices = tasks.map(t => {
+                        const dueDay = startOfDay(new Date(t.dueDate));
+                        return weekDays.findIndex(wd => isSameDay(wd, dueDay));
+                      }).filter(d => d >= 0).sort((a, b) => a - b);
+                      if (dayIndices.length < 2) return;
+                      const firstDay = dayIndices[0];
+                      const lastDay = dayIndices[dayIndices.length - 1];
+                      tasks.forEach(t => {
+                        recurringSpans.set(t.id, { firstDayIdx: firstDay, lastDayIdx: lastDay, title: t.title });
+                      });
+                    });
 
                     return weekDays.map((day, dayIdx) => {
                     const isDayToday = isSameDay(day, new Date());
@@ -18476,10 +18521,19 @@ export default function Dashboard() {
                           const dueRefLinkPdf = !dueAttachmentUrl && task.referenceLink ? task.referenceLink : null;
                           const dueModulePdfUrl = dueAttachmentUrl || dueRefLinkPdf || dueModuleFile?.objectPath || null;
                           const hasPrepDays = task.startDate && !isSameDay(startOfDay(new Date(task.startDate)), startOfDay(new Date(task.dueDate)));
+                          const spanInfo = recurringSpans.get(task.id);
+                          const isSpanFirst = spanInfo && dayIdx === spanInfo.firstDayIdx;
+                          const isSpanLast = spanInfo && dayIdx === spanInfo.lastDayIdx;
+                          const isSpanMiddle = spanInfo && dayIdx > spanInfo.firstDayIdx && dayIdx < spanInfo.lastDayIdx;
+                          const hasLeftConnector = hasPrepDays || (spanInfo && !isSpanFirst);
+                          const hasRightConnector = spanInfo && !isSpanLast;
                           return (
                             <div key={task.id} className="relative w-full min-w-0" style={{ zIndex: hoveredCountdownTaskId === task.id ? 55 : undefined }}>
-                            {hasPrepDays && (
+                            {hasLeftConnector && (
                               <div style={{ position: 'absolute', left: '-5px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '1px', backgroundColor: course.darkColor, zIndex: 2 }} />
+                            )}
+                            {hasRightConnector && (
+                              <div style={{ position: 'absolute', right: '-3px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '1px', backgroundColor: course.darkColor, zIndex: 2 }} />
                             )}
                             <div 
                               className={`flex flex-col gap-0 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer w-full min-w-0 ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
