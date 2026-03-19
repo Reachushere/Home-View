@@ -4014,11 +4014,11 @@ export default function Dashboard() {
   };
 
   const courseRowClass = (id: string) => {
-    if (checkedCourses[id]) return 'bg-emerald-100 text-emerald-700';
-    if (isSectionFulfilledForCourse(id)) return 'bg-gray-200 text-gray-400';
-    if (isActiveInOtherLevel(id)) return 'bg-gray-200 text-gray-400';
-    if (inProgressCourses[id] || isL2InProgressFromL1(id)) return 'bg-amber-100 text-amber-800';
-    if (isCourseGreyedOut(id)) return 'bg-gray-200 text-gray-400';
+    if (checkedCourses[id]) return 'bg-emerald-50 text-emerald-700';
+    if (isSectionFulfilledForCourse(id)) return 'bg-gray-100 text-gray-400';
+    if (isActiveInOtherLevel(id)) return 'bg-gray-100 text-gray-400';
+    if (inProgressCourses[id] || isL2InProgressFromL1(id)) return 'bg-amber-50 text-amber-800';
+    if (isCourseGreyedOut(id)) return 'bg-gray-100 text-gray-400';
     return '';
   };
   const shouldStrikethrough = (id: string) => {
