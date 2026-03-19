@@ -8549,7 +8549,7 @@ document.body.removeChild(a);
         dueDate.setHours(9, 0, 0, 0);
       }
 
-      let taskType = 'reading';
+      let taskType = courseName ? 'reading' : 'reminder';
       const typeLower = fullText.toLowerCase();
       if (/\bessay\b/.test(typeLower)) taskType = 'essay';
       else if (/\bquiz\b/.test(typeLower)) taskType = 'quiz';

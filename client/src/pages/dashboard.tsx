@@ -184,6 +184,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   poll: Vote,
   exam: GraduationCap,
   quiz: ClipboardCheck,
+  reminder: Bell,
 };
 
 const typeColors: Record<string, string> = {
@@ -195,6 +196,7 @@ const typeColors: Record<string, string> = {
   poll: "bg-cyan-500/20 text-cyan-600 dark:text-cyan-400",
   exam: "bg-red-500/20 text-red-600 dark:text-red-400",
   quiz: "bg-amber-500/20 text-amber-600 dark:text-amber-400",
+  reminder: "bg-teal-500/20 text-teal-600 dark:text-teal-400",
 };
 
 const courseColors: Record<string, { bg: string; border: string; text: string; dot: string; prepBg: string; prepBorder: string; prepText: string }> = {

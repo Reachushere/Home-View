@@ -12,6 +12,7 @@ export const TASK_TYPES = [
   "poll",
   "exam",
   "quiz",
+  "reminder",
   "meeting",
   "other"
 ] as const;
