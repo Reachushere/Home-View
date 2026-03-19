@@ -2346,7 +2346,7 @@ export default function Dashboard() {
     const saved = localStorage.getItem('colorSettings');
     const defaults = {
       boxBackground: '#ffffff',
-      headerBar: '#0e3356',
+      headerBar: '#0a2744',
       mainBackground: '#3a8bbf',
       boxGlassEffect: true,
       boxTransparency: 20,
@@ -2355,12 +2355,12 @@ export default function Dashboard() {
       mainBackgroundGradientEnd: '#164a72',
       todayCellBackground: '#d4d4d4',
       currentHourRowBackground: '#d4d4d4',
-      todayCurrentHourCellBackground: '#0e3356',
+      todayCurrentHourCellBackground: '#0a2744',
       backgroundPhoto: null as string | null
     };
     // Force migration V16: slightly less frosted than original 35
-    const migrationV23 = localStorage.getItem('colorSettingsMigrationV23');
-    if (!migrationV23) {
+    const migrationV24 = localStorage.getItem('colorSettingsMigrationV24');
+    if (!migrationV24) {
       localStorage.removeItem('colorSettings');
       localStorage.removeItem('colorSettingsMigrationV17');
       localStorage.removeItem('colorSettingsMigrationV18');
@@ -2369,7 +2369,8 @@ export default function Dashboard() {
       localStorage.removeItem('colorSettingsMigrationV20');
       localStorage.removeItem('colorSettingsMigrationV21');
       localStorage.removeItem('colorSettingsMigrationV22');
-      localStorage.setItem('colorSettingsMigrationV23', 'done');
+      localStorage.removeItem('colorSettingsMigrationV23');
+      localStorage.setItem('colorSettingsMigrationV24', 'done');
       return defaults;
     }
     const migrationDone = localStorage.getItem('colorSettingsMigrationV17');
@@ -3694,8 +3695,8 @@ export default function Dashboard() {
         if (data.colorSettings) {
           setColorSettings(prev => {
             const merged = { ...prev, ...data.colorSettings };
-            if (merged.headerBar === '#160502' || merged.headerBar === '#1a3a5c' || merged.headerBar === '#0f2540' || merged.headerBar === '#164a72') merged.headerBar = '#0e3356';
-            if (merged.todayCurrentHourCellBackground === '#160502' || merged.todayCurrentHourCellBackground === '#1a3a5c' || merged.todayCurrentHourCellBackground === '#0f2540' || merged.todayCurrentHourCellBackground === '#164a72') merged.todayCurrentHourCellBackground = '#0e3356';
+            if (merged.headerBar === '#160502' || merged.headerBar === '#1a3a5c' || merged.headerBar === '#0f2540' || merged.headerBar === '#164a72' || merged.headerBar === '#0e3356') merged.headerBar = '#0a2744';
+            if (merged.todayCurrentHourCellBackground === '#160502' || merged.todayCurrentHourCellBackground === '#1a3a5c' || merged.todayCurrentHourCellBackground === '#0f2540' || merged.todayCurrentHourCellBackground === '#164a72' || merged.todayCurrentHourCellBackground === '#0e3356') merged.todayCurrentHourCellBackground = '#0a2744';
             localStorage.setItem('colorSettings', JSON.stringify(merged));
             return merged;
           });
@@ -21156,7 +21157,7 @@ export default function Dashboard() {
               <span style={{ whiteSpace: 'nowrap' }}>Homework Progress</span>
             </h4>
             {weatherData && (
-              <div className="flex flex-col items-end mr-1" style={{ flexShrink: 0, gap: '4px' }}>
+              <div className="flex flex-col items-end" style={{ flexShrink: 0, gap: '4px', marginRight: '9px' }}>
                 <div className="flex items-center gap-1.5">
                   <span className="text-[10.5px] font-medium" style={{ color: 'rgba(255,255,255,1)' }} data-testid="homework-weather-temp">{Math.round(weatherData.temp)}°C</span>
                   <span className="text-[10.5px]" style={{ color: 'rgba(255,255,255,1)' }} data-testid="homework-weather-desc">{(() => { const WMO: Record<number, string> = {0:'Clear',1:'Mostly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Rime Fog',51:'Lt Drizzle',53:'Drizzle',55:'Hvy Drizzle',61:'Lt Rain',63:'Rain',65:'Hvy Rain',66:'Frzg Rain',67:'Hvy Frzg Rain',71:'Lt Snow',73:'Snow',75:'Hvy Snow',77:'Snow Grains',80:'Lt Showers',81:'Showers',82:'Hvy Showers',85:'Lt Snow Shwrs',86:'Hvy Snow Shwrs',95:'T-Storm',96:'T-Storm Hail',99:'Svr T-Storm'}; return WMO[weatherData.code] || ''; })()}</span>
