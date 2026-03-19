@@ -1231,15 +1231,15 @@ export default function Dashboard() {
   const topPillRef = useRef<HTMLDivElement>(null);
   const topPillTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const openTopPill = useCallback(() => {
-    startTransition(() => setIsTopPillOpen(true));
+    setIsTopPillOpen(true);
   }, []);
   const closeTopPill = useCallback(() => {
-    startTransition(() => setIsTopPillOpen(false));
+    setIsTopPillOpen(false);
   }, []);
   useEffect(() => {
     const mountDelay = setTimeout(() => {
       setTopPillMounted(true);
-      startTransition(() => setIsTopPillOpen(true));
+      setIsTopPillOpen(true);
     }, 800);
     topPillTimeoutRef.current = setTimeout(() => {
       closeTopPill();
@@ -11100,7 +11100,7 @@ export default function Dashboard() {
         {/* Icon buttons and task buttons with adjustable spacing */}
         <div className="flex items-center flex-nowrap [&>*]:flex-shrink-0" style={{ gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 4)}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '4px', paddingRight: '4px', width: '100%', overflow: 'visible', pointerEvents: 'auto' }}>
           {/* Hamburger Menu */}
-          <DropdownMenu open={isHamburgerOpen} onOpenChange={(open) => { if (hamburgerCloseTimer.current) { clearTimeout(hamburgerCloseTimer.current); hamburgerCloseTimer.current = null; } setIsHamburgerOpen(open); if (open) { triggerButtonGlow('hamburger'); if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); } else { topPillTimeoutRef.current = setTimeout(() => { closeTopPill(); }, 1800); } }} modal={false}>
+          <DropdownMenu open={isHamburgerOpen} onOpenChange={(open) => { if (hamburgerCloseTimer.current) { clearTimeout(hamburgerCloseTimer.current); hamburgerCloseTimer.current = null; } startTransition(() => setIsHamburgerOpen(open)); if (open) { triggerButtonGlow('hamburger'); if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); } else { topPillTimeoutRef.current = setTimeout(() => { closeTopPill(); }, 1800); } }} modal={false}>
             <DropdownMenuTrigger asChild>
               <div 
                 className="pill-button-hover"
@@ -11119,26 +11119,28 @@ export default function Dashboard() {
                 }}
                 data-testid="button-hamburger-menu"
                 title="Menu"
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsHamburgerOpen(prev => !prev); if (!isHamburgerOpen) triggerButtonGlow('hamburger'); }}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); startTransition(() => setIsHamburgerOpen(prev => !prev)); if (!isHamburgerOpen) triggerButtonGlow('hamburger'); }}
                 onMouseEnter={() => { if (!('ontouchstart' in window)) setIsHamburgerOpen(true); }}
               >
                 <Menu className="h-[20px] w-[20px]" strokeWidth={3} style={{ color: '#ffffff', marginTop: '2px', filter: 'drop-shadow(0 0 2px rgba(255,255,255,0.8))', WebkitTextStroke: '0.5px white', paintOrder: 'stroke fill' } as any} />
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" noAnimation onMouseLeave={() => { if (!('ontouchstart' in window)) { hamburgerCloseTimer.current = window.setTimeout(() => setIsHamburgerOpen(false), 250); } }} onMouseEnter={() => { if (hamburgerCloseTimer.current) { clearTimeout(hamburgerCloseTimer.current); hamburgerCloseTimer.current = null; } }}>
-              <DropdownMenuItem data-testid="menu-item-profile" className="text-xs" onClick={() => setIsProfileDialogOpen(true)}>
+              <DropdownMenuItem data-testid="menu-item-profile" className="text-xs" onClick={() => startTransition(() => setIsProfileDialogOpen(true))}>
                 <User className="h-3.5 w-3.5 mr-2" />
                 Profile Settings
               </DropdownMenuItem>
-              <DropdownMenuItem data-testid="menu-item-school" className="text-xs" onClick={() => setIsSchoolDialogOpen(true)}>
+              <DropdownMenuItem data-testid="menu-item-school" className="text-xs" onClick={() => startTransition(() => setIsSchoolDialogOpen(true))}>
                 <GraduationCap className="h-3.5 w-3.5 mr-2" />
                 School Settings
               </DropdownMenuItem>
               <DropdownMenuItem data-testid="menu-item-settings" className="text-xs" onClick={() => {
-                  setIsQuickAddOpen(false);
-                  setOriginalColorSettings({...colorSettings});
-                  setOriginalBlinkSettings({...blinkSettings});
-                  setIsSettingsDialogOpen(true);
+                  startTransition(() => {
+                    setIsQuickAddOpen(false);
+                    setOriginalColorSettings({...colorSettings});
+                    setOriginalBlinkSettings({...blinkSettings});
+                    setIsSettingsDialogOpen(true);
+                  });
                 }}>
                 <Settings className="h-3.5 w-3.5 mr-2" />
                 Calendar Settings
@@ -11974,7 +11976,7 @@ export default function Dashboard() {
           </Button>
 
           {/* Quick Add Button */}
-          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', prepDays: 0, priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder2: DEFAULT_REMINDER_2, reminder3: null, reminder4: null, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' }); setIsQuickAddOpen(true); }}>+ Add Task</Button>
+          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', prepDays: 0, priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder2: DEFAULT_REMINDER_2, reminder3: null, reminder4: null, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' }); setIsQuickAddOpen(true); }); }}>+ Add Task</Button>
 
         </div>
       </div>
@@ -13266,7 +13268,7 @@ export default function Dashboard() {
           <div 
             className="cursor-pointer hover:bg-white/20 rounded flex items-center justify-center"
             style={{ marginLeft: '2px', padding: '4px 6px', minWidth: '28px', minHeight: '28px' }}
-            onClick={() => { const newWeek = selectedWeek - 1; setSelectedWeek(newWeek); if (newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }}
+            onClick={() => { const newWeek = selectedWeek - 1; startTransition(() => setSelectedWeek(newWeek)); if (newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }}
             data-testid="button-pill-prev-week"
             data-date-nav
           >
@@ -13278,7 +13280,7 @@ export default function Dashboard() {
           <div 
             className="cursor-pointer hover:bg-white/20 rounded flex items-center justify-center"
             style={{ marginLeft: '2px', padding: '4px 6px', minWidth: '28px', minHeight: '28px' }}
-            onClick={() => { const newWeek = selectedWeek + 1; setSelectedWeek(newWeek); if (newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }}
+            onClick={() => { const newWeek = selectedWeek + 1; startTransition(() => setSelectedWeek(newWeek)); if (newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }}
             data-testid="button-pill-next-week"
             data-date-nav
           >
@@ -18622,7 +18624,7 @@ export default function Dashboard() {
                                   onClick={() => setEditingTask(task)}
                                   title={`Prep Day - ${task.title}`}
                                 >
-                                  {(() => { const totalPrepDays = differenceInCalendarDays(prepDueDate, prepStartDate); const showCount = totalPrepDays > 3; const daysLeft = showCount ? differenceInCalendarDays(prepDueDate, cellDate) : 0; const prepUrgent = showCount && daysLeft <= 2; const prepColor = prepUrgent ? '#ff3b3b' : '#ffffff'; return <span className="flex flex-col items-center justify-center whitespace-nowrap font-bold shrink-0" style={{ backgroundColor: '#6b7280', color: prepColor, letterSpacing: showCount ? '0.5px' : '1px', padding: showCount ? '0px 3px 0 2px' : '1px 3px 0 2px', fontSize: showCount ? '7px' : '8px', WebkitTextStroke: prepUrgent ? '0.15px #ff3b3b' : '0.15px #ffffff', alignSelf: 'stretch', lineHeight: showCount ? '1.1' : undefined, marginTop: showCount ? '-1px' : undefined, minWidth: '30px' }}><span style={{ marginTop: showCount ? '1px' : undefined, fontFamily: "system-ui, sans-serif", fontWeight: 700 }}>PREP</span>{showCount && <span style={{ color: prepColor, fontSize: '8px', fontWeight: 550, WebkitTextStroke: '0', letterSpacing: '0.3px', lineHeight: '1', marginTop: '0px', fontFamily: "system-ui, sans-serif" }}>{daysLeft}d</span>}</span>; })()}
+                                  {(() => { const totalPrepDays = differenceInCalendarDays(prepDueDate, prepStartDate); const showCount = totalPrepDays > 3; const daysLeft = showCount ? differenceInCalendarDays(prepDueDate, cellDate) : 0; const prepUrgent = showCount && daysLeft <= 2; const prepColor = prepUrgent ? '#ff3b3b' : '#ffffff'; return <span className="flex flex-col items-center justify-center whitespace-nowrap font-bold shrink-0" style={{ backgroundColor: '#9ca3af', color: prepColor, letterSpacing: showCount ? '0.5px' : '1px', padding: showCount ? '0px 3px 0 2px' : '1px 3px 0 2px', fontSize: showCount ? '7px' : '8px', WebkitTextStroke: prepUrgent ? '0.15px #ff3b3b' : '0.15px #ffffff', alignSelf: 'stretch', lineHeight: showCount ? '1.1' : undefined, marginTop: showCount ? '-1px' : undefined, minWidth: '30px' }}><span style={{ marginTop: showCount ? '1px' : undefined, fontFamily: "system-ui, sans-serif", fontWeight: 700 }}>PREP</span>{showCount && <span style={{ color: prepColor, fontSize: '8px', fontWeight: 550, WebkitTextStroke: '0', letterSpacing: '0.3px', lineHeight: '1', marginTop: '0px', fontFamily: "system-ui, sans-serif" }}>{daysLeft}d</span>}</span>; })()}
                                   <span className="truncate pl-[3px] py-0.5 flex-1 min-w-0" style={{ fontSize: '9px', transform: 'translateY(1px)', color: '#000000' }}>{task.title}</span>
                                 </div>
                               </div>
@@ -19092,7 +19094,7 @@ export default function Dashboard() {
                         >
                           {isPrepEvent ? (
                             <>
-                              <span className="flex items-center whitespace-nowrap font-bold shrink-0 rounded-l" style={{ backgroundColor: '#6b7280', color: '#ffffff', letterSpacing: '1px', padding: '1px 3px 0 2px', fontSize: '8px', WebkitTextStroke: '0.15px #ffffff', alignSelf: 'stretch', fontFamily: "system-ui, sans-serif", fontWeight: 700 }}>PREP</span>
+                              <span className="flex items-center whitespace-nowrap font-bold shrink-0 rounded-l" style={{ backgroundColor: '#9ca3af', color: '#ffffff', letterSpacing: '1px', padding: '1px 3px 0 2px', fontSize: '8px', WebkitTextStroke: '0.15px #ffffff', alignSelf: 'stretch', fontFamily: "system-ui, sans-serif", fontWeight: 700 }}>PREP</span>
                               <span className="truncate font-bold flex-1 min-w-0 pl-1">{displayTitle}</span>
                             </>
                           ) : (
