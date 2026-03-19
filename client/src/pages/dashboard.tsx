@@ -21162,7 +21162,7 @@ export default function Dashboard() {
               className="text-xs font-medium flex items-center text-white"
               style={{ flex: 1, letterSpacing: '0.3px' }}
             >
-              <span style={{ whiteSpace: 'nowrap', marginLeft: '10px' }}>Homework Progress</span>
+              <span style={{ whiteSpace: 'nowrap', marginLeft: '6px', marginTop: '12px' }}>Homework Progress</span>
             </h4>
             {weatherData && (
               <div className="flex items-center gap-1.5" style={{ flexShrink: 0, marginTop: '-32px', position: 'relative', left: '-132px' }}>
@@ -21171,7 +21171,7 @@ export default function Dashboard() {
               </div>
             )}
             {weatherData && (weatherData.sunrise || weatherData.sunset) && (
-              <div className="flex items-center gap-1.5" style={{ flexShrink: 0, lineHeight: 1, marginRight: '9px' }}>
+              <div className="flex items-center gap-1.5" style={{ flexShrink: 0, lineHeight: 1, marginRight: '9px', marginTop: '-32px' }}>
                 {weatherData.sunrise && <span className="text-[10px]" data-testid="homework-sunrise"><span style={{ color: '#FFFF00' }}>☀↑</span><span style={{ color: 'rgba(255,255,255,1)' }}> {(() => { const t = new Date(weatherData.sunrise); const h = t.getHours(); const m = t.getMinutes(); const ampm = h >= 12 ? 'PM' : 'AM'; return `${h === 0 ? 12 : h > 12 ? h - 12 : h}:${m.toString().padStart(2, '0')} ${ampm}`; })()}</span></span>}
                 {weatherData.sunset && <span className="text-[10px]" data-testid="homework-sunset"><span style={{ color: '#FFFF00' }}>☽↓</span><span style={{ color: 'rgba(255,255,255,1)' }}> {(() => { const t = new Date(weatherData.sunset); const h = t.getHours(); const m = t.getMinutes(); const ampm = h >= 12 ? 'PM' : 'AM'; return `${h === 0 ? 12 : h > 12 ? h - 12 : h}:${m.toString().padStart(2, '0')} ${ampm}`; })()}</span></span>}
               </div>
