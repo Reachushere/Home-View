@@ -17820,23 +17820,7 @@ export default function Dashboard() {
                 }
                 const filteredCourses = allDisplayCourses;
                 const minThreeTaskHeight = 3 * 20 + 4; // 64px minimum (3 tasks)
-                const maxCourseRowHeight = Math.max(minThreeTaskHeight, ...filteredCourses.map(cd => {
-                  const cn = cd.name.split(' - ')[0].toUpperCase();
-                  const count = allTasks?.filter(task => {
-                    if (!task.courseName?.toUpperCase().startsWith(cn)) return false;
-                    if (task.isCompleted) return false;
-                    const taskDueDate = startOfDay(new Date(task.dueDate));
-                    const weekStart = startOfDay(weekDays[0]);
-                    const weekEnd = startOfDay(addDays(weekDays[6], 1));
-                    if (taskDueDate >= weekStart && taskDueDate < weekEnd) return true;
-                    if (task.startDate) {
-                      const taskStartDate = startOfDay(new Date(task.startDate));
-                      if (taskStartDate < weekEnd && taskDueDate > weekStart) return true;
-                    }
-                    return false;
-                  }).length || 0;
-                  return count * 20 + 4;
-                }));
+                const maxCourseRowHeight = minThreeTaskHeight;
                 return (
               <div ref={courseRowsRef} data-testid="course-rows-container" style={{ borderTop: '1px solid black', marginTop: '-2px' }}>
               {filteredCourses.map((courseData, courseIdx) => {
@@ -18196,7 +18180,7 @@ export default function Dashboard() {
                       <div 
                         key={dayIdx} 
                         className={`relative flex flex-col gap-0.5 pt-0.5${slottedItems.filter(s => s !== null).length > 3 ? ' course-cell-scroll' : ''}`}
-                        style={{ backgroundColor: cellBgColor, padding: '2px 1px 2px 1px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, overflow: slottedItems.filter(s => s !== null).length > 3 ? 'auto' : 'visible', maxHeight: slottedItems.filter(s => s !== null).length > 3 ? '60px' : undefined, minWidth: 0 }}
+                        style={{ backgroundColor: cellBgColor, padding: '2px 1px 2px 1px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, overflowY: slottedItems.filter(s => s !== null).length > 3 ? 'auto' : 'visible', overflowX: 'hidden', maxHeight: `${maxCourseRowHeight}px`, minWidth: 0 }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
                           e.preventDefault();
@@ -18821,7 +18805,7 @@ export default function Dashboard() {
             </div>)}
               
                           {/* Time Slots - Scrollable area */}
-            <div ref={calendarScrollRef} className="flex-1 overflow-y-auto relative" style={{ borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', scrollbarWidth: 'none' }}>
+            <div ref={calendarScrollRef} className="flex-1 overflow-y-auto relative" style={{ borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', scrollbarWidth: 'thin' }}>
               <div style={{ backgroundColor: '#faf8f5', borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px' }}>
                 {timeSlots.map((hour, hourIdx) => {
                   const currentHour = new Date().getHours();
