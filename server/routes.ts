@@ -18,6 +18,7 @@ import { getSecondAccountAuthUrl, exchangeCodeForTokens, isSecondAccountConnecte
 import { getThirdAccountAuthUrl, exchangeCodeForTokensThird, isThirdAccountConnected, disconnectThirdAccount, getEventsFromThirdAccount, listThirdAccountCalendars, getEventsFromThirdAccountCalendar } from "./thirdGoogleAccount";
 import { textToSpeech } from "./replit_integrations/audio/client";
 import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, sendTestHaPush, sendHaTaskReminder, sendEchoVoiceAnnouncement, type TaskReminder } from "./email";
+import { checkForTickerEmails } from "./gmailTicker";
 import { getSchedulerStatus } from "./reminderScheduler";
 import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder } from "./onedrive";
 
@@ -3940,6 +3941,30 @@ html,body{height:100%;overflow:hidden;background:transparent}
     if (codeMatch) return codeMatch[1];
     return 'University';
   }
+
+  const gmailTickerProcessedIds = new Set<string>();
+  async function pollGmailForTicker() {
+    try {
+      const emails = await checkForTickerEmails(gmailTickerProcessedIds);
+      for (const email of emails) {
+        const existing = await storage.getAnnouncementByEmailId(email.emailId);
+        if (existing) continue;
+        const created = await storage.createAnnouncement({
+          emailId: email.emailId,
+          subject: 'Ticker Update',
+          body: email.body,
+          snippet: email.body.slice(0, 200),
+          courseName: 'Custom',
+          receivedAt: email.receivedAt,
+        });
+        console.log(`[Gmail Ticker] Added to ticker: "${email.body.slice(0, 60)}..." (id: ${created.id})`);
+      }
+    } catch (err: any) {
+      console.error('[Gmail Ticker] Poll error:', err.message);
+    }
+  }
+  pollGmailForTicker();
+  setInterval(pollGmailForTicker, 2 * 60 * 1000);
 
   // GET /api/calendar/list - List all available Google calendars for selection
   app.get("/api/calendar/list", async (_req, res) => {

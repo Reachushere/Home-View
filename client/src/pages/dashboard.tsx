@@ -317,7 +317,7 @@ const TICKER_LOGO_MAP: Record<string, { src: string; height: number }> = {
   CBC: { src: cbcLogoPath, height: 78 },
   CTV: { src: ctvLogoPath, height: 42 },
   Global: { src: globalLogoPath, height: 42 },
-  MSNBC: { src: msnbcLogoPath, height: 72 },
+  MSNBC: { src: msnbcLogoPath, height: 70 },
   Politico: { src: politicoLogoPath, height: 60 },
   'Raw Story': { src: rawStoryLogoPath, height: 64 },
   'ABC News': { src: abcNewsLogoPath, height: 56 },
@@ -2427,7 +2427,7 @@ export default function Dashboard() {
     const deviceSaved = localStorage.getItem(`gridSizes_${deviceId}`);
     
     const applyCompressedHours = (heights: number[]) => {
-      [0,1,2,3,4,5,6,21,22,23].forEach(i => { if (heights[i] > 10) heights[i] = 10; });
+      [0,1,2,3,4,5,6,21,22,23].forEach(i => { if (heights[i] > 12) heights[i] = 12; });
       return heights;
     };
 
