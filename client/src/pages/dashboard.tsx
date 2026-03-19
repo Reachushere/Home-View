@@ -30,6 +30,7 @@ import weatherAlertLogoPath from "@assets/Weather_Alert_1773608511887.png";
 import bbcNewsLogoPath from "@assets/BBC_1773609711103.png";
 import forecastIconPath from "@assets/Forecast2_1773897989398.png";
 import cnTowerPath from "@assets/CN2_1773897525570.png";
+import newspaperIconPath from "@assets/Newspaper_1773898462990.png";
 import foxNewsLogoPath from "@assets/Fox_News_1773610204651.png";
 import dashboardBg from "@assets/BG2_1769977873184.jpg";
 import celebrationAnimoji from "@assets/Animoji_1769350617739.webp";
@@ -13250,7 +13251,7 @@ export default function Dashboard() {
               const d3Name = dayNames[new Date(day3D.date + 'T12:00:00').getDay()];
               briefParts.push(`${d3Name}: ${d3Desc}, ${Math.round(day3D.high)}°/${Math.round(day3D.low)}°.`);
             }
-            items.push({ title: `📝 <b>FORECAST BRIEF</b>  |  ${briefParts.join('  ')}`, source: '_FORECAST_', link: '' });
+            items.push({ title: `<img src="${newspaperIconPath}" style="height:23px;width:auto;display:inline-block;vertical-align:middle;margin-right:4px;filter:invert(1)" /><b>FORECAST BRIEF</b>  |  ${briefParts.join('  ')}`, source: '_FORECAST_', link: '' });
           }
           return items;
         })() : []),
