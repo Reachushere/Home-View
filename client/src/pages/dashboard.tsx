@@ -8881,7 +8881,7 @@ export default function Dashboard() {
       return d >= wkStart && d <= wkEnd;
     });
   })();
-  const d2lTickerHeight = 22;
+  const d2lTickerHeight = 38;
 
   // Time slots for the day view - always show all 24 hours
   const isTravelMode = !!(schoolData.isTravelling || profileData.travelTimezone);
@@ -11879,12 +11879,22 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* D2L Announcement Ticker - fixed at very top of page */}
-      <div className="fixed left-0 right-0 z-[9999] overflow-hidden" style={{ top: 0, height: '22px', background: 'linear-gradient(90deg, rgba(16,185,129,0.12) 0%, rgba(5,150,105,0.08) 50%, rgba(16,185,129,0.12) 100%)', borderBottom: '1px solid rgba(16,185,129,0.25)' }} data-testid="announcement-ticker">
-        <div className="absolute left-0 top-0 bottom-0 w-6 z-10" style={{ background: 'linear-gradient(90deg, rgba(0,0,0,0.8) 0%, transparent 100%)' }} />
-        <div className="absolute right-0 top-0 bottom-0 w-6 z-10" style={{ background: 'linear-gradient(270deg, rgba(0,0,0,0.8) 0%, transparent 100%)' }} />
+      {/* D2L Announcement Ticker - fixed at very top of page, matches bottom news ticker style */}
+      <div className="fixed left-0 right-0 z-[9999] overflow-hidden" style={{ top: 0, height: '38px', background: 'linear-gradient(90deg, rgba(0,0,0,0.85) 0%, rgba(20,20,30,0.9) 50%, rgba(0,0,0,0.85) 100%)', borderBottom: '1px solid rgba(255,255,255,0.15)' }} data-testid="announcement-ticker">
         {thisWeekAnnouncements.length > 0 ? (
-          <div className="flex items-center h-full animate-ticker whitespace-nowrap" style={{ animation: `ticker ${Math.max(30, thisWeekAnnouncements.length * 12)}s linear infinite` }}>
+          <div ref={(el) => {
+            if (!el) return;
+            requestAnimationFrame(() => {
+              const contentWidth = el.scrollWidth;
+              const screenWidth = window.innerWidth;
+              const totalTravel = screenWidth + contentWidth;
+              const speed = 65;
+              const duration = totalTravel / speed;
+              el.style.setProperty('--ticker-start', `${screenWidth}px`);
+              el.style.setProperty('--ticker-end', `-${contentWidth}px`);
+              el.style.animation = `tickerScroll ${duration}s linear infinite`;
+            });
+          }} className="flex items-center h-full whitespace-nowrap" style={{ position: 'relative' }}>
             {[...thisWeekAnnouncements, ...thisWeekAnnouncements].map((a: any, i: number) => {
               const timeAgo = (() => {
                 const diff = Date.now() - new Date(a.receivedAt || a.date).getTime();
@@ -11897,19 +11907,19 @@ export default function Dashboard() {
               })();
               return (
                 <span key={`${a.id}-${i}`} className="inline-flex items-center gap-1.5 mx-4" data-testid={`announcement-${a.id}-${i}`}>
-                  <img src={tmuBoxesLogo} alt="TMU" className="rounded-sm" style={{ height: '14px', width: 'auto', objectFit: 'contain' }} />
-                  <span className="text-[9px] font-bold tracking-wide uppercase" style={{ background: 'rgba(0,61,124,0.15)', padding: '1px 4px', borderRadius: '2px', color: '#6DB3F2' }}>{a.courseName}</span>
-                  <span className="text-white/85 mx-0.5 text-[13px]" style={{ lineHeight: '1', fontWeight: 300 }}>|</span>
-                  <span className="text-[9px] text-white/90">{a.subject}</span>
-                  <span className="text-[8px] text-white/40 ml-1">{timeAgo}</span>
+                  <img src={tmuBoxesLogo} alt="TMU" className="rounded-sm" style={{ height: '42px', width: 'auto', minWidth: '42px', objectFit: 'contain', verticalAlign: 'middle' }} />
+                  <span className="text-[13px] font-bold tracking-wide uppercase" style={{ color: '#6DB3F2' }}>{a.courseName}</span>
+                  <span className="text-white/85 mx-1 text-[13px]" style={{ lineHeight: '1', verticalAlign: 'middle', fontWeight: 300 }}>|</span>
+                  <span className="text-[13px] text-white/90">{a.subject}</span>
+                  <span className="text-[11px] text-white/40 ml-1">{timeAgo}</span>
                 </span>
               );
             })}
           </div>
         ) : (
           <div className="flex items-center justify-center h-full">
-            <img src={tmuBoxesLogo} alt="TMU" className="rounded-sm" style={{ height: '14px', width: 'auto', objectFit: 'contain' }} />
-            <span className="text-[9px] text-white/40 ml-2">No announcements</span>
+            <img src={tmuBoxesLogo} alt="TMU" className="rounded-sm" style={{ height: '42px', width: 'auto', objectFit: 'contain' }} />
+            <span className="text-[13px] text-white/40 ml-2">No announcements</span>
           </div>
         )}
       </div>
