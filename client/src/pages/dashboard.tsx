@@ -2650,7 +2650,7 @@ export default function Dashboard() {
         if (rowResizing.rowType === 'allDay') {
           setGridSizes(prev => ({ ...prev, allDayRowHeight: Math.min(100, newHeight) }));
         } else if (rowResizing.rowType === 'course') {
-          setGridSizes(prev => ({ ...prev, courseRowHeight: Math.min(60, newHeight) }));
+          setGridSizes(prev => ({ ...prev, courseRowHeight: Math.min(82, newHeight) }));
         } else if (rowResizing.rowType === 'timeSlot' && rowResizing.hourIndex !== undefined) {
           setGridSizes(prev => {
             const newHeights = [...prev.timeSlotHeights];
@@ -17884,7 +17884,7 @@ export default function Dashboard() {
                   if (!alreadyExists) allDisplayCourses.push(sc);
                 }
                 const filteredCourses = allDisplayCourses;
-                const minThreeTaskHeight = 3 * 22 + 2 * 2 + 6; // 76px: 3 tasks (22px) + 2 gaps (2px) + padding (6px)
+                const minThreeTaskHeight = 3 * 24 + 2 * 2 + 6; // 82px: 3 tasks (24px) + 2 gaps (2px) + padding (6px)
                 const maxCourseRowHeight = minThreeTaskHeight;
                 return (
               <div ref={courseRowsRef} data-testid="course-rows-container" style={{ borderTop: '1px solid black', marginTop: '-2px' }}>
