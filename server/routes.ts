@@ -4050,9 +4050,29 @@ html,body{height:100%;overflow:hidden;background:transparent}
         const allTasks = await storage.getTasks();
         const matches = allTasks.filter((t: any) => t.title.toLowerCase().includes(target) || t.description?.toLowerCase().includes(target));
         for (const m of matches) {
+          if ((m as any).calendarEventId) {
+            try { await deleteCalendarEvent((m as any).calendarEventId); } catch (e: any) { console.log(`[Email Delete] Failed to remove Google Calendar event: ${e.message}`); }
+          }
+          if ((m as any).prepCalendarEventId) {
+            try { await deleteCalendarEvent((m as any).prepCalendarEventId); } catch (e: any) { console.log(`[Email Delete] Failed to remove prep calendar event: ${e.message}`); }
+          }
+          if ((m as any).secondAccountCalendarEventId) {
+            try { await deleteEventFromSecondAccount((m as any).secondAccountCalendarEventId); } catch (e: any) { console.log(`[Email Delete] Failed to remove second account event: ${e.message}`); }
+          }
+          if ((m as any).secondAccountPrepEventId) {
+            try { await deleteEventFromSecondAccount((m as any).secondAccountPrepEventId); } catch (e: any) { console.log(`[Email Delete] Failed to remove second account prep event: ${e.message}`); }
+          }
+          if ((m as any).repeatType && (m as any).repeatType !== 'none') {
+            const children = await storage.getChildTasks(m.id);
+            for (const child of children) {
+              if ((child as any).calendarEventId) { try { await deleteCalendarEvent((child as any).calendarEventId); } catch {} }
+              if ((child as any).secondAccountCalendarEventId) { try { await deleteEventFromSecondAccount((child as any).secondAccountCalendarEventId); } catch {} }
+              await storage.deleteTask(child.id);
+            }
+          }
           await storage.deleteTask(m.id);
         }
-        console.log(`[Email Delete] Deleted ${matches.length} calendar tasks matching "${target}"`);
+        console.log(`[Email Delete] Deleted ${matches.length} calendar tasks matching "${target}" (with Google Calendar cleanup)`);
         return res.json({ action: 'deleted', type: 'calendar', target, count: matches.length });
       }
 
