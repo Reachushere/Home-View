@@ -17924,7 +17924,7 @@ export default function Dashboard() {
                 const rgb = hexToRgb(courseData.color);
                 const course = { 
                   name: courseName, 
-                  bg: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.20)`, 
+                  bg: `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`, 
                   label: (() => {
                     const startColor = courseData.color || `rgb(${Math.max(0, rgb.r - 40)}, ${Math.max(0, rgb.g - 40)}, ${Math.max(0, rgb.b - 40)})`;
                     const endColor = courseData.colorEnd || `rgb(${Math.min(255, rgb.r + 100)}, ${Math.min(255, rgb.g + 100)}, ${Math.min(255, rgb.b + 100)})`;
