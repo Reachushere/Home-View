@@ -21158,8 +21158,8 @@ export default function Dashboard() {
           })()}
           <div style={{ padding: '0 8px', height: '47px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 42, overflow: 'visible', marginBottom: '-12px' }}>
             <div style={{ position: 'absolute', top: '15px', left: 0, right: 0, height: '0.25px', backgroundColor: '#ffffff' }} />
-            <span className="text-xs font-medium text-white" style={{ position: 'absolute', left: '12px', top: '19px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Homework Progress</span>
-            <span className="text-xs font-medium text-white" style={{ position: 'absolute', left: '161px', top: '19px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Upcoming Assignments</span>
+            <span className="text-xs font-medium text-white" style={{ position: 'absolute', left: '12px', top: '27px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Homework Progress</span>
+            <span className="text-xs font-medium text-white" style={{ position: 'absolute', left: '161px', top: '27px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Upcoming Assignments</span>
             {weatherData && (
               <div style={{ position: 'absolute', left: '12px', top: '0px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span className="text-[10.5px] font-medium" style={{ color: 'rgba(255,255,255,1)' }} data-testid="homework-weather-temp">{Math.round(weatherData.temp)}°C</span>
