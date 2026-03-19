@@ -6010,6 +6010,38 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     }
   }
 
+  setTimeout(async () => {
+    try {
+      const allFiles = await storage.getFiles();
+      const unprepared = allFiles.filter((f: any) => !f.preparedAudioPaths && !f.listened);
+      if (unprepared.length > 0) {
+        const semesterSettings = await storage.getActiveSemesterSettings();
+        const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date();
+        const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : null;
+        const currentWeek = getWeekNumber(torontoDate(), semStart, rwStart);
+
+        const getFileWeek = (f: any) => {
+          const m = f.folder?.match(/week-(\d+)/i);
+          return m ? parseInt(m[1], 10) : 999;
+        };
+        unprepared.sort((a: any, b: any) => {
+          const aw = getFileWeek(a), bw = getFileWeek(b);
+          const aDist = Math.abs(aw - currentWeek), bDist = Math.abs(bw - currentWeek);
+          return aDist - bDist;
+        });
+
+        console.log(`[AudioPrep] Startup: ${unprepared.length} unprepared files found, queuing (current week ${currentWeek})`);
+        for (const f of unprepared) {
+          queueFileForPreparation(f.id);
+        }
+      } else {
+        console.log(`[AudioPrep] Startup: all files already prepared or listened`);
+      }
+    } catch (e: any) {
+      console.error(`[AudioPrep] Startup scan error: ${e.message}`);
+    }
+  }, 15000);
+
   function findNextFileByPriority(allFiles: any[], currentWeekNumber: number, excludeFileId?: number): any | null {
     const weekFiles = allFiles.filter((f: any) => {
       if (f.listened) return false;
@@ -6551,6 +6583,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
       let chunksPlayedSinceLastPrompt = 0;
       const ATTENTION_INTERVAL = 3;
+      let lookaheadAudioPath: string | null = null;
+      let lookaheadChunkIndex: number = -1;
+      let lookaheadPromise: Promise<string | null> | null = null;
 
       for (let i = startChunk; i < chunks.length; i++) {
         if (aborted || !catWashPlaybackActive || catWashSessionId !== sessionId) {
@@ -6586,10 +6621,29 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           } else if (i === startChunk && preGeneratedFirstChunkPath) {
             audioPath = preGeneratedFirstChunkPath;
             console.log(`[Nest Playback] Using pre-generated audio for chunk ${i + 1}/${chunks.length}`);
+          } else if (lookaheadChunkIndex === i && lookaheadAudioPath) {
+            audioPath = lookaheadAudioPath;
+            console.log(`[Nest Playback] Using look-ahead audio for chunk ${i + 1}/${chunks.length}`);
           } else {
-            console.log(`[Nest Playback] Generating chunk ${i + 1}/${chunks.length} (${chunkText.length} chars)`);
-            audioPath = await generateAndSaveTTSAudio(chunkText, `nest-chunk-${fileId}-${i}-${Date.now()}`, voice);
+            if (lookaheadChunkIndex === i && lookaheadPromise) {
+              console.log(`[Nest Playback] Waiting for in-flight look-ahead for chunk ${i + 1}/${chunks.length}`);
+              const resolved = await lookaheadPromise;
+              if (resolved) {
+                audioPath = resolved;
+                console.log(`[Nest Playback] Look-ahead resolved for chunk ${i + 1}/${chunks.length}`);
+              } else {
+                console.log(`[Nest Playback] Look-ahead failed, regenerating chunk ${i + 1}/${chunks.length} (${chunkText.length} chars)`);
+                audioPath = await generateAndSaveTTSAudio(chunkText, `nest-chunk-${fileId}-${i}-${Date.now()}`, voice);
+              }
+            } else {
+              console.log(`[Nest Playback] Generating chunk ${i + 1}/${chunks.length} (${chunkText.length} chars)`);
+              audioPath = await generateAndSaveTTSAudio(chunkText, `nest-chunk-${fileId}-${i}-${Date.now()}`, voice);
+            }
           }
+          lookaheadAudioPath = null;
+          lookaheadChunkIndex = -1;
+          lookaheadPromise = null;
+
           const wordCount = chunkText.split(/\s+/).length;
           const estimatedMs = Math.max(5000, (wordCount / 175) * 60 * 1000 + 1000);
 
@@ -6604,6 +6658,15 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           }
           startWordAdvancement();
           console.log(`[Nest Playback] Playing chunk ${i + 1}, ~${Math.round(estimatedMs / 1000)}s`);
+
+          const nextIdx = i + 1;
+          if (nextIdx < chunks.length && !(preparedAudioCache[nextIdx] && preparedAudioCache[nextIdx].length > 0)) {
+            console.log(`[Nest Playback] Look-ahead: pre-generating chunk ${nextIdx + 1}/${chunks.length} in background`);
+            lookaheadChunkIndex = nextIdx;
+            lookaheadPromise = generateAndSaveTTSAudio(chunks[nextIdx], `nest-chunk-${fileId}-${nextIdx}-${Date.now()}`, voice)
+              .then(path => { lookaheadAudioPath = path; return path; })
+              .catch(err => { console.log(`[Nest Playback] Look-ahead generation failed for chunk ${nextIdx + 1}: ${err.message}`); return null; });
+          }
 
           const completed = await waitForNestPlaybackEnd(estimatedMs, sessionId);
           if (!completed) {
