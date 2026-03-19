@@ -1441,16 +1441,36 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 )}
                 <div className="mt-1">
                   {syllabusObjectPath ? (
-                    <button
-                      onClick={() => {
-                        setSyllabusViewerUrl(`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`);
-                        setShowSyllabusViewer(true);
-                      }}
-                      className="text-[10px] text-white underline hover:text-white/70 transition-colors"
-                      data-testid="button-view-syllabus"
-                    >
-                      View Syllabus
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <Paperclip className="h-3 w-3 text-emerald-400 shrink-0" data-testid="icon-syllabus-attached-view" />
+                      <button
+                        onClick={() => {
+                          setSyllabusViewerUrl(`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`);
+                          setShowSyllabusViewer(true);
+                        }}
+                        className="text-[10px] text-white underline hover:text-white/70 transition-colors"
+                        data-testid="button-view-syllabus"
+                      >
+                        View Syllabus
+                      </button>
+                      <button
+                        onClick={async () => {
+                          setSyllabusObjectPath('');
+                          try {
+                            await fetch('/api/syllabus/paths', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ courseCode: courseInfo.courseCode, objectPath: '' }),
+                            });
+                          } catch {}
+                          toast({ title: "Syllabus removed" });
+                        }}
+                        className="hover:opacity-70 transition-opacity"
+                        data-testid="button-delete-syllabus-view"
+                      >
+                        <Trash2 className="h-3 w-3 text-red-400/70 hover:text-red-400" />
+                      </button>
+                    </div>
                   ) : (
                     <span className="text-[10px] text-white/40 italic" data-testid="text-no-syllabus">No syllabus uploaded — use Edit to add one</span>
                   )}
