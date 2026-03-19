@@ -9210,6 +9210,50 @@ document.body.removeChild(a);
         await startConfirmedPlaybackFlow(nextFile, '[Voice Skip]', 'echo', confirmTTS);
         return;
 
+      } else if (command === 'clear_player' || command === 'clear player') {
+        console.log(`[Voice Command] Clear player requested — resetting all playback state`);
+
+        clearVoiceCommandPause_();
+
+        if (nestPlaybackAbort) {
+          nestPlaybackAbort();
+          nestPlaybackAbort = null;
+        }
+        await stopNestSpeaker();
+        stopWordAdvancement();
+        stopToothbrushPolling();
+
+        if (currentTTSSession) {
+          stopTTSSession("Clear player command");
+        }
+
+        catWashPlaybackActive = false;
+        catWashPlaybackStartedAt = null;
+        catWashPlaybackState = null;
+        catWashManuallyStoppedAt = null;
+        catLightsPromptPending = false;
+        currentTvFollowUrl = null;
+        currentTabletReaderUrl = null;
+
+        try {
+          const echoEntities = [
+            "media_player.echo_cat_left_am",
+            "media_player.echo_cat_right_am",
+            "media_player.echo_cat_washroom_middle",
+          ];
+          await fetch(`${haUrl}/api/services/media_player/media_stop`, {
+            method: 'POST', headers: haHeaders,
+            body: JSON.stringify({ entity_id: echoEntities }),
+          });
+        } catch {}
+
+        try {
+          const clearPath = await generateAndSaveTTSAudio("Player cleared. Ready for a new session.", `vc-clear-${Date.now()}`);
+          await playOnNestSpeaker(`${appUrl}${clearPath}`);
+        } catch {}
+
+        return res.json({ action: "cleared" });
+
       } else {
         console.log(`[Voice Command] Unknown command: "${command}"`);
         return res.json({ action: "unknown", command });
