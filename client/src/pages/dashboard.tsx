@@ -674,10 +674,11 @@ export default function Dashboard() {
     const screenHeight = window.screen.height;
     const pixelRatio = window.devicePixelRatio || 1;
     const deviceId = `device_${screenWidth}x${screenHeight}@${pixelRatio}`;
-    const resetKey = 'calendarHeight_reset_v10';
+    const resetKey = 'calendarHeight_reset_v11';
     if (!localStorage.getItem(resetKey)) {
       localStorage.removeItem('calendarHeight');
       localStorage.removeItem(`calendarHeight_${deviceId}`);
+      localStorage.removeItem('calendarReduction');
       localStorage.setItem(resetKey, '1');
     }
     const deviceSaved = localStorage.getItem(`calendarHeight_${deviceId}`);
@@ -734,7 +735,11 @@ export default function Dashboard() {
       return next;
     });
   };
-  const [calendarReductionUserSet, setCalendarReductionUserSetRaw] = useState(() => !!localStorage.getItem('calendarReduction'));
+  const [calendarReductionUserSet, setCalendarReductionUserSetRaw] = useState(() => {
+    const resetKey = 'calendarHeight_reset_v11';
+    if (!localStorage.getItem(resetKey)) return false;
+    return !!localStorage.getItem('calendarReduction');
+  });
   const calendarReductionUserSetRef = useRef(calendarReductionUserSet);
   const setCalendarReductionUserSet = (val: boolean) => {
     calendarReductionUserSetRef.current = val;
@@ -8804,7 +8809,7 @@ export default function Dashboard() {
         const totalFr = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0) + gridSizes.progressColumnWidth;
         const tuesdayFr = gridSizes.dayColumnWidths[2] || 1;
         const tuesdayPixelWidth = (frSpace / totalFr) * tuesdayFr;
-        const reduction = Math.round(1.5 * tuesdayPixelWidth) + 105;
+        const reduction = Math.round(1.5 * tuesdayPixelWidth) + 120;
         if (!calendarReductionUserSetRef.current) {
           setCalendarReduction(prev => prev === reduction ? prev : reduction);
         }
@@ -17915,11 +17920,11 @@ export default function Dashboard() {
               data-testid="calendar-top-resize-handle"
             >
               <div style={{ width: '191px', height: '16px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
-                <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 50, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▲</span></div>
+                <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 50, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 50, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▲</span></div>
                 <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
                 <div className="cursor-grab active:cursor-grabbing select-none" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={handleTopResizeStart} onTouchStart={handleTopResizeStart}><span style={{ fontSize: '13px', lineHeight: '1', color: '#000', letterSpacing: '-1px', writingMode: 'vertical-lr' }}>⋮⋮</span></div>
                 <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
-                <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.max(200, prev - 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▼</span></div>
+                <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.max(200, prev - 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.max(200, prev - 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▼</span></div>
               </div>
             </div>
           </div>
