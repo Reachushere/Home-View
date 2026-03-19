@@ -18408,6 +18408,7 @@ export default function Dashboard() {
                             const prepStartDate = startOfDay(new Date(task.startDate!));
                             const prepDueDate = startOfDay(new Date(task.dueDate));
                             const cellDate = startOfDay(day);
+                            if (cellDate < today) return null;
                             const isFirstPrepDay = isSameDay(cellDate, prepStartDate);
                             const isLastPrepDay = isSameDay(addDays(cellDate, 1), prepDueDate);
                             const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
