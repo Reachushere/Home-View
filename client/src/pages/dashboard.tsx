@@ -2427,7 +2427,7 @@ export default function Dashboard() {
     const deviceSaved = localStorage.getItem(`gridSizes_${deviceId}`);
     
     const applyCompressedHours = (heights: number[]) => {
-      [0,1,2,3,4,5,6,21,22,23].forEach(i => { if (heights[i] > 12) heights[i] = 12; });
+      [0,1,2,3,4,5,6,21,22,23].forEach(i => { heights[i] = 12; });
       return heights;
     };
 
