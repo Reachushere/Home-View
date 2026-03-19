@@ -826,6 +826,14 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
   app.post(api.tasks.create.path, async (req, res) => {
     try {
       const input = api.tasks.create.input.parse(req.body);
+      if (!input.startDate && input.dueDate) {
+        const due = new Date(input.dueDate);
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+        if (due.getTime() > now.getTime()) {
+          input.startDate = now.toISOString();
+        }
+      }
       const task = await storage.createTask(input);
       
       // Auto-sync to Google Calendar (primary account)
@@ -1037,6 +1045,14 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
           }
         } else {
           try {
+            if (!taskData.startDate && taskData.dueDate) {
+              const due = new Date(taskData.dueDate);
+              const now = new Date();
+              now.setHours(0, 0, 0, 0);
+              if (due.getTime() > now.getTime()) {
+                taskData.startDate = now;
+              }
+            }
             await storage.createTask(taskData);
             created++;
           } catch (e: any) {
