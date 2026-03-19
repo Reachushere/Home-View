@@ -12119,7 +12119,7 @@ export default function Dashboard() {
                   });
                 }
 
-                const semGpas: number[] = [];
+                const allGpaVals: number[] = [];
                 for (const semKey of relevantSemKeys) {
                   const courses = semAllCourses[semKey] || [];
                   const vals: number[] = [];
@@ -12150,11 +12150,9 @@ export default function Dashboard() {
                     else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); if (!isNaN(p)) vals.push(pToGpa(p)); }
                     else if (electiveGrade?.grade && electiveGrade.grade.trim() && letterToGpa[electiveGrade.grade] !== undefined) { vals.push(letterToGpa[electiveGrade.grade]); }
                   }
-                  if (vals.length > 0) {
-                    semGpas.push(vals.reduce((a, b) => a + b, 0) / vals.length);
-                  }
+                  for (const v of vals) allGpaVals.push(v);
                 }
-                const avgGpa = semGpas.length > 0 ? semGpas.reduce((a, b) => a + b, 0) / semGpas.length : null;
+                const avgGpa = allGpaVals.length > 0 ? allGpaVals.reduce((a, b) => a + b, 0) / allGpaVals.length : null;
                 const gpaToLetter = (gpa: number): string => {
                   if (gpa >= 4.17) return 'A+';
                   if (gpa >= 3.84) return 'A';
