@@ -21141,7 +21141,7 @@ export default function Dashboard() {
                 })}
                 {(isClear || isPartlyCloudy) && weatherData.isDay && (
                   <div className="absolute" style={{
-                    top: '6px', right: '6px', width: '18px', height: '18px',
+                    top: '0px', right: '6px', width: '18px', height: '18px',
                     borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,220,80,0.9) 0%, rgba(255,200,50,0.4) 50%, transparent 70%)',
                     boxShadow: '0 0 12px rgba(255,200,50,0.4)',
                     zIndex: 1,
@@ -21169,7 +21169,7 @@ export default function Dashboard() {
             );
           })()}
           <div style={{ padding: '0 8px', height: '46px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 42, overflow: 'visible', marginBottom: '-12px' }}>
-            <div style={{ position: 'absolute', top: '15px', left: 0, right: 0, height: '0.15px', backgroundColor: '#ffffff' }} />
+            <div style={{ position: 'absolute', top: '15px', left: 0, right: 0, height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)' }} />
             <span className="text-xs font-medium text-white" style={{ position: 'absolute', left: '6px', top: '30px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Homework Progress</span>
             <span className="text-xs font-medium text-white" style={{ position: 'absolute', left: '161px', top: '30px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Assignments</span>
             {weatherData && (
