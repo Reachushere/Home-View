@@ -417,7 +417,10 @@ function cleanTextForTTS(text: string): string {
 
   cleanedText = cleanedText
     .replace(/x{3,}/gi, '')
-    .replace(/\b(?:AB|BC|MB|NB|NL|NS|ON|PE|QC|SK)(?:[,;\s/]+(?:AB|BC|MB|NB|NL|NS|ON|PE|QC|SK)){2,}\b/g, '');
+    .replace(/(?:X\s+){2,}X?\b/g, '')
+    .replace(/\s+X(?=\s+[A-Z]|\s*$)/g, ' ')
+    .replace(/\b(?:AB|BC|MB|NB|NL|NS|ON|PE[I]?|QC|SK)(?:[,;\s/]+(?:AB|BC|MB|NB|NL|NS|ON|PE[I]?|QC|SK)){2,}\b/g, '')
+    .replace(/\bMunicipal Responsibility\s+(?:NL|PEI?|NS|NB|QC|ON|MB|SK|AB|BC)[\s\w]*(?:AB|BC)\b/g, '');
 
   // Final cleanup
   let result = cleanedText
