@@ -2382,7 +2382,7 @@ export default function Dashboard() {
     timeSlotHeight: number;
     timeSlotHeights: number[]; // Individual heights for each hour (0-23)
   }>(() => {
-    const defaultHeights = Array(24).fill(36); // Default 36px for each hour
+    const defaultHeights = Array(24).fill(36).map((h, i) => (i <= 6 || i >= 21) ? 14 : h);
     const defaultSizes = {
       timeColumnWidth: 59,
       moduleColumnWidth: 0,
@@ -2411,11 +2411,17 @@ export default function Dashboard() {
     const deviceId = `device_${screenWidth}x${screenHeight}@${pixelRatio}`;
     const deviceSaved = localStorage.getItem(`gridSizes_${deviceId}`);
     
+    const applyCompressedHours = (heights: number[]) => {
+      [0,1,2,3,4,5,6,21,22,23].forEach(i => { if (heights[i] > 14) heights[i] = 14; });
+      return heights;
+    };
+
     if (deviceSaved) {
       const parsed = JSON.parse(deviceSaved);
       if (!parsed.timeSlotHeights || parsed.timeSlotHeights.length !== 24) {
         parsed.timeSlotHeights = defaultHeights;
       }
+      applyCompressedHours(parsed.timeSlotHeights);
       if (!parsed.timeSlotHeight) parsed.timeSlotHeight = 36;
       if (!parsed.courseRowHeight) parsed.courseRowHeight = 48;
       if (parsed.moduleColumnWidth === undefined) parsed.moduleColumnWidth = 0;
@@ -2431,6 +2437,7 @@ export default function Dashboard() {
       if (!parsed.timeSlotHeights || parsed.timeSlotHeights.length !== 24) {
         parsed.timeSlotHeights = defaultHeights;
       }
+      applyCompressedHours(parsed.timeSlotHeights);
       if (!parsed.timeSlotHeight) parsed.timeSlotHeight = 36;
       if (!parsed.courseRowHeight) parsed.courseRowHeight = 48;
       if (parsed.moduleColumnWidth === undefined) parsed.moduleColumnWidth = 0;
