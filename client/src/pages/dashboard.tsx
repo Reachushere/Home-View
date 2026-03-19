@@ -21108,33 +21108,28 @@ export default function Dashboard() {
             </div>
           </div>
           {(() => {
-            const semTabs: Array<{ letter: string; year: string; semLabel: string }> = [];
+            const allSemDefs: Array<{ letter: string; year: string; semLabel: string; endDate: Date }> = [];
             for (let y = 2026; y <= 2029; y++) {
-              if (y === 2026) {
-                semTabs.push({ letter: 'W', year: String(y).slice(2), semLabel: 'Winter ' + y });
-                semTabs.push({ letter: 'S', year: String(y).slice(2), semLabel: 'Spring/Summer ' + y });
-                semTabs.push({ letter: 'F', year: String(y).slice(2), semLabel: 'Fall ' + y });
-              } else if (y === 2029) {
-                semTabs.push({ letter: 'W', year: String(y).slice(2), semLabel: 'Winter ' + y });
-                semTabs.push({ letter: 'S', year: String(y).slice(2), semLabel: 'Spring/Summer ' + y });
-              } else {
-                semTabs.push({ letter: 'W', year: String(y).slice(2), semLabel: 'Winter ' + y });
-                semTabs.push({ letter: 'S', year: String(y).slice(2), semLabel: 'Spring/Summer ' + y });
-                semTabs.push({ letter: 'F', year: String(y).slice(2), semLabel: 'Fall ' + y });
+              allSemDefs.push({ letter: 'W', year: String(y).slice(2), semLabel: 'Winter ' + y, endDate: new Date(y, 3, 17) });
+              allSemDefs.push({ letter: 'S', year: String(y).slice(2), semLabel: 'Spring/Summer ' + y, endDate: new Date(y, 7, 4) });
+              if (y < 2029) {
+                allSemDefs.push({ letter: 'F', year: String(y).slice(2), semLabel: 'Fall ' + y, endDate: new Date(y, 11, 7) });
               }
             }
+            const todayDate = new Date();
+            const semTabs = allSemDefs.filter(s => s.endDate >= todayDate);
             const currentSemLabel = hwWeeklyTimeline[0]?.semLabel || null;
             return (
               <div
                 className="absolute z-50"
-                style={{ right: '-21px', top: '30px', bottom: '10px', flexDirection: 'column', justifyContent: 'flex-start', gap: '3px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex' }}
+                style={{ right: '-21px', top: '30px', bottom: '10px', flexDirection: 'column', justifyContent: 'space-evenly', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex' }}
               >
-                {semTabs.map((tab, i) => {
+                {semTabs.map((tab) => {
                   const isActive = currentSemLabel === tab.semLabel;
                   return (
                     <div
                       key={tab.semLabel}
-                      className="cursor-pointer"
+                      className={`cursor-pointer${isActive ? ' semester-tab-bounce' : ''}`}
                       style={{ position: 'relative', width: '21px', height: '42px', flexShrink: 0 }}
                       onClick={() => {
                         if (!homeworkScrollRef.current) return;

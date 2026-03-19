@@ -318,6 +318,19 @@ button[role="combobox"] > span {
   animation: right-tab-nudge 6s 3s ease-in-out infinite;
 }
 
+.semester-tab-bounce {
+  animation: semester-tab-nudge 6s 3s ease-in-out infinite;
+}
+
+@keyframes semester-tab-nudge {
+  0%, 40% { transform: translateX(0px); }
+  44% { transform: translateX(-4px); }
+  48% { transform: translateX(0px); }
+  52% { transform: translateX(-2px); }
+  56% { transform: translateX(0px); }
+  60%, 100% { transform: translateX(0px); }
+}
+
 @keyframes burst-in {
   0% { transform: scale(0); opacity: 0; }
   60% { transform: scale(1.05); opacity: 1; }
