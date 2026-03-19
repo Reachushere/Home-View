@@ -3387,6 +3387,38 @@ export default function Dashboard() {
     }
   };
 
+  useEffect(() => {
+    const isFireDevice = /\bSilk\b/i.test(navigator.userAgent) || /\bKF[A-Z]{2,4}\b/.test(navigator.userAgent);
+    if (!isFireDevice) return;
+    const enterFullscreen = () => {
+      if (!document.fullscreenElement) {
+        const el = document.documentElement as any;
+        const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+        if (req) {
+          req.call(el).catch(() => {});
+        }
+      }
+    };
+    enterFullscreen();
+    const onInteraction = () => {
+      enterFullscreen();
+      document.removeEventListener('touchstart', onInteraction);
+      document.removeEventListener('click', onInteraction);
+    };
+    document.addEventListener('touchstart', onInteraction, { once: true });
+    document.addEventListener('click', onInteraction, { once: true });
+    const recheckInterval = setInterval(() => {
+      if (!document.fullscreenElement) {
+        enterFullscreen();
+      }
+    }, 5000);
+    return () => {
+      clearInterval(recheckInterval);
+      document.removeEventListener('touchstart', onInteraction);
+      document.removeEventListener('click', onInteraction);
+    };
+  }, []);
+
   const [pomodoroTime, setPomodoroTime] = useState(25 * 60); // 25 minutes in seconds
   const [pomodoroRunning, setPomodoroRunning] = useState(false);
   const [pomodoroStarted, setPomodoroStarted] = useState(false);
