@@ -18,7 +18,7 @@ import { getSecondAccountAuthUrl, exchangeCodeForTokens, isSecondAccountConnecte
 import { getThirdAccountAuthUrl, exchangeCodeForTokensThird, isThirdAccountConnected, disconnectThirdAccount, getEventsFromThirdAccount, listThirdAccountCalendars, getEventsFromThirdAccountCalendar } from "./thirdGoogleAccount";
 import { textToSpeech } from "./replit_integrations/audio/client";
 import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, sendTestHaPush, sendHaTaskReminder, sendEchoVoiceAnnouncement, type TaskReminder } from "./email";
-import { checkForTickerEmails } from "./gmailTicker";
+import { parseTickerCommand } from "./gmailTicker";
 import { getSchedulerStatus } from "./reminderScheduler";
 import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder } from "./onedrive";
 
@@ -3960,72 +3960,85 @@ html,body{height:100%;overflow:hidden;background:transparent}
     return 'University';
   }
 
-  const gmailTickerProcessedIds = new Set<string>();
   const tickerExpirations = new Map<number, NodeJS.Timeout>();
-  async function pollGmailForTicker() {
+  app.post('/api/webhook/ticker', async (req, res) => {
     try {
-      const emails = await checkForTickerEmails(gmailTickerProcessedIds);
-      for (const email of emails) {
-        if (email.command === 'clear') {
-          const all = await storage.getAnnouncements();
-          for (const a of all) {
-            await storage.deleteAnnouncement(a.id);
-            if (tickerExpirations.has(a.id)) { clearTimeout(tickerExpirations.get(a.id)!); tickerExpirations.delete(a.id); }
-          }
-          console.log(`[Gmail Ticker] Cleared all ${all.length} ticker items`);
-          continue;
-        }
-
-        if (email.command === 'delete' && email.commandTarget) {
-          const all = await storage.getAnnouncements();
-          const target = email.commandTarget.toLowerCase();
-          const matches = all.filter(a => a.body.toLowerCase().includes(target) || a.snippet?.toLowerCase().includes(target));
-          for (const m of matches) {
-            await storage.deleteAnnouncement(m.id);
-            if (tickerExpirations.has(m.id)) { clearTimeout(tickerExpirations.get(m.id)!); tickerExpirations.delete(m.id); }
-          }
-          console.log(`[Gmail Ticker] Deleted ${matches.length} ticker items matching "${email.commandTarget}"`);
-          continue;
-        }
-
-        if (email.command === 'expire' && email.expireMinutes) {
-          const all = await storage.getAnnouncements();
-          if (all.length > 0) {
-            const latest = all[all.length - 1];
-            const ms = email.expireMinutes * 60 * 1000;
-            const timeout = setTimeout(async () => {
-              try {
-                await storage.deleteAnnouncement(latest.id);
-                tickerExpirations.delete(latest.id);
-                console.log(`[Gmail Ticker] Auto-expired ticker item: "${latest.body.slice(0, 60)}..." (id: ${latest.id})`);
-              } catch (err: any) {
-                console.error('[Gmail Ticker] Expire cleanup error:', err.message);
-              }
-            }, ms);
-            tickerExpirations.set(latest.id, timeout);
-            console.log(`[Gmail Ticker] Set ${email.expireMinutes}min expiration for: "${latest.body.slice(0, 60)}..." (id: ${latest.id})`);
-          }
-          continue;
-        }
-
-        const existing = await storage.getAnnouncementByEmailId(email.emailId);
-        if (existing) continue;
-        const created = await storage.createAnnouncement({
-          emailId: email.emailId,
-          subject: 'Ticker Update',
-          body: email.body,
-          snippet: email.body.slice(0, 200),
-          courseName: 'Custom',
-          receivedAt: email.receivedAt,
-        });
-        console.log(`[Gmail Ticker] Added to ticker: "${email.body.slice(0, 60)}..." (id: ${created.id})`);
+      const { emailId, body, auth } = req.body;
+      if (auth !== '5747') {
+        return res.status(401).json({ error: 'Unauthorized' });
       }
+      if (!body || typeof body !== 'string') {
+        return res.status(400).json({ error: 'Missing body' });
+      }
+
+      const messageBody = body.trim();
+      const { command, target, expireMinutes } = parseTickerCommand(messageBody);
+
+      if (command === 'clear') {
+        const all = await storage.getAnnouncements();
+        for (const a of all) {
+          await storage.deleteAnnouncement(a.id);
+          if (tickerExpirations.has(a.id)) { clearTimeout(tickerExpirations.get(a.id)!); tickerExpirations.delete(a.id); }
+        }
+        console.log(`[Gmail Ticker] Cleared all ${all.length} ticker items`);
+        return res.json({ action: 'cleared', count: all.length });
+      }
+
+      if (command === 'delete' && target) {
+        const all = await storage.getAnnouncements();
+        const lowerTarget = target.toLowerCase();
+        const matches = all.filter(a => a.body.toLowerCase().includes(lowerTarget) || a.snippet?.toLowerCase().includes(lowerTarget));
+        for (const m of matches) {
+          await storage.deleteAnnouncement(m.id);
+          if (tickerExpirations.has(m.id)) { clearTimeout(tickerExpirations.get(m.id)!); tickerExpirations.delete(m.id); }
+        }
+        console.log(`[Gmail Ticker] Deleted ${matches.length} ticker items matching "${target}"`);
+        return res.json({ action: 'deleted', target, count: matches.length });
+      }
+
+      if (command === 'expire' && expireMinutes) {
+        const all = await storage.getAnnouncements();
+        if (all.length > 0) {
+          const latest = all[all.length - 1];
+          const ms = expireMinutes * 60 * 1000;
+          const timeout = setTimeout(async () => {
+            try {
+              await storage.deleteAnnouncement(latest.id);
+              tickerExpirations.delete(latest.id);
+              console.log(`[Gmail Ticker] Auto-expired ticker item: "${latest.body.slice(0, 60)}..." (id: ${latest.id})`);
+            } catch (err: any) {
+              console.error('[Gmail Ticker] Expire cleanup error:', err.message);
+            }
+          }, ms);
+          tickerExpirations.set(latest.id, timeout);
+          console.log(`[Gmail Ticker] Set ${expireMinutes}min expiration for: "${latest.body.slice(0, 60)}..." (id: ${latest.id})`);
+          return res.json({ action: 'expire_set', minutes: expireMinutes, itemId: latest.id });
+        }
+        return res.json({ action: 'expire_noop', reason: 'no items' });
+      }
+
+      const msgId = emailId || `webhook-${Date.now()}`;
+      const existing = await storage.getAnnouncementByEmailId(msgId);
+      if (existing) {
+        return res.json({ action: 'duplicate', emailId: msgId });
+      }
+
+      const created = await storage.createAnnouncement({
+        emailId: msgId,
+        subject: 'Ticker Update',
+        body: messageBody,
+        snippet: messageBody.slice(0, 200),
+        courseName: 'Custom',
+        receivedAt: new Date(),
+      });
+      console.log(`[Gmail Ticker] Added to ticker: "${messageBody.slice(0, 60)}..." (id: ${created.id})`);
+      return res.json({ action: 'added', id: created.id });
     } catch (err: any) {
-      console.error('[Gmail Ticker] Poll error:', err.message);
+      console.error('[Gmail Ticker] Webhook error:', err.message);
+      return res.status(500).json({ error: err.message });
     }
-  }
-  pollGmailForTicker();
-  setInterval(pollGmailForTicker, 2 * 60 * 1000);
+  });
+  console.log('[Gmail Ticker] Webhook endpoint ready at POST /api/webhook/ticker');
 
   // GET /api/calendar/list - List all available Google calendars for selection
   app.get("/api/calendar/list", async (_req, res) => {
