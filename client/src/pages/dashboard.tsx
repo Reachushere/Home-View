@@ -12884,6 +12884,8 @@ export default function Dashboard() {
                       if (updates.zoomLink !== undefined) payload[`${prefix}ZoomLink`] = updates.zoomLink;
                       if (updates.professor !== undefined) payload[`${prefix}Professor`] = updates.professor;
                       if (updates.professorEmail !== undefined) payload[`${prefix}ProfessorEmail`] = updates.professorEmail;
+                      if (updates.color !== undefined) payload[`${prefix}Color`] = updates.color;
+                      if (updates.colorEnd !== undefined) payload[`${prefix}ColorEnd`] = updates.colorEnd;
                       if (updates.semesterTerm && updates.year) {
                         const dates = computeSemesterDates(updates.semesterTerm, updates.year);
                         if (dates.startDate) {
