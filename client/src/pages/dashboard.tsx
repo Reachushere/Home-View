@@ -21615,7 +21615,7 @@ export default function Dashboard() {
                                   onClick={() => setEditingTask(task)}
                                   data-testid={`task-link-today-${task.id}`}
                                   data-upcoming-task-name
-                                  style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block', color: !taskCourseCode ? '#ffffff' : taskCourseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : taskCourseCode.toUpperCase() === 'CFNF400' ? '#ff69b4' : taskCourseCode.toUpperCase() === 'CASL101' ? '#b388ff' : getCourseGradientColors(taskCourseCode).end }}
+                                  style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block', color: '#ffffff' }}
                                 >
                                   {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
                                 </button>
@@ -21782,7 +21782,7 @@ export default function Dashboard() {
                                               onClick={() => setEditingTask(task)}
                                               data-testid={`task-link-tomorrow-${task.id}`}
                                               data-upcoming-task-name
-                                              style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block', color: !taskCourseCode ? '#ffffff' : taskCourseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : taskCourseCode.toUpperCase() === 'CFNF400' ? '#ff69b4' : taskCourseCode.toUpperCase() === 'CASL101' ? '#b388ff' : getCourseGradientColors(taskCourseCode).end }}
+                                              style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block', color: '#ffffff' }}
                                             >
                                               {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
                                             </button>
@@ -21970,7 +21970,7 @@ export default function Dashboard() {
                                               onClick={() => setEditingTask(task)}
                                               data-testid={`task-link-week-${task.id}`}
                                               data-upcoming-task-name
-                                              style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block', color: !taskCourseCode ? '#ffffff' : taskCourseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : taskCourseCode.toUpperCase() === 'CFNF400' ? '#ff69b4' : taskCourseCode.toUpperCase() === 'CASL101' ? '#b388ff' : gc.end }}
+                                              style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block', color: '#ffffff' }}
                                             >
                                               {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
                                             </button>
@@ -22160,7 +22160,7 @@ export default function Dashboard() {
                                               onClick={() => setEditingTask(task)}
                                               data-testid={`upcoming-2w-task-${task.id}`}
                                               data-upcoming-task-name
-                                              style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block', color: !taskCourseCode ? '#ffffff' : taskCourseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : taskCourseCode.toUpperCase() === 'CFNF400' ? '#ff69b4' : taskCourseCode.toUpperCase() === 'CASL101' ? '#b388ff' : gc.end }}
+                                              style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block', color: '#ffffff' }}
                                             >
                                               {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.title}
                                             </button>
@@ -22298,7 +22298,7 @@ export default function Dashboard() {
                                         className="text-[11px] truncate hover:underline cursor-pointer leading-none w-full"
                                         onClick={() => setEditingTask(task)}
                                         data-testid={`task-link-beyond-${task.id}`}
-                                        style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block', color: !taskCourseCode ? '#ffffff' : taskCourseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : taskCourseCode.toUpperCase() === 'CFNF400' ? '#ff69b4' : taskCourseCode.toUpperCase() === 'CASL101' ? '#b388ff' : getCourseGradientColors(taskCourseCode).end }}
+                                        style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block', color: '#ffffff' }}
                                       >
                                         {task.title}
                                       </button>
