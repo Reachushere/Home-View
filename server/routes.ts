@@ -18,7 +18,7 @@ import { getSecondAccountAuthUrl, exchangeCodeForTokens, isSecondAccountConnecte
 import { getThirdAccountAuthUrl, exchangeCodeForTokensThird, isThirdAccountConnected, disconnectThirdAccount, getEventsFromThirdAccount, listThirdAccountCalendars, getEventsFromThirdAccountCalendar } from "./thirdGoogleAccount";
 import { textToSpeech } from "./replit_integrations/audio/client";
 import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, sendTestHaPush, sendHaTaskReminder, sendEchoVoiceAnnouncement, type TaskReminder } from "./email";
-import { parseTickerCommand } from "./gmailTicker";
+import { parseTickerCommand, extractInlineExpiry } from "./gmailTicker";
 import { getSchedulerStatus } from "./reminderScheduler";
 import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder } from "./onedrive";
 
@@ -4153,6 +4153,9 @@ html,body{height:100%;overflow:hidden;background:transparent}
         return res.json({ action: 'expire_noop', reason: 'no items' });
       }
 
+      const { cleanBody, expireMinutes: inlineExpire } = extractInlineExpiry(messageBody);
+      const finalBody = cleanBody || messageBody;
+
       const msgId = emailId || `webhook-${Date.now()}`;
       const existing = await storage.getAnnouncementByEmailId(msgId);
       if (existing) {
@@ -4162,12 +4165,29 @@ html,body{height:100%;overflow:hidden;background:transparent}
       const created = await storage.createAnnouncement({
         emailId: msgId,
         subject: 'Ticker Update',
-        body: messageBody,
-        snippet: messageBody.slice(0, 200),
+        body: finalBody,
+        snippet: finalBody.slice(0, 200),
         courseName: 'Custom',
         receivedAt: new Date(),
       });
-      console.log(`[Gmail Ticker] Added to ticker: "${messageBody.slice(0, 60)}..." (id: ${created.id})`);
+      console.log(`[Gmail Ticker] Added to ticker: "${finalBody.slice(0, 60)}..." (id: ${created.id})`);
+
+      if (inlineExpire) {
+        const ms = inlineExpire * 60 * 1000;
+        const timeout = setTimeout(async () => {
+          try {
+            await storage.deleteAnnouncement(created.id);
+            tickerExpirations.delete(created.id);
+            console.log(`[Gmail Ticker] Auto-expired ticker item: "${finalBody.slice(0, 60)}..." (id: ${created.id})`);
+          } catch (err: any) {
+            console.error('[Gmail Ticker] Expire cleanup error:', err.message);
+          }
+        }, ms);
+        tickerExpirations.set(created.id, timeout);
+        console.log(`[Gmail Ticker] Set inline ${inlineExpire}min expiration for: "${finalBody.slice(0, 60)}..." (id: ${created.id})`);
+        return res.json({ action: 'added_with_expiry', id: created.id, expiresInMinutes: inlineExpire });
+      }
+
       return res.json({ action: 'added', id: created.id });
     } catch (err: any) {
       console.error('[Gmail Ticker] Webhook error:', err.message);

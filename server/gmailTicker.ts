@@ -29,3 +29,14 @@ export function parseTickerCommand(body: string): { command?: 'delete' | 'clear'
 
   return {};
 }
+
+export function extractInlineExpiry(body: string): { cleanBody: string; expireMinutes: number | null } {
+  const match = body.match(/\[expires?:\s*(\d+)\s*(min(?:ute)?s?|hours?|hr?s?|days?)\s*\]/i);
+  if (!match) return { cleanBody: body, expireMinutes: null };
+  let minutes = parseInt(match[1]);
+  const unit = match[2].toLowerCase();
+  if (unit.startsWith('h')) minutes *= 60;
+  if (unit.startsWith('d')) minutes *= 1440;
+  const cleanBody = body.replace(match[0], '').trim();
+  return { cleanBody, expireMinutes: minutes };
+}
