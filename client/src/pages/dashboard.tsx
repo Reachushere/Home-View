@@ -21052,7 +21052,7 @@ export default function Dashboard() {
           </div>
           <div
             className="absolute z-50 flex flex-col items-center cursor-pointer"
-            style={{ right: '-18px', bottom: '14px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
+            style={{ right: '-18px', bottom: '29px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
           >
             <div
               className="hover:bg-white/20 rounded-full flex items-center justify-center cursor-pointer"
@@ -21078,6 +21078,15 @@ export default function Dashboard() {
               data-testid="button-homework-scroll-bottom"
             >
               <ChevronDown style={{ width: '14px', height: '14px', color: 'white' }} strokeWidth={2.5} />
+            </div>
+            <div style={{ width: '9px', height: '1px', background: 'rgba(255,255,255,0.3)', marginTop: '7px', marginBottom: '7px' }} />
+            <div
+              className="hover:bg-white/20 rounded-full flex items-center justify-center cursor-pointer"
+              style={{ width: '18px', height: '18px' }}
+              onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollTo({ top: homeworkScrollRef.current.scrollHeight, behavior: 'smooth' }); } }}
+              data-testid="button-homework-scroll-to-bottom"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" style={{ transform: 'rotate(180deg)' }}><polyline points="17 10 12 5 7 10" /><polyline points="17 19 12 14 7 19" /></svg>
             </div>
           </div>
           <div className="absolute inset-0 rounded-[12px] overflow-hidden flex flex-col" style={{ pointerEvents: 'auto' }}>
