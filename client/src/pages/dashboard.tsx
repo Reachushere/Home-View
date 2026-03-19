@@ -13234,7 +13234,7 @@ export default function Dashboard() {
               const dayName = dayNames[dt.getDay()];
               return `${dayName}: ${Math.round(d.high)}°/${Math.round(d.low)}°`;
             });
-            items.push({ title: `<img src="${forecastIconPath}" style="height:21px;width:auto;display:inline-block;vertical-align:middle;margin-right:9px" />3-Day Forecast  |  ${forecastParts.join('  •  ')}`, source: '_FORECAST_', link: '' });
+            items.push({ title: `<img src="${forecastIconPath}" style="height:20px;width:auto;display:inline-block;vertical-align:middle;margin-left:3px;margin-right:9px" />3-Day Forecast  |  ${forecastParts.join('  •  ')}`, source: '_FORECAST_', link: '' });
             const briefParts: string[] = [];
             const todayD = weatherData.daily[0];
             const tomorrowD = weatherData.daily[1];
@@ -13252,11 +13252,11 @@ export default function Dashboard() {
               const d3Name = dayNames[new Date(day3D.date + 'T12:00:00').getDay()];
               briefParts.push(`${d3Name}: ${d3Desc}, ${Math.round(day3D.high)}°/${Math.round(day3D.low)}°.`);
             }
-            items.push({ title: `<img src="${newspaperIconPath}" style="height:21px;width:auto;display:inline-block;vertical-align:middle;margin-right:9px;position:relative;top:-3px" />Forecast Brief  |  ${briefParts.join('  ')}`, source: '_FORECAST_NOSEP_', link: '' });
+            items.push({ title: `<img src="${newspaperIconPath}" style="height:22px;width:auto;display:inline-block;vertical-align:middle;margin-right:9px" />Forecast Brief  |  ${briefParts.join('  ')}`, source: '_FORECAST_NOSEP_', link: '' });
           }
           return items;
         })() : []),
-        ...(pollenData ? [{ title: `<span style="margin-left:8px;font-size:21px;margin-right:9px">🌿</span>Pollen: ${pollenData.overall.level} (Tree: ${pollenData.tree.level}, Grass: ${pollenData.grass.level}, Weed: ${pollenData.weed.level})  |  AQI: ${pollenData.aqi}`, source: '_FORECAST_NOSEP_', link: '' }] : []),
+        ...(pollenData ? [{ title: `<span style="margin-left:11px;font-size:19px;margin-right:9px">🌿</span>Pollen: ${pollenData.overall.level} (Tree: ${pollenData.tree.level}, Grass: ${pollenData.grass.level}, Weed: ${pollenData.weed.level})  |  AQI: ${pollenData.aqi}`, source: '_FORECAST_NOSEP_', link: '' }] : []),
         ...(() => {
           const US_SOURCES = ['CNN', 'Politico', 'Raw Story', 'MSNBC', 'ABC News', 'Fox News'];
           const ca = newsHeadlines.filter(h => !US_SOURCES.includes(h.source) && h.source !== 'BBC');
