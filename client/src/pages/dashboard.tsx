@@ -18412,7 +18412,7 @@ export default function Dashboard() {
                           return slottedItems.map((item, itemIdx) => {
                           if (!item) {
                             if (itemIdx < firstFilledIdx || itemIdx > lastFilledIdx) return null;
-                            return <div key={`empty-${itemIdx}`} style={{ minHeight: '18px' }} />;
+                            return <div key={`empty-${itemIdx}`} style={{ height: '2px' }} />;
                           }
                           const task = item.task;
                           const today = startOfDay(new Date());
