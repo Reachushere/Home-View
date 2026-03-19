@@ -18441,22 +18441,22 @@ export default function Dashboard() {
                       <div 
                         key={dayIdx} 
                         className="relative pt-0.5"
-                        style={{ backgroundColor: isDayToday ? '#e4ecf5' : '#ffffff', padding: '2px 1px 2px 1px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, minWidth: 0, overflow: 'hidden' }}
+                        style={{ backgroundColor: isDayToday ? '#e4ecf5' : course.bg, padding: '2px 1px 2px 1px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, minWidth: 0, overflow: 'hidden' }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
                           e.preventDefault();
                           e.currentTarget.style.backgroundColor = '#8B8070';
                         }}
                         onDragLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = isDayToday ? '#e4ecf5' : '#ffffff';
+                          e.currentTarget.style.backgroundColor = isDayToday ? '#e4ecf5' : course.bg;
                         }}
                         onDrop={(e) => {
-                          e.currentTarget.style.backgroundColor = isDayToday ? '#e4ecf5' : '#ffffff';
+                          e.currentTarget.style.backgroundColor = isDayToday ? '#e4ecf5' : course.bg;
                           handleCourseRowDrop(e, course.name, day);
                         }}
                       >
                         <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', borderLeft: '1px solid rgba(0,0,0,0.12)', zIndex: 5, pointerEvents: 'none' }} />
-                        <div className={`flex flex-col gap-0.5${cellHasScroll ? ' course-cell-scroll' : ''}`} style={{ overflowY: cellHasScroll ? 'auto' : 'visible', overflowX: 'visible', height: '100%' }}>
+                        <div className={`flex flex-col gap-0.5${cellHasScroll ? ' course-cell-scroll' : ''}`} style={{ overflowY: cellHasScroll ? 'auto' : 'visible', overflowX: 'visible', maxHeight: '100%' }}>
                         {/* Course-associated projects */}
                         {allProjects.filter(proj => {
                           if (!proj.courseName) return false;
