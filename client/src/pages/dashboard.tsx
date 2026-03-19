@@ -21296,7 +21296,7 @@ export default function Dashboard() {
                             const is2Weeks = tDue >= twoWeeksStart && tDue <= threeWeeksEnd;
                             const barColor = isToday ? '#ef4444' : isThroughFriday ? '#eab308' : isNextWeek ? (daysUntil < 3 ? '#eab308' : '#22c55e') : is2Weeks ? (daysUntil < 3 ? '#eab308' : '#22c55e') : 'rgb(100, 100, 100)';
                             return (
-                              <div className="flex-shrink-0 flex items-center justify-end gap-2" style={{ marginLeft: 'auto', width: '120px' }}>
+                              <div className="flex-shrink-0 flex items-center justify-end gap-2" style={{ marginLeft: 'auto', width: '120px', position: 'relative', left: '5px' }}>
                                 <div style={{ width: '56px', position: 'relative', height: '5px', flexShrink: 0 }}>
                                   <div style={{ position: 'absolute', top: 0, right: 0, width: '56px', height: '5px', backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: '3px' }} />
                                   <div className="rounded-full" style={{ position: 'absolute', top: 0, right: 0, width: `${barWidth}px`, height: '5px', backgroundColor: barColor, opacity: 0.9 }} />
