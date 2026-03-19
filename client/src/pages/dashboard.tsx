@@ -21540,6 +21540,41 @@ export default function Dashboard() {
                 {dueTodayTasks.length === 0 ? (
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks due today</div>
                 ) : (
+                  <div style={{ display: 'flex', alignItems: 'stretch' }}>
+                    <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', alignSelf: 'center', overflow: 'hidden' }}>
+                      <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
+                        Today
+                      </span>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-end' }}>
+                        <div style={{ display: 'flex', gap: '2px', padding: '0 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
+                          {['S','M','T','W','T','F','S'].map((dl, dli) => (
+                            <div key={dli} style={{ width: '13px', fontSize: '6px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
+                          ))}
+                        </div>
+                        {(() => {
+                          const todayDate = startOfDay(new Date());
+                          const weekStart = startOfWeek(todayDate, { weekStartsOn: 0 });
+                          const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 5) });
+                          return (
+                            <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                              <div style={{ position: 'absolute', top: '-2px', bottom: '-2px', left: '-3px', right: '-3px', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.08)', border: '0.5px solid rgba(255,255,255,0.15)' }} />
+                              <div style={{ position: 'relative', display: 'flex', gap: '2px', padding: '2px 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
+                                {days.map((d, di) => {
+                                  const isToday = isSameDay(d, todayDate);
+                                  const isPast = d < todayDate && !isToday;
+                                  return (
+                                    <div key={di} style={{ width: '13px', height: '13px', borderRadius: '3px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7px', fontWeight: isToday ? 700 : 500, color: isPast ? 'rgba(255,255,255,0.25)' : isToday ? '#fff' : 'rgba(255,255,255,0.6)', backgroundColor: isToday ? 'rgb(255, 0, 0)' : 'transparent', border: isToday ? '1px solid rgba(255,80,80,0.6)' : '1px solid transparent' }}>
+                                      {format(d, 'd')}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
                   <div className="flex flex-col gap-0.5">
                     {dueTodayTasks.map((task, tIdx) => {
                       const progressBarWidth = getProgressBarWidth(task);
@@ -21612,6 +21647,8 @@ export default function Dashboard() {
                         </div>
                       );
                     })}
+                  </div>
+                    </div>
                   </div>
                 )}
 
@@ -22642,12 +22679,12 @@ export default function Dashboard() {
                   
                   if (filteredProjects.length === 0) {
                     return (
-                      <div className="text-center py-12 text-white/50">
-                        <FolderOpen className="h-16 w-16 mx-auto mb-4 opacity-30" />
+                      <div className="text-center py-12 text-white">
+                        <FolderOpen className="h-16 w-16 mx-auto mb-4 opacity-60" />
                         <h3 className="text-lg font-medium mb-2">
                           {projectStatusFilter === 'all' ? 'No projects yet' : `No ${projectStatusFilter.replace('_', ' ')} projects`}
                         </h3>
-                        <p className="text-sm mb-4">Create a project to organize your tasks and track progress.</p>
+                        <p className="text-sm mb-4 text-white/70">Create a project to organize your tasks and track progress.</p>
                         <Button 
                           variant="outline"
                           className="border-white/30 text-white hover:bg-white/10 hover:text-white"

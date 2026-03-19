@@ -1,5 +1,4 @@
 import { useState, DragEvent, useRef, useCallback, useEffect, useMemo } from "react";
-import quickActionsBg from "@assets/Washroom_1769164969510.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -1253,24 +1252,6 @@ export default function FilesPage() {
           <Home className="h-4 w-4" />
         </a>
 
-        {/* View Mode Toggle */}
-        <div className="flex items-center bg-[#2d2d2d] rounded-md border border-[#3d3d3d] overflow-hidden ml-1">
-          <button
-            className={`px-3 py-1 text-xs font-medium transition-colors ${viewMode === 'all' ? 'bg-white/20 text-white' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
-            onClick={() => setViewMode('all')}
-            data-testid="button-view-all"
-          >
-            All
-          </button>
-          <button
-            className={`px-3 py-1 text-xs font-medium transition-colors ${viewMode === 'week' ? 'bg-white/20 text-white' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
-            onClick={() => setViewMode('week')}
-            data-testid="button-view-week"
-          >
-            Week
-          </button>
-        </div>
-
         {viewMode === 'all' ? (
           <>
             <div className="flex items-center gap-1 text-sm text-gray-400 flex-1 min-w-0 truncate ml-2">
@@ -1320,81 +1301,6 @@ export default function FilesPage() {
         )}
       </div>
 
-      {viewMode === 'week' ? (
-        <div className="flex-1 overflow-y-auto py-3 px-3" style={{ scrollbarWidth: 'none' }}>
-          {oneDriveLoading ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-6 w-6 animate-spin text-white/50" />
-            </div>
-          ) : (
-            <div className="space-y-1">
-              {oneDriveFolders.map((folder) => {
-                const folderColor = getOneDriveFolderColor(folder.name);
-                return (
-                  <div
-                    key={folder.id}
-                    className="flex items-center gap-2 px-3 py-2 hover:bg-white/10 cursor-pointer rounded transition-colors"
-                    onClick={() => {
-                      setOneDrivePathHistory([...oneDrivePathHistory, oneDrivePath]);
-                      setOneDrivePath(folder.path);
-                    }}
-                    data-testid={`onedrive-folder-${folder.id}`}
-                  >
-                    <Folder
-                      className={folderColor ? "h-4 w-4" : "h-4 w-4 text-yellow-500 fill-yellow-400"}
-                      style={folderColor ? { color: folderColor, fill: folderColor } : undefined}
-                    />
-                    <span className="text-[13px] text-white/90 truncate flex-1">{folder.name}</span>
-                    <ChevronRight className="h-3 w-3 text-white/40" />
-                  </div>
-                );
-              })}
-
-              {oneDrivePdfFiles.map((file) => (
-                <div
-                  key={file.id}
-                  className="flex items-center gap-2 px-3 py-2 hover:bg-white/10 cursor-pointer rounded transition-colors group"
-                  onClick={() => {
-                    if (file.downloadUrl) {
-                      const encodedUrl = encodeURIComponent(file.downloadUrl);
-                      const encodedName = encodeURIComponent(file.name);
-                      window.open(`/pdf-reader?url=${encodedUrl}&name=${encodedName}`, '_blank');
-                    }
-                  }}
-                  data-testid={`onedrive-file-${file.id}`}
-                >
-                  <FileText className="h-4 w-4 text-red-400" />
-                  <span className="text-[13px] text-white/80 truncate flex-1">{file.name}</span>
-                  {file.size && (
-                    <span className="text-[11px] text-white/30">{formatFileSize(file.size)}</span>
-                  )}
-                </div>
-              ))}
-
-              {oneDriveFiles.filter(f => !f.mimeType?.includes("pdf")).map((file) => (
-                <div
-                  key={file.id}
-                  className="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded transition-colors"
-                  data-testid={`onedrive-file-${file.id}`}
-                >
-                  <File className="h-4 w-4 text-white/50" />
-                  <span className="text-[13px] text-white/60 truncate flex-1">{file.name}</span>
-                  {file.size && (
-                    <span className="text-[11px] text-white/30">{formatFileSize(file.size)}</span>
-                  )}
-                </div>
-              ))}
-
-              {oneDriveFolders.length === 0 && oneDriveFiles.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-8 text-white/40">
-                  <Folder className="h-8 w-8 mb-2 opacity-50" />
-                  <p className="text-[12px]">No files found</p>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      ) : (
       <div className="flex flex-1 overflow-hidden relative">
         {/* Sidebar - Tree Navigation */}
         <div 
@@ -1407,6 +1313,99 @@ export default function FilesPage() {
             onMouseDown={handlePanelMouseDown}
             data-testid="panel-resize-handle"
           />
+          {/* All / Week Tabs */}
+          <div className="flex items-center bg-[#2d2d2d] border-b border-[#3d3d3d] overflow-hidden">
+            <button
+              className={`flex-1 px-3 py-1.5 text-xs font-medium transition-colors ${viewMode === 'all' ? 'bg-white/20 text-white' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+              onClick={() => setViewMode('all')}
+              data-testid="button-view-all"
+            >
+              All
+            </button>
+            <button
+              className={`flex-1 px-3 py-1.5 text-xs font-medium transition-colors ${viewMode === 'week' ? 'bg-white/20 text-white' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+              onClick={() => setViewMode('week')}
+              data-testid="button-view-week"
+            >
+              Week
+            </button>
+          </div>
+
+          {viewMode === 'week' ? (
+            <div className="py-2 px-1" style={{ scrollbarWidth: 'none' }}>
+              {oneDriveLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-6 w-6 animate-spin text-white/50" />
+                </div>
+              ) : (
+                <div className="space-y-1">
+                  {oneDriveFolders.map((folder) => {
+                    const folderColor = getOneDriveFolderColor(folder.name);
+                    return (
+                      <div
+                        key={folder.id}
+                        className="flex items-center gap-2 px-2 py-1.5 hover:bg-white/10 cursor-pointer rounded transition-colors"
+                        onClick={() => {
+                          setOneDrivePathHistory([...oneDrivePathHistory, oneDrivePath]);
+                          setOneDrivePath(folder.path);
+                        }}
+                        data-testid={`onedrive-folder-${folder.id}`}
+                      >
+                        <Folder
+                          className={folderColor ? "h-4 w-4" : "h-4 w-4 text-yellow-500 fill-yellow-400"}
+                          style={folderColor ? { color: folderColor, fill: folderColor } : undefined}
+                        />
+                        <span className="text-[12px] text-white/90 truncate flex-1">{folder.name}</span>
+                        <ChevronRight className="h-3 w-3 text-white/40" />
+                      </div>
+                    );
+                  })}
+
+                  {oneDrivePdfFiles.map((file) => (
+                    <div
+                      key={file.id}
+                      className="flex items-center gap-2 px-2 py-1.5 hover:bg-white/10 cursor-pointer rounded transition-colors group"
+                      onClick={() => {
+                        if (file.downloadUrl) {
+                          const encodedUrl = encodeURIComponent(file.downloadUrl);
+                          const encodedName = encodeURIComponent(file.name);
+                          window.open(`/pdf-reader?url=${encodedUrl}&name=${encodedName}`, '_blank');
+                        }
+                      }}
+                      data-testid={`onedrive-file-${file.id}`}
+                    >
+                      <FileText className="h-4 w-4 text-red-400" />
+                      <span className="text-[12px] text-white/80 truncate flex-1">{file.name}</span>
+                      {file.size && (
+                        <span className="text-[10px] text-white/30">{formatFileSize(file.size)}</span>
+                      )}
+                    </div>
+                  ))}
+
+                  {oneDriveFiles.filter(f => !f.mimeType?.includes("pdf")).map((file) => (
+                    <div
+                      key={file.id}
+                      className="flex items-center gap-2 px-2 py-1.5 hover:bg-white/10 rounded transition-colors"
+                      data-testid={`onedrive-file-${file.id}`}
+                    >
+                      <File className="h-4 w-4 text-white/50" />
+                      <span className="text-[12px] text-white/60 truncate flex-1">{file.name}</span>
+                      {file.size && (
+                        <span className="text-[10px] text-white/30">{formatFileSize(file.size)}</span>
+                      )}
+                    </div>
+                  ))}
+
+                  {oneDriveFolders.length === 0 && oneDriveFiles.length === 0 && (
+                    <div className="flex flex-col items-center justify-center py-8 text-white/40">
+                      <Folder className="h-8 w-8 mb-2 opacity-50" />
+                      <p className="text-[12px]">No files found</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          ) : (
           <div className="py-2">
             {/* Root-level custom folders (at week level) */}
             {(() => {
@@ -1947,6 +1946,7 @@ export default function FilesPage() {
               )}
             </div>
           </div>
+          )}
         </div>
 
         {/* Main Content Area - File List */}
@@ -2131,90 +2131,7 @@ export default function FilesPage() {
           )}
         </div>
 
-        {/* Right Panel - File Details/Controls */}
-        {sortedFiles(getCurrentFolderFiles()).length > 0 && (
-          <div className="w-64 border-l border-[#3d3d3d] overflow-y-auto p-3 relative">
-            <div 
-              className="absolute inset-0" 
-              style={{
-                backgroundImage: `url(${quickActionsBg})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center center',
-                filter: 'brightness(1.04)'
-              }}
-            ></div>
-            <h3 className="text-sm font-medium mb-3 text-white relative z-10">Media Player</h3>
-            {sortedFiles(getCurrentFolderFiles()).map((file) => (
-              <div 
-                key={file.id}
-                className="mb-3 p-2 bg-[#c9a033] rounded-md relative z-10 border border-black/50"
-              >
-                <div className="text-[10px] truncate mb-2 text-black font-medium">{file.displayName}</div>
-                <div className="flex items-center gap-2 mb-2">
-                  <Select 
-                    value={getSpeakerForFile(file.id)} 
-                    onValueChange={(value) => setSpeakerForFile(file.id, value)}
-                  >
-                    <SelectTrigger className="flex-1 h-6 text-[10px] bg-[#3d3d3d] border-[#4d4d4d] text-white" data-testid={`select-speaker-${file.id}`}>
-                      <SelectValue placeholder="Speaker" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-[#2d2d2d] border-[#3d3d3d]">
-                      {SPEAKERS.map(speaker => (
-                        <SelectItem key={speaker.id} value={speaker.id} className="text-xs">
-                          {speaker.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                {/* Playback controls */}
-                <div className="flex items-center justify-center gap-3 mb-2">
-                  <SkipBack 
-                    className="h-4 w-4 text-black cursor-pointer hover:opacity-70" 
-                    onClick={(e) => { e.stopPropagation(); handleSkipChunk(file.id, "backward"); }}
-                    data-testid={`button-skip-back-panel-${file.id}`}
-                  />
-                  <Play 
-                    className="h-5 w-5 fill-black text-black cursor-pointer hover:opacity-70" 
-                    onClick={() => handlePlayFile(file.id, file.objectPath, file.displayName)}
-                    data-testid={`button-play-panel-${file.id}`}
-                  />
-                  <Square 
-                    className="h-4 w-4 fill-black text-black cursor-pointer hover:opacity-70" 
-                    onClick={() => handleStop(file.id)}
-                    data-testid={`button-stop-panel-${file.id}`}
-                  />
-                  <SkipForward 
-                    className="h-4 w-4 text-black cursor-pointer hover:opacity-70" 
-                    onClick={(e) => { e.stopPropagation(); handleSkipChunk(file.id, "forward"); }}
-                    data-testid={`button-skip-forward-panel-${file.id}`}
-                  />
-                  <RotateCcw 
-                    className="h-4 w-4 text-black cursor-pointer hover:opacity-70" 
-                    onClick={() => handleRestart(file.id, file.objectPath, file.displayName)}
-                    data-testid={`button-restart-panel-${file.id}`}
-                  />
-                </div>
-                {/* Volume controls with plus/minus */}
-                <div className="flex items-center justify-center gap-3">
-                  <Minus 
-                    className="h-4 w-4 text-black cursor-pointer hover:opacity-70" 
-                    onClick={(e) => { e.stopPropagation(); handleVolume(file.id, "down"); }}
-                    data-testid={`button-vol-down-panel-${file.id}`}
-                  />
-                  <Volume2 className="h-4 w-4 text-black" />
-                  <Plus 
-                    className="h-4 w-4 text-black cursor-pointer hover:opacity-70" 
-                    onClick={(e) => { e.stopPropagation(); handleVolume(file.id, "up"); }}
-                    data-testid={`button-vol-up-panel-${file.id}`}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
-      )}
 
       {/* Dialogs */}
       <Dialog open={!!editingFile} onOpenChange={() => setEditingFile(null)}>
