@@ -13348,7 +13348,7 @@ export default function Dashboard() {
           }
           return items;
         })() : []),
-        ...(pollenData ? [{ title: `<span style="margin-left:17px;font-size:17px;margin-right:4px;vertical-align:middle">🌿</span>Pollen: ${pollenData.overall.level} (Tree: ${pollenData.tree.level}, Grass: ${pollenData.grass.level}, Weed: ${pollenData.weed.level})  |  AQI: ${pollenData.aqi}`, source: '_FORECAST_NOSEP_', link: '' }] : []),
+        ...(pollenData ? [{ title: `<span style="margin-left:17px;font-size:17px;margin-right:4px;vertical-align:middle">🌿</span>Pollen: ${pollenData.overall.level} (Tree: ${pollenData.tree.level}, Grass: ${pollenData.grass.level}, Weed: ${pollenData.weed.level})  |  AQI: ${pollenData.aqi} (${pollenData.aqi <= 50 ? 'Good' : pollenData.aqi <= 100 ? 'Moderate' : pollenData.aqi <= 150 ? 'Unhealthy for Sensitive' : pollenData.aqi <= 200 ? 'Unhealthy' : pollenData.aqi <= 300 ? 'Very Unhealthy' : 'Hazardous'})`, source: '_FORECAST_NOSEP_', link: '' }] : []),
         ...(() => {
           const US_SOURCES = ['CNN', 'Politico', 'Raw Story', 'MSNBC', 'ABC News', 'Fox News'];
           const ca = newsHeadlines.filter(h => !US_SOURCES.includes(h.source) && h.source !== 'BBC');
