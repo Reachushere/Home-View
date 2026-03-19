@@ -2031,7 +2031,7 @@ html,body{height:100%;overflow:hidden;background:transparent}
       }
 
       const feeds = [
-        { source: 'CNN', url: 'http://rss.cnn.com/rss/cnn_latest.rss' },
+        { source: 'CNN', url: 'https://news.google.com/rss/search?q=site:cnn.com+when:1d&hl=en-US&gl=US&ceid=US:en' },
         { source: 'CBC', url: 'https://www.cbc.ca/cmlink/rss-topstories' },
         { source: 'CTV', url: 'https://news.google.com/rss/search?q=site:ctvnews.ca+when:1d&hl=en-CA&gl=CA&ceid=CA:en' },
         { source: 'Global', url: 'https://globalnews.ca/politics/feed/' },
@@ -2064,7 +2064,7 @@ html,body{height:100%;overflow:hidden;background:transparent}
             const pubDateMatch = item.match(/<pubDate[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/pubDate>/is);
             if (titleMatch?.[1]) {
               let title = titleMatch[1].replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&apos;/g, "'").replace(/&#(\d+);/g, (_, n) => String.fromCharCode(parseInt(n))).replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCharCode(parseInt(n, 16))).trim();
-              title = title.replace(/\s*-\s*(CTV News|Google News)$/i, '').trim();
+              title = title.replace(/\s*-\s*(CTV News|Google News|CNN)$/i, '').trim();
               const sportsFilter = /\b(NFL|NBA|NHL|MLB|CFL|MLS|FIFA|UEFA|NASCAR|PGA|ATP|WTA|Premier League|Super Bowl|Stanley Cup|World Series|World Cup|touchdown|quarterback|hockey|soccer|baseball|basketball|football score|playoff|championship game|draft pick|free agent signing|free agent|trade deadline|hat trick|grand slam|home run|Raptors|Maple Leafs|Blue Jays|Argonauts|Toronto FC|Canadiens|Senators|Oilers|Canucks|Flames|Jets|Bruins|Lakers|Warriors|Yankees|Dodgers|Chiefs|Eagles|coach|roster|medal|Olympic|athletics|tennis|boxing|UFC|MMA|wrestling|cricket|golf|curling|skiing|snowboard|goalie|goaltender|defenseman|striker|midfielder|pitcher|outfielder|inning|shutout|penalty shot|power play|slapshot|offseason|All-Star|all-star game|MVP|signing|signed.*deal|contract extension)\b/i;
               const junkFilter = /^LIVE:|^WATCH:|^BREAKING:?\s*$|^Video:|^Photos:|^Gallery:|News Live$|Live Stream|Full Episode|News in \d+ Minutes/i;
               if (title && title !== feed.source && title !== 'Google News' && title !== 'MS NOW' && !sportsFilter.test(title) && !junkFilter.test(title)) {
