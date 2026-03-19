@@ -3691,6 +3691,8 @@ export default function Dashboard() {
         if (data.colorSettings) {
           setColorSettings(prev => {
             const merged = { ...prev, ...data.colorSettings };
+            if (merged.headerBar === '#160502') merged.headerBar = '#1a3a5c';
+            if (merged.todayCurrentHourCellBackground === '#160502') merged.todayCurrentHourCellBackground = '#1a3a5c';
             localStorage.setItem('colorSettings', JSON.stringify(merged));
             return merged;
           });
