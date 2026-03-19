@@ -21165,17 +21165,15 @@ export default function Dashboard() {
               <span style={{ whiteSpace: 'nowrap', marginLeft: '10px' }}>Homework Progress</span>
             </h4>
             {weatherData && (
-              <div className="flex items-center" style={{ flexShrink: 0, marginRight: '9px', marginTop: '-6px', gap: '8px' }}>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[10.5px] font-medium" style={{ color: 'rgba(255,255,255,1)' }} data-testid="homework-weather-temp">{Math.round(weatherData.temp)}°C</span>
-                  <span className="text-[10.5px]" style={{ color: 'rgba(255,255,255,1)' }} data-testid="homework-weather-desc">{(() => { const WMO: Record<number, string> = {0:'Clear',1:'Mostly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Rime Fog',51:'Lt Drizzle',53:'Drizzle',55:'Hvy Drizzle',61:'Lt Rain',63:'Rain',65:'Hvy Rain',66:'Frzg Rain',67:'Hvy Frzg Rain',71:'Lt Snow',73:'Snow',75:'Hvy Snow',77:'Snow Grains',80:'Lt Showers',81:'Showers',82:'Hvy Showers',85:'Lt Snow Shwrs',86:'Hvy Snow Shwrs',95:'T-Storm',96:'T-Storm Hail',99:'Svr T-Storm'}; return WMO[weatherData.code] || ''; })()}</span>
-                </div>
-                {(weatherData.sunrise || weatherData.sunset) && (
-                  <div className="flex items-center gap-1.5" style={{ lineHeight: 1 }}>
-                    {weatherData.sunrise && <span className="text-[10px]" data-testid="homework-sunrise"><span style={{ color: '#FFFF00' }}>☀↑</span><span style={{ color: 'rgba(255,255,255,1)' }}> {(() => { const t = new Date(weatherData.sunrise); const h = t.getHours(); const m = t.getMinutes(); const ampm = h >= 12 ? 'PM' : 'AM'; return `${h === 0 ? 12 : h > 12 ? h - 12 : h}:${m.toString().padStart(2, '0')} ${ampm}`; })()}</span></span>}
-                    {weatherData.sunset && <span className="text-[10px]" data-testid="homework-sunset"><span style={{ color: '#FFFF00' }}>☽↓</span><span style={{ color: 'rgba(255,255,255,1)' }}> {(() => { const t = new Date(weatherData.sunset); const h = t.getHours(); const m = t.getMinutes(); const ampm = h >= 12 ? 'PM' : 'AM'; return `${h === 0 ? 12 : h > 12 ? h - 12 : h}:${m.toString().padStart(2, '0')} ${ampm}`; })()}</span></span>}
-                  </div>
-                )}
+              <div className="flex items-center gap-1.5" style={{ flexShrink: 0, marginTop: '-14px' }}>
+                <span className="text-[10.5px] font-medium" style={{ color: 'rgba(255,255,255,1)' }} data-testid="homework-weather-temp">{Math.round(weatherData.temp)}°C</span>
+                <span className="text-[10.5px]" style={{ color: 'rgba(255,255,255,1)' }} data-testid="homework-weather-desc">{(() => { const WMO: Record<number, string> = {0:'Clear',1:'Mostly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Rime Fog',51:'Lt Drizzle',53:'Drizzle',55:'Hvy Drizzle',61:'Lt Rain',63:'Rain',65:'Hvy Rain',66:'Frzg Rain',67:'Hvy Frzg Rain',71:'Lt Snow',73:'Snow',75:'Hvy Snow',77:'Snow Grains',80:'Lt Showers',81:'Showers',82:'Hvy Showers',85:'Lt Snow Shwrs',86:'Hvy Snow Shwrs',95:'T-Storm',96:'T-Storm Hail',99:'Svr T-Storm'}; return WMO[weatherData.code] || ''; })()}</span>
+              </div>
+            )}
+            {weatherData && (weatherData.sunrise || weatherData.sunset) && (
+              <div className="flex items-center gap-1.5" style={{ flexShrink: 0, lineHeight: 1, marginRight: '9px' }}>
+                {weatherData.sunrise && <span className="text-[10px]" data-testid="homework-sunrise"><span style={{ color: '#FFFF00' }}>☀↑</span><span style={{ color: 'rgba(255,255,255,1)' }}> {(() => { const t = new Date(weatherData.sunrise); const h = t.getHours(); const m = t.getMinutes(); const ampm = h >= 12 ? 'PM' : 'AM'; return `${h === 0 ? 12 : h > 12 ? h - 12 : h}:${m.toString().padStart(2, '0')} ${ampm}`; })()}</span></span>}
+                {weatherData.sunset && <span className="text-[10px]" data-testid="homework-sunset"><span style={{ color: '#FFFF00' }}>☽↓</span><span style={{ color: 'rgba(255,255,255,1)' }}> {(() => { const t = new Date(weatherData.sunset); const h = t.getHours(); const m = t.getMinutes(); const ampm = h >= 12 ? 'PM' : 'AM'; return `${h === 0 ? 12 : h > 12 ? h - 12 : h}:${m.toString().padStart(2, '0')} ${ampm}`; })()}</span></span>}
               </div>
             )}
             <div ref={homeworkSpacerRef} style={{ width: '0px', height: '100%', minHeight: '14px', backgroundColor: 'transparent', flexShrink: 0, marginRight: '4px', marginLeft: '0px' }} />
