@@ -4720,33 +4720,51 @@ html,body{height:100%;overflow:hidden;background:transparent}
       const cleanedText = cleanTextForTTS(text);
       console.log(`[TTS Speaker] Generating OpenAI audio (${cleanedText.length} chars, voice: ${selectedVoice})`);
 
-      const audioPath = await generateAndSaveTTSAudio(cleanedText, `speaker-tts-${Date.now()}`);
-      const appUrl = "https://home-view--bkh416.replit.app";
-      const fullAudioUrl = `${appUrl}${audioPath}`;
-      console.log(`[TTS Speaker] Audio generated: ${audioPath}`);
-      console.log(`[TTS Speaker] Playing via media_player/play_media on ${entityId} (NOT alexa_media)`);
+      const isNonAlexa = NON_ALEXA_ENTITIES.includes(entityId);
+      const wordCount = cleanedText.split(/\s+/).length;
+      const estimatedDurationMs = Math.max(5000, (wordCount / 145) * 60 * 1000 + 2000);
 
-      const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          entity_id: entityId,
-          media_content_id: fullAudioUrl,
-          media_content_type: "music",
-        }),
-      });
+      let playResp: Response;
+
+      if (isNonAlexa) {
+        const audioPath = await generateAndSaveTTSAudio(cleanedText, `speaker-tts-${Date.now()}`);
+        const appUrl = "https://home-view--bkh416.replit.app";
+        const fullAudioUrl = `${appUrl}${audioPath}`;
+        console.log(`[TTS Speaker] Non-Alexa: Generated audio at ${audioPath}, playing on ${entityId} via play_media`);
+
+        playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            entity_id: entityId,
+            media_content_id: fullAudioUrl,
+            media_content_type: "music",
+          }),
+        });
+      } else {
+        const ssmlContent = `<speak><prosody rate="90%">${cleanedText}</prosody></speak>`;
+        console.log(`[TTS Speaker] Alexa: Sending TTS to ${entityId} via notify/alexa_media (${cleanedText.length} chars)`);
+
+        playResp = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: ssmlContent,
+            target: entityId,
+            data: { type: "tts" },
+          }),
+        });
+      }
 
       if (!playResp.ok) {
         const errText = await playResp.text();
-        console.error(`[TTS Speaker] play_media FAILED: ${playResp.status} ${errText}`);
+        console.error(`[TTS Speaker] ${isNonAlexa ? 'play_media' : 'alexa_media'} FAILED: ${playResp.status} ${errText}`);
         return res.status(500).json({ error: "Failed to play audio on speaker" });
       }
 
-      const wordCount = cleanedText.split(/\s+/).length;
-      const estimatedDurationMs = Math.max(5000, (wordCount / 145) * 60 * 1000 + 2000);
-      console.log(`[TTS Speaker] SUCCESS - audio playing on ${entityId} (~${Math.round(estimatedDurationMs/1000)}s estimated)`);
+      console.log(`[TTS Speaker] SUCCESS - playing on ${entityId} via ${isNonAlexa ? 'play_media' : 'notify/alexa_media'} (~${Math.round(estimatedDurationMs/1000)}s estimated)`);
 
-      res.json({ success: true, entityId, method: "openai_audio_play_media", estimatedDurationMs });
+      res.json({ success: true, entityId, method: isNonAlexa ? "openai_audio_play_media" : "alexa_media_tts", estimatedDurationMs });
     } catch (err) {
       console.error("[TTS Speaker] Error:", err);
       res.status(500).json({ error: "Failed to play TTS on speaker" });
