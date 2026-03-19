@@ -4030,7 +4030,7 @@ html,body{height:100%;overflow:hidden;background:transparent}
       if (!body || typeof body !== 'string') {
         return res.status(400).json({ error: 'Missing body' });
       }
-      const text = body.trim().toLowerCase();
+      const text = body.trim().toLowerCase().replace(/^delete\s+/i, '');
 
       const tickerMatch = text.match(/^ticker\s+(?:item\s+)?(.+)/i);
       if (tickerMatch) {

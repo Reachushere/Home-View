@@ -11959,7 +11959,16 @@ export default function Dashboard() {
                     <span key={`${a.id}-${i}`} className="inline-flex items-center gap-1.5 mx-8" data-testid={`announcement-${a.id}-${i}`}>
                       <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', verticalAlign: 'middle' }}>
                         <img src={tmuBoxesLogo} alt="TMU" style={{ height: '27px', width: 'auto', objectFit: 'contain' }} />
-                        <span className="font-bold" style={{ position: 'absolute', color: '#ffffff', fontSize: '8px', letterSpacing: '0.5px', textAlign: 'center', lineHeight: '1', textShadow: '0 0 2px rgba(0,0,0,0.5)', left: '50%', top: '50%', transform: 'translate(calc(-50% + -1px), calc(-50% + 3px))', display: 'flex', flexDirection: 'column', alignItems: 'center' }}><span style={{ marginBottom: '-2px' }}>{(a.courseName || '').replace(/\s+/g, '')}</span><span style={{ fontSize: '7px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: '1', marginTop: '0px', whiteSpace: 'nowrap' }}>Local</span><span style={{ fontSize: '7px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: '1', whiteSpace: 'nowrap' }}>Politics</span></span>
+                        <span className="font-bold" style={{ position: 'absolute', color: '#ffffff', fontSize: '8px', letterSpacing: '0.5px', textAlign: 'center', lineHeight: '1', textShadow: '0 0 2px rgba(0,0,0,0.5)', left: '50%', top: '50%', transform: 'translate(calc(-50% + -1px), calc(-50% + 3px))', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>{(() => {
+                        const cn = a.courseName || 'Custom';
+                        if (cn === 'Custom') {
+                          return <span style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '0.3px', lineHeight: '1', whiteSpace: 'nowrap' }}>Reminder</span>;
+                        }
+                        const courseCode = cn.split(' - ')[0]?.replace(/\s+/g, '') || cn;
+                        const courseLongName = cn.split(' - ')[1] || '';
+                        const nameWords = courseLongName.trim().split(/\s+/);
+                        return (<>{courseCode && <span style={{ marginBottom: '-2px' }}>{courseCode}</span>}{nameWords.map((w: string, wi: number) => (<span key={wi} style={{ fontSize: '7px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: '1', whiteSpace: 'nowrap' }}>{w}</span>))}</>);
+                      })()}</span>
                       </span>
                       <span className="text-[13px] text-white/90 font-medium">{a.subject}</span>
                       {displaySnippet && <span className="text-[12px] text-white/55">{displaySnippet}</span>}
