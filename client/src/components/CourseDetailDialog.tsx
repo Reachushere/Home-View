@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback, useRef } from "react";
+import React, { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -194,6 +194,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
   const { toast } = useToast();
   const [showAddForm, setShowAddForm] = useState(false);
   const [newTask, setNewTask] = useState<NewTaskForm>(createEmptyTaskForm());
+  const [expandedTaskId, setExpandedTaskId] = useState<number | null>(null);
+  const [editTaskFields, setEditTaskFields] = useState<any>(null);
   const [isEditingInfo, setIsEditingInfo] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isParsingPdf, setIsParsingPdf] = useState(false);
@@ -833,8 +835,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
     const isDragging = dragId === task.id;
     const isDragOver = dragOverId === task.id;
     return (
+      <React.Fragment key={task.id}>
       <div
-        key={task.id}
         draggable
         onDragStart={() => handleDragStart(task.id)}
         onDragOver={(e) => handleDragOver(e, task.id)}
@@ -865,7 +867,31 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
         <div className="flex-1 min-w-0">
           <div
             className={`text-[10px] font-medium truncate flex items-center gap-1 cursor-pointer hover:underline ${task.isCompleted ? "line-through text-white/50" : "text-white"}`}
-            onClick={(e) => { e.stopPropagation(); e.preventDefault(); if (onOpenEditTask) onOpenEditTask(task); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              if (expandedTaskId === task.id) {
+                setExpandedTaskId(null);
+                setEditTaskFields(null);
+              } else {
+                setExpandedTaskId(task.id);
+                const d = task.dueDate ? new Date(task.dueDate) : null;
+                setEditTaskFields({
+                  title: task.title || '',
+                  type: task.type || 'other',
+                  dueDate: d ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` : '',
+                  dueTime: d ? `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` : '',
+                  description: task.description || '',
+                  gradeWeight: task.gradeWeight?.toString() || '',
+                  gradeTotal: task.gradeTotal?.toString() || '',
+                  gradeValue: task.gradeValue?.toString() || '',
+                  reminder1: task.reminder1 ?? 30,
+                  reminder2: task.reminder2 ?? 120,
+                  reminder3: task.reminder3 ?? null,
+                  reminder4: task.reminder4 ?? null,
+                });
+              }
+            }}
             data-testid={`link-edit-task-${task.id}`}
           >
             {task.title}
@@ -952,6 +978,121 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
           </button>
         </div>
       </div>
+      {expandedTaskId === task.id && editTaskFields && (
+        <div className="bg-white/5 border border-white/15 rounded-lg p-3 mb-1 space-y-2 ml-6" data-testid={`inline-edit-form-${task.id}`}>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <Label className="text-[9px] text-white mb-0.5 block">Title</Label>
+              <Input value={editTaskFields.title} onChange={(e) => setEditTaskFields({ ...editTaskFields, title: e.target.value })} className="h-7 text-[10px] bg-white/10 border-white/15 text-white" data-testid={`input-inline-title-${task.id}`} />
+            </div>
+            <div>
+              <Label className="text-[9px] text-white mb-0.5 block">Type</Label>
+              <select value={editTaskFields.type} onChange={(e) => setEditTaskFields({ ...editTaskFields, type: e.target.value })} className="w-full h-7 rounded bg-white/10 border border-white/15 text-white text-[10px] px-1.5" data-testid={`select-inline-type-${task.id}`}>
+                {TASK_TYPE_OPTIONS.map((t) => (<option key={t.value} value={t.value} className="bg-gray-800">{t.label}</option>))}
+              </select>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <Label className="text-[9px] text-white mb-0.5 block">Due Date</Label>
+              <Input type="date" value={editTaskFields.dueDate} onChange={(e) => setEditTaskFields({ ...editTaskFields, dueDate: e.target.value })} className="h-7 !text-[10px] text-white bg-white/10 border-white/15" style={{ colorScheme: 'dark' }} data-testid={`input-inline-date-${task.id}`} />
+            </div>
+            <div>
+              <Label className="text-[9px] text-white mb-0.5 block">Due Time</Label>
+              <Input type="time" value={editTaskFields.dueTime} onChange={(e) => setEditTaskFields({ ...editTaskFields, dueTime: e.target.value })} className="h-7 !text-[10px] text-white bg-white/10 border-white/15" style={{ colorScheme: 'dark' }} data-testid={`input-inline-time-${task.id}`} />
+            </div>
+          </div>
+          <div>
+            <Label className="text-[9px] text-white mb-0.5 block">Description</Label>
+            <Input value={editTaskFields.description} onChange={(e) => setEditTaskFields({ ...editTaskFields, description: e.target.value })} className="h-7 text-[10px] bg-white/10 border-white/15 text-white placeholder:text-white/25" placeholder="Optional description" data-testid={`input-inline-desc-${task.id}`} />
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            <div>
+              <Label className="text-[9px] text-white mb-0.5 block">Grade Weight (%)</Label>
+              <Input type="number" value={editTaskFields.gradeWeight} onChange={(e) => setEditTaskFields({ ...editTaskFields, gradeWeight: e.target.value })} placeholder="e.g. 20" className="h-7 text-[10px] bg-white/10 border-white/15 text-white placeholder:text-white/25" data-testid={`input-inline-weight-${task.id}`} />
+            </div>
+            <div>
+              <Label className="text-[9px] text-white mb-0.5 block">Total Points</Label>
+              <Input type="number" value={editTaskFields.gradeTotal} onChange={(e) => setEditTaskFields({ ...editTaskFields, gradeTotal: e.target.value })} placeholder="e.g. 100" className="h-7 text-[10px] bg-white/10 border-white/15 text-white placeholder:text-white/25" data-testid={`input-inline-total-${task.id}`} />
+            </div>
+            <div>
+              <Label className="text-[9px] text-white mb-0.5 block">Score Earned</Label>
+              <Input type="number" value={editTaskFields.gradeValue} onChange={(e) => setEditTaskFields({ ...editTaskFields, gradeValue: e.target.value })} placeholder="e.g. 85" className="h-7 text-[10px] bg-white/10 border-white/15 text-white placeholder:text-white/25" data-testid={`input-inline-value-${task.id}`} />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <Label className="text-[9px] text-white mb-0.5 block">Reminder 1</Label>
+              <select value={editTaskFields.reminder1 ?? ''} onChange={(e) => setEditTaskFields({ ...editTaskFields, reminder1: e.target.value ? parseInt(e.target.value) : null })} className="w-full h-7 rounded bg-white/10 border border-white/15 text-white text-[10px] px-1.5" data-testid={`select-inline-r1-${task.id}`}>
+                {REMINDER_PRESETS.map((r) => (<option key={r.value} value={r.value} className="bg-gray-800">{r.label}</option>))}
+              </select>
+            </div>
+            <div>
+              <Label className="text-[9px] text-white mb-0.5 block">Reminder 2</Label>
+              <select value={editTaskFields.reminder2 ?? ''} onChange={(e) => setEditTaskFields({ ...editTaskFields, reminder2: e.target.value ? parseInt(e.target.value) : null })} className="w-full h-7 rounded bg-white/10 border border-white/15 text-white text-[10px] px-1.5" data-testid={`select-inline-r2-${task.id}`}>
+                {REMINDER_PRESETS.map((r) => (<option key={r.value} value={r.value} className="bg-gray-800">{r.label}</option>))}
+              </select>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <Label className="text-[9px] text-white mb-0.5 block">Reminder 3</Label>
+              <select value={editTaskFields.reminder3 ?? ''} onChange={(e) => setEditTaskFields({ ...editTaskFields, reminder3: e.target.value ? parseInt(e.target.value) : null })} className="w-full h-7 rounded bg-white/10 border border-white/15 text-white text-[10px] px-1.5" data-testid={`select-inline-r3-${task.id}`}>
+                {REMINDER_PRESETS.map((r) => (<option key={r.value} value={r.value} className="bg-gray-800">{r.label}</option>))}
+              </select>
+            </div>
+            <div>
+              <Label className="text-[9px] text-white mb-0.5 block">Reminder 4</Label>
+              <select value={editTaskFields.reminder4 ?? ''} onChange={(e) => setEditTaskFields({ ...editTaskFields, reminder4: e.target.value ? parseInt(e.target.value) : null })} className="w-full h-7 rounded bg-white/10 border border-white/15 text-white text-[10px] px-1.5" data-testid={`select-inline-r4-${task.id}`}>
+                {REMINDER_PRESETS.map((r) => (<option key={r.value} value={r.value} className="bg-gray-800">{r.label}</option>))}
+              </select>
+            </div>
+          </div>
+          <div className="flex items-center justify-end gap-2 pt-1">
+            <Button size="sm" variant="ghost" onClick={() => { setExpandedTaskId(null); setEditTaskFields(null); }} className="h-7 text-[10px] text-white hover:text-white hover:bg-white/10" data-testid={`button-inline-cancel-${task.id}`}>Cancel</Button>
+            <Button
+              size="sm"
+              onClick={() => {
+                const updates: Record<string, any> = {};
+                if (editTaskFields.title !== task.title) updates.title = editTaskFields.title;
+                if (editTaskFields.type !== task.type) updates.type = editTaskFields.type;
+                if (editTaskFields.description !== (task.description || '')) updates.description = editTaskFields.description;
+                if (editTaskFields.dueDate) {
+                  const dd = new Date(editTaskFields.dueDate);
+                  if (editTaskFields.dueTime) {
+                    const [h, m] = editTaskFields.dueTime.split(':').map(Number);
+                    dd.setHours(h, m, 0, 0);
+                  } else {
+                    dd.setHours(23, 59, 0, 0);
+                  }
+                  updates.dueDate = dd.toISOString();
+                }
+                const gw = editTaskFields.gradeWeight ? parseInt(editTaskFields.gradeWeight) : null;
+                const gt = editTaskFields.gradeTotal ? parseInt(editTaskFields.gradeTotal) : null;
+                const gv = editTaskFields.gradeValue ? parseInt(editTaskFields.gradeValue) : null;
+                if (gw !== (task.gradeWeight ?? null)) updates.gradeWeight = gw;
+                if (gt !== (task.gradeTotal ?? null)) updates.gradeTotal = gt;
+                if (gv !== (task.gradeValue ?? null)) updates.gradeValue = gv;
+                if (editTaskFields.reminder1 !== (task.reminder1 ?? null)) updates.reminder1 = editTaskFields.reminder1;
+                if (editTaskFields.reminder2 !== (task.reminder2 ?? null)) updates.reminder2 = editTaskFields.reminder2;
+                if (editTaskFields.reminder3 !== (task.reminder3 ?? null)) updates.reminder3 = editTaskFields.reminder3;
+                if (editTaskFields.reminder4 !== (task.reminder4 ?? null)) updates.reminder4 = editTaskFields.reminder4;
+                if (Object.keys(updates).length > 0) {
+                  updateTaskMutation.mutate({ id: task.id, data: updates, _task: task });
+                }
+                setExpandedTaskId(null);
+                setEditTaskFields(null);
+                toast({ title: "Task updated" });
+              }}
+              className="h-7 text-[10px] bg-white/20 hover:bg-white/30 text-white"
+              data-testid={`button-inline-save-${task.id}`}
+            >
+              Save Changes
+            </Button>
+          </div>
+        </div>
+      )}
+      </React.Fragment>
     );
   };
 
@@ -1235,41 +1376,41 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             ) : (
               <>
                 <div className="grid grid-cols-[1fr_1fr] gap-x-4 gap-y-1.5 text-[10px]">
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5" style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center' }}>
                     <User className="h-3 w-3 text-white flex-shrink-0" />
                     <span className="text-white whitespace-nowrap">Professor:</span>
                     <span className="text-white truncate">{courseInfo.professor || "Not set"}</span>
                   </div>
-                  <div className="flex items-center gap-1.5 justify-end">
-                    <Mail className="h-3 w-3 text-white flex-shrink-0" />
-                    <span className="text-white whitespace-nowrap">Email:</span>
+                  <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end' }}>
+                    <Mail className="h-3 w-3 text-white flex-shrink-0" style={{ justifySelf: 'start' }} />
+                    <span className="text-white whitespace-nowrap" style={{ justifySelf: 'start' }}>Email:</span>
                     {courseInfo.professorEmail ? (
-                      <a href={`mailto:${courseInfo.professorEmail}`} className="text-white hover:text-white/80 underline truncate" data-testid="link-professor-email">
+                      <a href={`mailto:${courseInfo.professorEmail}`} className="text-white hover:text-white/80 underline truncate" style={{ justifySelf: 'end' }} data-testid="link-professor-email">
                         {courseInfo.professorEmail}
                       </a>
                     ) : (
-                      <span className="text-white">Not set</span>
+                      <span className="text-white" style={{ justifySelf: 'end' }}>Not set</span>
                     )}
                   </div>
-                  <div className="flex items-center gap-1.5">
+                  <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center' }}>
                     {courseInfo.deliveryMode === "virtual" ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '38px', height: 'auto', filter: 'brightness(0) invert(1)' }} /> : courseInfo.deliveryMode === "online" ? <img src={wifiLogoPath} alt="Online" style={{ width: '14px', height: 'auto' }} /> : <Globe className="h-3 w-3 text-white" />}
                     <span className="text-white">Mode:</span>
                     <span className="text-white">{deliveryLabel}</span>
                   </div>
                   {courseInfo.courseType && (
-                    <div className="flex items-center gap-1.5">
-                      <BookOpen className="h-3 w-3 text-white" />
-                      <span className="text-white">Type:</span>
-                      <span className="text-white">{courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Open Elective" : "Liberal Studies"}</span>
+                    <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end' }}>
+                      <BookOpen className="h-3 w-3 text-white" style={{ justifySelf: 'start' }} />
+                      <span className="text-white whitespace-nowrap" style={{ justifySelf: 'start' }}>Type:</span>
+                      <span className="text-white" style={{ justifySelf: 'end' }}>{courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Open Elective" : "Liberal Studies"}</span>
                     </div>
                   )}
-                  <div className="flex items-center gap-1.5 col-span-2">
-                    <GraduationCap className="h-3 w-3 text-white" />
+                  <div className="col-span-2" style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center' }}>
+                    <GraduationCap className="h-3 w-3 text-white flex-shrink-0" />
                     <span className="text-white">Certificate:</span>
                     <span className="text-white text-[9px]">{certificateName || certificateType || '—'}</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <Calendar className="h-3 w-3 text-white" />
+                  <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center' }}>
+                    <Calendar className="h-3 w-3 text-white flex-shrink-0" />
                     <span className="text-white">Schedule:</span>
                     <span className="text-white capitalize">
                       {courseInfo.classDay
@@ -1278,8 +1419,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     </span>
                   </div>
                   {courseInfo.deliveryMode === "online" && (
-                    <div className="flex items-center gap-1.5">
-                      <Clock className="h-3 w-3 text-white" />
+                    <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center' }}>
+                      <Clock className="h-3 w-3 text-white flex-shrink-0" />
                       <span className="text-white">Modules:</span>
                       <span className="text-white">Weekly (change every Saturday)</span>
                     </div>
@@ -1298,8 +1439,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     <ExternalLink className="h-2.5 w-2.5 ml-auto flex-shrink-0" />
                   </a>
                 )}
-                {syllabusObjectPath && (
-                  <div className="mt-1">
+                <div className="mt-1">
+                  {syllabusObjectPath ? (
                     <button
                       onClick={() => {
                         setSyllabusViewerUrl(`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`);
@@ -1310,8 +1451,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     >
                       View Syllabus
                     </button>
-                  </div>
-                )}
+                  ) : (
+                    <span className="text-[10px] text-white/40 italic" data-testid="text-no-syllabus">No syllabus uploaded — use Edit to add one</span>
+                  )}
+                </div>
               </>
             )}
           </div>
