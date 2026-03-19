@@ -8852,9 +8852,11 @@ export default function Dashboard() {
       });
     };
     window.addEventListener('resize', rafUpdatePositions);
+    const positionInterval = setInterval(updatePositions, 2000);
     return () => {
       window.removeEventListener('resize', rafUpdatePositions);
       cancelAnimationFrame(rafId);
+      clearInterval(positionInterval);
     };
   }, [dueTodayTasks.length, dueTomorrowTasks.length, dueThisWeekTasks.length, modulesHoneycombOpen, isResizingThisWeek, isResizingHomework, gridSizes.allDayRowHeight]);
   
