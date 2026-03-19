@@ -21805,7 +21805,7 @@ export default function Dashboard() {
                               )}
                             </div>
                             <div style={{ flex: 1, minWidth: 0 }}><div style={{ maxHeight: '80px', overflowY: 'auto', scrollbarWidth: 'none' }}>
-                              {group.tasks.map((task, taskIdx) => {
+                              {group.tasks.filter((t, i, arr) => t.type !== "class" || arr.findIndex(x => x.type === "class" && x.title === t.title && x.courseName === t.courseName) === i).map((task, taskIdx) => {
                                 const progressColor = getProgressColor(task, 'tomorrow');
                                 const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
                                 const courseName = task.courseName?.split(' - ').slice(1).join(' - ') || task.courseName?.split(' - ')[0] || '';
@@ -21992,7 +21992,7 @@ export default function Dashboard() {
                               )}
                             </div>
                             <div style={{ flex: 1, minWidth: 0,  }}>
-                              {group.tasks.map((task, taskIdx) => {
+                              {group.tasks.filter((t, i, arr) => t.type !== "class" || arr.findIndex(x => x.type === "class" && x.title === t.title && x.courseName === t.courseName) === i).map((task, taskIdx) => {
                                 const progressColor = getProgressColor(task, 'thisweek');
                                 const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
                                 const courseName = task.courseName?.split(' - ').slice(1).join(' - ') || task.courseName?.split(' - ')[0] || '';
@@ -22183,7 +22183,7 @@ export default function Dashboard() {
                               )}
                             </div>
                             <div style={{ flex: 1, minWidth: 0,  }}>
-                              {group.tasks.map((task, taskIdx) => {
+                              {group.tasks.filter((t, i, arr) => t.type !== "class" || arr.findIndex(x => x.type === "class" && x.title === t.title && x.courseName === t.courseName) === i).map((task, taskIdx) => {
                                 const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
                                 const progressColor = daysUntil <= 1 ? '#ef4444' : daysUntil <= 3 ? '#f97316' : daysUntil <= 5 ? '#eab308' : '#22c55e';
                                 const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
@@ -22350,7 +22350,7 @@ export default function Dashboard() {
                               )}
                             </div>
                             <div style={{ flex: 1, minWidth: 0,  }}>
-                              {group.tasks.map((task, taskIdx) => {
+                              {group.tasks.filter((t, i, arr) => t.type !== "class" || arr.findIndex(x => x.type === "class" && x.title === t.title && x.courseName === t.courseName) === i).map((task, taskIdx) => {
                                 const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
                                 const progressColor = daysUntil <= 1 ? '#ef4444' : daysUntil <= 3 ? '#f97316' : daysUntil <= 5 ? '#eab308' : '#22c55e';
                                 const courseName = task.courseName?.split(' - ').slice(1).join(' - ') || task.courseName?.split(' - ')[0] || '';
