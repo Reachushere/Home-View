@@ -21162,7 +21162,7 @@ export default function Dashboard() {
               className="text-xs font-medium flex items-center text-white"
               style={{ flex: 1, letterSpacing: '0.3px' }}
             >
-              <span style={{ whiteSpace: 'nowrap', marginLeft: '5px', marginTop: '19px' }}>Homework Progress</span>
+              <span style={{ whiteSpace: 'nowrap', marginLeft: '6px', marginTop: '22px' }}>Homework Progress</span>
             </h4>
             {weatherData && (
               <div className="flex items-center gap-1.5" style={{ flexShrink: 0, marginTop: '-32px', position: 'relative', left: '-132px' }}>
