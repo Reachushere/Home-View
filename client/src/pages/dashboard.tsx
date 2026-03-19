@@ -21792,11 +21792,11 @@ export default function Dashboard() {
                                 })}
                               </div>
                             </div>
-                            {group.tasks.length > 1 && (
-                              <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', alignSelf: 'stretch' }}>
+                            <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', alignSelf: 'stretch' }}>
+                              {group.tasks.length > 1 && (
                                 <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
-                              </div>
-                            )}
+                              )}
+                            </div>
                             <div style={{ flex: 1, minWidth: 0, maxHeight: '80px', overflowY: 'auto', scrollbarWidth: 'none' }}>
                               {group.tasks.map((task, taskIdx) => {
                                 const progressColor = getProgressColor(task, 'tomorrow');
@@ -21979,11 +21979,11 @@ export default function Dashboard() {
                                 })}
                               </div>
                             </div>
-                            {group.tasks.length > 1 && (
-                              <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', alignSelf: 'stretch' }}>
+                            <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', alignSelf: 'stretch' }}>
+                              {group.tasks.length > 1 && (
                                 <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
-                              </div>
-                            )}
+                              )}
+                            </div>
                             <div style={{ flex: 1, minWidth: 0 }}>
                               {group.tasks.map((task, taskIdx) => {
                                 const progressColor = getProgressColor(task, 'thisweek');
@@ -22170,11 +22170,11 @@ export default function Dashboard() {
                                 })}
                               </div>
                             </div>
-                            {group.tasks.length > 1 && (
-                              <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', alignSelf: 'stretch' }}>
+                            <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', alignSelf: 'stretch' }}>
+                              {group.tasks.length > 1 && (
                                 <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
-                              </div>
-                            )}
+                              )}
+                            </div>
                             <div style={{ flex: 1, minWidth: 0 }}>
                               {group.tasks.map((task, taskIdx) => {
                                 const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
@@ -22337,11 +22337,11 @@ export default function Dashboard() {
                                 })}
                               </div>
                             </div>
-                            {group.tasks.length > 1 && (
-                              <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', alignSelf: 'stretch' }}>
+                            <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', alignSelf: 'stretch' }}>
+                              {group.tasks.length > 1 && (
                                 <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
-                              </div>
-                            )}
+                              )}
+                            </div>
                             <div style={{ flex: 1, minWidth: 0 }}>
                               {group.tasks.map((task, taskIdx) => {
                                 const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
