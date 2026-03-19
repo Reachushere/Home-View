@@ -28,7 +28,8 @@ import rawStoryLogoPath from "@assets/Raw_Story_1773607642361.png";
 import abcNewsLogoPath from "@assets/ABC_1773609250051.png";
 import weatherAlertLogoPath from "@assets/Weather_Alert_1773608511887.png";
 import bbcNewsLogoPath from "@assets/BBC_1773609711103.png";
-import forecastIconPath from "@assets/Forecast_1773897886106.png";
+import forecastIconPath from "@assets/Forecast2_1773897989398.png";
+import cnTowerPath from "@assets/CN2_1773897525570.png";
 import foxNewsLogoPath from "@assets/Fox_News_1773610204651.png";
 import dashboardBg from "@assets/BG2_1769977873184.jpg";
 import celebrationAnimoji from "@assets/Animoji_1769350617739.webp";
@@ -359,7 +360,7 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
       }
       if (item.source === '_FORECAST_') {
         const forecastHtml = item.title.replace(/(<b>[^<]*<\/b>:?)/, '<span style="color:rgb(0,255,0);text-shadow:0 0 4px rgba(0,255,0,0.3)">$1</span>');
-        return `<span class="inline-flex items-center gap-1.5 mx-4" data-testid="weather-forecast-${i}"><span class="text-[13px] font-semibold text-white/95">${forecastHtml}</span></span>`;
+        return `<span class="inline-flex items-center gap-1.5 mx-4" data-testid="weather-forecast-${i}"><span class="text-[13px] font-semibold text-white/95">${forecastHtml}</span><span class="text-white/20 mx-2">|</span></span>`;
       }
       const logoInfo = TICKER_LOGO_MAP[item.source];
       const logoHtml = logoInfo
@@ -13223,7 +13224,7 @@ export default function Dashboard() {
           const WMO_DESC: Record<number, string> = { 0:'Clear',1:'Mainly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Rime Fog',51:'Light Drizzle',53:'Drizzle',55:'Heavy Drizzle',61:'Light Rain',63:'Rain',65:'Heavy Rain',66:'Freezing Rain',67:'Heavy Freezing Rain',71:'Light Snow',73:'Snow',75:'Heavy Snow',77:'Snow Grains',80:'Light Showers',81:'Showers',82:'Heavy Showers',85:'Light Snow Showers',86:'Heavy Snow Showers',95:'Thunderstorm',96:'Thunderstorm w/ Hail',99:'Severe Thunderstorm' };
           const desc = WMO_DESC[weatherData.code] || 'Mixed';
           const items: { title: string; source: string; link: string }[] = [];
-          items.push({ title: `🌡️ <b>TORONTO FORECAST</b>: ${Math.round(weatherData.temp)}°C — ${desc}  |  Wind: ${Math.round(weatherData.windSpeed)} km/h`, source: '_FORECAST_', link: '' });
+          items.push({ title: `<img src="${cnTowerPath}" style="height:23px;width:auto;display:inline-block;vertical-align:middle;margin-right:4px" /><b>TORONTO FORECAST</b>: ${Math.round(weatherData.temp)}°C — ${desc}  |  Wind: ${Math.round(weatherData.windSpeed)} km/h`, source: '_FORECAST_', link: '' });
           if (weatherData.daily && weatherData.daily.length >= 3) {
             const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
             const forecastParts = weatherData.daily.slice(0, 3).map(d => {
