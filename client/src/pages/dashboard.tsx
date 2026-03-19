@@ -21085,15 +21085,15 @@ export default function Dashboard() {
           >
             <ChevronDown style={{ width: '14px', height: '14px', color: 'white' }} strokeWidth={2.5} />
           </div>
-          {/* Bottom separator — 10px above bottom double chevron */}
+          {/* Bottom separator — 10px below bottom of page-down chevron */}
           <div
             className="absolute z-50"
-            style={{ right: '-14px', bottom: '42px', width: '9px', height: '1px', background: 'rgba(255,255,255,0.3)', pointerEvents: 'none', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
+            style={{ right: '-14px', bottom: '33px', width: '9px', height: '1px', background: 'rgba(255,255,255,0.3)', pointerEvents: 'none', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
           />
-          {/* Scroll to bottom (double chevron down) — moved down 5px to 24px */}
+          {/* Scroll to bottom (double chevron down) — 10px below bottom separator */}
           <div
             className="absolute z-50 hover:bg-white/20 rounded-full flex items-center justify-center cursor-pointer"
-            style={{ right: '-18px', bottom: '31px', width: '18px', height: '18px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
+            style={{ right: '-18px', bottom: '14px', width: '18px', height: '18px', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined }}
             onClick={() => { if (homeworkScrollRef.current) { homeworkScrollRef.current.scrollTo({ top: homeworkScrollRef.current.scrollHeight, behavior: 'smooth' }); } }}
             data-testid="button-homework-scroll-to-bottom"
           >
