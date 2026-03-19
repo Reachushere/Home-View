@@ -19808,11 +19808,13 @@ export default function Dashboard() {
             onClick={() => {
               localStorage.setItem('calendarHeight', String(calendarHeight));
               localStorage.setItem('calendarReduction', String(calendarReduction));
+              localStorage.setItem('gridSizes', JSON.stringify(gridSizes));
               const screenWidth = window.screen.width;
               const screenHeight = window.screen.height;
               const pixelRatio = window.devicePixelRatio || 1;
               const deviceId = `device_${screenWidth}x${screenHeight}@${pixelRatio}`;
               localStorage.setItem(`calendarHeight_${deviceId}`, String(calendarHeight));
+              localStorage.setItem(`gridSizes_${deviceId}`, JSON.stringify(gridSizes));
               toast({ title: "Saved", description: "Calendar size saved as default" });
             }}
             data-testid="button-set-default-size"
