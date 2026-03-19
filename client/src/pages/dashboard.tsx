@@ -20836,13 +20836,16 @@ export default function Dashboard() {
             // Parse course code and name (format: "CPPA122" or "CPPA122 - Full Name")
             const courseCode = (task.courseName?.split(' - ')[0] || '').trim();
             const courseFullName = (task.courseName?.includes(' - ') ? task.courseName.split(' - ').slice(1).join(' - ') : '').trim();
+            const taskGc = getCourseGradientColors(courseCode);
+            const taskRgb = hexToRgb(taskGc.start);
+            const taskCourseBg = `rgba(${taskRgb.r}, ${taskRgb.g}, ${taskRgb.b}, 0.13)`;
             
             return (
               <div 
                 key={task.id} 
                 className={`mb-1.5 rounded transition-colors ${draggedFile ? 'hover:bg-white/20 hover:ring-2 hover:ring-white/50' : ''} ${isZeroDaysTask ? 'animate-zero-day-blink' : shouldBlinkInTodayBox || shouldBlinkAssignment ? 'animate-blink-no-sweep' : ''}`} 
                 data-box-task-id={task.id} 
-                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
+                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundColor: taskCourseBg }}
                 onMouseEnter={() => setHoveredCountdownTaskIdDebounced(task.id)}
                 onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                 onDragOver={(e) => { if (draggedFile) { e.preventDefault(); e.stopPropagation(); } }}
