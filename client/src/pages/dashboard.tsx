@@ -11159,7 +11159,7 @@ export default function Dashboard() {
               className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
               style={{ background: 'transparent' }}
               data-testid="button-key-contacts"
-              title="Key Contacts"
+              title="Contacts"
               onClick={() => {
                 triggerButtonGlow('keycontacts');
                 setIsKeyContactsOpen(true);
