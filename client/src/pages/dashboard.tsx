@@ -18552,7 +18552,7 @@ export default function Dashboard() {
                                 <div
                                   className="flex items-center text-[9px] rounded border cursor-pointer relative w-full"
                                   style={{ 
-                                    backgroundColor: 'white',
+                                    backgroundColor: '#9ca3af',
                                     borderColor: course.darkColor,
                                     zIndex: hoveredCountdownTaskId === task.id ? 55 : 1,
                                     transform: hoveredCountdownTaskId === task.id ? 'scale(1.12)' : undefined,
@@ -18565,7 +18565,7 @@ export default function Dashboard() {
                                   title={`Prep Day - ${task.title}`}
                                 >
                                   {(() => { const totalPrepDays = differenceInCalendarDays(prepDueDate, prepStartDate); const showCount = totalPrepDays > 3; const daysLeft = showCount ? differenceInCalendarDays(prepDueDate, cellDate) : 0; const prepUrgent = showCount && daysLeft <= 2; const prepColor = prepUrgent ? '#ff3b3b' : '#ffffff'; return <span className="flex flex-col items-center justify-center whitespace-nowrap font-bold shrink-0" style={{ backgroundColor: '#000000', color: prepColor, letterSpacing: showCount ? '0.5px' : '1px', padding: showCount ? '0px 3px 0 2px' : '1px 3px 0 2px', fontSize: showCount ? '7px' : '8px', WebkitTextStroke: prepUrgent ? '0.15px #ff3b3b' : '0.15px #ffffff', alignSelf: 'stretch', lineHeight: showCount ? '1.1' : undefined, marginTop: showCount ? '-1px' : undefined, minWidth: '30px' }}><span style={{ marginTop: showCount ? '1px' : undefined }}>PREP</span>{showCount && <span style={{ color: prepColor, fontSize: '8px', fontWeight: 550, WebkitTextStroke: '0', letterSpacing: '0.3px', lineHeight: '1', marginTop: '0px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>{daysLeft}d</span>}</span>; })()}
-                                  <span className="truncate text-black pl-[3px] py-0.5 flex-1 min-w-0" style={{ fontSize: '9px', transform: 'translateY(1px)' }}>{task.title}</span>
+                                  <span className="truncate pl-[3px] py-0.5 flex-1 min-w-0" style={{ fontSize: '9px', transform: 'translateY(1px)', color: '#000000' }}>{task.title}</span>
                                 </div>
                               </div>
                             );
