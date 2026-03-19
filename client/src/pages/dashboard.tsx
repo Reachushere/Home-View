@@ -5194,6 +5194,13 @@ export default function Dashboard() {
     retryDelay: 1000,
   });
 
+  const { data: d2lAnnouncements = [] } = useQuery<any[]>({
+    queryKey: ["/api/announcements"],
+    queryFn: () => fetch('/api/announcements?limit=15', { credentials: 'include' }).then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }).catch(() => []),
+    refetchInterval: 5 * 60 * 1000,
+    retry: 1,
+  });
+
   // Filter files for the current week (exclude completed/listened files)
   const currentWeekFiles = weeklyFiles.filter(f => 
     (f.folder?.startsWith(`week-${selectedWeek}`) || f.folder === `week-${selectedWeek}`) && !f.listened
@@ -17843,6 +17850,34 @@ export default function Dashboard() {
                 );
               })}
             </div>
+
+            {d2lAnnouncements.length > 0 && (
+              <div className="relative w-full overflow-hidden flex-shrink-0" style={{ height: '22px', background: 'linear-gradient(90deg, rgba(16,185,129,0.12) 0%, rgba(5,150,105,0.08) 50%, rgba(16,185,129,0.12) 100%)', borderBottom: '1px solid rgba(16,185,129,0.25)' }} data-testid="announcement-ticker">
+                <div className="absolute left-0 top-0 bottom-0 w-6 z-10" style={{ background: 'linear-gradient(90deg, rgba(0,0,0,0.8) 0%, transparent 100%)' }} />
+                <div className="absolute right-0 top-0 bottom-0 w-6 z-10" style={{ background: 'linear-gradient(270deg, rgba(0,0,0,0.8) 0%, transparent 100%)' }} />
+                <div className="flex items-center h-full animate-ticker whitespace-nowrap" style={{ animation: `ticker ${Math.max(30, d2lAnnouncements.length * 12)}s linear infinite` }}>
+                  {[...d2lAnnouncements, ...d2lAnnouncements].map((a: any, i: number) => {
+                    const timeAgo = (() => {
+                      const diff = Date.now() - new Date(a.date).getTime();
+                      const mins = Math.floor(diff / 60000);
+                      if (mins < 60) return `${mins}m ago`;
+                      const hrs = Math.floor(mins / 60);
+                      if (hrs < 24) return `${hrs}h ago`;
+                      const days = Math.floor(hrs / 24);
+                      return `${days}d ago`;
+                    })();
+                    return (
+                      <span key={`${a.id}-${i}`} className="inline-flex items-center gap-2 mx-6" data-testid={`announcement-${a.id}-${i}`}>
+                        <span className="text-[9px] font-bold text-emerald-400 tracking-wide uppercase">{a.courseName}</span>
+                        <span className="text-[9px] text-white/80">{a.subject}</span>
+                        <span className="text-[8px] text-white/40">{timeAgo}</span>
+                        <span className="text-emerald-600/40 mx-2">•</span>
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
             
               {/* Course Rows - Dynamic based on selected week */}
               {/* Pre-compute course row height: minimum = 3 tasks height, expand only if any course has >3 tasks */}

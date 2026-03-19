@@ -2253,6 +2253,10 @@ input[type="date"]::-webkit-datetime-edit-year-field {
   0% { transform: translate3d(var(--ticker-start), 0, 0); }
   100% { transform: translate3d(var(--ticker-end), 0, 0); }
 }
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
 @keyframes tickerAlertBlink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.3; }
@@ -2265,6 +2269,11 @@ input[type="date"]::-webkit-datetime-edit-year-field {
 }
 
 .news-ticker-scroll:hover {
+  animation-play-state: paused !important;
+}
+
+[data-testid="announcement-ticker"]:hover .animate-ticker,
+[data-testid="announcement-ticker"]:hover > div:nth-child(3) {
   animation-play-state: paused !important;
 }
 
