@@ -21156,7 +21156,7 @@ export default function Dashboard() {
               </div>
             );
           })()}
-          <div style={{ padding: '0 8px', height: '44px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 42, overflow: 'visible' }}>
+          <div style={{ padding: '0 8px', height: '39px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 42, overflow: 'visible' }}>
             <div style={{ position: 'absolute', top: '15px', left: 0, right: 0, height: '0.25px', backgroundColor: '#ffffff' }} />
             <span className="text-xs font-medium text-white" style={{ position: 'absolute', left: '12px', top: '31px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Homework Progress</span>
             <span className="text-xs font-medium text-white" style={{ position: 'absolute', left: '161px', top: '31px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Upcoming Assignments</span>
@@ -21176,7 +21176,7 @@ export default function Dashboard() {
           </div>
           {courseRowRects.length > 0 && courseProgressDataRef.current.length > 0 && (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
-            const firstRowOffset = courseRowRects[0] ? (courseRowRects[0].top - upcomingTop - 44) : 0;
+            const firstRowOffset = courseRowRects[0] ? (courseRowRects[0].top - upcomingTop - 39) : 0;
             const leftWidth = (() => {
               if (homeworkSpacerRef.current && homeworkSectionRef.current) {
                 const spacerRect = homeworkSpacerRef.current.getBoundingClientRect();
@@ -21542,7 +21542,7 @@ export default function Dashboard() {
           <div className="flex-1 px-2 flex flex-col" style={{ marginTop: (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
             if (courseRowRects.length > 0) {
-              const firstOffset = courseRowRects[0] ? (courseRowRects[0].top - upcomingTop - 44) : 0;
+              const firstOffset = courseRowRects[0] ? (courseRowRects[0].top - upcomingTop - 39) : 0;
               const lastRect = courseRowRects[courseRowRects.length - 1];
               if (lastRect) {
                 const lastBottom = lastRect.top + lastRect.height - upcomingTop - firstOffset;
@@ -21563,7 +21563,7 @@ export default function Dashboard() {
                   data-testid="hw-group-bar-handle"
                 />
                 {/* Today Section */}
-                <div data-homework-section="today" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 0 6px 0', marginTop: '-5px' }}>
+                <div data-homework-section="today" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 0 6px 0' }}>
                   <span className="text-[12px]" style={{ color: '#ffffff' }}>Today</span>
                   <span className="text-[11px]" style={{ color: '#ffffff' }}>({dueTodayTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', justifyContent: 'flex-end', marginLeft: 'auto', flexShrink: 0, width: '42px' }}>
