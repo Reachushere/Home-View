@@ -1108,7 +1108,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                       />
                       <div className={`h-6 px-2 text-[9px] bg-emerald-600/30 hover:bg-emerald-600/50 text-white border border-emerald-400/30 rounded-md flex items-center gap-1 transition-colors whitespace-nowrap ${isParsingSyllabus || isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
                         {isParsingSyllabus ? <Loader2 className="h-3 w-3 animate-spin" /> : <FileText className="h-3 w-3" />}
-                        {isParsingSyllabus ? 'Parsing...' : 'Syllabus'}
+                        {isParsingSyllabus ? 'Parsing...' : 'Add Syllabus'}
                       </div>
                     </label>
                     <label className="cursor-pointer" data-testid="button-upload-assignment">
@@ -1129,17 +1129,17 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-2 gap-2 text-[10px]">
+                <div className="grid grid-cols-[1fr_1fr] gap-x-4 gap-y-1.5 text-[10px]">
                   <div className="flex items-center gap-1.5">
-                    <User className="h-3 w-3 text-white" />
-                    <span className="text-white">Professor:</span>
-                    <span className="text-white">{courseInfo.professor || "Not set"}</span>
+                    <User className="h-3 w-3 text-white flex-shrink-0" />
+                    <span className="text-white whitespace-nowrap">Professor:</span>
+                    <span className="text-white truncate">{courseInfo.professor || "Not set"}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <Mail className="h-3 w-3 text-white" />
-                    <span className="text-white">Email:</span>
+                    <Mail className="h-3 w-3 text-white flex-shrink-0" />
+                    <span className="text-white whitespace-nowrap">Email:</span>
                     {courseInfo.professorEmail ? (
-                      <a href={`mailto:${courseInfo.professorEmail}`} className="text-white hover:text-white/80 underline" data-testid="link-professor-email">
+                      <a href={`mailto:${courseInfo.professorEmail}`} className="text-white hover:text-white/80 underline truncate" data-testid="link-professor-email">
                         {courseInfo.professorEmail}
                       </a>
                     ) : (
