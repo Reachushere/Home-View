@@ -2613,121 +2613,109 @@ export default function PDFReaderPage() {
 
       {!followOnly && <div className="relative flex-shrink-0 flex justify-center" style={{ zIndex: 10, padding: '5px 20px 14px 20px' }}>
         <div className="rounded-2xl mx-auto" style={{ background: 'rgba(255,255,255,0.16)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.22)', maxWidth: '1200px', width: '100%', overflow: 'visible' }}>
-          <div className="relative px-8 pb-5" style={{ overflow: 'visible' }}>
-            <div className="flex items-end justify-center" style={{ overflow: 'visible' }}>
+          <div className="relative px-4 pb-4 pt-1" style={{ overflow: 'visible' }}>
+            <div className="flex items-center justify-center" style={{ overflow: 'visible', gap: '12px' }}>
+              <div style={{ width: '120px', height: '48px', flexShrink: 0 }}>
+                <canvas
+                  ref={canvasRef}
+                  className="w-full h-full pointer-events-none"
+                  data-testid="audio-visualizer-canvas"
+                />
+              </div>
+
+              <button className="w-10 h-10 flex flex-col items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={restartCurrentChunk} disabled={!isPlaying} title="Restart current chunk" data-testid="button-refresh-chunk-inline">
+                <RefreshCw className="h-4 w-4 text-white" />
+                <span className="text-[8px] text-white/70 leading-none mt-0.5">Restart</span>
+              </button>
+
+              <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15); } }} disabled={!isPlaying} data-testid="button-rewind-15" title="Rewind 15s">
+                <RotateCcw className="h-4 w-4 text-white" />
+                <span className="text-[9px] text-white font-medium ml-0.5">15s</span>
+              </button>
+
+              <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 15); } }} disabled={!isPlaying} data-testid="button-forward-15" title="Forward 15s">
+                <span className="text-[9px] text-white font-medium mr-0.5">15s</span>
+                <RotateCw className="h-4 w-4 text-white" />
+              </button>
+
+              {file && file.lastChunkIndex > 0 && !isPlaying && (
+                <button
+                  className="w-12 h-12 flex flex-col items-center justify-center rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 shrink-0"
+                  style={{ outline: '2px solid rgba(255,255,255,0.25)', outlineOffset: '2px' }}
+                  onClick={restartFromBeginning}
+                  disabled={isLoading || numPages === 0}
+                  title="Restart from beginning (clears all progress)"
+                  data-testid="button-restart"
+                >
+                  <SkipBack className="h-5 w-5 text-white" />
+                  <span className="text-[8px] text-white/70 leading-none">Reset</span>
+                </button>
+              )}
+
+              {file && file.lastChunkIndex > 0 && !isPlaying && (
+                <button
+                  className="w-14 h-14 flex flex-col items-center justify-center rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 shrink-0"
+                  style={{ outline: '2px solid rgba(255,255,255,0.35)', outlineOffset: '3px' }}
+                  onClick={resumeFromLast}
+                  disabled={isLoading || numPages === 0}
+                  title={`Resume from chunk ${file.lastChunkIndex + 1}${file.totalChunks ? ` of ${file.totalChunks}` : ''}`}
+                  data-testid="button-resume"
+                >
+                  {isLoading ? <Loader2 className="h-6 w-6 text-white animate-spin" /> : <RotateCcw className="h-6 w-6 text-white" />}
+                  <span className="text-[8px] text-white/70 leading-none mt-0.5">Resume</span>
+                </button>
+              )}
+
               {catWashFollow && followState?.active ? (
                 <button
-                  className="rounded-full bg-red-600 hover:bg-red-500"
-                  style={{ marginTop: '-30px', padding: '18px', outline: '2px solid rgba(255,100,100,0.5)', outlineOffset: '3px' }}
+                  className="w-16 h-16 flex items-center justify-center rounded-full bg-red-600 hover:bg-red-500 shrink-0"
+                  style={{ outline: '2px solid rgba(255,100,100,0.5)', outlineOffset: '3px' }}
                   onClick={() => {
                     fetch("/api/cat-wash/stop", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ keepOpen: true }) }).then(() => setFollowState(null));
                   }}
                   data-testid="button-stop-catwash"
                 >
-                  <Square className="h-10 w-10 text-white fill-white" />
+                  <Square className="h-7 w-7 text-white fill-white" />
                 </button>
               ) : !isPlaying ? (
-                <div className="flex items-center" style={{ marginTop: '-30px', gap: '30px' }}>
-                  {file && file.lastChunkIndex > 0 && (
-                    <button
-                      className="rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 flex flex-col items-center"
-                      style={{ padding: '14px', outline: '2px solid rgba(255,255,255,0.25)', outlineOffset: '3px' }}
-                      onClick={restartFromBeginning}
-                      disabled={isLoading || numPages === 0}
-                      title="Restart from beginning (clears all progress)"
-                      data-testid="button-restart"
-                    >
-                      <SkipBack className="h-8 w-8 text-white" />
-                      <span className="text-[10px] text-white/70 mt-1">Reset</span>
-                    </button>
-                  )}
-                  {file && file.lastChunkIndex > 0 && (
-                    <button
-                      className="rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 flex flex-col items-center"
-                      style={{ padding: '18px', outline: '2px solid rgba(255,255,255,0.35)', outlineOffset: '3px' }}
-                      onClick={resumeFromLast}
-                      disabled={isLoading || numPages === 0}
-                      title={`Resume from chunk ${file.lastChunkIndex + 1}${file.totalChunks ? ` of ${file.totalChunks}` : ''}`}
-                      data-testid="button-resume"
-                    >
-                      {isLoading ? <Loader2 className="h-10 w-10 text-white animate-spin" /> : <RotateCcw className="h-10 w-10 text-white" />}
-                      <span className="text-[10px] text-white/70 mt-1">Resume</span>
-                    </button>
-                  )}
-                  <button
-                    className="rounded-full bg-white hover:bg-white/90 disabled:opacity-30"
-                    style={{ padding: '18px', outline: '2px solid rgba(255,255,255,0.35)', outlineOffset: '3px' }}
-                    onClick={startReading}
-                    disabled={isLoading || numPages === 0}
-                    data-testid="button-play"
-                  >
-                    {isLoading ? <Loader2 className="h-10 w-10 text-gray-900 animate-spin" /> : <Play className="h-10 w-10 text-gray-900 fill-gray-900 ml-0.5" />}
-                  </button>
-                </div>
+                <button
+                  className="w-16 h-16 flex items-center justify-center rounded-full bg-white hover:bg-white/90 disabled:opacity-30 shrink-0"
+                  style={{ outline: '2px solid rgba(255,255,255,0.35)', outlineOffset: '3px' }}
+                  onClick={startReading}
+                  disabled={isLoading || numPages === 0}
+                  data-testid="button-play"
+                >
+                  {isLoading ? <Loader2 className="h-7 w-7 text-gray-900 animate-spin" /> : <Play className="h-7 w-7 text-gray-900 fill-gray-900 ml-0.5" />}
+                </button>
               ) : isPaused ? (
-                <button className="rounded-full bg-white hover:bg-white/90" style={{ marginTop: '-30px', padding: '18px', outline: '2px solid rgba(255,255,255,0.35)', outlineOffset: '3px' }} onClick={resumeReading} data-testid="button-resume-play">
-                  <Play className="h-10 w-10 text-gray-900 fill-gray-900 ml-0.5" />
+                <button className="w-16 h-16 flex items-center justify-center rounded-full bg-white hover:bg-white/90 shrink-0" style={{ outline: '2px solid rgba(255,255,255,0.35)', outlineOffset: '3px' }} onClick={resumeReading} data-testid="button-resume-play">
+                  <Play className="h-7 w-7 text-gray-900 fill-gray-900 ml-0.5" />
                 </button>
               ) : (
-                <button className="rounded-full bg-white hover:bg-white/90" style={{ marginTop: '-30px', padding: '18px', outline: '2px solid rgba(255,255,255,0.35)', outlineOffset: '3px' }} onClick={stopReading} data-testid="button-stop-center">
-                  <Square className="h-10 w-10 text-gray-900 fill-gray-900" />
+                <button className="w-16 h-16 flex items-center justify-center rounded-full bg-white hover:bg-white/90 shrink-0" style={{ outline: '2px solid rgba(255,255,255,0.35)', outlineOffset: '3px' }} onClick={stopReading} data-testid="button-stop-center">
+                  <Square className="h-7 w-7 text-gray-900 fill-gray-900" />
                 </button>
               )}
-            </div>
 
-
-            <div className="absolute" style={{ bottom: '12px', left: '24px', width: '120px', height: '48px' }}>
-              <canvas
-                ref={canvasRef}
-                className="w-full h-full pointer-events-none"
-                data-testid="audio-visualizer-canvas"
-              />
-            </div>
-
-            <div className="absolute flex items-start gap-2" style={{ bottom: '10px', left: '39px' }}>
-              <button className="p-3 rounded-full hover:bg-white/10 flex flex-col items-center gap-0.5" onClick={restartCurrentChunk} disabled={!isPlaying} title="Refresh current chunk" data-testid="button-refresh-chunk-inline">
-                <RefreshCw className="h-5 w-5 text-white" />
-                <span className="text-[9px] text-white/70 leading-none">Restart</span>
-              </button>
-              <button className="p-3 rounded-full hover:bg-white/10 flex flex-col items-center gap-0.5" onClick={restartFromBeginning} disabled={!isPlaying} title="Restart from beginning (resets all progress)" data-testid="button-restart-inline">
-                <RotateCcw className="h-5 w-5 text-white" />
-                <span className="text-[9px] text-white/70 leading-none">Reset</span>
-              </button>
-            </div>
-
-            <div className="absolute flex items-start gap-2" style={{ bottom: '4px', left: '275px' }}>
-              <div className="flex items-start gap-2">
-                <button className="p-3 rounded-full hover:bg-white/10 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15); } }} disabled={!isPlaying} data-testid="button-rewind-15">
-                  <RotateCcw className="h-5 w-5 text-white" />
-                  <span className="text-xs text-white font-medium">15s</span>
-                </button>
-                <button className="p-3 rounded-full hover:bg-white/10 flex items-center gap-1" style={{ marginLeft: '25px' }} onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 15); } }} disabled={!isPlaying} data-testid="button-forward-15">
-                  <span className="text-xs text-white font-medium">15s</span>
-                  <RotateCw className="h-5 w-5 text-white" />
-                </button>
-              </div>
-            </div>
-
-            <div className="absolute right-8 flex items-start" style={{ gap: '12px', bottom: '4px' }}>
-              <button className="p-3 rounded-full hover:bg-white/10" style={{ marginRight: '145px' }} onClick={skipBack} disabled={(!isPlaying && !(catWashFollow && followState?.active)) || currentChunk === 0} data-testid="button-skip-back">
+              <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={skipBack} disabled={(!isPlaying && !(catWashFollow && followState?.active)) || currentChunk === 0} data-testid="button-skip-back" title="Previous chunk">
                 <SkipBack className="h-5 w-5 text-white" />
               </button>
-              <button className="p-3 rounded-full hover:bg-white/10" style={{ marginRight: '115px' }} onClick={skipForward} disabled={(!isPlaying && !(catWashFollow && followState?.active)) || currentChunk >= totalChunks - 1} data-testid="button-skip-forward-left">
+
+              <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={skipForward} disabled={(!isPlaying && !(catWashFollow && followState?.active)) || currentChunk >= totalChunks - 1} data-testid="button-skip-forward-left" title="Next chunk">
                 <SkipForward className="h-5 w-5 text-white" />
               </button>
-              <button className="p-3 rounded-full hover:bg-white/10 flex flex-col items-center gap-0.5" onClick={() => {
+
+              <button className="w-10 h-10 flex flex-col items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={() => {
                 if (catWashFollow && followState?.active) {
                   fetch("/api/cat-wash/stop", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ keepOpen: true }) }).then(() => setFollowState(null));
                 } else {
                   stopReading();
                 }
-              }} disabled={!isPlaying && !(catWashFollow && followState?.active)} data-testid="button-stop">
-                <Square className="h-5 w-5 text-white fill-white" />
-                <span className="text-[9px] text-white/70 leading-none">Stop</span>
+              }} disabled={!isPlaying && !(catWashFollow && followState?.active)} data-testid="button-stop" title="Stop">
+                <Square className="h-4 w-4 text-white fill-white" />
+                <span className="text-[8px] text-white/70 leading-none mt-0.5">Stop</span>
               </button>
             </div>
-
-
           </div>
 
           <div className="flex items-center justify-between px-8 pb-4">
