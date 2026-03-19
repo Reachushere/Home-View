@@ -659,7 +659,10 @@ export default function Dashboard() {
   };
 
   const [initialEndTime, setInitialEndTime] = useState<string>("");
-  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [editingTask, setEditingTaskRaw] = useState<Task | null>(null);
+  const setEditingTask = useCallback((task: Task | null) => {
+    startTransition(() => setEditingTaskRaw(task));
+  }, []);
   const [maxTaskNameWidth, setMaxTaskNameWidth] = useState<number>(0);
   const [rescheduleTask, setRescheduleTask] = useState<Task | null>(null);
   const [isTodayExpanded, setIsTodayExpanded] = useState(false);
@@ -1217,10 +1220,10 @@ export default function Dashboard() {
   const topPillRef = useRef<HTMLDivElement>(null);
   const topPillTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const openTopPill = useCallback(() => {
-    setIsTopPillOpen(true);
+    startTransition(() => setIsTopPillOpen(true));
   }, []);
   const closeTopPill = useCallback(() => {
-    setIsTopPillOpen(false);
+    startTransition(() => setIsTopPillOpen(false));
   }, []);
   useEffect(() => {
     requestAnimationFrame(() => {
@@ -11181,9 +11184,11 @@ export default function Dashboard() {
               data-testid="button-courses-pill"
               title="Courses"
               onClick={() => {
-                setDraftPriorityBoth({ ...coursePlayPriority });
-                setSchoolCoursesOpenSource('pill');
-                setIsSchoolCoursesDialogOpen(true);
+                startTransition(() => {
+                  setDraftPriorityBoth({ ...coursePlayPriority });
+                  setSchoolCoursesOpenSource('pill');
+                  setIsSchoolCoursesDialogOpen(true);
+                });
               }}
             >
               <BookOpen className="text-white" style={{ height: '20px', width: '20px' }} />
@@ -12126,9 +12131,11 @@ export default function Dashboard() {
               className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity"
               onClick={(e) => {
                 e.stopPropagation();
-                setDraftPriorityBoth({ ...coursePlayPriority });
-                setSchoolCoursesOpenSource('degree');
-                setIsSchoolCoursesDialogOpen(true);
+                startTransition(() => {
+                  setDraftPriorityBoth({ ...coursePlayPriority });
+                  setSchoolCoursesOpenSource('degree');
+                  setIsSchoolCoursesDialogOpen(true);
+                });
               }}
               data-testid="button-degree-courses"
             >
@@ -15397,9 +15404,11 @@ export default function Dashboard() {
                   <Button
                     className="flex-1 bg-blue-500 hover:bg-blue-600 text-white"
                     onClick={() => {
-                      setShowRankCoursesReminder(false);
-                      setDraftPriorityBoth({ ...coursePlayPriority });
-                      setIsSchoolCoursesDialogOpen(true);
+                      startTransition(() => {
+                        setShowRankCoursesReminder(false);
+                        setDraftPriorityBoth({ ...coursePlayPriority });
+                        setIsSchoolCoursesDialogOpen(true);
+                      });
                     }}
                     data-testid="button-rank-courses-now"
                   >
@@ -15779,7 +15788,7 @@ export default function Dashboard() {
           {/* Courses Dialog - All past + current courses organized by semester */}
           {isSchoolCoursesDialogOpen && createPortal(
             <div>
-            <div className={`fixed inset-0 z-[10002] ${schoolCoursesOpenSource === 'pill' ? 'bg-black/50' : ''}`} onClick={() => setIsSchoolCoursesDialogOpen(false)} />
+            <div className={`fixed inset-0 z-[10002] ${schoolCoursesOpenSource === 'pill' ? 'bg-black/50' : ''}`} onClick={() => startTransition(() => setIsSchoolCoursesDialogOpen(false))} />
             <div
               className="fixed left-[50%] translate-x-[-50%] z-[10002] overflow-hidden flex flex-col text-[11px] text-white p-0 sm:rounded-lg"
               style={schoolCoursesOpenSource === 'pill' ? { top: 'calc(3vh - 6px)', width: 'calc(96vw + 24px)', maxWidth: 'calc(96vw + 24px)', bottom: 'calc(3vh + 32px)', color: 'white', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' } : { top: `${(calendarBorderTop || (calendarTop + 15)) - 7 - 30 - 4 - 9}px`, width: 'calc(96vw + 28px - 20px)', maxWidth: 'calc(96vw + 28px - 20px)', bottom: '50px', color: 'white', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
@@ -16169,13 +16178,13 @@ export default function Dashboard() {
               
               <div className="flex items-center justify-end px-4 py-3 border-t border-white/20">
                 <div className="flex gap-2">
-                  <Button variant="outline" className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 px-6" style={{ fontSize: '12px', minWidth: '120px', marginRight: '10px' }} onClick={() => setIsSchoolCoursesDialogOpen(false)} data-testid="button-cancel-school-courses">Cancel</Button>
+                  <Button variant="outline" className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 px-6" style={{ fontSize: '12px', minWidth: '120px', marginRight: '10px' }} onClick={() => startTransition(() => setIsSchoolCoursesDialogOpen(false))} data-testid="button-cancel-school-courses">Cancel</Button>
                   <Button variant="outline" className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8 px-6" style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '12px', minWidth: '120px' }} onClick={() => {
                     const draft = draftCoursePlayPriorityRef.current;
                     setCoursePlayPriority(draft);
                     localStorage.setItem('coursePlayPriority', JSON.stringify(draft));
                     fetch('/api/course-play-priority', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(draft) }).catch(() => {});
-                    setIsSchoolCoursesDialogOpen(false);
+                    startTransition(() => setIsSchoolCoursesDialogOpen(false));
                   }} data-testid="button-save-school-courses">Save</Button>
                 </div>
               </div>
