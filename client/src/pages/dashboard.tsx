@@ -2359,14 +2359,6 @@ export default function Dashboard() {
       backgroundPhoto: null as string | null
     };
     // Force migration V16: slightly less frosted than original 35
-    const migrationDone = localStorage.getItem('colorSettingsMigrationV17');
-    if (!migrationDone) {
-      const existing = saved ? JSON.parse(saved) : {};
-      const migrated = { ...defaults, ...existing, mainBackground: existing.mainBackground || '#3a8bbf', mainBackgroundGradient: existing.mainBackgroundGradient ?? true, mainBackgroundGradientEnd: existing.mainBackgroundGradientEnd || '#164a72', mainBackgroundOverlay: existing.mainBackgroundOverlay ?? true, boxBackground: existing.boxBackground || '#ffffff', boxTransparency: existing.boxTransparency || 28 };
-      localStorage.setItem('colorSettings', JSON.stringify(migrated));
-      localStorage.setItem('colorSettingsMigrationV17', 'done');
-      return migrated;
-    }
     const migrationV20 = localStorage.getItem('colorSettingsMigrationV20');
     if (!migrationV20) {
       localStorage.removeItem('colorSettings');
@@ -2376,6 +2368,14 @@ export default function Dashboard() {
       localStorage.removeItem('colorSettingsMigrationV19');
       localStorage.setItem('colorSettingsMigrationV20', 'done');
       return defaults;
+    }
+    const migrationDone = localStorage.getItem('colorSettingsMigrationV17');
+    if (!migrationDone) {
+      const existing = saved ? JSON.parse(saved) : {};
+      const migrated = { ...defaults, ...existing, mainBackground: existing.mainBackground || '#3a8bbf', mainBackgroundGradient: existing.mainBackgroundGradient ?? true, mainBackgroundGradientEnd: existing.mainBackgroundGradientEnd || '#164a72', mainBackgroundOverlay: existing.mainBackgroundOverlay ?? true, boxBackground: existing.boxBackground || '#ffffff', boxTransparency: existing.boxTransparency || 28 };
+      localStorage.setItem('colorSettings', JSON.stringify(migrated));
+      localStorage.setItem('colorSettingsMigrationV17', 'done');
+      return migrated;
     }
     if (saved) {
       const parsed = JSON.parse(saved);
