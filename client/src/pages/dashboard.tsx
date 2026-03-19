@@ -18556,22 +18556,26 @@ export default function Dashboard() {
                       for (const f of files) {
                         if (f.listened) {
                           totalProgress += 100;
-                        } else if (f.checkedChunks && f.checkedChunks !== 'null' && f.checkedChunks !== '[]' && f.totalChunks && f.totalChunks > 0) {
-                          try {
-                            const checked = JSON.parse(f.checkedChunks);
-                            if (Array.isArray(checked) && checked.length > 0) {
-                              totalProgress += Math.round((checked.length / f.totalChunks) * 100);
-                            } else if (f.lastChunkIndex != null && f.lastChunkIndex > 0) {
-                              totalProgress += Math.round((f.lastChunkIndex / f.totalChunks) * 100);
-                            }
-                          } catch {
-                            if (f.lastChunkIndex != null && f.lastChunkIndex > 0) {
-                              totalProgress += Math.round((f.lastChunkIndex / f.totalChunks) * 100);
-                            }
-                          }
                         } else {
-                          const isCurrentlyPlaying = !f.listened && previewFile && f.id === previewFile.id && isPlaying && totalChunks > 0;
-                          if (isCurrentlyPlaying) {
+                          const isCurrentFile = previewFile && f.id === previewFile.id;
+                          const liveChecked = isCurrentFile ? checkedChunksRef.current : null;
+                          const liveTotal = isCurrentFile ? (ttsChunksRef.current.length || totalChunks) : 0;
+                          if (liveChecked && liveChecked.size > 0 && liveTotal > 0) {
+                            totalProgress += Math.round((liveChecked.size / liveTotal) * 100);
+                          } else if (f.checkedChunks && f.checkedChunks !== 'null' && f.checkedChunks !== '[]' && f.totalChunks && f.totalChunks > 0) {
+                            try {
+                              const checked = JSON.parse(f.checkedChunks);
+                              if (Array.isArray(checked) && checked.length > 0) {
+                                totalProgress += Math.round((checked.length / f.totalChunks) * 100);
+                              } else if (f.lastChunkIndex != null && f.lastChunkIndex > 0) {
+                                totalProgress += Math.round((f.lastChunkIndex / f.totalChunks) * 100);
+                              }
+                            } catch {
+                              if (f.lastChunkIndex != null && f.lastChunkIndex > 0) {
+                                totalProgress += Math.round((f.lastChunkIndex / f.totalChunks) * 100);
+                              }
+                            }
+                          } else if (isCurrentFile && isPlaying && totalChunks > 0) {
                             totalProgress += Math.round(((currentChunkIndex + 1) / totalChunks) * 100);
                           } else if (f.totalChunks && f.totalChunks > 0 && f.lastChunkIndex != null && f.lastChunkIndex >= 0) {
                             totalProgress += Math.round((f.lastChunkIndex / f.totalChunks) * 100);
