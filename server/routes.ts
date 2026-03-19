@@ -3959,10 +3959,53 @@ html,body{height:100%;overflow:hidden;background:transparent}
   }
 
   const gmailTickerProcessedIds = new Set<string>();
+  const tickerExpirations = new Map<number, NodeJS.Timeout>();
   async function pollGmailForTicker() {
     try {
       const emails = await checkForTickerEmails(gmailTickerProcessedIds);
       for (const email of emails) {
+        if (email.command === 'clear') {
+          const all = await storage.getAnnouncements();
+          for (const a of all) {
+            await storage.deleteAnnouncement(a.id);
+            if (tickerExpirations.has(a.id)) { clearTimeout(tickerExpirations.get(a.id)!); tickerExpirations.delete(a.id); }
+          }
+          console.log(`[Gmail Ticker] Cleared all ${all.length} ticker items`);
+          continue;
+        }
+
+        if (email.command === 'delete' && email.commandTarget) {
+          const all = await storage.getAnnouncements();
+          const target = email.commandTarget.toLowerCase();
+          const matches = all.filter(a => a.body.toLowerCase().includes(target) || a.snippet?.toLowerCase().includes(target));
+          for (const m of matches) {
+            await storage.deleteAnnouncement(m.id);
+            if (tickerExpirations.has(m.id)) { clearTimeout(tickerExpirations.get(m.id)!); tickerExpirations.delete(m.id); }
+          }
+          console.log(`[Gmail Ticker] Deleted ${matches.length} ticker items matching "${email.commandTarget}"`);
+          continue;
+        }
+
+        if (email.command === 'expire' && email.expireMinutes) {
+          const all = await storage.getAnnouncements();
+          if (all.length > 0) {
+            const latest = all[all.length - 1];
+            const ms = email.expireMinutes * 60 * 1000;
+            const timeout = setTimeout(async () => {
+              try {
+                await storage.deleteAnnouncement(latest.id);
+                tickerExpirations.delete(latest.id);
+                console.log(`[Gmail Ticker] Auto-expired ticker item: "${latest.body.slice(0, 60)}..." (id: ${latest.id})`);
+              } catch (err: any) {
+                console.error('[Gmail Ticker] Expire cleanup error:', err.message);
+              }
+            }, ms);
+            tickerExpirations.set(latest.id, timeout);
+            console.log(`[Gmail Ticker] Set ${email.expireMinutes}min expiration for: "${latest.body.slice(0, 60)}..." (id: ${latest.id})`);
+          }
+          continue;
+        }
+
         const existing = await storage.getAnnouncementByEmailId(email.emailId);
         if (existing) continue;
         const created = await storage.createAnnouncement({
