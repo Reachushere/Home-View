@@ -19066,7 +19066,7 @@ export default function Dashboard() {
                           href={event.htmlLink}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className={`flex items-center text-[8px] py-0.5 rounded border cursor-pointer hover:opacity-80 w-full min-w-0 overflow-hidden ${isPrepEvent ? 'gap-0 px-0' : 'gap-1 px-1'} bg-gray-200 dark:bg-gray-700 text-black dark:text-white border-gray-500`}
+                          className={`flex items-center text-[8px] py-0.5 rounded border cursor-pointer hover:opacity-80 w-full min-w-0 overflow-hidden ${isPrepEvent ? 'gap-0 px-0 bg-white dark:bg-white text-black border-gray-500' : 'gap-1 px-1 bg-gray-200 dark:bg-gray-700 text-black dark:text-white border-gray-500'}`}
                           data-testid={`all-day-gcal-${event.id}`}
                         >
                           {isPrepEvent ? (
