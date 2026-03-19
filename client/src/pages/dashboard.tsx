@@ -21479,7 +21479,8 @@ export default function Dashboard() {
                     zIndex: 41,
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
+                    justifyContent: 'flex-start',
+                    paddingLeft: '4px',
                     borderBottom: '1px dotted #999',
                   }}>
                     <span className="text-[8px] font-[785] uppercase tracking-wide text-white/80">Other</span>
