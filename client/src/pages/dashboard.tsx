@@ -21158,8 +21158,8 @@ export default function Dashboard() {
           })()}
           <div style={{ padding: '0 8px', height: '44px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 42, overflow: 'visible' }}>
             <div style={{ position: 'absolute', top: '15px', left: 0, right: 0, height: '0.25px', backgroundColor: '#ffffff' }} />
-            <span className="text-xs font-medium text-white" style={{ position: 'absolute', left: '14px', top: '33px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Homework Progress</span>
-            <span className="text-xs font-medium text-white" style={{ position: 'absolute', left: '161px', top: '33px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Upcoming Assignments</span>
+            <span className="text-xs font-medium text-white" style={{ position: 'absolute', left: '14px', top: '31px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Homework Progress</span>
+            <span className="text-xs font-medium text-white" style={{ position: 'absolute', left: '161px', top: '31px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Upcoming Assignments</span>
             {weatherData && (
               <div style={{ position: 'absolute', left: '14px', top: '0px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span className="text-[10.5px] font-medium" style={{ color: 'rgba(255,255,255,1)' }} data-testid="homework-weather-temp">{Math.round(weatherData.temp)}°C</span>
@@ -21563,7 +21563,7 @@ export default function Dashboard() {
                   data-testid="hw-group-bar-handle"
                 />
                 {/* Today Section */}
-                <div data-homework-section="today" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 0 6px 0' }}>
+                <div data-homework-section="today" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 0 6px 0', marginTop: '-5px' }}>
                   <span className="text-[12px]" style={{ color: '#ffffff' }}>Today</span>
                   <span className="text-[11px]" style={{ color: '#ffffff' }}>({dueTodayTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', justifyContent: 'flex-end', marginLeft: 'auto', flexShrink: 0, width: '42px' }}>
