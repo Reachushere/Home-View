@@ -2587,7 +2587,7 @@ export default function PDFReaderPage() {
               </button>
             </div>
 
-            <div className="absolute flex items-start gap-2" style={{ bottom: '10px', left: '285px' }}>
+            <div className="absolute flex items-start gap-2" style={{ bottom: '4px', left: '285px' }}>
               <div className="flex items-start gap-2">
                 <button className="p-3 rounded-full hover:bg-white/10 flex items-center gap-1" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15); } }} disabled={!isPlaying} data-testid="button-rewind-15">
                   <RotateCcw className="h-5 w-5 text-white" />
@@ -2600,7 +2600,7 @@ export default function PDFReaderPage() {
               </div>
             </div>
 
-            <div className="absolute right-8 flex items-start" style={{ gap: '12px', bottom: '10px' }}>
+            <div className="absolute right-8 flex items-start" style={{ gap: '12px', bottom: '4px' }}>
               <button className="p-3 rounded-full hover:bg-white/10" style={{ marginRight: '145px' }} onClick={skipBack} disabled={!isPlaying || currentChunk === 0} data-testid="button-skip-back">
                 <SkipBack className="h-5 w-5 text-white" />
               </button>
