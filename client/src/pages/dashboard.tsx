@@ -21157,6 +21157,7 @@ export default function Dashboard() {
             );
           })()}
           <div style={{ padding: '0 8px', height: '48px', backgroundColor: colorSettings.headerBar, display: 'flex', alignItems: 'center', position: 'relative', zIndex: 42 }}>
+            <div style={{ position: 'absolute', top: '8px', left: 0, right: 0, height: '1px', backgroundColor: '#ffffff' }} />
             <h4
               className="text-xs font-medium flex items-center text-white"
               style={{ flex: 1, letterSpacing: '0.3px' }}
