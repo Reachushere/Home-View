@@ -1451,7 +1451,7 @@ export default function Dashboard() {
         beacon('poll-error', { error: e.message });
       }
     };
-    const interval = setInterval(checkTabletNav, 3000);
+    const interval = setInterval(checkTabletNav, 10000);
     return () => clearInterval(interval);
   }, []);
   
@@ -4461,7 +4461,7 @@ export default function Dashboard() {
         lastDate = currentDate;
         setCurrentTime(now);
       }
-    }, 1000);
+    }, 10000);
     return () => clearInterval(timer);
   }, [speakNewWeek, speakNewDay]);
 
