@@ -2346,7 +2346,7 @@ export default function Dashboard() {
     const saved = localStorage.getItem('colorSettings');
     const defaults = {
       boxBackground: '#ffffff',
-      headerBar: '#0a2744',
+      headerBar: '#071e38',
       mainBackground: '#3a8bbf',
       boxGlassEffect: true,
       boxTransparency: 20,
@@ -2355,12 +2355,12 @@ export default function Dashboard() {
       mainBackgroundGradientEnd: '#164a72',
       todayCellBackground: '#d4d4d4',
       currentHourRowBackground: '#d4d4d4',
-      todayCurrentHourCellBackground: '#0a2744',
+      todayCurrentHourCellBackground: '#071e38',
       backgroundPhoto: null as string | null
     };
     // Force migration V16: slightly less frosted than original 35
-    const migrationV24 = localStorage.getItem('colorSettingsMigrationV24');
-    if (!migrationV24) {
+    const migrationV25 = localStorage.getItem('colorSettingsMigrationV25');
+    if (!migrationV25) {
       localStorage.removeItem('colorSettings');
       localStorage.removeItem('colorSettingsMigrationV17');
       localStorage.removeItem('colorSettingsMigrationV18');
@@ -2370,7 +2370,8 @@ export default function Dashboard() {
       localStorage.removeItem('colorSettingsMigrationV21');
       localStorage.removeItem('colorSettingsMigrationV22');
       localStorage.removeItem('colorSettingsMigrationV23');
-      localStorage.setItem('colorSettingsMigrationV24', 'done');
+      localStorage.removeItem('colorSettingsMigrationV24');
+      localStorage.setItem('colorSettingsMigrationV25', 'done');
       return defaults;
     }
     const migrationDone = localStorage.getItem('colorSettingsMigrationV17');
@@ -3695,8 +3696,8 @@ export default function Dashboard() {
         if (data.colorSettings) {
           setColorSettings(prev => {
             const merged = { ...prev, ...data.colorSettings };
-            if (merged.headerBar === '#160502' || merged.headerBar === '#1a3a5c' || merged.headerBar === '#0f2540' || merged.headerBar === '#164a72' || merged.headerBar === '#0e3356') merged.headerBar = '#0a2744';
-            if (merged.todayCurrentHourCellBackground === '#160502' || merged.todayCurrentHourCellBackground === '#1a3a5c' || merged.todayCurrentHourCellBackground === '#0f2540' || merged.todayCurrentHourCellBackground === '#164a72' || merged.todayCurrentHourCellBackground === '#0e3356') merged.todayCurrentHourCellBackground = '#0a2744';
+            if (['#160502','#1a3a5c','#0f2540','#164a72','#0e3356','#0a2744'].includes(merged.headerBar)) merged.headerBar = '#071e38';
+            if (['#160502','#1a3a5c','#0f2540','#164a72','#0e3356','#0a2744'].includes(merged.todayCurrentHourCellBackground)) merged.todayCurrentHourCellBackground = '#071e38';
             localStorage.setItem('colorSettings', JSON.stringify(merged));
             return merged;
           });
@@ -21154,7 +21155,7 @@ export default function Dashboard() {
               className="text-xs font-medium flex items-center text-white"
               style={{ flex: 1, letterSpacing: '0.3px' }}
             >
-              <span style={{ whiteSpace: 'nowrap' }}>Homework Progress</span>
+              <span style={{ whiteSpace: 'nowrap', marginLeft: '10px' }}>Homework Progress</span>
             </h4>
             {weatherData && (
               <div className="flex flex-col items-end" style={{ flexShrink: 0, gap: '4px', marginRight: '9px' }}>
