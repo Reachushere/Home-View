@@ -13256,7 +13256,7 @@ export default function Dashboard() {
           }
           return items;
         })() : []),
-        ...(pollenData ? [{ title: `<span style="margin-left:8px">🌿</span> Pollen: ${pollenData.overall.level} (Tree: ${pollenData.tree.level}, Grass: ${pollenData.grass.level}, Weed: ${pollenData.weed.level})  |  AQI: ${pollenData.aqi}`, source: '_FORECAST_NOSEP_', link: '' }] : []),
+        ...(pollenData ? [{ title: `<span style="margin-left:8px;font-size:17px">🌿</span> Pollen: ${pollenData.overall.level} (Tree: ${pollenData.tree.level}, Grass: ${pollenData.grass.level}, Weed: ${pollenData.weed.level})  |  AQI: ${pollenData.aqi}`, source: '_FORECAST_NOSEP_', link: '' }] : []),
         ...(() => {
           const US_SOURCES = ['CNN', 'Politico', 'Raw Story', 'MSNBC', 'ABC News', 'Fox News'];
           const ca = newsHeadlines.filter(h => !US_SOURCES.includes(h.source) && h.source !== 'BBC');
