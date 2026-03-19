@@ -18180,7 +18180,7 @@ export default function Dashboard() {
                       <div 
                         key={dayIdx} 
                         className={`relative flex flex-col gap-0.5 pt-0.5${slottedItems.filter(s => s !== null).length > 3 ? ' course-cell-scroll' : ''}`}
-                        style={{ backgroundColor: cellBgColor, padding: '2px 1px 2px 1px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, overflowY: slottedItems.filter(s => s !== null).length > 3 ? 'auto' : 'visible', overflowX: 'hidden', maxHeight: `${maxCourseRowHeight}px`, minWidth: 0 }}
+                        style={{ backgroundColor: cellBgColor, padding: '2px 1px 2px 1px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, overflowY: slottedItems.filter(s => s !== null).length > 3 ? 'auto' : 'visible', overflowX: 'visible', maxHeight: `${maxCourseRowHeight}px`, minWidth: 0 }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
                           e.preventDefault();
