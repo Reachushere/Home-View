@@ -2346,7 +2346,7 @@ export default function Dashboard() {
     const saved = localStorage.getItem('colorSettings');
     const defaults = {
       boxBackground: '#ffffff',
-      headerBar: '#14532d',
+      headerBar: '#1a3a5c',
       mainBackground: '#3a8bbf',
       boxGlassEffect: true,
       boxTransparency: 20,
@@ -2355,7 +2355,7 @@ export default function Dashboard() {
       mainBackgroundGradientEnd: '#164a72',
       todayCellBackground: '#d4d4d4',
       currentHourRowBackground: '#d4d4d4',
-      todayCurrentHourCellBackground: '#14532d',
+      todayCurrentHourCellBackground: '#1a3a5c',
       backgroundPhoto: null as string | null
     };
     // Force migration V16: slightly less frosted than original 35
