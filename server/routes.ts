@@ -3873,7 +3873,22 @@ html,body{height:100%;overflow:hidden;background:transparent}
   app.get("/api/announcements", async (_req, res) => {
     try {
       const all = await storage.getAnnouncements();
-      res.json(all);
+      const now = new Date();
+      const active = [];
+      for (const a of all) {
+        const received = new Date(a.receivedAt);
+        const dayOfWeek = received.getDay();
+        const daysUntilFriday = dayOfWeek <= 5 ? (5 - dayOfWeek) : (5 + 7 - dayOfWeek);
+        const fridayEnd = new Date(received);
+        fridayEnd.setDate(received.getDate() + daysUntilFriday);
+        fridayEnd.setHours(23, 59, 59, 999);
+        if (now <= fridayEnd) {
+          active.push(a);
+        } else {
+          storage.deleteAnnouncement(a.id).catch(() => {});
+        }
+      }
+      res.json(active);
     } catch (err: any) {
       console.error("Error fetching announcements:", err.message);
       res.json([]);

@@ -92,6 +92,7 @@ export interface IStorage {
   getAnnouncements(): Promise<Announcement[]>;
   createAnnouncement(data: InsertAnnouncement): Promise<Announcement>;
   getAnnouncementByEmailId(emailId: string): Promise<Announcement | undefined>;
+  deleteAnnouncement(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -723,6 +724,10 @@ export class DatabaseStorage implements IStorage {
   async getAnnouncementByEmailId(emailId: string): Promise<Announcement | undefined> {
     const [a] = await db.select().from(announcements).where(eq(announcements.emailId, emailId));
     return a;
+  }
+
+  async deleteAnnouncement(id: number): Promise<void> {
+    await db.delete(announcements).where(eq(announcements.id, id));
   }
 }
 
