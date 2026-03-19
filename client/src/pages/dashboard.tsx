@@ -21227,7 +21227,7 @@ export default function Dashboard() {
                     const textColor = '#ffffff';
                     const dateColor = '#ffffff';
                     let firstSelectedWeekIdx = -1;
-                    return courseTasks.map((t, tIdx) => {
+                    const renderCourseTask = (t: any, tIdx: number) => {
                       const dueStr = format(new Date(t.dueDate), 'MMM d');
                       const taskWeek = (t.weekNumber !== undefined && t.weekNumber !== null) ? t.weekNumber : (semesterSettings?.semesterStartDate ? getWeekNumber(new Date(t.dueDate), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null);
                       const isSelectedWeek = taskWeek === selectedWeek;
@@ -21235,7 +21235,7 @@ export default function Dashboard() {
                       return (
                         <div
                           key={t.id}
-                          className="flex items-center gap-1 min-w-0 cursor-pointer hover:brightness-125"
+                          className="flex items-center gap-1.5 min-w-0 cursor-pointer hover:brightness-125"
                           data-hw-week={taskWeek}
                           ref={isSelectedWeek && firstSelectedWeekIdx === tIdx ? (el) => {
                             if (el) {
@@ -21248,9 +21248,10 @@ export default function Dashboard() {
                             }
                           } : undefined}
                           style={{
-                            lineHeight: '1.3',
-                            marginBottom: '1px',
+                            lineHeight: '1.4',
+                            marginBottom: '2px',
                             opacity: 1,
+                            padding: '1px 0',
                           }}
                           onMouseEnter={() => {
                             setHoveredCountdownTaskId(t.id);
@@ -21258,8 +21259,8 @@ export default function Dashboard() {
                           onMouseLeave={() => setHoveredCountdownTaskId(null)}
                           onClick={() => setEditingTask(t)}
                         >
-                          <span style={{ fontSize: '9px', color: textColor, flexShrink: 0 }}>•</span>
-                          <span className="truncate" style={{ fontSize: '8px', color: textColor, textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400, flex: 1, minWidth: 0 }}>{t.title}</span>
+                          <span style={{ fontSize: '16px', color: textColor, flexShrink: 0 }}>•</span>
+                          <span className="truncate" style={{ fontSize: '16px', color: textColor, textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400, flex: 1, minWidth: 0 }}>{t.title}</span>
                           {(() => {
                             const tDueDate = new Date(t.dueDate);
                             const tDue = startOfDay(tDueDate);
@@ -21267,25 +21268,37 @@ export default function Dashboard() {
                             const daysUntil = differenceInCalendarDays(tDueDate, new Date());
                             const maxDays = 14;
                             const progressPercent = Math.max(0, Math.min(100, (daysUntil / maxDays) * 100));
-                            const barWidth = Math.round((progressPercent / 100) * 28);
+                            const barWidth = Math.round((progressPercent / 100) * 56);
                             const isToday = daysUntil <= 0;
                             const isThroughFriday = !isToday && tDue <= thisWeekFridayEnd;
                             const isNextWeek = tDue >= nextSaturday && tDue <= nextWeekEnd;
                             const is2Weeks = tDue >= twoWeeksStart && tDue <= threeWeeksEnd;
                             const barColor = isToday ? '#ef4444' : isThroughFriday ? '#eab308' : isNextWeek ? (daysUntil < 3 ? '#eab308' : '#22c55e') : is2Weeks ? (daysUntil < 3 ? '#eab308' : '#22c55e') : 'rgb(100, 100, 100)';
                             return (
-                              <div className="flex-shrink-0 flex items-center justify-end gap-1.5" style={{ marginLeft: 'auto', width: '75px' }}>
-                                <div style={{ width: '28px', position: 'relative', height: '3px', flexShrink: 0 }}>
-                                  <div style={{ position: 'absolute', top: 0, right: 0, width: '28px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: '2px' }} />
-                                  <div className="rounded-full" style={{ position: 'absolute', top: 0, right: 0, width: `${barWidth}px`, height: '3px', backgroundColor: barColor, opacity: 0.9 }} />
+                              <div className="flex-shrink-0 flex items-center justify-end gap-2" style={{ marginLeft: 'auto', width: '120px' }}>
+                                <div style={{ width: '56px', position: 'relative', height: '5px', flexShrink: 0 }}>
+                                  <div style={{ position: 'absolute', top: 0, right: 0, width: '56px', height: '5px', backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: '3px' }} />
+                                  <div className="rounded-full" style={{ position: 'absolute', top: 0, right: 0, width: `${barWidth}px`, height: '5px', backgroundColor: barColor, opacity: 0.9 }} />
                                 </div>
-                                <span style={{ fontSize: '8px', color: dateColor, fontWeight: 400, minWidth: '32px', textAlign: 'right' }}>{dueStr}</span>
+                                <span style={{ fontSize: '16px', color: dateColor, fontWeight: 400, minWidth: '52px', textAlign: 'right' }}>{dueStr}</span>
                               </div>
                             );
                           })()}
                         </div>
                       );
-                    });
+                    };
+                    const pinnedTasks = courseTasks.slice(0, 2);
+                    const scrollTasks = courseTasks.slice(2);
+                    return (
+                      <>
+                        {pinnedTasks.map((t, tIdx) => renderCourseTask(t, tIdx))}
+                        {scrollTasks.length > 0 && (
+                          <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', scrollbarWidth: 'none' }}>
+                            {scrollTasks.map((t, tIdx) => renderCourseTask(t, tIdx + 2))}
+                          </div>
+                        )}
+                      </>
+                    );
                   })()}
                 </div>,
               ];
