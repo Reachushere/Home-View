@@ -21156,7 +21156,7 @@ export default function Dashboard() {
               </div>
             );
           })()}
-          <div style={{ padding: '0 8px', height: '46px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 42, overflow: 'visible' }}>
+          <div style={{ padding: '0 8px', height: '44px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 42, overflow: 'visible' }}>
             <div style={{ position: 'absolute', top: '15px', left: 0, right: 0, height: '0.25px', backgroundColor: '#ffffff' }} />
             <span className="text-xs font-medium text-white" style={{ position: 'absolute', left: '14px', top: '33px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Homework Progress</span>
             <span className="text-xs font-medium text-white" style={{ position: 'absolute', left: '161px', top: '33px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Upcoming Assignments</span>
@@ -21176,7 +21176,7 @@ export default function Dashboard() {
           </div>
           {courseRowRects.length > 0 && courseProgressDataRef.current.length > 0 && (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
-            const firstRowOffset = courseRowRects[0] ? (courseRowRects[0].top - upcomingTop - 46) : 0;
+            const firstRowOffset = courseRowRects[0] ? (courseRowRects[0].top - upcomingTop - 44) : 0;
             const leftWidth = (() => {
               if (homeworkSpacerRef.current && homeworkSectionRef.current) {
                 const spacerRect = homeworkSpacerRef.current.getBoundingClientRect();
@@ -21542,7 +21542,7 @@ export default function Dashboard() {
           <div className="flex-1 px-2 flex flex-col" style={{ marginTop: (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
             if (courseRowRects.length > 0) {
-              const firstOffset = courseRowRects[0] ? (courseRowRects[0].top - upcomingTop - 46) : 0;
+              const firstOffset = courseRowRects[0] ? (courseRowRects[0].top - upcomingTop - 44) : 0;
               const lastRect = courseRowRects[courseRowRects.length - 1];
               if (lastRect) {
                 const lastBottom = lastRect.top + lastRect.height - upcomingTop - firstOffset;
