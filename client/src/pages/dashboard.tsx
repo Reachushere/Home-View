@@ -21797,7 +21797,7 @@ export default function Dashboard() {
                                 <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
                               </div>
                             )}
-                            <div style={{ flex: 1, minWidth: 0, maxHeight: '80px', overflowY: 'auto', scrollbarWidth: 'none' }}>
+                            <div style={{ flex: 1, minWidth: 0, maxHeight: '80px', overflowY: 'auto', overflowX: 'clip', scrollbarWidth: 'none', marginRight: '-7px', paddingRight: '7px' }}>
                               {group.tasks.map((task, taskIdx) => {
                                 const progressColor = getProgressColor(task, 'tomorrow');
                                 const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
