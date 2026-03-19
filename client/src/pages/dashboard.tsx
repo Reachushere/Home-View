@@ -18715,7 +18715,7 @@ export default function Dashboard() {
                     const readingP = calcFileProgress(readingFiles, readingFolderKey);
                     const otherFiles = weeklyFiles.filter(f => f.folder === otherFolderKey);
                     const otherP = calcFileProgress(otherFiles, otherFolderKey);
-                    const hasNoData = courseCode === 'CASL101' ? false : (!moduleP.hasFiles && !readingP.hasFiles && !otherP.hasFiles);
+                    const hasNoData = false;
                     const courseMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode);
                     const courseHexColor = courseMatch?.color || '#6b7280';
                     const courseHexColorEnd = courseMatch?.colorEnd;
