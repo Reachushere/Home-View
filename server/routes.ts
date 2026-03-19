@@ -3664,48 +3664,123 @@ html,body{height:100%;overflow:hidden;background:transparent}
   app.post("/api/onedrive/ensure-all-semester-folders", async (req, res) => {
     try {
       const allSemesters = await storage.getAllSemesterSettings();
-      if (!allSemesters || allSemesters.length === 0) {
-        return res.json({ success: true, message: "No semesters found" });
-      }
 
       const { createOneDriveFolder } = await import("./onedrive");
       const allResults: Array<{ semester: string; folders: string[] }> = [];
 
-      for (const semester of allSemesters) {
-        const semType = getSemesterTypeFolder(semester.semesterType);
-        const startDate = semester.semesterStartDate ? new Date(semester.semesterStartDate) : new Date();
-        const year = startDate.getFullYear();
-        const basePath = `/School/1. TMU/Courses/${year}`;
+      if (allSemesters && allSemesters.length > 0) {
+        for (const semester of allSemesters) {
+          const semType = getSemesterTypeFolder(semester.semesterType);
+          const startDate = semester.semesterStartDate ? new Date(semester.semesterStartDate) : new Date();
+          const year = startDate.getFullYear();
+          const basePath = `/School/1. TMU/Courses/${year}`;
 
-        await createOneDriveFolder(basePath, semType);
-        const semPath = `${basePath}/${semType}`;
-        const courseResults: string[] = [];
+          await createOneDriveFolder(basePath, semType);
+          const semPath = `${basePath}/${semType}`;
+          const courseResults: string[] = [];
 
-        for (let i = 1; i <= 3; i++) {
-          const code = ((semester as any)[`course${i}Code`] || '').replace(/\s/g, '');
-          if (!code) continue;
-          const name = (semester as any)[`course${i}Name`] || '';
-          const folderName = name ? `${code} - ${name}` : code;
-          await createOneDriveFolder(semPath, folderName);
-          const coursePath = `${semPath}/${folderName}`;
+          for (let i = 1; i <= 3; i++) {
+            const code = ((semester as any)[`course${i}Code`] || '').replace(/\s/g, '');
+            if (!code) continue;
+            const name = (semester as any)[`course${i}Name`] || '';
+            const folderName = name ? `${code} - ${name}` : code;
+            await createOneDriveFolder(semPath, folderName);
+            const coursePath = `${semPath}/${folderName}`;
 
-          const weekNames = generateWeekFolderNames(semester, i);
-          for (const weekName of weekNames) {
-            await createOneDriveFolder(coursePath, weekName);
-            const weekPath = `${coursePath}/${weekName}`;
-            await createOneDriveFolder(weekPath, "Module");
-            await createOneDriveFolder(weekPath, "Reading");
+            const weekNames = generateWeekFolderNames(semester, i);
+            for (const weekName of weekNames) {
+              await createOneDriveFolder(coursePath, weekName);
+              const weekPath = `${coursePath}/${weekName}`;
+              await createOneDriveFolder(weekPath, "Module");
+              await createOneDriveFolder(weekPath, "Reading");
+            }
+            courseResults.push(`${folderName} (${weekNames.length} weeks)`);
           }
-          courseResults.push(`${folderName} (${weekNames.length} weeks)`);
-        }
 
-        allResults.push({ semester: semester.semesterName || `${semType} ${year}`, folders: courseResults });
-        console.log(`[OneDrive] Ensured folders for ${semester.semesterName}: ${courseResults.join(', ')}`);
+          allResults.push({ semester: semester.semesterName || `${semType} ${year}`, folders: courseResults });
+          console.log(`[OneDrive] Ensured folders for ${semester.semesterName}: ${courseResults.join(', ')}`);
+        }
       }
 
-      res.json({ success: true, semesters: allResults });
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const semesterTypes = ['Winter', 'Spring & Summer', 'Fall'];
+      const existingKeys = new Set(
+        (allSemesters || []).map((s: any) => {
+          const semType = getSemesterTypeFolder(s.semesterType);
+          const year = s.semesterStartDate ? new Date(s.semesterStartDate).getFullYear() : currentYear;
+          return `${year}/${semType}`;
+        })
+      );
+
+      const placeholderResults: string[] = [];
+      for (let year = currentYear; year <= currentYear + 2; year++) {
+        const yearPath = `/School/1. TMU/Courses/${year}`;
+        try {
+          await createOneDriveFolder('/School/1. TMU/Courses', String(year));
+        } catch (e: any) {
+          console.log(`[OneDrive] Year folder ${year}: ${e.message}`);
+        }
+        for (const semType of semesterTypes) {
+          const key = `${year}/${semType}`;
+          if (existingKeys.has(key)) continue;
+          try {
+            await createOneDriveFolder(yearPath, semType);
+            placeholderResults.push(`${year}/${semType}`);
+            console.log(`[OneDrive] Created placeholder folder: ${year}/${semType}`);
+          } catch (e: any) {
+            console.log(`[OneDrive] Placeholder ${year}/${semType}: ${e.message}`);
+          }
+        }
+      }
+
+      res.json({ success: true, semesters: allResults, placeholders: placeholderResults });
     } catch (err: any) {
       console.error("Error ensuring all semester folders:", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post("/api/onedrive/ensure-placeholder-folders", async (req, res) => {
+    try {
+      const allSemesters = await storage.getAllSemesterSettings();
+      const { createOneDriveFolder } = await import("./onedrive");
+
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const semesterTypes = ['Winter', 'Spring & Summer', 'Fall'];
+      const existingKeys = new Set(
+        (allSemesters || []).map((s: any) => {
+          const semType = getSemesterTypeFolder(s.semesterType);
+          const year = s.semesterStartDate ? new Date(s.semesterStartDate).getFullYear() : currentYear;
+          return `${year}/${semType}`;
+        })
+      );
+
+      const placeholderResults: string[] = [];
+      for (let year = currentYear; year <= currentYear + 2; year++) {
+        const yearPath = `/School/1. TMU/Courses/${year}`;
+        try {
+          await createOneDriveFolder('/School/1. TMU/Courses', String(year));
+        } catch (e: any) {
+          // ignore if year folder already exists
+        }
+        for (const semType of semesterTypes) {
+          const key = `${year}/${semType}`;
+          if (existingKeys.has(key)) continue;
+          try {
+            await createOneDriveFolder(yearPath, semType);
+            placeholderResults.push(`${year}/${semType}`);
+            console.log(`[OneDrive] Created placeholder folder: ${year}/${semType}`);
+          } catch (e: any) {
+            // ignore if folder already exists
+          }
+        }
+      }
+
+      res.json({ success: true, placeholders: placeholderResults });
+    } catch (err: any) {
+      console.error("Error ensuring placeholder folders:", err);
       res.status(500).json({ error: err.message });
     }
   });

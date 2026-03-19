@@ -310,6 +310,22 @@ app.use((req, res, next) => {
       }
       setTimeout(runFileMonitor, 10000);
       setInterval(runFileMonitor, 5 * 60 * 1000);
+
+      async function ensureOneDrivePlaceholders() {
+        try {
+          const resp = await fetch(`http://localhost:${port}/api/onedrive/ensure-placeholder-folders`, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+          const data = await resp.json();
+          const placeholders = data.placeholders || [];
+          if (placeholders.length > 0) {
+            console.log(`[OneDrive] Created ${placeholders.length} placeholder folders: ${placeholders.join(', ')}`);
+          } else {
+            console.log(`[OneDrive] All year/semester placeholder folders already exist`);
+          }
+        } catch (e: any) {
+          console.error("[OneDrive] Error ensuring placeholder folders:", e.message);
+        }
+      }
+      setTimeout(ensureOneDrivePlaceholders, 15000);
     },
   );
 })();
