@@ -825,7 +825,6 @@ export default function Dashboard() {
   const courseProgressDataRef = useRef<Array<{
     courseCode: string;
     progressBg: string;
-    progressBgSoft: string;
     moduleP: {percent: number; hasFiles: boolean};
     readingP: {percent: number; hasFiles: boolean};
     moduleUnread: number;
@@ -18819,20 +18818,9 @@ export default function Dashboard() {
                     const readingFolderCount = fileCounts[readingFolderKey];
                     const moduleUnread = moduleFolderCount?.unlistened || 0;
                     const readingUnread = readingFolderCount?.unlistened || 0;
-                    const progressBg = `linear-gradient(180deg, ${courseHexColor} 0%, ${courseHexColorEnd || courseHexColor} 100%)`;
-                    const progressBgSoft = (() => {
-                      const soften = (hex: string, amount: number) => {
-                        const r = parseInt(hex.slice(1, 3), 16);
-                        const g = parseInt(hex.slice(3, 5), 16);
-                        const b = parseInt(hex.slice(5, 7), 16);
-                        const bg = 26;
-                        const mr = Math.round(r * amount + bg * (1 - amount));
-                        const mg = Math.round(g * amount + bg * (1 - amount));
-                        const mb = Math.round(b * amount + bg * (1 - amount));
-                        return `#${mr.toString(16).padStart(2,'0')}${mg.toString(16).padStart(2,'0')}${mb.toString(16).padStart(2,'0')}`;
-                      };
-                      const startColor = soften(courseHexColor, 0.5);
-                      const endColor = soften(courseHexColorEnd || courseHexColor, 0.5);
+                    const progressBg = (() => {
+                      const startColor = courseHexColor;
+                      const endColor = courseHexColorEnd || courseHexColor;
                       return `linear-gradient(180deg, ${startColor} 0%, ${endColor} 100%)`;
                     })();
                     const handlePlayFiles = (fileType: 'module' | 'reading') => {
@@ -18856,7 +18844,6 @@ export default function Dashboard() {
                     courseProgressDataRef.current[courseIdx] = {
                       courseCode,
                       progressBg,
-                      progressBgSoft,
                       moduleP,
                       readingP,
                       moduleUnread,
@@ -21510,7 +21497,7 @@ export default function Dashboard() {
                   left: 0,
                   width: `${effectiveDividerPct}%`,
                   height: `${rowHeight}px`,
-                  background: pd.progressBgSoft || pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
+                  background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
                   zIndex: 1,
                 }} />,
                 <div key={`${pd.courseCode}-right-fill-ext`} style={{
