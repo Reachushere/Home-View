@@ -702,26 +702,6 @@ export default function Dashboard() {
   const homeworkSpacerRef = useRef<HTMLDivElement>(null);
   const homeworkSectionRef = useRef<HTMLElement>(null);
   const homeworkScrollRef = useRef<HTMLDivElement>(null);
-  const timelineMarkerRef = useRef<HTMLDivElement>(null);
-  const [timelineBoxRect, setTimelineBoxRect] = useState<{top: number, left: number, width: number} | null>(null);
-  useEffect(() => {
-    let raf: number;
-    const update = () => {
-      const el = timelineMarkerRef.current;
-      if (el) {
-        const r = el.getBoundingClientRect();
-        setTimelineBoxRect(prev => {
-          const t = r.top - 10;
-          const l = r.left + r.width / 2 - 27;
-          if (prev && prev.top === t && prev.left === l && prev.width === r.width) return prev;
-          return { top: t, left: l, width: r.width };
-        });
-      }
-      raf = requestAnimationFrame(update);
-    };
-    raf = requestAnimationFrame(update);
-    return () => cancelAnimationFrame(raf);
-  }, []);
   const [hwDividerPercent, setHwDividerPercent] = useState(() => {
     const saved = localStorage.getItem('hwDividerPercent');
     return saved ? parseFloat(saved) : 33;
@@ -9398,12 +9378,9 @@ export default function Dashboard() {
         backgroundColor: colorSettings.mainBackgroundOverlay ? safeHex(colorSettings.mainBackground, '#3a8bbf') : '#000000'
       }}
     >
-      {timelineBoxRect && createPortal(
-        <div style={{ position: 'fixed', top: timelineBoxRect.top, left: timelineBoxRect.left, width: '54px', height: '19px', backgroundColor: 'red', border: '2px solid yellow', borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 99999, pointerEvents: 'none' }}>
-          <span style={{ fontSize: '8px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
-        </div>,
-        document.body
-      )}
+      <div style={{ position: 'fixed', top: '96px', left: '50%', transform: 'translateX(-50%)', width: '54px', height: '19px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 99999, pointerEvents: 'none' }}>
+        <span style={{ fontSize: '8px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
+      </div>
       {/* Background photo layer - always shown when set, behind overlay */}
       {colorSettings.backgroundPhoto && (
         <div 
@@ -21698,7 +21675,6 @@ export default function Dashboard() {
 
             return rows;
           })()}
-          <div ref={timelineMarkerRef} style={{ height: '0px', flexShrink: 0 }} />
           <div className="flex-1 px-2 flex flex-col" style={{ marginTop: (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
             if (courseRowRects.length > 0) {
