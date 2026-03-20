@@ -1944,6 +1944,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       const customAnnouncements = await storage.getAnnouncements();
       const tickerNow = new Date();
       for (const a of customAnnouncements) {
+        if (!a.courseName || a.courseName === 'Custom') continue;
         const received = new Date(a.receivedAt);
         const dayOfWeek = received.getDay();
         const daysUntilFriday = dayOfWeek <= 5 ? (5 - dayOfWeek) : (5 + 7 - dayOfWeek);
@@ -1952,8 +1953,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
         fridayEnd.setHours(23, 59, 59, 999);
         if (tickerNow <= fridayEnd) {
           const escapedBody = (a.body || a.snippet || a.subject || '').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-          const isD2L = a.courseName && a.courseName !== 'Custom';
-          const label = isD2L ? `📢 <b>${a.courseName}</b>` : '📌 <b>NOTICE</b>';
+          const label = `📢 <b>${a.courseName}</b>`;
           tickerItems += `<span class="t-item"><span class="t-forecast">${label}:</span> <span class="t-data" style="color:rgba(255,255,255,0.95)">${escapedBody}</span></span>`;
         }
       }
