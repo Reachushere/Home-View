@@ -23148,11 +23148,9 @@ export default function Dashboard() {
               <div
                 className="rounded-b-[12px]"
                 style={{
-                  background: 'rgba(255,255,255,0.16)',
-                  backdropFilter: 'blur(24px)',
-                  WebkitBackdropFilter: 'blur(24px)',
-                  borderTop: '1px solid rgba(255,255,255,0.25)',
-                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15)',
+                  background: 'rgba(5, 23, 41, 0.92)',
+                  borderTop: '1px solid rgba(255,255,255,0.15)',
+                  boxShadow: '0 -2px 8px rgba(0,0,0,0.3)',
                   padding: '6px 8px 8px',
                 }}
                 data-testid="hw-floating-player-controls"
