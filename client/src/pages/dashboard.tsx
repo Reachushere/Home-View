@@ -21738,7 +21738,7 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', alignSelf: 'stretch', position: 'relative', zIndex: 3 }}>
-                      <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
+                      
                     </div>
                     <div style={{ flex: 1, minWidth: 0, marginRight: '-7px' }}><div style={{ maxHeight: '80px', overflowY: 'auto', scrollbarWidth: 'none', marginLeft: '-12px', paddingLeft: '12px' }}>
                   <div className="flex flex-col gap-0.5">
@@ -21909,9 +21909,7 @@ export default function Dashboard() {
                               </div>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', alignSelf: 'stretch' }}>
-                              {true && (
-                                <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
-                              )}
+                              
                             </div>
                             <div style={{ flex: 1, minWidth: 0, marginRight: '-7px' }}><div style={{ maxHeight: '80px', overflowY: 'auto', scrollbarWidth: 'none' }}>
                               {group.tasks.filter((t, i, arr) => t.type !== "class" || arr.findIndex(x => x.type === "class" && x.title === t.title && x.courseName === t.courseName) === i).map((task, taskIdx) => {
@@ -22099,9 +22097,7 @@ export default function Dashboard() {
                               </div>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', alignSelf: 'stretch' }}>
-                              {group.tasks.length > 1 && (
-                                <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
-                              )}
+                              
                             </div>
                             <div style={{ flex: 1, minWidth: 0, marginRight: '-7px' }}>
                               {group.tasks.filter((t, i, arr) => t.type !== "class" || arr.findIndex(x => x.type === "class" && x.title === t.title && x.courseName === t.courseName) === i).map((task, taskIdx) => {
@@ -22110,7 +22106,7 @@ export default function Dashboard() {
                                 const courseName = task.courseName?.split(' - ').slice(1).join(' - ') || task.courseName?.split(' - ')[0] || '';
                                 const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
                                 const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
-                                const gc = getCourseGradientColors(taskCourseCode);
+                                
                                 const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                                 const isLastTask = taskIdx === group.tasks.length - 1;
                                 return (
@@ -22292,9 +22288,7 @@ export default function Dashboard() {
                               </div>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', alignSelf: 'stretch' }}>
-                              {group.tasks.length > 1 && (
-                                <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
-                              )}
+                              
                             </div>
                             <div style={{ flex: 1, minWidth: 0, marginRight: '-7px' }}>
                               {group.tasks.filter((t, i, arr) => t.type !== "class" || arr.findIndex(x => x.type === "class" && x.title === t.title && x.courseName === t.courseName) === i).map((task, taskIdx) => {
@@ -22302,7 +22296,7 @@ export default function Dashboard() {
                                 const progressColor = daysUntil <= 1 ? '#ef4444' : daysUntil <= 3 ? '#f97316' : daysUntil <= 5 ? '#eab308' : '#22c55e';
                                 const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
                                 const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
-                                const gc = getCourseGradientColors(taskCourseCode);
+                                
                                 const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                                 const isLastTask = taskIdx === group.tasks.length - 1;
                                 return (
@@ -22497,9 +22491,7 @@ export default function Dashboard() {
                               </div>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', alignSelf: 'stretch' }}>
-                              {group.tasks.length > 1 && (
-                                <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
-                              )}
+                              
                             </div>
                             <div style={{ flex: 1, minWidth: 0, marginRight: '-7px' }}>
                               {group.tasks.filter((t, i, arr) => t.type !== "class" || arr.findIndex(x => x.type === "class" && x.title === t.title && x.courseName === t.courseName) === i).map((task, taskIdx) => {
@@ -22507,11 +22499,11 @@ export default function Dashboard() {
                                 const progressColor = daysUntil <= 1 ? '#ef4444' : daysUntil <= 3 ? '#f97316' : daysUntil <= 5 ? '#eab308' : '#22c55e';
                                 const courseName = task.courseName?.split(' - ').slice(1).join(' - ') || task.courseName?.split(' - ')[0] || '';
                                 const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
-                                const gc = getCourseGradientColors(taskCourseCode);
+                                
                                 const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                                 const isLastTask = taskIdx === group.tasks.length - 1;
                                 return (
-                                  <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: taskIdx % 2 === 0 ? '#051729' : 'transparent', marginLeft: '-8px', marginRight: '-7px', paddingLeft: '8px', paddingRight: '7px', borderLeft: `3px solid ${gc.start}` }}
+                                  <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: taskIdx % 2 === 0 ? '#051729' : 'transparent', marginLeft: '-8px', marginRight: '-7px', paddingLeft: '8px', paddingRight: '7px', }}
                                     onMouseEnter={() => setHoveredCountdownTaskIdDebounced(task.id)}
                                     onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                                     ref={(rowEl) => {
