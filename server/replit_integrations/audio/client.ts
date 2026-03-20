@@ -17,8 +17,8 @@ let rateLimitResetTime: number | null = null;
 
 export async function initTTSFallbackStatus() {
   try {
-    const { db } = await import("../db");
-    const { appState } = await import("../../shared/schema");
+    const { db } = await import("../../db");
+    const { appState } = await import("../../../shared/schema");
     const { eq } = await import("drizzle-orm");
     const rows = await db.select().from(appState).where(eq(appState.key, 'tts_rate_limit_reset'));
     if (rows.length > 0) {
@@ -41,8 +41,8 @@ export async function initTTSFallbackStatus() {
 
 async function saveRateLimitReset(resetMs: number) {
   try {
-    const { db } = await import("../db");
-    const { appState } = await import("../../shared/schema");
+    const { db } = await import("../../db");
+    const { appState } = await import("../../../shared/schema");
     await db.insert(appState).values({ key: 'tts_rate_limit_reset', value: String(resetMs) })
       .onConflictDoUpdate({ target: appState.key, set: { value: String(resetMs) } });
   } catch (e: any) {
