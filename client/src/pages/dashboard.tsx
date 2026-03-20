@@ -9378,9 +9378,12 @@ export default function Dashboard() {
         backgroundColor: colorSettings.mainBackgroundOverlay ? safeHex(colorSettings.mainBackground, '#3a8bbf') : '#000000'
       }}
     >
-      <div style={{ position: 'fixed', top: '96px', left: '50%', transform: 'translateX(-50%)', width: '54px', height: '19px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 99999, pointerEvents: 'none' }}>
-        <span style={{ fontSize: '8px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
-      </div>
+      {createPortal(
+        <div style={{ position: 'fixed', top: '96px', left: '50%', transform: 'translateX(-50%)', width: '54px', height: '19px', backgroundColor: 'red', border: '2px solid yellow', borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2147483647, pointerEvents: 'none' }}>
+          <span style={{ fontSize: '8px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
+        </div>,
+        document.body
+      )}
       {/* Background photo layer - always shown when set, behind overlay */}
       {colorSettings.backgroundPhoto && (
         <div 
