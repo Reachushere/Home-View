@@ -17817,7 +17817,7 @@ export default function Dashboard() {
             >
               <div style={{ width: '191px', height: '18px', position: 'relative', display: 'flex', alignItems: 'center' }}>
                 <svg width="191" height="18" viewBox="-0.5 -0.5 43 17" preserveAspectRatio="none" style={{ position: 'absolute', top: 0, left: 0 }}>
-                  <path d="M0.00 16.00 L42.00 16.00 L41.98 12.45 C41.98,12.44 41.52,12.14 41.05,11.12 C40.20,8.79 40.08,3.21 38.76,0.71 C38.59,0.40 38.37,0.17 38.10,0.00 L26.70,0.00 L15.30,0.00 L3.90,0.00 C3.63,0.17 3.41,0.40 3.24,0.71 C1.92,3.21 1.80,8.79 0.95,11.12 C0.94,11.51 0.01,12.48 0.01,12.49 L0.00 16.00 Z" fill="rgba(255,255,255,0.35)" stroke="rgba(255,255,255,0.35)" strokeWidth="1" />
+                  <path d="M0.00 16.00 L42.00 16.00 L41.98 12.45 C41.98,12.44 41.52,12.14 41.05,11.12 C40.20,8.79 40.08,3.21 38.76,0.71 C38.59,0.40 38.37,0.17 38.10,0.00 L26.70,0.00 L15.30,0.00 L3.90,0.00 C3.63,0.17 3.41,0.40 3.24,0.71 C1.92,3.21 1.80,8.79 0.95,11.12 C0.94,11.51 0.01,12.48 0.01,12.49 L0.00 16.00 Z" fill="rgba(255,255,255,0.35)" stroke="rgba(255,255,255,0.55)" strokeWidth="1" />
                 </svg>
                 <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', width: '100%', height: '100%' }}>
                   <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 60, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 60, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: 'white' }}>▲</span></div>
@@ -21153,7 +21153,7 @@ export default function Dashboard() {
                         <path d={semTabs.indexOf(tab) === 0
                           ? "M0.00 0.00 L0.00 42.00 L3.55 41.98 C3.56,41.98 3.86,40.68 4.88,39.40 C7.21,37.06 12.79,36.74 15.29,33.10 C15.60,32.64 15.83,32.03 16.00,31.29 L16.00 22.62 L16.00 19.38 L16.00 10.71 C15.83,9.98 15.60,9.36 15.29,8.90 C12.79,5.27 7.21,4.94 4.88,2.60 C4.49,2.59 3.55,0.02 3.55,0.02 L0.00 0.00 Z"
                           : "M0.00 42.00 L0.00 4.53 L3.55 4.50 C3.56,4.50 3.86,3.06 4.88,1.65 C5.48,0.99 6.28,0.47 7.20,0.00 C9.86,1.37 13.43,2.33 15.29,5.33 C15.60,5.84 15.83,6.52 16.00,7.33 L16.00 16.95 L16.00 20.53 L16.00 30.13 C15.83,30.94 15.60,31.63 15.29,32.14 C12.79,36.17 7.21,36.53 4.88,39.12 C4.49,39.13 3.55,41.98 3.55,41.98 L0.00 42.00 Z"
-                        } fill={isActive ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)'} stroke="rgba(255,255,255,0.35)" strokeWidth="1" />
+                        } fill={isActive ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)'} stroke="rgba(255,255,255,0.55)" strokeWidth="1" />
                         <text x="8" y={semTabs.indexOf(tab) === 0 ? 17 : 16} textAnchor="middle" fill="white" fontSize="11" fontWeight="600" fontFamily="system-ui">{tab.letter}</text>
                         <text x="8" y="31" textAnchor="middle" fill="white" fontSize="12" fontWeight="600" fontFamily="system-ui">{tab.year}</text>
                       </svg>
