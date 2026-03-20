@@ -706,9 +706,10 @@ export default function Dashboard() {
   const homeworkScrollRef = useRef<HTMLDivElement>(null);
   const [hwIsScrolling, setHwIsScrolling] = useState(false);
   const hwScrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [hwVisibleSemLabel, setHwVisibleSemLabel] = useState<string | null>(null);
   const [hwFloating, setHwFloatingRaw] = useState(() => {
     const saved = localStorage.getItem('hwFloating');
-    return saved ? JSON.parse(saved) : { detached: false, minimized: false, x: 100, y: 100 };
+    return saved ? { showControls: false, ...JSON.parse(saved) } : { detached: false, minimized: false, showControls: false, x: 100, y: 100 };
   });
   const setHwFloating = (val: any) => {
     setHwFloatingRaw((prev: any) => {
@@ -21221,7 +21222,7 @@ export default function Dashboard() {
             overflow: 'visible',
             right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1}px`,
             width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1 - 5 - 2 - 1}px`,
-            top: `${(calendarBorderTop || (calendarTop + 15))}px`,
+            top: `${(calendarBorderTop || (calendarTop + 15)) - 30}px`,
             bottom: `${calendarBottom}px`,
             background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
             boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08)',
@@ -21281,19 +21282,20 @@ export default function Dashboard() {
             const todayDate = new Date();
             const semTabs = allSemDefs.filter(s => s.endDate >= todayDate);
             const currentSemLabel = hwWeeklyTimeline[0]?.semLabel || null;
+            const scrollActiveSem = hwVisibleSemLabel || currentSemLabel;
             return (
               <div
                 className="absolute"
                 style={{ right: '-16px', bottom: '28px', pointerEvents: 'auto', zIndex: 0, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || hwFloating.detached) ? 'none' : 'block', width: '18px', height: `${semTabs.length * 53 + 23}px` }}
               >
                 {semTabs.map((tab, tabIdx) => {
-                  const isActive = currentSemLabel === tab.semLabel;
+                  const isActive = scrollActiveSem === tab.semLabel;
                   const reversedIdx = semTabs.length - 1 - tabIdx;
                   return (
                     <div
                       key={tab.semLabel}
                       className={`cursor-pointer${isActive ? ' semester-tab-bounce' : ''}`}
-                      style={{ position: 'absolute', bottom: `${reversedIdx * 53 + reversedIdx * 3 + 2 + (tabIdx === 0 ? 1 : 0)}px`, width: '18px', height: '88px', zIndex: semTabs.length - tabIdx, clipPath: 'inset(0 0 0 2px)' }}
+                      style={{ position: 'absolute', bottom: `${reversedIdx * 53 + reversedIdx * 3 + 2 + (tabIdx === 0 ? 1 : 0)}px`, width: isActive ? '24px' : '18px', height: '88px', zIndex: isActive ? 100 : semTabs.length - tabIdx, clipPath: isActive ? 'none' : 'inset(0 0 0 2px)', transition: 'width 0.25s ease, transform 0.25s ease', transform: isActive ? 'translateX(2px)' : 'none' }}
                       onClick={() => {
                         const targetIdx = hwWeeklyTimeline.findIndex(w => w.semLabel === tab.semLabel && w.weekNum === 1);
                         const fallbackIdx = targetIdx >= 0 ? targetIdx : hwWeeklyTimeline.findIndex(w => w.semLabel === tab.semLabel);
@@ -21316,38 +21318,44 @@ export default function Dashboard() {
                       data-testid={`semester-tab-${tab.letter.toLowerCase()}${tab.year}`}
                       title={tab.semLabel}
                     >
-                      <svg width="18" height="88" viewBox="0 0 16 54" style={{ display: 'block' }}>
+                      <svg width={isActive ? '24' : '18'} height="88" viewBox="0 0 16 54" style={{ display: 'block', transition: 'width 0.25s ease' }}>
                         <defs><filter id={`tabShadow-${tabIdx}`} x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="0.5" stdDeviation="0.5" floodColor="black" floodOpacity="0.7" /></filter></defs>
                         <path d={semTabs.indexOf(tab) === 0
                           ? "M0.00 0.00 L0.00 54.00 L3.55 53.98 C3.56,53.98 3.86,52.68 4.88,51.40 C7.21,49.06 12.79,48.74 15.29,45.10 C15.60,44.64 15.83,44.03 16.00,43.29 L16.00 22.62 L16.00 19.38 L16.00 10.71 C15.83,9.98 15.60,9.36 15.29,8.90 C12.79,5.27 7.21,4.94 4.88,2.60 C4.49,2.59 3.55,0.02 3.55,0.02 L0.00 0.00 Z"
                           : "M0.00 54.00 L0.00 4.53 L3.55 4.50 C3.56,4.50 3.86,3.06 4.88,1.65 C5.48,0.99 6.28,0.47 7.20,0.00 C9.86,1.37 13.43,2.33 15.29,5.33 C15.60,5.84 15.83,6.52 16.00,7.33 L16.00 16.95 L16.00 20.53 L16.00 42.13 C15.83,42.94 15.60,43.63 15.29,44.14 C12.79,48.17 7.21,48.53 4.88,51.12 C4.49,51.13 3.55,53.98 3.55,53.98 L0.00 54.00 Z"
-                        } fill={isActive ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)'} stroke="rgba(255,255,255,0.55)" strokeWidth="1" />
-                        {semTabs.indexOf(tab) === semTabs.length - 1 ? (
-                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="9" fontWeight="600" fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 5, 26)">2029</text>
+                        } fill={isActive ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.15)'} stroke={isActive ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.55)'} strokeWidth={isActive ? '1.5' : '1'} />
+                        {(() => {
+                          const tFs = isActive ? '11' : '9';
+                          const tFw = isActive ? '800' : '600';
+                          const tFs2 = isActive ? '10' : '8';
+                          const tFill = isActive ? '#ffffff' : 'white';
+                          return semTabs.indexOf(tab) === semTabs.length - 1 ? (
+                          <text x="5" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 5, 26)">2029</text>
                         ) : (tab.letter === 'F' && tab.year === '28') ? (
-                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="9" fontWeight="600" fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 5, 26)">2028</text>
+                          <text x="5" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 5, 26)">2028</text>
                         ) : (tab.letter === 'S' && tab.year === '28') ? (
-                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="9" fontWeight="600" fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 5, 26)">2027</text>
+                          <text x="5" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 5, 26)">2027</text>
                         ) : (tab.letter === 'W' && tab.year === '28') ? (
-                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="9" fontWeight="600" fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 5, 26)">F 2026</text>
+                          <text x="5" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 5, 26)">F 2026</text>
                         ) : (tab.letter === 'W' && tab.year === '26') ? (
-                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="9" fontWeight="600" fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 5, 26)">Wk 10</text>
+                          <text x="5" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 5, 26)">Wk 10</text>
                         ) : (tab.letter === 'S' && tab.year === '26') ? (
-                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="9" fontWeight="600" fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 5, 26)">Wk 11</text>
+                          <text x="5" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 5, 26)">Wk 11</text>
                         ) : (tab.letter === 'F' && tab.year === '26') ? (
-                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="9" fontWeight="600" fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 5, 26)">Wk 12</text>
+                          <text x="5" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 5, 26)">Wk 12</text>
                         ) : (tab.letter === 'W' && tab.year === '27') ? (
-                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="9" fontWeight="600" fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 5, 26)">May 26</text>
+                          <text x="5" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 5, 26)">May 26</text>
                         ) : (tab.letter === 'S' && tab.year === '27') ? (
-                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="9" fontWeight="600" fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 5, 26)">Jun 26</text>
+                          <text x="5" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 5, 26)">Jun 26</text>
                         ) : (tab.letter === 'F' && tab.year === '27') ? (
-                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="9" fontWeight="600" fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 5, 26)">Jul 26</text>
+                          <text x="5" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 5, 26)">Jul 26</text>
                         ) : (
                           <>
-                            <text x="9" y={semTabs.indexOf(tab) === 0 ? 24 : 22} textAnchor="middle" fill="white" fontSize="8" fontWeight="600" fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`}>{tab.letter}</text>
-                            <text x="9" y={semTabs.indexOf(tab) === 0 ? 36 : 34} textAnchor="middle" fill="white" fontSize="8" fontWeight="600" fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`}>{tab.year}</text>
+                            <text x="9" y={semTabs.indexOf(tab) === 0 ? 24 : 22} textAnchor="middle" fill={tFill} fontSize={tFs2} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`}>{tab.letter}</text>
+                            <text x="9" y={semTabs.indexOf(tab) === 0 ? 36 : 34} textAnchor="middle" fill={tFill} fontSize={tFs2} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`}>{tab.year}</text>
                           </>
-                        )}
+                        );
+                        })()}
                       </svg>
                     </div>
                   );
@@ -21831,7 +21839,7 @@ export default function Dashboard() {
               }
             }
             return '12px';
-          })(), flex: 1, paddingBottom: '0px', overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', zIndex: 2 }} ref={homeworkScrollRef} onScroll={() => { setHwIsScrolling(true); if (hwScrollTimerRef.current) clearTimeout(hwScrollTimerRef.current); hwScrollTimerRef.current = setTimeout(() => setHwIsScrolling(false), 300); }}>
+          })(), flex: 1, paddingBottom: '0px', overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', zIndex: 2 }} ref={homeworkScrollRef} onScroll={() => { setHwIsScrolling(true); if (hwScrollTimerRef.current) clearTimeout(hwScrollTimerRef.current); hwScrollTimerRef.current = setTimeout(() => setHwIsScrolling(false), 300); const sc = homeworkScrollRef.current; if (sc) { const sections = sc.querySelectorAll('[data-semester-label]'); let bestLabel: string | null = null; let bestDist = Infinity; const containerTop = sc.getBoundingClientRect().top; sections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestDist) { bestDist = dist; bestLabel = el.getAttribute('data-semester-label') || null; } }); if (bestLabel) setHwVisibleSemLabel(bestLabel); } }}>
             {isLoading ? (
               <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
             ) : (
@@ -22566,9 +22574,31 @@ export default function Dashboard() {
                       const groupIdx = tlIdx;
                       const dueDates = weekTasks.map(t => ({ date: startOfDay(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
-                          <div key={group.key}>
+                          <div key={group.key} data-semester-label={tlEntry.semLabel || ''}>
+                          {groupIdx === 0 && (() => {
+                            const prevYear = hwWeeklyTimeline[3]?.weekStart?.getFullYear();
+                            const showYearSep = prevYear && tlEntry.weekStart.getFullYear() !== prevYear;
+                            return showYearSep ? (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', margin: '14px 0 4px 0', padding: '0 4px' }}>
+                                <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)' }} />
+                                <span className="text-[10px] font-bold tracking-widest" style={{ color: 'rgba(255,255,255,0.7)', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>{tlEntry.weekStart.getFullYear()}</span>
+                                <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)' }} />
+                              </div>
+                            ) : null;
+                          })()}
+                          {groupIdx > 0 && (() => {
+                            const prevEntry = beyondTimeline[tlIdx - 1];
+                            const showYearSep = prevEntry && tlEntry.weekStart.getFullYear() !== prevEntry.weekStart.getFullYear();
+                            return showYearSep ? (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', margin: '18px 0 4px 0', padding: '0 4px' }}>
+                                <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)' }} />
+                                <span className="text-[10px] font-bold tracking-widest" style={{ color: 'rgba(255,255,255,0.7)', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>{tlEntry.weekStart.getFullYear()}</span>
+                                <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)' }} />
+                              </div>
+                            ) : null;
+                          })()}
                           {groupIdx > 0 && (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '20px' }}>
+                            <div data-semester-label={tlEntry.semLabel || ''} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: tlIdx > 0 && beyondTimeline[tlIdx - 1] && tlEntry.weekStart.getFullYear() !== beyondTimeline[tlIdx - 1].weekStart.getFullYear() ? '4px' : '20px' }}>
                               <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px' }}>
                                   <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{groupWeekLabel}</span>
@@ -22749,6 +22779,15 @@ export default function Dashboard() {
                   </button>
                   <span className="text-[8px] font-medium text-white/50 tracking-wider uppercase" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>⋮⋮ Drag ⋮⋮</span>
                   <button
+                    onClick={(e) => { e.stopPropagation(); setHwFloating(prev => ({ ...prev, showControls: !prev.showControls })); }}
+                    onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setHwFloating(prev => ({ ...prev, showControls: !prev.showControls })); }}
+                    className="w-5 h-5 rounded flex items-center justify-center hover:bg-white/20 active:bg-white/30 transition-colors"
+                    data-testid="hw-floating-controls-toggle"
+                    title="Toggle player controls"
+                  >
+                    <Play className="h-2.5 w-2.5 text-white/70" />
+                  </button>
+                  <button
                     onClick={(e) => { e.stopPropagation(); hwFloatingHandlers.onDock(); }}
                     onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); hwFloatingHandlers.onDock(); }}
                     className="w-5 h-5 rounded flex items-center justify-center hover:bg-white/20 active:bg-white/30 transition-colors"
@@ -22762,6 +22801,9 @@ export default function Dashboard() {
             </div>
             {!hwFloating.minimized && (
               <div className="flex flex-col flex-1 overflow-y-auto rounded-[12px]" style={{ scrollbarWidth: 'none', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, boxShadow: '0 12px 48px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.3)', maxHeight: '75vh' }}>
+                <div className="flex items-center justify-between px-2.5 py-1.5 rounded-t-[12px]" style={{ borderBottom: '1px solid rgba(255,255,255,0.12)', backgroundColor: colorSettings.headerBar }}>
+                  <span className="text-[10px] font-semibold text-white/80 tracking-wide">Homework Player</span>
+                </div>
                 {courseProgressDataRef.current.map((pd, idx) => {
                   if (!pd) return null;
                   const getProgressColor = (percent: number) => {
@@ -22818,7 +22860,7 @@ export default function Dashboard() {
                                   </div>
                                   <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ position: 'absolute', right: '31px', top: '50%', transform: 'translateY(-50%)' }}>{pd.moduleP.percent}%</span>
                                   <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '6px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`float-play-module-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayModule(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayModule(); }}>
-                                    <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-opacity duration-200" style={{ width: '18px', height: 'auto', display: 'block', opacity: pd.moduleP.percent === 100 ? 0.4 : 1 }} />
+                                    <Play className="hover:opacity-80 transition-opacity duration-200" style={{ width: '16px', height: '16px', opacity: pd.moduleP.percent === 100 ? 0.4 : 1, color: '#fff', fill: 'currentColor' }} />
                                   </div>
                                 </div>
                               </>
@@ -22855,7 +22897,7 @@ export default function Dashboard() {
                                   </div>
                                   <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ position: 'absolute', right: '31px', top: '50%', transform: 'translateY(-50%)' }}>{pd.readingP.percent}%</span>
                                   <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '6px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`float-play-reading-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayReading(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayReading(); }}>
-                                    <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-opacity duration-200" style={{ width: '18px', height: 'auto', display: 'block', opacity: pd.readingP.percent === 100 ? 0.4 : 1 }} />
+                                    <Play className="hover:opacity-80 transition-opacity duration-200" style={{ width: '16px', height: '16px', opacity: pd.readingP.percent === 100 ? 0.4 : 1, color: '#fff', fill: 'currentColor' }} />
                                   </div>
                                 </div>
                               </>
@@ -22866,6 +22908,57 @@ export default function Dashboard() {
                     </div>
                   );
                 })}
+              </div>
+            )}
+            {hwFloating.showControls && !hwFloating.minimized && (
+              <div
+                className="rounded-b-[12px]"
+                style={{
+                  background: 'rgba(0,0,0,0.4)',
+                  borderTop: '1px solid rgba(255,255,255,0.15)',
+                  padding: '8px 10px',
+                }}
+                data-testid="hw-floating-player-controls"
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[9px] font-medium text-white/60 uppercase tracking-wider">Player Controls</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    className="w-7 h-7 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 active:bg-white/30 transition-colors"
+                    data-testid="hw-ctrl-restart"
+                    title="Restart"
+                    onClick={() => {
+                      const iframe = document.querySelector('iframe[name="pdf-reader-frame"]') as HTMLIFrameElement;
+                      if (iframe?.contentWindow) iframe.contentWindow.postMessage({ type: 'tts-restart' }, '*');
+                    }}
+                    onTouchEnd={(e) => { e.preventDefault(); }}
+                  >
+                    <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 text-white/70" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 4v6h6M23 20v-6h-6" /><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15" /></svg>
+                  </button>
+                  <button
+                    className="w-9 h-9 rounded-full flex items-center justify-center bg-white/15 hover:bg-white/25 active:bg-white/35 transition-colors"
+                    data-testid="hw-ctrl-play"
+                    title="Play / Stop"
+                  >
+                    <Play className="w-4 h-4 text-white" style={{ fill: 'currentColor' }} />
+                  </button>
+                  <button
+                    className="w-7 h-7 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 active:bg-white/30 transition-colors"
+                    data-testid="hw-ctrl-reset"
+                    title="Reset"
+                  >
+                    <X className="w-3.5 h-3.5 text-white/70" />
+                  </button>
+                  <div className="flex-1 mx-1">
+                    <div className="rounded-full overflow-hidden" style={{ height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }}>
+                      <div className="h-full rounded-full bg-white/40" style={{ width: '0%' }} />
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-1.5 overflow-hidden" style={{ height: '14px' }}>
+                  <span className="text-[8px] text-white/40 italic">No file loaded</span>
+                </div>
               </div>
             )}
           </div>
