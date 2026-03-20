@@ -22226,9 +22226,11 @@ export default function Dashboard() {
                 {/* 2 Weeks Section */}
                 <div data-homework-section="twoweeks" data-semester-label={hwWeeklyTimeline[2]?.semLabel || ''} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 1px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '20px' }}>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[2]?.label || 'Two weeks'}</span>
+                    <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px' }}>
+                      <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[2]?.label || 'Two weeks'}</span>
+                      <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', position: 'relative', top: '-3px' }}>({dueTwoWeeksTasks.length})</span>
+                    </div>
                   </div>
-                  <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>{dueTwoWeeksTasks.length}</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px', marginTop: '2px' }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                       <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(twoWeeksStart, 'MMM').toUpperCase()}</div>
@@ -22283,7 +22285,7 @@ export default function Dashboard() {
                           <div key={group.key} style={{ display: 'flex', alignItems: 'center', gap: '0px', marginBottom: '2px' }}>
                             <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginLeft: '10px', marginRight: '4px', overflow: 'visible' }} data-testid={`mini-cal-2w-group-${group.key}`}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
-                                Two weeks
+                                {hwWeeklyTimeline[2]?.sublabel || 'Two weeks'}
                               </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
                                 <div style={{ display: 'flex', gap: '2px', padding: '0 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
@@ -22396,9 +22398,11 @@ export default function Dashboard() {
                 {/* 3 Weeks and Beyond Section */}
                 <div data-homework-section="threeweeks" data-semester-label={hwWeeklyTimeline[3]?.semLabel || ''} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '20px' }}>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[3]?.label || 'Three weeks'}</span>
+                    <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px' }}>
+                      <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[3]?.label || 'Three weeks'}</span>
+                      <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', position: 'relative', top: '-3px' }}>({dueBeyondTasks.length})</span>
+                    </div>
                   </div>
-                  <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>{dueBeyondTasks.length}</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, marginTop: '-3px' }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(100, 100, 100)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                       <div style={{ background: 'rgb(100, 100, 100)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(threeWeeksPlusStart, 'MMM').toUpperCase()}</div>
@@ -22456,20 +22460,13 @@ export default function Dashboard() {
                                     const wStart = startOfDay(w.weekStart);
                                     return Math.abs(lastWeek.getTime() - wStart.getTime()) < 2 * 86400000;
                                   });
-                                  if (tlEntry && tlEntry.semLabel) {
-                                    if (tlEntry.weekNum === 1) {
-                                      const semName = tlEntry.semLabel.startsWith('Spring') ? 'Spring' : tlEntry.semLabel.startsWith('Fall') ? 'Fall' : 'Winter';
-                                      return `${semName} Week 1`;
-                                    }
-                                    const dateRange = firstDay.getMonth() === lastDay.getMonth()
-                                      ? `${format(firstDay, 'MMM d')}-${format(lastDay, 'd')}`
-                                      : `${format(firstDay, 'MMM d')} - ${format(lastDay, 'MMM d')}`;
-                                    return `Week ${tlEntry.weekNum} - ${dateRange}`;
+                                  if (tlEntry && tlEntry.sublabel) {
+                                    return tlEntry.sublabel;
                                   }
                                   if (firstDay.getMonth() === lastDay.getMonth()) {
-                                    return `${format(firstDay, 'MMMM d')}-${format(lastDay, 'd, yyyy')}`;
+                                    return `${format(firstDay, 'MMM d')} - ${format(lastDay, 'd')}`;
                                   }
-                                  return `${format(firstDay, 'MMMM d')} - ${format(lastDay, 'MMMM d')}`;
+                                  return `${format(firstDay, 'MMM d')} - ${format(lastDay, 'MMM d')}`;
                                 })()}
                               </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
