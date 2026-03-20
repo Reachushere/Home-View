@@ -34,9 +34,19 @@ export type RepeatType = typeof REPEAT_TYPES[number];
 export type RepeatIntervalUnit = typeof REPEAT_INTERVAL_UNITS[number];
 
 export const COURSES = [
-  { code: "CPPA122", name: "Local Politics", color: "green" },
+  { code: "CPPA101", name: "Cdn Public Admin I: Institutions", color: "blue" },
+  { code: "CPPA102", name: "Cdn Public Admin II: Processes", color: "blue" },
+  { code: "CPPA120", name: "Canadian Politics and Government", color: "blue" },
+  { code: "CPPA121", name: "Ontario Politics and Government", color: "blue" },
+  { code: "CPPA122", name: "Local Politics and Government", color: "green" },
+  { code: "CPPA125", name: "Rights, Equity and the State", color: "blue" },
+  { code: "CPPA235", name: "Issues in Canadian Politics", color: "yellow" },
   { code: "CFNF400", name: "Human Sexuality", color: "pink" },
-  { code: "CASL101", name: "American Sign Language", color: "yellow" },
+  { code: "CASL101", name: "American Sign Language", color: "purple" },
+  { code: "CGCM738", name: "Photoshopped!", color: "orange" },
+  { code: "CECN210", name: "Understanding Economics", color: "emerald" },
+  { code: "CPHL110", name: "Philosophy of Religion", color: "blue" },
+  { code: "CHIS105", name: "Inventing Popular Culture", color: "red" },
 ] as const;
 
 export type Course = typeof COURSES[number];

@@ -211,9 +211,19 @@ const typeColors: Record<string, string> = {
 };
 
 const courseColors: Record<string, { bg: string; border: string; text: string; dot: string; prepBg: string; prepBorder: string; prepText: string }> = {
+  "CPPA101": { bg: "bg-blue-50 dark:bg-blue-900/30", border: "border-blue-400", text: "text-blue-600 dark:text-blue-300", dot: "bg-blue-400", prepBg: "bg-blue-50 dark:bg-blue-900/30", prepBorder: "border-blue-200", prepText: "text-blue-500 dark:text-blue-400" },
+  "CPPA102": { bg: "bg-blue-50 dark:bg-blue-900/30", border: "border-blue-400", text: "text-blue-600 dark:text-blue-300", dot: "bg-blue-400", prepBg: "bg-blue-50 dark:bg-blue-900/30", prepBorder: "border-blue-200", prepText: "text-blue-500 dark:text-blue-400" },
+  "CPPA120": { bg: "bg-blue-50 dark:bg-blue-900/30", border: "border-blue-400", text: "text-blue-600 dark:text-blue-300", dot: "bg-blue-400", prepBg: "bg-blue-50 dark:bg-blue-900/30", prepBorder: "border-blue-200", prepText: "text-blue-500 dark:text-blue-400" },
+  "CPPA121": { bg: "bg-blue-50 dark:bg-blue-900/30", border: "border-blue-400", text: "text-blue-600 dark:text-blue-300", dot: "bg-blue-400", prepBg: "bg-blue-50 dark:bg-blue-900/30", prepBorder: "border-blue-200", prepText: "text-blue-500 dark:text-blue-400" },
   "CPPA122": { bg: "bg-green-50 dark:bg-green-900/30", border: "border-green-400", text: "text-green-600 dark:text-green-300", dot: "bg-green-400", prepBg: "bg-green-50 dark:bg-green-900/30", prepBorder: "border-green-200", prepText: "text-green-500 dark:text-green-400" },
+  "CPPA125": { bg: "bg-blue-50 dark:bg-blue-900/30", border: "border-blue-400", text: "text-blue-600 dark:text-blue-300", dot: "bg-blue-400", prepBg: "bg-blue-50 dark:bg-blue-900/30", prepBorder: "border-blue-200", prepText: "text-blue-500 dark:text-blue-400" },
+  "CPPA235": { bg: "bg-amber-50 dark:bg-amber-900/30", border: "border-amber-400", text: "text-amber-700 dark:text-amber-300", dot: "bg-amber-400", prepBg: "bg-amber-50 dark:bg-amber-900/30", prepBorder: "border-amber-200", prepText: "text-amber-500 dark:text-amber-400" },
   "CFNF400": { bg: "bg-pink-50 dark:bg-pink-900/30", border: "border-pink-400", text: "text-pink-600 dark:text-pink-300", dot: "bg-pink-400", prepBg: "bg-pink-50 dark:bg-pink-900/30", prepBorder: "border-pink-200", prepText: "text-pink-500 dark:text-pink-400" },
   "CASL101": { bg: "bg-indigo-50 dark:bg-indigo-900/30", border: "border-indigo-400", text: "text-indigo-600 dark:text-indigo-300", dot: "bg-indigo-400", prepBg: "bg-indigo-50 dark:bg-indigo-900/30", prepBorder: "border-indigo-200", prepText: "text-indigo-500 dark:text-indigo-400" },
+  "CGCM738": { bg: "bg-orange-50 dark:bg-orange-900/30", border: "border-orange-400", text: "text-orange-600 dark:text-orange-300", dot: "bg-orange-400", prepBg: "bg-orange-50 dark:bg-orange-900/30", prepBorder: "border-orange-200", prepText: "text-orange-500 dark:text-orange-400" },
+  "CECN210": { bg: "bg-emerald-50 dark:bg-emerald-900/30", border: "border-emerald-400", text: "text-emerald-600 dark:text-emerald-300", dot: "bg-emerald-400", prepBg: "bg-emerald-50 dark:bg-emerald-900/30", prepBorder: "border-emerald-200", prepText: "text-emerald-500 dark:text-emerald-400" },
+  "CPHL110": { bg: "bg-blue-50 dark:bg-blue-900/30", border: "border-blue-500", text: "text-blue-600 dark:text-blue-300", dot: "bg-blue-500", prepBg: "bg-blue-50 dark:bg-blue-900/30", prepBorder: "border-blue-300", prepText: "text-blue-500 dark:text-blue-400" },
+  "CHIS105": { bg: "bg-red-50 dark:bg-red-900/30", border: "border-red-400", text: "text-red-600 dark:text-red-300", dot: "bg-red-400", prepBg: "bg-red-50 dark:bg-red-900/30", prepBorder: "border-red-200", prepText: "text-red-500 dark:text-red-400" },
 };
 
 // Display name mapping for course row labels (defaults, overridden by localStorage)
@@ -20351,31 +20361,17 @@ export default function Dashboard() {
                   <div className="space-y-1">
                     {/* Folders - show all folders for read-only users (they can navigate freely) */}
                     {oneDriveFolders.map((folder) => {
-                      // Check if folder name or current path matches a course - use hardcoded colors
-                      const courseColorMap: Record<string, string> = {
-                        'CPPA122': '#47B045',
-                        'CFNF400': '#FA67B3',
-                        'CASL101': '#6366f1',
-                        'CECN210': '#34D399',
-                        'CPHL110': '#60A5FA',
-                        'CHIS105': '#F87171',
-                        'CPPA235': '#CD853F',
-                      };
                       let folderColor: string | undefined;
-                      // First check if we're inside a course folder (path contains course code)
-                      for (const [courseCode, color] of Object.entries(courseColorMap)) {
-                        if (oneDrivePath.includes(courseCode)) {
-                          folderColor = color;
-                          break;
-                        }
+                      for (const c of coursesData.courses) {
+                        if (!c.name.trim()) continue;
+                        const code = c.name.split(' - ')[0]?.trim().toUpperCase();
+                        if (oneDrivePath.includes(code)) { folderColor = getCourseGradientColors(code).end; break; }
                       }
-                      // If not inside a course folder, check if folder name itself is a course
                       if (!folderColor) {
-                        for (const [courseCode, color] of Object.entries(courseColorMap)) {
-                          if (folder.name.includes(courseCode)) {
-                            folderColor = color;
-                            break;
-                          }
+                        for (const c of coursesData.courses) {
+                          if (!c.name.trim()) continue;
+                          const code = c.name.split(' - ')[0]?.trim().toUpperCase();
+                          if (folder.name.includes(code)) { folderColor = getCourseGradientColors(code).end; break; }
                         }
                       }
                       
@@ -22048,7 +22044,7 @@ export default function Dashboard() {
                                 const isToday = isSameDay(d, todayDate);
                                 const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
                                 const isDue = !!dueMatch;
-                                const dueColor = dueMatch ? (dueMatch.courseCode === 'CPPA122' ? '#22c55e' : dueMatch.courseCode === 'CFNF400' ? '#ff69b4' : dueMatch.courseCode === 'CASL101' ? '#b388ff' : getCourseGradientColors(dueMatch.courseCode).end) : '';
+                                const dueColor = dueMatch ? getCourseGradientColors(dueMatch.courseCode).end : '';
                                 return (
                                   <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
                                     width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
@@ -22219,7 +22215,7 @@ export default function Dashboard() {
                                         const isToday = isSameDay(d, today);
                                         const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
                                         const isDue = !!dueMatch;
-                                        const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : dueMatch.courseCode.toUpperCase() === 'CFNF400' ? '#ff69b4' : dueMatch.courseCode.toUpperCase() === 'CASL101' ? '#b388ff' : getCourseGradientColors(dueMatch.courseCode).end) : '';
+                                        const dueColor = dueMatch ? getCourseGradientColors(dueMatch.courseCode).end : '';
                                         return (
                                           <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
                                             width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
@@ -22407,7 +22403,7 @@ export default function Dashboard() {
                                         const isToday = isSameDay(d, today);
                                         const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
                                         const isDue = !!dueMatch;
-                                        const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : dueMatch.courseCode.toUpperCase() === 'CFNF400' ? '#ff69b4' : dueMatch.courseCode.toUpperCase() === 'CASL101' ? '#b388ff' : getCourseGradientColors(dueMatch.courseCode).end) : '';
+                                        const dueColor = dueMatch ? getCourseGradientColors(dueMatch.courseCode).end : '';
                                         return (
                                           <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
                                             width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
@@ -22598,7 +22594,7 @@ export default function Dashboard() {
                                         const isToday = isSameDay(d, today);
                                         const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
                                         const isDue = !!dueMatch;
-                                        const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : dueMatch.courseCode.toUpperCase() === 'CFNF400' ? '#ff69b4' : dueMatch.courseCode.toUpperCase() === 'CASL101' ? '#b388ff' : getCourseGradientColors(dueMatch.courseCode).end) : '';
+                                        const dueColor = dueMatch ? getCourseGradientColors(dueMatch.courseCode).end : '';
                                         return (
                                           <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
                                             width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
@@ -22789,7 +22785,7 @@ export default function Dashboard() {
                                         const isToday = isSameDay(d, today);
                                         const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
                                         const isDue = !!dueMatch;
-                                        const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : dueMatch.courseCode.toUpperCase() === 'CFNF400' ? '#ff69b4' : dueMatch.courseCode.toUpperCase() === 'CASL101' ? '#b388ff' : getCourseGradientColors(dueMatch.courseCode).end) : '';
+                                        const dueColor = dueMatch ? getCourseGradientColors(dueMatch.courseCode).end : '';
                                         return (
                                           <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
                                             width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
