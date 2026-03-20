@@ -21123,7 +21123,7 @@ export default function Dashboard() {
             return (
               <div
                 className="absolute"
-                style={{ right: '-17px', bottom: '28px', pointerEvents: 'auto', zIndex: 0, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'block', width: '19px', height: `${semTabs.length * 53 + 23}px` }}
+                style={{ right: '-19px', bottom: '28px', pointerEvents: 'auto', zIndex: 0, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'block', width: '18px', height: `${semTabs.length * 53 + 23}px` }}
               >
                 {semTabs.map((tab, tabIdx) => {
                   const isActive = currentSemLabel === tab.semLabel;
@@ -21132,7 +21132,7 @@ export default function Dashboard() {
                     <div
                       key={tab.semLabel}
                       className={`cursor-pointer${isActive ? ' semester-tab-bounce' : ''}`}
-                      style={{ position: 'absolute', bottom: `${reversedIdx * 53 + reversedIdx * 3 + 2 + (tabIdx === 0 ? 1 : 0)}px`, width: '18px', height: '88px', zIndex: semTabs.length - tabIdx }}
+                      style={{ position: 'absolute', bottom: `${reversedIdx * 53 + reversedIdx * 3 + 2 + (tabIdx === 0 ? 1 : 0)}px`, width: '18px', height: '88px', zIndex: semTabs.length - tabIdx, clipPath: reversedIdx > 0 ? 'inset(0 0 0 2px)' : undefined }}
                       onClick={() => {
                         if (!homeworkScrollRef.current) return;
                         const idx = hwWeeklyTimeline.findIndex(w => w.semLabel === tab.semLabel);
@@ -21169,7 +21169,7 @@ export default function Dashboard() {
               </div>
             );
           })()}
-          <div className="absolute inset-0 rounded-[12px] overflow-hidden flex flex-col" style={{ pointerEvents: 'auto', zIndex: 1 }}>
+          <div className="absolute inset-0 rounded-[12px] overflow-hidden flex flex-col" style={{ pointerEvents: 'auto' }}>
           {/* Weather Overlay */}
           {weatherData && (() => {
             const wc = weatherData.code;
