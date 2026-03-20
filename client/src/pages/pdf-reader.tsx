@@ -2791,16 +2791,13 @@ export default function PDFReaderPage() {
               onMouseDown={ctrlDragStart}
               onTouchStart={ctrlDragStart}
             >
-              <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-                <img
-                  src={dragTabPath}
-                  alt=""
-                  className="w-full h-full pointer-events-none"
-                  style={{ filter: 'brightness(0.3) saturate(0)', opacity: 0.9 }}
-                  draggable={false}
-                />
-                <div style={{ position: 'absolute', inset: 0, background: cId === 'cppa122' ? '#47B045' : cId === 'cfnf400' ? '#FA67B3' : cId === 'casl101' ? '#B045A2' : '#3a5a7a', mixBlendMode: 'multiply', opacity: 0.7, pointerEvents: 'none' }} />
-              </div>
+              <img
+                src={dragTabPath}
+                alt=""
+                className="w-full h-full pointer-events-none"
+                style={{ filter: 'brightness(0.75) saturate(0)', opacity: 0.95 }}
+                draggable={false}
+              />
               <div className="absolute inset-0 flex items-center justify-center gap-3" style={{ paddingTop: '6px' }}>
                 <button
                   onClick={(e) => { e.stopPropagation(); setCtrlFloating(prev => ({ ...prev, minimized: !prev.minimized })); }}
