@@ -22028,7 +22028,7 @@ export default function Dashboard() {
                     </div>
                     {hwWeeklyTimeline[1]?.sublabel && <span className="text-[8px]" style={{ color: '#ffffff', marginTop: '-1px', lineHeight: 1 }}>{hwWeeklyTimeline[1].sublabel}</span>}
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px', marginTop: '-1px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px', marginTop: '-4px' }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 200, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                       <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(nextSaturday, 'MMM').toUpperCase()}</div>
                       <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(nextSaturday, 'd')}</div>
