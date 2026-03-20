@@ -80,6 +80,8 @@ interface CourseInfo {
   classDay2?: string;
   classTime: string;
   classEndTime?: string;
+  classTime2?: string;
+  classEndTime2?: string;
   zoomLink?: string;
   courseType: string;
   startDate?: string;
@@ -91,7 +93,7 @@ interface CourseInfo {
 interface CourseDetailDialogProps {
   courseInfo: CourseInfo;
   onClose: () => void;
-  onSaveCourseInfo?: (updates: { professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; zoomLink?: string; semesterTerm?: string; year?: string; color?: string; colorEnd?: string }) => void;
+  onSaveCourseInfo?: (updates: { professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; classTime2?: string; classEndTime2?: string; zoomLink?: string; semesterTerm?: string; year?: string; color?: string; colorEnd?: string }) => void;
   onGradeCalculated?: (grade: string, percent: string) => void;
   onDeleteCourse?: () => void;
   onOpenEditTask?: (task: Task) => void;
@@ -271,6 +273,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
     classDay2: courseInfo.classDay2 || '',
     classTime: courseInfo.classTime || '',
     classEndTime: courseInfo.classEndTime || '',
+    classTime2: courseInfo.classTime2 || '',
+    classEndTime2: courseInfo.classEndTime2 || '',
     zoomLink: courseInfo.zoomLink || '',
     semesterTerm: courseInfo.semesterTerm || '',
     year: courseInfo.year || '',
@@ -1258,6 +1262,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                         classDay2: courseInfo.classDay2 || '',
                         classTime: courseInfo.classTime || '',
                         classEndTime: courseInfo.classEndTime || '',
+                        classTime2: courseInfo.classTime2 || '',
+                        classEndTime2: courseInfo.classEndTime2 || '',
                         zoomLink: courseInfo.zoomLink || '',
                       });
                       setIsEditingInfo(false);
@@ -1343,34 +1349,49 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     </select>
                   </div>
                 </div>
-                {editInfo.deliveryMode !== 'online' && (
-                <div className={`grid gap-2 ${editInfo.semesterTerm === 'Summer' ? 'grid-cols-4' : 'grid-cols-3'}`}>
-                  <div>
-                    <label className="text-white text-[9px] mb-0.5 block">Day</label>
-                    <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.classDay} onChange={(e) => setEditInfo({...editInfo, classDay: e.target.value})} data-testid="select-edit-day1">
-                      <option value="" className="bg-gray-800">—</option>
-                      {['monday','tuesday','wednesday','thursday','friday','saturday','sunday'].map(d => <option key={d} value={d} className="bg-gray-800 capitalize">{d.charAt(0).toUpperCase()+d.slice(1)}</option>)}
-                    </select>
-                  </div>
-                  {editInfo.semesterTerm === 'Summer' && (
-                    <div>
-                      <label className="text-white text-[9px] mb-0.5 block">Day 2</label>
-                      <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.classDay2} onChange={(e) => setEditInfo({...editInfo, classDay2: e.target.value})} data-testid="select-edit-day2">
-                        <option value="" className="bg-gray-800">—</option>
-                        {['monday','tuesday','wednesday','thursday','friday','saturday','sunday'].map(d => <option key={d} value={d} className="bg-gray-800 capitalize">{d.charAt(0).toUpperCase()+d.slice(1)}</option>)}
-                      </select>
+                {editInfo.deliveryMode !== 'online' && (() => {
+                  const isSpSu = editInfo.semesterTerm?.startsWith('spring_summer');
+                  return (
+                    <div className="space-y-2">
+                      <div className="grid gap-2 grid-cols-3">
+                        <div>
+                          <label className="text-white text-[9px] mb-0.5 block">{isSpSu ? 'Day 1' : 'Day'}</label>
+                          <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.classDay} onChange={(e) => setEditInfo({...editInfo, classDay: e.target.value})} data-testid="select-edit-day1">
+                            <option value="" className="bg-gray-800">—</option>
+                            {['monday','tuesday','wednesday','thursday','friday','saturday','sunday'].map(d => <option key={d} value={d} className="bg-gray-800 capitalize">{d.charAt(0).toUpperCase()+d.slice(1)}</option>)}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="text-white text-[9px] mb-0.5 block">Start</label>
+                          <input type="time" className="w-full h-6 text-[10px] bg-white/10 border border-white/15 rounded px-1" style={{ color: 'white', colorScheme: 'dark' }} value={editInfo.classTime} onChange={(e) => setEditInfo({...editInfo, classTime: e.target.value})} data-testid="input-edit-start-time" />
+                        </div>
+                        <div>
+                          <label className="text-white text-[9px] mb-0.5 block">End</label>
+                          <input type="time" className="w-full h-6 text-[10px] bg-white/10 border border-white/15 rounded px-1" style={{ color: 'white', colorScheme: 'dark' }} value={editInfo.classEndTime} onChange={(e) => setEditInfo({...editInfo, classEndTime: e.target.value})} data-testid="input-edit-end-time" />
+                        </div>
+                      </div>
+                      {isSpSu && (
+                        <div className="grid gap-2 grid-cols-3">
+                          <div>
+                            <label className="text-white text-[9px] mb-0.5 block">Day 2</label>
+                            <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.classDay2} onChange={(e) => setEditInfo({...editInfo, classDay2: e.target.value})} data-testid="select-edit-day2">
+                              <option value="" className="bg-gray-800">—</option>
+                              {['monday','tuesday','wednesday','thursday','friday','saturday','sunday'].map(d => <option key={d} value={d} className="bg-gray-800 capitalize">{d.charAt(0).toUpperCase()+d.slice(1)}</option>)}
+                            </select>
+                          </div>
+                          <div>
+                            <label className="text-white text-[9px] mb-0.5 block">Start</label>
+                            <input type="time" className="w-full h-6 text-[10px] bg-white/10 border border-white/15 rounded px-1" style={{ color: 'white', colorScheme: 'dark' }} value={editInfo.classTime2} onChange={(e) => setEditInfo({...editInfo, classTime2: e.target.value})} data-testid="input-edit-start-time-2" />
+                          </div>
+                          <div>
+                            <label className="text-white text-[9px] mb-0.5 block">End</label>
+                            <input type="time" className="w-full h-6 text-[10px] bg-white/10 border border-white/15 rounded px-1" style={{ color: 'white', colorScheme: 'dark' }} value={editInfo.classEndTime2} onChange={(e) => setEditInfo({...editInfo, classEndTime2: e.target.value})} data-testid="input-edit-end-time-2" />
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  )}
-                  <div>
-                    <label className="text-white text-[9px] mb-0.5 block">Start</label>
-                    <input type="time" className="w-full h-6 text-[10px] bg-white/10 border border-white/15 rounded px-1" style={{ color: 'white', colorScheme: 'dark' }} value={editInfo.classTime} onChange={(e) => setEditInfo({...editInfo, classTime: e.target.value})} data-testid="input-edit-start-time" />
-                  </div>
-                  <div>
-                    <label className="text-white text-[9px] mb-0.5 block">End</label>
-                    <input type="time" className="w-full h-6 text-[10px] bg-white/10 border border-white/15 rounded px-1" style={{ color: 'white', colorScheme: 'dark' }} value={editInfo.classEndTime} onChange={(e) => setEditInfo({...editInfo, classEndTime: e.target.value})} data-testid="input-edit-end-time" />
-                  </div>
-                </div>
-                )}
+                  );
+                })()}
                 <div>
                   <label className="text-white text-[9px] mb-0.5 block">Certificate Type</label>
                   <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={certificateType} onChange={(e) => updateCertificateType(e.target.value)} data-testid="select-edit-certificate-type-detail">
@@ -1493,17 +1514,34 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     <span className="text-white">Certificate:</span>
                     <span className="text-white text-[9px]">{certificateName || certificateType || '—'}</span>
                   </div>
-                  {courseInfo.deliveryMode !== "online" && (
-                  <div style={{ display: 'grid', gridTemplateColumns: '12px 58px 1fr', gap: '6px', alignItems: 'center' }}>
-                    <Calendar className="h-3 w-3 text-white flex-shrink-0" />
-                    <span className="text-white">Schedule:</span>
-                    <span className="text-white capitalize">
-                      {courseInfo.classDay
-                        ? `${courseInfo.classDay}${courseInfo.classDay2 ? ` & ${courseInfo.classDay2}` : ""}${courseInfo.classTime ? ` ${((t: string) => { const [h,m] = t.split(':').map(Number); const p = h >= 12 ? 'PM' : 'AM'; const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h; return `${h12}:${m.toString().padStart(2,'0')} ${p}`; })(courseInfo.classTime)}` : ""}${courseInfo.classEndTime ? `–${((t: string) => { const [h,m] = t.split(':').map(Number); const p = h >= 12 ? 'PM' : 'AM'; const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h; return `${h12}:${m.toString().padStart(2,'0')} ${p}`; })(courseInfo.classEndTime)}` : ""}`
-                        : "Not set"}
-                    </span>
-                  </div>
-                  )}
+                  {courseInfo.deliveryMode !== "online" && (() => {
+                    const fmt = (t: string) => { const [h,m] = t.split(':').map(Number); const p = h >= 12 ? 'PM' : 'AM'; const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h; return `${h12}:${m.toString().padStart(2,'0')} ${p}`; };
+                    const isSpSu = courseInfo.semesterTerm?.startsWith('spring_summer');
+                    return (
+                      <>
+                        <div style={{ display: 'grid', gridTemplateColumns: '12px 58px 1fr', gap: '6px', alignItems: 'center' }}>
+                          <Calendar className="h-3 w-3 text-white flex-shrink-0" />
+                          <span className="text-white">{isSpSu ? 'Day 1:' : 'Schedule:'}</span>
+                          <span className="text-white capitalize">
+                            {courseInfo.classDay
+                              ? `${courseInfo.classDay}${courseInfo.classTime ? ` ${fmt(courseInfo.classTime)}` : ""}${courseInfo.classEndTime ? `–${fmt(courseInfo.classEndTime)}` : ""}`
+                              : "Not set"}
+                          </span>
+                        </div>
+                        {isSpSu && (
+                          <div style={{ display: 'grid', gridTemplateColumns: '12px 58px 1fr', gap: '6px', alignItems: 'center' }}>
+                            <Calendar className="h-3 w-3 text-white flex-shrink-0" />
+                            <span className="text-white">Day 2:</span>
+                            <span className="text-white capitalize">
+                              {courseInfo.classDay2
+                                ? `${courseInfo.classDay2}${courseInfo.classTime2 ? ` ${fmt(courseInfo.classTime2)}` : (courseInfo.classTime ? ` ${fmt(courseInfo.classTime)}` : "")}${courseInfo.classEndTime2 ? `–${fmt(courseInfo.classEndTime2)}` : (courseInfo.classEndTime ? `–${fmt(courseInfo.classEndTime)}` : "")}`
+                                : "Not set"}
+                            </span>
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
                   {courseInfo.deliveryMode === "online" && (
                     <div style={{ display: 'grid', gridTemplateColumns: '12px 58px 1fr', gap: '6px', alignItems: 'center' }}>
                       <Clock className="h-3 w-3 text-white flex-shrink-0" />

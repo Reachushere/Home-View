@@ -4314,6 +4314,8 @@ export default function Dashboard() {
     let classDay2 = '';
     let classTime = '';
     let classEndTime = '';
+    let classTime2 = '';
+    let classEndTime2 = '';
     let zoomLink = '';
     let professor = matchedCourse?.professor || '';
     let professorEmail = matchedCourse?.professorEmail || '';
@@ -4335,6 +4337,8 @@ export default function Dashboard() {
           classDay2 = (sem as any)[`${prefix}ClassDay2`] || '';
           classTime = (sem as any)[`${prefix}ClassTime`] || '';
           classEndTime = (sem as any)[`${prefix}ClassEndTime`] || '';
+          classTime2 = (sem as any)[`${prefix}ClassTime2`] || '';
+          classEndTime2 = (sem as any)[`${prefix}ClassEndTime2`] || '';
           zoomLink = (sem as any)[`${prefix}ZoomLink`] || '';
           courseType = (sem as any)[`${prefix}CourseType`] || '';
           if (!professor) professor = (sem as any)[`${prefix}Professor`] || '';
@@ -4391,6 +4395,8 @@ export default function Dashboard() {
       classDay2,
       classTime,
       classEndTime,
+      classTime2,
+      classEndTime2,
       zoomLink,
       courseType,
       semesterTerm,
@@ -12965,6 +12971,8 @@ export default function Dashboard() {
                       if (updates.classDay2 !== undefined) payload[`${prefix}ClassDay2`] = updates.classDay2;
                       if (updates.classTime !== undefined) payload[`${prefix}ClassTime`] = updates.classTime;
                       if (updates.classEndTime !== undefined) payload[`${prefix}ClassEndTime`] = updates.classEndTime;
+                      if (updates.classTime2 !== undefined) payload[`${prefix}ClassTime2`] = updates.classTime2;
+                      if (updates.classEndTime2 !== undefined) payload[`${prefix}ClassEndTime2`] = updates.classEndTime2;
                       if (updates.zoomLink !== undefined) payload[`${prefix}ZoomLink`] = updates.zoomLink;
                       if (updates.professor !== undefined) payload[`${prefix}Professor`] = updates.professor;
                       if (updates.professorEmail !== undefined) payload[`${prefix}ProfessorEmail`] = updates.professorEmail;
@@ -13001,7 +13009,9 @@ export default function Dashboard() {
                               const [eY, eM, eD] = dates.endDate.split('-').map(Number);
                               const endD = new Date(eY, eM - 1, eD);
                               const dayMap: Record<string, number> = { sunday: 0, monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6 };
-                              const classDays = [updates.classDay, updates.classDay2].filter(Boolean).map(d => dayMap[d!] ?? -1).filter(d => d >= 0);
+                              const day1Num = dayMap[updates.classDay!] ?? -1;
+                              const day2Num = updates.classDay2 ? (dayMap[updates.classDay2] ?? -1) : -1;
+                              const classDays = [day1Num, day2Num].filter(d => d >= 0);
                               const existingTasks: any[] = queryClient.getQueryData(["/api/tasks"]) || [];
                               const existingClassTasks = existingTasks.filter((t: any) =>
                                 t.type === 'class' && (t.courseName || '').includes(courseCode)
@@ -13017,13 +13027,16 @@ export default function Dashboard() {
                                   if (classDays.includes(current.getDay())) {
                                     const diffWeeks = Math.floor((current.getTime() - startD.getTime()) / (7*24*60*60*1000));
                                     const weekNum = Math.min(Math.max(diffWeeks + 1, 1), 13);
+                                    const isDay2 = day2Num >= 0 && current.getDay() === day2Num;
+                                    const sTime = isDay2 && updates.classTime2 ? updates.classTime2 : updates.classTime!;
+                                    const eTime = isDay2 && updates.classEndTime2 ? updates.classEndTime2 : updates.classEndTime!;
                                     tasksToCreate.push({
                                       title: classTitle,
                                       type: 'class',
                                       dueDate: `${current.getFullYear()}-${(current.getMonth()+1).toString().padStart(2,'0')}-${current.getDate().toString().padStart(2,'0')}T12:00:00`,
                                       courseName,
-                                      eventStartTime: updates.classTime!,
-                                      eventEndTime: updates.classEndTime!,
+                                      eventStartTime: sTime,
+                                      eventEndTime: eTime,
                                       priority: 'medium',
                                       weekNumber: weekNum,
                                     });
@@ -16383,6 +16396,8 @@ export default function Dashboard() {
                       [`${prefix}ClassDay2`]: courseData.classDay2 || null,
                       [`${prefix}ClassTime`]: courseData.classTime || null,
                       [`${prefix}ClassEndTime`]: courseData.classEndTime || null,
+                      [`${prefix}ClassTime2`]: (courseData as any).classTime2 || null,
+                      [`${prefix}ClassEndTime2`]: (courseData as any).classEndTime2 || null,
                       [`${prefix}SpringSummerTerm`]: courseData.springSummerTerm || null,
                       [`${prefix}StartDate`]: courseData.startDate ? new Date(courseData.startDate).toISOString() : null,
                       [`${prefix}EndDate`]: courseData.endDate ? new Date(courseData.endDate).toISOString() : null,
@@ -16480,6 +16495,8 @@ export default function Dashboard() {
                     [`${prefix}ClassDay2`]: wizardData.classDay2 || null,
                     [`${prefix}ClassTime`]: wizardData.classTime || null,
                     [`${prefix}ClassEndTime`]: wizardData.classEndTime || null,
+                    [`${prefix}ClassTime2`]: (wizardData as any).classTime2 || null,
+                    [`${prefix}ClassEndTime2`]: (wizardData as any).classEndTime2 || null,
                     [`${prefix}SpringSummerTerm`]: wizardData.springSummerTerm || null,
                     [`${prefix}StartDate`]: wizardData.startDate ? new Date(wizardData.startDate).toISOString() : null,
                     [`${prefix}EndDate`]: wizardData.endDate ? new Date(wizardData.endDate).toISOString() : null,
