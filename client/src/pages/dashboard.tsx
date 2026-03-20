@@ -17836,11 +17836,11 @@ export default function Dashboard() {
           </div>
           <div className="flex-1 min-h-0 relative" style={{ overflow: 'visible' }}>
             <div
-              style={{ position: 'absolute', left: '4px', top: '-31px', width: '191px', height: '16px', touchAction: 'none', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto', overflow: 'visible' }}
+              style={{ position: 'absolute', left: '4px', top: '-31px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto', overflow: 'visible' }}
               data-testid="calendar-top-resize-handle"
             >
-              <div style={{ width: '191px', height: '16px', position: 'relative', display: 'flex', alignItems: 'center' }}>
-                <svg width="191" height="16" viewBox="5500 12570 7200 950" preserveAspectRatio="none" style={{ position: 'absolute', top: 0, left: 0 }}>
+              <div style={{ width: '191px', height: '14px', position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <svg width="191" height="14" viewBox="5500 12570 7200 950" preserveAspectRatio="none" style={{ position: 'absolute', top: 0, left: 0 }}>
                   <path d="M5733.17 13512.94l6731.61 0 -3.9 -207.81c0,-0.72 -73.04,-18.47 -147.64,-78.44 -136.86,-136.25 -155.52,-463.49 -367.75,-609.72 -26.77,-18.42 -62.89,-31.93 -105.53,-41.65 -1827.21,0 -3654.39,0 -5481.6,0 -42.63,9.72 -78.76,23.23 -105.53,41.65 -212.23,146.23 -231.26,473.47 -368.12,609.72 -0.3,23.38 -149.2,79.84 -149.24,80.72l-2.3 205.53z" fill="rgba(255,255,255,0.35)" stroke="rgba(255,255,255,0.55)" strokeWidth="55" />
                 </svg>
                 <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', width: '100%', height: '100%' }}>
