@@ -21668,7 +21668,7 @@ export default function Dashboard() {
                     e.preventDefault();
                   }}>
                     {otherProgressTasks.length === 0 && (
-                      <span className="text-[10px] text-white/40 italic" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', flex: 1, textAlign: 'center' }}>No upcoming items</span>
+                      <span className="text-[10px] text-white/40 italic" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>No upcoming items</span>
                     )}
                     {otherProgressTasks.map(t => {
                       const dueStr = format(new Date(t.dueDate), 'MMM d');
@@ -22038,7 +22038,6 @@ export default function Dashboard() {
                       <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[1]?.label || 'Next week'}</span>
                       <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', position: 'relative', top: '-3px' }}>({dueNextWeekTasks.length})</span>
                     </div>
-                    {hwWeeklyTimeline[1]?.sublabel && <span className="text-[8px]" style={{ color: '#ffffff', marginTop: '-1px', lineHeight: 1 }}>{hwWeeklyTimeline[1].sublabel}</span>}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px', marginTop: '-4px' }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 200, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
@@ -22228,7 +22227,6 @@ export default function Dashboard() {
                 <div data-homework-section="twoweeks" data-semester-label={hwWeeklyTimeline[2]?.semLabel || ''} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 1px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '20px' }}>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[2]?.label || 'Two weeks'}</span>
-                    {hwWeeklyTimeline[2]?.sublabel && <span className="text-[8px]" style={{ color: '#ffffff', marginTop: '-1px', lineHeight: 1 }}>{hwWeeklyTimeline[2].sublabel}</span>}
                   </div>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>{dueTwoWeeksTasks.length}</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px', marginTop: '2px' }}>
@@ -22399,7 +22397,6 @@ export default function Dashboard() {
                 <div data-homework-section="threeweeks" data-semester-label={hwWeeklyTimeline[3]?.semLabel || ''} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '20px' }}>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[3]?.label || 'Three weeks'}</span>
-                    {hwWeeklyTimeline[3]?.sublabel && <span className="text-[8px]" style={{ color: '#ffffff', marginTop: '-1px', lineHeight: 1 }}>{hwWeeklyTimeline[3].sublabel}</span>}
                   </div>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>{dueBeyondTasks.length}</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, marginTop: '-3px' }}>
