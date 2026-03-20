@@ -75,8 +75,8 @@ const PROFILES: Record<ProfileKey, {
   yasu: {
     label: "Yasu",
     theme: "sakura",
-    accent: "#2dd4bf",
-    glow: "rgba(45,212,191,0.3)",
+    accent: "#38bdf8",
+    glow: "rgba(56,189,248,0.35)",
     artists: [
       { name: "中島みゆき", uri: "spotify:track:59fRFaYL0MkBgctE2KOxHF", searchQuery: "中島みゆき 糸" },
       { name: "YOASOBI", uri: "spotify:artist:64tJ2EAv1R6UaZqc4iOCyj", searchQuery: "YOASOBI" },
@@ -154,39 +154,81 @@ function CherryBlossoms() {
     canvas.width = W * 2; canvas.height = H * 2;
     ctx.scale(2, 2);
 
-    const petals: { x: number; y: number; r: number; rot: number; vx: number; vy: number; vr: number; alpha: number; size: number }[] = [];
-    for (let i = 0; i < 25; i++) {
+    const petalColors = [
+      [255, 183, 197], [255, 192, 210], [255, 175, 195],
+      [255, 200, 215], [248, 170, 190], [255, 210, 220],
+    ];
+
+    interface Petal {
+      x: number; y: number; r: number; vx: number; vy: number; vr: number;
+      alpha: number; size: number; color: number[]; delay: number;
+      wobbleSpeed: number; wobbleAmp: number; flutter: number;
+    }
+
+    const petals: Petal[] = [];
+    for (let i = 0; i < 40; i++) {
       petals.push({
-        x: Math.random() * W, y: Math.random() * H - H,
-        r: Math.random() * Math.PI * 2, rot: 0,
-        vx: (Math.random() - 0.5) * 0.5, vy: 0.3 + Math.random() * 0.8,
-        vr: (Math.random() - 0.5) * 0.03, alpha: 0.3 + Math.random() * 0.5,
-        size: 4 + Math.random() * 6,
+        x: Math.random() * W, y: Math.random() * H * 2 - H,
+        r: Math.random() * Math.PI * 2,
+        vx: (Math.random() - 0.3) * 0.6, vy: 0.2 + Math.random() * 0.7,
+        vr: (Math.random() - 0.5) * 0.025,
+        alpha: 0.35 + Math.random() * 0.5,
+        size: 5 + Math.random() * 8,
+        color: petalColors[Math.floor(Math.random() * petalColors.length)],
+        delay: Math.random() * 6000,
+        wobbleSpeed: 1500 + Math.random() * 2000,
+        wobbleAmp: 0.3 + Math.random() * 0.5,
+        flutter: Math.random() * 0.02,
       });
     }
 
+    const drawPetal = (ctx: CanvasRenderingContext2D, p: Petal, t: number) => {
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.r);
+      const breathe = 1 + Math.sin(t / 3000 + p.delay) * 0.08;
+      ctx.scale(breathe, breathe);
+      ctx.globalAlpha = p.alpha;
+
+      const [cr, cg, cb] = p.color;
+      for (let i = 0; i < 5; i++) {
+        const angle = (i / 5) * Math.PI * 2 - Math.PI / 2;
+        const px = Math.cos(angle) * p.size * 0.45;
+        const py = Math.sin(angle) * p.size * 0.45;
+        ctx.beginPath();
+        ctx.ellipse(px, py, p.size * 0.55, p.size * 0.3, angle + Math.PI / 2, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${cr},${cg},${cb},0.85)`;
+        ctx.fill();
+      }
+
+      ctx.beginPath();
+      ctx.arc(0, 0, p.size * 0.15, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,220,180,0.9)`;
+      ctx.fill();
+
+      ctx.globalAlpha = p.alpha * 0.3;
+      ctx.beginPath();
+      ctx.arc(0, 0, p.size * 1.2, 0, Math.PI * 2);
+      const glow = ctx.createRadialGradient(0, 0, 0, 0, 0, p.size * 1.2);
+      glow.addColorStop(0, `rgba(${cr},${cg},${cb},0.25)`);
+      glow.addColorStop(1, `rgba(${cr},${cg},${cb},0)`);
+      ctx.fillStyle = glow;
+      ctx.fill();
+
+      ctx.restore();
+    };
+
     const animate = () => {
+      const t = Date.now();
       ctx.clearRect(0, 0, W, H);
       for (const p of petals) {
-        p.x += p.vx + Math.sin(Date.now() / 2000 + p.y * 0.01) * 0.3;
+        p.x += p.vx + Math.sin((t + p.delay) / p.wobbleSpeed) * p.wobbleAmp;
         p.y += p.vy;
-        p.r += p.vr;
-        if (p.y > H + 20) { p.y = -20; p.x = Math.random() * W; }
-        if (p.x > W + 20) p.x = -20;
-        if (p.x < -20) p.x = W + 20;
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.rotate(p.r);
-        ctx.globalAlpha = p.alpha;
-        ctx.beginPath();
-        ctx.ellipse(0, 0, p.size, p.size * 0.6, 0, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,${180 + Math.random() * 40},${190 + Math.random() * 30},0.9)`;
-        ctx.fill();
-        ctx.beginPath();
-        ctx.ellipse(p.size * 0.3, -p.size * 0.2, p.size * 0.7, p.size * 0.4, 0.5, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,${190 + Math.random() * 30},${200 + Math.random() * 20},0.7)`;
-        ctx.fill();
-        ctx.restore();
+        p.r += p.vr + Math.sin((t + p.delay) / 1800) * p.flutter;
+        if (p.y > H + 30) { p.y = -30; p.x = Math.random() * W; }
+        if (p.x > W + 30) p.x = -30;
+        if (p.x < -30) p.x = W + 30;
+        drawPetal(ctx, p, t);
       }
       animRef.current = requestAnimationFrame(animate);
     };
@@ -788,50 +830,50 @@ export default function SpotifyPlayerPage() {
   const isSakura = activeProfile === "yasu";
 
   const tc = {
-    textMuted: isSakura ? 'rgba(130,220,210,0.65)' : 'rgba(100,180,255,0.65)',
-    textSoft: isSakura ? 'rgba(140,225,215,0.45)' : 'rgba(100,180,255,0.45)',
-    textMid: isSakura ? 'rgba(130,215,205,0.8)' : 'rgba(140,200,255,0.8)',
-    textBright: isSakura ? 'rgba(140,230,220,0.85)' : 'rgba(140,200,255,0.85)',
-    navIdle: isSakura ? 'rgba(100,210,195,0.65)' : 'rgba(120,200,255,0.65)',
-    menuToggle: isSakura ? 'rgba(80,210,195,0.7)' : 'rgba(90,200,255,0.7)',
-    divider: isSakura ? 'rgba(45,212,191,0.18)' : 'rgba(70,160,255,0.2)',
+    textMuted: isSakura ? 'rgba(130,200,240,0.7)' : 'rgba(100,180,255,0.65)',
+    textSoft: isSakura ? 'rgba(140,210,245,0.5)' : 'rgba(100,180,255,0.45)',
+    textMid: isSakura ? 'rgba(120,195,240,0.85)' : 'rgba(140,200,255,0.8)',
+    textBright: isSakura ? 'rgba(140,215,250,0.9)' : 'rgba(140,200,255,0.85)',
+    navIdle: isSakura ? 'rgba(100,195,245,0.7)' : 'rgba(120,200,255,0.65)',
+    menuToggle: isSakura ? 'rgba(80,190,245,0.75)' : 'rgba(90,200,255,0.7)',
+    divider: isSakura ? 'rgba(56,189,248,0.2)' : 'rgba(70,160,255,0.2)',
     sideEdge: isSakura
-      ? 'linear-gradient(180deg, rgba(45,212,191,0.35), rgba(45,212,191,0.08), rgba(45,212,191,0.25))'
+      ? 'linear-gradient(180deg, rgba(56,189,248,0.4), rgba(56,189,248,0.1), rgba(56,189,248,0.3))'
       : 'linear-gradient(180deg, rgba(60,180,255,0.4), rgba(60,180,255,0.1), rgba(60,180,255,0.3))',
-    homeBtnBg: isSakura ? 'rgba(45,212,191,0.12)' : 'rgba(50,130,255,0.12)',
-    homeBtnBorder: isSakura ? 'rgba(45,212,191,0.2)' : 'rgba(80,170,255,0.2)',
-    homeBtnText: isSakura ? 'rgba(130,230,215,0.8)' : 'rgba(140,215,255,0.8)',
-    btnBg: isSakura ? 'rgba(45,212,191,0.1)' : 'rgba(60,140,255,0.1)',
-    btnBorder: isSakura ? 'rgba(45,212,191,0.2)' : 'rgba(60,140,255,0.2)',
-    btnText: isSakura ? 'rgba(130,220,210,0.7)' : 'rgba(100,180,255,0.7)',
-    cardBorder: isSakura ? 'rgba(45,212,191,0.2)' : 'rgba(80,160,255,0.25)',
-    progressBg: isSakura ? 'rgba(45,212,191,0.12)' : 'rgba(60,160,255,0.12)',
-    progressGrad: isSakura ? 'rgba(0,200,180,0.4)' : 'rgba(0,180,255,0.4)',
-    dotIdle: isSakura ? 'rgba(45,212,191,0.4)' : 'rgba(80,160,255,0.4)',
-    roomBorder: isSakura ? 'rgba(45,212,191,0.15)' : 'rgba(60,140,255,0.15)',
-    speakerBorder: isSakura ? 'rgba(45,212,191,0.18)' : 'rgba(80,160,255,0.18)',
-    speakerIcon: isSakura ? 'rgba(100,210,200,0.6)' : 'rgba(100,180,255,0.6)',
-    headerBorder: isSakura ? 'rgba(45,212,191,0.25)' : 'rgba(80,160,255,0.25)',
-    voiceOff: isSakura ? 'rgba(100,210,195,0.5)' : 'rgba(100,180,255,0.5)',
+    homeBtnBg: isSakura ? 'rgba(56,189,248,0.15)' : 'rgba(50,130,255,0.12)',
+    homeBtnBorder: isSakura ? 'rgba(56,189,248,0.25)' : 'rgba(80,170,255,0.2)',
+    homeBtnText: isSakura ? 'rgba(140,215,250,0.85)' : 'rgba(140,215,255,0.8)',
+    btnBg: isSakura ? 'rgba(56,189,248,0.12)' : 'rgba(60,140,255,0.1)',
+    btnBorder: isSakura ? 'rgba(56,189,248,0.25)' : 'rgba(60,140,255,0.2)',
+    btnText: isSakura ? 'rgba(130,205,245,0.75)' : 'rgba(100,180,255,0.7)',
+    cardBorder: isSakura ? 'rgba(56,189,248,0.22)' : 'rgba(80,160,255,0.25)',
+    progressBg: isSakura ? 'rgba(56,189,248,0.15)' : 'rgba(60,160,255,0.12)',
+    progressGrad: isSakura ? 'rgba(30,180,240,0.45)' : 'rgba(0,180,255,0.4)',
+    dotIdle: isSakura ? 'rgba(56,189,248,0.45)' : 'rgba(80,160,255,0.4)',
+    roomBorder: isSakura ? 'rgba(56,189,248,0.18)' : 'rgba(60,140,255,0.15)',
+    speakerBorder: isSakura ? 'rgba(56,189,248,0.2)' : 'rgba(80,160,255,0.18)',
+    speakerIcon: isSakura ? 'rgba(100,195,245,0.65)' : 'rgba(100,180,255,0.6)',
+    headerBorder: isSakura ? 'rgba(56,189,248,0.28)' : 'rgba(80,160,255,0.25)',
+    voiceOff: isSakura ? 'rgba(100,195,240,0.55)' : 'rgba(100,180,255,0.5)',
   };
 
   return (
-    <div className="fixed inset-0 flex flex-col overflow-hidden select-none" style={{ fontFamily: "'Inter', system-ui, sans-serif", background: isSakura ? '#1a3a3a' : '#152e54' }} data-testid="spotify-player-page">
+    <div className="fixed inset-0 flex flex-col overflow-hidden select-none" style={{ fontFamily: "'Inter', system-ui, sans-serif", background: isSakura ? '#0f2a42' : '#152e54' }} data-testid="spotify-player-page">
       <img
         src={isPlaying ? massBg : musicBg}
         alt=""
         className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
-        style={{ opacity: isPlaying ? 0.45 : 0.3, filter: isSakura ? "brightness(1.2) saturate(1.3) hue-rotate(140deg)" : "brightness(1.1) saturate(1.2) hue-rotate(200deg)" }}
+        style={{ opacity: isPlaying ? 0.45 : 0.3, filter: isSakura ? "brightness(1.15) saturate(1.2) hue-rotate(195deg)" : "brightness(1.1) saturate(1.2) hue-rotate(200deg)" }}
       />
 
       <div className="absolute inset-0" style={{
         background: isSakura
           ? `
-            radial-gradient(ellipse at 15% 30%, rgba(255,183,197,0.2) 0%, transparent 45%),
-            radial-gradient(ellipse at 85% 20%, rgba(45,212,191,0.25) 0%, transparent 40%),
-            radial-gradient(ellipse at 50% 70%, rgba(255,192,203,0.15) 0%, transparent 50%),
-            radial-gradient(ellipse at 70% 80%, rgba(30,180,170,0.2) 0%, transparent 45%),
-            linear-gradient(180deg, rgba(20,60,60,0.3) 0%, rgba(25,55,55,0.4) 100%)
+            radial-gradient(ellipse at 15% 30%, rgba(255,183,197,0.18) 0%, transparent 45%),
+            radial-gradient(ellipse at 85% 20%, rgba(56,189,248,0.3) 0%, transparent 40%),
+            radial-gradient(ellipse at 50% 70%, rgba(255,192,203,0.12) 0%, transparent 50%),
+            radial-gradient(ellipse at 70% 80%, rgba(40,170,240,0.25) 0%, transparent 45%),
+            linear-gradient(180deg, rgba(15,42,66,0.3) 0%, rgba(18,48,75,0.4) 100%)
           `
           : `
             radial-gradient(ellipse at 20% 50%, rgba(50,130,240,0.3) 0%, transparent 50%),
