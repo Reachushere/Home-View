@@ -49,8 +49,8 @@ const PROFILES: Record<ProfileKey, {
   bryn: {
     label: "Bryn",
     theme: "neon",
-    accent: "#a855f7",
-    glow: "rgba(168,85,247,0.3)",
+    accent: "#3b82f6",
+    glow: "rgba(59,130,246,0.3)",
     artists: [
       { name: "Katy Perry", uri: "spotify:artist:6jJ0s89eD6GaHleKKya26X", searchQuery: "Katy Perry" },
       { name: "Pink", uri: "spotify:artist:1KCSPY1glIKqW2TotWuXOR", searchQuery: "Pink singer" },
