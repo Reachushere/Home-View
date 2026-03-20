@@ -22,7 +22,7 @@ import { parseTickerCommand, extractInlineExpiry } from "./gmailTicker";
 import { getSchedulerStatus } from "./reminderScheduler";
 import { fetchTMUCalendarEvents } from "./tmuCalendar";
 import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder } from "./onedrive";
-import { getUncachableSpotifyClient } from "./spotify";
+import * as spotifyApi from "./spotify";
 
 // Helper function to generate repeated task due dates
 function generateRepeatDates(
@@ -13470,8 +13470,7 @@ Return ONLY the JSON object, no markdown formatting.`;
 
   app.get("/api/spotify/now-playing", async (_req, res) => {
     try {
-      const spotify = await getUncachableSpotifyClient();
-      const playback = await spotify.player.getCurrentlyPlayingTrack();
+      const playback = await spotifyApi.getNowPlaying();
       if (!playback || !playback.item) {
         return res.json({ playing: false });
       }
@@ -13495,9 +13494,8 @@ Return ONLY the JSON object, no markdown formatting.`;
 
   app.get("/api/spotify/recent", async (_req, res) => {
     try {
-      const spotify = await getUncachableSpotifyClient();
-      const recent = await spotify.player.getRecentlyPlayedTracks(5);
-      const tracks = recent.items.map((item: any) => ({
+      const recent = await spotifyApi.getRecentTracks(5);
+      const tracks = (recent?.items || []).map((item: any) => ({
         name: item.track.name,
         artist: item.track.artists?.map((a: any) => a.name).join(", ") || "Unknown",
         album: item.track.album?.name || "",
@@ -13515,8 +13513,7 @@ Return ONLY the JSON object, no markdown formatting.`;
 
   app.put("/api/spotify/play", async (_req, res) => {
     try {
-      const spotify = await getUncachableSpotifyClient();
-      await spotify.player.startResumePlayback("");
+      await spotifyApi.play();
       res.json({ ok: true });
     } catch (error: any) {
       console.error("Spotify play error:", error?.message || error);
@@ -13526,8 +13523,7 @@ Return ONLY the JSON object, no markdown formatting.`;
 
   app.put("/api/spotify/pause", async (_req, res) => {
     try {
-      const spotify = await getUncachableSpotifyClient();
-      await spotify.player.pausePlayback("");
+      await spotifyApi.pause();
       res.json({ ok: true });
     } catch (error: any) {
       console.error("Spotify pause error:", error?.message || error);
@@ -13537,8 +13533,7 @@ Return ONLY the JSON object, no markdown formatting.`;
 
   app.post("/api/spotify/next", async (_req, res) => {
     try {
-      const spotify = await getUncachableSpotifyClient();
-      await spotify.player.skipToNext("");
+      await spotifyApi.next();
       res.json({ ok: true });
     } catch (error: any) {
       console.error("Spotify next error:", error?.message || error);
@@ -13548,8 +13543,7 @@ Return ONLY the JSON object, no markdown formatting.`;
 
   app.post("/api/spotify/previous", async (_req, res) => {
     try {
-      const spotify = await getUncachableSpotifyClient();
-      await spotify.player.skipToPrevious("");
+      await spotifyApi.previous();
       res.json({ ok: true });
     } catch (error: any) {
       console.error("Spotify previous error:", error?.message || error);

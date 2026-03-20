@@ -59,30 +59,37 @@ export default function SpotifyPlayerPage() {
   const [nowPlaying, setNowPlaying] = useState<NowPlaying | null>(null);
   const [recent, setRecent] = useState<RecentTrack[]>([]);
   const [loading, setLoading] = useState(true);
+  const [connectionError, setConnectionError] = useState(false);
   const [actionPending, setActionPending] = useState(false);
   const [localProgress, setLocalProgress] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animFrameRef = useRef<number>();
   const barsRef = useRef<number[]>(Array.from({ length: 64 }, () => Math.random() * 0.3));
 
+  const authParam = new URLSearchParams(window.location.search).get('auth');
+  const authQuery = authParam ? `?auth=${authParam}` : '';
+
   const fetchNowPlaying = useCallback(async () => {
     try {
-      const res = await fetch("/api/spotify/now-playing");
+      const res = await fetch(`/api/spotify/now-playing${authQuery}`);
       if (res.ok) {
         const data = await res.json();
         setNowPlaying(data);
+        setConnectionError(false);
         if (data.progress) setLocalProgress(data.progress);
+      } else {
+        setConnectionError(true);
       }
     } catch (e) {
-      console.error("Failed to fetch now playing:", e);
+      setConnectionError(true);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [authQuery]);
 
   const fetchRecent = useCallback(async () => {
     try {
-      const res = await fetch("/api/spotify/recent");
+      const res = await fetch(`/api/spotify/recent${authQuery}`);
       if (res.ok) {
         const data = await res.json();
         setRecent(data);
@@ -90,7 +97,7 @@ export default function SpotifyPlayerPage() {
     } catch (e) {
       console.error("Failed to fetch recent:", e);
     }
-  }, []);
+  }, [authQuery]);
 
   useEffect(() => {
     fetchNowPlaying();
@@ -168,7 +175,7 @@ export default function SpotifyPlayerPage() {
   const doAction = async (action: string, method = "POST") => {
     setActionPending(true);
     try {
-      await fetch(`/api/spotify/${action}`, { method });
+      await fetch(`/api/spotify/${action}${authQuery}`, { method });
       setTimeout(fetchNowPlaying, 500);
     } catch (e) {
       console.error(`Spotify ${action} failed:`, e);
@@ -232,7 +239,11 @@ export default function SpotifyPlayerPage() {
 
       <div className="relative z-10 flex items-center px-6 py-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
         <button
-          onClick={() => navigate("/")}
+          onClick={() => {
+            const params = new URLSearchParams(window.location.search);
+            const authParam = params.get('auth');
+            window.location.href = '/' + (authParam ? `?auth=${authParam}` : '');
+          }}
           className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white/5 transition-colors"
           data-testid="back-to-dashboard"
         >
@@ -257,6 +268,16 @@ export default function SpotifyPlayerPage() {
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 pb-4" style={{ gap: "20px" }}>
         {loading ? (
           <Loader2 className="h-12 w-12 text-white/20 animate-spin" />
+        ) : connectionError ? (
+          <div className="flex flex-col items-center gap-4 text-center px-8">
+            <div className="w-20 h-20 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+              <Music2 className="h-10 w-10 text-white/30" />
+            </div>
+            <p className="text-sm text-white/50 max-w-xs">Spotify is connected but the API requires additional setup. Open the Spotify Developer Dashboard to register the app user.</p>
+            <div className="flex gap-3 mt-2">
+              <button onClick={fetchNowPlaying} className="px-4 py-2 rounded-lg text-xs font-medium text-white/70 hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }} data-testid="retry-spotify">Retry</button>
+            </div>
+          </div>
         ) : (
           <>
             <div className="relative" style={{ width: "280px", height: "280px" }}>

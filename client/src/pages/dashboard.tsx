@@ -11388,7 +11388,9 @@ export default function Dashboard() {
               title="Spotify Player"
               onClick={() => {
                 triggerButtonGlow('spotify');
-                window.open('/spotify', '_blank');
+                const params = new URLSearchParams(window.location.search);
+                const authParam = params.get('auth');
+                window.location.href = '/spotify' + (authParam ? `?auth=${authParam}` : '');
               }}
             >
               <Music2 className="text-white" style={{ height: '20px', width: '20px' }} />

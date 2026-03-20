@@ -1,12 +1,4 @@
-import { SpotifyApi } from "@spotify/web-api-ts-sdk";
-
-let connectionSettings: any;
-
-async function getAccessToken() {
-  if (connectionSettings && connectionSettings.settings.expires_at && new Date(connectionSettings.settings.expires_at).getTime() > Date.now()) {
-    return connectionSettings.settings.access_token;
-  }
-  
+async function getSpotifyAccessToken(): Promise<string> {
   const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
   const xReplitToken = process.env.REPL_IDENTITY 
     ? 'repl ' + process.env.REPL_IDENTITY 
@@ -15,10 +7,10 @@ async function getAccessToken() {
     : null;
 
   if (!xReplitToken) {
-    throw new Error('X-Replit-Token not found for repl/depl');
+    throw new Error('X-Replit-Token not found');
   }
 
-  connectionSettings = await fetch(
+  const data = await fetch(
     'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=spotify',
     {
       headers: {
@@ -26,28 +18,55 @@ async function getAccessToken() {
         'X-Replit-Token': xReplitToken
       }
     }
-  ).then(res => res.json()).then(data => data.items?.[0]);
-  const refreshToken =
-    connectionSettings?.settings?.oauth?.credentials?.refresh_token;
-  const accessToken = connectionSettings?.settings?.access_token || connectionSettings.settings?.oauth?.credentials?.access_token;
-  const clientId = connectionSettings?.settings?.oauth?.credentials?.client_id;
-  const expiresIn = connectionSettings.settings?.oauth?.credentials?.expires_in;
-  if (!connectionSettings || (!accessToken || !clientId || !refreshToken)) {
-    throw new Error('Spotify not connected');
-  }
-  return { accessToken, clientId, refreshToken, expiresIn };
+  ).then(res => res.json());
+
+  const conn = data.items?.[0];
+  if (!conn) throw new Error('Spotify not connected');
+
+  const accessToken = conn.settings?.access_token;
+  if (!accessToken) throw new Error('No Spotify access token');
+
+  return accessToken;
 }
 
-// Spotify integration - connected via Replit connector
-export async function getUncachableSpotifyClient() {
-  const { accessToken, clientId, refreshToken, expiresIn } = await getAccessToken();
-
-  const spotify = SpotifyApi.withAccessToken(clientId, {
-    access_token: accessToken,
-    token_type: "Bearer",
-    expires_in: expiresIn || 3600,
-    refresh_token: refreshToken,
+async function spotifyFetch(endpoint: string, method: string = 'GET', body?: any) {
+  const token = await getSpotifyAccessToken();
+  const res = await fetch(`https://api.spotify.com/v1${endpoint}`, {
+    method,
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: body ? JSON.stringify(body) : undefined,
   });
+  if (res.status === 204) return null;
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Spotify API ${res.status}: ${errText}`);
+  }
+  return res.json();
+}
 
-  return spotify;
+export async function getNowPlaying() {
+  return spotifyFetch('/me/player/currently-playing');
+}
+
+export async function getRecentTracks(limit: number = 5) {
+  return spotifyFetch(`/me/player/recently-played?limit=${limit}`);
+}
+
+export async function play() {
+  return spotifyFetch('/me/player/play', 'PUT');
+}
+
+export async function pause() {
+  return spotifyFetch('/me/player/pause', 'PUT');
+}
+
+export async function next() {
+  return spotifyFetch('/me/player/next', 'POST');
+}
+
+export async function previous() {
+  return spotifyFetch('/me/player/previous', 'POST');
 }
