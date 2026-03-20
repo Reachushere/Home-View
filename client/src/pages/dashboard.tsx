@@ -21165,11 +21165,11 @@ export default function Dashboard() {
                         ) : (tab.letter === 'F' && tab.year === '28') ? (
                           <text x="5" y="26" textAnchor="middle" fill="white" fontSize="11" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">2028</text>
                         ) : (tab.letter === 'W' && tab.year === '26') ? (
-                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="9" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">Wk 10</text>
+                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="10" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">Wk 10</text>
                         ) : (tab.letter === 'S' && tab.year === '26') ? (
-                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="9"  fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">Wk 11</text>
+                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="10" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">Wk 11</text>
                         ) : (tab.letter === 'F' && tab.year === '26') ? (
-                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="9" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">Wk 12</text>
+                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="10" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">Wk 12</text>
                         ) : (
                           <>
                             <text x="9" y={semTabs.indexOf(tab) === 0 ? 24 : 22} textAnchor="middle" fill="white" fontSize="9" fontWeight="600" fontFamily="system-ui">{tab.letter}</text>
