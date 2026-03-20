@@ -21162,6 +21162,8 @@ export default function Dashboard() {
                         } fill={isActive ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)'} stroke="rgba(255,255,255,0.55)" strokeWidth="1" />
                         {semTabs.indexOf(tab) === semTabs.length - 1 ? (
                           <text x="5" y="26" textAnchor="middle" fill="white" fontSize="11" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">2029</text>
+                        ) : (tab.letter === 'F' && tab.year === '28') ? (
+                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="11" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">2028</text>
                         ) : (
                           <>
                             <text x="9" y={semTabs.indexOf(tab) === 0 ? 24 : 22} textAnchor="middle" fill="white" fontSize="9" fontWeight="600" fontFamily="system-ui">{tab.letter}</text>
