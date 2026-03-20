@@ -21673,6 +21673,12 @@ export default function Dashboard() {
             return rows;
           })()}
           <div style={{ height: '1px', background: 'rgba(255,255,255,0.25)', margin: '0 8px', flexShrink: 0 }} />
+          <div style={{ position: 'relative' }}>
+            <div style={{ position: 'absolute', top: '-10px', left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 110, pointerEvents: 'none' }}>
+              <div style={{ width: '54px', height: '19px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto' }}>
+                <span style={{ fontSize: '8px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
+              </div>
+            </div>
           <div className="flex-1 px-2 flex flex-col" style={{ marginTop: (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
             if (courseRowRects.length > 0) {
@@ -21823,11 +21829,6 @@ export default function Dashboard() {
                   </div>
                 )}
 
-                <div style={{ position: 'absolute', top: '-19px', left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 100, pointerEvents: 'none' }}>
-                  <div style={{ width: '54px', height: '19px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto' }}>
-                    <span style={{ fontSize: '8px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
-                  </div>
-                </div>
                 {/* This Week Section - hidden on Fridays since everything shifts to today */}
                 {new Date().getDay() === 5 ? null : (<>
                 <div data-homework-section="thisweek" data-semester-label={hwWeeklyTimeline[0]?.semLabel || ''} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '24px' }}>
@@ -22571,6 +22572,7 @@ export default function Dashboard() {
                 )}
               </div>
             )}
+          </div>
           </div>
           </div>
         </section>
