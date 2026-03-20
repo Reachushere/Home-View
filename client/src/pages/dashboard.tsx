@@ -21132,7 +21132,7 @@ export default function Dashboard() {
                     <div
                       key={tab.semLabel}
                       className={`cursor-pointer${isActive ? ' semester-tab-bounce' : ''}`}
-                      style={{ position: 'absolute', bottom: `${reversedIdx * 53 + reversedIdx * 3 + 2 + (tabIdx === 0 ? 1 : 0)}px`, width: '18px', height: '88px', zIndex: semTabs.length - tabIdx, clipPath: reversedIdx === 0 ? 'inset(0 0 0 2px)' : ((tab.letter === 'S' && tab.year === '27') || (tab.letter === 'F' && tab.year === '27') || (tab.letter === 'W' && tab.year === '28') || (tab.letter === 'F' && tab.year === '28')) ? 'inset(0 0 0 2px)' : undefined }}
+                      style={{ position: 'absolute', bottom: `${reversedIdx * 53 + reversedIdx * 3 + 2 + (tabIdx === 0 ? 1 : 0)}px`, width: '18px', height: '88px', zIndex: semTabs.length - tabIdx, clipPath: reversedIdx === 0 ? 'inset(0 0 0 2px)' : ((tab.letter === 'S' && tab.year === '27') || (tab.letter === 'F' && tab.year === '27') || (tab.letter === 'F' && tab.year === '28')) ? 'inset(0 0 0 2px)' : undefined }}
                       onClick={() => {
                         if (!homeworkScrollRef.current) return;
                         const idx = hwWeeklyTimeline.findIndex(w => w.semLabel === tab.semLabel);
@@ -21166,6 +21166,8 @@ export default function Dashboard() {
                           <text x="5" y="26" textAnchor="middle" fill="white" fontSize="11" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">2028</text>
                         ) : (tab.letter === 'S' && tab.year === '28') ? (
                           <text x="5" y="26" textAnchor="middle" fill="white" fontSize="11" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">2027</text>
+                        ) : (tab.letter === 'W' && tab.year === '28') ? (
+                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="10" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">F 2026</text>
                         ) : (tab.letter === 'W' && tab.year === '26') ? (
                           <text x="5" y="26" textAnchor="middle" fill="white" fontSize="10" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">Wk 10</text>
                         ) : (tab.letter === 'S' && tab.year === '26') ? (
