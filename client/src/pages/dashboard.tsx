@@ -22767,7 +22767,7 @@ export default function Dashboard() {
                   src={dragTabPath}
                   alt=""
                   className="w-full h-full pointer-events-none"
-                  style={{ filter: 'brightness(0.35) saturate(0)', opacity: 0.9 }}
+                  style={{ filter: 'brightness(0.5) saturate(0)', opacity: 1 }}
                   draggable={false}
                 />
                 <div className="absolute inset-0 flex items-center justify-center gap-2.5" style={{ paddingTop: '5px' }}>
