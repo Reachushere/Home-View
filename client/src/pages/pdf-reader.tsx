@@ -303,7 +303,6 @@ export default function PDFReaderPage() {
   }, [ctrlFloating]);
 
   useEffect(() => {
-    if (!ctrlDragRef.current) return;
     const onMove = (e: MouseEvent | TouchEvent) => {
       const d = ctrlDragRef.current;
       if (!d) return;
@@ -324,7 +323,7 @@ export default function PDFReaderPage() {
       window.removeEventListener('touchmove', onMove);
       window.removeEventListener('touchend', onUp);
     };
-  });
+  }, []);
 
   const ctrlDragStart = (e: React.MouseEvent | React.TouchEvent) => {
     const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
