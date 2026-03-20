@@ -116,7 +116,7 @@ interface NewTaskForm {
   gradeValue: string;
 }
 
-function DebouncedGradeInput({ value, onSave, placeholder, testId }: { value: number | null | undefined; onSave: (val: number | null) => void; placeholder: string; testId: string }) {
+function DebouncedGradeInput({ value, onSave, placeholder, testId, disabled }: { value: number | null | undefined; onSave: (val: number | null) => void; placeholder: string; testId: string; disabled?: boolean }) {
   const fmt = (v: number | null | undefined) => v != null ? (Number.isInteger(v) ? v.toFixed(2) : String(v)) : '';
   const [local, setLocal] = useState(fmt(value));
   const [editing, setEditing] = useState(false);
@@ -134,9 +134,10 @@ function DebouncedGradeInput({ value, onSave, placeholder, testId }: { value: nu
       type="text"
       inputMode="decimal"
       pattern="[0-9]*\.?[0-9]*"
-      className="w-[30px] h-5 text-[9px] text-center bg-white border border-white/30 rounded text-black placeholder:text-gray-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+      className="w-[30px] h-5 text-[9px] text-center bg-white border border-white/30 rounded text-black placeholder:text-gray-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none disabled:bg-gray-400 disabled:cursor-not-allowed"
       placeholder={placeholder}
       value={local}
+      disabled={disabled}
       onFocus={() => setEditing(true)}
       onChange={(e) => setLocal(e.target.value)}
       onBlur={() => {
@@ -196,6 +197,33 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
   const [newTask, setNewTask] = useState<NewTaskForm>(createEmptyTaskForm());
   const [expandedTaskId, setExpandedTaskId] = useState<number | null>(null);
   const [editTaskFields, setEditTaskFields] = useState<any>(null);
+  const [commentTarget, setCommentTarget] = useState<{ type: string; id: string; label: string } | null>(null);
+  const [commentText, setCommentText] = useState('');
+  const [commentLoading, setCommentLoading] = useState(false);
+  const [commentSaving, setCommentSaving] = useState(false);
+
+  useEffect(() => {
+    if (!commentTarget) return;
+    setCommentLoading(true);
+    fetch(`/api/entity-comments/${commentTarget.type}/${commentTarget.id}`)
+      .then(r => r.json())
+      .then(data => { setCommentText(Array.isArray(data) && data.length > 0 ? data[0].content : ''); })
+      .catch(() => setCommentText(''))
+      .finally(() => setCommentLoading(false));
+  }, [commentTarget?.type, commentTarget?.id]);
+
+  const saveComment = useCallback(() => {
+    if (!commentTarget) return;
+    setCommentSaving(true);
+    fetch(`/api/entity-comments/${commentTarget.type}/${commentTarget.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: commentText }),
+    })
+      .then(() => toast({ title: 'Comment saved' }))
+      .catch(() => toast({ title: 'Failed to save', variant: 'destructive' }))
+      .finally(() => setCommentSaving(false));
+  }, [commentTarget, commentText, toast]);
   const [isEditingInfo, setIsEditingInfo] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isParsingPdf, setIsParsingPdf] = useState(false);
@@ -422,7 +450,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
   const totalWeight = courseTasks.reduce((s, t) => s + (t.gradeWeight || 0), 0);
 
   const gradeCalc = useMemo(() => {
-    const gradedTasks = courseTasks.filter(t => t.gradeWeight && t.gradeTotal && t.gradeValue !== null && t.gradeValue !== undefined && (t.gradeValue !== 0 || t.isCompleted));
+    const gradedTasks = courseTasks.filter(t => !t.excludeFromGpa && t.gradeWeight && t.gradeTotal && t.gradeValue !== null && t.gradeValue !== undefined && (t.gradeValue !== 0 || t.isCompleted));
     if (gradedTasks.length === 0) return null;
     let weightedSum = 0;
     let weightedTotal = 0;
@@ -929,28 +957,47 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             <span className="capitalize">{task.type}</span>
           </div>
         </div>
-        <div className="flex items-center flex-shrink-0" style={{ gap: '6px' }} onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center flex-shrink-0" style={{ gap: '6px', opacity: task.excludeFromGpa ? 0.35 : 1 }} onClick={(e) => e.stopPropagation()}>
           <DebouncedGradeInput
             value={task.gradeValue}
             onSave={(val) => updateGradeValueMutation.mutate({ id: task.id, gradeValue: val, _task: task })}
             placeholder="Scr"
             testId={`input-grade-value-${task.id}`}
+            disabled={!!task.excludeFromGpa}
           />
           <DebouncedGradeInput
             value={task.gradeTotal}
             onSave={(val) => updateTaskMutation.mutate({ id: task.id, data: { gradeTotal: val }, _task: task })}
             placeholder="Tot"
             testId={`input-grade-total-${task.id}`}
+            disabled={!!task.excludeFromGpa}
           />
           <DebouncedGradeInput
             value={task.gradeWeight}
             onSave={(val) => updateTaskMutation.mutate({ id: task.id, data: { gradeWeight: val }, _task: task })}
             placeholder="Wt"
             testId={`input-grade-weight-${task.id}`}
+            disabled={!!task.excludeFromGpa}
           />
           <span className="text-[9px] text-white w-[30px] text-center" data-testid={`text-grade-percent-${task.id}`}>
             {task.gradeValue !== null && task.gradeValue !== undefined && task.gradeTotal ? `${((task.gradeValue / task.gradeTotal) * 100).toFixed(2)}%` : '—'}
           </span>
+        </div>
+        <div className="flex items-center gap-1 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+          <button
+            onClick={() => setCommentTarget(commentTarget?.type === 'task' && commentTarget?.id === String(task.id) ? null : { type: 'task', id: String(task.id), label: task.title })}
+            className="text-white/40 hover:text-yellow-300 transition-colors p-0.5"
+            title="Comments"
+            data-testid={`button-comment-task-${task.id}`}
+          >
+            <MessageSquare className="h-3 w-3" />
+          </button>
+          <label className="flex items-center cursor-pointer" title={task.excludeFromGpa ? "Excluded from GPA" : "Counts toward GPA"} data-testid={`toggle-gpa-${task.id}`}>
+            <div className="relative" onClick={() => updateTaskMutation.mutate({ id: task.id, data: { excludeFromGpa: !task.excludeFromGpa }, _task: task })}>
+              <div className={`w-6 h-3.5 rounded-full transition-colors ${task.excludeFromGpa ? 'bg-red-500/60' : 'bg-green-500/60'}`} />
+              <div className={`absolute top-0.5 w-2.5 h-2.5 rounded-full bg-white transition-transform ${task.excludeFromGpa ? 'left-0.5' : 'left-3'}`} />
+            </div>
+          </label>
         </div>
         <div className="flex items-center gap-0.5 flex-shrink-0">
           <button
@@ -1129,7 +1176,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
       <div
         className="flex flex-col text-white rounded-lg overflow-hidden"
         style={{
-          width: "480px",
+          width: "960px",
           maxWidth: "95vw",
           height: "88vh",
           background: 'linear-gradient(180deg, #3a8bbf 0%, color-mix(in srgb, #164a72 70%, black) 100%)',
@@ -2151,6 +2198,52 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
           </div>
         </div>
       </div>
+
+      {commentTarget && (
+        <div
+          className="fixed z-[10005] flex flex-col rounded-lg overflow-hidden"
+          style={{
+            top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+            width: '320px', minHeight: '240px',
+            background: 'linear-gradient(135deg, #fef08a 0%, #fde047 100%)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.3), 4px 4px 0 rgba(0,0,0,0.1)',
+            border: '1px solid rgba(0,0,0,0.1)',
+          }}
+          onClick={(e) => e.stopPropagation()}
+          data-testid="comment-postit"
+        >
+          <div className="flex items-center justify-between px-3 py-2 border-b border-amber-400/50">
+            <span className="text-[11px] font-bold text-amber-900 truncate flex-1">{commentTarget.label}</span>
+            <button onClick={() => { saveComment(); setCommentTarget(null); }} className="text-amber-800 hover:text-amber-950 ml-2" data-testid="button-close-comment">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+          <div className="flex-1 p-2">
+            {commentLoading ? (
+              <div className="flex items-center justify-center h-full"><Loader2 className="h-5 w-5 animate-spin text-amber-800" /></div>
+            ) : (
+              <textarea
+                className="w-full h-[160px] bg-transparent text-[12px] text-amber-950 placeholder:text-amber-700/50 resize-none focus:outline-none"
+                placeholder="Write your comments here..."
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+                autoFocus
+                data-testid="input-comment-text"
+              />
+            )}
+          </div>
+          <div className="flex items-center justify-end px-3 py-2 border-t border-amber-400/50">
+            <button
+              onClick={saveComment}
+              disabled={commentSaving}
+              className="text-[10px] font-bold px-3 py-1 rounded bg-amber-800 text-white hover:bg-amber-900 disabled:opacity-50"
+              data-testid="button-save-comment"
+            >
+              {commentSaving ? 'Saving...' : 'Save'}
+            </button>
+          </div>
+        </div>
+      )}
 
       {showDeleteConfirm && (
         <div

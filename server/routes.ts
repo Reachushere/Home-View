@@ -2320,6 +2320,45 @@ html,body{height:100%;overflow:hidden;background:transparent}
     }
   });
 
+  app.get("/api/entity-comments/:entityType/:entityId", async (req, res) => {
+    try {
+      const comments = await storage.getEntityComments(req.params.entityType, req.params.entityId);
+      res.json(comments);
+    } catch (err) {
+      console.error("Error getting entity comments:", err);
+      res.status(500).json({ error: "Failed to get comments" });
+    }
+  });
+
+  app.put("/api/entity-comments/:entityType/:entityId", async (req, res) => {
+    try {
+      const { content } = req.body;
+      if (content === undefined) return res.status(400).json({ error: "content required" });
+      if (!content.trim()) {
+        const existing = await storage.getEntityComments(req.params.entityType, req.params.entityId);
+        if (existing.length > 0) {
+          await storage.deleteEntityComment(existing[0].id);
+        }
+        return res.json({ deleted: true });
+      }
+      const comment = await storage.upsertEntityComment(req.params.entityType, req.params.entityId, content);
+      res.json(comment);
+    } catch (err) {
+      console.error("Error saving entity comment:", err);
+      res.status(500).json({ error: "Failed to save comment" });
+    }
+  });
+
+  app.delete("/api/entity-comments/:id", async (req, res) => {
+    try {
+      await storage.deleteEntityComment(parseInt(req.params.id));
+      res.json({ success: true });
+    } catch (err) {
+      console.error("Error deleting entity comment:", err);
+      res.status(500).json({ error: "Failed to delete comment" });
+    }
+  });
+
   app.post("/api/semester-reset-files", async (_req, res) => {
     try {
       const allFiles = await storage.getFiles();

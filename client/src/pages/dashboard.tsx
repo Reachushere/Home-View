@@ -3365,6 +3365,28 @@ export default function Dashboard() {
   });
 
   const [currentPagLevel, setCurrentPagLevel] = useState(1);
+  const [dashboardCommentTarget, setDashboardCommentTarget] = useState<{ type: string; id: string; label: string } | null>(null);
+  const [dashboardCommentText, setDashboardCommentText] = useState('');
+  const [dashboardCommentLoading, setDashboardCommentLoading] = useState(false);
+  const [dashboardCommentSaving, setDashboardCommentSaving] = useState(false);
+  useEffect(() => {
+    if (!dashboardCommentTarget) return;
+    setDashboardCommentLoading(true);
+    fetch(`/api/entity-comments/${dashboardCommentTarget.type}/${dashboardCommentTarget.id}`)
+      .then(r => r.json())
+      .then(data => { setDashboardCommentText(Array.isArray(data) && data.length > 0 ? data[0].content : ''); })
+      .catch(() => setDashboardCommentText(''))
+      .finally(() => setDashboardCommentLoading(false));
+  }, [dashboardCommentTarget?.type, dashboardCommentTarget?.id]);
+  const saveDashboardComment = useCallback(() => {
+    if (!dashboardCommentTarget) return;
+    setDashboardCommentSaving(true);
+    fetch(`/api/entity-comments/${dashboardCommentTarget.type}/${dashboardCommentTarget.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: dashboardCommentText }),
+    }).finally(() => setDashboardCommentSaving(false));
+  }, [dashboardCommentTarget, dashboardCommentText]);
   const [selectedCertCourse, setSelectedCertCourse] = useState<{
     courseCode: string;
     courseName: string;
@@ -15153,9 +15175,14 @@ export default function Dashboard() {
                                     onClick={() => { setEditingContactId(c.id); setContactForm({ name: c.name, title: c.title || '', organization: c.organization || '', department: c.department || '', email: c.email || '', phone: c.phone || '', office: c.office || '', category: c.category || 'other', notes: c.notes || '' }); setContactFormOpen(true); }}
                                     data-testid={`contact-card-${c.id}`}
                                   >
-                                    <button onClick={(e) => { e.stopPropagation(); deleteContact(c.id); }} className="absolute top-2 right-2 text-red-400 hover:text-red-300 transition-colors opacity-0 group-hover:opacity-100 p-1" data-testid={`delete-contact-${c.id}`}>
-                                      <Trash2 className="h-3 w-3" />
-                                    </button>
+                                    <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                      <button onClick={(e) => { e.stopPropagation(); setDashboardCommentTarget(dashboardCommentTarget?.type === 'contact' && dashboardCommentTarget?.id === String(c.id) ? null : { type: 'contact', id: String(c.id), label: c.name }); }} className="text-yellow-400 hover:text-yellow-300 transition-colors p-1" data-testid={`button-comment-contact-${c.id}`}>
+                                        <MessageSquare className="h-3 w-3" />
+                                      </button>
+                                      <button onClick={(e) => { e.stopPropagation(); deleteContact(c.id); }} className="text-red-400 hover:text-red-300 transition-colors p-1" data-testid={`delete-contact-${c.id}`}>
+                                        <Trash2 className="h-3 w-3" />
+                                      </button>
+                                    </div>
                                     <div className="flex items-start gap-2">
                                       <div className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white flex-shrink-0" style={{ backgroundColor: getCategoryColor(c.category) }}>
                                         {c.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
@@ -15968,6 +15995,14 @@ export default function Dashboard() {
                           </div>
                           <span className="text-[7px] text-white font-medium" style={{ lineHeight: 1.1, marginTop: '1px' }}>AAS</span>
                         </div>
+                        <button
+                          className="flex-shrink-0 text-white/40 hover:text-yellow-300 transition-colors p-0.5"
+                          title="Course comments"
+                          onClick={(e) => { e.stopPropagation(); setDashboardCommentTarget(dashboardCommentTarget?.type === 'course' && dashboardCommentTarget?.id === semCourse.code ? null : { type: 'course', id: semCourse.code, label: `${displayName}${subtitle ? ' - ' + subtitle : ''}` }); }}
+                          data-testid={`button-comment-course-${semCourse.code}`}
+                        >
+                          <MessageSquare className="w-3 h-3" />
+                        </button>
                         <div className="flex-shrink-0" style={{ width: '35px', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', paddingLeft: '0px' }}>
                         {(() => {
                           const cc = semCourse.code.replace(/\s/g, '');
@@ -22546,6 +22581,52 @@ export default function Dashboard() {
           </div>
         </section>
 
+        {dashboardCommentTarget && createPortal(
+          <div
+            className="fixed z-[10005] flex flex-col rounded-lg overflow-hidden"
+            style={{
+              top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+              width: '320px', minHeight: '240px',
+              background: 'linear-gradient(135deg, #fef08a 0%, #fde047 100%)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.3), 4px 4px 0 rgba(0,0,0,0.1)',
+              border: '1px solid rgba(0,0,0,0.1)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+            data-testid="dashboard-comment-postit"
+          >
+            <div className="flex items-center justify-between px-3 py-2 border-b border-amber-400/50">
+              <span className="text-[11px] font-bold text-amber-900 truncate flex-1">{dashboardCommentTarget.label}</span>
+              <button onClick={() => { saveDashboardComment(); setDashboardCommentTarget(null); }} className="text-amber-800 hover:text-amber-950 ml-2" data-testid="button-close-dashboard-comment">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="flex-1 p-2">
+              {dashboardCommentLoading ? (
+                <div className="flex items-center justify-center h-full"><Loader2 className="h-5 w-5 animate-spin text-amber-800" /></div>
+              ) : (
+                <textarea
+                  className="w-full h-[160px] bg-transparent text-[12px] text-amber-950 placeholder:text-amber-700/50 resize-none focus:outline-none"
+                  placeholder="Write your comments here..."
+                  value={dashboardCommentText}
+                  onChange={(e) => setDashboardCommentText(e.target.value)}
+                  autoFocus
+                  data-testid="input-dashboard-comment-text"
+                />
+              )}
+            </div>
+            <div className="flex items-center justify-end px-3 py-2 border-t border-amber-400/50">
+              <button
+                onClick={saveDashboardComment}
+                disabled={dashboardCommentSaving}
+                className="text-[10px] font-bold px-3 py-1 rounded bg-amber-800 text-white hover:bg-amber-900 disabled:opacity-50"
+                data-testid="button-save-dashboard-comment"
+              >
+                {dashboardCommentSaving ? 'Saving...' : 'Save'}
+              </button>
+            </div>
+          </div>,
+          document.body
+        )}
         <div style={{ display: 'none' }} data-task-boxes-container="true" />
         </div>
           );

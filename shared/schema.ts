@@ -338,6 +338,7 @@ export const tasks = pgTable("tasks", {
   assignmentGroup: text("assignment_group"), // Group name for organizing assignments
   sortOrder: integer("sort_order").default(0), // Order within group or list
   isAcknowledged: boolean("is_acknowledged").default(true), // For reminders: false until user acknowledges
+  excludeFromGpa: boolean("exclude_from_gpa").default(false),
 });
 
 // Base schema from drizzle, then override date fields to accept ISO strings
@@ -554,6 +555,19 @@ export const feedbackNotes = pgTable("feedback_notes", {
 export const insertFeedbackNoteSchema = createInsertSchema(feedbackNotes).omit({ id: true, status: true, createdAt: true });
 export type FeedbackNote = typeof feedbackNotes.$inferSelect;
 export type InsertFeedbackNote = z.infer<typeof insertFeedbackNoteSchema>;
+
+export const entityComments = pgTable("entity_comments", {
+  id: serial("id").primaryKey(),
+  entityType: text("entity_type").notNull(),
+  entityId: text("entity_id").notNull(),
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertEntityCommentSchema = createInsertSchema(entityComments).omit({ id: true, createdAt: true, updatedAt: true });
+export type EntityComment = typeof entityComments.$inferSelect;
+export type InsertEntityComment = z.infer<typeof insertEntityCommentSchema>;
 
 export const announcements = pgTable("announcements", {
   id: serial("id").primaryKey(),

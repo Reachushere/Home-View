@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { tasks, files, semesterSettings, secondGoogleAccount, thirdGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, accessTokens, shiftSchedule, semesterChecklist, scholarships, keyContacts, announcements, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type ThirdGoogleAccount, type InsertThirdGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, type AccessToken, type InsertAccessToken, type ShiftScheduleEntry, type InsertShiftScheduleEntry, type SemesterChecklistItem, type InsertSemesterChecklistItem, type Scholarship, type InsertScholarship, type KeyContact, type InsertKeyContact, type Announcement, type InsertAnnouncement, getWeekNumber } from "@shared/schema";
+import { tasks, files, semesterSettings, secondGoogleAccount, thirdGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, accessTokens, shiftSchedule, semesterChecklist, scholarships, keyContacts, announcements, entityComments, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type ThirdGoogleAccount, type InsertThirdGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, type AccessToken, type InsertAccessToken, type ShiftScheduleEntry, type InsertShiftScheduleEntry, type SemesterChecklistItem, type InsertSemesterChecklistItem, type Scholarship, type InsertScholarship, type KeyContact, type InsertKeyContact, type Announcement, type InsertAnnouncement, type EntityComment, getWeekNumber } from "@shared/schema";
 import { eq, and, gte, lte, desc, or, isNull } from "drizzle-orm";
 
 export interface IStorage {
@@ -93,6 +93,9 @@ export interface IStorage {
   createAnnouncement(data: InsertAnnouncement): Promise<Announcement>;
   getAnnouncementByEmailId(emailId: string): Promise<Announcement | undefined>;
   deleteAnnouncement(id: number): Promise<void>;
+  getEntityComments(entityType: string, entityId: string): Promise<EntityComment[]>;
+  upsertEntityComment(entityType: string, entityId: string, content: string): Promise<EntityComment>;
+  deleteEntityComment(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -728,6 +731,24 @@ export class DatabaseStorage implements IStorage {
 
   async deleteAnnouncement(id: number): Promise<void> {
     await db.delete(announcements).where(eq(announcements.id, id));
+  }
+
+  async getEntityComments(entityType: string, entityId: string): Promise<EntityComment[]> {
+    return db.select().from(entityComments).where(and(eq(entityComments.entityType, entityType), eq(entityComments.entityId, entityId))).orderBy(desc(entityComments.updatedAt));
+  }
+
+  async upsertEntityComment(entityType: string, entityId: string, content: string): Promise<EntityComment> {
+    const existing = await db.select().from(entityComments).where(and(eq(entityComments.entityType, entityType), eq(entityComments.entityId, entityId)));
+    if (existing.length > 0) {
+      const [updated] = await db.update(entityComments).set({ content, updatedAt: new Date() }).where(eq(entityComments.id, existing[0].id)).returning();
+      return updated;
+    }
+    const [created] = await db.insert(entityComments).values({ entityType, entityId, content }).returning();
+    return created;
+  }
+
+  async deleteEntityComment(id: number): Promise<void> {
+    await db.delete(entityComments).where(eq(entityComments.id, id));
   }
 }
 
