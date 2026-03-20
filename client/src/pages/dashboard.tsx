@@ -18137,8 +18137,15 @@ export default function Dashboard() {
                   name: courseName, 
                   bg: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.35)`, 
                   label: (() => {
-                    const startColor = courseData.color || `rgb(${Math.max(0, rgb.r - 40)}, ${Math.max(0, rgb.g - 40)}, ${Math.max(0, rgb.b - 40)})`;
-                    const endColor = courseData.colorEnd || `rgb(${Math.min(255, rgb.r + 100)}, ${Math.min(255, rgb.g + 100)}, ${Math.min(255, rgb.b + 100)})`;
+                    const soften = (hex: string, amt: number) => {
+                      const hr = parseInt(hex.slice(1, 3), 16), hg = parseInt(hex.slice(3, 5), 16), hb = parseInt(hex.slice(5, 7), 16);
+                      const base = 26;
+                      return `rgb(${Math.round(hr * amt + base * (1 - amt))}, ${Math.round(hg * amt + base * (1 - amt))}, ${Math.round(hb * amt + base * (1 - amt))})`;
+                    };
+                    const startHex = courseData.color || `#${Math.max(0, rgb.r - 40).toString(16).padStart(2,'0')}${Math.max(0, rgb.g - 40).toString(16).padStart(2,'0')}${Math.max(0, rgb.b - 40).toString(16).padStart(2,'0')}`;
+                    const endHex = courseData.colorEnd || `#${Math.min(255, rgb.r + 100).toString(16).padStart(2,'0')}${Math.min(255, rgb.g + 100).toString(16).padStart(2,'0')}${Math.min(255, rgb.b + 100).toString(16).padStart(2,'0')}`;
+                    const startColor = startHex.startsWith('#') ? soften(startHex, 0.45) : startHex;
+                    const endColor = endHex.startsWith('#') ? soften(endHex, 0.45) : endHex;
                     return `linear-gradient(180deg, ${startColor} 0%, ${endColor} 100%)`;
                   })(),
                   darkColor: courseData.color || (() => {
