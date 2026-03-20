@@ -22445,10 +22445,10 @@ export default function Dashboard() {
                           groups.push({ key, tasks: [task], weeks });
                         }
                       });
-                      return groups.map((group) => {
+                      return groups.map((group, groupIdx) => {
                         const dueDates = group.tasks.map(t => ({ date: startOfDay(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
-                          <div key={group.key} style={{ display: 'flex', alignItems: 'center', marginBottom: '2px' }}>
+                          <div key={group.key} style={{ display: 'flex', alignItems: 'center', marginBottom: '2px', marginTop: groupIdx > 0 ? '25px' : undefined }}>
                             <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginLeft: '10px', marginRight: '4px', overflow: 'visible' }} data-testid={`mini-cal-beyond-group-${group.key}`}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 {(() => {
