@@ -20514,7 +20514,9 @@ export default function Dashboard() {
                                       setDraggedFileForMove(null);
                                     }}
                                   >
-                                    {isCourseExpanded ? <ChevronDown className="h-3.5 w-3.5 text-white" /> : <ChevronRight className="h-3.5 w-3.5 text-white" />}
+                                    <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '17px', height: '17px', borderRadius: '3px', background: 'white', flexShrink: 0 }}>
+                                      {isCourseExpanded ? <ChevronDown className="h-3.5 w-3.5 text-black" /> : <ChevronRight className="h-3.5 w-3.5 text-black" />}
+                                    </span>
                                     {isCourseExpanded ? <FolderOpen className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" />}
                                     <span className={`text-[12px] truncate flex-1 ${course.color}`}>{course.name}</span>
                                     <span className="text-[11px] text-white/40">{courseFiles.length}</span>
