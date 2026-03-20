@@ -23176,55 +23176,46 @@ export default function Dashboard() {
                   <div className="h-full rounded transition-all duration-500" style={{ width: '0%', background: 'linear-gradient(90deg, rgba(100,200,255,1) 0%, rgba(100,200,255,0.7) 100%)', boxShadow: '0 0 8px rgba(100,200,255,0.4)' }} />
                 </div>
 
-                <div className="flex items-center" style={{ overflow: 'visible', padding: '0 4px' }}>
-                  <div className="flex-1 flex items-center justify-evenly">
-                    <button className="w-8 h-8 flex flex-col items-center justify-center rounded-full hover:bg-white/10 transition-colors shrink-0" data-testid="hw-ctrl-restart" title="Restart" onClick={() => { const iframe = document.querySelector('iframe[name="pdf-reader-frame"]') as HTMLIFrameElement; if (iframe?.contentWindow) iframe.contentWindow.postMessage({ type: 'tts-restart' }, '*'); }}>
-                      <RefreshCw className="h-3.5 w-3.5 text-white" />
-                      <span className="text-[7px] text-white/70 leading-none mt-0.5">Restart</span>
-                    </button>
+                <div className="flex items-end justify-center" style={{ overflow: 'visible', padding: '0 2px', gap: '2px' }}>
+                  {[
+                    { id: 'hw-ctrl-restart', icon: <RefreshCw className="h-3.5 w-3.5 text-white" />, label: 'Restart', onClick: () => { const iframe = document.querySelector('iframe[name="pdf-reader-frame"]') as HTMLIFrameElement; if (iframe?.contentWindow) iframe.contentWindow.postMessage({ type: 'tts-restart' }, '*'); } },
+                    { id: 'hw-ctrl-reset', icon: <X className="h-3.5 w-3.5 text-white" />, label: 'Reset' },
+                    { id: 'hw-ctrl-rewind', icon: <RotateCcw className="h-3.5 w-3.5 text-white" />, label: '-15s' },
+                    { id: 'hw-ctrl-prev', icon: <SkipBack className="h-3.5 w-3.5 text-white" />, label: 'Prev' },
+                  ].map(btn => (
+                    <div key={btn.id} className="flex flex-col items-center" style={{ width: '32px' }}>
+                      <button className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors" data-testid={btn.id} title={btn.label} onClick={btn.onClick}>
+                        {btn.icon}
+                      </button>
+                      <span style={{ fontSize: '6px', color: 'rgba(255,255,255,0.55)', lineHeight: 1, marginTop: '2px', textAlign: 'center' }}>{btn.label}</span>
+                    </div>
+                  ))}
 
-                    <button className="w-8 h-8 flex flex-col items-center justify-center rounded-full hover:bg-white/10 transition-colors shrink-0" data-testid="hw-ctrl-reset" title="Reset">
-                      <X className="h-3.5 w-3.5 text-white" />
-                      <span className="text-[7px] text-white/70 leading-none mt-0.5">Reset</span>
-                    </button>
-
-                    <button className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors shrink-0" data-testid="hw-ctrl-rewind" title="Rewind 15s">
-                      <RotateCcw className="h-3.5 w-3.5 text-white" />
-                      <span className="text-[8px] text-white font-medium ml-0.5">15s</span>
-                    </button>
-
-                    <button className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors shrink-0" data-testid="hw-ctrl-prev" title="Previous chunk">
-                      <SkipBack className="h-4 w-4 text-white" />
-                    </button>
-                  </div>
-
-                  <div className="shrink-0 flex items-center justify-center" style={{ width: '56px' }}>
+                  <div className="flex flex-col items-center" style={{ width: '44px', margin: '0 2px' }}>
                     {hwFloating.isPlaying ? (
-                      <button className="w-12 h-12 flex items-center justify-center rounded-full bg-red-600 hover:bg-red-500 shrink-0" style={{ outline: '2px solid rgba(255,80,80,0.5)', outlineOffset: '2px', boxShadow: '0 0 16px rgba(255,50,50,0.4)' }} data-testid="hw-ctrl-stop-center" title="Stop" onClick={() => { const iframe = document.querySelector('iframe[name="pdf-reader-frame"]') as HTMLIFrameElement; if (iframe?.contentWindow) iframe.contentWindow.postMessage({ type: 'tts-stop' }, '*'); }}>
-                        <Square className="h-5 w-5 text-white fill-white" />
+                      <button className="w-10 h-10 flex items-center justify-center rounded-full bg-red-600 hover:bg-red-500" style={{ outline: '2px solid rgba(255,80,80,0.5)', outlineOffset: '2px', boxShadow: '0 0 16px rgba(255,50,50,0.4)' }} data-testid="hw-ctrl-stop-center" title="Stop" onClick={() => { const iframe = document.querySelector('iframe[name="pdf-reader-frame"]') as HTMLIFrameElement; if (iframe?.contentWindow) iframe.contentWindow.postMessage({ type: 'tts-stop' }, '*'); }}>
+                        <Square className="h-4 w-4 text-white fill-white" />
                       </button>
                     ) : (
-                      <button className="w-12 h-12 flex items-center justify-center rounded-full shrink-0" style={{ outline: '2px solid rgba(100,200,255,0.5)', outlineOffset: '2px', background: 'rgba(100,200,255,0.3)', boxShadow: '0 0 16px rgba(100,200,255,0.3)' }} data-testid="hw-ctrl-play" title="Play" onClick={() => { const iframe = document.querySelector('iframe[name="pdf-reader-frame"]') as HTMLIFrameElement; if (iframe?.contentWindow) iframe.contentWindow.postMessage({ type: 'tts-play' }, '*'); }}>
-                        <Play className="h-5 w-5 text-white fill-white ml-0.5" />
+                      <button className="w-10 h-10 flex items-center justify-center rounded-full" style={{ outline: '2px solid rgba(100,200,255,0.5)', outlineOffset: '2px', background: 'rgba(100,200,255,0.3)', boxShadow: '0 0 16px rgba(100,200,255,0.3)' }} data-testid="hw-ctrl-play" title="Play" onClick={() => { const iframe = document.querySelector('iframe[name="pdf-reader-frame"]') as HTMLIFrameElement; if (iframe?.contentWindow) iframe.contentWindow.postMessage({ type: 'tts-play' }, '*'); }}>
+                        <Play className="h-4 w-4 text-white fill-white ml-0.5" />
                       </button>
                     )}
+                    <span style={{ fontSize: '6px', color: 'rgba(255,255,255,0.55)', lineHeight: 1, marginTop: '2px', textAlign: 'center' }}>{hwFloating.isPlaying ? 'Stop' : 'Play'}</span>
                   </div>
 
-                  <div className="flex-1 flex items-center justify-evenly">
-                    <button className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors shrink-0" data-testid="hw-ctrl-next" title="Next chunk">
-                      <SkipForward className="h-4 w-4 text-white" />
-                    </button>
-
-                    <button className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors shrink-0" data-testid="hw-ctrl-forward" title="Forward 15s">
-                      <span className="text-[8px] text-white font-medium mr-0.5">15s</span>
-                      <RotateCw className="h-3.5 w-3.5 text-white" />
-                    </button>
-
-                    <button className="w-8 h-8 flex flex-col items-center justify-center rounded-full hover:bg-white/10 transition-colors shrink-0" data-testid="hw-ctrl-stop" title="Stop">
-                      <Square className="h-3.5 w-3.5 text-white fill-white" />
-                      <span className="text-[7px] text-white/70 leading-none mt-0.5">Stop</span>
-                    </button>
-                  </div>
+                  {[
+                    { id: 'hw-ctrl-next', icon: <SkipForward className="h-3.5 w-3.5 text-white" />, label: 'Next' },
+                    { id: 'hw-ctrl-forward', icon: <RotateCw className="h-3.5 w-3.5 text-white" />, label: '+15s' },
+                    { id: 'hw-ctrl-stop', icon: <Square className="h-3.5 w-3.5 text-white fill-white" />, label: 'Stop' },
+                  ].map(btn => (
+                    <div key={btn.id} className="flex flex-col items-center" style={{ width: '32px' }}>
+                      <button className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors" data-testid={btn.id} title={btn.label}>
+                        {btn.icon}
+                      </button>
+                      <span style={{ fontSize: '6px', color: 'rgba(255,255,255,0.55)', lineHeight: 1, marginTop: '2px', textAlign: 'center' }}>{btn.label}</span>
+                    </div>
+                  ))}
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '2px 4px', marginTop: '4px', background: 'rgba(255,255,255,0.07)', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.12)' }}>
