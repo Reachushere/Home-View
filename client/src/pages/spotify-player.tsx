@@ -236,7 +236,7 @@ function CherryBlossoms() {
     return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
   }, []);
 
-  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 3 }} />;
+  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 40 }} />;
 }
 
 function HoloCircuitLines({ accent, sakura = false }: { accent: string; sakura?: boolean }) {
