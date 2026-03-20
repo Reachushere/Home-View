@@ -21096,7 +21096,7 @@ export default function Dashboard() {
           {/* DEBUG: Large tab preview in center of screen */}
           <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999, background: 'rgba(0,0,0,0.6)', padding: '40px', borderRadius: '16px' }}>
             <svg width="160" height="420" viewBox="0 0 16 42">
-              <path d="M0,10 Q0,0 8,0 L11,0 Q16,0 16,6 L16,36 Q16,42 11,42 L8,42 Q0,42 0,32 Z" fill="rgba(255,255,255,0.35)" stroke="rgba(255,255,255,0.35)" strokeWidth="0.5" />
+              <path d="M0,0 L0,42 C14,42 16,39 16,34 L16,8 C16,3 14,0 0,0 Z" fill="rgba(255,255,255,0.35)" stroke="rgba(255,255,255,0.35)" strokeWidth="0.5" />
               <text x="9" y="19" textAnchor="middle" fill="white" fontSize="7" fontWeight="bold" fontFamily="system-ui">W</text>
               <text x="9" y="31" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="8" fontWeight="600" fontFamily="system-ui">26</text>
             </svg>
@@ -21156,7 +21156,7 @@ export default function Dashboard() {
                       title={tab.semLabel}
                     >
                       <svg width="16" height="42" viewBox="0 0 16 42" style={{ display: 'block' }}>
-                        <path d="M0,10 Q0,0 8,0 L11,0 Q16,0 16,6 L16,36 Q16,42 11,42 L8,42 Q0,42 0,32 Z" fill={isActive ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)'} stroke="rgba(255,255,255,0.35)" strokeWidth="1" />
+                        <path d="M0,0 L0,42 C14,42 16,39 16,34 L16,8 C16,3 14,0 0,0 Z" fill={isActive ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)'} stroke="rgba(255,255,255,0.35)" strokeWidth="1" />
                         <text x="9" y="19" textAnchor="middle" fill="white" fontSize="7" fontWeight="bold" fontFamily="system-ui">{tab.letter}</text>
                         <text x="9" y="31" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="8" fontWeight="600" fontFamily="system-ui">{tab.year}</text>
                       </svg>
