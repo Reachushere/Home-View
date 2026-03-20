@@ -21130,7 +21130,7 @@ export default function Dashboard() {
                     <div
                       key={tab.semLabel}
                       className={`cursor-pointer${isActive ? ' semester-tab-bounce' : ''}`}
-                      style={{ position: 'relative', width: '16px', height: '42px', flexShrink: 0, ...(tab.semLabel === 'Fall 2028' ? { marginTop: '12px' } : {}) }}
+                      style={{ position: 'relative', width: '16px', height: '42px', flexShrink: 0 }}
                       onClick={() => {
                         if (!homeworkScrollRef.current) return;
                         const idx = hwWeeklyTimeline.findIndex(w => w.semLabel === tab.semLabel);
