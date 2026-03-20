@@ -319,7 +319,7 @@ button[role="combobox"] > span {
 }
 
 .semester-tab-bounce {
-  animation: semester-tab-nudge 6s 3s ease-in-out infinite;
+  animation: semester-tab-nudge 6s 6s ease-in-out infinite;
 }
 
 @keyframes semester-tab-nudge {
