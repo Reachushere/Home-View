@@ -21635,7 +21635,7 @@ export default function Dashboard() {
               }
             }
             return '14px';
-          })(), paddingBottom: '0px', overflowY: 'auto', scrollbarWidth: 'none', position: 'relative' }} ref={homeworkScrollRef}>
+          })(), paddingBottom: '0px', overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', zIndex: 2 }} ref={homeworkScrollRef}>
             {isLoading ? (
               <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
             ) : (
