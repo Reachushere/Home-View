@@ -8861,13 +8861,14 @@ export default function Dashboard() {
     }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   })();
   const threeWeeksPlusStart = startOfDay(addDays(nextSaturday, 14));
+  const beyondStart = startOfDay(addDays(nextSaturday, 7));
   const dueBeyondTasks = (() => {
     return allTasks.filter(t => {
       if (t.isMissed || t.isCompleted) return false;
       if (isCASL101Finished(t)) return false;
       if (!t.dueDate) return false;
       const dueDate = new Date(t.dueDate);
-      return dueDate >= threeWeeksPlusStart;
+      return dueDate > threeWeeksEnd;
     }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   })();
   const dueThisWeekTasks = [...dueNextWeekTasks, ...dueTwoWeeksTasks];
@@ -22614,28 +22615,10 @@ export default function Dashboard() {
                     })()}
                   </div>
                 )}
-                {/* 3 Weeks and Beyond Section */}
-                <div data-homework-section="threeweeks" data-semester-label={hwWeeklyTimeline[3]?.semLabel || ''} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '20px' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px' }}>
-                      <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[3]?.label || 'Three weeks'}</span>
-                      <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', position: 'relative', top: '-1px' }}>({dueBeyondTasks.length})</span>
-                    </div>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px', marginTop: '-3px' }}>
-                    <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(100, 100, 100)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                      <div style={{ background: 'rgb(100, 100, 100)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(hwWeeklyTimeline[3]?.weekStart || threeWeeksPlusStart, 'MMM').toUpperCase()}</div>
-                      <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(hwWeeklyTimeline[3]?.weekStart || threeWeeksPlusStart, 'd')}</div>
-                    </div>
-                    <span style={{ fontSize: '6px', color: 'white', lineHeight: 1 }}>&#9654;</span>
-                    <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(100, 100, 100)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                      <div style={{ background: 'rgb(100, 100, 100)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(hwWeeklyTimeline[3]?.weekEnd || addDays(threeWeeksPlusStart, 6), 'MMM').toUpperCase()}</div>
-                      <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(hwWeeklyTimeline[3]?.weekEnd || addDays(threeWeeksPlusStart, 6), 'd')}</div>
-                    </div>
-                  </div>
-                </div>
+                {/* Beyond Section (Week 12+) */}
+                <div data-homework-section="threeweeks" />
                 {(() => {
-                  const beyondTimeline = hwWeeklyTimeline.slice(4);
+                  const beyondTimeline = hwWeeklyTimeline.slice(3);
                   const tasksByWeek = new Map<number, typeof dueBeyondTasks>();
                   dueBeyondTasks.forEach(task => {
                     const dueDate = startOfDay(new Date(task.dueDate));
@@ -22691,8 +22674,8 @@ export default function Dashboard() {
                               </div>
                             ) : null;
                           })()}
-                          {groupIdx > 0 && (
-                            <div data-semester-label={tlEntry.semLabel || ''} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: tlIdx > 0 && beyondTimeline[tlIdx - 1] && tlEntry.weekStart.getFullYear() !== beyondTimeline[tlIdx - 1].weekStart.getFullYear() ? '4px' : '20px' }}>
+                          {(
+                            <div data-semester-label={tlEntry.semLabel || ''} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: tlIdx === 0 ? '20px' : (tlIdx > 0 && beyondTimeline[tlIdx - 1] && tlEntry.weekStart.getFullYear() !== beyondTimeline[tlIdx - 1].weekStart.getFullYear() ? '4px' : '20px') }}>
                               <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px' }}>
                                   <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{groupWeekLabel}</span>
