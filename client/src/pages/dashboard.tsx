@@ -22045,7 +22045,7 @@ export default function Dashboard() {
                 {dueNextWeekTasks.length === 0 ? (
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks next week</div>
                 ) : (
-                  <div className="flex flex-col gap-0.5">
+                  <div className="flex flex-col gap-0.5" style={{ marginTop: '-3px' }}>
                     {(() => {
                       const today = startOfDay(new Date());
                       const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
