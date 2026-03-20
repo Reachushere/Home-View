@@ -21733,6 +21733,9 @@ export default function Dashboard() {
                 ) : (
                   <div style={{ display: 'flex', alignItems: 'center' }}>
                     <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginLeft: '10px', marginRight: '4px', overflow: 'visible' }}>
+                      <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
+                        {format(new Date(), 'MMMM d')}
+                      </span>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-end' }}>
                         <div style={{ display: 'flex', gap: '2px', padding: '0 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
                           {['S','M','T','W','T','F','S'].map((dl, dli) => (
