@@ -21148,9 +21148,9 @@ export default function Dashboard() {
                       title={tab.semLabel}
                     >
                       <svg width="21" height="42" viewBox="0 0 21 42" style={{ display: 'block' }}>
-                        <path d="M21,0 L21,42 L13,42 Q13,37.5 8,37.5 L7.5,37.5 Q0,37.5 0,31.5 L0,10.5 Q0,4.5 7.5,4.5 L8,4.5 Q13,4.5 13,0 Z" fill={isActive ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)'} stroke="rgba(255,255,255,0.35)" strokeWidth="1" />
-                        <text x="9" y="19" textAnchor="middle" fill="white" fontSize="9" fontWeight="bold" fontFamily="system-ui">{tab.letter}</text>
-                        <text x="9" y="32" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="7.5" fontWeight="600" fontFamily="system-ui">{tab.year}</text>
+                        <path d="M0,0 L0,42 L8,42 Q8,37.5 13,37.5 L13.5,37.5 Q21,37.5 21,31.5 L21,10.5 Q21,4.5 13.5,4.5 L13,4.5 Q8,4.5 8,0 Z" fill={isActive ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)'} stroke="rgba(255,255,255,0.35)" strokeWidth="1" />
+                        <text x="12" y="19" textAnchor="middle" fill="white" fontSize="9" fontWeight="bold" fontFamily="system-ui">{tab.letter}</text>
+                        <text x="12" y="32" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="7.5" fontWeight="600" fontFamily="system-ui">{tab.year}</text>
                       </svg>
                     </div>
                   );
