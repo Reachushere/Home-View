@@ -1296,11 +1296,11 @@ export default function SpotifyPlayerPage() {
                       }}
                       data-testid={`room-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
                       <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5" style={{ zIndex: 2, transform: `translate(${spot.labelOffsetX || 0}px, ${spot.labelOffsetY || 0}px)` }}>
-                        <RoomIcon icon={spot.icon} size={20} color={isActive ? profile.accent : 'rgba(120,190,255,0.7)'} />
+                        <RoomIcon icon={spot.icon} size={20} color={isActive ? profile.accent : 'rgba(255,255,255,0.9)'} />
                         <span className="text-[11px] font-bold uppercase tracking-wider text-center leading-tight px-1"
                           style={{
-                            color: isActive ? profile.accent : 'rgba(120,190,255,0.75)',
-                            textShadow: isActive ? `0 0 10px ${profile.glow}` : '0 1px 3px rgba(0,0,0,0.6)',
+                            color: isActive ? profile.accent : 'rgba(255,255,255,0.95)',
+                            textShadow: isActive ? `0 0 10px ${profile.glow}` : '0 1px 4px rgba(0,0,0,0.7)',
                           }}>
                           {isSakura ? (ROOM_JP[spot.room] || spot.room) : spot.room}
                         </span>
@@ -1424,7 +1424,7 @@ export default function SpotifyPlayerPage() {
                           <RoomIcon icon={spot.icon} size={20} color={isActive ? profile.accent : tc.navIdle} />
                           <div className="flex-1 min-w-0">
                             <span className="text-[13px] font-medium block"
-                              style={{ color: isActive ? profile.accent : tc.textMid }}>{isSakura ? (ROOM_JP[spot.room] || spot.room) : spot.room}</span>
+                              style={{ color: isActive ? profile.accent : 'rgba(255,255,255,0.95)' }}>{isSakura ? (ROOM_JP[spot.room] || spot.room) : spot.room}</span>
                             <span className="text-[11px]" style={{ color: tc.textSoft }}>
                               {speakerList.length} {isSakura ? "台のスピーカー" : (speakerList.length === 1 ? "speaker" : "speakers")}
                             </span>
