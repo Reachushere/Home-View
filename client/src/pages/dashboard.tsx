@@ -21150,7 +21150,7 @@ export default function Dashboard() {
                       <svg width="16" height="42" viewBox="0 0 16 42" style={{ display: 'block' }}>
                         <path d="M0,0 L0,42 L7,42 Q7,38 10,38 L10.5,38 Q16,38 16,32 L16,10 Q16,4 10.5,4 L10,4 Q7,4 7,0 Z" fill={isActive ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)'} stroke="rgba(255,255,255,0.35)" strokeWidth="1" />
                         <text x="9" y="19" textAnchor="middle" fill="white" fontSize="7" fontWeight="bold" fontFamily="system-ui">{tab.letter}</text>
-                        <text x="9" y="31" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="6" fontWeight="600" fontFamily="system-ui">{tab.year}</text>
+                        <text x="9" y="31" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="8" fontWeight="600" fontFamily="system-ui">{tab.year}</text>
                       </svg>
                     </div>
                   );
