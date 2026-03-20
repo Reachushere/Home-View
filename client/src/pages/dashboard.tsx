@@ -21158,37 +21158,22 @@ export default function Dashboard() {
                       className={`cursor-pointer${isActive ? ' semester-tab-bounce' : ''}`}
                       style={{ position: 'absolute', bottom: `${reversedIdx * 53 + reversedIdx * 3 + 2 + (tabIdx === 0 ? 1 : 0)}px`, width: '18px', height: '88px', zIndex: semTabs.length - tabIdx, clipPath: 'inset(0 0 0 2px)' }}
                       onClick={() => {
-                        if (!homeworkScrollRef.current) return;
-                        const scrollContainer = homeworkScrollRef.current!;
-                        let targetIdx = -1;
-                        if (tab.letter === 'W' && tab.year === '26') {
-                          targetIdx = hwWeeklyTimeline.findIndex(w => w.semLabel === 'Winter 2026' && w.weekNum === 10);
-                        } else if (tab.letter === 'S' && tab.year === '26') {
-                          targetIdx = hwWeeklyTimeline.findIndex(w => w.semLabel === 'Winter 2026' && w.weekNum === 11);
-                        } else if (tab.letter === 'F' && tab.year === '26') {
-                          targetIdx = hwWeeklyTimeline.findIndex(w => w.semLabel === 'Winter 2026' && w.weekNum === 12);
-                        } else if (tab.letter === 'W' && tab.year === '27') {
-                          targetIdx = hwWeeklyTimeline.findIndex(w => w.weekStart.getMonth() === 4 && w.weekStart.getFullYear() === 2026);
-                        } else if (tab.letter === 'S' && tab.year === '27') {
-                          targetIdx = hwWeeklyTimeline.findIndex(w => w.weekStart.getMonth() === 5 && w.weekStart.getFullYear() === 2026);
-                        } else if (tab.letter === 'F' && tab.year === '27') {
-                          targetIdx = hwWeeklyTimeline.findIndex(w => w.weekStart.getMonth() === 6 && w.weekStart.getFullYear() === 2026);
-                        } else if (tab.letter === 'W' && tab.year === '28') {
-                          targetIdx = hwWeeklyTimeline.findIndex(w => w.weekStart.getMonth() === 8 && w.weekStart.getFullYear() === 2026);
-                        } else if (tab.letter === 'S' && tab.year === '28') {
-                          targetIdx = hwWeeklyTimeline.findIndex(w => w.weekStart.getFullYear() >= 2027);
-                        } else if (tab.letter === 'F' && tab.year === '28') {
-                          targetIdx = hwWeeklyTimeline.findIndex(w => w.weekStart.getFullYear() >= 2028);
-                        } else {
-                          targetIdx = hwWeeklyTimeline.findIndex(w => w.weekStart.getFullYear() >= 2029);
+                        const targetIdx = hwWeeklyTimeline.findIndex(w => w.semLabel === tab.semLabel && w.weekNum === 1);
+                        const fallbackIdx = targetIdx >= 0 ? targetIdx : hwWeeklyTimeline.findIndex(w => w.semLabel === tab.semLabel);
+                        const idx = fallbackIdx >= 0 ? fallbackIdx : hwWeeklyTimeline.length - 1;
+                        const targetWeek = hwWeeklyTimeline[idx];
+                        if (targetWeek && targetWeek.weekNum) {
+                          setSelectedWeek(targetWeek.weekNum);
                         }
-                        if (targetIdx < 0) targetIdx = hwWeeklyTimeline.length - 1;
-                        const sectionIds = ['thisweek', 'nextweek', 'twoweeks', 'threeweeks'];
-                        const sectionId = targetIdx < 4 ? sectionIds[targetIdx] : 'threeweeks';
-                        const el = scrollContainer.querySelector(`[data-homework-section="${sectionId}"]`);
-                        if (el) {
-                          const elTop = (el as HTMLElement).offsetTop - scrollContainer.offsetTop;
-                          scrollContainer.scrollTo({ top: elTop - 4, behavior: 'smooth' });
+                        if (homeworkScrollRef.current) {
+                          const scrollContainer = homeworkScrollRef.current;
+                          const sectionIds = ['thisweek', 'nextweek', 'twoweeks', 'threeweeks'];
+                          const sectionId = idx < 4 ? sectionIds[idx] : 'threeweeks';
+                          const el = scrollContainer.querySelector(`[data-homework-section="${sectionId}"]`);
+                          if (el) {
+                            const elTop = (el as HTMLElement).offsetTop - scrollContainer.offsetTop;
+                            scrollContainer.scrollTo({ top: elTop - 4, behavior: 'smooth' });
+                          }
                         }
                       }}
                       data-testid={`semester-tab-${tab.letter.toLowerCase()}${tab.year}`}
