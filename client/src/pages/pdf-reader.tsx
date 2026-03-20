@@ -2971,13 +2971,13 @@ export default function PDFReaderPage() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between px-4 pb-4 flex-wrap gap-y-2">
-            <div className="flex items-center gap-3" data-testid="voice-selector">
-              <span className="text-[11px] text-white uppercase tracking-wide">Voice</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '6px 12px', margin: '0 8px 8px', background: 'rgba(255,255,255,0.07)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.12)' }}>
+            <div className="flex items-center gap-1.5 flex-shrink-0" data-testid="voice-selector">
+              <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Voice</span>
               <select
                 value={voice}
                 onChange={(e) => { const v = e.target.value as Voice; setVoice(v); voiceRef.current = v; localStorage.setItem('pdf-reader-voice', v); }}
-                className="bg-white/10 text-white text-sm rounded-lg px-3 py-2 border border-white/30 focus:outline-none focus:border-white/50 cursor-pointer w-[240px]"
+                style={{ background: 'rgba(255,255,255,0.1)', color: 'white', fontSize: '11px', borderRadius: '4px', padding: '3px 6px', border: '1px solid rgba(255,255,255,0.2)', outline: 'none', cursor: 'pointer', width: '150px' }}
                 data-testid="select-voice"
               >
                 {(["alloy","ash","echo","fable","onyx"] as Voice[]).map(v => (
@@ -2985,70 +2985,65 @@ export default function PDFReaderPage() {
                 ))}
               </select>
               <button
-                className="p-1.5 rounded-full hover:bg-white/15 transition-colors border border-white/30"
+                style={{ padding: '3px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.2)', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 onClick={previewVoice}
                 data-testid="button-preview-voice"
                 title="Preview voice"
               >
-                {isPreviewing ? <Square className="h-4 w-4 text-white fill-white" /> : <Volume2 className="h-4 w-4 text-white" />}
+                {isPreviewing ? <Square className="h-3 w-3 text-white fill-white" /> : <Volume2 className="h-3 w-3 text-white" />}
               </button>
             </div>
 
-            <div className="flex items-center gap-3" data-testid="speed-control">
-              <span className="text-[11px] text-white uppercase tracking-wide">Speed</span>
+            <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.15)', flexShrink: 0 }} />
+
+            <div className="flex items-center gap-1.5 flex-shrink-0" data-testid="speed-control">
+              <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Speed</span>
               <button
-                className="w-6 h-6 flex items-center justify-center text-sm text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
+                style={{ width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', color: 'white', fontWeight: 'bold', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.2)', background: 'transparent', cursor: 'pointer' }}
                 onClick={() => setPlaybackSpeed(Math.max(0.5, +(playbackSpeed - 0.1).toFixed(2)))}
                 data-testid="button-speed-down"
               >−</button>
               <input
-                type="range"
-                min="0.5"
-                max="3"
-                step="0.1"
-                value={playbackSpeed}
+                type="range" min="0.5" max="3" step="0.1" value={playbackSpeed}
                 onChange={(e) => setPlaybackSpeed(parseFloat(e.target.value))}
-                className="w-24 h-[3px] cursor-pointer"
-                style={{ accentColor: 'white' }}
+                style={{ width: '60px', height: '3px', cursor: 'pointer', accentColor: 'white' }}
                 data-testid="slider-speed"
               />
               <button
-                className="w-6 h-6 flex items-center justify-center text-sm text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
+                style={{ width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', color: 'white', fontWeight: 'bold', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.2)', background: 'transparent', cursor: 'pointer' }}
                 onClick={() => setPlaybackSpeed(Math.min(3, +(playbackSpeed + 0.1).toFixed(2)))}
                 data-testid="button-speed-up"
               >+</button>
-              <span className="text-sm text-white font-semibold min-w-[40px] text-center" style={{ marginLeft: '-2px' }} data-testid="text-speed">{playbackSpeed}x</span>
+              <span style={{ fontSize: '11px', color: 'white', fontWeight: 600, minWidth: '28px', textAlign: 'center' }} data-testid="text-speed">{playbackSpeed}x</span>
             </div>
 
-            <div className="flex items-center gap-3" data-testid="volume-control">
-              <span className="text-[11px] text-white uppercase tracking-wide">Volume</span>
+            <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.15)', flexShrink: 0 }} />
+
+            <div className="flex items-center gap-1.5 flex-shrink-0" data-testid="volume-control">
+              <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Volume</span>
               <button
-                className="w-6 h-6 flex items-center justify-center text-sm text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
+                style={{ width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', color: 'white', fontWeight: 'bold', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.2)', background: 'transparent', cursor: 'pointer' }}
                 onClick={() => setVolume(Math.max(0, +(volume - 0.1).toFixed(2)))}
                 data-testid="button-volume-down"
               >−</button>
               <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.05"
-                value={volume}
+                type="range" min="0" max="1" step="0.05" value={volume}
                 onChange={(e) => setVolume(parseFloat(e.target.value))}
-                className="w-24 h-[3px] cursor-pointer"
-                style={{ accentColor: 'white' }}
+                style={{ width: '60px', height: '3px', cursor: 'pointer', accentColor: 'white' }}
                 data-testid="slider-volume"
               />
               <button
-                className="w-6 h-6 flex items-center justify-center text-sm text-white font-bold rounded-full border border-white/30 hover:bg-white/15 transition-colors"
+                style={{ width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', color: 'white', fontWeight: 'bold', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.2)', background: 'transparent', cursor: 'pointer' }}
                 onClick={() => setVolume(Math.min(1, +(volume + 0.1).toFixed(2)))}
                 data-testid="button-volume-up"
               >+</button>
-              <Volume2 className="h-5 w-5 text-white" />
+              <Volume2 className="h-3.5 w-3.5 text-white" />
             </div>
 
+            <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.15)', flexShrink: 0 }} />
 
             <button
-              className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium transition-colors flex items-center gap-2"
+              style={{ padding: '3px 10px', borderRadius: '4px', background: '#059669', fontSize: '10px', color: 'white', fontWeight: 500, border: 'none', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
               onClick={async () => {
                 try {
                   const testBtn = document.querySelector('[data-testid="button-test-audio"]');
@@ -3066,17 +3061,17 @@ export default function PDFReaderPage() {
                   testAudio.onended = () => {
                     URL.revokeObjectURL(url);
                     const btn = document.querySelector('[data-testid="button-test-audio"]');
-                    if (btn) btn.textContent = '🔊 Test Audio';
+                    if (btn) btn.textContent = 'Test';
                   };
                   await testAudio.play();
                 } catch {
                   const btn = document.querySelector('[data-testid="button-test-audio"]');
-                  if (btn) btn.textContent = 'Test Failed';
-                  setTimeout(() => { if (btn) btn.textContent = '🔊 Test Audio'; }, 2000);
+                  if (btn) btn.textContent = 'Failed';
+                  setTimeout(() => { if (btn) btn.textContent = 'Test'; }, 2000);
                 }
               }}
               data-testid="button-test-audio"
-            >🔊 Test Audio</button>
+            >Test</button>
           </div>
 
           {allFiles.length > 1 && (() => {
