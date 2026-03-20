@@ -78,6 +78,7 @@ const PROFILES: Record<ProfileKey, {
     accent: "#2dd4bf",
     glow: "rgba(45,212,191,0.3)",
     artists: [
+      { name: "中島みゆき", uri: "spotify:track:59fRFaYL0MkBgctE2KOxHF", searchQuery: "中島みゆき 糸" },
       { name: "YOASOBI", uri: "spotify:artist:64tJ2EAv1R6UaZqc4iOCyj", searchQuery: "YOASOBI" },
       { name: "Kenshi Yonezu", uri: "spotify:artist:1snhtMLeb2DYoMOcVkiKnR", searchQuery: "Kenshi Yonezu" },
       { name: "Aimyon", uri: "spotify:artist:5Lak6GhYbSqhRimRYhE0dP", searchQuery: "Aimyon" },
