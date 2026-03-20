@@ -21122,7 +21122,7 @@ export default function Dashboard() {
             return (
               <div
                 className="absolute z-50"
-                style={{ right: '-10px', top: '30px', bottom: '10px', flexDirection: 'column', justifyContent: 'space-evenly', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex' }}
+                style={{ right: '-14px', top: '30px', bottom: '10px', flexDirection: 'column', justifyContent: 'space-evenly', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex' }}
               >
                 {semTabs.map((tab) => {
                   const isActive = currentSemLabel === tab.semLabel;
