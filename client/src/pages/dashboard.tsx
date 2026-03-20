@@ -22228,7 +22228,7 @@ export default function Dashboard() {
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px' }}>
                       <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[2]?.label || 'Two weeks'}</span>
-                      <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', position: 'relative', top: '-3px' }}>({dueTwoWeeksTasks.length})</span>
+                      <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', position: 'relative', top: '-1px' }}>({dueTwoWeeksTasks.length})</span>
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px', marginTop: '2px' }}>
@@ -22400,7 +22400,7 @@ export default function Dashboard() {
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px' }}>
                       <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[3]?.label || 'Three weeks'}</span>
-                      <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', position: 'relative', top: '-3px' }}>({dueBeyondTasks.length})</span>
+                      <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', position: 'relative', top: '-1px' }}>({dueBeyondTasks.length})</span>
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, marginTop: '-3px' }}>
