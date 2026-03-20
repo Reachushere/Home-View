@@ -2971,13 +2971,13 @@ export default function PDFReaderPage() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between px-8 pb-4">
+          <div className="flex items-center justify-between px-4 pb-4 flex-wrap gap-y-2">
             <div className="flex items-center gap-3" data-testid="voice-selector">
               <span className="text-[11px] text-white uppercase tracking-wide">Voice</span>
               <select
                 value={voice}
                 onChange={(e) => { const v = e.target.value as Voice; setVoice(v); voiceRef.current = v; localStorage.setItem('pdf-reader-voice', v); }}
-                className="bg-white/10 text-white text-sm rounded-lg px-3 py-2 border border-white/30 focus:outline-none focus:border-white/50 cursor-pointer w-[280px]"
+                className="bg-white/10 text-white text-sm rounded-lg px-3 py-2 border border-white/30 focus:outline-none focus:border-white/50 cursor-pointer w-[240px]"
                 data-testid="select-voice"
               >
                 {(["alloy","ash","echo","fable","onyx"] as Voice[]).map(v => (
