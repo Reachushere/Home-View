@@ -13849,7 +13849,7 @@ Return ONLY the JSON object, no markdown formatting.`;
 
   app.post("/api/spotify/bulk-images", async (req, res) => {
     try {
-      const { items } = req.body as { items: { name: string; uri: string }[] };
+      const { items } = req.body as { items: { name: string; uri: string; searchQuery?: string }[] };
       if (!items || !Array.isArray(items)) return res.json({ images: {} });
       const images: Record<string, string> = {};
       const ids: Record<string, string> = {};
@@ -13862,15 +13862,36 @@ Return ONLY the JSON object, no markdown formatting.`;
             const data = await spotifyApi.getArtistById(id);
             if (data?.images?.[0]?.url) images[item.name] = data.images[0].url;
             if (data?.id) ids[item.name] = data.id;
+            if (!images[item.name]) {
+              const q = item.searchQuery || item.name;
+              const searchData = await spotifyApi.search(q, 'artist', 3);
+              const artists = searchData?.artists?.items || [];
+              for (const a of artists) {
+                if (a?.images?.[0]?.url) {
+                  images[item.name] = a.images[0].url;
+                  if (a.id) ids[item.name] = a.id;
+                  break;
+                }
+              }
+            }
           } else if (type === "playlist") {
             const data = await spotifyApi.getPlaylistById(id);
             if (data?.images?.[0]?.url) images[item.name] = data.images[0].url;
           } else if (type === "track") {
-            const searchData = await spotifyApi.search(item.name, 'track', 1);
-            const track = searchData?.tracks?.items?.[0];
-            if (track?.album?.images?.[0]?.url) images[item.name] = track.album.images[0].url;
+            try {
+              const trackData = await spotifyApi.getTrackById(id);
+              if (trackData?.album?.images?.[0]?.url) images[item.name] = trackData.album.images[0].url;
+              if (trackData?.artists?.[0]?.id) ids[item.name] = trackData.artists[0].id;
+            } catch {
+              const q = item.searchQuery || item.name;
+              const searchData = await spotifyApi.search(q, 'track', 1);
+              const track = searchData?.tracks?.items?.[0];
+              if (track?.album?.images?.[0]?.url) images[item.name] = track.album.images[0].url;
+            }
           }
-        } catch {}
+        } catch (e: any) {
+          console.error(`[Spotify] Bulk image fetch failed for ${item.name}:`, e.message);
+        }
       }
       res.json({ images, ids });
     } catch (error: any) {

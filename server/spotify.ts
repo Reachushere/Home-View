@@ -259,6 +259,10 @@ export async function getArtistById(artistId: string) {
   return spotifyFetch(`/artists/${artistId}`);
 }
 
+export async function getTrackById(trackId: string) {
+  return spotifyFetch(`/tracks/${trackId}`);
+}
+
 export async function getPlaylistById(playlistId: string) {
   return spotifyFetch(`/playlists/${playlistId}?fields=id,name,images`);
 }

@@ -639,7 +639,7 @@ export default function SpotifyPlayerPage() {
       const res = await fetch(`/api/spotify/bulk-images${authQuery}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items: uniqueItems.map(a => ({ name: a.name, uri: a.uri })) }),
+        body: JSON.stringify({ items: uniqueItems.map(a => ({ name: a.name, uri: a.uri, searchQuery: a.searchQuery || a.name })) }),
       });
       if (res.ok) {
         const data = await res.json();
@@ -830,22 +830,22 @@ export default function SpotifyPlayerPage() {
   const isSakura = activeProfile === "yasu";
 
   const tc = {
-    textMuted: isSakura ? 'rgba(130,200,240,0.7)' : 'rgba(100,180,255,0.65)',
-    textSoft: isSakura ? 'rgba(140,210,245,0.5)' : 'rgba(100,180,255,0.45)',
-    textMid: isSakura ? 'rgba(120,195,240,0.85)' : 'rgba(140,200,255,0.8)',
-    textBright: isSakura ? 'rgba(140,215,250,0.9)' : 'rgba(140,200,255,0.85)',
-    navIdle: isSakura ? 'rgba(100,195,245,0.7)' : 'rgba(120,200,255,0.65)',
-    menuToggle: isSakura ? 'rgba(80,190,245,0.75)' : 'rgba(90,200,255,0.7)',
+    textMuted: isSakura ? 'rgba(150,210,248,0.8)' : 'rgba(100,180,255,0.65)',
+    textSoft: isSakura ? 'rgba(160,220,250,0.6)' : 'rgba(100,180,255,0.45)',
+    textMid: isSakura ? 'rgba(140,210,248,0.9)' : 'rgba(140,200,255,0.8)',
+    textBright: isSakura ? 'rgba(170,225,255,0.95)' : 'rgba(140,200,255,0.85)',
+    navIdle: isSakura ? 'rgba(120,210,250,0.8)' : 'rgba(120,200,255,0.65)',
+    menuToggle: isSakura ? 'rgba(100,200,250,0.8)' : 'rgba(90,200,255,0.7)',
     divider: isSakura ? 'rgba(56,189,248,0.2)' : 'rgba(70,160,255,0.2)',
     sideEdge: isSakura
       ? 'linear-gradient(180deg, rgba(56,189,248,0.4), rgba(56,189,248,0.1), rgba(56,189,248,0.3))'
       : 'linear-gradient(180deg, rgba(60,180,255,0.4), rgba(60,180,255,0.1), rgba(60,180,255,0.3))',
-    homeBtnBg: isSakura ? 'rgba(56,189,248,0.15)' : 'rgba(50,130,255,0.12)',
-    homeBtnBorder: isSakura ? 'rgba(56,189,248,0.25)' : 'rgba(80,170,255,0.2)',
-    homeBtnText: isSakura ? 'rgba(140,215,250,0.85)' : 'rgba(140,215,255,0.8)',
-    btnBg: isSakura ? 'rgba(56,189,248,0.12)' : 'rgba(60,140,255,0.1)',
-    btnBorder: isSakura ? 'rgba(56,189,248,0.25)' : 'rgba(60,140,255,0.2)',
-    btnText: isSakura ? 'rgba(130,205,245,0.75)' : 'rgba(100,180,255,0.7)',
+    homeBtnBg: isSakura ? 'rgba(56,189,248,0.18)' : 'rgba(50,130,255,0.12)',
+    homeBtnBorder: isSakura ? 'rgba(56,189,248,0.3)' : 'rgba(80,170,255,0.2)',
+    homeBtnText: isSakura ? 'rgba(160,225,255,0.9)' : 'rgba(140,215,255,0.8)',
+    btnBg: isSakura ? 'rgba(56,189,248,0.15)' : 'rgba(60,140,255,0.1)',
+    btnBorder: isSakura ? 'rgba(56,189,248,0.3)' : 'rgba(60,140,255,0.2)',
+    btnText: isSakura ? 'rgba(150,215,250,0.85)' : 'rgba(100,180,255,0.7)',
     cardBorder: isSakura ? 'rgba(56,189,248,0.22)' : 'rgba(80,160,255,0.25)',
     progressBg: isSakura ? 'rgba(56,189,248,0.15)' : 'rgba(60,160,255,0.12)',
     progressGrad: isSakura ? 'rgba(30,180,240,0.45)' : 'rgba(0,180,255,0.4)',
@@ -858,22 +858,23 @@ export default function SpotifyPlayerPage() {
   };
 
   return (
-    <div className="fixed inset-0 flex flex-col overflow-hidden select-none" style={{ fontFamily: "'Inter', system-ui, sans-serif", background: isSakura ? '#0f2a42' : '#152e54' }} data-testid="spotify-player-page">
+    <div className="fixed inset-0 flex flex-col overflow-hidden select-none" style={{ fontFamily: "'Inter', system-ui, sans-serif", background: isSakura ? '#0c2240' : '#152e54' }} data-testid="spotify-player-page">
       <img
         src={isPlaying ? massBg : musicBg}
         alt=""
         className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
-        style={{ opacity: isPlaying ? 0.35 : 0.2, filter: isSakura ? "brightness(0.8) saturate(0.6) hue-rotate(200deg)" : "brightness(1.1) saturate(1.2) hue-rotate(200deg)" }}
+        style={{ opacity: isPlaying ? 0.25 : 0.15, filter: isSakura ? "brightness(0.7) saturate(0.4) hue-rotate(200deg)" : "brightness(1.1) saturate(1.2) hue-rotate(200deg)" }}
       />
 
       <div className="absolute inset-0" style={{
         background: isSakura
           ? `
-            radial-gradient(ellipse at 15% 30%, rgba(255,183,197,0.18) 0%, transparent 45%),
-            radial-gradient(ellipse at 85% 20%, rgba(56,189,248,0.3) 0%, transparent 40%),
-            radial-gradient(ellipse at 50% 70%, rgba(255,192,203,0.12) 0%, transparent 50%),
-            radial-gradient(ellipse at 70% 80%, rgba(40,170,240,0.25) 0%, transparent 45%),
-            linear-gradient(180deg, rgba(15,42,66,0.3) 0%, rgba(18,48,75,0.4) 100%)
+            radial-gradient(ellipse at 15% 30%, rgba(255,183,197,0.25) 0%, transparent 45%),
+            radial-gradient(ellipse at 85% 20%, rgba(56,189,248,0.35) 0%, transparent 40%),
+            radial-gradient(ellipse at 50% 70%, rgba(255,192,203,0.18) 0%, transparent 50%),
+            radial-gradient(ellipse at 70% 80%, rgba(56,189,248,0.3) 0%, transparent 45%),
+            radial-gradient(ellipse at 30% 50%, rgba(100,200,255,0.12) 0%, transparent 50%),
+            linear-gradient(180deg, rgba(15,45,80,0.2) 0%, rgba(12,34,64,0.3) 100%)
           `
           : `
             radial-gradient(ellipse at 20% 50%, rgba(50,130,240,0.3) 0%, transparent 50%),
