@@ -123,14 +123,14 @@ const ROOM_JP: Record<string, string> = {
 
 const ROOM_HOTSPOTS: { room: string; x: number; y: number; w: number; h: number; entityId: string; groupEntityId: string; deviceType: string; icon: string; nightImg?: string; labelOffsetX?: number; labelOffsetY?: number; hideLabel?: boolean }[] = [
   { room: "Balcony", x: 2, y: 72, w: 18, h: 25, entityId: "media_player.balcony_speaker", groupEntityId: "media_player.balcony_media_group", deviceType: "echo", icon: "balcony", hideLabel: true },
-  { room: "Queen Bedroom", x: 2, y: 38, w: 18, h: 33, entityId: "media_player.queen_bedroom", groupEntityId: "media_player.queen_bedroom_media_group", deviceType: "echo", icon: "bed", nightImg: queenNight, labelOffsetX: 108, labelOffsetY: 20 },
+  { room: "Queen Bedroom", x: 2, y: 38, w: 18, h: 33, entityId: "media_player.queen_bedroom", groupEntityId: "media_player.queen_bedroom_media_group", deviceType: "echo", icon: "bed", nightImg: queenNight, labelOffsetX: 143, labelOffsetY: 20 },
   { room: "Pug Washroom", x: 2, y: 5, w: 16, h: 32, entityId: "media_player.echo_show_pug_am", groupEntityId: "media_player.pug_media_group", deviceType: "echo_show", icon: "bath", nightImg: pugNight, labelOffsetX: 60, labelOffsetY: 78 },
   { room: "Hallway", x: 19, y: 5, w: 16, h: 32, entityId: "media_player.hallway_2", groupEntityId: "media_player.hallway_media_group", deviceType: "echo", icon: "hallway", nightImg: hallwayNight, labelOffsetX: -15, labelOffsetY: -20 },
   { room: "Kitchen", x: 36, y: 5, w: 28, h: 45, entityId: "media_player.kitchen_lr", groupEntityId: "media_player.kitchen_media_group", deviceType: "echo", icon: "kitchen", nightImg: kitchenNight, labelOffsetX: -40, labelOffsetY: 51 },
   { room: "Living Room", x: 36, y: 52, w: 28, h: 45, entityId: "media_player.kitchen_lr", groupEntityId: "media_player.living_room_media_group", deviceType: "echo", icon: "sofa", nightImg: livingRoomNight, labelOffsetX: 25, labelOffsetY: -46 },
   { room: "King Bedroom", x: 65, y: 30, w: 33, h: 50, entityId: "media_player.king_bedroom", groupEntityId: "media_player.king_bedroom_media_group", deviceType: "echo", icon: "crown", nightImg: kingNight, labelOffsetX: -68, labelOffsetY: -66 },
-  { room: "Cat Washroom", x: 84, y: 3, w: 14, h: 26, entityId: "media_player.cat_speakers", groupEntityId: "media_player.cat_washroom_media_group", deviceType: "echo", icon: "bath", nightImg: catNight, labelOffsetX: -155, labelOffsetY: 25 },
-  { room: "Closet", x: 65, y: 3, w: 18, h: 26, entityId: "media_player.echo_closet_am", groupEntityId: "media_player.closet_media_group", deviceType: "echo", icon: "closet", nightImg: closetNight, labelOffsetX: -95 },
+  { room: "Cat Washroom", x: 84, y: 3, w: 14, h: 26, entityId: "media_player.cat_speakers", groupEntityId: "media_player.cat_washroom_media_group", deviceType: "echo", icon: "bath", nightImg: catNight, labelOffsetX: -213, labelOffsetY: 25 },
+  { room: "Closet", x: 65, y: 3, w: 18, h: 26, entityId: "media_player.echo_closet_am", groupEntityId: "media_player.closet_media_group", deviceType: "echo", icon: "closet", nightImg: closetNight, labelOffsetX: -75, labelOffsetY: 25 },
   { room: "Everywhere", x: 84, y: 78, w: 14, h: 18, entityId: "media_player.everywhere_5", groupEntityId: "media_player.everywhere_2", deviceType: "group", icon: "everywhere" },
 ];
 
