@@ -324,9 +324,9 @@ button[role="combobox"] > span {
 
 @keyframes semester-tab-nudge {
   0%, 40% { transform: translateX(0px); }
-  44% { transform: translateX(-4px); }
+  44% { transform: translateX(4px); }
   48% { transform: translateX(0px); }
-  52% { transform: translateX(-2px); }
+  52% { transform: translateX(2px); }
   56% { transform: translateX(0px); }
   60%, 100% { transform: translateX(0px); }
 }
