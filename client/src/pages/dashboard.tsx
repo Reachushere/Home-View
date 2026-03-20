@@ -21344,21 +21344,63 @@ export default function Dashboard() {
                       className={`cursor-pointer${isActive ? ' semester-tab-bounce' : ''}`}
                       style={{ position: 'absolute', bottom: `${reversedIdx * 53 + reversedIdx * 3 + 2 + (tabIdx === 0 ? 1 : 0)}px`, width: '18px', height: '88px', zIndex: isActive ? 100 : semTabs.length - tabIdx, clipPath: isActive ? 'none' : 'inset(0 0 0 2px)', transition: 'width 0.25s ease, transform 0.25s ease', transform: isActive ? 'translateX(2px)' : 'none' }}
                       onClick={() => {
-                        const targetIdx = hwWeeklyTimeline.findIndex(w => w.semLabel === tab.semLabel && w.weekNum === 1);
-                        const fallbackIdx = targetIdx >= 0 ? targetIdx : hwWeeklyTimeline.findIndex(w => w.semLabel === tab.semLabel);
-                        const idx = fallbackIdx >= 0 ? fallbackIdx : hwWeeklyTimeline.length - 1;
+                        let idx = -1;
+                        if (tab.letter === 'W' && tab.year === '26') {
+                          idx = hwWeeklyTimeline.findIndex(w => w.semLabel === 'Winter 2026' && w.weekNum === 10);
+                        } else if (tab.letter === 'S' && tab.year === '26') {
+                          idx = hwWeeklyTimeline.findIndex(w => w.semLabel === 'Winter 2026' && w.weekNum === 11);
+                        } else if (tab.letter === 'F' && tab.year === '26') {
+                          idx = hwWeeklyTimeline.findIndex(w => w.semLabel === 'Winter 2026' && w.weekNum === 12);
+                        } else if (tab.letter === 'W' && tab.year === '27') {
+                          idx = hwWeeklyTimeline.findIndex(w => w.weekStart.getMonth() === 4 && w.weekStart.getFullYear() === 2026);
+                        } else if (tab.letter === 'S' && tab.year === '27') {
+                          idx = hwWeeklyTimeline.findIndex(w => w.weekStart.getMonth() === 5 && w.weekStart.getFullYear() === 2026);
+                        } else if (tab.letter === 'F' && tab.year === '27') {
+                          idx = hwWeeklyTimeline.findIndex(w => w.weekStart.getMonth() === 6 && w.weekStart.getFullYear() === 2026);
+                        } else if (tab.letter === 'W' && tab.year === '28') {
+                          idx = hwWeeklyTimeline.findIndex(w => w.semLabel === 'Fall 2026' && w.weekNum === 1);
+                        } else if (tab.letter === 'S' && tab.year === '28') {
+                          idx = hwWeeklyTimeline.findIndex(w => w.semLabel === 'Winter 2027' && w.weekNum === 1);
+                        } else if (tab.letter === 'F' && tab.year === '28') {
+                          idx = hwWeeklyTimeline.findIndex(w => w.semLabel === 'Winter 2028' && w.weekNum === 1);
+                        } else {
+                          idx = hwWeeklyTimeline.findIndex(w => w.semLabel === 'Winter 2029' && w.weekNum === 1);
+                        }
+                        if (idx < 0) idx = hwWeeklyTimeline.length - 1;
                         const targetWeek = hwWeeklyTimeline[idx];
                         if (targetWeek && targetWeek.weekNum) {
                           setSelectedWeek(targetWeek.weekNum);
                         }
                         if (homeworkScrollRef.current) {
                           const scrollContainer = homeworkScrollRef.current;
-                          const sectionIds = ['thisweek', 'nextweek', 'twoweeks', 'threeweeks'];
-                          const sectionId = idx < 4 ? sectionIds[idx] : 'threeweeks';
-                          const el = scrollContainer.querySelector(`[data-homework-section="${sectionId}"]`);
-                          if (el) {
-                            const elTop = (el as HTMLElement).offsetTop - scrollContainer.offsetTop;
-                            scrollContainer.scrollTo({ top: elTop - 4, behavior: 'smooth' });
+                          if (idx < 4) {
+                            const sectionIds = ['thisweek', 'nextweek', 'twoweeks', 'threeweeks'];
+                            const el = scrollContainer.querySelector(`[data-homework-section="${sectionIds[idx]}"]`);
+                            if (el) {
+                              const elTop = (el as HTMLElement).offsetTop - scrollContainer.offsetTop;
+                              scrollContainer.scrollTo({ top: elTop - 4, behavior: 'smooth' });
+                            }
+                          } else {
+                            const targetWeekISO = hwWeeklyTimeline[idx]?.weekStart?.toISOString();
+                            if (targetWeekISO) {
+                              const allSemLabels = scrollContainer.querySelectorAll('[data-semester-label]');
+                              let targetEl: Element | null = null;
+                              for (const el of allSemLabels) {
+                                const key = el.getAttribute('data-semester-label');
+                                if (key && hwWeeklyTimeline[idx]?.semLabel && key === hwWeeklyTimeline[idx].semLabel) {
+                                  targetEl = el;
+                                  break;
+                                }
+                              }
+                              if (!targetEl) {
+                                const threeWeeksEl = scrollContainer.querySelector('[data-homework-section="threeweeks"]');
+                                targetEl = threeWeeksEl;
+                              }
+                              if (targetEl) {
+                                const elTop = (targetEl as HTMLElement).offsetTop - scrollContainer.offsetTop;
+                                scrollContainer.scrollTo({ top: elTop - 4, behavior: 'smooth' });
+                              }
+                            }
                           }
                         }
                       }}
@@ -21492,7 +21534,7 @@ export default function Dashboard() {
               </div>
             );
           })()}
-          <div style={{ padding: '0 8px', height: '46px', backgroundColor: `color-mix(in srgb, ${colorSettings.headerBar} 70%, black)`, position: 'relative', zIndex: 42, overflow: 'visible', marginBottom: '-12px' }}>
+          <div style={{ padding: '0 8px', height: '46px', backgroundColor: `color-mix(in srgb, ${colorSettings.headerBar} 70%, black)`, position: 'relative', zIndex: 42, overflow: 'visible', marginBottom: '-12px', boxShadow: '0 3px 6px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3)' }}>
             <div style={{ position: 'absolute', top: '15px', left: '22px', right: 0, height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)' }} />
             <span className="text-xs font-medium text-white" style={{ position: 'absolute', left: '6px', top: '30px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Homework Progress</span>
             <span className="text-xs font-medium text-white" style={{ position: 'absolute', left: '161px', top: '30px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Assignments</span>
@@ -27019,7 +27061,7 @@ function TaskForm({
                   {formData.dueDate ? format(new Date(formData.dueDate), "MMM d, yyyy 'at' h:mm a") : "Pick a date"}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start" side="top" style={{ zIndex: 10002, maxHeight: '50vh', overflowY: 'auto' }} onOpenAutoFocus={(e) => e.preventDefault()} onInteractOutside={(e) => e.preventDefault()} onPointerDownOutside={(e) => e.preventDefault()} onFocusOutside={(e) => e.preventDefault()}>
+              <PopoverContent className="w-auto p-0" align="start" side="top" style={{ zIndex: 10010, maxHeight: '50vh', overflowY: 'auto' }} onOpenAutoFocus={(e) => e.preventDefault()} onInteractOutside={(e) => e.preventDefault()} onPointerDownOutside={(e) => e.preventDefault()} onFocusOutside={(e) => e.preventDefault()}>
                 <div className="p-3">
                   {(() => {
                     const now = new Date();
