@@ -8778,7 +8778,7 @@ export default function Dashboard() {
     const currentWeekSat = startOfWeek(todayStart, { weekStartsOn: 6 });
     const result: Array<{ weekStart: Date; weekEnd: Date; label: string; sublabel: string; semLabel: string | null; weekNum: number | null }> = [];
     let cursor = currentWeekSat;
-    const endLimit = new Date(2030, 11, 31);
+    const endLimit = new Date(2029, 11, 31);
     while (cursor < endLimit) {
       const wStart = new Date(cursor);
       const wEnd = addDays(wStart, 6);
@@ -22373,59 +22373,39 @@ export default function Dashboard() {
                     </div>
                   </div>
                 </div>
-                {dueBeyondTasks.length === 0 ? (
-                  <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks beyond two weeks</div>
-                ) : (
+                {(() => {
+                  const beyondTimeline = hwWeeklyTimeline.slice(4);
+                  const tasksByWeek = new Map<number, typeof dueBeyondTasks>();
+                  dueBeyondTasks.forEach(task => {
+                    const dueDate = startOfDay(new Date(task.dueDate));
+                    let bestIdx = -1;
+                    let bestDist = Infinity;
+                    for (let i = 0; i < beyondTimeline.length; i++) {
+                      const wStart = startOfDay(beyondTimeline[i].weekStart);
+                      const wEnd = startOfDay(beyondTimeline[i].weekEnd);
+                      if (dueDate >= wStart && dueDate <= wEnd) { bestIdx = i; break; }
+                      const dist = Math.abs(dueDate.getTime() - wStart.getTime());
+                      if (dist < bestDist) { bestDist = dist; bestIdx = i; }
+                    }
+                    if (bestIdx >= 0) {
+                      if (!tasksByWeek.has(bestIdx)) tasksByWeek.set(bestIdx, []);
+                      tasksByWeek.get(bestIdx)!.push(task);
+                    }
+                  });
+                  return (
                   <div className="flex flex-col gap-0.5" style={{ marginTop: '10px' }}>
-                    {(() => {
-                      const today = startOfDay(new Date());
-                      const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
-                      const getCalKey = (task: any) => {
-                        const dueDate = startOfDay(new Date(task.dueDate));
-                        const dueWeekStart = startOfWeek(dueDate, { weekStartsOn: 0 });
-                        const weeks: Date[] = [];
-                        let ws = todayWeekStart;
-                        while (ws <= dueWeekStart) { weeks.push(ws); ws = addDays(ws, 7); }
-                        if (weeks.length > 4) weeks.splice(0, weeks.length - 4);
-                        return weeks.map(w => w.toISOString()).join('|');
-                      };
-                      const groups: { key: string; tasks: typeof dueBeyondTasks; weeks: Date[] }[] = [];
-                      const groupMap = new Map<string, number>();
-                      dueBeyondTasks.forEach(task => {
-                        const key = getCalKey(task);
-                        if (groupMap.has(key)) {
-                          groups[groupMap.get(key)!].tasks.push(task);
-                        } else {
-                          const dueDate = startOfDay(new Date(task.dueDate));
-                          const dueWeekStart = startOfWeek(dueDate, { weekStartsOn: 0 });
-                          const weeks: Date[] = [];
-                          let ws = todayWeekStart;
-                          while (ws <= dueWeekStart) { weeks.push(ws); ws = addDays(ws, 7); }
-                          if (weeks.length > 4) weeks.splice(0, weeks.length - 4);
-                          groupMap.set(key, groups.length);
-                          groups.push({ key, tasks: [task], weeks });
-                        }
-                      });
-                      return groups.map((group, groupIdx) => {
-                        const dueDates = group.tasks.map(t => ({ date: startOfDay(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
-                        const groupTlEntry = (() => {
-                          const lastWeek = group.weeks[group.weeks.length - 1];
-                          return hwWeeklyTimeline.find(w => {
-                            const wStart = startOfDay(w.weekStart);
-                            return Math.abs(lastWeek.getTime() - wStart.getTime()) < 2 * 86400000;
-                          });
-                        })();
-                        const isLastSemWeek = groupTlEntry?.semLabel ? (() => {
-                          const idx = hwWeeklyTimeline.indexOf(groupTlEntry);
-                          return idx >= 0 && idx < hwWeeklyTimeline.length - 1 && hwWeeklyTimeline[idx + 1].semLabel !== groupTlEntry.semLabel;
-                        })() : false;
-                        const groupCalDate = groupTlEntry?.weekStart || group.weeks[group.weeks.length - 1];
-                        const groupWeekLabel = groupTlEntry?.label || (() => {
-                          const lw = group.weeks[group.weeks.length - 1];
-                          const ld = addDays(lw, 6);
-                          return lw.getMonth() === ld.getMonth() ? `${format(lw, 'MMM d')}-${format(ld, 'd')}` : `${format(lw, 'MMM d')} - ${format(ld, 'MMM d')}`;
-                        })();
-                        const groupSublabel = groupTlEntry?.sublabel || '';
+                    {beyondTimeline.map((tlEntry, tlIdx) => {
+                      const weekTasks = tasksByWeek.get(tlIdx) || [];
+                      const isLastSemWeek = tlEntry.semLabel ? (() => {
+                        const fullIdx = hwWeeklyTimeline.indexOf(tlEntry);
+                        return fullIdx >= 0 && fullIdx < hwWeeklyTimeline.length - 1 && hwWeeklyTimeline[fullIdx + 1].semLabel !== tlEntry.semLabel;
+                      })() : false;
+                      const groupWeekLabel = tlEntry.label;
+                      const groupSublabel = tlEntry.sublabel;
+                      const groupCalDate = tlEntry.weekStart;
+                      const group = { key: tlEntry.weekStart.toISOString(), tasks: weekTasks, weeks: [tlEntry.weekStart] };
+                      const groupIdx = tlIdx;
+                      const dueDates = weekTasks.map(t => ({ date: startOfDay(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
                           <div key={group.key}>
                           {groupIdx > 0 && (
@@ -22556,10 +22536,10 @@ export default function Dashboard() {
                           </div>
                           </div>
                         );
-                      });
-                    })()}
+                    })}
                   </div>
-                )}
+                  );
+                })()}
               </div>
             )}
           </div>
