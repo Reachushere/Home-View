@@ -6778,15 +6778,11 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
   async function playChumFmRadio(haUrl: string): Promise<void> {
     const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
-    await Promise.allSettled(
-      CAT_ECHO_ENTITIES.map(entity =>
-        fetch(`${haUrl}/api/services/media_player/play_media`, {
-          method: 'POST', headers: haHeaders,
-          body: JSON.stringify({ entity_id: entity, media_content_type: "custom", media_content_id: "play 104.5 chum fm" }),
-        })
-      )
-    );
-    console.log(`[Radio] Playing CHUM FM 104.5 on Echo cat washroom speakers`);
+    await fetch(`${haUrl}/api/services/media_player/play_media`, {
+      method: 'POST', headers: haHeaders,
+      body: JSON.stringify({ entity_id: "media_player.cat_washroom_media_group", media_content_type: "custom", media_content_id: "play 104.5 chum fm" }),
+    });
+    console.log(`[Radio] Playing CHUM FM 104.5 on Cat Washroom speaker group`);
   }
 
   async function startConfirmedPlaybackFlow(
