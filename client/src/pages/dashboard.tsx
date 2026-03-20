@@ -48,6 +48,7 @@ import pdfSearchLogo from "@assets/Adobe61_1772583825907.png";
 import pdfIconPath from "@assets/Adobee_1772801638235.png";
 import zoomCamPath from "@assets/Zoomcam_1773655084814.png";
 import readerIconPath from "@assets/Adobe65_1772615790465.png";
+import dragTabPath from "@assets/drag-tab.svg";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22706,59 +22707,61 @@ export default function Dashboard() {
 
         {hwFloating.detached && (
           <div
-            className="rounded-[12px] flex flex-col fixed"
+            className="flex flex-col fixed"
             style={{
               zIndex: 9999,
               left: `${hwFloating.x}px`,
               top: `${hwFloating.y}px`,
               width: hwFloating.minimized ? '220px' : '340px',
-              height: hwFloating.minimized ? '36px' : 'auto',
-              maxHeight: hwFloating.minimized ? '36px' : '80vh',
-              overflow: 'hidden',
-              background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
-              boxShadow: '0 12px 48px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.3)',
-              border: '1px solid rgba(255,255,255,0.5)',
-              transition: hwDragRef.current ? 'none' : 'width 0.25s ease, max-height 0.25s ease',
+              overflow: 'visible',
+              transition: hwDragRef.current ? 'none' : 'width 0.25s ease',
               touchAction: 'none',
             }}
             data-testid="hw-floating-panel"
           >
             <div
-              className="flex items-center justify-between px-2.5 flex-shrink-0 cursor-grab active:cursor-grabbing select-none"
-              style={{ height: '36px', background: 'rgba(255,255,255,0.08)', borderBottom: '1px solid rgba(255,255,255,0.15)', borderRadius: '12px 12px 0 0', touchAction: 'none' }}
-              onMouseDown={hwFloatingHandlers.onDragStart}
-              onTouchStart={hwFloatingHandlers.onDragStart}
+              className="flex-shrink-0 select-none"
+              style={{ position: 'relative', height: '32px', touchAction: 'none' }}
               data-testid="hw-floating-titlebar"
             >
-              <div className="flex items-center gap-1.5">
-                <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>⋮⋮</span>
-                <span className="text-[11px] font-medium text-white/80">Homework Progress</span>
-              </div>
-              <div className="flex items-center gap-0.5">
-                <button
-                  onClick={(e) => { e.stopPropagation(); hwFloatingHandlers.onMinToggle(); }}
-                  onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); hwFloatingHandlers.onMinToggle(); }}
-                  className="w-8 h-8 rounded-md flex items-center justify-center hover:bg-white/15 active:bg-white/25 transition-colors"
-                  style={{ fontSize: '16px', color: 'rgba(255,255,255,0.6)', lineHeight: 1 }}
-                  data-testid="hw-floating-minimize"
-                  title={hwFloating.minimized ? 'Expand' : 'Minimize'}
-                >
-                  {hwFloating.minimized ? '□' : '—'}
-                </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); hwFloatingHandlers.onDock(); }}
-                  onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); hwFloatingHandlers.onDock(); }}
-                  className="w-8 h-8 rounded-md flex items-center justify-center hover:bg-white/15 active:bg-white/25 transition-colors"
-                  style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', lineHeight: 1 }}
-                  data-testid="hw-floating-dock"
-                  title="Snap back to sidebar"
-                >
-                  ⏎
-                </button>
+              <div
+                className="absolute cursor-grab active:cursor-grabbing"
+                style={{ left: '50%', transform: 'translateX(-50%)', bottom: '0', width: '180px', height: '32px', zIndex: 1 }}
+                onMouseDown={hwFloatingHandlers.onDragStart}
+                onTouchStart={hwFloatingHandlers.onDragStart}
+              >
+                <img
+                  src={dragTabPath}
+                  alt=""
+                  className="w-full h-full pointer-events-none"
+                  style={{ filter: 'brightness(0.35) saturate(0)', opacity: 0.9 }}
+                  draggable={false}
+                />
+                <div className="absolute inset-0 flex items-center justify-center gap-2.5" style={{ paddingTop: '5px' }}>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); hwFloatingHandlers.onMinToggle(); }}
+                    onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); hwFloatingHandlers.onMinToggle(); }}
+                    className="w-5 h-5 rounded flex items-center justify-center hover:bg-white/20 active:bg-white/30 transition-colors"
+                    data-testid="hw-floating-minimize"
+                    title={hwFloating.minimized ? 'Expand' : 'Minimize'}
+                  >
+                    {hwFloating.minimized ? <Maximize2 className="h-2.5 w-2.5 text-white/70" /> : <Minimize2 className="h-2.5 w-2.5 text-white/70" />}
+                  </button>
+                  <span className="text-[8px] font-medium text-white/50 tracking-wider uppercase" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>⋮⋮ Drag ⋮⋮</span>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); hwFloatingHandlers.onDock(); }}
+                    onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); hwFloatingHandlers.onDock(); }}
+                    className="w-5 h-5 rounded flex items-center justify-center hover:bg-white/20 active:bg-white/30 transition-colors"
+                    data-testid="hw-floating-dock"
+                    title="Snap back to sidebar"
+                  >
+                    <Minimize2 className="h-2.5 w-2.5 text-white/70" style={{ transform: 'rotate(180deg)' }} />
+                  </button>
+                </div>
               </div>
             </div>
             {!hwFloating.minimized && (
-              <div className="flex flex-col flex-1 overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
+              <div className="flex flex-col flex-1 overflow-y-auto rounded-[12px]" style={{ scrollbarWidth: 'none', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, boxShadow: '0 12px 48px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.3)', maxHeight: '75vh' }}>
                 {courseProgressDataRef.current.map((pd, idx) => {
                   if (!pd) return null;
                   const getProgressColor = (percent: number) => {
