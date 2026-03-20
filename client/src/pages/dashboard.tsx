@@ -18821,7 +18821,7 @@ export default function Dashboard() {
                     const progressBg = (() => {
                       const startColor = courseHexColor;
                       const endColor = courseHexColorEnd || courseHexColor;
-                      return `linear-gradient(180deg, ${startColor} 0%, ${endColor} 100%)`;
+                      return `linear-gradient(180deg, color-mix(in srgb, ${startColor} 35%, #1a1a2e) 0%, color-mix(in srgb, ${endColor} 35%, #1a1a2e) 100%)`;
                     })();
                     const handlePlayFiles = (fileType: 'module' | 'reading') => {
                       const courseCodeLower = courseCode.toLowerCase();
