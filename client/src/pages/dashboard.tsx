@@ -825,6 +825,7 @@ export default function Dashboard() {
   const courseProgressDataRef = useRef<Array<{
     courseCode: string;
     progressBg: string;
+    progressBgSoft: string;
     moduleP: {percent: number; hasFiles: boolean};
     readingP: {percent: number; hasFiles: boolean};
     moduleUnread: number;
@@ -18818,7 +18819,8 @@ export default function Dashboard() {
                     const readingFolderCount = fileCounts[readingFolderKey];
                     const moduleUnread = moduleFolderCount?.unlistened || 0;
                     const readingUnread = readingFolderCount?.unlistened || 0;
-                    const progressBg = (() => {
+                    const progressBg = `linear-gradient(180deg, ${courseHexColor} 0%, ${courseHexColorEnd || courseHexColor} 100%)`;
+                    const progressBgSoft = (() => {
                       const soften = (hex: string, amount: number) => {
                         const r = parseInt(hex.slice(1, 3), 16);
                         const g = parseInt(hex.slice(3, 5), 16);
@@ -18854,6 +18856,7 @@ export default function Dashboard() {
                     courseProgressDataRef.current[courseIdx] = {
                       courseCode,
                       progressBg,
+                      progressBgSoft,
                       moduleP,
                       readingP,
                       moduleUnread,
@@ -21505,7 +21508,7 @@ export default function Dashboard() {
                   left: 0,
                   width: `${effectiveDividerPct}%`,
                   height: `${rowHeight}px`,
-                  background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
+                  background: pd.progressBgSoft || pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
                   zIndex: 1,
                 }} />,
                 <div key={`${pd.courseCode}-right-fill-ext`} style={{
@@ -22826,7 +22829,7 @@ export default function Dashboard() {
                     <div
                       key={pd.courseCode}
                       style={{
-                        background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
+                        background: pd.progressBgSoft || pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
                         borderBottom: '0.5px solid rgba(255,255,255,0.2)',
                         display: 'flex',
                         flexDirection: 'column',
