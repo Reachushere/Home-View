@@ -2,8 +2,11 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import {
   Play, Pause, SkipForward, SkipBack, Music2, Loader2,
   ChevronLeft, Shuffle, Repeat, Volume2, VolumeX, Speaker, Disc3,
+  Search, ListMusic, Disc, Users, Radio, Menu, X, Home,
 } from "lucide-react";
 import floorplanImg from "@assets/Floorplan11_1774005505273.png";
+import massBg from "@assets/mass-background2_1774005959332.png";
+import musicBg from "@assets/Music_BG20_1774006032495.png";
 
 interface NowPlaying {
   playing: boolean; name?: string; artist?: string; album?: string;
@@ -19,6 +22,26 @@ interface ProfileArtist {
 }
 
 type ProfileKey = "bryn" | "yasu";
+
+interface StationShortcut {
+  name: string; command: string; uri?: string; icon?: string;
+}
+
+const STATION_SHORTCUTS: StationShortcut[] = [
+  { name: "Gay FM", command: "play Gay FM Radio on tunein on the everywhere group", icon: "📻" },
+  { name: "Vibe of Vegas", command: "play the Vibe of Vegas Radio on tunein on the everywhere group", icon: "🎰" },
+  { name: "Dinner Jazz", command: "play Dinner Jazz music on Spotify on the everywhere group", icon: "🎷" },
+  { name: "Chill Electronic", command: "play Chill Electronic station on Spotify on the everywhere group", icon: "🎧" },
+  { name: "CHUM FM", command: "play 104.5 Chum FM", icon: "📡" },
+  { name: "Spring Cleaning", command: "play spring cleaning music on Spotify on the everywhere group", icon: "🌸" },
+  { name: "Pink", command: "", uri: "spotify:playlist:37i9dQZF1DZ06evO0YT088", icon: "💖" },
+  { name: "Easy Listening", command: "play easy listening on Spotify in the everywhere group", icon: "🎵" },
+  { name: "Katy Perry", command: "", uri: "spotify:playlist:37i9dQZF1DZ06evO3Jefw4", icon: "🎤" },
+  { name: "Disney", command: "play Disney songs on Spotify on the everywhere group", icon: "🏰" },
+  { name: "Club Riva", command: "play Club Riva Lounge Radio on tunein on the everywhere group", icon: "🍸" },
+  { name: "Samui Island", command: "play Samui Island Radio on tunein", icon: "🌴" },
+  { name: "Calm My Cat", command: "Enable Calm My Cat everywhere", icon: "🐱" },
+];
 
 const PROFILES: Record<ProfileKey, {
   label: string; artists: ProfileArtist[]; theme: string; accent: string; glow: string;
@@ -57,18 +80,20 @@ const PROFILES: Record<ProfileKey, {
   },
 };
 
-const ROOM_HOTSPOTS: { room: string; x: number; y: number; w: number; h: number; entityId: string; deviceType: string }[] = [
-  { room: "Balcony", x: 2, y: 72, w: 18, h: 25, entityId: "media_player.queen_bedroom", deviceType: "echo" },
-  { room: "Queen Bedroom", x: 2, y: 38, w: 18, h: 33, entityId: "media_player.queen_bedroom", deviceType: "echo" },
-  { room: "Pug Washroom", x: 2, y: 5, w: 16, h: 32, entityId: "media_player.echo_show_pug_am", deviceType: "echo_show" },
-  { room: "Hallway", x: 19, y: 5, w: 16, h: 32, entityId: "media_player.hallway_2", deviceType: "echo" },
-  { room: "Kitchen", x: 36, y: 5, w: 28, h: 45, entityId: "media_player.kitchen_lr", deviceType: "echo" },
-  { room: "Living Room", x: 36, y: 52, w: 28, h: 45, entityId: "media_player.kitchen_lr", deviceType: "echo" },
-  { room: "King Bedroom", x: 65, y: 30, w: 33, h: 50, entityId: "media_player.king_bedroom", deviceType: "echo" },
-  { room: "Cat Washroom", x: 65, y: 3, w: 18, h: 26, entityId: "media_player.cat_speakers", deviceType: "echo" },
-  { room: "Closet", x: 84, y: 3, w: 14, h: 26, entityId: "media_player.echo_closet_am", deviceType: "echo" },
-  { room: "Everywhere", x: 84, y: 78, w: 14, h: 18, entityId: "media_player.everywhere_5", deviceType: "group" },
+const ROOM_HOTSPOTS: { room: string; x: number; y: number; w: number; h: number; entityId: string; groupEntityId: string; deviceType: string; icon: string }[] = [
+  { room: "Balcony", x: 2, y: 72, w: 18, h: 25, entityId: "media_player.queen_bedroom", groupEntityId: "media_player.queen_bedroom_media_group", deviceType: "echo", icon: "🌆" },
+  { room: "Queen Bedroom", x: 2, y: 38, w: 18, h: 33, entityId: "media_player.queen_bedroom", groupEntityId: "media_player.queen_bedroom_media_group", deviceType: "echo", icon: "🛏️" },
+  { room: "Pug Washroom", x: 2, y: 5, w: 16, h: 32, entityId: "media_player.echo_show_pug_am", groupEntityId: "media_player.pug_media_group", deviceType: "echo_show", icon: "🐶" },
+  { room: "Hallway", x: 19, y: 5, w: 16, h: 32, entityId: "media_player.hallway_2", groupEntityId: "media_player.hallway_media_group", deviceType: "echo", icon: "🚪" },
+  { room: "Kitchen", x: 36, y: 5, w: 28, h: 45, entityId: "media_player.kitchen_lr", groupEntityId: "media_player.kitchen_media_group", deviceType: "echo", icon: "🍳" },
+  { room: "Living Room", x: 36, y: 52, w: 28, h: 45, entityId: "media_player.kitchen_lr", groupEntityId: "media_player.living_room_media_group", deviceType: "echo", icon: "🛋️" },
+  { room: "King Bedroom", x: 65, y: 30, w: 33, h: 50, entityId: "media_player.king_bedroom", groupEntityId: "media_player.king_bedroom_media_group", deviceType: "echo", icon: "👑" },
+  { room: "Cat Washroom", x: 65, y: 3, w: 18, h: 26, entityId: "media_player.cat_speakers", groupEntityId: "media_player.cat_washroom_media_group", deviceType: "echo", icon: "🐱" },
+  { room: "Closet", x: 84, y: 3, w: 14, h: 26, entityId: "media_player.echo_closet_am", groupEntityId: "media_player.closet_media_group", deviceType: "echo", icon: "👔" },
+  { room: "Everywhere", x: 84, y: 78, w: 14, h: 18, entityId: "media_player.everywhere_5", groupEntityId: "media_player.everywhere_2", deviceType: "group", icon: "🏠" },
 ];
+
+type ViewMode = "floor" | "stations" | "rooms";
 
 function formatMs(ms: number) {
   const s = Math.floor(ms / 1000), m = Math.floor(s / 60);
@@ -131,7 +156,7 @@ function CherryBlossoms() {
   return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 1 }} />;
 }
 
-function SpinningVinyl({ albumArt, playing, accent }: { albumArt?: string; playing: boolean; accent: string }) {
+function SpinningVinyl({ albumArt, playing, accent, size = 200 }: { albumArt?: string; playing: boolean; accent: string; size?: number }) {
   const rotRef = useRef(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animRef = useRef<number>();
@@ -141,7 +166,6 @@ function SpinningVinyl({ albumArt, playing, accent }: { albumArt?: string; playi
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    const size = 200;
     canvas.width = size * 2; canvas.height = size * 2;
     ctx.scale(2, 2);
     const cx = size / 2, cy = size / 2;
@@ -154,19 +178,19 @@ function SpinningVinyl({ albumArt, playing, accent }: { albumArt?: string; playi
       if (playing) rotRef.current += 0.012;
       const t = Date.now() / 1000;
       ctx.save(); ctx.translate(cx, cy); ctx.rotate(rotRef.current);
-      const R = 85;
-      const vg = ctx.createRadialGradient(0, 0, 30, 0, 0, R);
+      const R = size * 0.42;
+      const vg = ctx.createRadialGradient(0, 0, R * 0.35, 0, 0, R);
       vg.addColorStop(0, "#1a1a20"); vg.addColorStop(0.4, "#111116"); vg.addColorStop(1, "#0a0a0f");
       ctx.beginPath(); ctx.arc(0, 0, R, 0, Math.PI * 2); ctx.fillStyle = vg; ctx.fill();
       for (let g = 0; g < 20; g++) {
-        const r = 30 + g * 2.8;
+        const r = R * 0.35 + g * (R * 0.033);
         if (r > R) break;
         ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2);
         const hue = playing ? (280 + g * 12 + t * 40) % 360 : 0;
         ctx.strokeStyle = playing ? `hsla(${hue},100%,60%,${0.1 + Math.sin(t * 3 + g * 0.5) * 0.06})` : `rgba(255,255,255,0.03)`;
         ctx.lineWidth = 0.6; ctx.stroke();
       }
-      const lr = 28;
+      const lr = R * 0.33;
       if (imgEl && imgEl.complete && imgEl.naturalWidth > 0) {
         ctx.save(); ctx.beginPath(); ctx.arc(0, 0, lr, 0, Math.PI * 2); ctx.clip();
         ctx.drawImage(imgEl, -lr, -lr, lr * 2, lr * 2); ctx.restore();
@@ -188,9 +212,9 @@ function SpinningVinyl({ albumArt, playing, accent }: { albumArt?: string; playi
     };
     animate();
     return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
-  }, [albumArt, playing, accent]);
+  }, [albumArt, playing, accent, size]);
 
-  return <canvas ref={canvasRef} style={{ width: 160, height: 160 }} data-testid="spinning-vinyl" />;
+  return <canvas ref={canvasRef} style={{ width: size * 0.8, height: size * 0.8 }} data-testid="spinning-vinyl" />;
 }
 
 export default function SpotifyPlayerPage() {
@@ -209,6 +233,8 @@ export default function SpotifyPlayerPage() {
   const [notification, setNotification] = useState<string | null>(null);
   const [profileSpinning, setProfileSpinning] = useState(false);
   const [activeRooms, setActiveRooms] = useState<Set<string>>(new Set());
+  const [viewMode, setViewMode] = useState<ViewMode>("floor");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const searchParams = new URLSearchParams(window.location.search);
   const authParam = searchParams.get("auth");
@@ -284,7 +310,7 @@ export default function SpotifyPlayerPage() {
     const hotspot = ROOM_HOTSPOTS.find(h => h.room === roomName);
     const roomGroup = rooms.find(r => r.room === roomName);
     const groupSpeaker = roomGroup?.speakers.find(s => s.type === "group") || roomGroup?.speakers[0];
-    const entityId = groupSpeaker?.entityId || hotspot?.entityId;
+    const entityId = groupSpeaker?.entityId || hotspot?.groupEntityId || hotspot?.entityId;
     const deviceType = hotspot?.deviceType || "echo";
     if (!entityId) {
       showNotif(`No speakers in ${roomName}`);
@@ -300,6 +326,22 @@ export default function SpotifyPlayerPage() {
       showNotif(`Playing ${artistData.name} in ${roomName}`);
     } catch {
       showNotif("Failed to play");
+    }
+  };
+
+  const playStation = async (station: StationShortcut) => {
+    if (station.uri) {
+      try {
+        await fetch(`/api/spotify/play-context${authQuery}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ contextUri: station.uri, shuffle: true }),
+        });
+        showNotif(`Playing ${station.name}`);
+        setTimeout(fetchNowPlaying, 1000);
+      } catch { showNotif("Failed to play station"); }
+    } else if (station.command) {
+      showNotif(`${station.name} (voice command)`);
     }
   };
 
@@ -360,252 +402,364 @@ export default function SpotifyPlayerPage() {
   const isSakura = activeProfile === "yasu";
 
   return (
-    <div className="fixed inset-0 flex flex-col overflow-hidden select-none" style={{ background: "#050508", fontFamily: "'Inter', system-ui, sans-serif" }} data-testid="spotify-player-page">
+    <div className="fixed inset-0 flex flex-col overflow-hidden select-none" style={{ fontFamily: "'Inter', system-ui, sans-serif" }} data-testid="spotify-player-page">
+      <img
+        src={isPlaying ? massBg : musicBg}
+        alt=""
+        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
+        style={{ opacity: isPlaying ? 0.6 : 0.4, filter: "brightness(0.5)" }}
+      />
+      <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.7) 100%)" }} />
+
       {isSakura && <CherryBlossoms />}
+
       <div className="absolute inset-0 pointer-events-none" style={{
         background: isSakura
-          ? "radial-gradient(ellipse at 50% 30%, rgba(244,114,182,0.04) 0%, transparent 60%), radial-gradient(ellipse at 80% 70%, rgba(251,113,133,0.03) 0%, transparent 50%)"
-          : "radial-gradient(ellipse at 30% 40%, rgba(168,85,247,0.04) 0%, transparent 50%), radial-gradient(ellipse at 70% 60%, rgba(99,102,241,0.03) 0%, transparent 50%)",
+          ? "radial-gradient(ellipse at 50% 30%, rgba(244,114,182,0.06) 0%, transparent 60%)"
+          : "radial-gradient(ellipse at 30% 40%, rgba(168,85,247,0.06) 0%, transparent 50%)",
       }} />
 
-      <div className="relative z-10 flex items-center gap-3 px-4 pt-2 pb-1">
-        {!isEmbedded && (
-          <button onClick={() => { const p = new URLSearchParams(window.location.search); window.location.href = "/" + (p.get("auth") ? `?auth=${p.get("auth")}` : ""); }}
-            className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-white/5" data-testid="back-to-dashboard">
-            <ChevronLeft className="h-4 w-4 text-white/20" />
-          </button>
-        )}
-        <Disc3 className="h-5 w-5" style={{ color: profile.accent }} />
-        <span className="text-sm font-bold text-white/60 tracking-tight">HoloMusic</span>
-        <div className="flex-1" />
-        <div className="flex gap-1 p-0.5 rounded-xl" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" }}>
-          {(Object.keys(PROFILES) as ProfileKey[]).map(k => (
-            <button key={k} onClick={() => switchProfile(k)}
-              className="px-4 py-1.5 rounded-lg text-xs font-medium transition-all"
-              style={{
-                background: activeProfile === k ? `${PROFILES[k].accent}20` : "transparent",
-                color: activeProfile === k ? PROFILES[k].accent : "rgba(255,255,255,0.3)",
-                border: activeProfile === k ? `1px solid ${PROFILES[k].accent}30` : "1px solid transparent",
-                boxShadow: activeProfile === k ? `0 0 15px ${PROFILES[k].glow}` : "none",
-              }}
-              data-testid={`profile-${k}`}>
-              {PROFILES[k].label}
-            </button>
-          ))}
-        </div>
-        {isSakura && <span className="text-sm opacity-40">🌸</span>}
-      </div>
-
       {notification && (
-        <div className="absolute top-12 left-1/2 -translate-x-1/2 z-50 px-5 py-2 rounded-xl text-xs font-medium text-white"
-          style={{ background: `${profile.accent}30`, border: `1px solid ${profile.accent}40`, backdropFilter: "blur(20px)", boxShadow: `0 0 20px ${profile.glow}`, animation: "fadeInUp 0.3s ease" }}
+        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-50 px-5 py-2 rounded-xl text-xs font-medium text-white"
+          style={{ background: `${profile.accent}40`, border: `1px solid ${profile.accent}50`, backdropFilter: "blur(20px)", boxShadow: `0 0 30px ${profile.glow}`, animation: "fadeInUp 0.3s ease" }}
           data-testid="notification">
           {notification}
         </div>
       )}
 
-      <div className="relative z-10 flex-1 flex overflow-hidden px-3 pb-1 gap-3" style={{
+      <div className="relative z-10 flex-1 flex overflow-hidden" style={{
         transform: profileSpinning ? "perspective(1200px) rotateY(-90deg)" : "perspective(1200px) rotateY(0deg)",
         opacity: profileSpinning ? 0 : 1,
         transition: "transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease",
       }}>
-        <div className="flex flex-col gap-2 flex-shrink-0" style={{ width: 320 }}>
-          <div className="flex-1 overflow-y-auto rounded-2xl p-3" style={{
-            background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)",
-            backdropFilter: "blur(20px)", scrollbarWidth: "none",
-          }}>
-            <div className="text-[9px] uppercase tracking-[0.2em] font-bold mb-2 px-1" style={{ color: `${profile.accent}60` }}>
-              {isSakura ? "お気に入り • Favorites" : "Favorites"}
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              {profile.artists.map((artist, i) => (
-                <div key={artist.name} draggable
-                  onDragStart={handleDragStart("artist", artist)}
-                  onDragEnd={() => setDragItem(null)}
-                  className="flex flex-col items-center gap-1.5 p-2 rounded-xl cursor-grab active:cursor-grabbing transition-all hover:scale-105 active:scale-95 group"
+
+        <div className="flex flex-col flex-shrink-0 relative" style={{ width: menuOpen ? 220 : 50, transition: "width 0.3s ease" }}>
+          <div className="absolute inset-0 rounded-r-2xl" style={{
+            background: "rgba(0,0,0,0.5)",
+            backdropFilter: "blur(30px)",
+            borderRight: `1px solid rgba(255,255,255,0.06)`,
+          }} />
+
+          <div className="relative z-10 flex flex-col h-full py-3">
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="w-full flex items-center justify-center py-2 mb-2 hover:bg-white/5 transition-colors"
+              data-testid="menu-toggle"
+            >
+              {menuOpen ? <X className="h-5 w-5 text-white/50" /> : <Menu className="h-5 w-5 text-white/50" />}
+            </button>
+
+            {!isEmbedded && (
+              <button onClick={() => { const p = new URLSearchParams(window.location.search); window.location.href = "/" + (p.get("auth") ? `?auth=${p.get("auth")}` : ""); }}
+                className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-white/5 transition-colors" data-testid="back-to-dashboard">
+                <ChevronLeft className="h-4 w-4 text-white/30 flex-shrink-0" />
+                {menuOpen && <span className="text-xs text-white/30 whitespace-nowrap">Dashboard</span>}
+              </button>
+            )}
+
+            <div className="flex-1 flex flex-col gap-1 mt-2">
+              {([
+                { mode: "floor" as ViewMode, icon: <Home className="h-4 w-4" />, label: "Floor Plan" },
+                { mode: "stations" as ViewMode, icon: <Radio className="h-4 w-4" />, label: "Stations" },
+                { mode: "rooms" as ViewMode, icon: <Speaker className="h-4 w-4" />, label: "Rooms" },
+              ]).map(item => (
+                <button key={item.mode}
+                  onClick={() => setViewMode(item.mode)}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all"
                   style={{
-                    background: "rgba(255,255,255,0.02)",
-                    border: `1px solid rgba(255,255,255,0.04)`,
-                    animation: `fadeInUp 0.4s ease ${i * 60}ms both`,
+                    background: viewMode === item.mode ? `${profile.accent}15` : "transparent",
+                    color: viewMode === item.mode ? profile.accent : "rgba(255,255,255,0.35)",
                   }}
-                  data-testid={`artist-card-${artist.name.toLowerCase().replace(/\s/g, "-")}`}>
-                  <div className="w-14 h-14 rounded-full overflow-hidden flex-shrink-0 ring-2 transition-all"
-                    style={{
-                      ringColor: `${profile.accent}15`,
-                      boxShadow: `0 0 15px ${profile.glow}`,
-                      background: artistImages[artist.name] ? `url(${artistImages[artist.name]}) center/cover` : `linear-gradient(135deg, ${profile.accent}40, ${profile.accent}20)`,
-                    }}>
-                    {!artistImages[artist.name] && <div className="w-full h-full flex items-center justify-center"><Music2 className="h-5 w-5 text-white/15" /></div>}
+                  data-testid={`nav-${item.mode}`}
+                >
+                  <div className="flex-shrink-0">{item.icon}</div>
+                  {menuOpen && <span className="text-xs whitespace-nowrap">{item.label}</span>}
+                </button>
+              ))}
+            </div>
+
+            <div className="mt-auto flex flex-col gap-1 px-1">
+              {(Object.keys(PROFILES) as ProfileKey[]).map(k => (
+                <button key={k} onClick={() => switchProfile(k)}
+                  className="w-full flex items-center gap-3 px-2 py-2 rounded-lg transition-all"
+                  style={{
+                    background: activeProfile === k ? `${PROFILES[k].accent}20` : "transparent",
+                    color: activeProfile === k ? PROFILES[k].accent : "rgba(255,255,255,0.3)",
+                    boxShadow: activeProfile === k ? `0 0 15px ${PROFILES[k].glow}` : "none",
+                  }}
+                  data-testid={`profile-${k}`}>
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs flex-shrink-0"
+                    style={{ background: `${PROFILES[k].accent}30`, border: `1px solid ${PROFILES[k].accent}50` }}>
+                    {PROFILES[k].label[0]}
                   </div>
-                  <span className="text-[10px] text-white/50 truncate w-full text-center font-medium group-hover:text-white/80 transition-colors">{artist.name}</span>
-                </div>
+                  {menuOpen && <span className="text-xs whitespace-nowrap">{PROFILES[k].label}</span>}
+                </button>
               ))}
             </div>
           </div>
-
-          <div className="rounded-2xl p-3 flex flex-col items-center" style={{
-            background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)", backdropFilter: "blur(20px)",
-          }}>
-            <div className="text-[9px] uppercase tracking-[0.2em] font-bold mb-2 w-full px-1" style={{ color: `${profile.accent}60` }}>
-              {isSakura ? "ターンテーブル • Turntable" : "Turntable"}
-            </div>
-            <div className="relative p-2 rounded-2xl" style={{
-              background: "linear-gradient(135deg, rgba(20,20,25,0.9), rgba(15,15,20,0.95))",
-              border: "1px solid rgba(255,255,255,0.06)",
-              boxShadow: isPlaying ? `0 0 40px ${profile.glow}, inset 0 1px 0 rgba(255,255,255,0.05)` : "inset 0 1px 0 rgba(255,255,255,0.03)",
-            }}>
-              <div className="relative flex items-center justify-center" style={{ width: 160, height: 160 }}>
-                <SpinningVinyl albumArt={nowPlaying?.albumArt} playing={isPlaying} accent={profile.accent} />
-                {isPlaying && <div className="absolute -right-1 top-1/2 -translate-y-1/2 w-1 h-16 rounded-full" style={{
-                  background: `linear-gradient(180deg, transparent, ${profile.accent}60, transparent)`,
-                  boxShadow: `0 0 8px ${profile.glow}`,
-                  transform: "rotate(-25deg) translateY(-50%)", transformOrigin: "bottom center",
-                }} />}
-              </div>
-            </div>
-            <div className="text-center mt-2 w-full">
-              <p className="text-xs font-bold text-white/80 truncate" data-testid="track-name">{nowPlaying?.name || "Drag an artist here"}</p>
-              <p className="text-[10px] truncate mt-0.5" style={{ color: isPlaying ? profile.accent : "rgba(255,255,255,0.25)" }} data-testid="track-artist">{nowPlaying?.artist || "then drag to a room"}</p>
-            </div>
-          </div>
         </div>
 
-        <div className="flex-1 relative rounded-2xl overflow-hidden" style={{
-          border: `1px solid ${dragItem ? `${profile.accent}30` : "rgba(255,255,255,0.04)"}`,
-          transition: "border-color 0.3s ease",
-          boxShadow: dragItem ? `0 0 30px ${profile.glow}` : "none",
-        }}>
-          <img src={floorplanImg} alt="Apartment floor plan" className="absolute inset-0 w-full h-full object-contain" style={{ filter: "brightness(0.7) contrast(1.1)", opacity: 0.85 }} />
-          <div className="absolute inset-0" style={{
-            background: "radial-gradient(ellipse at center, transparent 40%, rgba(5,5,8,0.7) 100%)",
-          }} />
+        <div className="flex-1 flex gap-3 p-3 overflow-hidden">
 
-          {ROOM_HOTSPOTS.map(spot => {
-            const isActive = activeRooms.has(spot.room);
-            const isDrop = dropTarget === spot.room;
-            const isEvery = spot.room === "Everywhere";
-            const roomData = rooms.find(r => r.room === spot.room);
+          <div className="flex flex-col gap-3 flex-shrink-0" style={{ width: 280 }}>
+            <div className="rounded-2xl p-3 flex flex-col items-center" style={{
+              background: "rgba(0,0,0,0.4)", border: "1px solid rgba(255,255,255,0.06)", backdropFilter: "blur(30px)",
+            }}>
+              <div className="relative p-2 rounded-2xl" style={{
+                background: "linear-gradient(135deg, rgba(20,20,25,0.9), rgba(15,15,20,0.95))",
+                border: "1px solid rgba(255,255,255,0.06)",
+                boxShadow: isPlaying ? `0 0 40px ${profile.glow}, inset 0 1px 0 rgba(255,255,255,0.05)` : "inset 0 1px 0 rgba(255,255,255,0.03)",
+              }}>
+                <SpinningVinyl albumArt={nowPlaying?.albumArt} playing={isPlaying} accent={profile.accent} size={200} />
+              </div>
 
-            return (
-              <div key={spot.room}
-                draggable={isActive}
-                onDragStart={handleDragStart("room", { room: spot.room, speakers: roomData?.speakers })}
-                onDragEnd={() => setDragItem(null)}
-                onDragOver={handleDragOver(spot.room)}
-                onDragLeave={() => setDropTarget(null)}
-                onDrop={handleRoomDrop(spot.room)}
-                className="absolute flex flex-col items-center justify-center rounded-xl transition-all cursor-pointer"
-                style={{
-                  left: `${spot.x}%`, top: `${spot.y}%`,
-                  width: `${spot.w}%`, height: `${spot.h}%`,
-                  background: isDrop
-                    ? `${profile.accent}20`
-                    : isActive
-                      ? `${profile.accent}10`
-                      : "rgba(0,0,0,0.15)",
-                  border: isDrop
-                    ? `2px solid ${profile.accent}80`
-                    : isActive
-                      ? `1px solid ${profile.accent}40`
-                      : "1px solid rgba(255,255,255,0.06)",
-                  boxShadow: isDrop
-                    ? `0 0 30px ${profile.glow}, inset 0 0 20px ${profile.glow}`
-                    : isActive
-                      ? `0 0 20px ${profile.glow}`
-                      : "none",
-                  backdropFilter: "blur(8px)",
-                  transform: isDrop ? "scale(1.03)" : "scale(1)",
-                  zIndex: isDrop ? 20 : 10,
-                }}
-                data-testid={`room-hotspot-${spot.room.toLowerCase().replace(/\s/g, "-")}`}
-              >
-                <Speaker className="mb-0.5" style={{
-                  width: isEvery ? 14 : 16, height: isEvery ? 14 : 16,
-                  color: isActive ? profile.accent : isDrop ? profile.accent : "rgba(255,255,255,0.2)",
-                  filter: isActive ? `drop-shadow(0 0 6px ${profile.glow})` : "none",
-                  animation: isActive ? "pulse 2s ease-in-out infinite" : "none",
-                }} />
-                <span className="text-white font-semibold text-center leading-tight" style={{
-                  fontSize: isEvery ? 8 : 9,
-                  textShadow: isActive ? `0 0 10px ${profile.glow}` : "0 1px 3px rgba(0,0,0,0.8)",
-                  opacity: isDrop ? 1 : 0.7,
-                }}>{spot.room}</span>
-                {isActive && (
-                  <div className="flex gap-0.5 items-end mt-0.5" style={{ height: 8 }}>
-                    {[0,1,2].map(i => <div key={i} className="w-0.5 rounded-full" style={{ background: profile.accent, animation: `eqBar 0.6s ease-in-out ${i * 0.12}s infinite alternate` }} />)}
-                  </div>
+              <div className="text-center mt-3 w-full px-2">
+                <p className="text-sm font-bold text-white/90 truncate" data-testid="track-name" style={{ fontSize: 15 }}>
+                  {nowPlaying?.name || "Nothing Playing"}
+                </p>
+                <p className="text-xs truncate mt-0.5" style={{ color: isPlaying ? profile.accent : "rgba(255,255,255,0.25)" }} data-testid="track-artist">
+                  {nowPlaying?.artist || "Select an artist or station"}
+                </p>
+                {nowPlaying?.album && (
+                  <p className="text-[10px] text-white/20 truncate mt-0.5" data-testid="track-album">{nowPlaying.album}</p>
                 )}
               </div>
-            );
-          })}
-
-          {dragItem && (
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 px-4 py-1.5 rounded-full text-[10px] font-medium text-white/60"
-              style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(10px)", border: `1px solid ${profile.accent}30` }}>
-              {dragItem.type === "artist" ? `Drop "${dragItem.data.name}" on a room` : `Drop on another room to group`}
             </div>
-          )}
+
+            <div className="flex-1 overflow-y-auto rounded-2xl p-3" style={{
+              background: "rgba(0,0,0,0.4)", border: "1px solid rgba(255,255,255,0.06)",
+              backdropFilter: "blur(30px)", scrollbarWidth: "none",
+            }}>
+              <div className="text-[9px] uppercase tracking-[0.2em] font-bold mb-2 px-1" style={{ color: `${profile.accent}80` }}>
+                {isSakura ? "お気に入り • Favorites" : "Favorites"}
+              </div>
+              <div className="grid grid-cols-2 gap-1.5">
+                {profile.artists.map((artist, i) => (
+                  <div key={artist.name} draggable
+                    onDragStart={handleDragStart("artist", artist)}
+                    onDragEnd={() => setDragItem(null)}
+                    className="flex flex-col items-center gap-1 p-2 rounded-xl cursor-grab active:cursor-grabbing transition-all hover:scale-105 active:scale-95 group"
+                    style={{
+                      background: "rgba(255,255,255,0.03)",
+                      border: `1px solid rgba(255,255,255,0.05)`,
+                      animation: `fadeInUp 0.4s ease ${i * 60}ms both`,
+                    }}
+                    data-testid={`artist-card-${artist.name.toLowerCase().replace(/\s/g, "-")}`}>
+                    <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 ring-1 transition-all"
+                      style={{
+                        ringColor: `${profile.accent}20`,
+                        boxShadow: `0 0 12px ${profile.glow}`,
+                        background: artistImages[artist.name] ? `url(${artistImages[artist.name]}) center/cover` : `linear-gradient(135deg, ${profile.accent}40, ${profile.accent}20)`,
+                      }}>
+                      {!artistImages[artist.name] && <div className="w-full h-full flex items-center justify-center"><Music2 className="h-4 w-4 text-white/15" /></div>}
+                    </div>
+                    <span className="text-[9px] text-white/50 truncate w-full text-center font-medium group-hover:text-white/80 transition-colors">{artist.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex-1 relative rounded-2xl overflow-hidden" style={{
+            border: `1px solid ${dragItem ? `${profile.accent}30` : "rgba(255,255,255,0.06)"}`,
+            transition: "border-color 0.3s ease",
+            boxShadow: dragItem ? `0 0 30px ${profile.glow}` : "none",
+            background: "rgba(0,0,0,0.3)",
+            backdropFilter: "blur(20px)",
+          }}>
+            {viewMode === "floor" && (
+              <>
+                <img src={floorplanImg} alt="Apartment floor plan" className="absolute inset-0 w-full h-full object-contain" style={{ filter: "brightness(0.7) contrast(1.1)", opacity: 0.85 }} />
+                <div className="absolute inset-0" style={{
+                  background: `radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.5) 100%)`,
+                }} />
+                {ROOM_HOTSPOTS.map(spot => {
+                  const isActive = activeRooms.has(spot.room);
+                  const isDrop = dropTarget === spot.room;
+                  return (
+                    <div key={spot.room}
+                      draggable onDragStart={handleDragStart("room", spot)}
+                      onDrop={handleRoomDrop(spot.room)}
+                      onDragOver={handleDragOver(spot.room)}
+                      onDragLeave={() => setDropTarget(null)}
+                      className="absolute rounded-xl cursor-pointer transition-all"
+                      style={{
+                        left: `${spot.x}%`, top: `${spot.y}%`, width: `${spot.w}%`, height: `${spot.h}%`,
+                        background: isDrop ? `${profile.accent}25` : isActive ? `${profile.accent}12` : "rgba(0,0,0,0.15)",
+                        border: `1.5px solid ${isDrop ? profile.accent : isActive ? `${profile.accent}60` : "rgba(255,255,255,0.08)"}`,
+                        boxShadow: isActive ? `0 0 20px ${profile.glow}, inset 0 0 15px ${profile.glow}` : isDrop ? `0 0 25px ${profile.glow}` : "none",
+                        backdropFilter: "blur(4px)",
+                      }}
+                      data-testid={`room-${spot.room.toLowerCase().replace(/\s/g, "-")}`}
+                    >
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5">
+                        <span className="text-base">{spot.icon}</span>
+                        <span className="text-[8px] font-bold uppercase tracking-wider text-white/60 text-center leading-tight px-1">
+                          {spot.room}
+                        </span>
+                        {isActive && (
+                          <div className="flex gap-0.5 mt-0.5">
+                            {[...Array(3)].map((_, i) => (
+                              <div key={i} className="w-0.5 rounded-full" style={{
+                                height: 4 + Math.random() * 6,
+                                background: profile.accent,
+                                animation: `eqBounce ${0.3 + i * 0.15}s ease-in-out infinite alternate`,
+                              }} />
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </>
+            )}
+
+            {viewMode === "stations" && (
+              <div className="absolute inset-0 p-4 overflow-y-auto" style={{ scrollbarWidth: "none" }}>
+                <div className="text-[10px] uppercase tracking-[0.2em] font-bold mb-3" style={{ color: `${profile.accent}80` }}>
+                  Stations & Shortcuts
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  {STATION_SHORTCUTS.map((station) => (
+                    <button key={station.name}
+                      onClick={() => playStation(station)}
+                      className="flex items-center gap-2 p-3 rounded-xl transition-all hover:scale-[1.02] active:scale-95"
+                      style={{
+                        background: "rgba(255,255,255,0.04)",
+                        border: "1px solid rgba(255,255,255,0.06)",
+                        backdropFilter: "blur(10px)",
+                      }}
+                      data-testid={`station-${station.name.toLowerCase().replace(/\s/g, "-")}`}
+                    >
+                      <span className="text-lg flex-shrink-0">{station.icon}</span>
+                      <span className="text-xs text-white/70 font-medium text-left truncate">{station.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {viewMode === "rooms" && (
+              <div className="absolute inset-0 p-4 overflow-y-auto" style={{ scrollbarWidth: "none" }}>
+                <div className="text-[10px] uppercase tracking-[0.2em] font-bold mb-3" style={{ color: `${profile.accent}80` }}>
+                  Speaker Rooms
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  {ROOM_HOTSPOTS.map(spot => {
+                    const isActive = activeRooms.has(spot.room);
+                    return (
+                      <button key={spot.room}
+                        onClick={() => {
+                          if (isPlaying && nowPlaying) {
+                            playOnRoom(spot.room, { name: nowPlaying.artist || "", uri: "", searchQuery: nowPlaying.artist || "" });
+                          } else {
+                            showNotif("Start playing something first");
+                          }
+                        }}
+                        className="flex items-center gap-3 p-3 rounded-xl transition-all hover:scale-[1.02] active:scale-95"
+                        style={{
+                          background: isActive ? `${profile.accent}15` : "rgba(255,255,255,0.04)",
+                          border: `1px solid ${isActive ? `${profile.accent}40` : "rgba(255,255,255,0.06)"}`,
+                          boxShadow: isActive ? `0 0 15px ${profile.glow}` : "none",
+                        }}
+                        data-testid={`room-btn-${spot.room.toLowerCase().replace(/\s/g, "-")}`}
+                      >
+                        <span className="text-lg flex-shrink-0">{spot.icon}</span>
+                        <div className="flex-1 text-left">
+                          <span className="text-xs text-white/70 font-medium block">{spot.room}</span>
+                          <span className="text-[9px] text-white/30">{spot.entityId.split(".")[1]}</span>
+                        </div>
+                        {isActive && (
+                          <div className="flex gap-0.5">
+                            {[...Array(4)].map((_, i) => (
+                              <div key={i} className="w-0.5 rounded-full" style={{
+                                height: 6 + Math.random() * 8,
+                                background: profile.accent,
+                                animation: `eqBounce ${0.3 + i * 0.12}s ease-in-out infinite alternate`,
+                              }} />
+                            ))}
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="relative z-10" style={{ background: "rgba(0,0,0,0.4)", borderTop: `1px solid rgba(255,255,255,0.04)`, backdropFilter: "blur(30px)" }}>
-        {nowPlaying?.duration ? (
-          <div className="px-6 pt-1.5">
-            <div className="relative rounded-full overflow-hidden cursor-pointer group" style={{ height: 3, background: "rgba(255,255,255,0.06)" }}
-              onClick={e => { const r = e.currentTarget.getBoundingClientRect(); setLocalProgress(Math.round(Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * (nowPlaying.duration || 0))); }}
-              data-testid="progress-bar">
-              <div className="absolute inset-y-0 left-0 rounded-full" style={{
-                width: `${progressPct}%`, background: `linear-gradient(90deg, ${profile.accent}, ${isSakura ? "#fb7185" : "#c084fc"})`,
-                boxShadow: `0 0 10px ${profile.glow}`, transition: "width 0.5s linear",
-              }} />
-            </div>
-            <div className="flex justify-between mt-0.5">
-              <span className="text-[8px] text-white/15 font-mono tabular-nums">{formatMs(localProgress)}</span>
-              <span className="text-[8px] text-white/15 font-mono tabular-nums">{formatMs(nowPlaying.duration)}</span>
+      <div className="relative z-10 px-4 pb-3 pt-1" style={{
+        background: "linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%)",
+      }}>
+        <div className="flex items-center gap-2 mb-1.5">
+          <span className="text-[10px] text-white/30 tabular-nums w-8 text-right">{formatMs(localProgress)}</span>
+          <div className="flex-1 h-1 rounded-full overflow-hidden cursor-pointer group" style={{ background: "rgba(255,255,255,0.08)" }}
+            onClick={e => {
+              if (!nowPlaying?.duration) return;
+              const rect = e.currentTarget.getBoundingClientRect();
+              const pct = (e.clientX - rect.left) / rect.width;
+              doAction("seek", "POST", { positionMs: Math.round(pct * nowPlaying.duration) });
+            }}
+            data-testid="progress-bar">
+            <div className="h-full rounded-full transition-all relative" style={{
+              width: `${progressPct}%`, background: `linear-gradient(90deg, ${profile.accent}, ${profile.accent}cc)`,
+              boxShadow: `0 0 8px ${profile.glow}`,
+            }}>
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                style={{ background: profile.accent, boxShadow: `0 0 6px ${profile.accent}` }} />
             </div>
           </div>
-        ) : null}
-        <div className="flex items-center justify-center gap-3 py-2 px-6">
-          <button onClick={() => { setRepeatMode(r => { const n = r === "off" ? "context" : r === "context" ? "track" : "off"; doAction("repeat", "PUT", { state: n }); return n; }); }}
-            className="w-8 h-8 flex items-center justify-center transition-all hover:scale-110 relative"
-            style={{ color: repeatMode !== "off" ? profile.accent : "rgba(255,255,255,0.15)" }} data-testid="button-repeat">
-            <Repeat className="h-3.5 w-3.5" />
-            {repeatMode === "track" && <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full text-[5px] font-black flex items-center justify-center" style={{ background: profile.accent, color: "black" }}>1</span>}
+          <span className="text-[10px] text-white/30 tabular-nums w-8">{formatMs(nowPlaying?.duration || 0)}</span>
+        </div>
+
+        <div className="flex items-center justify-center gap-5">
+          <button onClick={() => doAction("shuffle", "POST")} className="transition-all hover:scale-110"
+            style={{ color: shuffleOn ? profile.accent : "rgba(255,255,255,0.25)" }} data-testid="btn-shuffle">
+            <Shuffle className="h-4 w-4" />
           </button>
-          <button onClick={() => { setShuffleOn(s => { const n = !s; doAction("shuffle", "PUT", { state: n }); return n; }); }}
-            className="w-8 h-8 flex items-center justify-center transition-all hover:scale-110"
-            style={{ color: shuffleOn ? profile.accent : "rgba(255,255,255,0.15)" }} data-testid="button-shuffle">
-            <Shuffle className="h-3.5 w-3.5" />
+          <button onClick={() => doAction("previous")} className="text-white/50 hover:text-white hover:scale-110 transition-all" data-testid="btn-prev">
+            <SkipBack className="h-5 w-5" />
           </button>
-          <button onClick={() => doAction("previous")} disabled={actionPending} className="w-10 h-10 flex items-center justify-center transition-all hover:scale-110" data-testid="button-previous">
-            <SkipBack className="h-5 w-5 text-white/40 fill-white/40" />
-          </button>
-          <button onClick={() => doAction(isPlaying ? "pause" : "play", "PUT")} disabled={actionPending}
+          <button onClick={() => doAction(isPlaying ? "pause" : "play")}
             className="w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-105 active:scale-95"
-            style={{ background: `linear-gradient(135deg, ${profile.accent}, ${isSakura ? "#fb7185" : "#7c3aed"})`, boxShadow: `0 0 25px ${profile.glow}` }}
-            data-testid="button-play-pause">
-            {actionPending ? <Loader2 className="h-5 w-5 text-white animate-spin" /> : isPlaying ? <Pause className="h-5 w-5 text-white fill-white" /> : <Play className="h-5 w-5 text-white fill-white ml-0.5" />}
+            style={{
+              background: `linear-gradient(135deg, ${profile.accent}, ${profile.accent}cc)`,
+              boxShadow: `0 0 25px ${profile.glow}, 0 4px 15px rgba(0,0,0,0.3)`,
+            }}
+            data-testid="btn-play-pause">
+            {actionPending ? <Loader2 className="h-5 w-5 text-white animate-spin" /> :
+              isPlaying ? <Pause className="h-5 w-5 text-white" /> : <Play className="h-5 w-5 text-white ml-0.5" />}
           </button>
-          <button onClick={() => doAction("next")} disabled={actionPending} className="w-10 h-10 flex items-center justify-center transition-all hover:scale-110" data-testid="button-next">
-            <SkipForward className="h-5 w-5 text-white/40 fill-white/40" />
+          <button onClick={() => doAction("next")} className="text-white/50 hover:text-white hover:scale-110 transition-all" data-testid="btn-next">
+            <SkipForward className="h-5 w-5" />
           </button>
-          <div className="w-px h-5 mx-1" style={{ background: "rgba(255,255,255,0.04)" }} />
-          <VolumeX className="h-3 w-3 text-white/10 cursor-pointer" onClick={() => { setVolume(0); doAction("volume", "PUT", { volume: 0 }); }} />
-          <div className="relative h-7 flex items-center cursor-pointer" style={{ width: 80 }}
-            onClick={e => { const r = e.currentTarget.getBoundingClientRect(); const v = Math.round(Math.max(0, Math.min(100, ((e.clientX - r.left) / r.width) * 100))); setVolume(v); doAction("volume", "PUT", { volume: v }); }}>
-            <div className="w-full h-1 rounded-full" style={{ background: "rgba(255,255,255,0.04)" }}>
-              <div className="h-full rounded-full" style={{ width: `${volume}%`, background: `linear-gradient(90deg, ${profile.accent}, ${isSakura ? "#fb7185" : "#c084fc"})`, boxShadow: `0 0 6px ${profile.glow}` }} />
-            </div>
+          <button onClick={() => doAction("repeat", "POST")} className="transition-all hover:scale-110"
+            style={{ color: repeatMode !== "off" ? profile.accent : "rgba(255,255,255,0.25)" }} data-testid="btn-repeat">
+            <Repeat className="h-4 w-4" />
+            {repeatMode === "track" && <span className="text-[6px] absolute mt-[-2px]">1</span>}
+          </button>
+
+          <div className="ml-6 flex items-center gap-2">
+            <button onClick={() => doAction("volume", "POST", { volume: volume > 0 ? 0 : 30 })}
+              className="text-white/30 hover:text-white/60 transition-colors" data-testid="btn-mute">
+              {volume === 0 ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+            </button>
+            <input type="range" min={0} max={100} value={volume}
+              onChange={e => { setVolume(+e.target.value); doAction("volume", "POST", { volume: +e.target.value }); }}
+              className="w-24 accent-current" style={{ color: profile.accent, height: 3 }}
+              data-testid="volume-slider" />
           </div>
-          <Volume2 className="h-3 w-3 text-white/10" />
-          <span className="text-[8px] text-white/10 font-mono w-5 text-right tabular-nums">{volume}%</span>
         </div>
       </div>
 
       <style>{`
-        @keyframes eqBar { 0% { height: 2px; } 100% { height: 8px; } }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes eqBounce { from { height: 3px; } to { height: 12px; } }
+        input[type="range"] { -webkit-appearance: none; background: rgba(255,255,255,0.08); border-radius: 4px; outline: none; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; border-radius: 50%; background: currentColor; cursor: pointer; }
       `}</style>
     </div>
   );
