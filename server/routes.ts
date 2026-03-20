@@ -13760,6 +13760,97 @@ Return ONLY the JSON object, no markdown formatting.`;
     }
   });
 
+  app.get("/api/spotify/devices", async (_req, res) => {
+    try {
+      const data = await spotifyApi.getDevices();
+      const devices = (data?.devices || []).map((d: any) => ({
+        id: d.id,
+        name: d.name,
+        type: d.type,
+        isActive: d.is_active,
+        volume: d.volume_percent,
+      }));
+      res.json(devices);
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to get devices" });
+    }
+  });
+
+  app.put("/api/spotify/transfer", async (req, res) => {
+    try {
+      const { deviceId } = req.body;
+      await spotifyApi.transferPlayback(deviceId);
+      res.json({ ok: true });
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to transfer playback" });
+    }
+  });
+
+  app.get("/api/spotify/rooms", async (_req, res) => {
+    try {
+      const rooms = FLICK_DEVICES.map(g => ({
+        room: g.room,
+        icon: g.icon,
+        speakers: g.devices.filter(d => d.type === "echo" || d.type === "echo_show" || d.type === "speaker" || d.type === "group").map(d => ({
+          id: d.id,
+          name: d.name,
+          entityId: d.entityId,
+          type: d.type,
+          room: d.room,
+        })),
+      })).filter(g => g.speakers.length > 0);
+      res.json(rooms);
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to get rooms" });
+    }
+  });
+
+  app.post("/api/spotify/play-on-speaker", async (req, res) => {
+    try {
+      const { entityId, spotifyUri, artistName } = req.body;
+      if (!entityId) return res.status(400).json({ error: "entityId required" });
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+
+      if (spotifyUri) {
+        await fetch(`${haUrl}/api/services/media_player/play_media`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: entityId, media_content_id: spotifyUri, media_content_type: "spotify" }),
+        });
+      } else if (artistName) {
+        await fetch(`${haUrl}/api/services/media_player/play_media`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: entityId, media_content_id: artistName, media_content_type: "SPOTIFY" }),
+        });
+      }
+      console.log(`[Spotify] Playing on ${entityId}: ${spotifyUri || artistName}`);
+      res.json({ ok: true });
+    } catch (error: any) {
+      console.error("[Spotify] Play on speaker error:", error);
+      res.status(500).json({ error: "Failed to play on speaker" });
+    }
+  });
+
+  app.post("/api/spotify/group-speakers", async (req, res) => {
+    try {
+      const { sourceEntityId, targetEntityId } = req.body;
+      if (!sourceEntityId || !targetEntityId) return res.status(400).json({ error: "Both entity IDs required" });
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+
+      await fetch(`${haUrl}/api/services/media_player/join`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entity_id: sourceEntityId, group_members: [targetEntityId] }),
+      });
+      console.log(`[Spotify] Grouped ${targetEntityId} into ${sourceEntityId}`);
+      res.json({ ok: true });
+    } catch (error: any) {
+      console.error("[Spotify] Group speakers error:", error);
+      res.status(500).json({ error: "Failed to group speakers" });
+    }
+  });
+
   return httpServer;
 }
 

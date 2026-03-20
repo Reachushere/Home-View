@@ -242,3 +242,7 @@ export async function getPlaybackState() {
 export async function search(query: string, types: string = 'track,artist,album,playlist', limit: number = 20) {
   return spotifyFetch(`/search?q=${encodeURIComponent(query)}&type=${types}&limit=${limit}`);
 }
+
+export async function transferPlayback(deviceId: string, play: boolean = true) {
+  return spotifyFetch('/me/player', 'PUT', { device_ids: [deviceId], play });
+}
