@@ -23227,29 +23227,24 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 6px', marginTop: '6px', background: 'rgba(255,255,255,0.07)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.12)' }}>
-                  <div className="flex items-center gap-1 flex-shrink-0">
-                    <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Voice</span>
-                    <select style={{ background: 'rgba(255,255,255,0.1)', color: 'white', fontSize: '9px', borderRadius: '4px', padding: '2px 4px', border: '1px solid rgba(255,255,255,0.2)', outline: 'none', cursor: 'pointer', maxWidth: '90px' }}>
-                      <option value="echo">Echo - English (Male, Cl...</option>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '2px 4px', marginTop: '4px', background: 'rgba(255,255,255,0.07)', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.12)' }}>
+                  <div className="flex items-center gap-0.5 flex-shrink-0">
+                    <span style={{ fontSize: '6px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Voice</span>
+                    <select style={{ background: 'rgba(255,255,255,0.1)', color: 'white', fontSize: '7px', borderRadius: '3px', padding: '1px 2px', border: '1px solid rgba(255,255,255,0.2)', outline: 'none', cursor: 'pointer', maxWidth: '65px' }}>
+                      <option value="echo">Echo</option>
                     </select>
-                    <Volume2 className="w-3 h-3 text-white/50" />
                   </div>
-                  <div className="flex items-center gap-1 flex-shrink-0">
-                    <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Speed</span>
-                    <span style={{ fontSize: '7px', color: 'white', fontWeight: 'bold' }}>—</span>
-                    <input type="range" min="0.5" max="3" step="0.1" defaultValue="1" style={{ width: '30px', height: '2px', cursor: 'pointer', accentColor: 'white' }} />
-                    <span style={{ fontSize: '7px', color: 'white', fontWeight: 'bold' }}>+</span>
-                    <span style={{ fontSize: '9px', color: 'white', fontWeight: 600, minWidth: '18px', textAlign: 'center' }}>1x</span>
+                  <div className="flex items-center gap-0.5 flex-shrink-0">
+                    <span style={{ fontSize: '6px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Spd</span>
+                    <input type="range" min="0.5" max="3" step="0.1" defaultValue="1" style={{ width: '22px', height: '2px', cursor: 'pointer', accentColor: 'white' }} />
+                    <span style={{ fontSize: '7px', color: 'white', fontWeight: 600, minWidth: '14px', textAlign: 'center' }}>1x</span>
                   </div>
-                  <div className="flex items-center gap-1 flex-shrink-0">
-                    <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Volume</span>
-                    <span style={{ fontSize: '7px', color: 'white', fontWeight: 'bold' }}>—</span>
-                    <input type="range" min="0" max="1" step="0.05" defaultValue="0.8" style={{ width: '30px', height: '2px', cursor: 'pointer', accentColor: 'white' }} />
-                    <span style={{ fontSize: '7px', color: 'white', fontWeight: 'bold' }}>+</span>
-                    <Volume2 className="w-3 h-3 text-white/50" />
+                  <div className="flex items-center gap-0.5 flex-shrink-0">
+                    <span style={{ fontSize: '6px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Vol</span>
+                    <input type="range" min="0" max="1" step="0.05" defaultValue="0.8" style={{ width: '22px', height: '2px', cursor: 'pointer', accentColor: 'white' }} />
+                    <Volume2 className="w-2.5 h-2.5 text-white/50" />
                   </div>
-                  <button style={{ padding: '2px 8px', borderRadius: '4px', background: '#059669', fontSize: '9px', color: 'white', fontWeight: 500, border: 'none', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }} data-testid="hw-ctrl-test">Test</button>
+                  <button style={{ padding: '1px 5px', borderRadius: '3px', background: '#059669', fontSize: '7px', color: 'white', fontWeight: 500, border: 'none', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }} data-testid="hw-ctrl-test">Test</button>
                 </div>
               </div>
             )}
