@@ -553,6 +553,7 @@ export default function SpotifyPlayerPage() {
   const [artistImages, setArtistImages] = useState<Record<string, string>>({});
   const [dragItem, setDragItem] = useState<{ type: "artist" | "room"; data: any } | null>(null);
   const [dropTarget, setDropTarget] = useState<string | null>(null);
+  const [selectedArtist, setSelectedArtist] = useState<ProfileArtist | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
   const [profileSpinning, setProfileSpinning] = useState(false);
   const [activeRooms, setActiveRooms] = useState<Set<string>>(new Set());
@@ -816,7 +817,7 @@ export default function SpotifyPlayerPage() {
   const switchProfile = (p: ProfileKey) => {
     if (p === activeProfile) return;
     setProfileSpinning(true);
-    setTimeout(() => { setActiveProfile(p); setTimeout(() => setProfileSpinning(false), 50); }, 350);
+    setTimeout(() => { setActiveProfile(p); setSelectedArtist(null); setTimeout(() => setProfileSpinning(false), 50); }, 350);
   };
 
   const switchView = (v: ViewMode) => {
@@ -1086,21 +1087,30 @@ export default function SpotifyPlayerPage() {
               </div>
               <div className="overflow-y-auto flex-1" style={{ scrollbarWidth: "none", maxHeight: 'calc(100% - 24px)' }}>
                 <div className="grid grid-cols-2 gap-1.5">
-                  {profile.artists.map((artist, i) => (
+                  {profile.artists.map((artist, i) => {
+                    const isSelected = selectedArtist?.name === artist.name;
+                    return (
                     <div key={artist.name} draggable
                       onDragStart={handleDragStart("artist", artist)}
                       onDragEnd={() => setDragItem(null)}
-                      className="flex flex-col items-center gap-1 p-2 rounded-lg cursor-grab active:cursor-grabbing transition-all group hover:scale-105"
+                      onClick={() => {
+                        if (selectedArtist?.name === artist.name) { setSelectedArtist(null); }
+                        else { setSelectedArtist(artist); if (viewMode !== "floor") { switchView("floor"); } showNotif(isSakura ? `${artist.name} を選択 → 部屋をタップ` : `${artist.name} selected — tap a room`); }
+                      }}
+                      className="flex flex-col items-center gap-1 p-2 rounded-lg cursor-pointer transition-all group hover:scale-105"
                       style={{
-                        background: isSakura ? "rgba(22,52,82,0.55)" : "rgba(30,60,110,0.6)",
-                        border: `1px solid ${tc.cardBorder}`,
+                        background: isSelected
+                          ? `${profile.accent}25`
+                          : isSakura ? "rgba(22,52,82,0.55)" : "rgba(30,60,110,0.6)",
+                        border: `1px solid ${isSelected ? profile.accent : tc.cardBorder}`,
+                        boxShadow: isSelected ? `0 0 20px ${profile.glow}, inset 0 0 15px ${profile.glow}` : 'none',
                         animation: `fadeInUp 0.4s ease ${i * 60}ms both`,
                       }}
                       data-testid={`artist-card-${artist.name.toLowerCase().replace(/\s/g, "-")}`}>
                       <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 transition-all"
                         style={{
-                          border: `2px solid ${profile.accent}50`,
-                          boxShadow: `0 0 18px ${profile.glow}`,
+                          border: `2px solid ${isSelected ? profile.accent : `${profile.accent}50`}`,
+                          boxShadow: isSelected ? `0 0 25px ${profile.accent}` : `0 0 18px ${profile.glow}`,
                           background: artistImages[artist.name]
                             ? `url(${artistImages[artist.name]}) center/cover`
                             : `linear-gradient(135deg, ${profile.accent}40, rgba(30,60,115,0.7))`,
@@ -1108,9 +1118,10 @@ export default function SpotifyPlayerPage() {
                         {!artistImages[artist.name] && <div className="w-full h-full flex items-center justify-center"><Music2 className="h-4 w-4" style={{ color: `${profile.accent}60` }} /></div>}
                       </div>
                       <span className="text-[11px] truncate w-full text-center font-medium transition-colors"
-                        style={{ color: tc.textBright }}>{artist.name}</span>
+                        style={{ color: isSelected ? profile.accent : tc.textBright }}>{artist.name}</span>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 {recommendations.length > 0 && (
@@ -1261,19 +1272,27 @@ export default function SpotifyPlayerPage() {
                       onDrop={handleRoomDrop(spot.room)}
                       onDragOver={handleDragOver(spot.room)}
                       onDragLeave={() => setDropTarget(null)}
+                      onClick={() => {
+                        if (selectedArtist) {
+                          playOnRoom(spot.room, selectedArtist);
+                          setSelectedArtist(null);
+                        }
+                      }}
                       className="absolute cursor-pointer transition-all"
                       style={{
                         left: `${spot.x}%`, top: `${spot.y}%`, width: `${spot.w}%`, height: `${spot.h}%`,
                         background: isActive
                           ? `${profile.accent}12`
-                          : isDrop
+                          : (isDrop || selectedArtist)
                             ? `${profile.accent}10`
                             : 'transparent',
                         boxShadow: isActive
                           ? `0 0 35px ${profile.glow}, inset 0 0 20px ${profile.glow}`
-                          : isDrop
+                          : (isDrop || selectedArtist)
                             ? `0 0 25px ${profile.glow}`
                             : "none",
+                        border: selectedArtist && !isActive ? `1px dashed ${profile.accent}50` : 'none',
+                        animation: selectedArtist && !isActive ? 'holoPulse 2s ease-in-out infinite' : 'none',
                       }}
                       data-testid={`room-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
                       <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5" style={{ zIndex: 2, transform: `translate(${spot.labelOffsetX || 0}px, ${spot.labelOffsetY || 0}px)` }}>

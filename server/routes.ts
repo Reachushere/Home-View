@@ -13989,7 +13989,8 @@ Return ONLY the JSON object, no markdown formatting.`;
           }
         }
 
-        if (spotifyUri) {
+        const isArtistUri = spotifyUri && spotifyUri.startsWith("spotify:artist:");
+        if (spotifyUri && !isArtistUri) {
           console.log(`[Spotify] Echo device - using media_player.play_media for ${targetEntity}: ${spotifyUri}`);
           const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
             method: 'POST',
@@ -14002,9 +14003,9 @@ Return ONLY the JSON object, no markdown formatting.`;
           });
           console.log(`[Spotify] media_player.play_media response: ${playResp.status}`);
         } else {
-          const searchTerm = artistName || "music";
+          const searchTerm = artistName || (spotifyUri ? spotifyUri.split(":").pop() : "music");
           const message = `Play ${searchTerm} on Spotify`;
-          console.log(`[Spotify] Echo device (no URI) - using notify/alexa_media for ${targetEntity}: "${message}"`);
+          console.log(`[Spotify] Echo device - using notify/alexa_media for ${targetEntity}: "${message}"`);
           const notifyResp = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
