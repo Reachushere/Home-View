@@ -120,16 +120,16 @@ const ROOM_JP: Record<string, string> = {
   "Everywhere": "全室",
 };
 
-const ROOM_HOTSPOTS: { room: string; x: number; y: number; w: number; h: number; entityId: string; groupEntityId: string; deviceType: string; icon: string; nightImg?: string }[] = [
-  { room: "Balcony", x: 2, y: 72, w: 18, h: 25, entityId: "media_player.queen_bedroom", groupEntityId: "media_player.queen_bedroom_media_group", deviceType: "echo", icon: "balcony" },
-  { room: "Queen Bedroom", x: 2, y: 38, w: 18, h: 33, entityId: "media_player.queen_bedroom", groupEntityId: "media_player.queen_bedroom_media_group", deviceType: "echo", icon: "bed", nightImg: queenNight },
-  { room: "Pug Washroom", x: 2, y: 5, w: 16, h: 32, entityId: "media_player.echo_show_pug_am", groupEntityId: "media_player.pug_media_group", deviceType: "echo_show", icon: "bath", nightImg: pugNight },
+const ROOM_HOTSPOTS: { room: string; x: number; y: number; w: number; h: number; entityId: string; groupEntityId: string; deviceType: string; icon: string; nightImg?: string; labelOffsetX?: number; labelOffsetY?: number }[] = [
+  { room: "Balcony", x: 2, y: 72, w: 18, h: 25, entityId: "media_player.balcony_speaker", groupEntityId: "media_player.balcony_media_group", deviceType: "echo", icon: "balcony" },
+  { room: "Queen Bedroom", x: 2, y: 38, w: 18, h: 33, entityId: "media_player.queen_bedroom", groupEntityId: "media_player.queen_bedroom_media_group", deviceType: "echo", icon: "bed", nightImg: queenNight, labelOffsetX: 8 },
+  { room: "Pug Washroom", x: 2, y: 5, w: 16, h: 32, entityId: "media_player.echo_show_pug_am", groupEntityId: "media_player.pug_media_group", deviceType: "echo_show", icon: "bath", nightImg: pugNight, labelOffsetX: 6, labelOffsetY: 8 },
   { room: "Hallway", x: 19, y: 5, w: 16, h: 32, entityId: "media_player.hallway_2", groupEntityId: "media_player.hallway_media_group", deviceType: "echo", icon: "hallway", nightImg: hallwayNight },
-  { room: "Kitchen", x: 36, y: 5, w: 28, h: 45, entityId: "media_player.kitchen_lr", groupEntityId: "media_player.kitchen_media_group", deviceType: "echo", icon: "kitchen", nightImg: kitchenNight },
-  { room: "Living Room", x: 36, y: 52, w: 28, h: 45, entityId: "media_player.kitchen_lr", groupEntityId: "media_player.living_room_media_group", deviceType: "echo", icon: "sofa", nightImg: livingRoomNight },
-  { room: "King Bedroom", x: 65, y: 30, w: 33, h: 50, entityId: "media_player.king_bedroom", groupEntityId: "media_player.king_bedroom_media_group", deviceType: "echo", icon: "crown", nightImg: kingNight },
-  { room: "Cat Washroom", x: 65, y: 3, w: 18, h: 26, entityId: "media_player.cat_speakers", groupEntityId: "media_player.cat_washroom_media_group", deviceType: "echo", icon: "bath", nightImg: catNight },
-  { room: "Closet", x: 84, y: 3, w: 14, h: 26, entityId: "media_player.echo_closet_am", groupEntityId: "media_player.closet_media_group", deviceType: "echo", icon: "closet", nightImg: closetNight },
+  { room: "Kitchen", x: 36, y: 5, w: 28, h: 45, entityId: "media_player.kitchen_lr", groupEntityId: "media_player.kitchen_media_group", deviceType: "echo", icon: "kitchen", nightImg: kitchenNight, labelOffsetY: 6 },
+  { room: "Living Room", x: 36, y: 52, w: 28, h: 45, entityId: "media_player.kitchen_lr", groupEntityId: "media_player.living_room_media_group", deviceType: "echo", icon: "sofa", nightImg: livingRoomNight, labelOffsetY: -6 },
+  { room: "King Bedroom", x: 65, y: 30, w: 33, h: 50, entityId: "media_player.king_bedroom", groupEntityId: "media_player.king_bedroom_media_group", deviceType: "echo", icon: "crown", nightImg: kingNight, labelOffsetX: -8, labelOffsetY: -6 },
+  { room: "Cat Washroom", x: 84, y: 3, w: 14, h: 26, entityId: "media_player.cat_speakers", groupEntityId: "media_player.cat_washroom_media_group", deviceType: "echo", icon: "bath", nightImg: catNight },
+  { room: "Closet", x: 65, y: 3, w: 18, h: 26, entityId: "media_player.echo_closet_am", groupEntityId: "media_player.closet_media_group", deviceType: "echo", icon: "closet", nightImg: closetNight },
   { room: "Everywhere", x: 84, y: 78, w: 14, h: 18, entityId: "media_player.everywhere_5", groupEntityId: "media_player.everywhere_2", deviceType: "group", icon: "everywhere" },
 ];
 
@@ -496,7 +496,11 @@ export default function SpotifyPlayerPage() {
   const [shuffleOn, setShuffleOn] = useState(false);
   const [repeatMode, setRepeatMode] = useState("off");
   const [rooms, setRooms] = useState<RoomGroup[]>([]);
-  const [activeProfile, setActiveProfile] = useState<ProfileKey>("bryn");
+  const [activeProfile, setActiveProfile] = useState<ProfileKey>(() => {
+    const p = new URLSearchParams(window.location.search).get("auth");
+    if (p && (p === "bryn" || p === "yasu" || p === "guest")) return p;
+    return "bryn";
+  });
   const [artistImages, setArtistImages] = useState<Record<string, string>>({});
   const [dragItem, setDragItem] = useState<{ type: "artist" | "room"; data: any } | null>(null);
   const [dropTarget, setDropTarget] = useState<string | null>(null);
@@ -1158,7 +1162,7 @@ export default function SpotifyPlayerPage() {
                             : "none",
                       }}
                       data-testid={`room-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
-                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5" style={{ zIndex: 2 }}>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5" style={{ zIndex: 2, transform: `translate(${spot.labelOffsetX || 0}px, ${spot.labelOffsetY || 0}px)` }}>
                         <RoomIcon icon={spot.icon} size={20} color={isActive ? profile.accent : 'rgba(120,190,255,0.7)'} />
                         <span className="text-[11px] font-bold uppercase tracking-wider text-center leading-tight px-1"
                           style={{
