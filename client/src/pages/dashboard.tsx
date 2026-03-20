@@ -19465,7 +19465,7 @@ export default function Dashboard() {
                                     </div>
                                   </div>
                                 )}
-                                <div className="absolute top-0 bottom-0 z-[3] pointer-events-none" style={{ left: `${gridSizes.timeSlotHeight + 5}px`, right: '1px', padding: '1px 0' }} data-testid="hours-until-next-task">
+                                <div className="absolute top-0 bottom-0 z-[3] pointer-events-none" style={{ left: `${gridSizes.timeSlotHeight + 5}px`, right: '1px' }} data-testid="hours-until-next-task">
                                   <div style={{ width: '100%', height: '100%', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
                                     <img src={greenRectImg} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'fill', borderRadius: '5px' }} />
                                     <span style={{ position: 'relative', zIndex: 1, fontSize: '14px', color: 'white', fontWeight: 900, lineHeight: 1, marginRight: '6px' }}>{displayTime}</span>
