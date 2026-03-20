@@ -21672,13 +21672,13 @@ export default function Dashboard() {
 
             return rows;
           })()}
-          <div style={{ height: '1px', background: 'rgba(255,255,255,0.25)', margin: '0 8px', flexShrink: 0 }} />
-          <div style={{ position: 'relative' }}>
-            <div style={{ position: 'absolute', top: '-10px', left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 110, pointerEvents: 'none' }}>
+          <div style={{ height: '1px', background: 'rgba(255,255,255,0.25)', margin: '0 8px', flexShrink: 0, position: 'relative' }}>
+            <div style={{ position: 'absolute', top: '-9px', left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 110, pointerEvents: 'none' }}>
               <div style={{ width: '54px', height: '19px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto' }}>
                 <span style={{ fontSize: '8px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
               </div>
             </div>
+          </div>
           <div className="flex-1 px-2 flex flex-col" style={{ marginTop: (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
             if (courseRowRects.length > 0) {
@@ -22575,7 +22575,6 @@ export default function Dashboard() {
                 )}
               </div>
             )}
-          </div>
           </div>
           </div>
         </section>
