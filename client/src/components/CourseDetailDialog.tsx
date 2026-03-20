@@ -2033,6 +2033,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                       %<SortIcon field="percent" />
                     </span>
                   </div>
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <div className="p-0.5"><div className="w-3" /></div>
+                    <div style={{ width: '24px' }} />
+                  </div>
                   <div className="flex items-center gap-0.5 flex-shrink-0">
                     <div className="p-0.5"><div className="w-3" /></div>
                     <div className="p-0.5"><div className="w-3" /></div>
@@ -2111,32 +2115,38 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 <div className="flex-shrink-0" style={{ width: '14px' }} />
                 <div className="w-4 flex-shrink-0" />
                 <div className="w-3 flex-shrink-0" />
-                <div className="flex-1 min-w-0 text-[9px] font-semibold text-white">Totals</div>
+                <div className="flex-1 min-w-0 text-[11px] font-bold text-white">Totals</div>
                 <div className="flex items-center flex-shrink-0" style={{ gap: '6px' }}>
-                  <span className="text-[9px] font-semibold text-white w-[30px] text-center" data-testid="text-sum-value">
-                    {(() => { const v = courseTasks.reduce((s, t) => s + (t.gradeValue || 0), 0); return v ? v.toFixed(2) : '—'; })()}
+                  <span className="text-[12px] font-bold text-white w-[30px] text-center" data-testid="text-sum-value">
+                    {(() => { const v = courseTasks.filter(t => !t.excludeFromGpa).reduce((s, t) => s + (t.gradeValue || 0), 0); return v ? v.toFixed(1) : '—'; })()}
                   </span>
-                  <span className="text-[9px] font-semibold text-white w-[30px] text-center" data-testid="text-sum-total">
-                    {(() => { const v = courseTasks.reduce((s, t) => s + (t.gradeTotal || 0), 0); return v ? v.toFixed(2) : '—'; })()}
+                  <span className="text-[12px] font-bold text-white w-[30px] text-center" data-testid="text-sum-total">
+                    {(() => { const v = courseTasks.filter(t => !t.excludeFromGpa).reduce((s, t) => s + (t.gradeTotal || 0), 0); return v ? v.toFixed(1) : '—'; })()}
                   </span>
-                  <span className={`text-[9px] font-semibold w-[30px] text-center ${
+                  <span className={`text-[12px] font-bold w-[30px] text-center ${
                     totalWeight === 100 ? 'text-green-400' : totalWeight > 100 ? 'text-red-400' : 'text-amber-400'
                   }`} data-testid="text-sum-weight">
-                    {totalWeight ? totalWeight.toFixed(2) : '—'}
+                    {totalWeight ? totalWeight.toFixed(1) : '—'}
                   </span>
-                  <span className={`text-[9px] font-semibold w-[30px] text-center ${
+                  <span className={`text-[12px] font-bold w-[30px] text-center ${
                     (() => {
-                      const sumTotal = courseTasks.reduce((s, t) => s + (t.gradeTotal || 0), 0);
-                      const sumValue = courseTasks.reduce((s, t) => s + (t.gradeValue || 0), 0);
+                      const gTasks = courseTasks.filter(t => !t.excludeFromGpa);
+                      const sumTotal = gTasks.reduce((s, t) => s + (t.gradeTotal || 0), 0);
+                      const sumValue = gTasks.reduce((s, t) => s + (t.gradeValue || 0), 0);
                       return sumTotal > 0 && sumValue > 0 ? 'text-emerald-400' : 'text-white/50';
                     })()
                   }`} data-testid="text-total-percent">
                     {(() => {
-                      const sumTotal = courseTasks.reduce((s, t) => s + (t.gradeTotal || 0), 0);
-                      const sumValue = courseTasks.reduce((s, t) => s + (t.gradeValue || 0), 0);
-                      return sumTotal > 0 ? `${((sumValue / sumTotal) * 100).toFixed(2)}%` : '—';
+                      const gTasks = courseTasks.filter(t => !t.excludeFromGpa);
+                      const sumTotal = gTasks.reduce((s, t) => s + (t.gradeTotal || 0), 0);
+                      const sumValue = gTasks.reduce((s, t) => s + (t.gradeValue || 0), 0);
+                      return sumTotal > 0 ? `${((sumValue / sumTotal) * 100).toFixed(1)}%` : '—';
                     })()}
                   </span>
+                </div>
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  <div className="p-0.5"><div className="w-3" /></div>
+                  <div style={{ width: '24px' }} />
                 </div>
                 <div className="flex items-center gap-0.5 flex-shrink-0">
                   <div className="p-0.5"><div className="w-3" /></div>
