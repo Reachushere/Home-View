@@ -287,7 +287,50 @@ export default function PDFReaderPage() {
   const [volumeOverlay, setVolumeOverlay] = useState<{ volume: number; direction: string } | null>(null);
   const volumeOverlayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastVolumeTimestampRef = useRef<number>(0);
-  
+
+  const [ctrlFloating, setCtrlFloating] = useState<{ detached: boolean; minimized: boolean; x: number; y: number }>(() => {
+    try {
+      const saved = localStorage.getItem('pdfReaderCtrlFloating');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return { detached: false, minimized: false, x: 100, y: 100 };
+  });
+  const ctrlDragRef = useRef<{ startX: number; startY: number; origX: number; origY: number } | null>(null);
+
+  useEffect(() => {
+    localStorage.setItem('pdfReaderCtrlFloating', JSON.stringify(ctrlFloating));
+  }, [ctrlFloating]);
+
+  useEffect(() => {
+    if (!ctrlDragRef.current) return;
+    const onMove = (e: MouseEvent | TouchEvent) => {
+      const d = ctrlDragRef.current;
+      if (!d) return;
+      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+      const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+      const newX = Math.max(0, Math.min(window.innerWidth - 200, d.origX + (clientX - d.startX)));
+      const newY = Math.max(0, Math.min(window.innerHeight - 50, d.origY + (clientY - d.startY)));
+      setCtrlFloating(prev => ({ ...prev, x: newX, y: newY }));
+    };
+    const onUp = () => { ctrlDragRef.current = null; };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    window.addEventListener('touchmove', onMove, { passive: false });
+    window.addEventListener('touchend', onUp);
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+      window.removeEventListener('touchmove', onMove);
+      window.removeEventListener('touchend', onUp);
+    };
+  });
+
+  const ctrlDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    ctrlDragRef.current = { startX: clientX, startY: clientY, origX: ctrlFloating.x, origY: ctrlFloating.y };
+  };
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const chunksRef = useRef<string[]>([]);
   const pdfDocRef = useRef<any>(null);
@@ -2735,9 +2778,57 @@ export default function PDFReaderPage() {
         </div>
       )}
 
-      {!followOnly && <div className="relative flex-shrink-0 flex justify-center" style={{ zIndex: 10, padding: '5px 20px 14px 20px' }}>
-        <div className="rounded-2xl mx-auto" style={{ background: 'rgba(255,255,255,0.16)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.22)', maxWidth: '1200px', width: '100%', overflow: 'visible' }}>
+      {!followOnly && <div className={ctrlFloating.detached ? "fixed flex flex-col rounded-[14px]" : "relative flex-shrink-0 flex justify-center"} style={ctrlFloating.detached ? { zIndex: 9999, left: `${ctrlFloating.x}px`, top: `${ctrlFloating.y}px`, width: ctrlFloating.minimized ? '220px' : '520px', maxHeight: ctrlFloating.minimized ? '40px' : '80vh', overflow: 'hidden', background: 'rgba(15,15,30,0.95)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.35)', boxShadow: '0 12px 48px rgba(0,0,0,0.5), 0 4px 16px rgba(0,0,0,0.3)', transition: ctrlDragRef.current ? 'none' : 'width 0.25s ease, max-height 0.25s ease', touchAction: 'none' } : { zIndex: 10, padding: '5px 20px 14px 20px' }}>
+        {ctrlFloating.detached && (
+          <div
+            className="flex items-center justify-between px-3 flex-shrink-0 cursor-grab active:cursor-grabbing select-none"
+            style={{ height: '40px', background: 'rgba(255,255,255,0.08)', borderBottom: '1px solid rgba(255,255,255,0.15)', borderRadius: '14px 14px 0 0', touchAction: 'none' }}
+            onMouseDown={ctrlDragStart}
+            onTouchStart={ctrlDragStart}
+            data-testid="ctrl-floating-titlebar"
+          >
+            <div className="flex items-center gap-2">
+              <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>⋮⋮</span>
+              <span className="text-[12px] font-medium text-white/80">Player Controls</span>
+            </div>
+            <div className="flex items-center gap-0.5">
+              <button
+                onClick={(e) => { e.stopPropagation(); setCtrlFloating(prev => ({ ...prev, minimized: !prev.minimized })); }}
+                onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setCtrlFloating(prev => ({ ...prev, minimized: !prev.minimized })); }}
+                className="w-8 h-8 rounded-md flex items-center justify-center hover:bg-white/15 active:bg-white/25 transition-colors"
+                style={{ fontSize: '16px', color: 'rgba(255,255,255,0.6)', lineHeight: 1 }}
+                data-testid="ctrl-floating-minimize"
+                title={ctrlFloating.minimized ? 'Expand' : 'Minimize'}
+              >
+                {ctrlFloating.minimized ? '□' : '—'}
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); setCtrlFloating(prev => ({ ...prev, detached: false, minimized: false })); }}
+                onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setCtrlFloating(prev => ({ ...prev, detached: false, minimized: false })); }}
+                className="w-8 h-8 rounded-md flex items-center justify-center hover:bg-white/15 active:bg-white/25 transition-colors"
+                style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', lineHeight: 1 }}
+                data-testid="ctrl-floating-dock"
+                title="Snap back to bottom"
+              >
+                ⏎
+              </button>
+            </div>
+          </div>
+        )}
+        {(!ctrlFloating.detached || !ctrlFloating.minimized) && <div className={ctrlFloating.detached ? "" : "rounded-2xl mx-auto"} style={ctrlFloating.detached ? { overflow: 'visible' } : { background: 'rgba(255,255,255,0.16)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.22)', maxWidth: '1200px', width: '100%', overflow: 'visible' }}>
           <div className="relative px-4 pb-4 pt-1" style={{ overflow: 'visible' }}>
+            {!ctrlFloating.detached && (
+              <button
+                onClick={() => setCtrlFloating(prev => ({ ...prev, detached: true }))}
+                onTouchEnd={(e) => { e.preventDefault(); setCtrlFloating(prev => ({ ...prev, detached: true })); }}
+                className="absolute z-[70] w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/20 active:bg-white/30 transition-colors"
+                style={{ top: '6px', right: '6px', fontSize: '12px', color: 'rgba(255,255,255,0.5)', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                data-testid="ctrl-detach-button"
+                title="Pop out controls as floating window"
+              >
+                ⇱
+              </button>
+            )}
             <div className="flex items-center justify-between" style={{ overflow: 'visible', gap: '8px' }}>
               <div style={{ width: '120px', height: '48px', flexShrink: 0 }}>
                 <canvas
@@ -2991,7 +3082,7 @@ export default function PDFReaderPage() {
               </div>
             );
           })()}
-        </div>
+        </div>}
       </div>}
     </div>
   );
