@@ -21123,7 +21123,7 @@ export default function Dashboard() {
             return (
               <div
                 className="absolute"
-                style={{ right: '-17px', bottom: '28px', pointerEvents: 'auto', zIndex: -1, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'block', width: '19px', height: `${semTabs.length * 53 + 23}px` }}
+                style={{ right: '-17px', bottom: '28px', pointerEvents: 'auto', zIndex: 0, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'block', width: '19px', height: `${semTabs.length * 53 + 23}px` }}
               >
                 {semTabs.map((tab, tabIdx) => {
                   const isActive = currentSemLabel === tab.semLabel;
@@ -21169,7 +21169,7 @@ export default function Dashboard() {
               </div>
             );
           })()}
-          <div className="absolute inset-0 rounded-[12px] overflow-hidden flex flex-col" style={{ pointerEvents: 'auto' }}>
+          <div className="absolute inset-0 rounded-[12px] overflow-hidden flex flex-col" style={{ pointerEvents: 'auto', zIndex: 1 }}>
           {/* Weather Overlay */}
           {weatherData && (() => {
             const wc = weatherData.code;
