@@ -726,7 +726,7 @@ export default function Dashboard() {
   const [hwScrolledDown, setHwScrolledDown] = useState(false);
   const [hwFloating, setHwFloatingRaw] = useState(() => {
     const saved = localStorage.getItem('hwFloating');
-    return saved ? { showControls: false, ...JSON.parse(saved) } : { detached: false, minimized: false, showControls: false, x: 100, y: 100 };
+    return saved ? { showControls: false, isPlaying: false, ...JSON.parse(saved) } : { detached: false, minimized: false, showControls: false, isPlaying: false, x: 100, y: 100 };
   });
   const setHwFloating = (val: any) => {
     setHwFloatingRaw((prev: any) => {
@@ -7985,7 +7985,13 @@ export default function Dashboard() {
       }
     };
     window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
+    const handleTtsState = (e: MessageEvent) => {
+      if (e.data?.type === 'tts-state-update') {
+        setHwFloating((p: any) => ({ ...p, isPlaying: e.data.isPlaying }));
+      }
+    };
+    window.addEventListener('message', handleTtsState);
+    return () => { window.removeEventListener('message', handleMessage); window.removeEventListener('message', handleTtsState); };
   }, [refetchSecondAccount, queryClient, toast]);
   
   const disconnectSecondAccountMutation = useMutation({
@@ -23193,9 +23199,15 @@ export default function Dashboard() {
                   </div>
 
                   <div className="shrink-0 flex items-center justify-center" style={{ width: '56px' }}>
-                    <button className="w-12 h-12 flex items-center justify-center rounded-full bg-red-600 hover:bg-red-500 shrink-0" style={{ outline: '2px solid rgba(255,80,80,0.5)', outlineOffset: '2px', boxShadow: '0 0 16px rgba(255,50,50,0.4)' }} data-testid="hw-ctrl-play" title="Stop">
-                      <Square className="h-5 w-5 text-white fill-white" />
-                    </button>
+                    {hwFloating.isPlaying ? (
+                      <button className="w-12 h-12 flex items-center justify-center rounded-full bg-red-600 hover:bg-red-500 shrink-0" style={{ outline: '2px solid rgba(255,80,80,0.5)', outlineOffset: '2px', boxShadow: '0 0 16px rgba(255,50,50,0.4)' }} data-testid="hw-ctrl-stop-center" title="Stop" onClick={() => { const iframe = document.querySelector('iframe[name="pdf-reader-frame"]') as HTMLIFrameElement; if (iframe?.contentWindow) iframe.contentWindow.postMessage({ type: 'tts-stop' }, '*'); }}>
+                        <Square className="h-5 w-5 text-white fill-white" />
+                      </button>
+                    ) : (
+                      <button className="w-12 h-12 flex items-center justify-center rounded-full shrink-0" style={{ outline: '2px solid rgba(100,200,255,0.5)', outlineOffset: '2px', background: 'rgba(100,200,255,0.3)', boxShadow: '0 0 16px rgba(100,200,255,0.3)' }} data-testid="hw-ctrl-play" title="Play" onClick={() => { const iframe = document.querySelector('iframe[name="pdf-reader-frame"]') as HTMLIFrameElement; if (iframe?.contentWindow) iframe.contentWindow.postMessage({ type: 'tts-play' }, '*'); }}>
+                        <Play className="h-5 w-5 text-white fill-white ml-0.5" />
+                      </button>
+                    )}
                   </div>
 
                   <div className="flex-1 flex items-center justify-evenly">

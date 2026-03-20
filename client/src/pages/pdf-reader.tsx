@@ -254,6 +254,11 @@ export default function PDFReaderPage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  useEffect(() => {
+    if (window.parent !== window) {
+      window.parent.postMessage({ type: 'tts-state-update', isPlaying }, '*');
+    }
+  }, [isPlaying]);
   const [isPreloading, setIsPreloading] = useState(false);
   const [currentChunk, setCurrentChunk] = useState(0);
   const [totalChunks, setTotalChunks] = useState(0);
