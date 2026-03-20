@@ -2854,7 +2854,7 @@ export default function PDFReaderPage() {
               </div>
             )}
 
-            <div className="flex items-center justify-center" style={{ overflow: 'visible', gap: '6px' }}>
+            <div className="flex items-center justify-evenly" style={{ overflow: 'visible' }}>
               <div style={{ width: '90px', height: '48px', flexShrink: 0 }}>
                 <canvas
                   ref={canvasRef}
