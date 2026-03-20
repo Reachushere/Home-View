@@ -18134,7 +18134,16 @@ export default function Dashboard() {
                 const rgb = hexToRgb(courseData.color);
                 const course = { 
                   name: courseName, 
-                  bg: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.35)`, 
+                  bg: (() => {
+                    const bgMap: Record<string, string> = {
+                      'CPPA122': '#2a4a3a',
+                      'CFNF400': '#4a2a3d',
+                      'CASL101': '#3d2a4a',
+                      'CECN210': '#2a4a42',
+                      'CHIS105': '#4a2a2a',
+                    };
+                    return bgMap[courseName] || `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.25)`;
+                  })(), 
                   label: (() => {
                     const startColor = courseData.color || `rgb(${Math.max(0, rgb.r - 40)}, ${Math.max(0, rgb.g - 40)}, ${Math.max(0, rgb.b - 40)})`;
                     const endColor = courseData.colorEnd || `rgb(${Math.min(255, rgb.r + 100)}, ${Math.min(255, rgb.g + 100)}, ${Math.min(255, rgb.b + 100)})`;
