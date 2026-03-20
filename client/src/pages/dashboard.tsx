@@ -21734,8 +21734,8 @@ export default function Dashboard() {
                           </div>
                           <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
-                            <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: '#FFFF00', textAlign: 'center', lineHeight: 1, marginLeft: '-10px', marginRight: '6px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
-                            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '-3px' }}>
+                            <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: '#FFFF00', textAlign: 'center', lineHeight: 1, marginLeft: '-14px', marginRight: '6px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
+                            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '2px' }}>
                               <div>
                                 <button
                                   className="text-[11px] truncate hover:underline cursor-pointer leading-none w-full"
@@ -21760,7 +21760,7 @@ export default function Dashboard() {
                                 </div>
                               )}
                             </div>
-                            <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
+                            <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px', marginLeft: '-6px' }}>
                               <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil === 0 ? 'Today' : `${daysUntil} day${daysUntil === 1 ? '' : 's'}`}</span>
                               <div style={{ width: '48px', position: 'relative', height: '3px' }}>
                                 <div className="rounded-full transition-opacity duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${daysUntil === 0 ? 48 : Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: daysUntil === 0 ? '#ef4444' : progressColor, opacity: 0.9 }} />
@@ -21906,8 +21906,8 @@ export default function Dashboard() {
                                     </div>
                                     <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
-                                        <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: '#FFFF00', textAlign: 'center', lineHeight: 1, marginLeft: '-17px', marginRight: '6px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
-                                        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '-4px' }}>
+                                        <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: '#FFFF00', textAlign: 'center', lineHeight: 1, marginLeft: '-21px', marginRight: '6px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
+                                        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '1px' }}>
                                           <div>
                                             <button
                                               className="text-[11px] truncate hover:underline cursor-pointer leading-none w-full"
@@ -21945,7 +21945,7 @@ export default function Dashboard() {
                                             </div>
                                           )}
                                         </div>
-                                        <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
+                                        <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px', marginLeft: '-6px' }}>
                                           <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
                                           <div style={{ width: '48px', position: 'relative', height: '3px' }}>
                                             <div className="rounded-full transition-opacity duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
@@ -22097,8 +22097,8 @@ export default function Dashboard() {
                                     </div>
                                     <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
-                                        <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: '#FFFF00', textAlign: 'center', lineHeight: 1, marginLeft: '-17px', marginRight: '6px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
-                                        <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '-3px' }}>
+                                        <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: '#FFFF00', textAlign: 'center', lineHeight: 1, marginLeft: '-21px', marginRight: '6px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
+                                        <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '2px' }}>
                                           <div>
                                             <button
                                               className="text-[11px] truncate hover:underline cursor-pointer leading-none w-full"
@@ -22136,7 +22136,7 @@ export default function Dashboard() {
                                             </div>
                                           )}
                                         </div>
-                                        <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
+                                        <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px', marginLeft: '-6px' }}>
                                           <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
                                           <div style={{ width: '48px', position: 'relative', height: '3px' }}>
                                             <div className="rounded-full transition-opacity duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
@@ -22290,8 +22290,8 @@ export default function Dashboard() {
                                     </div>
                                     <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
-                                        <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: '#FFFF00', textAlign: 'center', lineHeight: 1, marginLeft: '-17px', marginRight: '6px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
-                                        <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '-3px' }}>
+                                        <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: '#FFFF00', textAlign: 'center', lineHeight: 1, marginLeft: '-21px', marginRight: '6px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
+                                        <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '2px' }}>
                                           <div>
                                             <button
                                               className="text-[11px] truncate hover:underline cursor-pointer leading-none w-full"
@@ -22307,7 +22307,7 @@ export default function Dashboard() {
                                             </div>
                                           </div>
                                         </div>
-                                        <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
+                                        <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px', marginLeft: '-6px' }}>
                                           <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
                                           <div style={{ width: '48px', position: 'relative', height: '3px' }}>
                                             <div className="rounded-full transition-opacity duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
@@ -22459,8 +22459,8 @@ export default function Dashboard() {
                                     </div>
                                     <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
-                                        <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: '#FFFF00', textAlign: 'center', lineHeight: 1, marginLeft: '-17px', marginRight: '6px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
-                                        <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '-3px' }}>
+                                        <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: '#FFFF00', textAlign: 'center', lineHeight: 1, marginLeft: '-21px', marginRight: '6px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
+                                        <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '2px' }}>
                                           <div>
                                             <button
                                               className="text-[11px] truncate hover:underline cursor-pointer leading-none w-full"
@@ -22476,7 +22476,7 @@ export default function Dashboard() {
                                             </div>
                                           </div>
                                         </div>
-                                        <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
+                                        <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px', marginLeft: '-6px' }}>
                                           <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
                                           <div style={{ width: '48px', position: 'relative', height: '3px' }}>
                                             <div className="rounded-full transition-opacity duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(30, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
