@@ -21154,8 +21154,8 @@ export default function Dashboard() {
                           ? "M0.00 0.00 L0.00 42.00 L3.55 41.98 C3.56,41.98 3.86,40.68 4.88,39.40 C7.21,37.06 12.79,36.74 15.29,33.10 C15.60,32.64 15.83,32.03 16.00,31.29 L16.00 22.62 L16.00 19.38 L16.00 10.71 C15.83,9.98 15.60,9.36 15.29,8.90 C12.79,5.27 7.21,4.94 4.88,2.60 C4.49,2.59 3.55,0.02 3.55,0.02 L0.00 0.00 Z"
                           : "M0.00 42.00 L0.00 4.53 L3.55 4.50 C3.56,4.50 3.86,3.06 4.88,1.65 C5.48,0.99 6.28,0.47 7.20,0.00 C9.86,1.37 13.43,2.33 15.29,5.33 C15.60,5.84 15.83,6.52 16.00,7.33 L16.00 16.95 L16.00 20.53 L16.00 30.13 C15.83,30.94 15.60,31.63 15.29,32.14 C12.79,36.17 7.21,36.53 4.88,39.12 C4.49,39.13 3.55,41.98 3.55,41.98 L0.00 42.00 Z"
                         } fill={isActive ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)'} stroke="rgba(255,255,255,0.35)" strokeWidth="1" />
-                        <text x="9" y="19" textAnchor="middle" fill="white" fontSize="11" fontWeight="600" fontFamily="system-ui">{tab.letter}</text>
-                        <text x="9" y="30" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="12" fontWeight="600" fontFamily="system-ui">{tab.year}</text>
+                        <text x="8" y="18" textAnchor="middle" fill="white" fontSize="11" fontWeight="600" fontFamily="system-ui">{tab.letter}</text>
+                        <text x="8" y="30" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="12" fontWeight="600" fontFamily="system-ui">{tab.year}</text>
                       </svg>
                     </div>
                   );
