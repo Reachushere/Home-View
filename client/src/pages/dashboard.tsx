@@ -19452,12 +19452,14 @@ export default function Dashboard() {
                               .sort((a, b) => getTaskTime(a) - getTaskTime(b))[0];
                             const hoursUntil = nextSchoolTask ? (getTaskTime(nextSchoolTask) - now.getTime()) / (1000 * 60 * 60) : null;
                             const displayTime = hoursUntil !== null ? (hoursUntil < 1 ? `${Math.max(1, Math.round(hoursUntil * 60))}m` : hoursUntil < 10 ? `${hoursUntil.toFixed(1)}h` : `${Math.round(hoursUntil)}h`) : '--';
+                            const debugMissed = 1;
+                            const debugTime = '199';
                             return (
-                              <div className="absolute left-0 right-0 top-0 bottom-0 z-[3] pointer-events-none flex items-center gap-[2px]" style={{ padding: '0 2px' }} data-testid="hours-until-next-task">
-                                {missedCount > 0 && (
+                              <div className="absolute left-0 right-0 top-0 bottom-0 z-[3] pointer-events-none flex items-center gap-[2px]" style={{ padding: '0 1px' }} data-testid="hours-until-next-task">
+                                {debugMissed > 0 && (
                                   <div className="shrink-0" style={{ width: `${narrowColWidth + 2}px`, height: `${narrowColWidth + 2}px`, background: 'linear-gradient(135deg, #f5c842 0%, #e0a800 100%)', borderRadius: '5px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(202, 138, 6, 0.6)', boxShadow: '0 1px 3px rgba(0,0,0,0.2)', gap: '1px', padding: '3px 2px 2px' }} data-testid="missed-tasks-indicator">
                                     <div style={{ backgroundColor: '#ef4444', borderRadius: '4px', width: `${narrowColWidth - 8}px`, height: `${narrowColWidth - 10}px`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 1px 2px rgba(0,0,0,0.15)' }}>
-                                      <span style={{ fontSize: '11px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{missedCount}</span>
+                                      <span style={{ fontSize: '11px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{debugMissed}</span>
                                     </div>
                                     <span style={{ fontSize: '6px', color: '#1a1a1a', fontWeight: 900, lineHeight: 1, letterSpacing: '0.3px' }}>Due</span>
                                   </div>
@@ -19465,7 +19467,7 @@ export default function Dashboard() {
                                 <div className="flex-1" style={{ height: `${narrowColWidth + 2}px`, background: 'linear-gradient(135deg, #f5c842 0%, #e0a800 100%)', borderRadius: '5px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 4px', border: '1px solid rgba(202, 138, 4, 0.6)', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>
                                   <span style={{ fontSize: '7px', color: '#1a1a1a', fontWeight: 800, lineHeight: 1.1, whiteSpace: 'nowrap' }}>Next<br/>task:</span>
                                   <div style={{ backgroundColor: '#22c55e', borderRadius: '4px', padding: '2px 5px', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '20px', minHeight: '16px', border: '1px solid rgba(22, 163, 74, 0.5)' }}>
-                                    <span style={{ fontSize: '11px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{displayTime}</span>
+                                    <span style={{ fontSize: '11px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{debugTime}</span>
                                   </div>
                                 </div>
                               </div>
