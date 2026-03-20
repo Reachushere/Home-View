@@ -18147,6 +18147,19 @@ export default function Dashboard() {
                   ? springSummerCourses
                   : [];
                 const allDisplayCourses = [...winterCourses];
+                const defaultWinterCourses = [
+                  { name: 'CPPA122 - Local Politics and Government', color: '#0F5004', colorEnd: '#47B045', professor: 'Caryl Arundel', professorEmail: 'carundel@torontomu.ca' },
+                  { name: 'CFNF400 - Human Sexuality', color: '#DE1864', colorEnd: '#FA67B3', professor: 'Alex McKay', professorEmail: 'a4mckay@torontomu.ca' },
+                  { name: 'CASL101 - American Sign Language', color: '#974B8A', colorEnd: '#B045A2', professor: 'Christina Moreau', professorEmail: 'christina.moreau@torontomu.ca' },
+                ];
+                for (const dwc of defaultWinterCourses) {
+                  const dwcCode = dwc.name.split(' - ')[0]?.trim().toUpperCase();
+                  const dwcDef = winterCourseDefs.find(d => d.code === dwcCode);
+                  if (dwcDef && currentWeekStart <= new Date(dwcDef.endDate + 'T23:59:59')) {
+                    const alreadyHas = allDisplayCourses.some(c => c.name.split(' - ')[0]?.trim().toUpperCase() === dwcCode);
+                    if (!alreadyHas) allDisplayCourses.push(dwc);
+                  }
+                }
                 for (const sc of activeSpringSummerCourses) {
                   const alreadyExists = allDisplayCourses.some(c => c.name.split(' - ')[0]?.trim().toUpperCase() === sc.name.split(' - ')[0]?.trim().toUpperCase());
                   if (!alreadyExists) allDisplayCourses.push(sc);
