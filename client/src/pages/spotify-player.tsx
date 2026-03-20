@@ -256,7 +256,7 @@ function HoloVinyl({ albumArt, playing, accent, size = 220 }: { albumArt?: strin
 
     const animate = () => {
       ctx.clearRect(0, 0, size, size);
-      if (playing) rotRef.current += 0.012;
+      rotRef.current += playing ? 0.015 : 0.004;
       const t = Date.now() / 1000;
 
       ctx.save(); ctx.translate(cx, cy); ctx.rotate(rotRef.current);
@@ -534,6 +534,22 @@ export default function SpotifyPlayerPage() {
     } catch { showNotif("Failed to group"); }
   };
 
+  const ungroupRoom = async (roomName: string) => {
+    const hotspot = ROOM_HOTSPOTS.find(h => h.room === roomName);
+    const roomGroup = rooms.find(r => r.room === roomName);
+    const speaker = roomGroup?.speakers.find(s => s.type === "group") || roomGroup?.speakers[0];
+    const entityId = speaker?.entityId || hotspot?.groupEntityId || hotspot?.entityId;
+    if (!entityId) return;
+    try {
+      await fetch(`/api/spotify/ungroup-speaker${authQuery}`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ entityId }),
+      });
+      setActiveRooms(prev => { const n = new Set(prev); n.delete(roomName); return n; });
+      showNotif(`Ungrouped ${roomName}`);
+    } catch { showNotif("Failed to ungroup"); }
+  };
+
   const handleDragStart = (type: "artist" | "room", data: any) => (e: React.DragEvent) => {
     setDragItem({ type, data });
     e.dataTransfer.effectAllowed = "move";
@@ -631,7 +647,7 @@ export default function SpotifyPlayerPage() {
                 className="w-full flex items-center gap-3 px-3 py-2 transition-colors" style={{ color: 'rgba(0,180,255,0.25)' }}
                 data-testid="back-to-dashboard">
                 <ChevronLeft className="h-4 w-4 flex-shrink-0" />
-                {menuOpen && <span className="text-[10px] whitespace-nowrap">Dashboard</span>}
+                {menuOpen && <span className="text-[12px] whitespace-nowrap">Dashboard</span>}
               </button>
             )}
 
@@ -651,7 +667,7 @@ export default function SpotifyPlayerPage() {
                   }}
                   data-testid={`nav-${item.mode}`}>
                   <div className="flex-shrink-0">{item.icon}</div>
-                  {menuOpen && <span className="text-[10px] whitespace-nowrap font-medium">{item.label}</span>}
+                  {menuOpen && <span className="text-[12px] whitespace-nowrap font-medium">{item.label}</span>}
                 </button>
               ))}
 
@@ -662,7 +678,7 @@ export default function SpotifyPlayerPage() {
                 style={{ color: showSearch ? profile.accent : 'rgba(0,180,255,0.3)' }}
                 data-testid="nav-search">
                 <Search className="h-3.5 w-3.5 flex-shrink-0" />
-                {menuOpen && <span className="text-[10px] whitespace-nowrap font-medium">Search</span>}
+                {menuOpen && <span className="text-[12px] whitespace-nowrap font-medium">Search</span>}
               </button>
             </div>
 
@@ -676,7 +692,7 @@ export default function SpotifyPlayerPage() {
                     boxShadow: activeProfile === k ? `0 0 20px ${PROFILES[k].glow}, inset 0 0 15px ${PROFILES[k].glow}` : "none",
                   }}
                   data-testid={`profile-${k}`}>
-                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0"
+                  <div className="w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-bold flex-shrink-0"
                     style={{
                       background: activeProfile === k
                         ? `linear-gradient(135deg, ${PROFILES[k].accent}40, ${PROFILES[k].accent}20)`
@@ -687,7 +703,7 @@ export default function SpotifyPlayerPage() {
                     }}>
                     {PROFILES[k].label[0]}
                   </div>
-                  {menuOpen && <span className="text-[10px] whitespace-nowrap font-medium"
+                  {menuOpen && <span className="text-[12px] whitespace-nowrap font-medium"
                     style={{ color: activeProfile === k ? PROFILES[k].accent : 'rgba(0,180,255,0.3)' }}>
                     {PROFILES[k].label}
                   </span>}
@@ -710,21 +726,21 @@ export default function SpotifyPlayerPage() {
                   style={{ color: 'rgba(200,230,255,0.95)', textShadow: isPlaying ? `0 0 20px ${profile.glow}` : 'none' }}>
                   {nowPlaying?.name || "Nothing Playing"}
                 </p>
-                <p className="text-xs truncate mt-0.5 font-medium" data-testid="track-artist"
+                <p className="text-sm truncate mt-0.5 font-medium" data-testid="track-artist"
                   style={{ color: isPlaying ? profile.accent : "rgba(0,180,255,0.35)" }}>
                   {nowPlaying?.artist || "Select an artist or station"}
                 </p>
                 {nowPlaying?.album && (
-                  <p className="text-[9px] truncate mt-0.5" data-testid="track-album"
+                  <p className="text-[11px] truncate mt-0.5" data-testid="track-album"
                     style={{ color: 'rgba(0,180,255,0.2)' }}>{nowPlaying.album}</p>
                 )}
               </div>
             </HoloPanel>
 
             <HoloPanel accent={profile.accent} className="flex-1 overflow-hidden p-3">
-              <div className="text-[9px] uppercase tracking-[0.2em] font-bold mb-2 px-1 flex items-center gap-1.5"
+              <div className="text-[12px] uppercase tracking-[0.2em] font-bold mb-2 px-1 flex items-center gap-1.5"
                 style={{ color: `${profile.accent}80` }}>
-                <Wifi className="h-2.5 w-2.5" />
+                <Wifi className="h-3 w-3" />
                 {isSakura ? "お気に入り • Favorites" : "Favorites"}
               </div>
               <div className="overflow-y-auto flex-1" style={{ scrollbarWidth: "none", maxHeight: 'calc(100% - 24px)' }}>
@@ -750,7 +766,7 @@ export default function SpotifyPlayerPage() {
                         }}>
                         {!artistImages[artist.name] && <div className="w-full h-full flex items-center justify-center"><Music2 className="h-3.5 w-3.5" style={{ color: `${profile.accent}40` }} /></div>}
                       </div>
-                      <span className="text-[8px] truncate w-full text-center font-medium transition-colors"
+                      <span className="text-[11px] truncate w-full text-center font-medium transition-colors"
                         style={{ color: 'rgba(0,180,255,0.4)' }}>{artist.name}</span>
                     </div>
                   ))}
@@ -819,8 +835,8 @@ export default function SpotifyPlayerPage() {
                         </div>
                       )}
                       <div className="flex-1 min-w-0">
-                        <p className="text-[10px] font-medium truncate" style={{ color: 'rgba(200,230,255,0.8)' }}>{r.name}</p>
-                        <p className="text-[9px] truncate" style={{ color: 'rgba(0,180,255,0.3)' }}>{r.artist || r.type}</p>
+                        <p className="text-[12px] font-medium truncate" style={{ color: 'rgba(200,230,255,0.8)' }}>{r.name}</p>
+                        <p className="text-[11px] truncate" style={{ color: 'rgba(0,180,255,0.3)' }}>{r.artist || r.type}</p>
                       </div>
                     </button>
                   ))}
@@ -863,21 +879,34 @@ export default function SpotifyPlayerPage() {
                       data-testid={`room-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
                       <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5">
                         <span className="text-base" style={{ filter: isActive ? `drop-shadow(0 0 6px ${profile.accent})` : 'none' }}>{spot.icon}</span>
-                        <span className="text-[7px] font-bold uppercase tracking-wider text-center leading-tight px-1"
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-center leading-tight px-1"
                           style={{ color: isActive ? profile.accent : 'rgba(0,180,255,0.4)', textShadow: isActive ? `0 0 8px ${profile.glow}` : 'none' }}>
                           {spot.room}
                         </span>
                         {isActive && (
-                          <div className="flex gap-0.5 mt-0.5">
-                            {[...Array(3)].map((_, i) => (
-                              <div key={i} className="w-0.5 rounded-full" style={{
-                                height: 4 + Math.random() * 6,
-                                background: profile.accent,
-                                boxShadow: `0 0 4px ${profile.accent}`,
-                                animation: `eqBounce ${0.3 + i * 0.15}s ease-in-out infinite alternate`,
-                              }} />
-                            ))}
-                          </div>
+                          <>
+                            <div className="flex gap-0.5 mt-0.5">
+                              {[...Array(3)].map((_, i) => (
+                                <div key={i} className="w-0.5 rounded-full" style={{
+                                  height: 4 + Math.random() * 6,
+                                  background: profile.accent,
+                                  boxShadow: `0 0 4px ${profile.accent}`,
+                                  animation: `eqBounce ${0.3 + i * 0.15}s ease-in-out infinite alternate`,
+                                }} />
+                              ))}
+                            </div>
+                            <button onClick={(e) => { e.stopPropagation(); e.preventDefault(); ungroupRoom(spot.room); }}
+                              className="mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium transition-all hover:scale-110"
+                              style={{
+                                background: 'rgba(255,60,60,0.2)',
+                                border: '1px solid rgba(255,60,60,0.3)',
+                                color: 'rgba(255,120,120,0.9)',
+                                textShadow: '0 0 4px rgba(255,60,60,0.3)',
+                              }}
+                              data-testid={`floorplan-ungroup-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
+                              ✕ Ungroup
+                            </button>
+                          </>
                         )}
                       </div>
                       {isDrop && (
@@ -894,9 +923,9 @@ export default function SpotifyPlayerPage() {
 
             {viewMode === "stations" && (
               <div className="absolute inset-0 p-4 overflow-y-auto" style={{ scrollbarWidth: "none" }}>
-                <div className="text-[9px] uppercase tracking-[0.2em] font-bold mb-3 flex items-center gap-1.5"
+                <div className="text-[12px] uppercase tracking-[0.15em] font-bold mb-3 flex items-center gap-1.5"
                   style={{ color: `${profile.accent}70` }}>
-                  <Radio className="h-3 w-3" /> Stations & Shortcuts
+                  <Radio className="h-3.5 w-3.5" /> Stations & Shortcuts
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   {STATION_SHORTCUTS.map((station, i) => (
@@ -910,7 +939,7 @@ export default function SpotifyPlayerPage() {
                       }}
                       data-testid={`station-${station.name.toLowerCase().replace(/\s/g, "-")}`}>
                       <span className="text-lg flex-shrink-0" style={{ filter: 'drop-shadow(0 0 4px rgba(0,180,255,0.3))' }}>{station.icon}</span>
-                      <span className="text-[10px] font-medium text-left truncate"
+                      <span className="text-[13px] font-medium text-left truncate"
                         style={{ color: 'rgba(0,180,255,0.5)' }}>{station.name}</span>
                     </button>
                   ))}
@@ -920,23 +949,15 @@ export default function SpotifyPlayerPage() {
 
             {viewMode === "rooms" && (
               <div className="absolute inset-0 p-4 overflow-y-auto" style={{ scrollbarWidth: "none" }}>
-                <div className="text-[9px] uppercase tracking-[0.2em] font-bold mb-3 flex items-center gap-1.5"
+                <div className="text-[12px] uppercase tracking-[0.15em] font-bold mb-3 flex items-center gap-1.5"
                   style={{ color: `${profile.accent}70` }}>
-                  <Speaker className="h-3 w-3" /> Speaker Rooms
+                  <Speaker className="h-3.5 w-3.5" /> Speaker Rooms
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   {ROOM_HOTSPOTS.map((spot, i) => {
                     const isActive = activeRooms.has(spot.room);
                     return (
-                      <button key={spot.room}
-                        onClick={() => {
-                          if (isPlaying && nowPlaying) {
-                            playOnRoom(spot.room, { name: nowPlaying.artist || "", uri: "", searchQuery: nowPlaying.artist || "" });
-                          } else {
-                            showNotif("Start playing something first");
-                          }
-                        }}
-                        className="flex items-center gap-3 p-3 rounded-lg transition-all group"
+                      <div key={spot.room} className="flex items-center gap-3 p-3 rounded-lg transition-all group"
                         style={{
                           background: isActive ? `${profile.accent}10` : "rgba(0,15,40,0.5)",
                           border: `1px solid ${isActive ? `${profile.accent}35` : "rgba(0,180,255,0.08)"}`,
@@ -944,25 +965,46 @@ export default function SpotifyPlayerPage() {
                           animation: `fadeInUp 0.3s ease ${i * 40}ms both`,
                         }}
                         data-testid={`room-btn-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
-                        <span className="text-lg flex-shrink-0" style={{ filter: isActive ? `drop-shadow(0 0 6px ${profile.accent})` : 'drop-shadow(0 0 3px rgba(0,180,255,0.2))' }}>{spot.icon}</span>
-                        <div className="flex-1 text-left">
-                          <span className="text-[10px] font-medium block"
-                            style={{ color: isActive ? profile.accent : 'rgba(0,180,255,0.5)' }}>{spot.room}</span>
-                          <span className="text-[8px]" style={{ color: 'rgba(0,180,255,0.2)' }}>{spot.entityId.split(".")[1]}</span>
-                        </div>
+                        <button className="flex items-center gap-3 flex-1 text-left"
+                          onClick={() => {
+                            if (isPlaying && nowPlaying) {
+                              playOnRoom(spot.room, { name: nowPlaying.artist || "", uri: "", searchQuery: nowPlaying.artist || "" });
+                            } else {
+                              showNotif("Start playing something first");
+                            }
+                          }}>
+                          <span className="text-lg flex-shrink-0" style={{ filter: isActive ? `drop-shadow(0 0 6px ${profile.accent})` : 'drop-shadow(0 0 3px rgba(0,180,255,0.2))' }}>{spot.icon}</span>
+                          <div className="flex-1">
+                            <span className="text-[13px] font-medium block"
+                              style={{ color: isActive ? profile.accent : 'rgba(0,180,255,0.5)' }}>{spot.room}</span>
+                            <span className="text-[11px]" style={{ color: 'rgba(0,180,255,0.2)' }}>{spot.entityId.split(".")[1]}</span>
+                          </div>
+                        </button>
                         {isActive && (
-                          <div className="flex gap-0.5">
-                            {[...Array(4)].map((_, j) => (
-                              <div key={j} className="w-0.5 rounded-full" style={{
-                                height: 6 + Math.random() * 8,
-                                background: profile.accent,
-                                boxShadow: `0 0 4px ${profile.accent}`,
-                                animation: `eqBounce ${0.3 + j * 0.12}s ease-in-out infinite alternate`,
-                              }} />
-                            ))}
+                          <div className="flex items-center gap-2">
+                            <div className="flex gap-0.5">
+                              {[...Array(4)].map((_, j) => (
+                                <div key={j} className="w-0.5 rounded-full" style={{
+                                  height: 6 + Math.random() * 8,
+                                  background: profile.accent,
+                                  boxShadow: `0 0 4px ${profile.accent}`,
+                                  animation: `eqBounce ${0.3 + j * 0.12}s ease-in-out infinite alternate`,
+                                }} />
+                              ))}
+                            </div>
+                            <button onClick={(e) => { e.stopPropagation(); ungroupRoom(spot.room); }}
+                              className="px-2 py-1 rounded text-[11px] font-medium transition-all hover:scale-105"
+                              style={{
+                                background: 'rgba(255,60,60,0.15)',
+                                border: '1px solid rgba(255,60,60,0.25)',
+                                color: 'rgba(255,120,120,0.8)',
+                              }}
+                              data-testid={`ungroup-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
+                              Ungroup
+                            </button>
                           </div>
                         )}
-                      </button>
+                      </div>
                     );
                   })}
                 </div>
@@ -983,7 +1025,7 @@ export default function SpotifyPlayerPage() {
 
         <div className="px-6 pt-2 pb-1">
           <div className="flex items-center gap-3 mb-1">
-            <span className="text-[10px] tabular-nums w-8 text-right" style={{ color: 'rgba(0,180,255,0.3)' }}>{formatMs(localProgress)}</span>
+            <span className="text-[12px] tabular-nums w-10 text-right" style={{ color: 'rgba(0,180,255,0.3)' }}>{formatMs(localProgress)}</span>
             <div className="flex-1 h-[3px] rounded-full overflow-hidden cursor-pointer group relative"
               style={{ background: 'rgba(0,180,255,0.08)' }}
               onClick={e => {
@@ -1002,7 +1044,7 @@ export default function SpotifyPlayerPage() {
                   style={{ background: profile.accent, boxShadow: `0 0 8px ${profile.accent}, 0 0 16px ${profile.glow}` }} />
               </div>
             </div>
-            <span className="text-[10px] tabular-nums w-8" style={{ color: 'rgba(0,180,255,0.3)' }}>{formatMs(nowPlaying?.duration || 0)}</span>
+            <span className="text-[12px] tabular-nums w-10" style={{ color: 'rgba(0,180,255,0.3)' }}>{formatMs(nowPlaying?.duration || 0)}</span>
           </div>
 
           <div className="flex items-center justify-center gap-6 pb-1">

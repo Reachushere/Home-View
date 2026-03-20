@@ -13866,6 +13866,25 @@ Return ONLY the JSON object, no markdown formatting.`;
     }
   });
 
+  app.post("/api/spotify/ungroup-speaker", async (req, res) => {
+    try {
+      const { entityId } = req.body;
+      if (!entityId) return res.status(400).json({ error: "entityId required" });
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+
+      await fetch(`${haUrl}/api/services/media_player/unjoin`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entity_id: entityId }),
+      });
+      console.log(`[Spotify] Ungrouped ${entityId}`);
+      res.json({ ok: true });
+    } catch (error: any) {
+      console.error("[Spotify] Ungroup speaker error:", error);
+      res.status(500).json({ error: "Failed to ungroup speaker" });
+    }
+  });
+
   return httpServer;
 }
 
