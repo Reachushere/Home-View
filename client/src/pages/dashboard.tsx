@@ -21123,7 +21123,7 @@ export default function Dashboard() {
             return (
               <div
                 className="absolute"
-                style={{ right: '-21px', bottom: '14px', pointerEvents: 'auto', zIndex: 1, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'block', width: '25px', height: `${semTabs.length * 72 + 4}px` }}
+                style={{ right: '-21px', bottom: '14px', pointerEvents: 'auto', zIndex: 1, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'block', width: '25px', height: `${semTabs.length * 68 + 8}px` }}
               >
                 {semTabs.map((tab, tabIdx) => {
                   const isActive = currentSemLabel === tab.semLabel;
@@ -21132,7 +21132,7 @@ export default function Dashboard() {
                     <div
                       key={tab.semLabel}
                       className={`cursor-pointer${isActive ? ' semester-tab-bounce' : ''}`}
-                      style={{ position: 'absolute', bottom: `${reversedIdx * 72}px`, width: '25px', height: '76px', zIndex: semTabs.length - tabIdx }}
+                      style={{ position: 'absolute', bottom: `${reversedIdx * 68}px`, width: '25px', height: '76px', zIndex: semTabs.length - tabIdx }}
                       onClick={() => {
                         if (!homeworkScrollRef.current) return;
                         const idx = hwWeeklyTimeline.findIndex(w => w.semLabel === tab.semLabel);
