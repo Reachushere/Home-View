@@ -9394,7 +9394,7 @@ export default function Dashboard() {
             const lastRect = courseRowRects[courseRowRects.length - 1];
             if (lastRect) {
               const otherRowH = gridSizes.courseRowHeight || 48;
-              return `${lastRect.top + lastRect.height + otherRowH - 10}px`;
+              return `${lastRect.top + lastRect.height + otherRowH - 10 + 7}px`;
             }
           }
           return '96px';
