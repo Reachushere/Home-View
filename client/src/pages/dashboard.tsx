@@ -21724,7 +21724,7 @@ export default function Dashboard() {
                         {(() => {
                           const todayDate = startOfDay(new Date());
                           const weekStart = startOfWeek(todayDate, { weekStartsOn: 0 });
-                          const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 5) });
+                          const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
                           return (
                             <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                               <div style={{ position: 'absolute', top: '-2px', bottom: '-2px', left: '-3px', right: '-3px', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.08)', border: '0.5px solid rgba(255,255,255,0.15)' }} />
