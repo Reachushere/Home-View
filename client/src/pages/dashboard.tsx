@@ -21831,9 +21831,9 @@ export default function Dashboard() {
                 <div data-homework-section="thisweek" data-semester-label={hwWeeklyTimeline[0]?.semLabel || ''} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '5px' }}>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <span className="text-[12px] font-semibold" style={{ color: isSameDay(startOfWeek(new Date(), { weekStartsOn: 6 }), startOfDay(hwWeeklyTimeline[0]?.weekStart)) ? '#ffff00' : '#ffffff' }}>{hwWeeklyTimeline[0]?.label || 'This week'}</span>
-                    {hwWeeklyTimeline[0]?.sublabel && <span className="text-[8px]" style={{ color: 'rgba(255,255,255,0.55)', marginTop: '-1px', lineHeight: 1 }}>{hwWeeklyTimeline[0].sublabel}</span>}
+                    {hwWeeklyTimeline[0]?.sublabel && <span className="text-[8px]" style={{ color: '#ffffff', marginTop: '-1px', lineHeight: 1 }}>{hwWeeklyTimeline[0].sublabel}</span>}
                   </div>
-                  <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTomorrowTasks.length})</span>
+                  <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>{dueTomorrowTasks.length}</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px', marginTop: '5px' }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 165, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                       <div style={{ background: 'rgb(255, 165, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(addDays(new Date(), 1), 'MMM').toUpperCase()}</div>
@@ -22018,9 +22018,9 @@ export default function Dashboard() {
                 <div data-homework-section="nextweek" data-semester-label={hwWeeklyTimeline[1]?.semLabel || ''} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '20px' }}>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[1]?.label || 'Next week'}</span>
-                    {hwWeeklyTimeline[1]?.sublabel && <span className="text-[8px]" style={{ color: 'rgba(255,255,255,0.55)', marginTop: '-1px', lineHeight: 1 }}>{hwWeeklyTimeline[1].sublabel}</span>}
+                    {hwWeeklyTimeline[1]?.sublabel && <span className="text-[8px]" style={{ color: '#ffffff', marginTop: '-1px', lineHeight: 1 }}>{hwWeeklyTimeline[1].sublabel}</span>}
                   </div>
-                  <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueNextWeekTasks.length})</span>
+                  <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>{dueNextWeekTasks.length}</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px', marginTop: '-1px' }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 200, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                       <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(nextSaturday, 'MMM').toUpperCase()}</div>
@@ -22209,9 +22209,9 @@ export default function Dashboard() {
                 <div data-homework-section="twoweeks" data-semester-label={hwWeeklyTimeline[2]?.semLabel || ''} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 1px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '20px' }}>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[2]?.label || 'Two weeks'}</span>
-                    {hwWeeklyTimeline[2]?.sublabel && <span className="text-[8px]" style={{ color: 'rgba(255,255,255,0.55)', marginTop: '-1px', lineHeight: 1 }}>{hwWeeklyTimeline[2].sublabel}</span>}
+                    {hwWeeklyTimeline[2]?.sublabel && <span className="text-[8px]" style={{ color: '#ffffff', marginTop: '-1px', lineHeight: 1 }}>{hwWeeklyTimeline[2].sublabel}</span>}
                   </div>
-                  <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueTwoWeeksTasks.length})</span>
+                  <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>{dueTwoWeeksTasks.length}</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px', marginTop: '2px' }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                       <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(twoWeeksStart, 'MMM').toUpperCase()}</div>
@@ -22379,10 +22379,10 @@ export default function Dashboard() {
                 {/* 3 Weeks and Beyond Section */}
                 <div data-homework-section="threeweeks" data-semester-label={hwWeeklyTimeline[3]?.semLabel || ''} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '20px' }}>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[3]?.label ? hwWeeklyTimeline[3].label + ' +' : 'Three weeks +'}</span>
-                    {hwWeeklyTimeline[3]?.sublabel && <span className="text-[8px]" style={{ color: 'rgba(255,255,255,0.55)', marginTop: '-1px', lineHeight: 1 }}>{hwWeeklyTimeline[3].sublabel + ' +'}</span>}
+                    <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[3]?.label || 'Three weeks'}</span>
+                    {hwWeeklyTimeline[3]?.sublabel && <span className="text-[8px]" style={{ color: '#ffffff', marginTop: '-1px', lineHeight: 1 }}>{hwWeeklyTimeline[3].sublabel}</span>}
                   </div>
-                  <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>({dueBeyondTasks.length})</span>
+                  <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>{dueBeyondTasks.length}</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, marginTop: '-3px' }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(100, 100, 100)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                       <div style={{ background: 'rgb(100, 100, 100)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(threeWeeksPlusStart, 'MMM').toUpperCase()}</div>
