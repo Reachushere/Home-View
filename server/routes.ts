@@ -22,6 +22,7 @@ import { parseTickerCommand, extractInlineExpiry } from "./gmailTicker";
 import { getSchedulerStatus } from "./reminderScheduler";
 import { fetchTMUCalendarEvents } from "./tmuCalendar";
 import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder } from "./onedrive";
+import { getUncachableSpotifyClient } from "./spotify";
 
 // Helper function to generate repeated task due dates
 function generateRepeatDates(
@@ -13464,6 +13465,95 @@ Return ONLY the JSON object, no markdown formatting.`;
     } catch (error) {
       console.error("Error applying course changes:", error);
       res.status(500).json({ error: "Failed to apply changes" });
+    }
+  });
+
+  app.get("/api/spotify/now-playing", async (_req, res) => {
+    try {
+      const spotify = await getUncachableSpotifyClient();
+      const playback = await spotify.player.getCurrentlyPlayingTrack();
+      if (!playback || !playback.item) {
+        return res.json({ playing: false });
+      }
+      const track = playback.item as any;
+      res.json({
+        playing: playback.is_playing,
+        name: track.name,
+        artist: track.artists?.map((a: any) => a.name).join(", ") || "Unknown",
+        album: track.album?.name || "",
+        albumArt: track.album?.images?.[0]?.url || "",
+        albumArtSmall: track.album?.images?.[track.album.images.length - 1]?.url || "",
+        progress: playback.progress_ms,
+        duration: track.duration_ms,
+        trackUrl: track.external_urls?.spotify || "",
+      });
+    } catch (error: any) {
+      console.error("Spotify now-playing error:", error?.message || error);
+      res.status(500).json({ error: "Failed to get Spotify status" });
+    }
+  });
+
+  app.get("/api/spotify/recent", async (_req, res) => {
+    try {
+      const spotify = await getUncachableSpotifyClient();
+      const recent = await spotify.player.getRecentlyPlayedTracks(5);
+      const tracks = recent.items.map((item: any) => ({
+        name: item.track.name,
+        artist: item.track.artists?.map((a: any) => a.name).join(", ") || "Unknown",
+        album: item.track.album?.name || "",
+        albumArt: item.track.album?.images?.[0]?.url || "",
+        albumArtSmall: item.track.album?.images?.[item.track.album.images.length - 1]?.url || "",
+        playedAt: item.played_at,
+        trackUrl: item.track.external_urls?.spotify || "",
+      }));
+      res.json(tracks);
+    } catch (error: any) {
+      console.error("Spotify recent error:", error?.message || error);
+      res.status(500).json({ error: "Failed to get recent tracks" });
+    }
+  });
+
+  app.put("/api/spotify/play", async (_req, res) => {
+    try {
+      const spotify = await getUncachableSpotifyClient();
+      await spotify.player.startResumePlayback("");
+      res.json({ ok: true });
+    } catch (error: any) {
+      console.error("Spotify play error:", error?.message || error);
+      res.status(500).json({ error: "Failed to play" });
+    }
+  });
+
+  app.put("/api/spotify/pause", async (_req, res) => {
+    try {
+      const spotify = await getUncachableSpotifyClient();
+      await spotify.player.pausePlayback("");
+      res.json({ ok: true });
+    } catch (error: any) {
+      console.error("Spotify pause error:", error?.message || error);
+      res.status(500).json({ error: "Failed to pause" });
+    }
+  });
+
+  app.post("/api/spotify/next", async (_req, res) => {
+    try {
+      const spotify = await getUncachableSpotifyClient();
+      await spotify.player.skipToNext("");
+      res.json({ ok: true });
+    } catch (error: any) {
+      console.error("Spotify next error:", error?.message || error);
+      res.status(500).json({ error: "Failed to skip" });
+    }
+  });
+
+  app.post("/api/spotify/previous", async (_req, res) => {
+    try {
+      const spotify = await getUncachableSpotifyClient();
+      await spotify.player.skipToPrevious("");
+      res.json({ ok: true });
+    } catch (error: any) {
+      console.error("Spotify previous error:", error?.message || error);
+      res.status(500).json({ error: "Failed to go back" });
     }
   });
 

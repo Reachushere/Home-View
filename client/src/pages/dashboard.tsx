@@ -135,6 +135,7 @@ import {
   Redo2,
   Radio,
   Minus,
+  ArrowDownToLine,
   ListChecks,
   ZoomIn,
   ZoomOut,
@@ -22756,53 +22757,44 @@ export default function Dashboard() {
             data-testid="hw-floating-panel"
           >
             <div
-              className="flex-shrink-0 select-none"
-              style={{ position: 'relative', height: '36px', touchAction: 'none' }}
+              className="flex items-center justify-between select-none cursor-grab active:cursor-grabbing"
+              style={{ padding: '4px 8px', background: 'rgba(255,255,255,0.12)', borderRadius: '10px 10px 0 0', borderBottom: '1px solid rgba(255,255,255,0.15)', touchAction: 'none' }}
+              onMouseDown={hwFloatingHandlers.onDragStart}
+              onTouchStart={hwFloatingHandlers.onDragStart}
               data-testid="hw-floating-titlebar"
             >
-              <div
-                className="absolute cursor-grab active:cursor-grabbing"
-                style={{ left: '50%', transform: 'translateX(-50%)', bottom: '0', width: '200px', height: '36px', zIndex: 1 }}
-                onMouseDown={hwFloatingHandlers.onDragStart}
-                onTouchStart={hwFloatingHandlers.onDragStart}
-              >
-                <img
-                  src={dragTabPath}
-                  alt=""
-                  className="w-full h-full pointer-events-none"
-                  style={{ filter: 'brightness(0.35) saturate(0)', opacity: 1 }}
-                  draggable={false}
-                />
-                <div className="absolute inset-0 flex items-center justify-center gap-2.5" style={{ paddingTop: '6px' }}>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); hwFloatingHandlers.onMinToggle(); }}
-                    onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); hwFloatingHandlers.onMinToggle(); }}
-                    className="w-5 h-5 rounded flex items-center justify-center hover:bg-white/20 active:bg-white/30 transition-colors"
-                    data-testid="hw-floating-minimize"
-                    title={hwFloating.minimized ? 'Expand' : 'Minimize'}
-                  >
-                    {hwFloating.minimized ? <Maximize2 className="h-2.5 w-2.5 text-white/70" /> : <Minimize2 className="h-2.5 w-2.5 text-white/70" />}
-                  </button>
-                  <span className="text-[8px] font-medium text-white/50 tracking-wider uppercase" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>⋮⋮ Drag ⋮⋮</span>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setHwFloating(prev => ({ ...prev, showControls: !prev.showControls })); }}
-                    onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setHwFloating(prev => ({ ...prev, showControls: !prev.showControls })); }}
-                    className="w-5 h-5 rounded flex items-center justify-center hover:bg-white/20 active:bg-white/30 transition-colors"
-                    data-testid="hw-floating-controls-toggle"
-                    title="Toggle player controls"
-                  >
-                    <Play className="h-2.5 w-2.5 text-white/70" />
-                  </button>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); hwFloatingHandlers.onDock(); }}
-                    onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); hwFloatingHandlers.onDock(); }}
-                    className="w-5 h-5 rounded flex items-center justify-center hover:bg-white/20 active:bg-white/30 transition-colors"
-                    data-testid="hw-floating-dock"
-                    title="Snap back to sidebar"
-                  >
-                    <Minimize2 className="h-2.5 w-2.5 text-white/70" style={{ transform: 'rotate(180deg)' }} />
-                  </button>
-                </div>
+              <div className="flex items-center gap-1.5">
+                <GripHorizontal className="h-4 w-4 text-white/40" />
+                <span className="text-[10px] font-medium text-white/60 uppercase tracking-wide">Homework Player</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={(e) => { e.stopPropagation(); hwFloatingHandlers.onMinToggle(); }}
+                  onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); hwFloatingHandlers.onMinToggle(); }}
+                  className="w-6 h-6 rounded flex items-center justify-center hover:bg-white/20 active:bg-white/30 transition-colors"
+                  data-testid="hw-floating-minimize"
+                  title={hwFloating.minimized ? 'Expand' : 'Minimize'}
+                >
+                  {hwFloating.minimized ? <Maximize2 className="h-3 w-3 text-white/70" /> : <Minus className="h-3 w-3 text-white/70" />}
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); setHwFloating(prev => ({ ...prev, showControls: !prev.showControls })); }}
+                  onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setHwFloating(prev => ({ ...prev, showControls: !prev.showControls })); }}
+                  className="w-6 h-6 rounded flex items-center justify-center hover:bg-white/20 active:bg-white/30 transition-colors"
+                  data-testid="hw-floating-controls-toggle"
+                  title="Toggle player controls"
+                >
+                  <Play className="h-3 w-3 text-white/70" />
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); hwFloatingHandlers.onDock(); }}
+                  onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); hwFloatingHandlers.onDock(); }}
+                  className="w-6 h-6 rounded flex items-center justify-center hover:bg-white/20 active:bg-white/30 transition-colors"
+                  data-testid="hw-floating-dock"
+                  title="Snap back to sidebar"
+                >
+                  <ArrowDownToLine className="h-3 w-3 text-white/70" />
+                </button>
               </div>
             </div>
             {!hwFloating.minimized && (
