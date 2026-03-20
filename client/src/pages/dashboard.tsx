@@ -23154,11 +23154,11 @@ export default function Dashboard() {
                   WebkitBackdropFilter: 'blur(24px)',
                   borderTop: '1px solid rgba(255,255,255,0.25)',
                   boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15)',
-                  padding: '8px 12px 10px',
+                  padding: '6px 8px 8px',
                 }}
                 data-testid="hw-floating-player-controls"
               >
-                <div className="overflow-hidden rounded-lg mb-2" style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.12)', height: '24px', position: 'relative' }}>
+                <div className="overflow-hidden rounded-lg mb-1.5" style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(100,200,255,0.2)', height: '22px', position: 'relative' }}>
                   <div className="absolute inset-0 flex items-center" style={{ animation: 'ctrl-marquee 18s linear infinite', whiteSpace: 'nowrap', paddingLeft: '100%' }}>
                     <span className="text-[10px] font-medium mx-6" style={{ color: 'rgba(100,200,255,0.9)', fontFamily: "'Courier New', monospace", textShadow: '0 0 8px rgba(100,200,255,0.5)' }}>
                       Homework Player · Ready
@@ -23169,68 +23169,72 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <div className="mb-2 rounded overflow-hidden" style={{ height: '4px', background: 'rgba(255,255,255,0.1)' }}>
+                <div className="mb-1.5 rounded overflow-hidden" style={{ height: '5px', background: 'rgba(255,255,255,0.1)' }}>
                   <div className="h-full rounded transition-all duration-500" style={{ width: '0%', background: 'linear-gradient(90deg, rgba(100,200,255,1) 0%, rgba(100,200,255,0.7) 100%)', boxShadow: '0 0 8px rgba(100,200,255,0.4)' }} />
                 </div>
 
-                <div className="flex items-center justify-evenly" style={{ overflow: 'visible' }}>
+                <div className="flex items-center justify-between" style={{ overflow: 'visible', padding: '0 4px' }}>
                   <button className="w-8 h-8 flex flex-col items-center justify-center rounded-full hover:bg-white/10 transition-colors shrink-0" data-testid="hw-ctrl-restart" title="Restart" onClick={() => { const iframe = document.querySelector('iframe[name="pdf-reader-frame"]') as HTMLIFrameElement; if (iframe?.contentWindow) iframe.contentWindow.postMessage({ type: 'tts-restart' }, '*'); }}>
-                    <RefreshCw className="h-3.5 w-3.5 text-white/70" />
-                    <span className="text-[7px] text-white/50 leading-none mt-0.5">Restart</span>
+                    <RefreshCw className="h-3.5 w-3.5 text-white" />
+                    <span className="text-[7px] text-white/70 leading-none mt-0.5">Restart</span>
                   </button>
 
                   <button className="w-8 h-8 flex flex-col items-center justify-center rounded-full hover:bg-white/10 transition-colors shrink-0" data-testid="hw-ctrl-reset" title="Reset">
-                    <X className="h-3.5 w-3.5 text-white/70" />
-                    <span className="text-[7px] text-white/50 leading-none mt-0.5">Reset</span>
+                    <X className="h-3.5 w-3.5 text-white" />
+                    <span className="text-[7px] text-white/70 leading-none mt-0.5">Reset</span>
                   </button>
 
                   <button className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors shrink-0" data-testid="hw-ctrl-rewind" title="Rewind 15s">
-                    <RotateCcw className="h-3.5 w-3.5 text-white/70" />
+                    <RotateCcw className="h-3.5 w-3.5 text-white" />
+                    <span className="text-[8px] text-white font-medium ml-0.5">15s</span>
                   </button>
 
                   <button className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors shrink-0" data-testid="hw-ctrl-prev" title="Previous chunk">
-                    <SkipBack className="h-4 w-4 text-white/70" />
+                    <SkipBack className="h-4 w-4 text-white" />
                   </button>
 
-                  <button className="w-12 h-12 flex items-center justify-center rounded-full shrink-0" style={{ background: 'linear-gradient(135deg, rgba(100,200,255,0.8), rgba(80,160,255,0.6))', boxShadow: '0 0 16px rgba(100,200,255,0.3)', outline: '2px solid rgba(100,200,255,0.3)', outlineOffset: '2px' }} data-testid="hw-ctrl-play" title="Play">
-                    <Play className="h-5 w-5 text-white fill-white ml-0.5" />
+                  <button className="w-12 h-12 flex items-center justify-center rounded-full bg-red-600 hover:bg-red-500 shrink-0" style={{ outline: '2px solid rgba(255,80,80,0.5)', outlineOffset: '2px', boxShadow: '0 0 16px rgba(255,50,50,0.4)' }} data-testid="hw-ctrl-play" title="Stop">
+                    <Square className="h-5 w-5 text-white fill-white" />
                   </button>
 
                   <button className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors shrink-0" data-testid="hw-ctrl-next" title="Next chunk">
-                    <SkipForward className="h-4 w-4 text-white/70" />
+                    <SkipForward className="h-4 w-4 text-white" />
                   </button>
 
                   <button className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors shrink-0" data-testid="hw-ctrl-forward" title="Forward 15s">
-                    <RotateCw className="h-3.5 w-3.5 text-white/70" />
+                    <span className="text-[8px] text-white font-medium mr-0.5">15s</span>
+                    <RotateCw className="h-3.5 w-3.5 text-white" />
                   </button>
 
                   <button className="w-8 h-8 flex flex-col items-center justify-center rounded-full hover:bg-white/10 transition-colors shrink-0" data-testid="hw-ctrl-stop" title="Stop">
-                    <Square className="h-3.5 w-3.5 text-white/70 fill-white/70" />
-                    <span className="text-[7px] text-white/50 leading-none mt-0.5">Stop</span>
+                    <Square className="h-3.5 w-3.5 text-white fill-white" />
+                    <span className="text-[7px] text-white/70 leading-none mt-0.5">Stop</span>
                   </button>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '5px 8px', marginTop: '8px', background: 'rgba(255,255,255,0.07)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.12)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 6px', marginTop: '6px', background: 'rgba(255,255,255,0.07)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.12)' }}>
                   <div className="flex items-center gap-1 flex-shrink-0">
-                    <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Voice</span>
-                    <select style={{ background: 'rgba(255,255,255,0.1)', color: 'white', fontSize: '10px', borderRadius: '4px', padding: '2px 4px', border: '1px solid rgba(255,255,255,0.2)', outline: 'none', cursor: 'pointer', width: '100px' }}>
-                      <option value="echo">Echo - English</option>
+                    <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Voice</span>
+                    <select style={{ background: 'rgba(255,255,255,0.1)', color: 'white', fontSize: '9px', borderRadius: '4px', padding: '2px 4px', border: '1px solid rgba(255,255,255,0.2)', outline: 'none', cursor: 'pointer', maxWidth: '90px' }}>
+                      <option value="echo">Echo - English (Male, Cl...</option>
                     </select>
-                    <Volume2 className="w-3 h-3 text-white/40" />
+                    <Volume2 className="w-3 h-3 text-white/50" />
                   </div>
-                  <div style={{ width: '1px', height: '16px', background: 'rgba(255,255,255,0.15)' }} />
                   <div className="flex items-center gap-1 flex-shrink-0">
-                    <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Speed</span>
-                    <span style={{ fontSize: '10px', color: 'white', fontWeight: 500 }}>1x</span>
+                    <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Speed</span>
+                    <span style={{ fontSize: '7px', color: 'white', fontWeight: 'bold' }}>—</span>
+                    <input type="range" min="0.5" max="3" step="0.1" defaultValue="1" style={{ width: '30px', height: '2px', cursor: 'pointer', accentColor: 'white' }} />
+                    <span style={{ fontSize: '7px', color: 'white', fontWeight: 'bold' }}>+</span>
+                    <span style={{ fontSize: '9px', color: 'white', fontWeight: 600, minWidth: '18px', textAlign: 'center' }}>1x</span>
                   </div>
-                  <div style={{ width: '1px', height: '16px', background: 'rgba(255,255,255,0.15)' }} />
-                  <div className="flex items-center gap-1 flex-1">
-                    <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Vol</span>
-                    <div className="flex-1 rounded-full overflow-hidden" style={{ height: '3px', background: 'rgba(255,255,255,0.15)' }}>
-                      <div className="h-full rounded-full" style={{ width: '80%', background: 'rgba(100,200,255,0.6)' }} />
-                    </div>
-                    <Volume2 className="w-3 h-3 text-white/40" />
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Volume</span>
+                    <span style={{ fontSize: '7px', color: 'white', fontWeight: 'bold' }}>—</span>
+                    <input type="range" min="0" max="1" step="0.05" defaultValue="0.8" style={{ width: '30px', height: '2px', cursor: 'pointer', accentColor: 'white' }} />
+                    <span style={{ fontSize: '7px', color: 'white', fontWeight: 'bold' }}>+</span>
+                    <Volume2 className="w-3 h-3 text-white/50" />
                   </div>
+                  <button style={{ padding: '2px 8px', borderRadius: '4px', background: '#059669', fontSize: '9px', color: 'white', fontWeight: 500, border: 'none', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }} data-testid="hw-ctrl-test">Test</button>
                 </div>
               </div>
             )}
