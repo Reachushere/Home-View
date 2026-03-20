@@ -19454,21 +19454,21 @@ export default function Dashboard() {
                               .filter(t => !t.isCompleted && t.courseName && getTaskTime(t) > now.getTime())
                               .sort((a, b) => getTaskTime(a) - getTaskTime(b))[0];
                             const hoursUntil = nextSchoolTask ? (getTaskTime(nextSchoolTask) - now.getTime()) / (1000 * 60 * 60) : null;
-                            const displayTime = hoursUntil !== null ? (hoursUntil < 1 ? `${Math.max(1, Math.round(hoursUntil * 60))}m` : hoursUntil < 10 ? `${hoursUntil.toFixed(1)}h` : `${Math.round(hoursUntil)}h`) : '--';
+                            const displayTime = hoursUntil !== null ? (hoursUntil < 1 ? `${Math.max(1, Math.round(hoursUntil * 60))}` : hoursUntil < 10 ? `${hoursUntil.toFixed(1)}` : `${Math.round(hoursUntil)}`) : '--';
                             return (
                               <>
-                                {(missedCount > 0 || true) && (
+                                {missedCount > 0 && (
                                   <div className="absolute top-0 bottom-0 z-[3] pointer-events-none" style={{ left: '0px', width: `${gridSizes.timeSlotHeight + 3}px`, padding: '0px' }} data-testid="missed-tasks-indicator">
                                     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
                                       <img src={dueBoxImg} alt="" style={{ width: '100%', height: '100%', objectFit: 'fill', borderRadius: '5px', display: 'block' }} />
-                                      <span style={{ position: 'absolute', top: '18%', left: 0, right: 0, textAlign: 'center', fontSize: '13px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{missedCount || 0}</span>
+                                      <span style={{ position: 'absolute', top: '15%', left: 0, right: 0, textAlign: 'center', fontSize: '18px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{missedCount}</span>
                                     </div>
                                   </div>
                                 )}
                                 <div className="absolute top-0 bottom-0 z-[3] pointer-events-none" style={{ left: `${gridSizes.timeSlotHeight + 5}px`, right: '1px' }} data-testid="hours-until-next-task">
                                   <div style={{ width: '100%', height: '100%', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
                                     <img src={greenRectImg} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'fill', borderRadius: '5px' }} />
-                                    <span style={{ position: 'relative', zIndex: 1, fontSize: '14px', color: 'white', fontWeight: 900, lineHeight: 1, marginRight: '6px' }}>{displayTime}</span>
+                                    <span style={{ position: 'relative', zIndex: 1, fontSize: '20px', color: 'white', fontWeight: 900, lineHeight: 1, marginRight: '6px' }}>{displayTime}</span>
                                   </div>
                                 </div>
                               </>
