@@ -22408,11 +22408,9 @@ export default function Dashboard() {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, marginTop: '-3px' }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(100, 100, 100)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                      <div style={{ background: 'rgb(100, 100, 100)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(threeWeeksPlusStart, 'MMM').toUpperCase()}</div>
-                      <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(threeWeeksPlusStart, 'd')}</div>
+                      <div style={{ background: 'rgb(100, 100, 100)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(hwWeeklyTimeline[3]?.weekEnd || addDays(threeWeeksPlusStart, 6), 'MMM').toUpperCase()}</div>
+                      <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(hwWeeklyTimeline[3]?.weekEnd || addDays(threeWeeksPlusStart, 6), 'd')}</div>
                     </div>
-                    <span style={{ fontSize: '6px', color: 'white', lineHeight: 1 }}>&#9654;</span>
-                    <span className="text-[7px] text-white/60">END</span>
                   </div>
                 </div>
                 {dueBeyondTasks.length === 0 ? (
@@ -22457,35 +22455,46 @@ export default function Dashboard() {
                             return Math.abs(lastWeek.getTime() - wStart.getTime()) < 2 * 86400000;
                           });
                         })();
+                        const isLastSemWeek = groupTlEntry?.semLabel ? (() => {
+                          const idx = hwWeeklyTimeline.indexOf(groupTlEntry);
+                          return idx >= 0 && idx < hwWeeklyTimeline.length - 1 && hwWeeklyTimeline[idx + 1].semLabel !== groupTlEntry.semLabel;
+                        })() : false;
+                        const groupCalDate = groupTlEntry?.weekStart || group.weeks[group.weeks.length - 1];
+                        const groupWeekLabel = groupTlEntry?.label || (() => {
+                          const lw = group.weeks[group.weeks.length - 1];
+                          const ld = addDays(lw, 6);
+                          return lw.getMonth() === ld.getMonth() ? `${format(lw, 'MMM d')}-${format(ld, 'd')}` : `${format(lw, 'MMM d')} - ${format(ld, 'MMM d')}`;
+                        })();
+                        const groupSublabel = groupTlEntry?.sublabel || '';
                         return (
                           <div key={group.key}>
-                          {groupIdx > 0 && groupTlEntry && (
-                            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px', marginTop: '21px', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.2)', marginBottom: '17px' }}>
-                              <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{groupTlEntry.label}</span>
-                              <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', position: 'relative', top: '-1px' }}>({group.tasks.length})</span>
+                          {groupIdx > 0 && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '20px' }}>
+                              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px' }}>
+                                  <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{groupWeekLabel}</span>
+                                  <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', position: 'relative', top: '-1px' }}>({group.tasks.length})</span>
+                                </div>
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, marginTop: '-3px' }}>
+                                <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(100, 100, 100)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                                  <div style={{ background: 'rgb(100, 100, 100)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(groupCalDate, 'MMM').toUpperCase()}</div>
+                                  <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(groupCalDate, 'd')}</div>
+                                </div>
+                                {isLastSemWeek && (
+                                  <>
+                                    <span style={{ fontSize: '6px', color: 'white', lineHeight: 1 }}>&#9654;</span>
+                                    <span className="text-[7px] text-white/60">END</span>
+                                  </>
+                                )}
+                              </div>
                             </div>
                           )}
                           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '2px' }}>
                             <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginLeft: '10px', marginRight: '4px', overflow: 'visible' }} data-testid={`mini-cal-beyond-group-${group.key}`}>
-                              {groupIdx === 0 && (
+                              {groupSublabel && (
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
-                                {(() => {
-                                  const lastWeek = group.weeks[group.weeks.length - 1];
-                                  const lastWeekDays = eachDayOfInterval({ start: lastWeek, end: addDays(lastWeek, 6) });
-                                  const firstDay = lastWeekDays[0];
-                                  const lastDay = lastWeekDays[lastWeekDays.length - 1];
-                                  const tlEntry = hwWeeklyTimeline.find(w => {
-                                    const wStart = startOfDay(w.weekStart);
-                                    return Math.abs(lastWeek.getTime() - wStart.getTime()) < 2 * 86400000;
-                                  });
-                                  if (tlEntry && tlEntry.sublabel) {
-                                    return tlEntry.sublabel;
-                                  }
-                                  if (firstDay.getMonth() === lastDay.getMonth()) {
-                                    return `${format(firstDay, 'MMM d')} - ${format(lastDay, 'd')}`;
-                                  }
-                                  return `${format(firstDay, 'MMM d')} - ${format(lastDay, 'MMM d')}`;
-                                })()}
+                                {groupSublabel}
                               </span>
                               )}
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
