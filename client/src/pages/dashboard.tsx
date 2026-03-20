@@ -19456,18 +19456,22 @@ export default function Dashboard() {
                             const hoursUntil = nextSchoolTask ? (getTaskTime(nextSchoolTask) - now.getTime()) / (1000 * 60 * 60) : null;
                             const displayTime = hoursUntil !== null ? (hoursUntil < 1 ? `${Math.max(1, Math.round(hoursUntil * 60))}m` : hoursUntil < 10 ? `${hoursUntil.toFixed(1)}h` : `${Math.round(hoursUntil)}h`) : '--';
                             return (
-                              <div className="absolute top-0 bottom-0 z-[3] pointer-events-none flex items-stretch" style={{ left: `${gridSizes.timeSlotHeight + 5}px`, right: '1px', padding: '1px 0' }} data-testid="hours-until-next-task">
+                              <>
                                 {(missedCount > 0 || true) && (
-                                  <div className="shrink-0" style={{ aspectRatio: '1', position: 'relative', marginRight: '2px' }} data-testid="missed-tasks-indicator">
-                                    <img src={dueBoxImg} alt="" style={{ width: '100%', height: '100%', objectFit: 'fill', borderRadius: '5px', display: 'block' }} />
-                                    <span style={{ position: 'absolute', top: '15%', left: 0, right: 0, textAlign: 'center', fontSize: '13px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{missedCount}</span>
+                                  <div className="absolute top-0 bottom-0 z-[3] pointer-events-none" style={{ left: '1px', width: `${gridSizes.timeSlotHeight}px`, padding: '1px' }} data-testid="missed-tasks-indicator">
+                                    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+                                      <img src={dueBoxImg} alt="" style={{ width: '100%', height: '100%', objectFit: 'fill', borderRadius: '5px', display: 'block' }} />
+                                      <span style={{ position: 'absolute', top: '18%', left: 0, right: 0, textAlign: 'center', fontSize: '13px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{missedCount || 0}</span>
+                                    </div>
                                   </div>
                                 )}
-                                <div className="flex-1" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-                                  <img src={greenRectImg} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'fill', borderRadius: '5px' }} />
-                                  <span style={{ position: 'relative', zIndex: 1, fontSize: '14px', color: 'white', fontWeight: 900, lineHeight: 1, marginRight: '6px' }}>{displayTime}</span>
+                                <div className="absolute top-0 bottom-0 z-[3] pointer-events-none" style={{ left: `${gridSizes.timeSlotHeight + 5}px`, right: '1px', padding: '1px 0' }} data-testid="hours-until-next-task">
+                                  <div style={{ width: '100%', height: '100%', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+                                    <img src={greenRectImg} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'fill', borderRadius: '5px' }} />
+                                    <span style={{ position: 'relative', zIndex: 1, fontSize: '14px', color: 'white', fontWeight: 900, lineHeight: 1, marginRight: '6px' }}>{displayTime}</span>
+                                  </div>
                                 </div>
-                              </div>
+                              </>
                             );
                           })()}
                           {/* Hour boundary dotted line - skip for 12pm since it has AM/PM separator */}
