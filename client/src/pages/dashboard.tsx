@@ -17812,11 +17812,11 @@ export default function Dashboard() {
           </div>
           <div style={{ position: 'relative', height: '0px', zIndex: 50, overflow: 'visible' }}>
             <div
-              style={{ position: 'absolute', left: '4px', top: '-15px', width: '191px', height: '16px', touchAction: 'none', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto', overflow: 'visible' }}
+              style={{ position: 'absolute', left: '4px', top: '-18px', width: '191px', height: '18px', touchAction: 'none', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto', overflow: 'visible' }}
               data-testid="calendar-top-resize-handle"
             >
-              <div style={{ width: '191px', height: '16px', position: 'relative', display: 'flex', alignItems: 'center' }}>
-                <svg width="191" height="16" viewBox="0 0 42 16" preserveAspectRatio="none" style={{ position: 'absolute', top: 0, left: 0 }}>
+              <div style={{ width: '191px', height: '18px', position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <svg width="191" height="18" viewBox="0 0 42 16" preserveAspectRatio="none" style={{ position: 'absolute', top: 0, left: 0 }}>
                   <path d="M0.00 16.00 L42.00 16.00 L41.98 12.45 C41.98,12.44 41.52,12.14 41.05,11.12 C40.20,8.79 40.08,3.21 38.76,0.71 C38.59,0.40 38.37,0.17 38.10,0.00 L26.70,0.00 L15.30,0.00 L3.90,0.00 C3.63,0.17 3.41,0.40 3.24,0.71 C1.92,3.21 1.80,8.79 0.95,11.12 C0.94,11.51 0.01,12.48 0.01,12.49 L0.00 16.00 Z" fill="rgba(255,255,255,0.35)" stroke="rgba(255,255,255,0.35)" strokeWidth="1" />
                 </svg>
                 <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', width: '100%', height: '100%' }}>
