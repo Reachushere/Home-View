@@ -21827,7 +21827,7 @@ export default function Dashboard() {
                   </div>
                 )}
 
-                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-58px', marginBottom: '2px', position: 'relative', zIndex: 100 }}>
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-67px', marginBottom: '2px', position: 'relative', zIndex: 100 }}>
                   <div style={{ width: '54px', height: '19px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <span style={{ fontSize: '8px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
                   </div>
