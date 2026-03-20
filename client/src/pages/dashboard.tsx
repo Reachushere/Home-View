@@ -18831,8 +18831,8 @@ export default function Dashboard() {
                         const mb = Math.round(b * amount + bg * (1 - amount));
                         return `#${mr.toString(16).padStart(2,'0')}${mg.toString(16).padStart(2,'0')}${mb.toString(16).padStart(2,'0')}`;
                       };
-                      const startColor = soften(courseHexColor, 0.35);
-                      const endColor = soften(courseHexColorEnd || courseHexColor, 0.35);
+                      const startColor = soften(courseHexColor, 0.5);
+                      const endColor = soften(courseHexColorEnd || courseHexColor, 0.5);
                       return `linear-gradient(180deg, ${startColor} 0%, ${endColor} 100%)`;
                     })();
                     const handlePlayFiles = (fileType: 'module' | 'reading') => {
@@ -22831,7 +22831,7 @@ export default function Dashboard() {
                     <div
                       key={pd.courseCode}
                       style={{
-                        background: pd.progressBgSoft || pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
+                        background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
                         borderBottom: '0.5px solid rgba(255,255,255,0.2)',
                         display: 'flex',
                         flexDirection: 'column',
