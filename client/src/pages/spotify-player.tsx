@@ -509,20 +509,20 @@ function RoomIcon({ icon, size = 18, color }: { icon: string; size?: number; col
 function HoloPanel({ children, className = "", accent, glow = false, style = {}, sakura = false }: {
   children: React.ReactNode; className?: string; accent: string; glow?: boolean; style?: React.CSSProperties; sakura?: boolean;
 }) {
-  const bg = sakura ? 'rgba(20,55,55,0.75)' : 'rgba(25,50,95,0.75)';
-  const borderIdle = sakura ? 'rgba(45,212,191,0.25)' : 'rgba(80,160,255,0.3)';
-  const innerGlowIdle = sakura ? 'rgba(30,90,85,0.2)' : 'rgba(30,70,140,0.2)';
-  const topLineIdle = sakura ? 'rgba(45,212,191,0.35)' : 'rgba(80,180,255,0.4)';
-  const gradTop = sakura ? 'rgba(45,180,170,0.08)' : 'rgba(60,140,255,0.08)';
-  const gradBot = sakura ? 'rgba(40,160,150,0.06)' : 'rgba(50,120,240,0.06)';
+  const bg = sakura ? 'rgba(14,38,65,0.75)' : 'rgba(25,50,95,0.75)';
+  const borderIdle = sakura ? 'rgba(56,189,248,0.28)' : 'rgba(80,160,255,0.3)';
+  const innerGlowIdle = sakura ? 'rgba(20,60,120,0.2)' : 'rgba(30,70,140,0.2)';
+  const topLineIdle = sakura ? 'rgba(56,189,248,0.4)' : 'rgba(80,180,255,0.4)';
+  const gradTop = sakura ? 'rgba(40,160,240,0.08)' : 'rgba(60,140,255,0.08)';
+  const gradBot = sakura ? 'rgba(35,150,230,0.06)' : 'rgba(50,120,240,0.06)';
   return (
     <div className={`relative rounded-xl overflow-hidden ${className}`} style={{
       background: bg,
       backdropFilter: 'blur(30px)',
       border: `1px solid ${glow ? accent + '60' : borderIdle}`,
       boxShadow: glow
-        ? `0 0 30px ${accent}30, inset 0 1px 0 ${sakura ? 'rgba(45,212,191,0.2)' : 'rgba(80,180,255,0.2)'}, inset 0 0 60px ${innerGlowIdle}`
-        : `inset 0 1px 0 ${sakura ? 'rgba(45,212,191,0.15)' : 'rgba(80,180,255,0.15)'}, inset 0 0 40px ${innerGlowIdle}`,
+        ? `0 0 30px ${accent}30, inset 0 1px 0 ${sakura ? 'rgba(56,189,248,0.22)' : 'rgba(80,180,255,0.2)'}, inset 0 0 60px ${innerGlowIdle}`
+        : `inset 0 1px 0 ${sakura ? 'rgba(56,189,248,0.18)' : 'rgba(80,180,255,0.15)'}, inset 0 0 40px ${innerGlowIdle}`,
       ...style,
     }}>
       <div className="absolute inset-0 pointer-events-none" style={{
@@ -901,7 +901,7 @@ export default function SpotifyPlayerPage() {
       {notification && (
         <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 px-6 py-2.5 rounded-lg text-xs font-medium text-white/95"
           style={{
-            background: isSakura ? 'rgba(20,60,60,0.92)' : 'rgba(25,55,105,0.92)',
+            background: isSakura ? 'rgba(15,42,66,0.92)' : 'rgba(25,55,105,0.92)',
             border: `1px solid ${profile.accent}60`,
             backdropFilter: "blur(20px)",
             boxShadow: `0 0 30px ${profile.glow}, 0 0 60px rgba(0,0,0,0.3)`,
@@ -921,9 +921,9 @@ export default function SpotifyPlayerPage() {
 
         <div className="flex flex-col flex-shrink-0 relative" style={{ width: menuOpen ? 200 : 48, transition: "width 0.3s ease" }}>
           <div className="absolute inset-0" style={{
-            background: isSakura ? 'rgba(18,50,50,0.8)' : 'rgba(22,48,90,0.8)',
+            background: isSakura ? 'rgba(14,38,62,0.8)' : 'rgba(22,48,90,0.8)',
             backdropFilter: "blur(30px)",
-            borderRight: isSakura ? '1px solid rgba(45,212,191,0.2)' : '1px solid rgba(70,160,255,0.25)',
+            borderRight: isSakura ? '1px solid rgba(56,189,248,0.22)' : '1px solid rgba(70,160,255,0.25)',
           }} />
           <div className="absolute top-0 right-0 bottom-0 w-[1px]" style={{
             background: tc.sideEdge,
@@ -1091,7 +1091,7 @@ export default function SpotifyPlayerPage() {
                       onDragEnd={() => setDragItem(null)}
                       className="flex flex-col items-center gap-1 p-2 rounded-lg cursor-grab active:cursor-grabbing transition-all group hover:scale-105"
                       style={{
-                        background: isSakura ? "rgba(22,55,55,0.6)" : "rgba(30,60,110,0.6)",
+                        background: isSakura ? "rgba(16,40,65,0.6)" : "rgba(30,60,110,0.6)",
                         border: `1px solid ${tc.cardBorder}`,
                         animation: `fadeInUp 0.4s ease ${i * 60}ms both`,
                       }}
@@ -1166,12 +1166,12 @@ export default function SpotifyPlayerPage() {
           </div>
 
           <div className="flex-1 relative rounded-xl overflow-hidden" style={{
-            border: `1px solid ${dragItem ? `${profile.accent}50` : (isSakura ? 'rgba(45,212,191,0.12)' : 'rgba(50,140,255,0.15)')}`,
+            border: `1px solid ${dragItem ? `${profile.accent}50` : (isSakura ? 'rgba(56,189,248,0.15)' : 'rgba(50,140,255,0.15)')}`,
             transition: "border-color 0.3s ease, box-shadow 0.3s ease",
             boxShadow: dragItem
               ? `0 0 40px ${profile.glow}, inset 0 0 30px ${profile.glow}`
-              : `inset 0 1px 0 ${isSakura ? 'rgba(45,212,191,0.1)' : 'rgba(50,140,255,0.1)'}`,
-            background: isSakura ? "rgba(18,48,48,0.55)" : "rgba(25,50,90,0.55)",
+              : `inset 0 1px 0 ${isSakura ? 'rgba(56,189,248,0.12)' : 'rgba(50,140,255,0.1)'}`,
+            background: isSakura ? "rgba(14,38,62,0.55)" : "rgba(25,50,90,0.55)",
             backdropFilter: "blur(20px)",
             perspective: '1200px',
           }}>
@@ -1182,14 +1182,14 @@ export default function SpotifyPlayerPage() {
               transformStyle: 'preserve-3d',
             }}>
             <div className="absolute top-0 left-0 right-0 h-[1px]" style={{
-              background: isSakura ? 'linear-gradient(90deg, transparent, rgba(45,212,191,0.12), transparent)' : 'linear-gradient(90deg, transparent, rgba(0,180,255,0.15), transparent)',
+              background: isSakura ? 'linear-gradient(90deg, transparent, rgba(56,189,248,0.15), transparent)' : 'linear-gradient(90deg, transparent, rgba(0,180,255,0.15), transparent)',
             }} />
 
             {showSearch && (
-              <div className="absolute inset-0 z-20 p-4 overflow-y-auto" style={{ background: isSakura ? 'rgba(16,45,45,0.94)' : 'rgba(22,48,88,0.94)', backdropFilter: 'blur(20px)', scrollbarWidth: 'none' }}>
+              <div className="absolute inset-0 z-20 p-4 overflow-y-auto" style={{ background: isSakura ? 'rgba(12,35,58,0.94)' : 'rgba(22,48,88,0.94)', backdropFilter: 'blur(20px)', scrollbarWidth: 'none' }}>
                 <div className="flex items-center gap-2 mb-3">
                   <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-lg" style={{
-                    background: isSakura ? 'rgba(22,55,55,0.6)' : 'rgba(28,55,100,0.6)', border: `1px solid ${tc.cardBorder}`,
+                    background: isSakura ? 'rgba(16,40,65,0.6)' : 'rgba(28,55,100,0.6)', border: `1px solid ${tc.cardBorder}`,
                   }}>
                     <Search className="h-3.5 w-3.5" style={{ color: tc.voiceOff }} />
                     <input
@@ -1221,7 +1221,7 @@ export default function SpotifyPlayerPage() {
                       }
                     }}
                       className="flex items-center gap-2 p-2.5 rounded-lg transition-all text-left group"
-                      style={{ background: isSakura ? 'rgba(22,55,55,0.55)' : 'rgba(28,55,100,0.55)', border: `1px solid ${tc.cardBorder}` }}
+                      style={{ background: isSakura ? 'rgba(16,40,65,0.55)' : 'rgba(28,55,100,0.55)', border: `1px solid ${tc.cardBorder}` }}
                       data-testid={`search-result-${i}`}>
                       {r.image ? (
                         <img src={r.image} alt="" className="w-9 h-9 rounded-md object-cover flex-shrink-0"
@@ -1287,7 +1287,7 @@ export default function SpotifyPlayerPage() {
                         {speakerCount > 0 && (
                           <div className="flex items-center gap-0.5 mt-0.5 px-1.5 py-0.5 rounded-full"
                             style={{
-                              background: isActive ? `${profile.accent}20` : (isSakura ? 'rgba(18,48,48,0.6)' : 'rgba(25,50,90,0.6)'),
+                              background: isActive ? `${profile.accent}20` : (isSakura ? 'rgba(14,38,62,0.6)' : 'rgba(25,50,90,0.6)'),
                               border: `1px solid ${isActive ? `${profile.accent}40` : tc.roomBorder}`,
                             }}>
                             {[...Array(Math.min(speakerCount, 4))].map((_, si) => (
@@ -1354,7 +1354,7 @@ export default function SpotifyPlayerPage() {
                       onClick={() => playStation(station)}
                       className="flex items-center gap-2.5 p-3 rounded-lg transition-all group hover:scale-[1.02]"
                       style={{
-                        background: isSakura ? "rgba(22,55,55,0.6)" : "rgba(28,55,100,0.6)",
+                        background: isSakura ? "rgba(16,40,65,0.6)" : "rgba(28,55,100,0.6)",
                         border: `1px solid ${tc.cardBorder}`,
                         animation: `fadeInUp 0.3s ease ${i * 40}ms both`,
                       }}
@@ -1393,7 +1393,7 @@ export default function SpotifyPlayerPage() {
                     return (
                       <div key={spot.room} className="rounded-lg transition-all overflow-hidden"
                         style={{
-                          background: isActive ? `${profile.accent}15` : (isSakura ? "rgba(22,55,55,0.6)" : "rgba(28,55,100,0.6)"),
+                          background: isActive ? `${profile.accent}15` : (isSakura ? "rgba(16,40,65,0.6)" : "rgba(28,55,100,0.6)"),
                           border: `1px solid ${isActive ? `${profile.accent}40` : tc.cardBorder}`,
                           boxShadow: isActive ? `0 0 20px ${profile.glow}, inset 0 0 15px ${profile.glow}` : "none",
                           animation: `fadeInUp 0.3s ease ${i * 40}ms both`,
@@ -1428,7 +1428,7 @@ export default function SpotifyPlayerPage() {
                         </button>
                         {isExpanded && (
                           <div className="px-3 pb-3 flex flex-col gap-1.5" style={{
-                            borderTop: `1px solid ${isActive ? `${profile.accent}20` : (isSakura ? 'rgba(45,212,191,0.06)' : 'rgba(40,120,255,0.08)')}`,
+                            borderTop: `1px solid ${isActive ? `${profile.accent}20` : (isSakura ? 'rgba(56,189,248,0.08)' : 'rgba(40,120,255,0.08)')}`,
                           }}>
                             <div className="flex items-center justify-between pt-2 mb-1">
                               <span className="text-[10px] uppercase tracking-wider font-bold" style={{ color: `${profile.accent}70` }}>
@@ -1461,7 +1461,7 @@ export default function SpotifyPlayerPage() {
                               return (
                                 <div key={spk.entityId} className="rounded-lg overflow-hidden"
                                   style={{
-                                    background: isSakura ? 'rgba(18,48,48,0.6)' : 'rgba(22,45,85,0.6)',
+                                    background: isSakura ? 'rgba(14,38,62,0.6)' : 'rgba(22,45,85,0.6)',
                                     border: `1px solid ${tc.speakerBorder}`,
                                   }}>
                                   <button className="flex items-center gap-2 w-full text-left px-2.5 py-2"
@@ -1480,7 +1480,7 @@ export default function SpotifyPlayerPage() {
                                   </button>
                                   {isSpkExpanded && (
                                     <div className="px-2.5 pb-2 flex flex-wrap gap-1.5" style={{
-                                      borderTop: `1px solid ${isSakura ? 'rgba(45,212,191,0.06)' : 'rgba(40,120,255,0.06)'}`,
+                                      borderTop: `1px solid ${isSakura ? 'rgba(56,189,248,0.08)' : 'rgba(40,120,255,0.06)'}`,
                                       paddingTop: '6px',
                                     }}>
                                       <button onClick={() => {
@@ -1554,12 +1554,12 @@ export default function SpotifyPlayerPage() {
       </div>
 
       <div className="relative z-10" style={{
-        background: isSakura ? 'rgba(18,50,50,0.85)' : 'rgba(22,48,88,0.85)',
+        background: isSakura ? 'rgba(14,38,62,0.85)' : 'rgba(22,48,88,0.85)',
         backdropFilter: 'blur(30px)',
-        borderTop: isSakura ? '1px solid rgba(45,212,191,0.2)' : '1px solid rgba(70,160,255,0.25)',
+        borderTop: isSakura ? '1px solid rgba(56,189,248,0.22)' : '1px solid rgba(70,160,255,0.25)',
       }}>
         <div className="absolute top-0 left-0 right-0 h-[1px]" style={{
-          background: isSakura ? 'linear-gradient(90deg, transparent, rgba(45,212,191,0.3), transparent)' : 'linear-gradient(90deg, transparent, rgba(60,160,255,0.35), transparent)',
+          background: isSakura ? 'linear-gradient(90deg, transparent, rgba(56,189,248,0.35), transparent)' : 'linear-gradient(90deg, transparent, rgba(60,160,255,0.35), transparent)',
         }} />
 
         <div className="px-6 pt-2 pb-1">
@@ -1632,8 +1632,8 @@ export default function SpotifyPlayerPage() {
             <button onClick={toggleVoiceConfirm}
               className="ml-4 flex items-center gap-1 px-2 py-1 rounded-md transition-all hover:scale-105"
               style={{
-                background: voiceConfirm ? `${profile.accent}20` : (isSakura ? 'rgba(45,212,191,0.08)' : 'rgba(40,120,255,0.08)'),
-                border: `1px solid ${voiceConfirm ? profile.accent + '50' : (isSakura ? 'rgba(45,212,191,0.18)' : 'rgba(60,150,255,0.18)')}`,
+                background: voiceConfirm ? `${profile.accent}20` : (isSakura ? 'rgba(56,189,248,0.1)' : 'rgba(40,120,255,0.08)'),
+                border: `1px solid ${voiceConfirm ? profile.accent + '50' : (isSakura ? 'rgba(56,189,248,0.2)' : 'rgba(60,150,255,0.18)')}`,
                 color: voiceConfirm ? profile.accent : tc.voiceOff,
                 boxShadow: voiceConfirm ? `0 0 10px ${profile.glow}` : 'none',
               }}
@@ -1662,7 +1662,7 @@ export default function SpotifyPlayerPage() {
         }
         .holo-range {
           -webkit-appearance: none;
-          background: ${isSakura ? 'rgba(45,212,191,0.12)' : 'rgba(60,160,255,0.12)'};
+          background: ${isSakura ? 'rgba(56,189,248,0.15)' : 'rgba(60,160,255,0.12)'};
           border-radius: 4px;
           outline: none;
         }
