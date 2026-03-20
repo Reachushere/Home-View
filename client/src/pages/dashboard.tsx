@@ -121,6 +121,7 @@ import {
   SkipForward,
   SkipBack,
   RotateCcw,
+  RotateCw,
   Gauge,
   Menu,
   LayoutGrid,
@@ -136,6 +137,7 @@ import {
   Radio,
   Minus,
   ArrowDownToLine,
+  Music2,
   ListChecks,
   ZoomIn,
   ZoomOut,
@@ -11366,6 +11368,30 @@ export default function Dashboard() {
               onClick={() => setIsFeedbackOpen(true)}
             >
               <MessageSquare className="text-white" style={{ height: '20px', width: '20px' }} />
+            </Button>
+          </div>
+
+          {/* Spotify Button */}
+          <div className="pill-button-hover" style={{ 
+            marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+            border: '1.5px solid rgba(255,255,255,0.35)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
+              style={{ background: 'transparent' }}
+              data-testid="button-spotify-pill"
+              title="Spotify Player"
+              onClick={() => {
+                triggerButtonGlow('spotify');
+                window.open('/spotify', '_blank');
+              }}
+            >
+              <Music2 className="text-white" style={{ height: '20px', width: '20px' }} />
             </Button>
           </div>
 
@@ -22918,50 +22944,88 @@ export default function Dashboard() {
               <div
                 className="rounded-b-[12px]"
                 style={{
-                  background: 'rgba(0,0,0,0.4)',
-                  borderTop: '1px solid rgba(255,255,255,0.15)',
-                  padding: '8px 10px',
+                  background: 'rgba(255,255,255,0.16)',
+                  backdropFilter: 'blur(24px)',
+                  WebkitBackdropFilter: 'blur(24px)',
+                  borderTop: '1px solid rgba(255,255,255,0.25)',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15)',
+                  padding: '8px 12px 10px',
                 }}
                 data-testid="hw-floating-player-controls"
               >
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[9px] font-medium text-white/60 uppercase tracking-wider">Player Controls</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    className="w-7 h-7 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 active:bg-white/30 transition-colors"
-                    data-testid="hw-ctrl-restart"
-                    title="Restart"
-                    onClick={() => {
-                      const iframe = document.querySelector('iframe[name="pdf-reader-frame"]') as HTMLIFrameElement;
-                      if (iframe?.contentWindow) iframe.contentWindow.postMessage({ type: 'tts-restart' }, '*');
-                    }}
-                    onTouchEnd={(e) => { e.preventDefault(); }}
-                  >
-                    <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 text-white/70" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 4v6h6M23 20v-6h-6" /><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15" /></svg>
-                  </button>
-                  <button
-                    className="w-9 h-9 rounded-full flex items-center justify-center bg-white/15 hover:bg-white/25 active:bg-white/35 transition-colors"
-                    data-testid="hw-ctrl-play"
-                    title="Play / Stop"
-                  >
-                    <Play className="w-4 h-4 text-white" style={{ fill: 'currentColor' }} />
-                  </button>
-                  <button
-                    className="w-7 h-7 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 active:bg-white/30 transition-colors"
-                    data-testid="hw-ctrl-reset"
-                    title="Reset"
-                  >
-                    <X className="w-3.5 h-3.5 text-white/70" />
-                  </button>
-                  <div className="flex-1 mx-1">
-                    <div className="rounded-full overflow-hidden" style={{ height: '4px', backgroundColor: 'rgba(255,255,255,0.15)' }}>
-                      <div className="h-full rounded-full bg-white/40" style={{ width: '0%' }} />
-                    </div>
+                <div className="overflow-hidden rounded-lg mb-2" style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.12)', height: '24px', position: 'relative' }}>
+                  <div className="absolute inset-0 flex items-center" style={{ animation: 'ctrl-marquee 18s linear infinite', whiteSpace: 'nowrap', paddingLeft: '100%' }}>
+                    <span className="text-[10px] font-medium mx-6" style={{ color: 'rgba(100,200,255,0.9)', fontFamily: "'Courier New', monospace", textShadow: '0 0 8px rgba(100,200,255,0.5)' }}>
+                      Homework Player · Ready
+                    </span>
+                    <span className="text-[10px] font-medium mx-6" style={{ color: 'rgba(100,200,255,0.9)', fontFamily: "'Courier New', monospace", textShadow: '0 0 8px rgba(100,200,255,0.5)' }}>
+                      Homework Player · Ready
+                    </span>
                   </div>
                 </div>
-                <div className="mt-1.5 overflow-hidden" style={{ height: '14px' }}>
-                  <span className="text-[8px] text-white/40 italic">No file loaded</span>
+
+                <div className="mb-2 rounded overflow-hidden" style={{ height: '4px', background: 'rgba(255,255,255,0.1)' }}>
+                  <div className="h-full rounded transition-all duration-500" style={{ width: '0%', background: 'linear-gradient(90deg, rgba(100,200,255,1) 0%, rgba(100,200,255,0.7) 100%)', boxShadow: '0 0 8px rgba(100,200,255,0.4)' }} />
+                </div>
+
+                <div className="flex items-center justify-evenly" style={{ overflow: 'visible' }}>
+                  <button className="w-8 h-8 flex flex-col items-center justify-center rounded-full hover:bg-white/10 transition-colors shrink-0" data-testid="hw-ctrl-restart" title="Restart" onClick={() => { const iframe = document.querySelector('iframe[name="pdf-reader-frame"]') as HTMLIFrameElement; if (iframe?.contentWindow) iframe.contentWindow.postMessage({ type: 'tts-restart' }, '*'); }}>
+                    <RefreshCw className="h-3.5 w-3.5 text-white/70" />
+                    <span className="text-[7px] text-white/50 leading-none mt-0.5">Restart</span>
+                  </button>
+
+                  <button className="w-8 h-8 flex flex-col items-center justify-center rounded-full hover:bg-white/10 transition-colors shrink-0" data-testid="hw-ctrl-reset" title="Reset">
+                    <X className="h-3.5 w-3.5 text-white/70" />
+                    <span className="text-[7px] text-white/50 leading-none mt-0.5">Reset</span>
+                  </button>
+
+                  <button className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors shrink-0" data-testid="hw-ctrl-rewind" title="Rewind 15s">
+                    <RotateCcw className="h-3.5 w-3.5 text-white/70" />
+                  </button>
+
+                  <button className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors shrink-0" data-testid="hw-ctrl-prev" title="Previous chunk">
+                    <SkipBack className="h-4 w-4 text-white/70" />
+                  </button>
+
+                  <button className="w-12 h-12 flex items-center justify-center rounded-full shrink-0" style={{ background: 'linear-gradient(135deg, rgba(100,200,255,0.8), rgba(80,160,255,0.6))', boxShadow: '0 0 16px rgba(100,200,255,0.3)', outline: '2px solid rgba(100,200,255,0.3)', outlineOffset: '2px' }} data-testid="hw-ctrl-play" title="Play">
+                    <Play className="h-5 w-5 text-white fill-white ml-0.5" />
+                  </button>
+
+                  <button className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors shrink-0" data-testid="hw-ctrl-next" title="Next chunk">
+                    <SkipForward className="h-4 w-4 text-white/70" />
+                  </button>
+
+                  <button className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors shrink-0" data-testid="hw-ctrl-forward" title="Forward 15s">
+                    <RotateCw className="h-3.5 w-3.5 text-white/70" />
+                  </button>
+
+                  <button className="w-8 h-8 flex flex-col items-center justify-center rounded-full hover:bg-white/10 transition-colors shrink-0" data-testid="hw-ctrl-stop" title="Stop">
+                    <Square className="h-3.5 w-3.5 text-white/70 fill-white/70" />
+                    <span className="text-[7px] text-white/50 leading-none mt-0.5">Stop</span>
+                  </button>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '5px 8px', marginTop: '8px', background: 'rgba(255,255,255,0.07)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.12)' }}>
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Voice</span>
+                    <select style={{ background: 'rgba(255,255,255,0.1)', color: 'white', fontSize: '10px', borderRadius: '4px', padding: '2px 4px', border: '1px solid rgba(255,255,255,0.2)', outline: 'none', cursor: 'pointer', width: '100px' }}>
+                      <option value="echo">Echo - English</option>
+                    </select>
+                    <Volume2 className="w-3 h-3 text-white/40" />
+                  </div>
+                  <div style={{ width: '1px', height: '16px', background: 'rgba(255,255,255,0.15)' }} />
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Speed</span>
+                    <span style={{ fontSize: '10px', color: 'white', fontWeight: 500 }}>1x</span>
+                  </div>
+                  <div style={{ width: '1px', height: '16px', background: 'rgba(255,255,255,0.15)' }} />
+                  <div className="flex items-center gap-1 flex-1">
+                    <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Vol</span>
+                    <div className="flex-1 rounded-full overflow-hidden" style={{ height: '3px', background: 'rgba(255,255,255,0.15)' }}>
+                      <div className="h-full rounded-full" style={{ width: '80%', background: 'rgba(100,200,255,0.6)' }} />
+                    </div>
+                    <Volume2 className="w-3 h-3 text-white/40" />
+                  </div>
                 </div>
               </div>
             )}

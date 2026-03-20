@@ -36,7 +36,10 @@ import {
   ChevronDown,
   Mic,
   Maximize2,
-  Minimize2
+  Minimize2,
+  Minus,
+  GripHorizontal,
+  ArrowDownToLine
 } from "lucide-react";
 import type { FileRecord } from "@shared/schema";
 import { getWeekNumber } from "@shared/schema";
@@ -2778,51 +2781,42 @@ export default function PDFReaderPage() {
         </div>
       )}
 
-      {!followOnly && <div className={ctrlFloating.detached ? "fixed flex flex-col" : "relative flex-shrink-0 flex justify-center"} style={ctrlFloating.detached ? { zIndex: 9999, left: `${ctrlFloating.x}px`, top: `${ctrlFloating.y}px`, width: ctrlFloating.minimized ? '220px' : '580px', overflow: 'visible', transition: ctrlDragRef.current ? 'none' : 'width 0.25s ease', touchAction: 'none' } : { zIndex: 10, padding: '5px 20px 14px 20px' }}>
+      {!followOnly && <div className={ctrlFloating.detached ? "fixed flex flex-col" : "relative flex-shrink-0 flex justify-center"} style={ctrlFloating.detached ? { zIndex: 9999, left: `${ctrlFloating.x}px`, top: `${ctrlFloating.y}px`, width: ctrlFloating.minimized ? '220px' : 'min(95vw, 1200px)', overflow: 'visible', transition: ctrlDragRef.current ? 'none' : 'width 0.25s ease', touchAction: 'none' } : { zIndex: 10, padding: '5px 20px 14px 20px' }}>
         {ctrlFloating.detached && (
           <div
-            className="flex-shrink-0 select-none"
-            style={{ position: 'relative', height: '36px', touchAction: 'none' }}
+            className="flex items-center justify-between select-none cursor-grab active:cursor-grabbing"
+            style={{ padding: '4px 8px', background: 'rgba(255,255,255,0.12)', borderRadius: '10px 10px 0 0', borderBottom: '1px solid rgba(255,255,255,0.15)', touchAction: 'none' }}
+            onMouseDown={ctrlDragStart}
+            onTouchStart={ctrlDragStart}
             data-testid="ctrl-floating-titlebar"
           >
-            <div
-              className="absolute cursor-grab active:cursor-grabbing"
-              style={{ left: '50%', transform: 'translateX(-50%)', bottom: '0', width: '200px', height: '36px', zIndex: 1 }}
-              onMouseDown={ctrlDragStart}
-              onTouchStart={ctrlDragStart}
-            >
-              <img
-                src={dragTabPath}
-                alt=""
-                className="w-full h-full pointer-events-none"
-                style={{ filter: 'brightness(0.75) saturate(0)', opacity: 0.95 }}
-                draggable={false}
-              />
-              <div className="absolute inset-0 flex items-center justify-center gap-3" style={{ paddingTop: '6px' }}>
-                <button
-                  onClick={(e) => { e.stopPropagation(); setCtrlFloating(prev => ({ ...prev, minimized: !prev.minimized })); }}
-                  onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setCtrlFloating(prev => ({ ...prev, minimized: !prev.minimized })); }}
-                  className="w-6 h-6 rounded flex items-center justify-center hover:bg-white/20 active:bg-white/30 transition-colors"
-                  data-testid="ctrl-floating-minimize"
-                  title={ctrlFloating.minimized ? 'Expand' : 'Minimize'}
-                >
-                  {ctrlFloating.minimized ? <Maximize2 className="h-3 w-3 text-white/80" /> : <Minimize2 className="h-3 w-3 text-white/80" />}
-                </button>
-                <span className="text-[9px] font-medium text-white/60 tracking-wider uppercase" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>⋮⋮ Drag ⋮⋮</span>
-                <button
-                  onClick={(e) => { e.stopPropagation(); setCtrlFloating(prev => ({ ...prev, detached: false, minimized: false })); }}
-                  onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setCtrlFloating(prev => ({ ...prev, detached: false, minimized: false })); }}
-                  className="w-6 h-6 rounded flex items-center justify-center hover:bg-white/20 active:bg-white/30 transition-colors"
-                  data-testid="ctrl-floating-dock"
-                  title="Snap back to bottom"
-                >
-                  <Minimize2 className="h-3 w-3 text-white/80" style={{ transform: 'rotate(180deg)' }} />
-                </button>
-              </div>
+            <div className="flex items-center gap-1.5">
+              <GripHorizontal className="h-4 w-4 text-white/40" />
+              <span className="text-[10px] font-medium text-white/60 uppercase tracking-wide">Media Controls</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={(e) => { e.stopPropagation(); setCtrlFloating(prev => ({ ...prev, minimized: !prev.minimized })); }}
+                onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setCtrlFloating(prev => ({ ...prev, minimized: !prev.minimized })); }}
+                className="w-6 h-6 rounded flex items-center justify-center hover:bg-white/20 active:bg-white/30 transition-colors"
+                data-testid="ctrl-floating-minimize"
+                title={ctrlFloating.minimized ? 'Expand' : 'Minimize'}
+              >
+                {ctrlFloating.minimized ? <Maximize2 className="h-3 w-3 text-white/70" /> : <Minus className="h-3 w-3 text-white/70" />}
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); setCtrlFloating(prev => ({ ...prev, detached: false, minimized: false })); }}
+                onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setCtrlFloating(prev => ({ ...prev, detached: false, minimized: false })); }}
+                className="w-6 h-6 rounded flex items-center justify-center hover:bg-white/20 active:bg-white/30 transition-colors"
+                data-testid="ctrl-floating-dock"
+                title="Snap back to bottom"
+              >
+                <ArrowDownToLine className="h-3 w-3 text-white/70" />
+              </button>
             </div>
           </div>
         )}
-        {(!ctrlFloating.detached || !ctrlFloating.minimized) && <div className={ctrlFloating.detached ? "rounded-2xl" : "rounded-2xl mx-auto"} style={ctrlFloating.detached ? { overflow: 'visible', background: 'rgba(255,255,255,0.16)', backdropFilter: 'blur(24px)', border: `1px solid ${waveColor}44`, maxWidth: '1200px', width: '100%', boxShadow: `0 0 30px ${waveColor}33, 0 0 60px ${waveColor}18, inset 0 1px 0 rgba(255,255,255,0.15)` } : { background: 'rgba(255,255,255,0.16)', backdropFilter: 'blur(24px)', border: `1px solid ${waveColor}44`, maxWidth: '1200px', width: '100%', overflow: 'visible', boxShadow: `0 0 30px ${waveColor}33, 0 0 60px ${waveColor}18, inset 0 1px 0 rgba(255,255,255,0.15)` }}>
+        {(!ctrlFloating.detached || !ctrlFloating.minimized) && <div className={ctrlFloating.detached ? "" : "rounded-2xl mx-auto"} style={ctrlFloating.detached ? { overflow: 'visible', background: 'rgba(255,255,255,0.16)', backdropFilter: 'blur(24px)', border: `1px solid ${waveColor}44`, borderTop: 'none', borderRadius: '0 0 16px 16px', maxWidth: '1200px', width: '100%', boxShadow: `0 0 30px ${waveColor}33, 0 0 60px ${waveColor}18, inset 0 1px 0 rgba(255,255,255,0.15)` } : { background: 'rgba(255,255,255,0.16)', backdropFilter: 'blur(24px)', border: `1px solid ${waveColor}44`, maxWidth: '1200px', width: '100%', overflow: 'visible', boxShadow: `0 0 30px ${waveColor}33, 0 0 60px ${waveColor}18, inset 0 1px 0 rgba(255,255,255,0.15)` }}>
           <div className="relative px-4 pb-3 pt-2" style={{ overflow: 'visible' }}>
             {!ctrlFloating.detached && (
               <button
