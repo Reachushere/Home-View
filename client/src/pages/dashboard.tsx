@@ -9396,7 +9396,7 @@ export default function Dashboard() {
           }
           return '50%';
         })(), width: '50px', height: '15px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2147483647, pointerEvents: 'none' }}>
-          <span style={{ fontSize: '8px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
+          <span style={{ fontSize: '8px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.7px', lineHeight: 1 }}>Timeline</span>
         </div>,
         document.body
       )}
