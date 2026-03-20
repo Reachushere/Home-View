@@ -21835,7 +21835,7 @@ export default function Dashboard() {
                 {/* This Week Section */}
                 <div data-homework-section="thisweek" data-semester-label={hwWeeklyTimeline[0]?.semLabel || ''} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '5px' }}>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span className="text-[12px] font-semibold" style={{ color: isSameDay(startOfWeek(new Date(), { weekStartsOn: 6 }), startOfDay(hwWeeklyTimeline[0]?.weekStart)) ? '#ffff00' : '#ffffff' }}>{hwWeeklyTimeline[0]?.label || 'This week'}</span>
+                    <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[0]?.label || 'This week'}</span>
                     {hwWeeklyTimeline[0]?.sublabel && <span className="text-[8px]" style={{ color: '#ffffff', marginTop: '-1px', lineHeight: 1 }}>{hwWeeklyTimeline[0].sublabel}</span>}
                   </div>
                   <span className="text-[11px] font-semibold" style={{ color: '#ffffff' }}>{dueTomorrowTasks.length}</span>
