@@ -57,16 +57,17 @@ const PROFILES: Record<ProfileKey, {
   },
 };
 
-const ROOM_HOTSPOTS: { room: string; x: number; y: number; w: number; h: number }[] = [
-  { room: "Queen Bedroom", x: 5, y: 8, w: 22, h: 35 },
-  { room: "Closet", x: 5, y: 55, w: 14, h: 20 },
-  { room: "Cat Washroom", x: 2, y: 75, w: 18, h: 22 },
-  { room: "Pug Washroom", x: 20, y: 75, w: 12, h: 22 },
-  { room: "Hallway", x: 28, y: 5, w: 18, h: 40 },
-  { room: "Kitchen", x: 30, y: 25, w: 30, h: 40 },
-  { room: "Living Room", x: 30, y: 55, w: 32, h: 42 },
-  { room: "King Bedroom", x: 65, y: 15, w: 30, h: 48 },
-  { room: "Everywhere", x: 85, y: 75, w: 12, h: 18 },
+const ROOM_HOTSPOTS: { room: string; x: number; y: number; w: number; h: number; entityId: string; deviceType: string }[] = [
+  { room: "Balcony", x: 2, y: 72, w: 18, h: 25, entityId: "media_player.queen_bedroom", deviceType: "echo" },
+  { room: "Queen Bedroom", x: 2, y: 38, w: 18, h: 33, entityId: "media_player.queen_bedroom", deviceType: "echo" },
+  { room: "Pug Washroom", x: 2, y: 5, w: 16, h: 32, entityId: "media_player.echo_show_pug_am", deviceType: "echo_show" },
+  { room: "Hallway", x: 19, y: 5, w: 16, h: 32, entityId: "media_player.hallway_2", deviceType: "echo" },
+  { room: "Kitchen", x: 36, y: 5, w: 28, h: 45, entityId: "media_player.kitchen_lr", deviceType: "echo" },
+  { room: "Living Room", x: 36, y: 52, w: 28, h: 45, entityId: "media_player.kitchen_lr", deviceType: "echo" },
+  { room: "King Bedroom", x: 65, y: 30, w: 33, h: 50, entityId: "media_player.king_bedroom", deviceType: "echo" },
+  { room: "Cat Washroom", x: 65, y: 3, w: 18, h: 26, entityId: "media_player.cat_speakers", deviceType: "echo" },
+  { room: "Closet", x: 84, y: 3, w: 14, h: 26, entityId: "media_player.echo_closet_am", deviceType: "echo" },
+  { room: "Everywhere", x: 84, y: 78, w: 14, h: 18, entityId: "media_player.everywhere_5", deviceType: "group" },
 ];
 
 function formatMs(ms: number) {
@@ -280,17 +281,20 @@ export default function SpotifyPlayerPage() {
   };
 
   const playOnRoom = async (roomName: string, artistData: ProfileArtist) => {
+    const hotspot = ROOM_HOTSPOTS.find(h => h.room === roomName);
     const roomGroup = rooms.find(r => r.room === roomName);
-    if (!roomGroup || roomGroup.speakers.length === 0) {
+    const groupSpeaker = roomGroup?.speakers.find(s => s.type === "group") || roomGroup?.speakers[0];
+    const entityId = groupSpeaker?.entityId || hotspot?.entityId;
+    const deviceType = hotspot?.deviceType || "echo";
+    if (!entityId) {
       showNotif(`No speakers in ${roomName}`);
       return;
     }
-    const groupSpeaker = roomGroup.speakers.find(s => s.type === "group") || roomGroup.speakers[0];
     try {
       await fetch(`/api/spotify/play-on-speaker${authQuery}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ entityId: groupSpeaker.entityId, spotifyUri: artistData.uri, artistName: artistData.name }),
+        body: JSON.stringify({ entityId, spotifyUri: artistData.uri, artistName: artistData.name, deviceType }),
       });
       setActiveRooms(prev => new Set(prev).add(roomName));
       showNotif(`Playing ${artistData.name} in ${roomName}`);
