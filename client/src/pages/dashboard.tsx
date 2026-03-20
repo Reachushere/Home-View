@@ -19458,7 +19458,7 @@ export default function Dashboard() {
                             return (
                               <>
                                 {(missedCount > 0 || true) && (
-                                  <div className="absolute top-0 bottom-0 z-[3] pointer-events-none" style={{ left: '1px', width: `${gridSizes.timeSlotHeight}px`, padding: '1px' }} data-testid="missed-tasks-indicator">
+                                  <div className="absolute top-0 bottom-0 z-[3] pointer-events-none" style={{ left: '0px', width: `${gridSizes.timeSlotHeight + 3}px`, padding: '0px' }} data-testid="missed-tasks-indicator">
                                     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
                                       <img src={dueBoxImg} alt="" style={{ width: '100%', height: '100%', objectFit: 'fill', borderRadius: '5px', display: 'block' }} />
                                       <span style={{ position: 'absolute', top: '18%', left: 0, right: 0, textAlign: 'center', fontSize: '13px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{missedCount || 0}</span>
