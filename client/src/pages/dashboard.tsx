@@ -9388,7 +9388,14 @@ export default function Dashboard() {
             }
           }
           return '96px';
-        })(), left: '50%', transform: 'translateX(-50%)', width: '54px', height: '19px', backgroundColor: 'red', border: '2px solid yellow', borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2147483647, pointerEvents: 'none' }}>
+        })(), left: (() => {
+          const hw = homeworkScrollRef.current;
+          if (hw) {
+            const r = hw.getBoundingClientRect();
+            return `${r.left + r.width / 2 - 27}px`;
+          }
+          return '50%';
+        })(), width: '54px', height: '19px', backgroundColor: 'red', border: '2px solid yellow', borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2147483647, pointerEvents: 'none' }}>
           <span style={{ fontSize: '8px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
         </div>,
         document.body
