@@ -21711,7 +21711,7 @@ export default function Dashboard() {
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks due today</div>
                 ) : (
                   <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', overflow: 'hidden' }}>
+                    <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginLeft: '10px', marginRight: '4px', overflow: 'visible' }}>
                       <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                         {format(new Date(), 'MMMM d')}
                       </span>
@@ -21727,7 +21727,7 @@ export default function Dashboard() {
                           const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
                           return (
                             <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                              <div style={{ position: 'absolute', top: '-2px', bottom: '-2px', left: '-3px', right: '-3px', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.08)', border: '0.5px solid rgba(255,255,255,0.15)' }} />
+                              <div style={{ position: 'absolute', top: '-2px', bottom: '-2px', left: '-3px', right: '-3px', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.15)', border: '0.5px solid rgba(255,255,255,0.55)' }} />
                               <div style={{ position: 'relative', display: 'flex', gap: '2px', padding: '2px 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
                                 {days.map((d, di) => {
                                   const isToday = isSameDay(d, todayDate);
