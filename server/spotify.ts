@@ -192,3 +192,53 @@ export async function next() {
 export async function previous() {
   return spotifyFetch('/me/player/previous', 'POST');
 }
+
+export async function getPlaylists(limit: number = 50) {
+  return spotifyFetch(`/me/playlists?limit=${limit}`);
+}
+
+export async function getSavedAlbums(limit: number = 50) {
+  return spotifyFetch(`/me/albums?limit=${limit}`);
+}
+
+export async function getTopArtists(limit: number = 50) {
+  return spotifyFetch(`/me/top/artists?limit=${limit}&time_range=medium_term`);
+}
+
+export async function getSavedTracks(limit: number = 50) {
+  return spotifyFetch(`/me/tracks?limit=${limit}`);
+}
+
+export async function setVolume(volumePercent: number) {
+  return spotifyFetch(`/me/player/volume?volume_percent=${Math.round(volumePercent)}`, 'PUT');
+}
+
+export async function getDevices() {
+  return spotifyFetch('/me/player/devices');
+}
+
+export async function playContext(contextUri: string, offset?: number) {
+  const body: any = { context_uri: contextUri };
+  if (offset !== undefined) body.offset = { position: offset };
+  return spotifyFetch('/me/player/play', 'PUT', body);
+}
+
+export async function playTracks(uris: string[]) {
+  return spotifyFetch('/me/player/play', 'PUT', { uris });
+}
+
+export async function setShuffle(state: boolean) {
+  return spotifyFetch(`/me/player/shuffle?state=${state}`, 'PUT');
+}
+
+export async function setRepeat(state: string) {
+  return spotifyFetch(`/me/player/repeat?state=${state}`, 'PUT');
+}
+
+export async function getPlaybackState() {
+  return spotifyFetch('/me/player');
+}
+
+export async function search(query: string, types: string = 'track,artist,album,playlist', limit: number = 20) {
+  return spotifyFetch(`/search?q=${encodeURIComponent(query)}&type=${types}&limit=${limit}`);
+}

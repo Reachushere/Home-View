@@ -13578,6 +13578,188 @@ Return ONLY the JSON object, no markdown formatting.`;
     }
   });
 
+  app.get("/api/spotify/playlists", async (_req, res) => {
+    try {
+      const data = await spotifyApi.getPlaylists();
+      const items = (data?.items || []).map((p: any) => ({
+        id: p.id,
+        name: p.name,
+        image: p.images?.[0]?.url || "",
+        imageSmall: p.images?.[p.images.length - 1]?.url || p.images?.[0]?.url || "",
+        trackCount: p.tracks?.total || 0,
+        uri: p.uri,
+        owner: p.owner?.display_name || "",
+      }));
+      res.json(items);
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to fetch playlists" });
+    }
+  });
+
+  app.get("/api/spotify/albums", async (_req, res) => {
+    try {
+      const data = await spotifyApi.getSavedAlbums();
+      const items = (data?.items || []).map((item: any) => ({
+        id: item.album.id,
+        name: item.album.name,
+        artist: item.album.artists?.map((a: any) => a.name).join(", ") || "",
+        image: item.album.images?.[0]?.url || "",
+        imageSmall: item.album.images?.[item.album.images.length - 1]?.url || item.album.images?.[0]?.url || "",
+        trackCount: item.album.total_tracks || 0,
+        uri: item.album.uri,
+        year: item.album.release_date?.substring(0, 4) || "",
+      }));
+      res.json(items);
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to fetch albums" });
+    }
+  });
+
+  app.get("/api/spotify/artists", async (_req, res) => {
+    try {
+      const data = await spotifyApi.getTopArtists();
+      const items = (data?.items || []).map((a: any) => ({
+        id: a.id,
+        name: a.name,
+        image: a.images?.[0]?.url || "",
+        imageSmall: a.images?.[a.images.length - 1]?.url || a.images?.[0]?.url || "",
+        genres: a.genres?.slice(0, 3) || [],
+        uri: a.uri,
+      }));
+      res.json(items);
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to fetch artists" });
+    }
+  });
+
+  app.get("/api/spotify/tracks", async (_req, res) => {
+    try {
+      const data = await spotifyApi.getSavedTracks();
+      const items = (data?.items || []).map((item: any) => ({
+        id: item.track.id,
+        name: item.track.name,
+        artist: item.track.artists?.map((a: any) => a.name).join(", ") || "",
+        album: item.track.album?.name || "",
+        image: item.track.album?.images?.[0]?.url || "",
+        imageSmall: item.track.album?.images?.[item.track.album.images.length - 1]?.url || "",
+        duration: item.track.duration_ms || 0,
+        uri: item.track.uri,
+      }));
+      res.json(items);
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to fetch tracks" });
+    }
+  });
+
+  app.put("/api/spotify/volume", async (req, res) => {
+    try {
+      const { volume } = req.body;
+      await spotifyApi.setVolume(volume);
+      res.json({ ok: true });
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to set volume" });
+    }
+  });
+
+  app.put("/api/spotify/play-context", async (req, res) => {
+    try {
+      const { uri, offset } = req.body;
+      await spotifyApi.playContext(uri, offset);
+      res.json({ ok: true });
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to play" });
+    }
+  });
+
+  app.put("/api/spotify/play-tracks", async (req, res) => {
+    try {
+      const { uris } = req.body;
+      await spotifyApi.playTracks(uris);
+      res.json({ ok: true });
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to play tracks" });
+    }
+  });
+
+  app.put("/api/spotify/shuffle", async (req, res) => {
+    try {
+      const { state } = req.body;
+      await spotifyApi.setShuffle(state);
+      res.json({ ok: true });
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to set shuffle" });
+    }
+  });
+
+  app.put("/api/spotify/repeat", async (req, res) => {
+    try {
+      const { state } = req.body;
+      await spotifyApi.setRepeat(state);
+      res.json({ ok: true });
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to set repeat" });
+    }
+  });
+
+  app.get("/api/spotify/playback-state", async (_req, res) => {
+    try {
+      const data = await spotifyApi.getPlaybackState();
+      if (!data) {
+        res.json({ active: false });
+        return;
+      }
+      res.json({
+        active: true,
+        volume: data.device?.volume_percent ?? 50,
+        shuffle: data.shuffle_state ?? false,
+        repeat: data.repeat_state ?? "off",
+        deviceName: data.device?.name || "Unknown",
+        deviceType: data.device?.type || "Unknown",
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to get playback state" });
+    }
+  });
+
+  app.get("/api/spotify/search", async (req, res) => {
+    try {
+      const q = req.query.q as string;
+      if (!q) { res.json({ tracks: [], artists: [], albums: [], playlists: [] }); return; }
+      const data = await spotifyApi.search(q);
+      res.json({
+        tracks: (data?.tracks?.items || []).map((t: any) => ({
+          id: t.id, name: t.name,
+          artist: t.artists?.map((a: any) => a.name).join(", ") || "",
+          album: t.album?.name || "",
+          image: t.album?.images?.[0]?.url || "",
+          imageSmall: t.album?.images?.[t.album.images.length - 1]?.url || "",
+          duration: t.duration_ms || 0, uri: t.uri,
+        })),
+        artists: (data?.artists?.items || []).map((a: any) => ({
+          id: a.id, name: a.name,
+          image: a.images?.[0]?.url || "",
+          imageSmall: a.images?.[a.images.length - 1]?.url || "",
+          genres: a.genres?.slice(0, 3) || [], uri: a.uri,
+        })),
+        albums: (data?.albums?.items || []).map((a: any) => ({
+          id: a.id, name: a.name,
+          artist: a.artists?.map((ar: any) => ar.name).join(", ") || "",
+          image: a.images?.[0]?.url || "",
+          imageSmall: a.images?.[a.images.length - 1]?.url || "",
+          year: a.release_date?.substring(0, 4) || "", uri: a.uri,
+        })),
+        playlists: (data?.playlists?.items || []).map((p: any) => ({
+          id: p.id, name: p.name,
+          image: p.images?.[0]?.url || "",
+          imageSmall: p.images?.[p.images.length - 1]?.url || p.images?.[0]?.url || "",
+          owner: p.owner?.display_name || "", uri: p.uri,
+        })),
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to search" });
+    }
+  });
+
   return httpServer;
 }
 
