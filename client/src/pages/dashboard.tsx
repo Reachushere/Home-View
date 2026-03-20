@@ -8759,29 +8759,37 @@ export default function Dashboard() {
   const dueThisWeekTasks = [...dueNextWeekTasks, ...dueTwoWeeksTasks];
 
   const hwWeeklyTimeline = useMemo(() => {
+    const NUM_WEEKS = 13;
     const semDefs: Array<{ label: string; start: Date; end: Date }> = [];
-    for (let y = 2026; y <= 2029; y++) {
-      semDefs.push({ label: 'Winter ' + y, start: new Date(y, 0, 13), end: new Date(y, 3, 17) });
-      semDefs.push({ label: 'Spring/Summer ' + y, start: new Date(y, 4, 5), end: new Date(y, 7, 4) });
-      semDefs.push({ label: 'Fall ' + y, start: new Date(y, 8, 8), end: new Date(y, 11, 7) });
+    for (let y = 2025; y <= 2030; y++) {
+      const winterStart = new Date(y, 0, 12);
+      const winterW1Sat = startOfWeek(winterStart, { weekStartsOn: 6 });
+      semDefs.push({ label: 'Winter ' + y, start: winterW1Sat, end: addDays(winterW1Sat, NUM_WEEKS * 7 - 1) });
+
+      const springSumStart = new Date(y, 4, 5);
+      const springSumW1Sat = startOfWeek(springSumStart, { weekStartsOn: 6 });
+      semDefs.push({ label: 'Spring/Summer ' + y, start: springSumW1Sat, end: addDays(springSumW1Sat, NUM_WEEKS * 7 - 1) });
+
+      const fallStart = new Date(y, 8, 8);
+      const fallW1Sat = startOfWeek(fallStart, { weekStartsOn: 6 });
+      semDefs.push({ label: 'Fall ' + y, start: fallW1Sat, end: addDays(fallW1Sat, NUM_WEEKS * 7 - 1) });
     }
     const todayStart = startOfDay(new Date());
     const currentWeekSat = startOfWeek(todayStart, { weekStartsOn: 6 });
     const result: Array<{ weekStart: Date; weekEnd: Date; label: string; sublabel: string; semLabel: string | null; weekNum: number | null }> = [];
     let cursor = currentWeekSat;
-    const endLimit = new Date(2030, 3, 17);
+    const endLimit = new Date(2030, 11, 31);
     while (cursor < endLimit) {
       const wStart = new Date(cursor);
       const wEnd = addDays(wStart, 6);
-      const wMid = addDays(wStart, 3);
       let matched: (typeof semDefs)[0] | null = null;
       let wNum: number | null = null;
       for (const sem of semDefs) {
-        const semSat = startOfWeek(sem.start, { weekStartsOn: 6 });
-        if (wMid >= semSat && wMid <= sem.end) {
+        if (wStart >= sem.start && wStart <= sem.end) {
           matched = sem;
-          const diffD = Math.floor((wStart.getTime() - semSat.getTime()) / 86400000);
+          const diffD = Math.floor((wStart.getTime() - sem.start.getTime()) / 86400000);
           wNum = Math.floor(diffD / 7) + 1;
+          if (wNum > NUM_WEEKS) { matched = null; wNum = null; }
           break;
         }
       }
