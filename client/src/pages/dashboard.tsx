@@ -21132,7 +21132,7 @@ export default function Dashboard() {
                     <div
                       key={tab.semLabel}
                       className={`cursor-pointer${isActive ? ' semester-tab-bounce' : ''}`}
-                      style={{ position: 'absolute', bottom: `${reversedIdx * 53 + reversedIdx * 3 + 2 + (tabIdx === 0 ? 1 : 0)}px`, width: '18px', height: '88px', zIndex: semTabs.length - tabIdx, clipPath: reversedIdx === 0 ? 'inset(0 0 0 2px)' : ((tab.letter === 'F' && tab.year === '28')) ? 'inset(0 0 0 2px)' : undefined }}
+                      style={{ position: 'absolute', bottom: `${reversedIdx * 53 + reversedIdx * 3 + 2 + (tabIdx === 0 ? 1 : 0)}px`, width: '18px', height: '88px', zIndex: semTabs.length - tabIdx, clipPath: reversedIdx === 0 ? 'inset(0 0 0 2px)' : ((tab.letter === 'F' && tab.year === '28') || (tab.letter === 'S' && tab.year === '28')) ? 'inset(0 0 0 2px)' : undefined }}
                       onClick={() => {
                         if (!homeworkScrollRef.current) return;
                         const idx = hwWeeklyTimeline.findIndex(w => w.semLabel === tab.semLabel);
