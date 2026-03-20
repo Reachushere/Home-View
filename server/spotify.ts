@@ -254,3 +254,11 @@ export async function getRelatedArtists(artistId: string) {
 export async function getArtistTopTracks(artistId: string, market: string = 'US') {
   return spotifyFetch(`/artists/${artistId}/top-tracks?market=${market}`);
 }
+
+export async function getArtistById(artistId: string) {
+  return spotifyFetch(`/artists/${artistId}`);
+}
+
+export async function getPlaylistById(playlistId: string) {
+  return spotifyFetch(`/playlists/${playlistId}?fields=id,name,images`);
+}

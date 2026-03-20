@@ -13847,6 +13847,38 @@ Return ONLY the JSON object, no markdown formatting.`;
     }
   });
 
+  app.post("/api/spotify/bulk-images", async (req, res) => {
+    try {
+      const { items } = req.body as { items: { name: string; uri: string }[] };
+      if (!items || !Array.isArray(items)) return res.json({ images: {} });
+      const images: Record<string, string> = {};
+      const ids: Record<string, string> = {};
+      for (const item of items) {
+        try {
+          const parts = item.uri.split(":");
+          const type = parts[1];
+          const id = parts[2];
+          if (type === "artist") {
+            const data = await spotifyApi.getArtistById(id);
+            if (data?.images?.[0]?.url) images[item.name] = data.images[0].url;
+            if (data?.id) ids[item.name] = data.id;
+          } else if (type === "playlist") {
+            const data = await spotifyApi.getPlaylistById(id);
+            if (data?.images?.[0]?.url) images[item.name] = data.images[0].url;
+          } else if (type === "track") {
+            const searchData = await spotifyApi.search(item.name, 'track', 1);
+            const track = searchData?.tracks?.items?.[0];
+            if (track?.album?.images?.[0]?.url) images[item.name] = track.album.images[0].url;
+          }
+        } catch {}
+      }
+      res.json({ images, ids });
+    } catch (error: any) {
+      console.error("[Spotify] Bulk images error:", error.message);
+      res.status(500).json({ error: "Failed to fetch images" });
+    }
+  });
+
   app.get("/api/spotify/devices", async (_req, res) => {
     try {
       const data = await spotifyApi.getDevices();

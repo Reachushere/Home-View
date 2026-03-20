@@ -34,7 +34,7 @@ interface ProfileArtist {
 type ProfileKey = "bryn" | "yasu" | "guest";
 
 interface StationShortcut {
-  name: string; command: string; uri?: string; icon?: string;
+  name: string; command: string; uri?: string; icon?: string; image?: string;
 }
 
 const STATION_SHORTCUTS: StationShortcut[] = [
@@ -588,10 +588,27 @@ export default function SpotifyPlayerPage() {
   const artistIdsRef = useRef<Record<string, string>>({});
 
   const fetchArtistImages = useCallback(async () => {
-    const all = [...PROFILES.bryn.artists, ...PROFILES.yasu.artists];
+    const profileArtists = [...PROFILES.bryn.artists, ...PROFILES.yasu.artists, ...PROFILES.guest.artists];
+    const stationItems = STATION_SHORTCUTS.filter(s => s.uri).map(s => ({ name: s.name, uri: s.uri!, searchQuery: s.name }));
+    const all = [...profileArtists, ...stationItems];
+    const uniqueItems = all.filter((a, i, arr) => arr.findIndex(x => x.name === a.name) === i);
+    try {
+      const res = await fetch(`/api/spotify/bulk-images${authQuery}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items: uniqueItems.map(a => ({ name: a.name, uri: a.uri })) }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setArtistImages(data.images || {});
+        artistIdsRef.current = data.ids || {};
+        fetchRecommendations(data.ids || {});
+        return;
+      }
+    } catch {}
     const imgs: Record<string, string> = {};
     const ids: Record<string, string> = {};
-    for (const a of all) {
+    for (const a of uniqueItems) {
       try {
         const res = await fetch(`/api/spotify/search?q=${encodeURIComponent(a.searchQuery)}&${authQuery.slice(1)}`);
         if (res.ok) {
@@ -1287,7 +1304,9 @@ export default function SpotifyPlayerPage() {
                   <Radio className="h-3.5 w-3.5" /> {isSakura ? "ステーション＆ショートカット" : "Stations & Shortcuts"}
                 </div>
                 <div className="grid grid-cols-3 gap-2">
-                  {STATION_SHORTCUTS.map((station, i) => (
+                  {STATION_SHORTCUTS.map((station, i) => {
+                    const stImg = artistImages[station.name] || station.image;
+                    return (
                     <button key={station.name}
                       onClick={() => playStation(station)}
                       className="flex items-center gap-2.5 p-3 rounded-lg transition-all group hover:scale-[1.02]"
@@ -1297,11 +1316,21 @@ export default function SpotifyPlayerPage() {
                         animation: `fadeInUp 0.3s ease ${i * 40}ms both`,
                       }}
                       data-testid={`station-${station.name.toLowerCase().replace(/\s/g, "-")}`}>
-                      <span className="text-lg flex-shrink-0" style={{ filter: `drop-shadow(0 0 4px ${tc.dotIdle})` }}>{station.icon}</span>
+                      {stImg ? (
+                        <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0"
+                          style={{
+                            border: `1.5px solid ${profile.accent}50`,
+                            boxShadow: `0 0 10px ${profile.glow}`,
+                            background: `url(${stImg}) center/cover`,
+                          }} />
+                      ) : (
+                        <span className="text-lg flex-shrink-0" style={{ filter: `drop-shadow(0 0 4px ${tc.dotIdle})` }}>{station.icon}</span>
+                      )}
                       <span className="text-[13px] font-medium text-left truncate"
                         style={{ color: tc.navIdle }}>{station.name}</span>
                     </button>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}
