@@ -22754,12 +22754,12 @@ export default function Dashboard() {
           >
             <div
               className="flex-shrink-0 select-none"
-              style={{ position: 'relative', height: '32px', touchAction: 'none' }}
+              style={{ position: 'relative', height: '36px', touchAction: 'none' }}
               data-testid="hw-floating-titlebar"
             >
               <div
                 className="absolute cursor-grab active:cursor-grabbing"
-                style={{ left: '50%', transform: 'translateX(-50%)', bottom: '0', width: '180px', height: '32px', zIndex: 1 }}
+                style={{ left: '50%', transform: 'translateX(-50%)', bottom: '0', width: '200px', height: '36px', zIndex: 1 }}
                 onMouseDown={hwFloatingHandlers.onDragStart}
                 onTouchStart={hwFloatingHandlers.onDragStart}
               >
@@ -22767,10 +22767,10 @@ export default function Dashboard() {
                   src={dragTabPath}
                   alt=""
                   className="w-full h-full pointer-events-none"
-                  style={{ filter: 'brightness(0.5) saturate(0)', opacity: 1 }}
+                  style={{ filter: 'brightness(0.85) saturate(0)', opacity: 1 }}
                   draggable={false}
                 />
-                <div className="absolute inset-0 flex items-center justify-center gap-2.5" style={{ paddingTop: '5px' }}>
+                <div className="absolute inset-0 flex items-center justify-center gap-2.5" style={{ paddingTop: '6px' }}>
                   <button
                     onClick={(e) => { e.stopPropagation(); hwFloatingHandlers.onMinToggle(); }}
                     onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); hwFloatingHandlers.onMinToggle(); }}
@@ -22835,8 +22835,8 @@ export default function Dashboard() {
                           <div
                             className="flex-1 flex flex-col justify-center cursor-pointer active:bg-white/10 transition-colors"
                             style={{ paddingLeft: '8px', paddingRight: '6px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', position: 'relative', minHeight: '30px', paddingTop: '3px', paddingBottom: '3px' }}
-                            onClick={pd.handlePlayModule}
-                            onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayModule(); }}
+                            onClick={() => setHwFloating(prev => ({ ...prev, showControls: !prev.showControls }))}
+                            onTouchEnd={(e) => { e.preventDefault(); setHwFloating(prev => ({ ...prev, showControls: !prev.showControls })); }}
                           >
                             {!pd.moduleP.hasFiles ? (
                               <>
@@ -22856,14 +22856,17 @@ export default function Dashboard() {
                                   )}
                                 </div>
                                 <div className="flex items-center gap-[5px]">
-                                  <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', flex: 1, marginRight: '51px', marginLeft: '1px', marginTop: '4px' }}>
+                                  <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', flex: 1, marginRight: '68px', marginLeft: '1px', marginTop: '4px' }}>
                                     {pd.moduleP.percent > 0 && (
                                       <div className="h-full rounded-full" style={{ width: `${pd.moduleP.percent}%`, backgroundColor: getProgressColor(pd.moduleP.percent) }} />
                                     )}
                                   </div>
-                                  <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ position: 'absolute', right: '31px', top: '50%', transform: 'translateY(-50%)' }}>{pd.moduleP.percent}%</span>
-                                  <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '6px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`float-play-module-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayModule(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayModule(); }}>
-                                    <Play className="hover:opacity-80 transition-opacity duration-200" style={{ width: '16px', height: '16px', opacity: pd.moduleP.percent === 100 ? 0.4 : 1, color: '#fff', fill: 'currentColor' }} />
+                                  <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ position: 'absolute', right: '48px', top: '50%', transform: 'translateY(-50%)' }}>{pd.moduleP.percent}%</span>
+                                  <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '26px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`float-play-module-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); setHwFloating(prev => ({ ...prev, showControls: !prev.showControls })); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setHwFloating(prev => ({ ...prev, showControls: !prev.showControls })); }}>
+                                    <Play className="hover:opacity-80 transition-opacity duration-200" style={{ width: '14px', height: '14px', opacity: pd.moduleP.percent === 100 ? 0.4 : 1, color: '#fff', fill: 'currentColor' }} />
+                                  </div>
+                                  <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '6px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`float-reader-module-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayModule(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayModule(); }}>
+                                    <Headphones className="hover:opacity-80 transition-opacity duration-200" style={{ width: '14px', height: '14px', opacity: pd.moduleP.percent === 100 ? 0.4 : 1, color: '#fff' }} />
                                   </div>
                                 </div>
                               </>
@@ -22872,8 +22875,8 @@ export default function Dashboard() {
                           <div
                             className="flex-1 flex flex-col justify-center cursor-pointer active:bg-white/10 transition-colors"
                             style={{ paddingLeft: '8px', paddingRight: '6px', position: 'relative', minHeight: '30px', paddingTop: '3px', paddingBottom: '3px' }}
-                            onClick={pd.handlePlayReading}
-                            onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayReading(); }}
+                            onClick={() => setHwFloating(prev => ({ ...prev, showControls: !prev.showControls }))}
+                            onTouchEnd={(e) => { e.preventDefault(); setHwFloating(prev => ({ ...prev, showControls: !prev.showControls })); }}
                           >
                             {!pd.readingP.hasFiles ? (
                               <>
@@ -22893,14 +22896,17 @@ export default function Dashboard() {
                                   )}
                                 </div>
                                 <div className="flex items-center gap-[5px]">
-                                  <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', flex: 1, marginRight: '51px', marginLeft: '1px', marginTop: '4px' }}>
+                                  <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', flex: 1, marginRight: '68px', marginLeft: '1px', marginTop: '4px' }}>
                                     {pd.readingP.percent > 0 && (
                                       <div className="h-full rounded-full" style={{ width: `${pd.readingP.percent}%`, backgroundColor: getProgressColor(pd.readingP.percent) }} />
                                     )}
                                   </div>
-                                  <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ position: 'absolute', right: '31px', top: '50%', transform: 'translateY(-50%)' }}>{pd.readingP.percent}%</span>
-                                  <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '6px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`float-play-reading-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayReading(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayReading(); }}>
-                                    <Play className="hover:opacity-80 transition-opacity duration-200" style={{ width: '16px', height: '16px', opacity: pd.readingP.percent === 100 ? 0.4 : 1, color: '#fff', fill: 'currentColor' }} />
+                                  <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ position: 'absolute', right: '48px', top: '50%', transform: 'translateY(-50%)' }}>{pd.readingP.percent}%</span>
+                                  <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '26px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`float-play-reading-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); setHwFloating(prev => ({ ...prev, showControls: !prev.showControls })); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setHwFloating(prev => ({ ...prev, showControls: !prev.showControls })); }}>
+                                    <Play className="hover:opacity-80 transition-opacity duration-200" style={{ width: '14px', height: '14px', opacity: pd.readingP.percent === 100 ? 0.4 : 1, color: '#fff', fill: 'currentColor' }} />
+                                  </div>
+                                  <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '6px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`float-reader-reading-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayReading(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayReading(); }}>
+                                    <Headphones className="hover:opacity-80 transition-opacity duration-200" style={{ width: '14px', height: '14px', opacity: pd.readingP.percent === 100 ? 0.4 : 1, color: '#fff' }} />
                                   </div>
                                 </div>
                               </>
