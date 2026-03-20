@@ -20545,10 +20545,11 @@ export default function Dashboard() {
               bottom: '-27px', 
               background: 'rgba(255, 255, 255, 0.35)',
               borderRadius: '20px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              zIndex: 2
             }}
           />
-          <div className="relative" style={{ height: 'calc(100% + 5px)', marginTop: '8px', marginLeft: '-15px', width: 'calc(100% + 30px)' }}>
+          <div className="relative" style={{ height: 'calc(100% + 5px)', marginTop: '8px', marginLeft: '-15px', width: 'calc(100% + 30px)', zIndex: 3 }}>
             <div className="absolute inset-0 pointer-events-none z-[100]" style={{ border: '2px solid black', borderRadius: '16px' }} />
             <div className="overflow-hidden h-full" style={{ background: 'black', borderRadius: '16px' }}>
             <div className="p-0 h-full flex flex-col" style={{ overflow: 'hidden' }}>
