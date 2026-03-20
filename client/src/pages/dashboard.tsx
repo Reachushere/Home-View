@@ -21903,7 +21903,7 @@ export default function Dashboard() {
                                   const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, isLastWeek ? 5 : 6) });
                                   return (
                                     <div key={wi} style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                      <div style={{ position: 'absolute', top: '-2px', bottom: '-2px', left: '-3px', right: '-3px', borderRadius: '4px', backgroundColor: `rgba(255,255,255,${0.08 + wi * 0.04})`, border: '0.5px solid rgba(255,255,255,0.15)' }} />
+                                      <div style={{ position: 'absolute', top: '-2px', bottom: '-2px', left: '-3px', right: '-3px', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.15)', border: '0.5px solid rgba(255,255,255,0.55)' }} />
                                       <div style={{ position: 'relative', display: 'flex', gap: '2px', padding: '2px 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
                                       {days.map((d, di) => {
                                         const isToday = isSameDay(d, today);
