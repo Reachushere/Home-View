@@ -9389,7 +9389,16 @@ export default function Dashboard() {
       }}
     >
       {createPortal(
-        <div style={{ position: 'fixed', top: '96px', left: (() => {
+        <div style={{ position: 'fixed', top: (() => {
+          if (courseRowRects.length > 0) {
+            const lastRect = courseRowRects[courseRowRects.length - 1];
+            if (lastRect) {
+              const otherRowH = gridSizes.courseRowHeight || 48;
+              return `${lastRect.top + lastRect.height + otherRowH - 10}px`;
+            }
+          }
+          return '96px';
+        })(), left: (() => {
           const hw = homeworkScrollRef.current;
           if (hw) {
             const r = hw.getBoundingClientRect();
