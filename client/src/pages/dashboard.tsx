@@ -1931,6 +1931,10 @@ export default function Dashboard() {
   const [isSchoolDialogOpen, setIsSchoolDialogOpen] = useState(false);
   const [isSchoolCoursesDialogOpen, setIsSchoolCoursesDialogOpen] = useState(false);
   const [schoolCoursesOpenSource, setSchoolCoursesOpenSource] = useState<'pill' | 'degree'>('degree');
+  const [semSettingsDialogKey, setSemSettingsDialogKey] = useState<string | null>(null);
+  const [perSemesterSettings, setPerSemesterSettings] = useState<Record<string, { week1StartDate: string; semesterType: string; numberOfWeeks: number; timezone: string; readingWeekDate: string; isTravelling: boolean; travelTimezone: string; travelStartDate: string; travelEndDate: string }>>(() => {
+    try { const s = localStorage.getItem('perSemesterSettings'); return s ? JSON.parse(s) : {}; } catch { return {}; }
+  });
   const coursesScrollRef = useRef<HTMLDivElement>(null);
   const [coursesScrolled, setCoursesScrolled] = useState(false);
 
@@ -2974,9 +2978,9 @@ export default function Dashboard() {
       { name: 'CFNF400 - Human Sexuality', color: '#DE1864', colorEnd: '#FA67B3', professor: 'Alex McKay', professorEmail: 'a4mckay@torontomu.ca' },
       { name: 'CASL101 - American Sign Language', color: '#974B8A', colorEnd: '#B045A2', professor: 'Christina Moreau', professorEmail: 'christina.moreau@torontomu.ca' },
       { name: 'CECN210 - Understanding Economics', color: '#059669', colorEnd: '#34D399', professor: '', professorEmail: '' },
+      { name: 'CPHL110 - Philosophy of Religion', color: '#2563EB', colorEnd: '#60A5FA', professor: '', professorEmail: '' },
       { name: 'CHIS105 - Inventing Popular Culture', color: '#DC2626', colorEnd: '#F87171', professor: '', professorEmail: '' },
-      { name: '', color: '#6b7280', colorEnd: '#9ca3af', professor: '', professorEmail: '' },
-      { name: '', color: '#6b7280', colorEnd: '#9ca3af', professor: '', professorEmail: '' },
+      { name: 'CPPA235 - Issues in Canadian Politics', color: '#8B6914', colorEnd: '#CD853F', professor: '', professorEmail: '' },
       { name: '', color: '#6b7280', colorEnd: '#9ca3af', professor: '', professorEmail: '' },
       { name: '', color: '#6b7280', colorEnd: '#9ca3af', professor: '', professorEmail: '' },
       { name: '', color: '#6b7280', colorEnd: '#9ca3af', professor: '', professorEmail: '' },
@@ -15611,7 +15615,7 @@ export default function Dashboard() {
               </div>
               <div className="flex-1 overflow-y-auto px-4 pb-4 pt-0" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', marginTop: '-2px' }}>
               <div className="grid grid-cols-2 gap-4">
-                {/* Left Column - School & Semester Settings */}
+                {/* Left Column - School Settings */}
                 <div className="flex flex-col gap-4" style={{ paddingTop: '0px', marginTop: '6px' }}>
                 <SchoolForm 
                   key={isSchoolDialogOpen ? 'open' : 'closed'}
@@ -16253,6 +16257,12 @@ export default function Dashboard() {
                             >
                               <div className="px-2 py-1.5 border-b flex items-center justify-between flex-shrink-0" style={{ background: 'transparent', borderColor: isCurrentSem ? '#ffffff' : 'rgba(255,255,255,0.3)' }}>
                                 <div className="flex items-center gap-1.5 flex-wrap">
+                                  <Settings
+                                    className="text-white/50 hover:text-white cursor-pointer transition-colors flex-shrink-0"
+                                    style={{ width: '11px', height: '11px' }}
+                                    onClick={(e) => { e.stopPropagation(); setSemSettingsDialogKey(sem.key); }}
+                                    data-testid={`button-sem-settings-${sem.key}`}
+                                  />
                                   <span className="text-[10px] font-bold text-white whitespace-nowrap">{sem.label}</span>
                                   {isCurrentSem && <span className="text-[7px] font-bold text-white bg-emerald-500/20 px-1 py-0.5 rounded-full border border-white">CURRENT</span>}
                                 </div>
@@ -16327,6 +16337,46 @@ export default function Dashboard() {
                   }} data-testid="button-save-school-courses">Save</Button>
                 </div>
               </div>
+            </div>
+            </div>,
+            document.body
+          )}
+
+          {semSettingsDialogKey && createPortal(
+            <div>
+            <div className="fixed inset-0 z-[10003] bg-black/50" onClick={() => setSemSettingsDialogKey(null)} />
+            <div
+              className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-[10003] overflow-hidden flex flex-col text-[11px] text-white p-0 sm:rounded-lg"
+              style={{ width: '500px', maxWidth: '94vw', maxHeight: '80vh', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
+            >
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
+                <div className="flex items-center gap-2">
+                  <Settings className="text-white" style={{ width: '14px', height: '14px' }} />
+                  <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
+                    SEMESTER SETTINGS
+                  </h2>
+                </div>
+                <span className="text-[11px] font-medium text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                  {(() => { const semesterMeta: Record<string, string> = { 'ss2025': 'Spring/Summer 2025', 'f2025': 'Fall 2025', 'w2026': 'Winter 2026', 'ss2026': 'Spring/Summer 2026', 'f2026': 'Fall 2026', 'w2027': 'Winter 2027', 'ss2027': 'Spring/Summer 2027', 'f2027': 'Fall 2027', 'w2028': 'Winter 2028', 'ss2028': 'Spring/Summer 2028', 'f2028': 'Fall 2028' }; return semesterMeta[semSettingsDialogKey] || semSettingsDialogKey; })()}
+                </span>
+              </div>
+              <SemesterSettingsFormBody
+                semKey={semSettingsDialogKey}
+                existing={perSemesterSettings[semSettingsDialogKey] || {}}
+                onCancel={() => setSemSettingsDialogKey(null)}
+                onSave={(data) => {
+                  const semKey = semSettingsDialogKey!;
+                  const updated = { ...perSemesterSettings, [semKey]: data };
+                  setPerSemesterSettings(updated);
+                  localStorage.setItem('perSemesterSettings', JSON.stringify(updated));
+                  if (semKey === 'w2026') {
+                    saveSchool({ ...schoolData, numberOfWeeks: data.numberOfWeeks, week1StartDate: data.week1StartDate, timezone: data.timezone, isTravelling: data.isTravelling, travelTimezone: data.travelTimezone, travelStartDate: data.travelStartDate, travelEndDate: data.travelEndDate, semesterType: data.semesterType });
+                    if (data.readingWeekDate) { apiRequest("PATCH", "/api/semester", { readingWeekStart: new Date(data.readingWeekDate).toISOString() }); }
+                    else { apiRequest("PATCH", "/api/semester", { readingWeekStart: null }); }
+                  }
+                  setSemSettingsDialogKey(null);
+                }}
+              />
             </div>
             </div>,
             document.body
@@ -21203,7 +21253,29 @@ export default function Dashboard() {
                   <div style={{ width: '36px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px' }}>
                     <span className="text-[9px] font-bold" style={{ color: progressColor, lineHeight: 1 }}>{daysUntil}d</span>
                     
-                    <span className="text-[9px] font-bold" style={{ color: progressColor, lineHeight: 1, whiteSpace: 'nowrap' }}>{format(new Date(task.dueDate), 'MMM d')}</span>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button className="text-[9px] font-bold hover:underline cursor-pointer" style={{ color: progressColor, lineHeight: 1, whiteSpace: 'nowrap' }} onClick={(e) => e.stopPropagation()} data-testid={`date-link-${task.id}`}>{format(new Date(task.dueDate), 'MMM d')}</button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="end" side="top" style={{ zIndex: 10010 }} onOpenAutoFocus={(e) => e.preventDefault()}>
+                        <div className="p-2">
+                          <CalendarPicker
+                            mode="single"
+                            selected={new Date(task.dueDate)}
+                            onSelect={(date) => {
+                              if (date) {
+                                const old = new Date(task.dueDate);
+                                date.setHours(old.getHours(), old.getMinutes(), old.getSeconds());
+                                apiRequest("PATCH", `/api/tasks/${task.id}`, { dueDate: date.toISOString() }).then(() => {
+                                  queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+                                });
+                              }
+                            }}
+                            defaultMonth={new Date(task.dueDate)}
+                          />
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   <div style={{ width: '3px', flexShrink: 0 }} />
                 </div>
@@ -21976,7 +22048,7 @@ export default function Dashboard() {
                                 const isToday = isSameDay(d, todayDate);
                                 const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
                                 const isDue = !!dueMatch;
-                                const dueColor = dueMatch ? (dueMatch.courseCode === 'CPPA122' ? '#22c55e' : dueMatch.courseCode === 'CFNF400' ? '#ff69b4' : dueMatch.courseCode === 'CASL101' ? '#b388ff' : getCourseGradientColors(dueMatch.courseCode).start) : '';
+                                const dueColor = dueMatch ? (dueMatch.courseCode === 'CPPA122' ? '#22c55e' : dueMatch.courseCode === 'CFNF400' ? '#ff69b4' : dueMatch.courseCode === 'CASL101' ? '#b388ff' : getCourseGradientColors(dueMatch.courseCode).end) : '';
                                 return (
                                   <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
                                     width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
@@ -22147,7 +22219,7 @@ export default function Dashboard() {
                                         const isToday = isSameDay(d, today);
                                         const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
                                         const isDue = !!dueMatch;
-                                        const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : dueMatch.courseCode.toUpperCase() === 'CFNF400' ? '#ff69b4' : dueMatch.courseCode.toUpperCase() === 'CASL101' ? '#b388ff' : getCourseGradientColors(dueMatch.courseCode).start) : '';
+                                        const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : dueMatch.courseCode.toUpperCase() === 'CFNF400' ? '#ff69b4' : dueMatch.courseCode.toUpperCase() === 'CASL101' ? '#b388ff' : getCourseGradientColors(dueMatch.courseCode).end) : '';
                                         return (
                                           <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
                                             width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
@@ -22335,7 +22407,7 @@ export default function Dashboard() {
                                         const isToday = isSameDay(d, today);
                                         const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
                                         const isDue = !!dueMatch;
-                                        const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : dueMatch.courseCode.toUpperCase() === 'CFNF400' ? '#ff69b4' : dueMatch.courseCode.toUpperCase() === 'CASL101' ? '#b388ff' : getCourseGradientColors(dueMatch.courseCode).start) : '';
+                                        const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : dueMatch.courseCode.toUpperCase() === 'CFNF400' ? '#ff69b4' : dueMatch.courseCode.toUpperCase() === 'CASL101' ? '#b388ff' : getCourseGradientColors(dueMatch.courseCode).end) : '';
                                         return (
                                           <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
                                             width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
@@ -22526,7 +22598,7 @@ export default function Dashboard() {
                                         const isToday = isSameDay(d, today);
                                         const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
                                         const isDue = !!dueMatch;
-                                        const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : dueMatch.courseCode.toUpperCase() === 'CFNF400' ? '#ff69b4' : dueMatch.courseCode.toUpperCase() === 'CASL101' ? '#b388ff' : getCourseGradientColors(dueMatch.courseCode).start) : '';
+                                        const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : dueMatch.courseCode.toUpperCase() === 'CFNF400' ? '#ff69b4' : dueMatch.courseCode.toUpperCase() === 'CASL101' ? '#b388ff' : getCourseGradientColors(dueMatch.courseCode).end) : '';
                                         return (
                                           <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
                                             width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
@@ -22717,7 +22789,7 @@ export default function Dashboard() {
                                         const isToday = isSameDay(d, today);
                                         const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
                                         const isDue = !!dueMatch;
-                                        const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : dueMatch.courseCode.toUpperCase() === 'CFNF400' ? '#ff69b4' : dueMatch.courseCode.toUpperCase() === 'CASL101' ? '#b388ff' : getCourseGradientColors(dueMatch.courseCode).start) : '';
+                                        const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : dueMatch.courseCode.toUpperCase() === 'CFNF400' ? '#ff69b4' : dueMatch.courseCode.toUpperCase() === 'CASL101' ? '#b388ff' : getCourseGradientColors(dueMatch.courseCode).end) : '';
                                         return (
                                           <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
                                             width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
@@ -25543,6 +25615,173 @@ function TravelDateTimePicker({ label, value, onChange, testId }: { label: strin
 }
 
 
+function SemesterSettingsFormBody({ semKey, existing, onCancel, onSave }: {
+  semKey: string;
+  existing: Partial<{ week1StartDate: string; semesterType: string; numberOfWeeks: number; timezone: string; readingWeekDate: string; isTravelling: boolean; travelTimezone: string; travelStartDate: string; travelEndDate: string }>;
+  onCancel: () => void;
+  onSave: (data: { week1StartDate: string; semesterType: string; numberOfWeeks: number; timezone: string; readingWeekDate: string; isTravelling: boolean; travelTimezone: string; travelStartDate: string; travelEndDate: string }) => void;
+}) {
+  const defaultType = semKey.startsWith('ss') ? 'spring_summer' : semKey.startsWith('f') ? 'fall' : 'winter';
+  const [localW1, setLocalW1] = useState(existing.week1StartDate || '');
+  const [localType, setLocalType] = useState(existing.semesterType || defaultType);
+  const [localWeeks, setLocalWeeks] = useState(existing.numberOfWeeks || 13);
+  const [localTz, setLocalTz] = useState(existing.timezone || 'America/Toronto');
+  const [localRw, setLocalRw] = useState(existing.readingWeekDate || '');
+  const [localTravel, setLocalTravel] = useState(existing.isTravelling || false);
+  const [localTravelTz, setLocalTravelTz] = useState(existing.travelTimezone || '');
+  const [localTravelStart, setLocalTravelStart] = useState(existing.travelStartDate || '');
+  const [localTravelEnd, setLocalTravelEnd] = useState(existing.travelEndDate || '');
+
+  return (
+    <>
+      <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent' }}>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1">
+            <Label className="text-[10px] text-white/70">Week 1, Day 1 Date</Label>
+            <Input
+              type="date"
+              value={localW1}
+              onChange={(e) => setLocalW1(e.target.value)}
+              className="!text-black !text-[10px] h-8 bg-white border-white/20"
+              style={{ fontSize: '10px', color: 'black' }}
+              data-testid="input-sem-settings-week1"
+            />
+          </div>
+          <div className="space-y-1">
+            <Label className="text-[10px] text-white/70">Semester Type</Label>
+            <select
+              value={localType}
+              onChange={(e) => setLocalType(e.target.value)}
+              className="w-full h-8 px-2 text-[10px] rounded-md bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
+              data-testid="select-sem-settings-type"
+            >
+              <option value="fall" className="text-black bg-white">Fall</option>
+              <option value="winter" className="text-black bg-white">Winter</option>
+              <option value="spring_summer" className="text-black bg-white">Spring/Summer</option>
+            </select>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1">
+            <Label className="text-[10px] text-white/70">School Weeks</Label>
+            <select
+              value={String(localWeeks)}
+              onChange={(e) => setLocalWeeks(Number(e.target.value))}
+              className="w-full h-8 px-2 text-[10px] rounded-md bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
+              data-testid="select-sem-settings-weeks"
+            >
+              {[10, 11, 12, 13, 14, 15, 16].map(w => (
+                <option key={w} value={String(w)} className="text-black bg-white">{w} weeks</option>
+              ))}
+            </select>
+          </div>
+          <div className="space-y-1">
+            <Label className="text-[10px] text-white/70">Time Zone</Label>
+            <select
+              value={localTz}
+              onChange={(e) => setLocalTz(e.target.value)}
+              className="w-full h-8 px-2 text-[10px] rounded-md bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
+              data-testid="select-sem-settings-timezone"
+            >
+              {[
+                { value: 'America/Toronto', label: 'Eastern (Toronto)' },
+                { value: 'America/New_York', label: 'Eastern (New York)' },
+                { value: 'America/Chicago', label: 'Central (Chicago)' },
+                { value: 'America/Denver', label: 'Mountain (Denver)' },
+                { value: 'America/Los_Angeles', label: 'Pacific (LA)' },
+                { value: 'America/Vancouver', label: 'Pacific (Vancouver)' },
+                { value: 'America/Edmonton', label: 'Mountain (Edmonton)' },
+                { value: 'America/Winnipeg', label: 'Central (Winnipeg)' },
+                { value: 'America/Halifax', label: 'Atlantic (Halifax)' },
+                { value: 'America/St_Johns', label: "Newfoundland (St. John's)" },
+                { value: 'America/Regina', label: 'Central - No DST (Regina)' },
+                { value: 'Pacific/Honolulu', label: 'Hawaii' },
+                { value: 'America/Anchorage', label: 'Alaska' },
+                { value: 'Europe/London', label: 'GMT (London)' },
+                { value: 'Europe/Paris', label: 'CET (Paris)' },
+                { value: 'Europe/Berlin', label: 'CET (Berlin)' },
+                { value: 'Asia/Tokyo', label: 'JST (Tokyo)' },
+                { value: 'Asia/Shanghai', label: 'CST (Shanghai)' },
+                { value: 'Australia/Sydney', label: 'AEST (Sydney)' },
+                { value: 'UTC', label: 'UTC' },
+              ].map(tz => (
+                <option key={tz.value} value={tz.value} className="text-black bg-white">{tz.label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <div className="space-y-1">
+          <Label className="text-[10px] text-white/70">Reading Week Start Date</Label>
+          <div className="flex items-center gap-2">
+            <Input
+              type="date"
+              value={localRw}
+              onChange={(e) => setLocalRw(e.target.value)}
+              className="!text-black !text-[10px] h-8 bg-white w-40"
+              style={{ fontSize: '10px', color: 'black' }}
+              data-testid="input-sem-settings-reading-week"
+            />
+            {localRw && (
+              <button
+                type="button"
+                onClick={() => setLocalRw('')}
+                className="text-[9px] text-red-300 hover:text-red-200 underline"
+                data-testid="button-clear-sem-reading-week"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+          {localRw && (
+            <div className="text-[9px] text-white/50">
+              Week of {format(new Date(localRw), 'MMM d, yyyy')} will be skipped in week numbering
+            </div>
+          )}
+        </div>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Checkbox
+              checked={localTravel}
+              onCheckedChange={(checked) => setLocalTravel(!!checked)}
+              className="h-3.5 w-3.5 border-white/50 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
+              data-testid="checkbox-sem-settings-travelling"
+            />
+            <Label className="text-[10px] text-white/70 cursor-pointer flex items-center gap-1">
+              <Plane className="h-3 w-3" />
+              I'm travelling
+            </Label>
+          </div>
+          {localTravel && (
+            <div className="space-y-2 ml-5">
+              <Label className="text-[10px] text-white/70">Where are you travelling to?</Label>
+              <select
+                value={localTravelTz}
+                onChange={(e) => setLocalTravelTz(e.target.value)}
+                className="w-full h-8 px-2 text-[10px] rounded-md bg-white !text-black focus:outline-none focus:ring-2 focus:ring-orange-400" style={{ color: 'black' }}
+                data-testid="select-sem-settings-travel-tz"
+              >
+                <option value="" className="text-black bg-white">Pick a city</option>
+                {TRAVEL_CITIES.map(c => (
+                  <option key={c.value} value={c.value} className="text-black bg-white">{c.label}</option>
+                ))}
+              </select>
+            </div>
+          )}
+        </div>
+        <p className="text-[8px] text-white/40">Course details shown in the Courses section.</p>
+      </div>
+      <div className="flex items-center justify-end px-4 py-3 border-t border-white/20">
+        <div className="flex gap-2">
+          <Button variant="outline" className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 px-6" style={{ fontSize: '12px', minWidth: '100px' }} onClick={onCancel} data-testid="button-cancel-sem-settings">Cancel</Button>
+          <Button variant="outline" className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8 px-6" style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '12px', minWidth: '100px' }} onClick={() => {
+            onSave({ week1StartDate: localW1, semesterType: localType, numberOfWeeks: localWeeks, timezone: localTz, readingWeekDate: localRw, isTravelling: localTravel, travelTimezone: localTravelTz, travelStartDate: localTravelStart, travelEndDate: localTravelEnd });
+          }} data-testid="button-save-sem-settings">Save</Button>
+        </div>
+      </div>
+    </>
+  );
+}
+
 function SchoolForm({ 
   schoolData, 
   semesterSettings,
@@ -25717,169 +25956,40 @@ function SchoolForm({
         </div>
       </div>
       
-      {semesterSettings && (
-        <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '12px' }}>
-          <Label className="text-[10px] font-medium">Semester Settings</Label>
-          <div className="space-y-2 text-[10px]">
-            <div className="flex items-center justify-between">
-              <span className="text-white/70">Semester</span>
-              <span className="font-medium">{semesterSettings.semesterName}</span>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-1">
-                <Label htmlFor="week1StartDate" className="text-[10px] text-white/70">Week 1, Day 1 Date</Label>
-                <Input 
-                  id="week1StartDate"
-                  type="date"
-                  value={week1StartDate}
-                  onChange={(e) => setWeek1StartDate(e.target.value)}
-                  className="!text-black !text-[10px] h-8 bg-white border-white/20"
-                  style={{ fontSize: '10px', color: 'black' }}
-                  data-testid="input-week1-start-date"
-                />
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="semesterType" className="text-[10px] text-white/70">Semester Type</Label>
-                <select
-                  value={semesterType}
-                  onChange={(e) => setSemesterType(e.target.value)}
-                  className="w-full h-8 px-2 text-[10px] rounded-md bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
-                  data-testid="select-semester-type"
-                >
-                  <option value="fall" className="text-black bg-white">Fall</option>
-                  <option value="winter" className="text-black bg-white">Winter</option>
-                  <option value="spring_summer" className="text-black bg-white">Spring/Summer</option>
-                </select>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-1">
-                <Label htmlFor="numberOfWeeks" className="text-[10px] text-white/70">School Weeks</Label>
-                <select
-                  value={String(numberOfWeeks)}
-                  onChange={(e) => setNumberOfWeeks(Number(e.target.value))}
-                  className="w-full h-8 px-2 text-[10px] rounded-md bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
-                  data-testid="select-number-of-weeks"
-                >
-                  {[10, 11, 12, 13, 14, 15, 16].map(w => (
-                    <option key={w} value={String(w)} className="text-black bg-white">{w} weeks</option>
-                  ))}
-                </select>
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="timezone" className="text-[10px] text-white/70">Time Zone</Label>
-                <select
-                  value={timezone}
-                  onChange={(e) => setTimezone(e.target.value)}
-                  className="w-full h-8 px-2 text-[10px] rounded-md bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
-                  data-testid="select-timezone"
-                >
-                  {[
-                    { value: 'America/Toronto', label: 'Eastern (Toronto)' },
-                    { value: 'America/New_York', label: 'Eastern (New York)' },
-                    { value: 'America/Chicago', label: 'Central (Chicago)' },
-                    { value: 'America/Denver', label: 'Mountain (Denver)' },
-                    { value: 'America/Los_Angeles', label: 'Pacific (LA)' },
-                    { value: 'America/Vancouver', label: 'Pacific (Vancouver)' },
-                    { value: 'America/Edmonton', label: 'Mountain (Edmonton)' },
-                    { value: 'America/Winnipeg', label: 'Central (Winnipeg)' },
-                    { value: 'America/Halifax', label: 'Atlantic (Halifax)' },
-                    { value: 'America/St_Johns', label: "Newfoundland (St. John's)" },
-                    { value: 'America/Regina', label: 'Central - No DST (Regina)' },
-                    { value: 'Pacific/Honolulu', label: 'Hawaii' },
-                    { value: 'America/Anchorage', label: 'Alaska' },
-                    { value: 'Europe/London', label: 'GMT (London)' },
-                    { value: 'Europe/Paris', label: 'CET (Paris)' },
-                    { value: 'Europe/Berlin', label: 'CET (Berlin)' },
-                    { value: 'Asia/Tokyo', label: 'JST (Tokyo)' },
-                    { value: 'Asia/Shanghai', label: 'CST (Shanghai)' },
-                    { value: 'Australia/Sydney', label: 'AEST (Sydney)' },
-                    { value: 'UTC', label: 'UTC' },
-                  ].map(tz => (
-                    <option key={tz.value} value={tz.value} className="text-black bg-white">{tz.label}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <div className="space-y-1">
-              <Label htmlFor="readingWeekDate" className="text-[10px] text-white/70">Reading Week Start Date</Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  id="readingWeekDate"
-                  type="date"
-                  value={readingWeekDate}
-                  onChange={(e) => setReadingWeekDate(e.target.value)}
-                  className="!text-black !text-[10px] h-8 bg-white w-40"
-                  style={{ fontSize: '10px', color: 'black' }}
-                  data-testid="input-reading-week-date"
-                />
-                {readingWeekDate && (
-                  <button
-                    type="button"
-                    onClick={() => setReadingWeekDate('')}
-                    className="text-[9px] text-red-300 hover:text-red-200 underline"
-                    data-testid="button-clear-reading-week"
-                  >
-                    Clear
-                  </button>
-                )}
-              </div>
-              {readingWeekDate && (
-                <div className="text-[9px] text-white/50">
-                  Week of {format(new Date(readingWeekDate), 'MMM d, yyyy')} will be skipped in week numbering
+      <div className="border rounded-lg p-3 space-y-2" style={{ marginTop: '12px' }}>
+        <Label className="text-[10px] font-medium">Semesters</Label>
+        <div className="space-y-1 text-[10px]">
+          {[
+            { key: 'ss2025', label: 'Spring/Summer 2025', dates: 'May 5 – Aug 8, 2025' },
+            { key: 'f2025', label: 'Fall 2025', dates: 'Sep – Dec 2025' },
+            { key: 'w2026', label: 'Winter 2026', dates: 'Jan – Apr 2026' },
+            { key: 'ss2026', label: 'Spring/Summer 2026', dates: 'May 4 – Aug 4, 2026' },
+            { key: 'f2026', label: 'Fall 2026', dates: 'Sep – Dec 2026' },
+            { key: 'w2027', label: 'Winter 2027', dates: 'Jan – Apr 2027' },
+            { key: 'ss2027', label: 'Spring/Summer 2027', dates: 'May – Aug 2027' },
+            { key: 'f2027', label: 'Fall 2027', dates: 'Sep – Dec 2027' },
+            { key: 'w2028', label: 'Winter 2028', dates: 'Jan – Apr 2028' },
+            { key: 'ss2028', label: 'Spring/Summer 2028', dates: 'May – Aug 2028' },
+            { key: 'f2028', label: 'Fall 2028', dates: 'Sep – Dec 2028' },
+          ].map(sem => {
+            const isCurrent = (() => {
+              const now = new Date();
+              if (sem.key === 'w2026' && now >= new Date('2026-01-01') && now <= new Date('2026-04-30')) return true;
+              if (sem.key === 'ss2026' && now >= new Date('2026-05-04') && now <= new Date('2026-08-04')) return true;
+              return false;
+            })();
+            return (
+              <div key={sem.key} className="flex items-center justify-between py-1 px-1.5 rounded" style={{ background: isCurrent ? 'rgba(255,255,255,0.08)' : 'transparent' }}>
+                <div className="flex items-center gap-1.5">
+                  {isCurrent && <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />}
+                  <span className={`text-white ${isCurrent ? 'font-bold' : 'font-normal'}`}>{sem.label}</span>
                 </div>
-              )}
-            </div>
-            <div className="space-y-2 pt-1">
-              <div className="flex items-center gap-2">
-                <Checkbox 
-                  id="isTravelling"
-                  checked={isTravelling}
-                  onCheckedChange={(checked) => setIsTravelling(!!checked)}
-                  className="h-3.5 w-3.5 border-white/50 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
-                  data-testid="checkbox-travelling"
-                />
-                <Label htmlFor="isTravelling" className="text-[10px] text-white/70 cursor-pointer flex items-center gap-1">
-                  <Plane className="h-3 w-3" />
-                  I'm travelling
-                </Label>
+                <span className="text-white/50">{sem.dates}</span>
               </div>
-              {isTravelling && (
-                <div className="space-y-1 ml-5">
-                  <Label htmlFor="travelTimezone" className="text-[10px] text-white/70">Where are you travelling to?</Label>
-                  <select
-                    value={travelTimezone}
-                    onChange={(e) => setTravelTimezone(e.target.value)}
-                    className="w-full h-8 px-2 text-[10px] rounded-md bg-white !text-black focus:outline-none focus:ring-2 focus:ring-orange-400" style={{ color: 'black' }}
-                    data-testid="select-travel-timezone"
-                  >
-                    <option value="" className="text-black bg-white">Pick a city</option>
-                    {TRAVEL_CITIES.map(c => (
-                      <option key={c.value} value={c.value} className="text-black bg-white">{c.label}</option>
-                    ))}
-                  </select>
-                  <p className="text-[8px] text-orange-300/70">Due times will show in both your school and travel time zones.</p>
-                  <div className="grid grid-cols-2 gap-2 mt-2">
-                    <TravelDateTimePicker
-                      label="Start Date & Time"
-                      value={travelStartDate}
-                      onChange={setTravelStartDate}
-                      testId="input-travel-start-date"
-                    />
-                    <TravelDateTimePicker
-                      label="End Date & Time"
-                      value={travelEndDate}
-                      onChange={setTravelEndDate}
-                      testId="input-travel-end-date"
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-          <p className="text-[8px] text-white/40 mt-1">Course details shown in the Courses section.</p>
+            );
+          })}
         </div>
-      )}
+      </div>
       
     </form>
   );
