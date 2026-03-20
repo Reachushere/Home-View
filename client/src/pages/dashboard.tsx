@@ -9379,7 +9379,16 @@ export default function Dashboard() {
       }}
     >
       {createPortal(
-        <div style={{ position: 'fixed', top: '96px', left: '50%', transform: 'translateX(-50%)', width: '54px', height: '19px', backgroundColor: 'red', border: '2px solid yellow', borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2147483647, pointerEvents: 'none' }}>
+        <div style={{ position: 'fixed', top: (() => {
+          if (courseRowRects.length > 0) {
+            const lastRect = courseRowRects[courseRowRects.length - 1];
+            if (lastRect) {
+              const otherRowH = gridSizes.courseRowHeight || 48;
+              return `${lastRect.top + lastRect.height + otherRowH - 10}px`;
+            }
+          }
+          return '96px';
+        })(), left: '50%', transform: 'translateX(-50%)', width: '54px', height: '19px', backgroundColor: 'red', border: '2px solid yellow', borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2147483647, pointerEvents: 'none' }}>
           <span style={{ fontSize: '8px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
         </div>,
         document.body
