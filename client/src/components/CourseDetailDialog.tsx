@@ -136,7 +136,7 @@ function DebouncedGradeInput({ value, onSave, placeholder, testId, disabled }: {
       type="text"
       inputMode="decimal"
       pattern="[0-9]*\.?[0-9]*"
-      className="w-[30px] h-5 text-[9px] text-center bg-white border border-white/30 rounded text-black placeholder:text-gray-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none disabled:bg-gray-400 disabled:cursor-not-allowed"
+      className="w-[30px] h-5 text-[9px] text-center bg-transparent border border-amber-400/60 rounded text-white placeholder:text-amber-400/50 focus:border-amber-400 focus:ring-1 focus:ring-amber-400/30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none disabled:border-white/20 disabled:text-white/30 disabled:placeholder:text-white/20 disabled:cursor-not-allowed"
       placeholder={placeholder}
       value={local}
       disabled={disabled}
@@ -2086,15 +2086,15 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                   <div className={`flex-1 min-w-0 ${hdrCls('title')}`} onClick={() => toggleSort('title')} data-testid="sort-title">
                     Assignment<SortIcon field="title" />
                   </div>
-                  <div className="flex items-end flex-shrink-0" style={{ gap: '6px' }}>
+                  <div className="flex items-end flex-shrink-0 text-amber-400/70" style={{ gap: '6px' }}>
                     <span className={`w-[30px] text-center leading-tight ${hdrCls('score')}`} onClick={() => toggleSort('score')} style={{ display: 'inline-flex', justifyContent: 'center' }} data-testid="sort-score">
-                      Score<br/>received<SortIcon field="score" />
+                      Scr<SortIcon field="score" />
                     </span>
                     <span className={`w-[30px] text-center leading-tight ${hdrCls('total')}`} onClick={() => toggleSort('total')} data-testid="sort-total">
-                      Total<SortIcon field="total" />
+                      Tot<SortIcon field="total" />
                     </span>
                     <span className={`w-[30px] text-center leading-tight ${hdrCls('weight')}`} onClick={() => toggleSort('weight')} data-testid="sort-weight">
-                      Wt%<SortIcon field="weight" />
+                      Wt<SortIcon field="weight" />
                     </span>
                     <span className={`w-[30px] text-center leading-tight ${hdrCls('percent')}`} onClick={() => toggleSort('percent')} data-testid="sort-percent">
                       %<SortIcon field="percent" />
@@ -2178,16 +2178,16 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
               {ungroupedTasks.map(task => renderAssignmentRow(task, null))}
             </div>
             {courseTasks.length > 0 && (
-              <div className="flex items-center gap-1.5 px-1.5 py-1.5 mt-1 rounded-md border border-white/20 bg-white/10" data-testid="grade-totals-row">
+              <div className="flex items-center gap-1.5 px-1.5 py-1.5 mt-1 rounded-md border border-amber-400/30 bg-amber-400/5" data-testid="grade-totals-row">
                 <div className="flex-shrink-0" style={{ width: '14px' }} />
                 <div className="w-4 flex-shrink-0" />
                 <div className="w-3 flex-shrink-0" />
                 <div className="flex-1 min-w-0 text-[11px] font-bold text-white">Totals</div>
                 <div className="flex items-center flex-shrink-0" style={{ gap: '6px' }}>
-                  <span className="text-[12px] font-bold text-white w-[30px] text-center" data-testid="text-sum-value">
+                  <span className="text-[12px] font-bold w-[30px] text-center text-amber-400" data-testid="text-sum-value">
                     {(() => { const v = courseTasks.filter(t => !t.excludeFromGpa).reduce((s, t) => s + (t.gradeValue || 0), 0); return v ? v.toFixed(1) : '—'; })()}
                   </span>
-                  <span className="text-[12px] font-bold text-white w-[30px] text-center" data-testid="text-sum-total">
+                  <span className="text-[12px] font-bold w-[30px] text-center text-amber-400" data-testid="text-sum-total">
                     {(() => { const v = courseTasks.filter(t => !t.excludeFromGpa).reduce((s, t) => s + (t.gradeTotal || 0), 0); return v ? v.toFixed(1) : '—'; })()}
                   </span>
                   <span className={`text-[12px] font-bold w-[30px] text-center ${
@@ -2200,7 +2200,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                       const gTasks = courseTasks.filter(t => !t.excludeFromGpa);
                       const sumTotal = gTasks.reduce((s, t) => s + (t.gradeTotal || 0), 0);
                       const sumValue = gTasks.reduce((s, t) => s + (t.gradeValue || 0), 0);
-                      return sumTotal > 0 && sumValue > 0 ? 'text-emerald-400' : 'text-white/50';
+                      return sumTotal > 0 && sumValue > 0 ? 'text-emerald-400' : 'text-amber-400/50';
                     })()
                   }`} data-testid="text-total-percent">
                     {(() => {
