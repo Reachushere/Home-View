@@ -22825,7 +22825,12 @@ export default function Dashboard() {
             </div>
             {!hwFloating.minimized && (
               <div className="flex flex-col flex-1 overflow-y-auto rounded-[12px]" style={{ scrollbarWidth: 'none', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, boxShadow: '0 12px 48px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.3)', maxHeight: '75vh' }}>
-                <div className="flex items-center justify-between px-2.5 py-1.5 rounded-t-[12px]" style={{ borderBottom: '1px solid rgba(255,255,255,0.12)', backgroundColor: colorSettings.headerBar }}>
+                <div
+                  className="flex items-center justify-between px-2.5 py-1.5 rounded-t-[12px] select-none cursor-grab active:cursor-grabbing"
+                  style={{ borderBottom: '1px solid rgba(255,255,255,0.12)', backgroundColor: colorSettings.headerBar, touchAction: 'none' }}
+                  onMouseDown={hwFloatingHandlers.onDragStart}
+                  onTouchStart={hwFloatingHandlers.onDragStart}
+                >
                   <span className="text-[10px] font-semibold text-white/80 tracking-wide">Homework Player</span>
                 </div>
                 {courseProgressDataRef.current.map((pd, idx) => {
