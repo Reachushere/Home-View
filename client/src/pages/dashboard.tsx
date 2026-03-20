@@ -21758,7 +21758,7 @@ export default function Dashboard() {
                       const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
                       const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                       return (
-                        <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '0px', backgroundColor: tIdx % 2 === 0 ? '#051729' : 'transparent', marginLeft: '-8px', marginRight: '-12px', paddingLeft: '8px', paddingRight: '12px' }}
+                        <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '0px', backgroundColor: tIdx % 2 === 0 ? '#051729' : 'transparent', marginLeft: '0px', marginRight: '-12px', paddingLeft: '0px', paddingRight: '12px' }}
                           onMouseEnter={() => setHoveredCountdownTaskIdDebounced(task.id)}
                           onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                           ref={(rowEl) => {
@@ -21782,7 +21782,7 @@ export default function Dashboard() {
                           </div>
                           <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
-                            <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: '#FFFF00', textAlign: 'center', lineHeight: 1, marginLeft: '-6px', marginRight: '6px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
+                            <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: '#FFFF00', textAlign: 'center', lineHeight: 1, marginLeft: '2px', marginRight: '6px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
                             <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '2px' }}>
                               <div>
                                 <button
