@@ -1343,6 +1343,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     </select>
                   </div>
                 </div>
+                {editInfo.deliveryMode !== 'online' && (
                 <div className={`grid gap-2 ${editInfo.semesterTerm === 'Summer' ? 'grid-cols-4' : 'grid-cols-3'}`}>
                   <div>
                     <label className="text-white text-[9px] mb-0.5 block">Day</label>
@@ -1369,6 +1370,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     <input type="time" className="w-full h-6 text-[10px] bg-white/10 border border-white/15 rounded px-1" style={{ color: 'white', colorScheme: 'dark' }} value={editInfo.classEndTime} onChange={(e) => setEditInfo({...editInfo, classEndTime: e.target.value})} data-testid="input-edit-end-time" />
                   </div>
                 </div>
+                )}
                 <div>
                   <label className="text-white text-[9px] mb-0.5 block">Certificate Type</label>
                   <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={certificateType} onChange={(e) => updateCertificateType(e.target.value)} data-testid="select-edit-certificate-type-detail">
@@ -1491,6 +1493,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     <span className="text-white">Certificate:</span>
                     <span className="text-white text-[9px]">{certificateName || certificateType || '—'}</span>
                   </div>
+                  {courseInfo.deliveryMode !== "online" && (
                   <div style={{ display: 'grid', gridTemplateColumns: '12px 58px 1fr', gap: '6px', alignItems: 'center' }}>
                     <Calendar className="h-3 w-3 text-white flex-shrink-0" />
                     <span className="text-white">Schedule:</span>
@@ -1500,6 +1503,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                         : "Not set"}
                     </span>
                   </div>
+                  )}
                   {courseInfo.deliveryMode === "online" && (
                     <div style={{ display: 'grid', gridTemplateColumns: '12px 58px 1fr', gap: '6px', alignItems: 'center' }}>
                       <Clock className="h-3 w-3 text-white flex-shrink-0" />
