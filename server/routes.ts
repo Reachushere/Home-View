@@ -342,12 +342,14 @@ function cleanTextForTTS(text: string): string {
     .replace(/^CJUR?\s*\d+:\d+.*$/gm, '')  // Remove journal reference lines like "CJUR 4:1 (June 1995) 83"
     .replace(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}.*$/gm, ''); // Remove IP address lines
 
-  // Remove copyright notices and publisher boilerplate
+  // Remove copyright notices and publisher boilerplate (Nelson Education full block)
   cleanedText = cleanedText
+    .replace(/Copyright\s+\d{4}\s+Nelson Education Ltd\.?\s*All Rights Reserved\.?\s*May not be copied[\s\S]*?(?:require it|permitted)\./gi, '')
     .replace(/Copyright\s+\d{4}\s+.*?All Rights Reserved\.?/gi, '')
     .replace(/May not be copied,?\s*scanned,?\s*or duplicated.*?(?:require it|permitted)\./gi, '')
     .replace(/Due to electronic rights,?\s*some third.party content may be suppressed.*?(?:require it)\./gi, '')
     .replace(/Nelson Education reserves the right to remove additional content at any time if subsequent rights restrictions require it\./gi, '')
+    .replace(/Nelson Education Ltd\.?/gi, '')
     .replace(/\(c\)\s+[^\n.]+(?:Press|Publishing|Books|Media|Photos?|Images?|Reuters|Getty|AP|Corbis|Alamy|Shutterstock|iStock|ZUMA)[^\n.]*/gi, '')
     .replace(/^\s*\d{1,3}\s+(?:Local Government|NEL)\b.*$/gm, '')
     .replace(/\bNEL\b/g, '')
@@ -430,10 +432,21 @@ function cleanTextForTTS(text: string): string {
 
   cleanedText = cleanedText
     .replace(/x{3,}/gi, '')
-    .replace(/(?:X\s+){2,}X?\b/g, '')
+    .replace(/(?:X[\s,;]+){2,}X?\b/g, '')
+    .replace(/(?:\bX\b[\s,;]*){3,}/g, '')
     .replace(/\s+X(?=\s+[A-Z]|\s*$)/g, ' ')
-    .replace(/\b(?:AB|BC|MB|NB|NL|NS|ON|PE[I]?|QC|SK)(?:[,;\s/]+(?:AB|BC|MB|NB|NL|NS|ON|PE[I]?|QC|SK)){2,}\b/g, '')
-    .replace(/\bMunicipal Responsibility\s+(?:NL|PEI?|NS|NB|QC|ON|MB|SK|AB|BC)[\s\w]*(?:AB|BC)\b/g, '');
+    .replace(/\b(?:AB|BC|MB|NB|NL|NS|ON|PE[I]?|QC|SK)(?:[,;\s/]+(?:AB|BC|MB|NB|NL|NS|ON|PE[I]?|QC|SK)){1,}\b/g, '')
+    .replace(/\bMunicipal Responsibility\s+(?:NL|PEI?|NS|NB|QC|ON|MB|SK|AB|BC)[\s\w]*(?:AB|BC)\b/g, '')
+    .replace(/^.*(?:AB|BC|MB|NB|NL|NS|ON|PE[I]?|QC|SK)\s+(?:AB|BC|MB|NB|NL|NS|ON|PE[I]?|QC|SK).*$/gm, '');
+
+  // Remove spaced-out headings like "ar e po l i T i c a l pa r T i e s" (single letters with spaces)
+  cleanedText = cleanedText
+    .replace(/(?:[a-zA-Z]\s+){5,}[a-zA-Z]/g, '');
+
+  // Remove inline footnote numbers (superscript references like 65, 66, 67 appearing mid-sentence)
+  cleanedText = cleanedText
+    .replace(/(?<=\w)(\d{1,3})(?=\s+[A-Z])/g, '')
+    .replace(/\b\d{1,2}\s+(?:See|Ibid|Op\.?\s*cit|Supra|Infra)\b.*$/gm, '');
 
   // Final cleanup
   let result = cleanedText
@@ -11073,7 +11086,21 @@ document.body.removeChild(a);
     }
   });
 
+  const TTS_FILTER_VERSION = 3;
   setTimeout(async () => {
+    try {
+      const rows = await db.select().from(appState).where(eq(appState.key, 'tts_filter_version'));
+      const currentVersion = rows.length > 0 ? parseInt(rows[0].value) : 0;
+      if (currentVersion < TTS_FILTER_VERSION) {
+        await db.execute(sql`UPDATE files SET extracted_text = NULL, prepared_audio_paths = NULL, prepared_at = NULL WHERE extracted_text IS NOT NULL`);
+        await db.insert(appState).values({ key: 'tts_filter_version', value: String(TTS_FILTER_VERSION) })
+          .onConflictDoUpdate({ target: appState.key, set: { value: String(TTS_FILTER_VERSION) } });
+        console.log(`[Startup] TTS filter version ${currentVersion} → ${TTS_FILTER_VERSION}: cleared cached text and audio for re-extraction`);
+      }
+    } catch (e: any) {
+      console.error(`[Startup] Filter version check failed: ${e.message}`);
+    }
+
     try {
       const allFiles = await storage.getFiles();
       const unprepared = allFiles.filter((f: any) => !f.preparedAudioPaths && f.folder && (f.folder.includes('-module') || f.folder.includes('-reading')));
