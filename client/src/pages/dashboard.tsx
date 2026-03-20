@@ -21123,7 +21123,7 @@ export default function Dashboard() {
             return (
               <div
                 className="absolute"
-                style={{ right: '-19px', bottom: '14px', pointerEvents: 'auto', zIndex: 1, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'block', width: '23px', height: `${semTabs.length * 35 + 3}px` }}
+                style={{ right: '-18px', bottom: '14px', pointerEvents: 'auto', zIndex: 1, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'block', width: '23px', height: `${semTabs.length * 35 + 3}px` }}
               >
                 {semTabs.map((tab, tabIdx) => {
                   const isActive = currentSemLabel === tab.semLabel;
