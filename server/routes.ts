@@ -7454,6 +7454,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
             const nextChunks = chunkTextForNest(nextText);
             if (nextChunks.length > 0) {
               const nextName = nextFile.displayName || nextFile.originalName;
+              console.log(`[Nest Playback] Starting next file: "${nextName}" (${nextChunks.length} chunks)`);
               catWashPlaybackState = {
                 fileId: nextFile.id,
                 fileName: nextName,
@@ -7469,7 +7470,11 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
               };
               startNestChunkPlayback(nextFile.id, nextName, nextChunks, 0, sessionId, voice);
               return;
+            } else {
+              console.error(`[Nest Playback] Next file "${nextFile.displayName || nextFile.originalName}" produced 0 chunks after splitting`);
             }
+          } else {
+            console.error(`[Nest Playback] Failed to extract text from next file "${nextFile.displayName || nextFile.originalName}" (id: ${nextFile.id})`);
           }
         }
 
