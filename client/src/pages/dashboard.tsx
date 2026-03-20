@@ -21685,7 +21685,7 @@ export default function Dashboard() {
               </div>
             );
           })()}
-          <div style={{ padding: '0 8px', height: '46px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 42, overflow: 'visible', marginBottom: '-12px', boxShadow: '0 3px 6px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3)' }}>
+          <div style={{ padding: '0 8px', height: '46px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 46, overflow: 'visible', marginBottom: '-12px', boxShadow: '0 3px 6px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3)' }}>
             <div style={{ position: 'absolute', top: '15px', left: '22px', right: 0, height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)' }} />
             <span className="text-xs font-medium text-white" style={{ position: 'absolute', left: '6px', top: '30px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Homework Progress</span>
             <span className="text-xs font-medium text-white" style={{ position: 'absolute', left: '161px', top: '30px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Assignments</span>
