@@ -1342,7 +1342,7 @@ export default function PDFReaderPage() {
     
     var currentTime = audioRef.current.currentTime;
     var duration = audioDurationRef.current;
-    var progress = Math.max(0, (currentTime / duration) - (1 / 180));
+    var progress = Math.max(0, (currentTime / duration) - (1 / 195));
     
     var estimatedWordIndex: number;
     const cumulative = wordCumulativeRef.current;
