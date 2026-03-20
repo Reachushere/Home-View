@@ -21094,12 +21094,19 @@ export default function Dashboard() {
           data-testid="section-coming-up"
         >
           {/* DEBUG: Large tab preview in center of screen */}
-          <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999, background: 'rgba(0,0,0,0.6)', padding: '40px', borderRadius: '16px' }}>
-            <svg width="160" height="420" viewBox="0 0 16 42">
-              <path d="M0,0 L0,42 C14,42 16,39 16,34 L16,8 C16,3 14,0 0,0 Z" fill="rgba(255,255,255,0.35)" stroke="rgba(255,255,255,0.35)" strokeWidth="0.5" />
-              <text x="9" y="19" textAnchor="middle" fill="white" fontSize="7" fontWeight="bold" fontFamily="system-ui">W</text>
-              <text x="9" y="31" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="8" fontWeight="600" fontFamily="system-ui">26</text>
-            </svg>
+          <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999, background: 'rgba(0,0,0,0.6)', padding: '40px', borderRadius: '16px', display: 'flex', gap: '30px' }}>
+            <div>
+              <div style={{ color: 'white', fontSize: '12px', marginBottom: '8px', textAlign: 'center' }}>Top tab</div>
+              <svg width="160" height="420" viewBox="0 0 16 42">
+                <path d="M0.00 0.00 L0.00 42.00 L3.55 41.98 C3.56,41.98 3.86,40.68 4.88,39.40 C7.21,37.06 12.79,38.68 15.29,35.05 C15.60,34.59 15.83,33.97 16.00,33.24 L16.00 22.62 L16.00 19.38 L16.00 8.76 C15.83,8.03 15.60,7.41 15.29,6.95 C12.79,3.32 7.21,4.94 4.88,2.60 C4.49,2.59 3.55,0.02 3.55,0.02 L0.00 0.00 Z" fill="rgba(255,255,255,0.35)" stroke="rgba(255,255,255,0.35)" strokeWidth="0.5" />
+              </svg>
+            </div>
+            <div>
+              <div style={{ color: 'white', fontSize: '12px', marginBottom: '8px', textAlign: 'center' }}>Other tabs</div>
+              <svg width="160" height="420" viewBox="0 0 16 42">
+                <path d="M0.00 5.15 L0.00 42.00 L3.55 41.98 C3.56,41.98 3.86,40.52 4.88,39.09 C7.21,36.45 12.79,38.27 15.29,34.19 C15.60,33.68 15.83,32.98 16.00,32.16 L16.00 20.24 L16.00 16.61 L16.00 4.69 C15.83,3.87 15.60,3.17 15.29,2.66 C14.35,1.11 12.96,0.42 11.48,0.00 C9.04,0.68 6.33,0.60 4.88,2.24 C3.86,3.67 3.56,5.13 3.55,5.13 L0.00 5.15 Z" fill="rgba(255,255,255,0.35)" stroke="rgba(255,255,255,0.35)" strokeWidth="0.5" />
+              </svg>
+            </div>
           </div>
           {/* Homework Width Resize Handle — outside left side, near bottom */}
           <div
@@ -21156,7 +21163,10 @@ export default function Dashboard() {
                       title={tab.semLabel}
                     >
                       <svg width="16" height="42" viewBox="0 0 16 42" style={{ display: 'block' }}>
-                        <path d="M0,0 L0,42 C14,42 16,39 16,34 L16,8 C16,3 14,0 0,0 Z" fill={isActive ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)'} stroke="rgba(255,255,255,0.35)" strokeWidth="1" />
+                        <path d={semTabs.indexOf(tab) === 0
+                          ? "M0.00 0.00 L0.00 42.00 L3.55 41.98 C3.56,41.98 3.86,40.68 4.88,39.40 C7.21,37.06 12.79,38.68 15.29,35.05 C15.60,34.59 15.83,33.97 16.00,33.24 L16.00 22.62 L16.00 19.38 L16.00 8.76 C15.83,8.03 15.60,7.41 15.29,6.95 C12.79,3.32 7.21,4.94 4.88,2.60 C4.49,2.59 3.55,0.02 3.55,0.02 L0.00 0.00 Z"
+                          : "M0.00 5.15 L0.00 42.00 L3.55 41.98 C3.56,41.98 3.86,40.52 4.88,39.09 C7.21,36.45 12.79,38.27 15.29,34.19 C15.60,33.68 15.83,32.98 16.00,32.16 L16.00 20.24 L16.00 16.61 L16.00 4.69 C15.83,3.87 15.60,3.17 15.29,2.66 C14.35,1.11 12.96,0.42 11.48,0.00 C9.04,0.68 6.33,0.60 4.88,2.24 C3.86,3.67 3.56,5.13 3.55,5.13 L0.00 5.15 Z"
+                        } fill={isActive ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)'} stroke="rgba(255,255,255,0.35)" strokeWidth="1" />
                         <text x="9" y="19" textAnchor="middle" fill="white" fontSize="7" fontWeight="bold" fontFamily="system-ui">{tab.letter}</text>
                         <text x="9" y="31" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="8" fontWeight="600" fontFamily="system-ui">{tab.year}</text>
                       </svg>
