@@ -702,6 +702,8 @@ export default function Dashboard() {
   const homeworkSpacerRef = useRef<HTMLDivElement>(null);
   const homeworkSectionRef = useRef<HTMLElement>(null);
   const homeworkScrollRef = useRef<HTMLDivElement>(null);
+  const [hwIsScrolling, setHwIsScrolling] = useState(false);
+  const hwScrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [hwDividerPercent, setHwDividerPercent] = useState(() => {
     const saved = localStorage.getItem('hwDividerPercent');
     return saved ? parseFloat(saved) : 33;
@@ -21105,12 +21107,12 @@ export default function Dashboard() {
             overflow: 'visible',
             right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1}px`,
             width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1 - 5 - 2 - 1}px`,
-            top: `${calendarBorderTop || (calendarTop + 15)}px`,
+            top: `${(calendarBorderTop || (calendarTop + 15)) + 7}px`,
             bottom: `${calendarBottom}px`,
             background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
             boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08)',
             border: '1px solid white',
-            opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : 1,
+            opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : hwIsScrolling ? 0.5 : 1,
             pointerEvents: (isPillMenuOpen && !sidePillIdle) ? 'none' : 'auto',
             transition: 'opacity 0.2s ease'
           }}
@@ -21707,7 +21709,7 @@ export default function Dashboard() {
               }
             }
             return '14px';
-          })(), paddingBottom: '0px', overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', zIndex: 2 }} ref={homeworkScrollRef}>
+          })(), paddingBottom: '0px', overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', zIndex: 2 }} ref={homeworkScrollRef} onScroll={() => { setHwIsScrolling(true); if (hwScrollTimerRef.current) clearTimeout(hwScrollTimerRef.current); hwScrollTimerRef.current = setTimeout(() => setHwIsScrolling(false), 300); }}>
             {isLoading ? (
               <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
             ) : (
