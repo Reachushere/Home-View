@@ -21241,9 +21241,9 @@ export default function Dashboard() {
             background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
             boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08)',
             border: '1px solid white',
-            opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : (hwIsScrolling || hwScrolledDown) ? 0.25 : 1,
+            opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : 1,
             pointerEvents: (isPillMenuOpen && !sidePillIdle) ? 'none' : 'auto',
-            transition: 'opacity 0.3s ease'
+            transition: 'opacity 0.2s ease'
           }}
           data-testid="section-coming-up"
         >
