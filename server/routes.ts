@@ -341,6 +341,18 @@ function cleanTextForTTS(text: string): string {
     .replace(/^\d+\s*$/gm, '')  // Remove standalone page numbers
     .replace(/^CJUR?\s*\d+:\d+.*$/gm, '')  // Remove journal reference lines like "CJUR 4:1 (June 1995) 83"
     .replace(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}.*$/gm, ''); // Remove IP address lines
+
+  // Remove copyright notices and publisher boilerplate
+  cleanedText = cleanedText
+    .replace(/Copyright\s+\d{4}\s+.*?All Rights Reserved\.?/gi, '')
+    .replace(/May not be copied,?\s*scanned,?\s*or duplicated.*?(?:require it|permitted)\./gi, '')
+    .replace(/Due to electronic rights,?\s*some third.party content may be suppressed.*?(?:require it)\./gi, '')
+    .replace(/Nelson Education reserves the right to remove additional content at any time if subsequent rights restrictions require it\./gi, '')
+    .replace(/\(c\)\s+[^\n.]+(?:Press|Publishing|Books|Media|Photos?|Images?|Reuters|Getty|AP|Corbis|Alamy|Shutterstock|iStock|ZUMA)[^\n.]*/gi, '')
+    .replace(/^\s*\d{1,3}\s+(?:Local Government|NEL)\b.*$/gm, '')
+    .replace(/\bNEL\b/g, '')
+    .replace(/^\d+\s+See\s+.*$/gm, '')
+    .replace(/^\d+\s+[A-Z][a-z]+\s+[A-Z]\.?\s+[A-Z][a-z]+,\s+.*$/gm, '');
   
   console.log("After JSTOR cleanup:", cleanedText.length);
   
