@@ -4098,6 +4098,70 @@ html,body{height:100%;overflow:hidden;background:transparent}
     }
   });
 
+  // Unified email intake — routes emails from homeworkbryn@gmail.com to the correct handler
+  app.post('/api/webhook/email', async (req, res) => {
+    try {
+      const { emailId, subject, body, from, auth } = req.body;
+      if (auth !== '5747') {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+      const subjectLower = (subject || '').trim().toLowerCase();
+      const bodyLower = (body || '').trim().toLowerCase();
+
+      // Route based on subject prefix
+      if (subjectLower.startsWith('ticker')) {
+        // Forward to ticker handler
+        const tickerResp = await fetch(`http://localhost:${process.env.PORT || 5000}/api/webhook/ticker`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ emailId, subject, body, auth }),
+        });
+        const tickerData = await tickerResp.json();
+        console.log(`[Email Router] Routed to ticker: "${subject}"`);
+        return res.json({ routed: 'ticker', ...tickerData });
+      }
+
+      if (subjectLower.startsWith('reminder') || subjectLower.startsWith('remind')) {
+        // Forward to reminder handler
+        const remResp = await fetch(`http://localhost:${process.env.PORT || 5000}/api/webhook/reminder`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ subject, body, auth }),
+        });
+        const remData = await remResp.json();
+        console.log(`[Email Router] Routed to reminder: "${subject}"`);
+        return res.json({ routed: 'reminder', ...remData });
+      }
+
+      if (subjectLower.startsWith('delete')) {
+        // Forward to delete handler
+        const delResp = await fetch(`http://localhost:${process.env.PORT || 5000}/api/webhook/delete`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ body: subject, auth }),
+        });
+        const delData = await delResp.json();
+        console.log(`[Email Router] Routed to delete: "${subject}"`);
+        return res.json({ routed: 'delete', ...delData });
+      }
+
+      // Default: route to email-homework (task creation)
+      const hwResp = await fetch(`http://localhost:${process.env.PORT || 5000}/api/webhook/email-homework`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Webhook-Secret': auth },
+        body: JSON.stringify({ subject, body, from }),
+      });
+      const hwData = await hwResp.json();
+      console.log(`[Email Router] Routed to email-homework: "${subject}"`);
+      return res.json({ routed: 'email-homework', ...hwData });
+
+    } catch (err: any) {
+      console.error('[Email Router] Error:', err.message);
+      return res.status(500).json({ error: err.message });
+    }
+  });
+  console.log('[Email Router] Unified email intake ready at POST /api/webhook/email');
+
   const tickerExpirations = new Map<number, NodeJS.Timeout>();
   app.post('/api/webhook/ticker', async (req, res) => {
     try {
