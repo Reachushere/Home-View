@@ -13807,11 +13807,36 @@ Return ONLY the JSON object, no markdown formatting.`;
 
   app.post("/api/spotify/play-on-speaker", async (req, res) => {
     try {
-      const { entityId, spotifyUri, artistName } = req.body;
+      const { entityId, spotifyUri, artistName, deviceType } = req.body;
       if (!entityId) return res.status(400).json({ error: "entityId required" });
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
 
-      if (spotifyUri) {
+      const isEcho = entityId.includes("echo") || entityId.includes("_am") || deviceType === "echo" || deviceType === "echo_show";
+
+      if (isEcho) {
+        const searchTerm = artistName || (spotifyUri ? spotifyUri.split(":").pop() : "music");
+        const message = `Play ${searchTerm} on Spotify`;
+        console.log(`[Spotify] Echo device detected - using notify/alexa_media for ${entityId}: "${message}"`);
+        await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: message,
+            data: { type: "announce" },
+            target: entityId,
+          }),
+        });
+        await new Promise(r => setTimeout(r, 500));
+        await fetch(`${haUrl}/api/services/media_player/play_media`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            entity_id: entityId,
+            media_content_id: spotifyUri || artistName || "music",
+            media_content_type: "SPOTIFY",
+          }),
+        });
+      } else if (spotifyUri) {
         await fetch(`${haUrl}/api/services/media_player/play_media`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
@@ -13824,7 +13849,7 @@ Return ONLY the JSON object, no markdown formatting.`;
           body: JSON.stringify({ entity_id: entityId, media_content_id: artistName, media_content_type: "SPOTIFY" }),
         });
       }
-      console.log(`[Spotify] Playing on ${entityId}: ${spotifyUri || artistName}`);
+      console.log(`[Spotify] Playing on ${entityId} (echo=${isEcho}): ${spotifyUri || artistName}`);
       res.json({ ok: true });
     } catch (error: any) {
       console.error("[Spotify] Play on speaker error:", error);
