@@ -21672,19 +21672,11 @@ export default function Dashboard() {
 
             return rows;
           })()}
-          {(() => {
-            const timelineRef = homeworkScrollRef;
-            const scrollEl = timelineRef?.current;
-            const rect = scrollEl?.getBoundingClientRect();
-            const topPos = rect ? rect.top - 12 : 0;
-            const centerX = rect ? rect.left + rect.width / 2 - 27 : 0;
-            return rect ? createPortal(
-              <div style={{ position: 'fixed', top: topPos, left: centerX, width: '54px', height: '19px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, pointerEvents: 'none' }}>
-                <span style={{ fontSize: '8px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
-              </div>,
-              document.body
-            ) : null;
-          })()}
+          <div style={{ position: 'relative', height: '0px', flexShrink: 0 }}>
+            <div style={{ position: 'absolute', top: '-10px', left: '50%', transform: 'translateX(-50%)', width: '54px', height: '19px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 110, pointerEvents: 'none' }}>
+              <span style={{ fontSize: '8px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
+            </div>
+          </div>
           <div className="flex-1 px-2 flex flex-col" style={{ marginTop: (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
             if (courseRowRects.length > 0) {
