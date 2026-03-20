@@ -2735,7 +2735,7 @@ export default function PDFReaderPage() {
         </div>
       </div>
 
-      {totalChunks > 0 && (
+      {totalChunks > 0 && !(catWashFollow && followState?.active) && (
         <div className="relative flex-shrink-0" style={{ zIndex: 10 }}>
           <div className="w-full px-0" data-testid="progress-gradient-bar">
             <div className="relative w-full h-8 flex items-center" style={{ background: `linear-gradient(90deg, ${waveColor}33 0%, ${waveColor}88 ${chunkProgress}%, rgba(255,255,255,0.08) ${chunkProgress}%, rgba(255,255,255,0.08) 100%)` }}>
