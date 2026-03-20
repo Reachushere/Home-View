@@ -18394,6 +18394,7 @@ export default function Dashboard() {
                                 <Checkbox
                                   checked={task.isCompleted || false}
                                   onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                  onClick={(e) => e.stopPropagation()}
                                   className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
                                   data-testid={`checkbox-module-static-${task.id}`}
                                 />
@@ -18480,6 +18481,7 @@ export default function Dashboard() {
                                       <Checkbox
                                         checked={task.isCompleted || false}
                                         onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                        onClick={(e) => e.stopPropagation()}
                                         className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
                                         data-testid={`checkbox-fullweek-${task.id}`}
                                       />
@@ -18876,6 +18878,7 @@ export default function Dashboard() {
                               <Checkbox
                                 checked={task.isCompleted || false}
                                 onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                onClick={(e) => e.stopPropagation()}
                                 className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
                                 data-testid={`checkbox-course-row-${task.id}`}
                               />
@@ -19115,18 +19118,19 @@ export default function Dashboard() {
                                   backgroundColor: isUnackedReminder ? 'rgba(220, 38, 38, 0.25)' : 'rgba(107, 114, 128, 0.25)',
                                   borderColor: isUnackedReminder ? 'rgba(220, 38, 38, 0.6)' : 'rgba(107, 114, 128, 0.5)',
                                 }}
-                                onClick={() => setEditingTask(task)}
                                 title={task.title}
                                 data-testid={`other-task-${task.id}`}
                               >
                                 <Checkbox
                                   checked={task.isCompleted || false}
                                   onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                  onClick={(e) => e.stopPropagation()}
                                   className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
                                   data-testid={`checkbox-other-${task.id}`}
                                 />
                                 <span
-                                  className={`truncate font-bold text-black flex-1 min-w-0 ${task.isCompleted ? "line-through" : ""}`}
+                                  onClick={() => setEditingTask(task)}
+                                  className={`truncate font-bold text-black flex-1 min-w-0 cursor-pointer hover:opacity-80 ${task.isCompleted ? "line-through" : ""}`}
                                 >
                                   {task.title}
                                 </span>
@@ -19246,6 +19250,7 @@ export default function Dashboard() {
                               <Checkbox
                                 checked={task.isCompleted || false}
                                 onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                onClick={(e) => e.stopPropagation()}
                                 className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
                                 data-testid={`checkbox-allday-${task.id}`}
                               />
@@ -19668,6 +19673,7 @@ export default function Dashboard() {
                                   <Checkbox
                                       checked={task.isCompleted || false}
                                       onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                      onClick={(e) => e.stopPropagation()}
                                       className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
                                       data-testid={`checkbox-time-${task.id}`}
                                     />
