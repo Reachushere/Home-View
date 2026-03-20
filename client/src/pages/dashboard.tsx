@@ -21888,7 +21888,7 @@ export default function Dashboard() {
                         const dueDates = group.tasks.map(t => ({ date: startOfDay(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
                           <div key={group.key} style={{ display: 'flex', alignItems: 'center' }}>
-                            <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', overflow: 'hidden' }}>
+                            <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginLeft: '4px', marginRight: '4px', overflow: 'hidden' }}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 This week
                               </span>
@@ -22075,7 +22075,7 @@ export default function Dashboard() {
                         const dueDates = group.tasks.map(t => ({ date: startOfDay(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
                           <div key={group.key} style={{ display: 'flex', alignItems: 'center', gap: '0px', marginBottom: '2px' }}>
-                            <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', overflow: 'hidden' }} data-testid={`mini-cal-group-${group.key}`}>
+                            <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginLeft: '4px', marginRight: '4px', overflow: 'hidden' }} data-testid={`mini-cal-group-${group.key}`}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 Next week
                               </span>
@@ -22269,7 +22269,7 @@ export default function Dashboard() {
                         });
                         return (
                           <div key={group.key} style={{ display: 'flex', alignItems: 'center', gap: '0px', marginBottom: '2px' }}>
-                            <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', overflow: 'hidden' }} data-testid={`mini-cal-2w-group-${group.key}`}>
+                            <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginLeft: '4px', marginRight: '4px', overflow: 'hidden' }} data-testid={`mini-cal-2w-group-${group.key}`}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 Two weeks
                               </span>
@@ -22434,7 +22434,7 @@ export default function Dashboard() {
                         const dueDates = group.tasks.map(t => ({ date: startOfDay(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
                           <div key={group.key} style={{ display: 'flex', alignItems: 'center', marginBottom: '2px' }}>
-                            <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginRight: '4px', overflow: 'hidden' }} data-testid={`mini-cal-beyond-group-${group.key}`}>
+                            <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginLeft: '4px', marginRight: '4px', overflow: 'hidden' }} data-testid={`mini-cal-beyond-group-${group.key}`}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 {(() => {
                                   const lastWeek = group.weeks[group.weeks.length - 1];
