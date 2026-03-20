@@ -19453,18 +19453,18 @@ export default function Dashboard() {
                             const hoursUntil = nextSchoolTask ? (getTaskTime(nextSchoolTask) - now.getTime()) / (1000 * 60 * 60) : null;
                             const displayTime = hoursUntil !== null ? (hoursUntil < 1 ? `${Math.max(1, Math.round(hoursUntil * 60))}m` : hoursUntil < 10 ? `${hoursUntil.toFixed(1)}h` : `${Math.round(hoursUntil)}h`) : '--';
                             return (
-                              <div className="absolute right-0 top-0 bottom-0 z-[3] pointer-events-none flex items-center justify-end gap-[2px]" style={{ paddingRight: '2px' }} data-testid="hours-until-next-task">
+                              <div className="absolute left-0 right-0 top-0 bottom-0 z-[3] pointer-events-none flex items-center gap-[2px]" style={{ padding: '0 2px' }} data-testid="hours-until-next-task">
                                 {missedCount > 0 && (
-                                  <div style={{ width: `${narrowColWidth + 2}px`, height: `${narrowColWidth + 2}px`, background: 'linear-gradient(135deg, #f5c842 0%, #e0a800 100%)', borderRadius: '5px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(202, 138, 6, 0.6)', boxShadow: '0 1px 3px rgba(0,0,0,0.2)', gap: '1px', padding: '3px 2px 2px' }} data-testid="missed-tasks-indicator">
+                                  <div className="shrink-0" style={{ width: `${narrowColWidth + 2}px`, height: `${narrowColWidth + 2}px`, background: 'linear-gradient(135deg, #f5c842 0%, #e0a800 100%)', borderRadius: '5px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(202, 138, 6, 0.6)', boxShadow: '0 1px 3px rgba(0,0,0,0.2)', gap: '1px', padding: '3px 2px 2px' }} data-testid="missed-tasks-indicator">
                                     <div style={{ backgroundColor: '#ef4444', borderRadius: '4px', width: `${narrowColWidth - 8}px`, height: `${narrowColWidth - 10}px`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 1px 2px rgba(0,0,0,0.15)' }}>
                                       <span style={{ fontSize: '11px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{missedCount}</span>
                                     </div>
                                     <span style={{ fontSize: '6px', color: '#1a1a1a', fontWeight: 900, lineHeight: 1, letterSpacing: '0.3px' }}>Due</span>
                                   </div>
                                 )}
-                                <div style={{ height: `${narrowColWidth + 2}px`, background: 'linear-gradient(135deg, #f5c842 0%, #e0a800 100%)', borderRadius: '5px', display: 'flex', alignItems: 'center', padding: '0 3px', gap: '3px', border: '1px solid rgba(202, 138, 4, 0.6)', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>
+                                <div className="flex-1" style={{ height: `${narrowColWidth + 2}px`, background: 'linear-gradient(135deg, #f5c842 0%, #e0a800 100%)', borderRadius: '5px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 4px', border: '1px solid rgba(202, 138, 4, 0.6)', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>
                                   <span style={{ fontSize: '7px', color: '#1a1a1a', fontWeight: 800, lineHeight: 1.1, whiteSpace: 'nowrap' }}>Next<br/>task:</span>
-                                  <div style={{ backgroundColor: '#22c55e', borderRadius: '4px', padding: '2px 4px', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '18px', minHeight: '16px', border: '1px solid rgba(22, 163, 74, 0.5)' }}>
+                                  <div style={{ backgroundColor: '#22c55e', borderRadius: '4px', padding: '2px 5px', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '20px', minHeight: '16px', border: '1px solid rgba(22, 163, 74, 0.5)' }}>
                                     <span style={{ fontSize: '11px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{displayTime}</span>
                                   </div>
                                 </div>
@@ -19872,9 +19872,9 @@ export default function Dashboard() {
                         overflow: 'visible',
                       }}>
                         <line
-                          x1={`${(frBefore / totalFrUnits) * 100}%`}
+                          x1={`${((frBefore + DAY_COL_LEFT_REDUCTION + narrowColWidth + 2) / totalFrUnits) * 100}%`}
                           y1={taskMidY < lineMidY ? '2' : `${Math.abs(lineMidY - taskMidY) + 2}`}
-                          x2={`${((frBefore + DAY_COL_LEFT_REDUCTION + narrowColWidth) / totalFrUnits) * 100}%`}
+                          x2={`${((frBefore + frDay) / totalFrUnits) * 100}%`}
                           y2={taskMidY < lineMidY ? `${Math.abs(lineMidY - taskMidY) + 2}` : '2'}
                           stroke="#ef4444"
                           strokeWidth="1.5"
