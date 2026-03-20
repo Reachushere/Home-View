@@ -7,6 +7,14 @@ import {
 import floorplanImg from "@assets/Floorplan11_1774005505273.png";
 import massBg from "@assets/mass-background2_1774005959332.png";
 import musicBg from "@assets/Music_BG20_1774006032495.png";
+import hallwayNight from "@assets/Hallway_Night_1774008796945.png";
+import kingNight from "@assets/King_Night_1774008796946.png";
+import kitchenNight from "@assets/Kitchen_Night_1774008796947.png";
+import livingRoomNight from "@assets/Living_Room_Night_1774008796948.png";
+import pugNight from "@assets/Pug_Night_1774008796949.png";
+import queenNight from "@assets/Queen_Night_1774008796950.png";
+import catNight from "@assets/Cat_Night_1774008796951.png";
+import closetNight from "@assets/Closet_Night_1774008796953.png";
 
 interface NowPlaying {
   playing: boolean; name?: string; artist?: string; album?: string;
@@ -80,16 +88,16 @@ const PROFILES: Record<ProfileKey, {
   },
 };
 
-const ROOM_HOTSPOTS: { room: string; x: number; y: number; w: number; h: number; entityId: string; groupEntityId: string; deviceType: string; icon: string }[] = [
+const ROOM_HOTSPOTS: { room: string; x: number; y: number; w: number; h: number; entityId: string; groupEntityId: string; deviceType: string; icon: string; nightImg?: string }[] = [
   { room: "Balcony", x: 2, y: 72, w: 18, h: 25, entityId: "media_player.queen_bedroom", groupEntityId: "media_player.queen_bedroom_media_group", deviceType: "echo", icon: "🌆" },
-  { room: "Queen Bedroom", x: 2, y: 38, w: 18, h: 33, entityId: "media_player.queen_bedroom", groupEntityId: "media_player.queen_bedroom_media_group", deviceType: "echo", icon: "🛏️" },
-  { room: "Pug Washroom", x: 2, y: 5, w: 16, h: 32, entityId: "media_player.echo_show_pug_am", groupEntityId: "media_player.pug_media_group", deviceType: "echo_show", icon: "🐶" },
-  { room: "Hallway", x: 19, y: 5, w: 16, h: 32, entityId: "media_player.hallway_2", groupEntityId: "media_player.hallway_media_group", deviceType: "echo", icon: "🚪" },
-  { room: "Kitchen", x: 36, y: 5, w: 28, h: 45, entityId: "media_player.kitchen_lr", groupEntityId: "media_player.kitchen_media_group", deviceType: "echo", icon: "🍳" },
-  { room: "Living Room", x: 36, y: 52, w: 28, h: 45, entityId: "media_player.kitchen_lr", groupEntityId: "media_player.living_room_media_group", deviceType: "echo", icon: "🛋️" },
-  { room: "King Bedroom", x: 65, y: 30, w: 33, h: 50, entityId: "media_player.king_bedroom", groupEntityId: "media_player.king_bedroom_media_group", deviceType: "echo", icon: "👑" },
-  { room: "Cat Washroom", x: 65, y: 3, w: 18, h: 26, entityId: "media_player.cat_speakers", groupEntityId: "media_player.cat_washroom_media_group", deviceType: "echo", icon: "🐱" },
-  { room: "Closet", x: 84, y: 3, w: 14, h: 26, entityId: "media_player.echo_closet_am", groupEntityId: "media_player.closet_media_group", deviceType: "echo", icon: "👔" },
+  { room: "Queen Bedroom", x: 2, y: 38, w: 18, h: 33, entityId: "media_player.queen_bedroom", groupEntityId: "media_player.queen_bedroom_media_group", deviceType: "echo", icon: "🛏️", nightImg: queenNight },
+  { room: "Pug Washroom", x: 2, y: 5, w: 16, h: 32, entityId: "media_player.echo_show_pug_am", groupEntityId: "media_player.pug_media_group", deviceType: "echo_show", icon: "🐶", nightImg: pugNight },
+  { room: "Hallway", x: 19, y: 5, w: 16, h: 32, entityId: "media_player.hallway_2", groupEntityId: "media_player.hallway_media_group", deviceType: "echo", icon: "🚪", nightImg: hallwayNight },
+  { room: "Kitchen", x: 36, y: 5, w: 28, h: 45, entityId: "media_player.kitchen_lr", groupEntityId: "media_player.kitchen_media_group", deviceType: "echo", icon: "🍳", nightImg: kitchenNight },
+  { room: "Living Room", x: 36, y: 52, w: 28, h: 45, entityId: "media_player.kitchen_lr", groupEntityId: "media_player.living_room_media_group", deviceType: "echo", icon: "🛋️", nightImg: livingRoomNight },
+  { room: "King Bedroom", x: 65, y: 30, w: 33, h: 50, entityId: "media_player.king_bedroom", groupEntityId: "media_player.king_bedroom_media_group", deviceType: "echo", icon: "👑", nightImg: kingNight },
+  { room: "Cat Washroom", x: 65, y: 3, w: 18, h: 26, entityId: "media_player.cat_speakers", groupEntityId: "media_player.cat_washroom_media_group", deviceType: "echo", icon: "🐱", nightImg: catNight },
+  { room: "Closet", x: 84, y: 3, w: 14, h: 26, entityId: "media_player.echo_closet_am", groupEntityId: "media_player.closet_media_group", deviceType: "echo", icon: "👔", nightImg: closetNight },
   { room: "Everywhere", x: 84, y: 78, w: 14, h: 18, entityId: "media_player.everywhere_5", groupEntityId: "media_player.everywhere_2", deviceType: "group", icon: "🏠" },
 ];
 
@@ -932,7 +940,7 @@ export default function SpotifyPlayerPage() {
             {viewMode === "floor" && (
               <>
                 <img src={floorplanImg} alt="Apartment floor plan" className="absolute inset-0 w-full h-full object-contain"
-                  style={{ filter: "brightness(0.55) contrast(1.1) saturate(0.5) hue-rotate(190deg)", opacity: 0.75 }} />
+                  style={{ filter: "brightness(0.65) contrast(1.05) saturate(0.6) hue-rotate(190deg)", opacity: 0.8 }} />
                 <div className="absolute inset-0" style={{
                   background: `radial-gradient(ellipse at center, transparent 30%, rgba(3,8,20,0.6) 100%)`,
                 }} />
@@ -945,27 +953,55 @@ export default function SpotifyPlayerPage() {
                       onDrop={handleRoomDrop(spot.room)}
                       onDragOver={handleDragOver(spot.room)}
                       onDragLeave={() => setDropTarget(null)}
-                      className="absolute rounded-lg cursor-pointer transition-all"
+                      className="absolute cursor-pointer transition-all"
                       style={{
                         left: `${spot.x}%`, top: `${spot.y}%`, width: `${spot.w}%`, height: `${spot.h}%`,
-                        background: isDrop
-                          ? `${profile.accent}20`
-                          : isActive
-                            ? `rgba(0,180,255,0.08)`
-                            : "rgba(3,8,20,0.25)",
-                        border: `1px solid ${isDrop ? profile.accent : isActive ? `${profile.accent}50` : "rgba(0,180,255,0.08)"}`,
+                        border: `1px solid ${isDrop ? profile.accent : isActive ? `${profile.accent}60` : "rgba(0,180,255,0.06)"}`,
+                        borderRadius: '4px',
                         boxShadow: isActive
-                          ? `0 0 25px ${profile.glow}, inset 0 0 20px ${profile.glow}`
+                          ? `0 0 30px ${profile.glow}, 0 0 15px ${profile.glow}, inset 0 0 25px ${profile.glow}`
                           : isDrop
                             ? `0 0 30px ${profile.glow}`
                             : "none",
-                        backdropFilter: "blur(4px)",
+                        overflow: 'hidden',
                       }}
                       data-testid={`room-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
-                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5">
-                        <span className="text-base" style={{ filter: isActive ? `drop-shadow(0 0 6px ${profile.accent})` : 'none' }}>{spot.icon}</span>
+                      {spot.nightImg && (
+                        <img src={spot.nightImg} alt={spot.room}
+                          className="absolute inset-0 w-full h-full object-cover"
+                          style={{
+                            opacity: isActive ? 0.7 : 0.3,
+                            filter: isActive
+                              ? `brightness(0.8) saturate(1.2) hue-rotate(10deg)`
+                              : 'brightness(0.4) saturate(0.3) hue-rotate(190deg)',
+                            transition: 'opacity 0.4s ease, filter 0.4s ease',
+                          }} />
+                      )}
+                      {!spot.nightImg && (
+                        <div className="absolute inset-0" style={{
+                          background: isDrop
+                            ? `${profile.accent}20`
+                            : isActive
+                              ? `rgba(0,80,180,0.12)`
+                              : "rgba(3,8,20,0.25)",
+                        }} />
+                      )}
+                      {isActive && (
+                        <div className="absolute inset-0 pointer-events-none" style={{
+                          background: `linear-gradient(135deg, ${profile.accent}15, transparent 50%, ${profile.accent}10)`,
+                          border: `1px solid ${profile.accent}40`,
+                          borderRadius: '3px',
+                        }} />
+                      )}
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5" style={{ zIndex: 2 }}>
+                        <span className="text-base" style={{
+                          filter: isActive ? `drop-shadow(0 0 8px ${profile.accent})` : 'drop-shadow(0 0 2px rgba(0,0,0,0.8))',
+                        }}>{spot.icon}</span>
                         <span className="text-[11px] font-bold uppercase tracking-wider text-center leading-tight px-1"
-                          style={{ color: isActive ? profile.accent : 'rgba(0,180,255,0.4)', textShadow: isActive ? `0 0 8px ${profile.glow}` : 'none' }}>
+                          style={{
+                            color: isActive ? profile.accent : 'rgba(0,180,255,0.5)',
+                            textShadow: isActive ? `0 0 10px ${profile.glow}` : '0 1px 3px rgba(0,0,0,0.8)',
+                          }}>
                           {spot.room}
                         </span>
                         {isActive && (
@@ -983,10 +1019,11 @@ export default function SpotifyPlayerPage() {
                             <button onClick={(e) => { e.stopPropagation(); e.preventDefault(); ungroupRoom(spot.room); }}
                               className="mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium transition-all hover:scale-110"
                               style={{
-                                background: 'rgba(255,60,60,0.2)',
-                                border: '1px solid rgba(255,60,60,0.3)',
+                                background: 'rgba(255,60,60,0.25)',
+                                border: '1px solid rgba(255,60,60,0.35)',
                                 color: 'rgba(255,120,120,0.9)',
                                 textShadow: '0 0 4px rgba(255,60,60,0.3)',
+                                backdropFilter: 'blur(4px)',
                               }}
                               data-testid={`floorplan-ungroup-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
                               ✕ Ungroup
@@ -995,8 +1032,9 @@ export default function SpotifyPlayerPage() {
                         )}
                       </div>
                       {isDrop && (
-                        <div className="absolute inset-0 rounded-lg pointer-events-none" style={{
-                          border: `1px dashed ${profile.accent}60`,
+                        <div className="absolute inset-0 pointer-events-none" style={{
+                          border: `2px dashed ${profile.accent}70`,
+                          borderRadius: '3px',
                           animation: 'holoPulse 1s ease-in-out infinite',
                         }} />
                       )}
