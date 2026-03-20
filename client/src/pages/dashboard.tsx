@@ -22979,7 +22979,7 @@ export default function Dashboard() {
               style={{ position: 'relative', width: '100%', height: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', touchAction: 'none' }}
               data-testid="hw-floating-titlebar"
             >
-              <div style={{ width: '191px', height: '14px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.35)', border: '1px solid rgba(255,255,255,0.55)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
+              <div style={{ width: '191px', height: '14px', borderRadius: '6px 6px 0 0', background: colorSettings.headerBar, border: '1px solid rgba(255,255,255,0.25)', borderBottom: 'none', display: 'flex', alignItems: 'center' }}>
                 <button
                   className="cursor-pointer"
                   style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto', background: 'none', border: 'none', padding: 0 }}
