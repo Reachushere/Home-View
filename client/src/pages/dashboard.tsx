@@ -16129,9 +16129,9 @@ export default function Dashboard() {
                           onClick={(e) => { e.stopPropagation(); setDashboardCommentTarget(dashboardCommentTarget?.type === 'course' && dashboardCommentTarget?.id === semCourse.code ? null : { type: 'course', id: semCourse.code, label: `${displayName}${subtitle ? ' - ' + subtitle : ''}` }); }}
                           data-testid={`button-comment-course-${semCourse.code}`}
                         >
-                          <MessageSquare className="w-3 h-3" />
+                          <MessageSquare className="w-3 h-3" strokeWidth={2.5} />
                         </button>
-                        <div className="flex-shrink-0" style={{ width: '35px', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', paddingLeft: '0px' }}>
+                        <div className="flex-shrink-0" style={{ width: '35px', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', paddingLeft: '0px', marginLeft: '3px' }}>
                         {(() => {
                           const cc = semCourse.code.replace(/\s/g, '');
                           let dm = courseDeliveryModes[cc] || '';
@@ -16143,7 +16143,7 @@ export default function Dashboard() {
                         })()}
                         </div>
                         <span className="text-[10px] truncate min-w-0 flex-1 cursor-pointer hover:underline" style={{ marginLeft: '14px' }} onClick={(e) => { e.stopPropagation(); const certKey = pastEntry?.certKey || semCourse.code; startTransition(() => setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey })); }} data-testid={`course-name-click-${semCourse.code}`}><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
-                        <div className="flex items-center gap-1 flex-shrink-0">
+                        <div className="flex items-center gap-1 flex-shrink-0" style={{ marginRight: '-3px' }}>
                           {(() => {
                             const profName = currentCourse?.professor || profInfo.professor;
                             const profEmail = currentCourse?.professorEmail || profInfo.email;
