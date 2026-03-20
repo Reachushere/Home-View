@@ -19453,26 +19453,22 @@ export default function Dashboard() {
                             const hoursUntil = nextSchoolTask ? (getTaskTime(nextSchoolTask) - now.getTime()) / (1000 * 60 * 60) : null;
                             const displayTime = hoursUntil !== null ? (hoursUntil < 1 ? `${Math.max(1, Math.round(hoursUntil * 60))}m` : hoursUntil < 10 ? `${hoursUntil.toFixed(1)}h` : `${Math.round(hoursUntil)}h`) : '--';
                             return (
-                              <>
-                                <div className="absolute right-0 top-0 bottom-0 z-[3] pointer-events-none flex items-center justify-center" style={{ width: `${narrowColWidth}px` }} data-testid="hours-until-next-task">
-                                  <div style={{ width: `${narrowColWidth - 4}px`, height: `${narrowColWidth - 4}px`, backgroundColor: 'rgba(250, 204, 21, 0.85)', borderRadius: '3px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(202, 138, 4, 0.6)' }}>
-                                    <div style={{ backgroundColor: '#22c55e', borderRadius: '2px', padding: '0px 3px', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px', minHeight: '14px' }}>
-                                      <span style={{ fontSize: '10px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{displayTime}</span>
-                                    </div>
-                                    <span style={{ fontSize: '5px', color: 'rgba(120, 80, 0, 0.9)', fontWeight: 800, marginTop: '0px', letterSpacing: '0.2px' }}>NEXT</span>
-                                  </div>
-                                </div>
+                              <div className="absolute right-0 top-0 bottom-0 z-[3] pointer-events-none flex items-center justify-end gap-[2px]" style={{ width: `${narrowColWidth * 2 + 4}px`, paddingRight: '2px' }} data-testid="hours-until-next-task">
                                 {missedCount > 0 && (
-                                  <div className="absolute left-0 top-0 bottom-0 z-[3] pointer-events-none flex items-center justify-center" style={{ width: `${narrowColWidth}px`, paddingLeft: `${DAY_COL_LEFT_REDUCTION}px` }} data-testid="missed-tasks-indicator">
-                                    <div style={{ width: `${narrowColWidth - DAY_COL_LEFT_REDUCTION - 2}px`, height: `${narrowColWidth - DAY_COL_LEFT_REDUCTION - 2}px`, backgroundColor: 'rgba(250, 204, 21, 0.85)', borderRadius: '3px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(202, 138, 6, 0.6)' }}>
-                                      <div style={{ backgroundColor: '#ef4444', borderRadius: '2px', padding: '0px 3px', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px', minHeight: '14px' }}>
-                                        <span style={{ fontSize: '10px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{missedCount}</span>
-                                      </div>
-                                      <span style={{ fontSize: '5px', color: 'rgba(120, 40, 0, 0.9)', fontWeight: 800, marginTop: '0px', letterSpacing: '0.2px', textTransform: 'uppercase' }}>Due</span>
+                                  <div style={{ width: `${narrowColWidth - 6}px`, height: `${narrowColWidth - 6}px`, backgroundColor: 'rgba(250, 204, 21, 0.85)', borderRadius: '3px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(202, 138, 6, 0.6)' }} data-testid="missed-tasks-indicator">
+                                    <div style={{ backgroundColor: '#ef4444', borderRadius: '2px', padding: '0px 3px', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px', minHeight: '14px' }}>
+                                      <span style={{ fontSize: '10px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{missedCount}</span>
                                     </div>
+                                    <span style={{ fontSize: '5px', color: 'rgba(120, 40, 0, 0.9)', fontWeight: 800, marginTop: '0px', letterSpacing: '0.2px', textTransform: 'uppercase' }}>Due</span>
                                   </div>
                                 )}
-                              </>
+                                <div style={{ width: `${narrowColWidth - 4}px`, height: `${narrowColWidth + 6}px`, backgroundColor: 'rgba(250, 204, 21, 0.85)', borderRadius: '3px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(202, 138, 4, 0.6)' }}>
+                                  <div style={{ backgroundColor: '#22c55e', borderRadius: '2px', padding: '0px 3px', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px', minHeight: '14px' }}>
+                                    <span style={{ fontSize: '10px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{displayTime}</span>
+                                  </div>
+                                  <span style={{ fontSize: '5px', color: 'rgba(120, 80, 0, 0.9)', fontWeight: 800, marginTop: '0px', letterSpacing: '0.2px' }}>NEXT</span>
+                                </div>
+                              </div>
                             );
                           })()}
                           {/* Hour boundary dotted line - skip for 12pm since it has AM/PM separator */}
