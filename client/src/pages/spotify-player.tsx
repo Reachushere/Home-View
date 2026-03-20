@@ -792,13 +792,16 @@ export default function SpotifyPlayerPage() {
     const entityId = groupSpeaker?.entityId || hotspot?.groupEntityId || hotspot?.entityId;
     const deviceType = hotspot?.deviceType || "echo";
     if (!entityId) { showNotif(`No speakers in ${roomName}`); return; }
+    const isJp = activeProfile === "yasu";
+    const announceMessage = isJp
+      ? `${artistData.name}を${ROOM_JP[roomName] || roomName}で再生します`
+      : `Now playing ${artistData.name} on the ${roomName}`;
     try {
       await fetch(`/api/spotify/play-on-speaker${authQuery}`, {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ entityId, spotifyUri: artistData.uri, artistName: artistData.name, deviceType }),
+        body: JSON.stringify({ entityId, spotifyUri: artistData.uri, artistName: artistData.name, deviceType, announceMessage }),
       });
       setActiveRooms(prev => new Set(prev).add(roomName));
-      announceTrack(artistData.name, artistData.name, roomName);
       showNotif(`Playing ${artistData.name} in ${roomName}`);
       setTimeout(fetchNowPlaying, 1500);
     } catch { showNotif("Failed to play"); }

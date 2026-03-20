@@ -13952,7 +13952,7 @@ Return ONLY the JSON object, no markdown formatting.`;
 
   app.post("/api/spotify/play-on-speaker", async (req, res) => {
     try {
-      const { entityId, spotifyUri, artistName, deviceType } = req.body;
+      const { entityId, spotifyUri, artistName, deviceType, announceMessage } = req.body;
       if (!entityId) return res.status(400).json({ error: "entityId required" });
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
 
@@ -13986,6 +13986,24 @@ Return ONLY the JSON object, no markdown formatting.`;
               }
               if (targetEntity !== entityId) break;
             }
+          }
+        }
+
+        if (announceMessage) {
+          console.log(`[Spotify] TTS announce on ${targetEntity}: "${announceMessage}"`);
+          try {
+            await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                message: announceMessage,
+                data: { type: "tts" },
+                target: [targetEntity],
+              }),
+            });
+            await new Promise(resolve => setTimeout(resolve, 2500));
+          } catch (ttsErr: any) {
+            console.log(`[Spotify] TTS announce failed (continuing): ${ttsErr.message}`);
           }
         }
 
