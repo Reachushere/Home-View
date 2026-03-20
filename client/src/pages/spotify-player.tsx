@@ -853,19 +853,27 @@ export default function SpotifyPlayerPage() {
   };
 
   const handleDragStart = (type: "artist" | "room", data: any) => (e: React.DragEvent) => {
+    console.log(`[DnD] Drag started: ${type} = ${data?.name || data?.room}`);
     setDragItem({ type, data });
     e.dataTransfer.effectAllowed = "move";
     e.dataTransfer.setData("text/plain", JSON.stringify({ type, data }));
+    if (type === "artist" && viewMode !== "floor") {
+      switchView("floor");
+    }
   };
 
   const handleRoomDrop = (roomName: string) => (e: React.DragEvent) => {
     e.preventDefault(); setDropTarget(null);
+    console.log(`[DnD] Dropped on room: ${roomName}`);
     try {
       const raw = e.dataTransfer.getData("text/plain");
       const parsed = JSON.parse(raw);
+      console.log(`[DnD] Parsed drop data:`, parsed.type, parsed.data?.name || parsed.data?.room);
       if (parsed.type === "artist") playOnRoom(roomName, parsed.data);
       else if (parsed.type === "room" && parsed.data.room !== roomName) groupRooms(parsed.data.room, roomName);
-    } catch {}
+    } catch (err) {
+      console.error(`[DnD] Drop parse error:`, err);
+    }
     setDragItem(null);
   };
 
