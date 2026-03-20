@@ -18408,7 +18408,9 @@ export default function Dashboard() {
                   }
                   return false;
                 });
-                if (courseTaskCount === 0 && !courseHasProjects) {
+                const mainCourseNames = ['CPPA122', 'CFNF400', 'CASL101'];
+                const isMainCourse = mainCourseNames.includes(courseName);
+                if (courseTaskCount === 0 && !courseHasProjects && !isMainCourse) {
                   return null;
                 }
                 
