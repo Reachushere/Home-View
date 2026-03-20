@@ -21903,7 +21903,7 @@ export default function Dashboard() {
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 {hwWeeklyTimeline[0]?.sublabel || ''}
                               </span>
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-end' }}>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
                                 <div style={{ display: 'flex', gap: '2px', padding: '0 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
                                   {['S','M','T','W','T','F','S'].map((dl, dli) => (
                                     <div key={dli} style={{ width: '13px', fontSize: '6px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
@@ -21913,21 +21913,24 @@ export default function Dashboard() {
                                   const isLastWeek = wi === group.weeks.length - 1;
                                   const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, isLastWeek ? 5 : 6) });
                                   return (
-                                    <div key={wi} style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                      <div style={{ position: 'absolute', top: '-2px', bottom: '-2px', left: '-3px', right: '-3px', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.15)', border: '0.5px solid rgba(255,255,255,0.55)' }} />
-                                      <div style={{ position: 'relative', display: 'flex', gap: '2px', padding: '2px 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
+                                    <div key={wi} style={{ display: 'flex', gap: '2px', padding: '1px 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end', borderRadius: isLastWeek ? '4px' : '3px', backgroundColor: isLastWeek ? 'rgba(255,255,255,0.15)' : `rgba(255,255,255,${0.08 + wi * 0.04})`, border: isLastWeek ? '0.5px solid rgba(255,255,255,0.55)' : '0.5px solid rgba(255,255,255,0.15)' }}>
                                       {days.map((d, di) => {
                                         const isToday = isSameDay(d, today);
-                                        const isDue = dueDates.some(dd => isSameDay(d, dd.date));
-                                        const dueEntry = dueDates.find(dd => isSameDay(d, dd.date));
-                                        const dueColor = isDue && dueEntry ? getCourseColor(dueEntry.courseCode) : undefined;
+                                        const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
+                                        const isDue = !!dueMatch;
+                                        const dueColor = dueMatch ? (dueMatch.courseCode.toUpperCase() === 'CPPA122' ? '#22c55e' : dueMatch.courseCode.toUpperCase() === 'CFNF400' ? '#ff69b4' : dueMatch.courseCode.toUpperCase() === 'CASL101' ? '#b388ff' : getCourseGradientColors(dueMatch.courseCode).start) : '';
                                         return (
-                                          <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{ width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: isToday ? '#fff' : isDue ? '#fff' : 'rgba(255,255,255,0.85)', backgroundColor: isToday ? '#ef4444' : isDue ? (dueColor || 'rgb(255,165,0)') : 'rgba(255,255,255,0.15)', border: isDue && !isToday ? `1px solid ${dueColor || 'rgb(255,165,0)'}` : 'none' }} data-testid={`mini-cal-date-${format(d, 'yyyy-MM-dd')}`}>
+                                          <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
+                                            width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                                            color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
+                                            backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.15)',
+                                            border: isDue && !isToday ? `1px solid ${dueColor}` : 'none',
+                                          }} data-testid={`mini-cal-date-${format(d, 'yyyy-MM-dd')}`}>
                                             {d.getDate()}
                                           </div>
                                         );
                                       })}
-                                      </div>
                                     </div>
                                   );
                                 })}
