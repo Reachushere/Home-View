@@ -17680,7 +17680,7 @@ export default function Dashboard() {
           </Dialog>
 
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-hidden overflow-x-visible scrollbar-hidden flex flex-col" style={{ marginTop: '0px', marginLeft: '-25px', marginRight: '-34px', paddingLeft: '25px', paddingRight: '0px' }}>
+        <div className="flex-1 overflow-visible scrollbar-hidden flex flex-col" style={{ marginTop: '0px', marginLeft: '-25px', marginRight: '-34px', paddingLeft: '25px', paddingRight: '0px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-[0px] mt-[0px] relative flex gap-4 transition-opacity duration-300" style={{ height: calendarHeight - 15 - d2lTickerHeight, flexShrink: 0, order: 1, paddingTop: `${10 + d2lTickerHeight}px` }}>
@@ -21672,10 +21672,19 @@ export default function Dashboard() {
 
             return rows;
           })()}
-          <div style={{ height: '1px', background: 'rgba(255,255,255,0.25)', margin: '0 8px', flexShrink: 0 }} />
-          <div style={{ width: '54px', height: '19px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', alignSelf: 'center', flexShrink: 0 }}>
-            <span style={{ fontSize: '8px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
-          </div>
+          {(() => {
+            const timelineRef = homeworkScrollRef;
+            const scrollEl = timelineRef?.current;
+            const rect = scrollEl?.getBoundingClientRect();
+            const topPos = rect ? rect.top - 12 : 0;
+            const centerX = rect ? rect.left + rect.width / 2 - 27 : 0;
+            return rect ? createPortal(
+              <div style={{ position: 'fixed', top: topPos, left: centerX, width: '54px', height: '19px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, pointerEvents: 'none' }}>
+                <span style={{ fontSize: '8px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
+              </div>,
+              document.body
+            ) : null;
+          })()}
           <div className="flex-1 px-2 flex flex-col" style={{ marginTop: (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
             if (courseRowRects.length > 0) {
@@ -21700,7 +21709,7 @@ export default function Dashboard() {
                   data-testid="hw-group-bar-handle"
                 />
                 {/* Today Section */}
-                <div data-homework-section="today" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 0 6px 0', marginTop: '50px' }}>
+                <div data-homework-section="today" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 0 6px 0', marginTop: '28px' }}>
                   <span className="text-[12px]" style={{ color: '#ffffff' }}>Today</span>
                   <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', position: 'relative', top: '0px' }}>({dueTodayTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', justifyContent: 'flex-end', marginLeft: 'auto', flexShrink: 0, width: '42px' }}>
