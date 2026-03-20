@@ -13989,32 +13989,46 @@ Return ONLY the JSON object, no markdown formatting.`;
           }
         }
 
-        const isArtistUri = spotifyUri && spotifyUri.startsWith("spotify:artist:");
-        if (spotifyUri && !isArtistUri) {
-          console.log(`[Spotify] Echo device - using media_player.play_media for ${targetEntity}: ${spotifyUri}`);
+        if (spotifyUri) {
+          const isArtistUri = spotifyUri.startsWith("spotify:artist:");
+          if (isArtistUri && artistName) {
+            console.log(`[Spotify] Echo device - artist URI, using play_media with artist name for ${targetEntity}: "${artistName}"`);
+            const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                entity_id: targetEntity,
+                media_content_id: artistName,
+                media_content_type: "SPOTIFY",
+              }),
+            });
+            console.log(`[Spotify] play_media (artist name) response: ${playResp.status}`);
+          } else {
+            console.log(`[Spotify] Echo device - using play_media for ${targetEntity}: ${spotifyUri}`);
+            const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                entity_id: targetEntity,
+                media_content_id: spotifyUri,
+                media_content_type: "SPOTIFY",
+              }),
+            });
+            console.log(`[Spotify] play_media response: ${playResp.status}`);
+          }
+        } else {
+          const searchTerm = artistName || "music";
+          console.log(`[Spotify] Echo device - no URI, using play_media with name for ${targetEntity}: "${searchTerm}"`);
           const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({
               entity_id: targetEntity,
-              media_content_id: spotifyUri,
-              media_content_type: "spotify",
+              media_content_id: searchTerm,
+              media_content_type: "SPOTIFY",
             }),
           });
-          console.log(`[Spotify] media_player.play_media response: ${playResp.status}`);
-        } else {
-          const searchTerm = artistName || (spotifyUri ? spotifyUri.split(":").pop() : "music");
-          const message = `Play ${searchTerm} on Spotify`;
-          console.log(`[Spotify] Echo device - using notify/alexa_media for ${targetEntity}: "${message}"`);
-          const notifyResp = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              message: message,
-              target: targetEntity,
-            }),
-          });
-          console.log(`[Spotify] notify/alexa_media response: ${notifyResp.status}`);
+          console.log(`[Spotify] play_media (name) response: ${playResp.status}`);
         }
       } else if (spotifyUri) {
         await fetch(`${haUrl}/api/services/media_player/play_media`, {
