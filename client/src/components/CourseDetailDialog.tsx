@@ -481,10 +481,14 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
   onGradeCalculatedRef.current = onGradeCalculated;
 
   useEffect(() => {
-    if (onGradeCalculatedRef.current && gradeCalc) {
-      onGradeCalculatedRef.current(gradeCalc.currentGrade, String(gradeCalc.rawPercent));
+    if (onGradeCalculatedRef.current) {
+      if (gradeCalc) {
+        onGradeCalculatedRef.current(gradeCalc.currentGrade, String(gradeCalc.currentPercent));
+      } else {
+        onGradeCalculatedRef.current('', '');
+      }
     }
-  }, [gradeCalc?.rawPercent, gradeCalc?.currentGrade]);
+  }, [gradeCalc?.currentPercent, gradeCalc?.currentGrade]);
 
   const createTaskMutation = useMutation({
     mutationFn: async (taskData: Record<string, any>) => {

@@ -12235,11 +12235,11 @@ export default function Dashboard() {
                         }
                       }
                     }
-                    if (info?.grade && info.grade.trim() && letterToGpa[info.grade] !== undefined) { vals.push(letterToGpa[info.grade]); }
-                    else if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); if (!isNaN(p)) vals.push(pToGpa(p)); }
+                    if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); if (!isNaN(p)) vals.push(pToGpa(p)); }
                     else if (cg?.grade && cg.grade.trim() && letterToGpa[cg.grade] !== undefined) { vals.push(letterToGpa[cg.grade]); }
                     else if (directGrade?.percent && directGrade.percent.trim()) { const p = parseFloat(directGrade.percent); if (!isNaN(p)) vals.push(pToGpa(p)); }
                     else if (directGrade?.grade && directGrade.grade.trim() && letterToGpa[directGrade.grade] !== undefined) { vals.push(letterToGpa[directGrade.grade]); }
+                    else if (info?.grade && info.grade.trim() && letterToGpa[info.grade] !== undefined) { vals.push(letterToGpa[info.grade]); }
                     else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); if (!isNaN(p)) vals.push(pToGpa(p)); }
                     else if (electiveGrade?.grade && electiveGrade.grade.trim() && letterToGpa[electiveGrade.grade] !== undefined) { vals.push(letterToGpa[electiveGrade.grade]); }
                   }
@@ -15918,7 +15918,8 @@ export default function Dashboard() {
                     const currentCourse = currentCoursesMap.get(codeNorm);
                     const pastEntry = allPastEntries.get(codeNorm);
                     const profInfo = pastCourseInfo[semCourse.code] || pastCourseInfo[codeNorm] || { professor: '', email: '', grade: '', semester: '', credits: '1.00' };
-                    const grade = courseGrades[codeNorm]?.percent || courseGrades[semCourse.code]?.percent || profInfo.grade || '';
+                    const rowCertKey = pastEntry?.certKey || Object.keys(certCourseMap).find(k => { const mc = certCourseMap[k].code.replace(/\s/g, '').toUpperCase(); return mc === codeNorm || ('C' + mc) === codeNorm || mc === codeNorm.replace(/^C(?=[A-Z]{2,})/, ''); }) || '';
+                    const grade = courseGrades[rowCertKey]?.percent || courseGrades[codeNorm]?.percent || courseGrades[semCourse.code]?.percent || profInfo.grade || '';
                     const isCurrentCourse = !!currentCourse || isCurrent(codeNorm);
                     const certType = courseCertificateTypes[semCourse.code] || courseCertificateTypes[codeNorm] || '';
                     const displayName = semCourse.name;
@@ -16149,9 +16150,9 @@ export default function Dashboard() {
                                         }
                                       }
                                     }
-                                    if (info?.grade && info.grade.trim() && letterToGpa[info.grade] !== undefined) { vals.push(letterToGpa[info.grade]); }
-                                    else if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); if (!isNaN(p)) vals.push(pToGpa(p)); }
+                                    if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); if (!isNaN(p)) vals.push(pToGpa(p)); }
                                     else if (cg?.grade && cg.grade.trim() && letterToGpa[cg.grade] !== undefined) { vals.push(letterToGpa[cg.grade]); }
+                                    else if (info?.grade && info.grade.trim() && letterToGpa[info.grade] !== undefined) { vals.push(letterToGpa[info.grade]); }
                                     else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); if (!isNaN(p)) vals.push(pToGpa(p)); }
                                     else if (electiveGrade?.grade && electiveGrade.grade.trim() && letterToGpa[electiveGrade.grade] !== undefined) { vals.push(letterToGpa[electiveGrade.grade]); }
                                   }
