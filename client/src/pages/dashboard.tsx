@@ -19455,11 +19455,11 @@ export default function Dashboard() {
                             return (
                               <div className="absolute right-0 top-0 bottom-0 z-[3] pointer-events-none flex items-center justify-end gap-[2px]" style={{ paddingRight: '2px' }} data-testid="hours-until-next-task">
                                 {missedCount > 0 && (
-                                  <div style={{ width: `${narrowColWidth - 6}px`, height: `${narrowColWidth - 6}px`, backgroundColor: 'rgba(250, 204, 21, 0.85)', borderRadius: '3px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(202, 138, 6, 0.6)' }} data-testid="missed-tasks-indicator">
-                                    <div style={{ backgroundColor: '#ef4444', borderRadius: '2px', padding: '0px 3px', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px', minHeight: '14px' }}>
-                                      <span style={{ fontSize: '10px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{missedCount}</span>
+                                  <div style={{ width: `${narrowColWidth + 2}px`, height: `${narrowColWidth + 2}px`, background: 'linear-gradient(135deg, #f5c842 0%, #e0a800 100%)', borderRadius: '5px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(202, 138, 6, 0.6)', boxShadow: '0 1px 3px rgba(0,0,0,0.2)', gap: '1px', padding: '3px 2px 2px' }} data-testid="missed-tasks-indicator">
+                                    <div style={{ backgroundColor: '#ef4444', borderRadius: '4px', width: `${narrowColWidth - 8}px`, height: `${narrowColWidth - 10}px`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 1px 2px rgba(0,0,0,0.15)' }}>
+                                      <span style={{ fontSize: '11px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{missedCount}</span>
                                     </div>
-                                    <span style={{ fontSize: '5px', color: 'rgba(120, 40, 0, 0.9)', fontWeight: 800, marginTop: '0px', letterSpacing: '0.2px', textTransform: 'uppercase' }}>Due</span>
+                                    <span style={{ fontSize: '6px', color: '#1a1a1a', fontWeight: 900, lineHeight: 1, letterSpacing: '0.3px' }}>Due</span>
                                   </div>
                                 )}
                                 <div style={{ height: `${narrowColWidth + 2}px`, background: 'linear-gradient(135deg, #f5c842 0%, #e0a800 100%)', borderRadius: '5px', display: 'flex', alignItems: 'center', padding: '0 3px', gap: '3px', border: '1px solid rgba(202, 138, 4, 0.6)', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>
