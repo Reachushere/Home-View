@@ -19457,7 +19457,7 @@ export default function Dashboard() {
                             const displayTime = hoursUntil !== null ? (hoursUntil < 1 ? `${Math.max(1, Math.round(hoursUntil * 60))}m` : hoursUntil < 10 ? `${hoursUntil.toFixed(1)}h` : `${Math.round(hoursUntil)}h`) : '--';
                             return (
                               <div className="absolute top-0 bottom-0 z-[3] pointer-events-none flex items-stretch" style={{ left: `${gridSizes.timeSlotHeight + 5}px`, right: '1px', padding: '1px 0' }} data-testid="hours-until-next-task">
-                                {missedCount > 0 && (
+                                {(missedCount > 0 || true) && (
                                   <div className="shrink-0" style={{ aspectRatio: '1', position: 'relative', marginRight: '2px' }} data-testid="missed-tasks-indicator">
                                     <img src={dueBoxImg} alt="" style={{ width: '100%', height: '100%', objectFit: 'fill', borderRadius: '5px', display: 'block' }} />
                                     <span style={{ position: 'absolute', top: '15%', left: 0, right: 0, textAlign: 'center', fontSize: '13px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{missedCount}</span>
