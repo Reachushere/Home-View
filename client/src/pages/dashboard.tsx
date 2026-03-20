@@ -18134,7 +18134,12 @@ export default function Dashboard() {
                 const rgb = hexToRgb(courseData.color);
                 const course = { 
                   name: courseName, 
-                  bg: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.55)`, 
+                  bg: (() => {
+                    const mr = Math.round(rgb.r * 0.4 + 40 * 0.6);
+                    const mg = Math.round(rgb.g * 0.4 + 50 * 0.6);
+                    const mb = Math.round(rgb.b * 0.4 + 55 * 0.6);
+                    return `rgb(${mr}, ${mg}, ${mb})`;
+                  })(), 
                   label: (() => {
                     const startColor = courseData.color || `rgb(${Math.max(0, rgb.r - 40)}, ${Math.max(0, rgb.g - 40)}, ${Math.max(0, rgb.b - 40)})`;
                     const endColor = courseData.colorEnd || `rgb(${Math.min(255, rgb.r + 100)}, ${Math.min(255, rgb.g + 100)}, ${Math.min(255, rgb.b + 100)})`;
