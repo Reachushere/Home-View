@@ -246,3 +246,11 @@ export async function search(query: string, types: string = 'track,artist,album,
 export async function transferPlayback(deviceId: string, play: boolean = true) {
   return spotifyFetch('/me/player', 'PUT', { device_ids: [deviceId], play });
 }
+
+export async function getRelatedArtists(artistId: string) {
+  return spotifyFetch(`/artists/${artistId}/related-artists`);
+}
+
+export async function getArtistTopTracks(artistId: string, market: string = 'US') {
+  return spotifyFetch(`/artists/${artistId}/top-tracks?market=${market}`);
+}

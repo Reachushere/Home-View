@@ -13760,6 +13760,24 @@ Return ONLY the JSON object, no markdown formatting.`;
     }
   });
 
+  app.get("/api/spotify/related-artists", async (req, res) => {
+    try {
+      const artistId = req.query.artistId as string;
+      if (!artistId) return res.json({ artists: [] });
+      const data = await spotifyApi.getRelatedArtists(artistId);
+      const artists = (data?.artists || []).slice(0, 8).map((a: any) => ({
+        id: a.id, name: a.name,
+        image: a.images?.[0]?.url || "",
+        imageSmall: a.images?.[a.images.length - 1]?.url || "",
+        genres: a.genres?.slice(0, 3) || [],
+        uri: a.uri,
+      }));
+      res.json({ artists });
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to get related artists" });
+    }
+  });
+
   app.get("/api/spotify/devices", async (_req, res) => {
     try {
       const data = await spotifyApi.getDevices();

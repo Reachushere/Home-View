@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import {
   Play, Pause, SkipForward, SkipBack, Music2, Loader2,
-  ChevronLeft, Shuffle, Repeat, Volume2, VolumeX, Speaker,
-  Search, Radio, Menu, X, Home, Zap, Wifi,
+  ChevronLeft, ChevronDown, Shuffle, Repeat, Volume2, VolumeX, Speaker,
+  Search, Radio, Menu, X, Home, Zap, Wifi, Star, Volume1,
 } from "lucide-react";
 import floorplanImg from "@assets/Floorplan11_1774005505273.png";
 import massBg from "@assets/mass-background2_1774005959332.png";
@@ -29,7 +29,7 @@ interface ProfileArtist {
   name: string; uri: string; image?: string; searchQuery: string;
 }
 
-type ProfileKey = "bryn" | "yasu";
+type ProfileKey = "bryn" | "yasu" | "guest";
 
 interface StationShortcut {
   name: string; command: string; uri?: string; icon?: string;
@@ -73,8 +73,8 @@ const PROFILES: Record<ProfileKey, {
   yasu: {
     label: "Yasu",
     theme: "sakura",
-    accent: "#f472b6",
-    glow: "rgba(244,114,182,0.3)",
+    accent: "#2dd4bf",
+    glow: "rgba(45,212,191,0.3)",
     artists: [
       { name: "YOASOBI", uri: "spotify:artist:64tJ2EAv1R6UaZqc4iOCyj", searchQuery: "YOASOBI" },
       { name: "Kenshi Yonezu", uri: "spotify:artist:1snhtMLeb2DYoMOcVkiKnR", searchQuery: "Kenshi Yonezu" },
@@ -84,6 +84,23 @@ const PROFILES: Record<ProfileKey, {
       { name: "Vaundy", uri: "spotify:artist:6k4bHMbRIf97CqMqmU7Xk4", searchQuery: "Vaundy" },
       { name: "King Gnu", uri: "spotify:artist:6n70eCqbtJhbMgsMet1WVb", searchQuery: "King Gnu" },
       { name: "Aimer", uri: "spotify:artist:0bAsR2unSRpn6BOpSbGhAu", searchQuery: "Aimer japanese" },
+      { name: "Tokyo Disney", uri: "spotify:track:2PdJJkPFzhJiMqUOT1GKsj", searchQuery: "Living in Color Tokyo Disney Resort" },
+    ],
+  },
+  guest: {
+    label: "Guest",
+    theme: "neon",
+    accent: "#a78bfa",
+    glow: "rgba(167,139,250,0.3)",
+    artists: [
+      { name: "Dua Lipa", uri: "spotify:artist:6M2wZ9GZgrQXHCFfjv46we", searchQuery: "Dua Lipa" },
+      { name: "The Weeknd", uri: "spotify:artist:1Xyo4u8uXC1ZmMpatF05PJ", searchQuery: "The Weeknd" },
+      { name: "Taylor Swift", uri: "spotify:artist:06HL4z0CvFAxyc27GXpf02", searchQuery: "Taylor Swift" },
+      { name: "Ed Sheeran", uri: "spotify:artist:6eUKZXaKkcviH0Ku9w2n3V", searchQuery: "Ed Sheeran" },
+      { name: "Billie Eilish", uri: "spotify:artist:6qqNVTkY8uBg9cP3Jd7DAH", searchQuery: "Billie Eilish" },
+      { name: "Harry Styles", uri: "spotify:artist:6KImCVD70vtIoJWnq6nGn3", searchQuery: "Harry Styles" },
+      { name: "Doja Cat", uri: "spotify:artist:5cj0lLjcoR7YOSnhnX0Po5", searchQuery: "Doja Cat" },
+      { name: "SZA", uri: "spotify:artist:7tYKF4w9nC0nq9CsPZTHyP", searchQuery: "SZA" },
     ],
   },
 };
@@ -147,11 +164,11 @@ function CherryBlossoms() {
         ctx.globalAlpha = p.alpha;
         ctx.beginPath();
         ctx.ellipse(0, 0, p.size, p.size * 0.6, 0, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,${150 + Math.random() * 50},${180 + Math.random() * 40},1)`;
+        ctx.fillStyle = `rgba(255,${180 + Math.random() * 40},${190 + Math.random() * 30},0.9)`;
         ctx.fill();
         ctx.beginPath();
         ctx.ellipse(p.size * 0.3, -p.size * 0.2, p.size * 0.7, p.size * 0.4, 0.5, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,${170 + Math.random() * 40},${190 + Math.random() * 30},0.8)`;
+        ctx.fillStyle = `rgba(255,${190 + Math.random() * 30},${200 + Math.random() * 20},0.7)`;
         ctx.fill();
         ctx.restore();
       }
@@ -209,9 +226,9 @@ function HoloCircuitLines({ accent }: { accent: string }) {
       const t = Date.now() / 1000;
 
       for (const path of paths) {
-        const alpha = 0.06 + Math.sin(t * path.speed + path.offset) * 0.04;
+        const alpha = 0.1 + Math.sin(t * path.speed + path.offset) * 0.06;
         ctx.strokeStyle = `${accent}${Math.round(alpha * 255).toString(16).padStart(2, '0')}`;
-        ctx.lineWidth = 0.6;
+        ctx.lineWidth = 0.8;
         ctx.beginPath();
         for (let p = 0; p < path.points.length; p++) {
           if (p === 0) ctx.moveTo(path.points[p].x, path.points[p].y);
@@ -420,19 +437,19 @@ function HoloPanel({ children, className = "", accent, glow = false, style = {} 
 }) {
   return (
     <div className={`relative rounded-xl overflow-hidden ${className}`} style={{
-      background: 'rgba(5,10,25,0.65)',
+      background: 'rgba(10,20,45,0.6)',
       backdropFilter: 'blur(30px)',
-      border: `1px solid ${glow ? accent + '30' : 'rgba(0,180,255,0.12)'}`,
+      border: `1px solid ${glow ? accent + '40' : 'rgba(40,120,255,0.15)'}`,
       boxShadow: glow
-        ? `0 0 30px ${accent}15, inset 0 1px 0 rgba(0,180,255,0.08), inset 0 0 60px rgba(0,10,40,0.3)`
-        : 'inset 0 1px 0 rgba(0,180,255,0.06), inset 0 0 40px rgba(0,10,40,0.2)',
+        ? `0 0 30px ${accent}20, inset 0 1px 0 rgba(40,140,255,0.1), inset 0 0 60px rgba(5,20,60,0.3)`
+        : 'inset 0 1px 0 rgba(40,140,255,0.08), inset 0 0 40px rgba(5,20,60,0.2)',
       ...style,
     }}>
       <div className="absolute inset-0 pointer-events-none" style={{
-        background: 'linear-gradient(180deg, rgba(0,180,255,0.03) 0%, transparent 30%, transparent 70%, rgba(0,100,200,0.02) 100%)',
+        background: 'linear-gradient(180deg, rgba(30,100,255,0.04) 0%, transparent 30%, transparent 70%, rgba(20,80,200,0.03) 100%)',
       }} />
       <div className="absolute top-0 left-0 right-0 h-[1px] pointer-events-none" style={{
-        background: `linear-gradient(90deg, transparent, ${glow ? accent + '40' : 'rgba(0,180,255,0.2)'}, transparent)`,
+        background: `linear-gradient(90deg, transparent, ${glow ? accent + '50' : 'rgba(40,140,255,0.25)'}, transparent)`,
       }} />
       <div className="relative z-10">{children}</div>
     </div>
@@ -457,6 +474,11 @@ export default function SpotifyPlayerPage() {
   const [activeRooms, setActiveRooms] = useState<Set<string>>(new Set());
   const [viewMode, setViewMode] = useState<ViewMode>("floor");
   const [viewSpinning, setViewSpinning] = useState(false);
+  const [expandedRoom, setExpandedRoom] = useState<string | null>(null);
+  const [expandedSpeaker, setExpandedSpeaker] = useState<string | null>(null);
+  const [recommendations, setRecommendations] = useState<{ name: string; image: string; uri: string; id: string }[]>([]);
+  const [recoIndex, setRecoIndex] = useState(0);
+  const [voiceConfirm, setVoiceConfirm] = useState(() => localStorage.getItem("holomusic-voice") === "true");
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
@@ -477,6 +499,29 @@ export default function SpotifyPlayerPage() {
     notifTimeout.current = setTimeout(() => setNotification(null), 3000);
   };
 
+  const announceTrack = useCallback((trackName: string, artistName: string) => {
+    if (!voiceConfirm || !window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const lang = activeProfile === "yasu" ? "ja-JP" : "en-US";
+    const text = activeProfile === "yasu"
+      ? `${artistName}の${trackName}を再生します`
+      : `Now playing ${trackName} by ${artistName}`;
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = lang;
+    utter.rate = 1.05;
+    utter.pitch = 1.0;
+    utter.volume = 0.7;
+    window.speechSynthesis.speak(utter);
+  }, [voiceConfirm, activeProfile]);
+
+  const toggleVoiceConfirm = () => {
+    const next = !voiceConfirm;
+    setVoiceConfirm(next);
+    localStorage.setItem("holomusic-voice", String(next));
+    const isJp = activeProfile === "yasu";
+    showNotif(next ? (isJp ? "音声確認オン" : "Voice confirmations on") : (isJp ? "音声確認オフ" : "Voice confirmations off"));
+  };
+
   const fetchNowPlaying = useCallback(async () => {
     try {
       const res = await fetch(`/api/spotify/now-playing${authQuery}`);
@@ -495,21 +540,42 @@ export default function SpotifyPlayerPage() {
     } catch {}
   }, [authQuery]);
 
+  const artistIdsRef = useRef<Record<string, string>>({});
+
   const fetchArtistImages = useCallback(async () => {
     const all = [...PROFILES.bryn.artists, ...PROFILES.yasu.artists];
     const imgs: Record<string, string> = {};
+    const ids: Record<string, string> = {};
     for (const a of all) {
       try {
         const res = await fetch(`/api/spotify/search?q=${encodeURIComponent(a.searchQuery)}&${authQuery.slice(1)}`);
         if (res.ok) {
           const data = await res.json();
-          const img = data.artists?.[0]?.image || data.tracks?.[0]?.image || "";
+          const artist = data.artists?.[0];
+          const img = artist?.image || data.tracks?.[0]?.image || "";
           if (img) imgs[a.name] = img;
+          if (artist?.id) ids[a.name] = artist.id;
         }
       } catch {}
     }
     setArtistImages(imgs);
+    artistIdsRef.current = ids;
+    fetchRecommendations(ids);
   }, [authQuery]);
+
+  const fetchRecommendations = useCallback(async (ids: Record<string, string>) => {
+    const currentArtists = activeProfile === "bryn" ? PROFILES.bryn.artists : PROFILES.yasu.artists;
+    const seedArtist = currentArtists[Math.floor(Math.random() * currentArtists.length)];
+    const artistId = ids[seedArtist.name];
+    if (!artistId) return;
+    try {
+      const res = await fetch(`/api/spotify/related-artists?artistId=${artistId}&${authQuery.slice(1)}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.artists?.length) setRecommendations(data.artists);
+      }
+    } catch {}
+  }, [authQuery, activeProfile]);
 
   const doSearch = useCallback(async (q: string) => {
     if (!q.trim()) { setSearchResults([]); return; }
@@ -528,6 +594,14 @@ export default function SpotifyPlayerPage() {
     const interval = setInterval(fetchNowPlaying, 4000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (recommendations.length <= 1) return;
+    const timer = setInterval(() => {
+      setRecoIndex(prev => (prev + 1) % recommendations.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [recommendations.length]);
 
   useEffect(() => {
     if (nowPlaying?.playing) {
@@ -559,6 +633,7 @@ export default function SpotifyPlayerPage() {
         body: JSON.stringify({ entityId, spotifyUri: artistData.uri, artistName: artistData.name, deviceType }),
       });
       setActiveRooms(prev => new Set(prev).add(roomName));
+      announceTrack(artistData.name, artistData.name);
       showNotif(`Playing ${artistData.name} in ${roomName}`);
     } catch { showNotif("Failed to play"); }
   };
@@ -570,6 +645,7 @@ export default function SpotifyPlayerPage() {
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ contextUri: station.uri, shuffle: true }),
         });
+        announceTrack(station.name, "");
         showNotif(`Playing ${station.name}`);
         setTimeout(fetchNowPlaying, 1000);
       } catch { showNotif("Failed to play station"); }
@@ -648,20 +724,20 @@ export default function SpotifyPlayerPage() {
   const isSakura = activeProfile === "yasu";
 
   return (
-    <div className="fixed inset-0 flex flex-col overflow-hidden select-none" style={{ fontFamily: "'Inter', system-ui, sans-serif", background: '#040c1a' }} data-testid="spotify-player-page">
+    <div className="fixed inset-0 flex flex-col overflow-hidden select-none" style={{ fontFamily: "'Inter', system-ui, sans-serif", background: '#081428' }} data-testid="spotify-player-page">
       <img
         src={isPlaying ? massBg : musicBg}
         alt=""
         className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
-        style={{ opacity: isPlaying ? 0.4 : 0.25, filter: "brightness(0.5) saturate(0.8) hue-rotate(200deg)" }}
+        style={{ opacity: isPlaying ? 0.5 : 0.35, filter: "brightness(0.7) saturate(1.0) hue-rotate(200deg)" }}
       />
 
       <div className="absolute inset-0" style={{
         background: `
-          radial-gradient(ellipse at 20% 50%, rgba(0,60,140,0.2) 0%, transparent 50%),
-          radial-gradient(ellipse at 80% 30%, ${isSakura ? 'rgba(244,114,182,0.08)' : 'rgba(30,80,200,0.1)'} 0%, transparent 40%),
-          radial-gradient(ellipse at 50% 80%, rgba(0,30,80,0.25) 0%, transparent 60%),
-          linear-gradient(180deg, rgba(0,10,30,0.3) 0%, rgba(0,15,40,0.5) 100%)
+          radial-gradient(ellipse at 20% 50%, rgba(20,80,180,0.25) 0%, transparent 50%),
+          radial-gradient(ellipse at 80% 30%, ${isSakura ? 'rgba(45,212,191,0.12)' : 'rgba(40,100,240,0.15)'} 0%, transparent 40%),
+          radial-gradient(ellipse at 50% 80%, rgba(10,50,120,0.2) 0%, transparent 60%),
+          linear-gradient(180deg, rgba(5,20,50,0.2) 0%, rgba(8,25,60,0.4) 100%)
         `,
       }} />
 
@@ -692,9 +768,9 @@ export default function SpotifyPlayerPage() {
 
         <div className="flex flex-col flex-shrink-0 relative" style={{ width: menuOpen ? 200 : 48, transition: "width 0.3s ease" }}>
           <div className="absolute inset-0" style={{
-            background: 'rgba(3,8,20,0.7)',
+            background: 'rgba(8,16,35,0.65)',
             backdropFilter: "blur(30px)",
-            borderRight: '1px solid rgba(0,180,255,0.08)',
+            borderRight: '1px solid rgba(30,120,255,0.15)',
           }} />
           <div className="absolute top-0 right-0 bottom-0 w-[1px]" style={{
             background: 'linear-gradient(180deg, rgba(0,180,255,0.2), rgba(0,180,255,0.05), rgba(0,180,255,0.15))',
@@ -710,9 +786,9 @@ export default function SpotifyPlayerPage() {
 
             <div className="flex-1 flex flex-col gap-0.5 mt-2 px-1">
               {([
-                { mode: "floor" as ViewMode, icon: <Home className="h-3.5 w-3.5" />, label: "Floor Plan" },
-                { mode: "stations" as ViewMode, icon: <Radio className="h-3.5 w-3.5" />, label: "Stations" },
-                { mode: "rooms" as ViewMode, icon: <Speaker className="h-3.5 w-3.5" />, label: "Rooms" },
+                { mode: "floor" as ViewMode, icon: <Home className="h-3.5 w-3.5" />, label: isSakura ? "間取り" : "Floor Plan" },
+                { mode: "stations" as ViewMode, icon: <Radio className="h-3.5 w-3.5" />, label: isSakura ? "ステーション" : "Stations" },
+                { mode: "rooms" as ViewMode, icon: <Speaker className="h-3.5 w-3.5" />, label: isSakura ? "部屋" : "Rooms" },
               ]).map(item => (
                 <button key={item.mode}
                   onClick={() => switchView(item.mode)}
@@ -810,15 +886,37 @@ export default function SpotifyPlayerPage() {
               <div className="text-center mt-2 w-full px-2">
                 <p className="text-sm font-bold truncate" data-testid="track-name"
                   style={{ color: 'rgba(200,230,255,0.95)', textShadow: isPlaying ? `0 0 20px ${profile.glow}` : 'none' }}>
-                  {nowPlaying?.name || "Nothing Playing"}
+                  {nowPlaying?.name || (isSakura ? "再生なし" : "Nothing Playing")}
                 </p>
-                <p className="text-sm truncate mt-0.5 font-medium" data-testid="track-artist"
-                  style={{ color: isPlaying ? profile.accent : "rgba(0,180,255,0.35)" }}>
-                  {nowPlaying?.artist || "Select an artist or station"}
-                </p>
+                {isPlaying && nowPlaying?.artist && (() => {
+                  const firstArtist = nowPlaying.artist.split(",")[0].trim();
+                  const artistImg = artistImages[firstArtist];
+                  return (
+                    <div className="flex items-center justify-center gap-1.5 mt-1">
+                      {artistImg && (
+                        <div className="w-5 h-5 rounded-full overflow-hidden flex-shrink-0"
+                          style={{
+                            border: `1px solid ${profile.accent}50`,
+                            boxShadow: `0 0 8px ${profile.glow}`,
+                            background: `url(${artistImg}) center/cover`,
+                          }} />
+                      )}
+                      <p className="text-sm truncate font-medium" data-testid="track-artist"
+                        style={{ color: profile.accent }}>
+                        {nowPlaying.artist}
+                      </p>
+                    </div>
+                  );
+                })()}
+                {(!isPlaying || !nowPlaying?.artist) && (
+                  <p className="text-sm truncate mt-0.5 font-medium" data-testid="track-artist-idle"
+                    style={{ color: "rgba(60,150,255,0.45)" }}>
+                    {nowPlaying?.artist || (isSakura ? "アーティストを選んでね" : "Select an artist or station")}
+                  </p>
+                )}
                 {nowPlaying?.album && (
                   <p className="text-[11px] truncate mt-0.5" data-testid="track-album"
-                    style={{ color: 'rgba(0,180,255,0.25)' }}>{nowPlaying.album}</p>
+                    style={{ color: 'rgba(60,150,255,0.35)' }}>{nowPlaying.album}</p>
                 )}
               </div>
             </HoloPanel>
@@ -827,7 +925,7 @@ export default function SpotifyPlayerPage() {
               <div className="text-[12px] uppercase tracking-[0.2em] font-bold mb-2 px-1 flex items-center gap-1.5"
                 style={{ color: `${profile.accent}80` }}>
                 <Wifi className="h-3 w-3" />
-                {isSakura ? "お気に入り • Favorites" : "Favorites"}
+                {isSakura ? "お気に入り" : "Favorites"}
               </div>
               <div className="overflow-y-auto flex-1" style={{ scrollbarWidth: "none", maxHeight: 'calc(100% - 24px)' }}>
                 <div className="grid grid-cols-2 gap-1.5">
@@ -835,28 +933,78 @@ export default function SpotifyPlayerPage() {
                     <div key={artist.name} draggable
                       onDragStart={handleDragStart("artist", artist)}
                       onDragEnd={() => setDragItem(null)}
-                      className="flex flex-col items-center gap-1 p-2 rounded-lg cursor-grab active:cursor-grabbing transition-all group"
+                      className="flex flex-col items-center gap-1 p-2 rounded-lg cursor-grab active:cursor-grabbing transition-all group hover:scale-105"
                       style={{
-                        background: "rgba(0,20,50,0.4)",
-                        border: '1px solid rgba(0,180,255,0.08)',
+                        background: "rgba(10,30,70,0.45)",
+                        border: '1px solid rgba(40,120,255,0.12)',
                         animation: `fadeInUp 0.4s ease ${i * 60}ms both`,
                       }}
                       data-testid={`artist-card-${artist.name.toLowerCase().replace(/\s/g, "-")}`}>
                       <div className="w-11 h-11 rounded-full overflow-hidden flex-shrink-0 transition-all"
                         style={{
-                          border: `1.5px solid ${profile.accent}30`,
-                          boxShadow: `0 0 12px ${profile.glow}`,
+                          border: `1.5px solid ${profile.accent}40`,
+                          boxShadow: `0 0 15px ${profile.glow}`,
                           background: artistImages[artist.name]
                             ? `url(${artistImages[artist.name]}) center/cover`
-                            : `linear-gradient(135deg, ${profile.accent}30, rgba(0,20,60,0.6))`,
+                            : `linear-gradient(135deg, ${profile.accent}40, rgba(10,30,80,0.7))`,
                         }}>
-                        {!artistImages[artist.name] && <div className="w-full h-full flex items-center justify-center"><Music2 className="h-3.5 w-3.5" style={{ color: `${profile.accent}40` }} /></div>}
+                        {!artistImages[artist.name] && <div className="w-full h-full flex items-center justify-center"><Music2 className="h-3.5 w-3.5" style={{ color: `${profile.accent}50` }} /></div>}
                       </div>
                       <span className="text-[11px] truncate w-full text-center font-medium transition-colors"
-                        style={{ color: 'rgba(0,180,255,0.4)' }}>{artist.name}</span>
+                        style={{ color: 'rgba(80,170,255,0.7)' }}>{artist.name}</span>
                     </div>
                   ))}
                 </div>
+
+                {recommendations.length > 0 && (
+                  <div className="mt-3 pt-3" style={{ borderTop: `1px solid ${profile.accent}15` }}>
+                    <div className="text-[10px] uppercase tracking-[0.2em] font-bold mb-2 px-1 flex items-center gap-1.5"
+                      style={{ color: `${profile.accent}60` }}>
+                      <Star className="h-3 w-3" />
+                      {isSakura ? "おすすめ" : "You Might Like"}
+                    </div>
+                    <div className="relative overflow-hidden rounded-lg" style={{ background: 'rgba(5,15,40,0.5)', border: `1px solid ${profile.accent}12` }}>
+                      {recommendations.map((reco, i) => (
+                        <div key={reco.id}
+                          className="flex items-center gap-2 p-2 cursor-pointer transition-all"
+                          style={{
+                            display: i === recoIndex ? 'flex' : 'none',
+                            animation: i === recoIndex ? 'fadeInUp 0.5s ease' : 'none',
+                          }}
+                          onClick={() => {
+                            doAction("play-context", "POST", { contextUri: reco.uri });
+                            announceTrack(reco.name, reco.name);
+                            showNotif(`Playing ${reco.name}`);
+                          }}
+                          data-testid={`reco-artist-${i}`}>
+                          {reco.image ? (
+                            <img src={reco.image} alt={reco.name} className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                              style={{ border: `1.5px solid ${profile.accent}30`, boxShadow: `0 0 12px ${profile.glow}` }} />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: `${profile.accent}20` }}>
+                              <Music2 className="h-4 w-4" style={{ color: profile.accent }} />
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[11px] font-semibold truncate" style={{ color: 'rgba(180,220,255,0.9)' }}>{reco.name}</p>
+                            <p className="text-[9px]" style={{ color: `${profile.accent}50` }}>
+                              {isSakura ? "タップして再生" : "Tap to play"}
+                            </p>
+                          </div>
+                          <Play className="h-3 w-3 flex-shrink-0" style={{ color: `${profile.accent}60` }} />
+                        </div>
+                      ))}
+                      {recommendations.length > 1 && (
+                        <div className="flex justify-center gap-1 pb-1.5">
+                          {recommendations.map((_, i) => (
+                            <div key={i} className="w-1 h-1 rounded-full transition-all"
+                              style={{ background: i === recoIndex ? profile.accent : `${profile.accent}25` }} />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </HoloPanel>
           </div>
@@ -867,7 +1015,7 @@ export default function SpotifyPlayerPage() {
             boxShadow: dragItem
               ? `0 0 40px ${profile.glow}, inset 0 0 30px ${profile.glow}`
               : 'inset 0 1px 0 rgba(0,180,255,0.06)',
-            background: "rgba(3,8,20,0.5)",
+            background: "rgba(8,16,35,0.45)",
             backdropFilter: "blur(20px)",
             perspective: '1200px',
           }}>
@@ -911,6 +1059,7 @@ export default function SpotifyPlayerPage() {
                     <button key={i} onClick={() => {
                       if (r.uri) {
                         doAction("play-context", "POST", { contextUri: r.uri });
+                        announceTrack(r.name, r.artist || r.name);
                         showNotif(`Playing ${r.name}`);
                         setShowSearch(false);
                       }
@@ -947,6 +1096,8 @@ export default function SpotifyPlayerPage() {
                 {ROOM_HOTSPOTS.map(spot => {
                   const isActive = activeRooms.has(spot.room);
                   const isDrop = dropTarget === spot.room;
+                  const roomData = rooms.find(r => r.room === spot.room);
+                  const speakerCount = roomData?.speakers?.length || 0;
                   return (
                     <div key={spot.room}
                       draggable onDragStart={handleDragStart("room", spot)}
@@ -956,54 +1107,47 @@ export default function SpotifyPlayerPage() {
                       className="absolute cursor-pointer transition-all"
                       style={{
                         left: `${spot.x}%`, top: `${spot.y}%`, width: `${spot.w}%`, height: `${spot.h}%`,
-                        border: `1px solid ${isDrop ? profile.accent : isActive ? `${profile.accent}60` : "rgba(0,180,255,0.06)"}`,
-                        borderRadius: '4px',
-                        boxShadow: isActive
-                          ? `0 0 30px ${profile.glow}, 0 0 15px ${profile.glow}, inset 0 0 25px ${profile.glow}`
+                        background: isActive
+                          ? `${profile.accent}12`
                           : isDrop
-                            ? `0 0 30px ${profile.glow}`
+                            ? `${profile.accent}10`
+                            : 'transparent',
+                        boxShadow: isActive
+                          ? `0 0 35px ${profile.glow}, inset 0 0 20px ${profile.glow}`
+                          : isDrop
+                            ? `0 0 25px ${profile.glow}`
                             : "none",
-                        overflow: 'hidden',
                       }}
                       data-testid={`room-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
-                      {spot.nightImg && (
-                        <img src={spot.nightImg} alt={spot.room}
-                          className="absolute inset-0 w-full h-full object-cover"
-                          style={{
-                            opacity: isActive ? 0.7 : 0.3,
-                            filter: isActive
-                              ? `brightness(0.8) saturate(1.2) hue-rotate(10deg)`
-                              : 'brightness(0.4) saturate(0.3) hue-rotate(190deg)',
-                            transition: 'opacity 0.4s ease, filter 0.4s ease',
-                          }} />
-                      )}
-                      {!spot.nightImg && (
-                        <div className="absolute inset-0" style={{
-                          background: isDrop
-                            ? `${profile.accent}20`
-                            : isActive
-                              ? `rgba(0,80,180,0.12)`
-                              : "rgba(3,8,20,0.25)",
-                        }} />
-                      )}
-                      {isActive && (
-                        <div className="absolute inset-0 pointer-events-none" style={{
-                          background: `linear-gradient(135deg, ${profile.accent}15, transparent 50%, ${profile.accent}10)`,
-                          border: `1px solid ${profile.accent}40`,
-                          borderRadius: '3px',
-                        }} />
-                      )}
                       <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5" style={{ zIndex: 2 }}>
                         <span className="text-base" style={{
-                          filter: isActive ? `drop-shadow(0 0 8px ${profile.accent})` : 'drop-shadow(0 0 2px rgba(0,0,0,0.8))',
+                          filter: isActive ? `drop-shadow(0 0 8px ${profile.accent})` : 'drop-shadow(0 0 2px rgba(0,0,0,0.5))',
                         }}>{spot.icon}</span>
                         <span className="text-[11px] font-bold uppercase tracking-wider text-center leading-tight px-1"
                           style={{
-                            color: isActive ? profile.accent : 'rgba(0,180,255,0.5)',
-                            textShadow: isActive ? `0 0 10px ${profile.glow}` : '0 1px 3px rgba(0,0,0,0.8)',
+                            color: isActive ? profile.accent : 'rgba(100,180,255,0.6)',
+                            textShadow: isActive ? `0 0 10px ${profile.glow}` : '0 1px 3px rgba(0,0,0,0.6)',
                           }}>
                           {spot.room}
                         </span>
+                        {speakerCount > 0 && (
+                          <div className="flex items-center gap-0.5 mt-0.5 px-1.5 py-0.5 rounded-full"
+                            style={{
+                              background: isActive ? `${profile.accent}20` : 'rgba(10,30,60,0.6)',
+                              border: `1px solid ${isActive ? `${profile.accent}40` : 'rgba(60,140,255,0.15)'}`,
+                            }}>
+                            {[...Array(Math.min(speakerCount, 4))].map((_, si) => (
+                              <div key={si} className="w-2 h-2.5 rounded-sm" style={{
+                                background: isActive ? profile.accent : 'rgba(80,160,255,0.4)',
+                                boxShadow: isActive ? `0 0 4px ${profile.accent}` : 'none',
+                                opacity: isActive ? 1 : 0.6,
+                              }} />
+                            ))}
+                            {speakerCount > 4 && (
+                              <span className="text-[8px] font-bold" style={{ color: isActive ? profile.accent : 'rgba(80,160,255,0.4)' }}>+{speakerCount - 4}</span>
+                            )}
+                          </div>
+                        )}
                         {isActive && (
                           <>
                             <div className="flex gap-0.5 mt-0.5">
@@ -1023,10 +1167,9 @@ export default function SpotifyPlayerPage() {
                                 border: '1px solid rgba(255,60,60,0.35)',
                                 color: 'rgba(255,120,120,0.9)',
                                 textShadow: '0 0 4px rgba(255,60,60,0.3)',
-                                backdropFilter: 'blur(4px)',
                               }}
                               data-testid={`floorplan-ungroup-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
-                              ✕ Ungroup
+                              {isSakura ? "✕ 解除" : "✕ Ungroup"}
                             </button>
                           </>
                         )}
@@ -1034,7 +1177,6 @@ export default function SpotifyPlayerPage() {
                       {isDrop && (
                         <div className="absolute inset-0 pointer-events-none" style={{
                           border: `2px dashed ${profile.accent}70`,
-                          borderRadius: '3px',
                           animation: 'holoPulse 1s ease-in-out infinite',
                         }} />
                       )}
@@ -1048,7 +1190,7 @@ export default function SpotifyPlayerPage() {
               <div className="absolute inset-0 p-4 overflow-y-auto" style={{ scrollbarWidth: "none" }}>
                 <div className="text-[12px] uppercase tracking-[0.15em] font-bold mb-3 flex items-center gap-1.5"
                   style={{ color: `${profile.accent}70` }}>
-                  <Radio className="h-3.5 w-3.5" /> Stations & Shortcuts
+                  <Radio className="h-3.5 w-3.5" /> {isSakura ? "ステーション＆ショートカット" : "Stations & Shortcuts"}
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   {STATION_SHORTCUTS.map((station, i) => (
@@ -1074,39 +1216,36 @@ export default function SpotifyPlayerPage() {
               <div className="absolute inset-0 p-4 overflow-y-auto" style={{ scrollbarWidth: "none" }}>
                 <div className="text-[12px] uppercase tracking-[0.15em] font-bold mb-3 flex items-center gap-1.5"
                   style={{ color: `${profile.accent}70` }}>
-                  <Speaker className="h-3.5 w-3.5" /> Speaker Rooms
+                  <Speaker className="h-3.5 w-3.5" /> {isSakura ? "スピーカー部屋" : "Speaker Rooms"}
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="flex flex-col gap-2">
                   {ROOM_HOTSPOTS.map((spot, i) => {
                     const isActive = activeRooms.has(spot.room);
+                    const isExpanded = expandedRoom === spot.room;
+                    const roomData = rooms.find(r => r.room === spot.room);
+                    const speakerList = roomData?.speakers || [];
                     return (
-                      <div key={spot.room} className="flex items-center gap-3 p-3 rounded-lg transition-all group"
+                      <div key={spot.room} className="rounded-lg transition-all overflow-hidden"
                         style={{
-                          background: isActive ? `${profile.accent}10` : "rgba(0,15,40,0.5)",
-                          border: `1px solid ${isActive ? `${profile.accent}35` : "rgba(0,180,255,0.08)"}`,
+                          background: isActive ? `${profile.accent}10` : "rgba(10,25,55,0.5)",
+                          border: `1px solid ${isActive ? `${profile.accent}35` : "rgba(40,120,255,0.1)"}`,
                           boxShadow: isActive ? `0 0 20px ${profile.glow}, inset 0 0 15px ${profile.glow}` : "none",
                           animation: `fadeInUp 0.3s ease ${i * 40}ms both`,
                         }}
                         data-testid={`room-btn-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
-                        <button className="flex items-center gap-3 flex-1 text-left"
-                          onClick={() => {
-                            if (isPlaying && nowPlaying) {
-                              playOnRoom(spot.room, { name: nowPlaying.artist || "", uri: "", searchQuery: nowPlaying.artist || "" });
-                            } else {
-                              showNotif("Start playing something first");
-                            }
-                          }}>
-                          <span className="text-lg flex-shrink-0" style={{ filter: isActive ? `drop-shadow(0 0 6px ${profile.accent})` : 'drop-shadow(0 0 3px rgba(0,180,255,0.2))' }}>{spot.icon}</span>
-                          <div className="flex-1">
+                        <button className="flex items-center gap-3 w-full text-left p-3"
+                          onClick={() => setExpandedRoom(isExpanded ? null : spot.room)}>
+                          <span className="text-lg flex-shrink-0" style={{ filter: isActive ? `drop-shadow(0 0 6px ${profile.accent})` : 'none' }}>{spot.icon}</span>
+                          <div className="flex-1 min-w-0">
                             <span className="text-[13px] font-medium block"
-                              style={{ color: isActive ? profile.accent : 'rgba(0,180,255,0.5)' }}>{spot.room}</span>
-                            <span className="text-[11px]" style={{ color: 'rgba(0,180,255,0.2)' }}>{spot.entityId.split(".")[1]}</span>
+                              style={{ color: isActive ? profile.accent : 'rgba(100,180,255,0.7)' }}>{spot.room}</span>
+                            <span className="text-[11px]" style={{ color: 'rgba(80,160,255,0.35)' }}>
+                              {speakerList.length} {isSakura ? "台のスピーカー" : (speakerList.length === 1 ? "speaker" : "speakers")}
+                            </span>
                           </div>
-                        </button>
-                        {isActive && (
-                          <div className="flex items-center gap-2">
-                            <div className="flex gap-0.5">
-                              {[...Array(4)].map((_, j) => (
+                          {isActive && (
+                            <div className="flex gap-0.5 mr-2">
+                              {[...Array(3)].map((_, j) => (
                                 <div key={j} className="w-0.5 rounded-full" style={{
                                   height: 6 + Math.random() * 8,
                                   background: profile.accent,
@@ -1115,16 +1254,126 @@ export default function SpotifyPlayerPage() {
                                 }} />
                               ))}
                             </div>
-                            <button onClick={(e) => { e.stopPropagation(); ungroupRoom(spot.room); }}
-                              className="px-2 py-1 rounded text-[11px] font-medium transition-all hover:scale-105"
-                              style={{
-                                background: 'rgba(255,60,60,0.15)',
-                                border: '1px solid rgba(255,60,60,0.25)',
-                                color: 'rgba(255,120,120,0.8)',
-                              }}
-                              data-testid={`ungroup-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
-                              Ungroup
-                            </button>
+                          )}
+                          <ChevronDown className="h-4 w-4 transition-transform flex-shrink-0" style={{
+                            color: 'rgba(80,160,255,0.4)',
+                            transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                          }} />
+                        </button>
+                        {isExpanded && (
+                          <div className="px-3 pb-3 flex flex-col gap-1.5" style={{
+                            borderTop: `1px solid ${isActive ? `${profile.accent}20` : 'rgba(40,120,255,0.08)'}`,
+                          }}>
+                            <div className="flex items-center justify-between pt-2 mb-1">
+                              <span className="text-[10px] uppercase tracking-wider font-bold" style={{ color: `${profile.accent}50` }}>
+                                {isSakura ? "デバイス" : "Devices"}
+                              </span>
+                              <div className="flex gap-1.5">
+                                <button onClick={() => {
+                                  if (isPlaying && nowPlaying) {
+                                    playOnRoom(spot.room, { name: nowPlaying.artist || "", uri: "", searchQuery: nowPlaying.artist || "" });
+                                  } else { showNotif(isSakura ? "まず再生してください" : "Start playing something first"); }
+                                }}
+                                  className="px-2 py-0.5 rounded text-[10px] font-medium transition-all hover:scale-105"
+                                  style={{ background: `${profile.accent}20`, border: `1px solid ${profile.accent}30`, color: profile.accent }}
+                                  data-testid={`play-room-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
+                                  {isSakura ? "▶ 全て再生" : "▶ Play All"}
+                                </button>
+                                {isActive && (
+                                  <button onClick={() => ungroupRoom(spot.room)}
+                                    className="px-2 py-0.5 rounded text-[10px] font-medium transition-all hover:scale-105"
+                                    style={{ background: 'rgba(255,60,60,0.15)', border: '1px solid rgba(255,60,60,0.25)', color: 'rgba(255,120,120,0.8)' }}
+                                    data-testid={`ungroup-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
+                                    {isSakura ? "解除" : "Ungroup"}
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                            {speakerList.map(spk => {
+                              const isSpkExpanded = expandedSpeaker === spk.entityId;
+                              const isEcho = spk.type === "echo" || spk.type === "echo_show";
+                              return (
+                                <div key={spk.entityId} className="rounded-lg overflow-hidden"
+                                  style={{
+                                    background: 'rgba(5,15,40,0.5)',
+                                    border: `1px solid rgba(40,120,255,0.08)`,
+                                  }}>
+                                  <button className="flex items-center gap-2 w-full text-left px-2.5 py-2"
+                                    onClick={() => setExpandedSpeaker(isSpkExpanded ? null : spk.entityId)}>
+                                    <span className="text-[13px]">{isEcho ? (spk.type === "echo_show" ? "📺" : "🔊") : "🔈"}</span>
+                                    <div className="flex-1 min-w-0">
+                                      <span className="text-[12px] font-medium block truncate" style={{ color: 'rgba(180,215,255,0.85)' }}>{spk.name}</span>
+                                      <span className="text-[10px]" style={{ color: 'rgba(80,160,255,0.3)' }}>
+                                        {isEcho ? "Echo" : spk.type} • {spk.room}
+                                      </span>
+                                    </div>
+                                    <ChevronDown className="h-3 w-3 transition-transform flex-shrink-0" style={{
+                                      color: 'rgba(80,160,255,0.3)',
+                                      transform: isSpkExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                                    }} />
+                                  </button>
+                                  {isSpkExpanded && (
+                                    <div className="px-2.5 pb-2 flex flex-wrap gap-1.5" style={{
+                                      borderTop: '1px solid rgba(40,120,255,0.06)',
+                                      paddingTop: '6px',
+                                    }}>
+                                      <button onClick={() => {
+                                        if (isPlaying && nowPlaying) {
+                                          fetch(`/api/spotify/play-on-speaker`, {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ entityId: spk.entityId, artistName: nowPlaying.artist, deviceType: spk.type }),
+                                          }).then(() => showNotif(`${isSakura ? "再生中" : "Playing on"} ${spk.name}`));
+                                        } else { showNotif(isSakura ? "まず再生してください" : "Play something first"); }
+                                      }}
+                                        className="px-2 py-1 rounded text-[10px] font-medium transition-all hover:scale-105"
+                                        style={{ background: `${profile.accent}15`, border: `1px solid ${profile.accent}25`, color: profile.accent }}
+                                        data-testid={`play-speaker-${spk.name.toLowerCase().replace(/\s/g, "-")}`}>
+                                        ▶ {isSakura ? "再生" : "Play"}
+                                      </button>
+                                      <button onClick={() => {
+                                        fetch(`/api/spotify/play-on-speaker`, {
+                                          method: 'POST',
+                                          headers: { 'Content-Type': 'application/json' },
+                                          body: JSON.stringify({ entityId: spk.entityId, command: "pause", deviceType: spk.type }),
+                                        }).then(() => showNotif(`${isSakura ? "一時停止" : "Paused"} ${spk.name}`));
+                                      }}
+                                        className="px-2 py-1 rounded text-[10px] font-medium transition-all hover:scale-105"
+                                        style={{ background: 'rgba(255,180,0,0.12)', border: '1px solid rgba(255,180,0,0.2)', color: 'rgba(255,200,60,0.8)' }}>
+                                        ⏸ {isSakura ? "停止" : "Pause"}
+                                      </button>
+                                      <button onClick={() => {
+                                        fetch(`/api/spotify/volume`, {
+                                          method: 'POST',
+                                          headers: { 'Content-Type': 'application/json' },
+                                          body: JSON.stringify({ entityId: spk.entityId, volume: 30 }),
+                                        }).then(() => showNotif(`${spk.name} → 30%`));
+                                      }}
+                                        className="px-2 py-1 rounded text-[10px] font-medium transition-all hover:scale-105"
+                                        style={{ background: 'rgba(60,140,255,0.1)', border: '1px solid rgba(60,140,255,0.2)', color: 'rgba(100,180,255,0.7)' }}>
+                                        🔉 30%
+                                      </button>
+                                      <button onClick={() => {
+                                        fetch(`/api/spotify/volume`, {
+                                          method: 'POST',
+                                          headers: { 'Content-Type': 'application/json' },
+                                          body: JSON.stringify({ entityId: spk.entityId, volume: 60 }),
+                                        }).then(() => showNotif(`${spk.name} → 60%`));
+                                      }}
+                                        className="px-2 py-1 rounded text-[10px] font-medium transition-all hover:scale-105"
+                                        style={{ background: 'rgba(60,140,255,0.1)', border: '1px solid rgba(60,140,255,0.2)', color: 'rgba(100,180,255,0.7)' }}>
+                                        🔊 60%
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
+                            {speakerList.length === 0 && (
+                              <span className="text-[11px] py-2 text-center" style={{ color: 'rgba(80,160,255,0.3)' }}>
+                                {isSakura ? "スピーカーが見つかりません" : "No speakers found"}
+                              </span>
+                            )}
                           </div>
                         )}
                       </div>
@@ -1139,17 +1388,17 @@ export default function SpotifyPlayerPage() {
       </div>
 
       <div className="relative z-10" style={{
-        background: 'rgba(3,8,20,0.75)',
+        background: 'rgba(8,18,40,0.7)',
         backdropFilter: 'blur(30px)',
-        borderTop: '1px solid rgba(0,180,255,0.08)',
+        borderTop: '1px solid rgba(40,120,255,0.12)',
       }}>
         <div className="absolute top-0 left-0 right-0 h-[1px]" style={{
-          background: 'linear-gradient(90deg, transparent, rgba(0,180,255,0.15), transparent)',
+          background: 'linear-gradient(90deg, transparent, rgba(40,140,255,0.25), transparent)',
         }} />
 
         <div className="px-6 pt-2 pb-1">
           <div className="flex items-center gap-3 mb-1">
-            <span className="text-[12px] tabular-nums w-10 text-right" style={{ color: 'rgba(0,180,255,0.3)' }}>{formatMs(localProgress)}</span>
+            <span className="text-[12px] tabular-nums w-10 text-right" style={{ color: 'rgba(60,160,255,0.5)' }}>{formatMs(localProgress)}</span>
             <div className="flex-1 h-[3px] rounded-full overflow-hidden cursor-pointer group relative"
               style={{ background: 'rgba(0,180,255,0.08)' }}
               onClick={e => {
@@ -1168,17 +1417,17 @@ export default function SpotifyPlayerPage() {
                   style={{ background: profile.accent, boxShadow: `0 0 8px ${profile.accent}, 0 0 16px ${profile.glow}` }} />
               </div>
             </div>
-            <span className="text-[12px] tabular-nums w-10" style={{ color: 'rgba(0,180,255,0.3)' }}>{formatMs(nowPlaying?.duration || 0)}</span>
+            <span className="text-[12px] tabular-nums w-10" style={{ color: 'rgba(60,160,255,0.5)' }}>{formatMs(nowPlaying?.duration || 0)}</span>
           </div>
 
           <div className="flex items-center justify-center gap-6 pb-1">
             <button onClick={() => doAction("shuffle", "POST")} className="transition-all hover:scale-110"
-              style={{ color: shuffleOn ? profile.accent : "rgba(0,180,255,0.2)", filter: shuffleOn ? `drop-shadow(0 0 6px ${profile.glow})` : 'none' }}
+              style={{ color: shuffleOn ? profile.accent : "rgba(60,150,255,0.35)", filter: shuffleOn ? `drop-shadow(0 0 6px ${profile.glow})` : 'none' }}
               data-testid="btn-shuffle">
               <Shuffle className="h-4 w-4" />
             </button>
             <button onClick={() => doAction("previous")} className="hover:scale-110 transition-all"
-              style={{ color: 'rgba(0,180,255,0.35)' }} data-testid="btn-prev">
+              style={{ color: 'rgba(80,170,255,0.5)' }} data-testid="btn-prev">
               <SkipBack className="h-5 w-5" />
             </button>
             <button onClick={() => doAction(isPlaying ? "pause" : "play")}
@@ -1193,11 +1442,11 @@ export default function SpotifyPlayerPage() {
                 isPlaying ? <Pause className="h-5 w-5 text-white" /> : <Play className="h-5 w-5 text-white ml-0.5" />}
             </button>
             <button onClick={() => doAction("next")} className="hover:scale-110 transition-all"
-              style={{ color: 'rgba(0,180,255,0.35)' }} data-testid="btn-next">
+              style={{ color: 'rgba(80,170,255,0.5)' }} data-testid="btn-next">
               <SkipForward className="h-5 w-5" />
             </button>
             <button onClick={() => doAction("repeat", "POST")} className="transition-all hover:scale-110 relative"
-              style={{ color: repeatMode !== "off" ? profile.accent : "rgba(0,180,255,0.2)", filter: repeatMode !== "off" ? `drop-shadow(0 0 6px ${profile.glow})` : 'none' }}
+              style={{ color: repeatMode !== "off" ? profile.accent : "rgba(60,150,255,0.35)", filter: repeatMode !== "off" ? `drop-shadow(0 0 6px ${profile.glow})` : 'none' }}
               data-testid="btn-repeat">
               <Repeat className="h-4 w-4" />
               {repeatMode === "track" && <span className="absolute -top-1 -right-1 text-[6px] font-bold" style={{ color: profile.accent }}>1</span>}
@@ -1213,6 +1462,20 @@ export default function SpotifyPlayerPage() {
                 className="w-24 holo-range" style={{ height: 3 }}
                 data-testid="volume-slider" />
             </div>
+
+            <button onClick={toggleVoiceConfirm}
+              className="ml-4 flex items-center gap-1 px-2 py-1 rounded-md transition-all hover:scale-105"
+              style={{
+                background: voiceConfirm ? `${profile.accent}20` : 'rgba(0,180,255,0.05)',
+                border: `1px solid ${voiceConfirm ? profile.accent + '50' : 'rgba(0,180,255,0.1)'}`,
+                color: voiceConfirm ? profile.accent : 'rgba(60,150,255,0.35)',
+                boxShadow: voiceConfirm ? `0 0 10px ${profile.glow}` : 'none',
+              }}
+              data-testid="btn-voice-confirm"
+              title={isSakura ? "音声確認" : "Voice confirmations"}>
+              <Volume1 className="h-3.5 w-3.5" />
+              <span className="text-[10px] font-medium">{isSakura ? "音声" : "Voice"}</span>
+            </button>
           </div>
         </div>
       </div>
