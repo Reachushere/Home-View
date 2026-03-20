@@ -19381,6 +19381,7 @@ export default function Dashboard() {
                               borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined
                             }}
                           />
+                          <div className="absolute top-0 bottom-0 z-[1] pointer-events-none" style={{ left: `${DAY_COL_LEFT_REDUCTION + gridSizes.timeSlotHeight}px`, width: '1px', borderLeft: '1px dotted rgba(180, 180, 180, 0.45)' }} />
                           {sleepLabelStart && !isToday && (
                             <div style={{
                               position: 'absolute',
@@ -19423,8 +19424,9 @@ export default function Dashboard() {
                               )}
                             </div>
                           )}
-                          {isToday && isCurrentHour && !hasAnyTasks && (() => {
+                          {isToday && isCurrentHour && (() => {
                             const now = new Date();
+                            const narrowColWidth = gridSizes.timeSlotHeight;
                             const getTaskTime = (t: any) => {
                               if (t.eventStartTime) {
                                 const [h, m] = t.eventStartTime.split(':').map(Number);
@@ -19434,24 +19436,43 @@ export default function Dashboard() {
                               }
                               return new Date(t.dueDate).getTime();
                             };
-                            const nextTask = allTasks
-                              .filter(t => !t.isCompleted && getTaskTime(t) > now.getTime())
+                            const todaySchoolTasks = allTasks.filter(t => {
+                              if (!t.courseName) return false;
+                              const d = new Date(t.dueDate);
+                              return isSameDay(d, now);
+                            });
+                            const missedSchoolTasks = todaySchoolTasks.filter(t => {
+                              if (t.isCompleted) return false;
+                              const taskTime = getTaskTime(t);
+                              return taskTime <= now.getTime();
+                            });
+                            const missedCount = missedSchoolTasks.length;
+                            const nextSchoolTask = allTasks
+                              .filter(t => !t.isCompleted && t.courseName && getTaskTime(t) > now.getTime())
                               .sort((a, b) => getTaskTime(a) - getTaskTime(b))[0];
-                            if (!nextTask) return null;
-                            const msUntil = getTaskTime(nextTask) - now.getTime();
-                            const hoursUntil = msUntil / (1000 * 60 * 60);
-                            const displayTime = hoursUntil < 1 ? `${Math.round(hoursUntil * 60)} min` : hoursUntil % 1 >= 0.25 && hoursUntil < 24 ? `${hoursUntil.toFixed(1)} hours` : `${Math.round(hoursUntil)} hours`;
+                            const hoursUntil = nextSchoolTask ? (getTaskTime(nextSchoolTask) - now.getTime()) / (1000 * 60 * 60) : null;
+                            const displayTime = hoursUntil !== null ? (hoursUntil < 1 ? `${Math.max(1, Math.round(hoursUntil * 60))}m` : hoursUntil < 10 ? `${hoursUntil.toFixed(1)}h` : `${Math.round(hoursUntil)}h`) : '--';
                             return (
-                              <div className="absolute inset-0 z-[2] flex items-center justify-center pointer-events-none" data-testid="hours-until-next-task">
-                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', lineHeight: '1' }}>
-                                  <span style={{ fontSize: '14px', color: 'rgba(90, 120, 180, 0.45)', fontWeight: 800, letterSpacing: '-0.5px' }}>
-                                    {displayTime}
-                                  </span>
-                                  <span style={{ fontSize: '8px', color: 'rgb(90, 120, 180)', fontWeight: 600, letterSpacing: '0.2px', marginTop: '1px' }}>
-                                    until next task due
-                                  </span>
+                              <>
+                                <div className="absolute right-0 top-0 bottom-0 z-[3] pointer-events-none flex items-center justify-center" style={{ width: `${narrowColWidth}px` }} data-testid="hours-until-next-task">
+                                  <div style={{ width: '100%', height: '100%', backgroundColor: 'rgba(250, 204, 21, 0.7)', borderRadius: '3px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(202, 138, 4, 0.5)' }}>
+                                    <div style={{ backgroundColor: '#22c55e', borderRadius: '2px', padding: '1px 4px', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '20px' }}>
+                                      <span style={{ fontSize: '11px', color: 'white', fontWeight: 800, lineHeight: 1 }}>{displayTime}</span>
+                                    </div>
+                                    <span style={{ fontSize: '6px', color: 'rgba(120, 80, 0, 0.8)', fontWeight: 700, marginTop: '1px', letterSpacing: '0.3px' }}>NEXT</span>
+                                  </div>
                                 </div>
-                              </div>
+                                {missedCount > 0 && (
+                                  <div className="absolute left-0 top-0 bottom-0 z-[3] pointer-events-none flex items-center justify-center" style={{ width: `${narrowColWidth}px`, paddingLeft: `${DAY_COL_LEFT_REDUCTION}px` }} data-testid="missed-tasks-indicator">
+                                    <div style={{ width: `${narrowColWidth - DAY_COL_LEFT_REDUCTION - 2}px`, height: `${narrowColWidth - DAY_COL_LEFT_REDUCTION - 2}px`, backgroundColor: 'rgba(250, 204, 21, 0.85)', borderRadius: '3px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(202, 138, 6, 0.6)' }}>
+                                      <div style={{ backgroundColor: '#ef4444', borderRadius: '2px', padding: '0px 3px', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px', minHeight: '14px' }}>
+                                        <span style={{ fontSize: '10px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{missedCount}</span>
+                                      </div>
+                                      <span style={{ fontSize: '5px', color: 'rgba(120, 40, 0, 0.9)', fontWeight: 800, marginTop: '0px', letterSpacing: '0.2px', textTransform: 'uppercase' }}>Due</span>
+                                    </div>
+                                  </div>
+                                )}
+                              </>
                             );
                           })()}
                           {/* Hour boundary dotted line - skip for 12pm since it has AM/PM separator */}
@@ -19805,8 +19826,69 @@ export default function Dashboard() {
                   );
                 })()}
                 
-                {/* Dynamic lines - solid line from second bullet to next task */}
-                {null}
+                {(() => {
+                  const now = new Date();
+                  const todayDayIdx = weekDays.findIndex(d => isSameDay(d, now));
+                  if (todayDayIdx < 0) return null;
+                  const currentHour = now.getHours();
+                  const currentMinutes = now.getMinutes();
+                  const calStartHour = calStart;
+                  if (currentHour < calStartHour) return null;
+                  const getTaskTimeLocal = (t: any) => {
+                    if (t.eventStartTime) {
+                      const [h, m] = t.eventStartTime.split(':').map(Number);
+                      return { hour: h, min: m };
+                    }
+                    const d = new Date(t.dueDate);
+                    return { hour: getETHours(d), min: getETMinutes(d) };
+                  };
+                  const missedSchool = allTasks.filter(t => {
+                    if (!t.courseName || t.isCompleted) return false;
+                    const d = new Date(t.dueDate);
+                    if (!isSameDay(d, now)) return false;
+                    const tt = getTaskTimeLocal(t);
+                    return (tt.hour < currentHour) || (tt.hour === currentHour && tt.min <= currentMinutes);
+                  });
+                  if (missedSchool.length === 0) return null;
+                  let currentTimeTop = 0;
+                  for (let h = calStartHour; h < currentHour; h++) currentTimeTop += getEffectiveRowHeight(h);
+                  currentTimeTop += (currentMinutes / 60) * getEffectiveRowHeight(currentHour);
+                  const narrowColWidth = gridSizes.timeSlotHeight;
+                  const totalFrUnits = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0);
+                  let todayColLeft = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth;
+                  const totalDayWidth = 100;
+                  return missedSchool.map(task => {
+                    const tt = getTaskTimeLocal(task);
+                    let taskTop = 0;
+                    for (let h = calStartHour; h < tt.hour; h++) taskTop += getEffectiveRowHeight(h);
+                    taskTop += (tt.min / 60) * getEffectiveRowHeight(tt.hour);
+                    const taskRowHeight = getEffectiveRowHeight(tt.hour);
+                    const taskMidY = taskTop + taskRowHeight / 2;
+                    const lineMidY = currentTimeTop;
+                    const frBefore = gridSizes.dayColumnWidths.slice(0, todayDayIdx).reduce((a: number, b: number) => a + b, 0);
+                    const frDay = gridSizes.dayColumnWidths[todayDayIdx];
+                    return (
+                      <svg key={`missed-line-${task.id}`} className="absolute pointer-events-none z-[4]" style={{
+                        top: `${Math.min(taskMidY, lineMidY) - 2}px`,
+                        left: `${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px`,
+                        width: `calc(100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px)`,
+                        height: `${Math.abs(lineMidY - taskMidY) + 4}px`,
+                        overflow: 'visible',
+                      }}>
+                        <line
+                          x1={`${(frBefore / totalFrUnits) * 100}%`}
+                          y1={taskMidY < lineMidY ? '2' : `${Math.abs(lineMidY - taskMidY) + 2}`}
+                          x2={`${((frBefore + DAY_COL_LEFT_REDUCTION + narrowColWidth) / totalFrUnits) * 100}%`}
+                          y2={taskMidY < lineMidY ? `${Math.abs(lineMidY - taskMidY) + 2}` : '2'}
+                          stroke="#ef4444"
+                          strokeWidth="1.5"
+                          strokeDasharray="3 3"
+                          opacity="0.6"
+                        />
+                      </svg>
+                    );
+                  });
+                })()}
             </div>
           </div>
           {/* Countdown arrow lines removed */}
