@@ -21145,7 +21145,7 @@ export default function Dashboard() {
                     <div
                       key={tab.semLabel}
                       className={`cursor-pointer${isActive ? ' semester-tab-bounce' : ''}`}
-                      style={{ position: 'relative', width: '16px', height: '42px', flexShrink: 0, marginBottom: '-6px', zIndex: semTabs.length - semTabs.indexOf(tab), clipPath: semTabs.indexOf(tab) > 0 ? 'inset(6px 0 0 0)' : undefined }}
+                      style={{ position: 'relative', width: '16px', height: '36px', flexShrink: 0, marginBottom: '-6px', zIndex: semTabs.length - semTabs.indexOf(tab), clipPath: semTabs.indexOf(tab) > 0 ? 'inset(6px 0 0 0)' : undefined }}
                       onClick={() => {
                         if (!homeworkScrollRef.current) return;
                         const idx = hwWeeklyTimeline.findIndex(w => w.semLabel === tab.semLabel);
@@ -21162,7 +21162,7 @@ export default function Dashboard() {
                       data-testid={`semester-tab-${tab.letter.toLowerCase()}${tab.year}`}
                       title={tab.semLabel}
                     >
-                      <svg width="16" height="42" viewBox="0 0 16 42" style={{ display: 'block' }}>
+                      <svg width="16" height="36" viewBox="0 0 16 42" style={{ display: 'block' }}>
                         <path d={semTabs.indexOf(tab) === 0
                           ? "M0.00 0.00 L0.00 42.00 L3.55 41.98 C3.56,41.98 3.86,40.68 4.88,39.40 C7.21,37.06 12.79,38.68 15.29,35.05 C15.60,34.59 15.83,33.97 16.00,33.24 L16.00 22.62 L16.00 19.38 L16.00 8.76 C15.83,8.03 15.60,7.41 15.29,6.95 C12.79,3.32 7.21,4.94 4.88,2.60 C4.49,2.59 3.55,0.02 3.55,0.02 L0.00 0.00 Z"
                           : "M0.00 5.15 L0.00 42.00 L3.55 41.98 C3.56,41.98 3.86,40.52 4.88,39.09 C7.21,36.45 12.79,38.27 15.29,34.19 C15.60,33.68 15.83,32.98 16.00,32.16 L16.00 20.24 L16.00 16.61 L16.00 4.69 C15.83,3.87 15.60,3.17 15.29,2.66 C14.35,1.11 12.96,0.42 11.48,0.00 C9.04,0.68 6.33,0.60 4.88,2.24 C3.86,3.67 3.56,5.13 3.55,5.13 L0.00 5.15 Z"
