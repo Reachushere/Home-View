@@ -8616,25 +8616,52 @@ document.body.removeChild(a);
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
 
-      const stateResp = await fetch(`${haUrl}/api/states/${NEST_SPEAKER_ENTITY}`, { headers: haHeaders });
-      const stateData = stateResp.ok ? await stateResp.json() : null;
-      const currentVolume = stateData?.attributes?.volume_level ?? 0.5;
+      const allCatEntities = [
+        NEST_SPEAKER_ENTITY,
+        "media_player.cat_washroom_media_group",
+      ];
 
-      const step = speed === 'fast' ? 0.15 : 0.05;
-      let newVolume: number;
+      const activeEntities: string[] = [];
+      await Promise.all(allCatEntities.map(async (entityId) => {
+        try {
+          const resp = await fetch(`${haUrl}/api/states/${entityId}`, { headers: haHeaders });
+          if (resp.ok) {
+            const data = await resp.json();
+            if (data.state === 'playing' || data.state === 'paused' || data.state === 'buffering') {
+              activeEntities.push(entityId);
+            }
+          }
+        } catch {}
+      }));
 
-      if (direction === 'up') {
-        newVolume = Math.min(1, currentVolume + step);
-      } else {
-        newVolume = Math.max(0, currentVolume - step);
+      if (activeEntities.length === 0) {
+        activeEntities.push(NEST_SPEAKER_ENTITY);
+        console.log(`[Cat Volume] No active speakers found — defaulting to Nest`);
       }
 
-      await fetch(`${haUrl}/api/services/media_player/volume_set`, {
-        method: 'POST', headers: haHeaders,
-        body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, volume_level: newVolume }),
-      });
-      lastVolumeChange = { volume: Math.round(newVolume * 100), direction, timestamp: Date.now() };
-      console.log(`[Cat Volume] Set volume: ${currentVolume} → ${newVolume} (${direction}, ${speed})`);
+      const step = speed === 'fast' ? 0.15 : 0.05;
+
+      for (const entityId of activeEntities) {
+        const stateResp = await fetch(`${haUrl}/api/states/${entityId}`, { headers: haHeaders });
+        const stateData = stateResp.ok ? await stateResp.json() : null;
+        const currentVolume = stateData?.attributes?.volume_level ?? 0.5;
+
+        let newVolume: number;
+        if (direction === 'up') {
+          newVolume = Math.min(1, currentVolume + step);
+        } else {
+          newVolume = Math.max(0, currentVolume - step);
+        }
+
+        await fetch(`${haUrl}/api/services/media_player/volume_set`, {
+          method: 'POST', headers: haHeaders,
+          body: JSON.stringify({ entity_id: entityId, volume_level: newVolume }),
+        });
+        console.log(`[Cat Volume] ${entityId}: ${currentVolume} → ${newVolume} (${direction}, ${speed})`);
+        lastVolumeChange = { volume: Math.round(newVolume * 100), direction, timestamp: Date.now() };
+      }
+
+      console.log(`[Cat Volume] Adjusted ${activeEntities.length} active speaker(s)`);
     } catch (err: any) {
       console.error(`[Cat Volume] Error: ${err.message}`);
     }
