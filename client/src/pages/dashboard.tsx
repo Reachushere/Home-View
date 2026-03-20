@@ -21107,7 +21107,7 @@ export default function Dashboard() {
             overflow: 'visible',
             right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1}px`,
             width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1 - 5 - 2 - 1}px`,
-            top: `${(calendarBorderTop || (calendarTop + 15)) + 7}px`,
+            top: `${(calendarBorderTop || (calendarTop + 15)) + 16}px`,
             bottom: `${calendarBottom}px`,
             background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
             boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08)',
@@ -21690,7 +21690,7 @@ export default function Dashboard() {
               if (lastRect) {
                 const lastBottom = lastRect.top + lastRect.height - upcomingTop - firstOffset;
                 const otherRowH = gridSizes.courseRowHeight || 48;
-                return `${lastBottom + otherRowH + 7 - 14 + 9}px`;
+                return `${lastBottom + otherRowH + 2}px`;
               }
             }
             return '25px';
