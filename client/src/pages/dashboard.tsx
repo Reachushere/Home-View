@@ -22285,7 +22285,7 @@ export default function Dashboard() {
                                   const isLastWeek = wi === group.weeks.length - 1;
                                   const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, isLastWeek ? 5 : 6) });
                                   return (
-                                    <div key={wi} style={{ display: 'flex', gap: '2px', padding: '1px 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end', borderRadius: '3px', backgroundColor: `rgba(255,255,255,${0.08 + wi * 0.04})`, border: '0.5px solid rgba(255,255,255,0.15)' }}>
+                                    <div key={wi} style={{ display: 'flex', gap: '2px', padding: '1px 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end', borderRadius: isLastWeek ? '4px' : '3px', backgroundColor: isLastWeek ? 'rgba(255,255,255,0.15)' : `rgba(255,255,255,${0.08 + wi * 0.04})`, border: isLastWeek ? '0.5px solid rgba(255,255,255,0.55)' : '0.5px solid rgba(255,255,255,0.15)' }}>
                                       {days.map((d, di) => {
                                         const isToday = isSameDay(d, today);
                                         const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
