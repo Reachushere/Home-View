@@ -22575,6 +22575,7 @@ export default function Dashboard() {
               </div>
             )}
           </div>
+          </div>
         </section>
 
         <div style={{ display: 'none' }} data-task-boxes-container="true" />
