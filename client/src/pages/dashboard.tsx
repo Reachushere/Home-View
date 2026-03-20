@@ -21703,7 +21703,7 @@ export default function Dashboard() {
                   data-testid="hw-group-bar-handle"
                 />
                 {/* Today Section */}
-                <div data-homework-section="today" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 0 6px 0', marginTop: '5px' }}>
+                <div data-homework-section="today" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 0 6px 0', marginTop: '25px' }}>
                   <span className="text-[12px]" style={{ color: '#ffffff' }}>Today</span>
                   <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', position: 'relative', top: '0px' }}>({dueTodayTasks.length})</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', justifyContent: 'flex-end', marginLeft: 'auto', flexShrink: 0, width: '42px' }}>
@@ -21750,8 +21750,12 @@ export default function Dashboard() {
                         })()}
                       </div>
                     </div>
-                    <div style={{ flex: 1, minWidth: 0, maxHeight: '80px', overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', marginLeft: '15px' }}>
-                  <div style={{ position: 'absolute', left: '-12px', top: '0', bottom: '0', width: '3px', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)', zIndex: 2 }} />
+                    <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', alignSelf: 'stretch' }}>
+                      {dueTodayTasks.length > 1 && (
+                        <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
+                      )}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0, maxHeight: '80px', overflowY: 'auto', scrollbarWidth: 'none' }}>
                   <div className="flex flex-col gap-0.5">
                     {dueTodayTasks.map((task, tIdx) => {
                       const progressBarWidth = getProgressBarWidth(task);
