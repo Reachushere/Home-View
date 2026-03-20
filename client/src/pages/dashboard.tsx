@@ -21111,8 +21111,8 @@ export default function Dashboard() {
             const allSemDefs: Array<{ letter: string; year: string; semLabel: string; endDate: Date }> = [];
             for (let y = 2026; y <= 2029; y++) {
               allSemDefs.push({ letter: 'W', year: String(y).slice(2), semLabel: 'Winter ' + y, endDate: new Date(y, 3, 17) });
-              allSemDefs.push({ letter: 'S', year: String(y).slice(2), semLabel: 'Spring/Summer ' + y, endDate: new Date(y, 7, 4) });
               if (y < 2029) {
+                allSemDefs.push({ letter: 'S', year: String(y).slice(2), semLabel: 'Spring/Summer ' + y, endDate: new Date(y, 7, 4) });
                 allSemDefs.push({ letter: 'F', year: String(y).slice(2), semLabel: 'Fall ' + y, endDate: new Date(y, 11, 7) });
               }
             }
