@@ -21176,29 +21176,29 @@ export default function Dashboard() {
                           : "M0.00 54.00 L0.00 4.53 L3.55 4.50 C3.56,4.50 3.86,3.06 4.88,1.65 C5.48,0.99 6.28,0.47 7.20,0.00 C9.86,1.37 13.43,2.33 15.29,5.33 C15.60,5.84 15.83,6.52 16.00,7.33 L16.00 16.95 L16.00 20.53 L16.00 42.13 C15.83,42.94 15.60,43.63 15.29,44.14 C12.79,48.17 7.21,48.53 4.88,51.12 C4.49,51.13 3.55,53.98 3.55,53.98 L0.00 54.00 Z"
                         } fill={isActive ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)'} stroke="rgba(255,255,255,0.55)" strokeWidth="1" />
                         {semTabs.indexOf(tab) === semTabs.length - 1 ? (
-                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="10" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">2029</text>
+                          <text x="5" y="26" textAnchor="middle" fill={colorSettings.headerBar} fontSize="10" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">2029</text>
                         ) : (tab.letter === 'F' && tab.year === '28') ? (
-                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="10" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">2028</text>
+                          <text x="5" y="26" textAnchor="middle" fill={colorSettings.headerBar} fontSize="10" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">2028</text>
                         ) : (tab.letter === 'S' && tab.year === '28') ? (
-                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="10" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">2027</text>
+                          <text x="5" y="26" textAnchor="middle" fill={colorSettings.headerBar} fontSize="10" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">2027</text>
                         ) : (tab.letter === 'W' && tab.year === '28') ? (
-                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="10" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">F 2026</text>
+                          <text x="5" y="26" textAnchor="middle" fill={colorSettings.headerBar} fontSize="10" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">F 2026</text>
                         ) : (tab.letter === 'W' && tab.year === '26') ? (
-                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="10" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">Wk 10</text>
+                          <text x="5" y="26" textAnchor="middle" fill={colorSettings.headerBar} fontSize="10" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">Wk 10</text>
                         ) : (tab.letter === 'S' && tab.year === '26') ? (
-                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="10" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">Wk 11</text>
+                          <text x="5" y="26" textAnchor="middle" fill={colorSettings.headerBar} fontSize="10" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">Wk 11</text>
                         ) : (tab.letter === 'F' && tab.year === '26') ? (
-                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="10" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">Wk 12</text>
+                          <text x="5" y="26" textAnchor="middle" fill={colorSettings.headerBar} fontSize="10" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">Wk 12</text>
                         ) : (tab.letter === 'W' && tab.year === '27') ? (
-                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="10" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">May 26</text>
+                          <text x="5" y="26" textAnchor="middle" fill={colorSettings.headerBar} fontSize="10" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">May 26</text>
                         ) : (tab.letter === 'S' && tab.year === '27') ? (
-                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="10" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">Jun 26</text>
+                          <text x="5" y="26" textAnchor="middle" fill={colorSettings.headerBar} fontSize="10" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">Jun 26</text>
                         ) : (tab.letter === 'F' && tab.year === '27') ? (
-                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="10" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">Jul 26</text>
+                          <text x="5" y="26" textAnchor="middle" fill={colorSettings.headerBar} fontSize="10" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">Jul 26</text>
                         ) : (
                           <>
-                            <text x="9" y={semTabs.indexOf(tab) === 0 ? 24 : 22} textAnchor="middle" fill="white" fontSize="9" fontWeight="600" fontFamily="system-ui">{tab.letter}</text>
-                            <text x="9" y={semTabs.indexOf(tab) === 0 ? 36 : 34} textAnchor="middle" fill="white" fontSize="9" fontWeight="600" fontFamily="system-ui">{tab.year}</text>
+                            <text x="9" y={semTabs.indexOf(tab) === 0 ? 24 : 22} textAnchor="middle" fill={colorSettings.headerBar} fontSize="9" fontWeight="600" fontFamily="system-ui">{tab.letter}</text>
+                            <text x="9" y={semTabs.indexOf(tab) === 0 ? 36 : 34} textAnchor="middle" fill={colorSettings.headerBar} fontSize="9" fontWeight="600" fontFamily="system-ui">{tab.year}</text>
                           </>
                         )}
                       </svg>
@@ -21760,7 +21760,7 @@ export default function Dashboard() {
                       const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
                       const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                       return (
-                        <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '0px', backgroundColor: tIdx % 2 === 0 ? 'rgba(5,23,41,0.75)' : 'transparent', marginLeft: '-9px', marginRight: '-7px', paddingLeft: '9px', paddingRight: '7px' }}
+                        <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '0px', backgroundColor: tIdx % 2 === 0 ? '#051729' : 'transparent', marginLeft: '-9px', marginRight: '-7px', paddingLeft: '9px', paddingRight: '7px' }}
                           onMouseEnter={() => setHoveredCountdownTaskIdDebounced(task.id)}
                           onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                           ref={(rowEl) => {
@@ -21827,6 +21827,11 @@ export default function Dashboard() {
                   </div>
                 )}
 
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2px', marginBottom: '2px' }}>
+                  <div style={{ width: '37px', height: '12px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ fontSize: '6px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
+                  </div>
+                </div>
                 {/* This Week Section */}
                 <div data-homework-section="thisweek" data-semester-label={hwWeeklyTimeline[0]?.semLabel || ''} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '5px' }}>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -21932,7 +21937,7 @@ export default function Dashboard() {
                                 const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                                 const isLastTask = taskIdx === group.tasks.length - 1;
                                 return (
-                                  <div key={task.id} style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: taskIdx % 2 === 0 ? 'rgba(5,23,41,0.75)' : 'transparent', marginLeft: '-9px', marginRight: '-7px', paddingLeft: '9px', paddingRight: '7px' }}
+                                  <div key={task.id} style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: taskIdx % 2 === 0 ? '#051729' : 'transparent', marginLeft: '-6px', marginRight: '-7px', paddingLeft: '6px', paddingRight: '7px' }}
                                     onMouseEnter={() => setHoveredCountdownTaskIdDebounced(task.id)}
                                     onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                                     ref={(rowEl) => {
@@ -21956,7 +21961,7 @@ export default function Dashboard() {
                                     </div>
                                     <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
-                                        <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: '#FFFF00', textAlign: 'center', lineHeight: 1, marginLeft: '-21px', marginRight: '6px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
+                                        <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: '#FFFF00', textAlign: 'center', lineHeight: 1, marginLeft: '-16px', marginRight: '6px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
                                         <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '1px' }}>
                                           <div>
                                             <button
@@ -22123,7 +22128,7 @@ export default function Dashboard() {
                                 const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                                 const isLastTask = taskIdx === group.tasks.length - 1;
                                 return (
-                                  <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: taskIdx % 2 === 0 ? 'rgba(5,23,41,0.75)' : 'transparent', marginLeft: '-9px', marginRight: '-7px', paddingLeft: '9px', paddingRight: '7px' }}
+                                  <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: taskIdx % 2 === 0 ? '#051729' : 'transparent', marginLeft: '-6px', marginRight: '-7px', paddingLeft: '6px', paddingRight: '7px' }}
                                     onMouseEnter={() => setHoveredCountdownTaskIdDebounced(task.id)}
                                     onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                                     ref={(rowEl) => {
@@ -22147,7 +22152,7 @@ export default function Dashboard() {
                                     </div>
                                     <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
-                                        <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: '#FFFF00', textAlign: 'center', lineHeight: 1, marginLeft: '-21px', marginRight: '6px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
+                                        <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: '#FFFF00', textAlign: 'center', lineHeight: 1, marginLeft: '-16px', marginRight: '6px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
                                         <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '2px' }}>
                                           <div>
                                             <button
@@ -22316,7 +22321,7 @@ export default function Dashboard() {
                                 const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                                 const isLastTask = taskIdx === group.tasks.length - 1;
                                 return (
-                                  <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: taskIdx % 2 === 0 ? 'rgba(5,23,41,0.75)' : 'transparent', marginLeft: '-9px', marginRight: '-7px', paddingLeft: '9px', paddingRight: '7px' }}
+                                  <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: taskIdx % 2 === 0 ? '#051729' : 'transparent', marginLeft: '-6px', marginRight: '-7px', paddingLeft: '6px', paddingRight: '7px' }}
                                     onMouseEnter={() => setHoveredCountdownTaskIdDebounced(task.id)}
                                     onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                                     ref={(rowEl) => {
@@ -22340,7 +22345,7 @@ export default function Dashboard() {
                                     </div>
                                     <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
-                                        <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: '#FFFF00', textAlign: 'center', lineHeight: 1, marginLeft: '-21px', marginRight: '6px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
+                                        <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: '#FFFF00', textAlign: 'center', lineHeight: 1, marginLeft: '-16px', marginRight: '6px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
                                         <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '2px' }}>
                                           <div>
                                             <button
@@ -22433,7 +22438,9 @@ export default function Dashboard() {
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 {(() => {
                                   const lastWeek = group.weeks[group.weeks.length - 1];
-                                  const lastWeekEnd = addDays(lastWeek, 6);
+                                  const lastWeekDays = eachDayOfInterval({ start: lastWeek, end: addDays(lastWeek, 6) });
+                                  const firstDay = lastWeekDays[0];
+                                  const lastDay = lastWeekDays[lastWeekDays.length - 1];
                                   const tlEntry = hwWeeklyTimeline.find(w => {
                                     const wStart = startOfDay(w.weekStart);
                                     return Math.abs(lastWeek.getTime() - wStart.getTime()) < 2 * 86400000;
@@ -22443,15 +22450,15 @@ export default function Dashboard() {
                                       const semName = tlEntry.semLabel.startsWith('Spring') ? 'Spring' : tlEntry.semLabel.startsWith('Fall') ? 'Fall' : 'Winter';
                                       return `${semName} Week 1`;
                                     }
-                                    const dateRange = lastWeek.getMonth() === lastWeekEnd.getMonth()
-                                      ? `${format(lastWeek, 'MMM d')}-${format(lastWeekEnd, 'd')}`
-                                      : `${format(lastWeek, 'MMM d')} - ${format(lastWeekEnd, 'MMM d')}`;
+                                    const dateRange = firstDay.getMonth() === lastDay.getMonth()
+                                      ? `${format(firstDay, 'MMM d')}-${format(lastDay, 'd')}`
+                                      : `${format(firstDay, 'MMM d')} - ${format(lastDay, 'MMM d')}`;
                                     return `Week ${tlEntry.weekNum} - ${dateRange}`;
                                   }
-                                  if (lastWeek.getMonth() === lastWeekEnd.getMonth()) {
-                                    return `${format(lastWeek, 'MMMM d')}-${format(lastWeekEnd, 'd, yyyy')}`;
+                                  if (firstDay.getMonth() === lastDay.getMonth()) {
+                                    return `${format(firstDay, 'MMMM d')}-${format(lastDay, 'd, yyyy')}`;
                                   }
-                                  return `${format(lastWeek, 'MMMM d')} - ${format(lastWeekEnd, 'MMMM d')}`;
+                                  return `${format(firstDay, 'MMMM d')} - ${format(lastDay, 'MMMM d')}`;
                                 })()}
                               </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
@@ -22464,7 +22471,7 @@ export default function Dashboard() {
                                   const isLastWeek = wi === group.weeks.length - 1;
                                   const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, isLastWeek ? 5 : 6) });
                                   return (
-                                    <div key={wi} style={{ display: 'flex', gap: '2px', padding: '1px 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end', borderRadius: '3px', backgroundColor: `rgba(255,255,255,${0.08 + wi * 0.04})`, border: '0.5px solid rgba(255,255,255,0.15)' }}>
+                                    <div key={wi} style={{ display: 'flex', gap: '2px', padding: '1px 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end', borderRadius: '3px', backgroundColor: `rgba(255,255,255,${0.08 + wi * 0.04})`, border: isLastWeek ? `2px solid ${colorSettings.headerBar}` : '0.5px solid rgba(255,255,255,0.15)', marginTop: isLastWeek && wi > 0 ? '4px' : undefined }}>
                                       {days.map((d, di) => {
                                         const isToday = isSameDay(d, today);
                                         const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
@@ -22501,7 +22508,7 @@ export default function Dashboard() {
                                 const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                                 const isLastTask = taskIdx === group.tasks.length - 1;
                                 return (
-                                  <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: taskIdx % 2 === 0 ? 'rgba(5,23,41,0.75)' : 'transparent', marginLeft: '-9px', marginRight: '-7px', paddingLeft: '9px', paddingRight: '7px' }}
+                                  <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: taskIdx % 2 === 0 ? '#051729' : 'transparent', marginLeft: '-6px', marginRight: '-7px', paddingLeft: '6px', paddingRight: '7px' }}
                                     onMouseEnter={() => setHoveredCountdownTaskIdDebounced(task.id)}
                                     onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                                     ref={(rowEl) => {
@@ -22525,7 +22532,7 @@ export default function Dashboard() {
                                     </div>
                                     <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
-                                        <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: '#FFFF00', textAlign: 'center', lineHeight: 1, marginLeft: '-21px', marginRight: '6px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
+                                        <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: '#FFFF00', textAlign: 'center', lineHeight: 1, marginLeft: '-16px', marginRight: '6px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
                                         <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '2px' }}>
                                           <div>
                                             <button
@@ -22564,9 +22571,6 @@ export default function Dashboard() {
             )}
           </div>
           </div>
-        <div data-testid="timeline-box" style={{ position: 'absolute', bottom: '210px', left: '50%', transform: 'translateX(-50%)', width: '37px', height: '12px', backgroundColor: colorSettings.headerBar, borderRadius: '0 0 2px 2px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60 }}>
-              <span style={{ fontSize: '6px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
-            </div>
         </section>
 
         <div style={{ display: 'none' }} data-task-boxes-container="true" />
