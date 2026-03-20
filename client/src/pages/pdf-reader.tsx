@@ -2848,16 +2848,18 @@ export default function PDFReaderPage() {
               </div>
             )}
 
-            <div className="flex items-center justify-evenly" style={{ overflow: 'visible' }}>
-              <div style={{ width: '90px', height: '48px', flexShrink: 0 }}>
+            <div className="flex justify-center mb-1">
+              <div style={{ width: '120px', height: '36px', flexShrink: 0 }}>
                 <canvas
                   ref={canvasRef}
                   className="w-full h-full pointer-events-none"
                   data-testid="audio-visualizer-canvas"
                 />
               </div>
+            </div>
 
-              <button className="w-10 h-10 flex flex-col items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={restartCurrentChunk} disabled={!isPlaying} title="Restart current chunk" data-testid="button-refresh-chunk-inline" style={{ marginRight: '10px' }}>
+            <div className="flex items-center justify-between" style={{ overflow: 'visible', padding: '0 8px' }}>
+              <button className="w-10 h-10 flex flex-col items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={restartCurrentChunk} disabled={!isPlaying} title="Restart current chunk" data-testid="button-refresh-chunk-inline">
                 <RefreshCw className="h-4 w-4 text-white" />
                 <span className="text-[8px] text-white/70 leading-none mt-0.5">Restart</span>
               </button>
@@ -2921,7 +2923,15 @@ export default function PDFReaderPage() {
                 >
                   <Play className="h-7 w-7 text-white fill-white ml-0.5" />
                 </button>
-              ) : !isPlaying ? (
+              ) : isPlaying && !isPaused ? (
+                <button className="w-16 h-16 flex items-center justify-center rounded-full bg-red-600 hover:bg-red-500 shrink-0" style={{ outline: '2px solid rgba(255,80,80,0.5)', outlineOffset: '3px', boxShadow: '0 0 20px rgba(255,50,50,0.4)' }} onClick={stopReading} data-testid="button-stop-center">
+                  <Square className="h-7 w-7 text-white fill-white" />
+                </button>
+              ) : isPaused ? (
+                <button className="w-16 h-16 flex items-center justify-center rounded-full shrink-0" style={{ outline: `2px solid ${waveColor}88`, outlineOffset: '3px', background: waveColor, boxShadow: `0 0 20px ${waveColor}66` }} onClick={resumeReading} data-testid="button-resume-play">
+                  <Play className="h-7 w-7 text-white fill-white ml-0.5" />
+                </button>
+              ) : (
                 <button
                   className="w-16 h-16 flex items-center justify-center rounded-full shrink-0"
                   style={{ outline: `2px solid ${waveColor}88`, outlineOffset: '3px', background: waveColor, boxShadow: `0 0 20px ${waveColor}66` }}
@@ -2930,14 +2940,6 @@ export default function PDFReaderPage() {
                   data-testid="button-play"
                 >
                   {isLoading ? <Loader2 className="h-7 w-7 text-white animate-spin" /> : <Play className="h-7 w-7 text-white fill-white ml-0.5" />}
-                </button>
-              ) : isPaused ? (
-                <button className="w-16 h-16 flex items-center justify-center rounded-full shrink-0" style={{ outline: `2px solid ${waveColor}88`, outlineOffset: '3px', background: waveColor, boxShadow: `0 0 20px ${waveColor}66` }} onClick={resumeReading} data-testid="button-resume-play">
-                  <Play className="h-7 w-7 text-white fill-white ml-0.5" />
-                </button>
-              ) : (
-                <button className="w-16 h-16 flex items-center justify-center rounded-full bg-red-600 hover:bg-red-500 shrink-0" style={{ outline: '2px solid rgba(255,80,80,0.5)', outlineOffset: '3px', boxShadow: '0 0 20px rgba(255,50,50,0.4)' }} onClick={stopReading} data-testid="button-stop-center">
-                  <Square className="h-7 w-7 text-white fill-white" />
                 </button>
               )}
 
@@ -2965,7 +2967,7 @@ export default function PDFReaderPage() {
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '6px 12px', margin: '0 8px 8px', background: 'rgba(255,255,255,0.07)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.12)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 12px', margin: '0 8px 8px', background: 'rgba(255,255,255,0.07)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.12)' }}>
             <div className="flex items-center gap-1.5 flex-shrink-0" data-testid="voice-selector">
               <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Voice</span>
               <select
