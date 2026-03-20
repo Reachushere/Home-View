@@ -6,3 +6,9 @@ id = "YFf1AFzLkqTG8aZXkvxoF"
 uri = "file://.local/cat-washroom-automation-report.md"
 type = "text"
 title = "Cat Washroom Automation Report"
+
+[[outputs]]
+id = "Bc6n7_mGe4RXg8AvakfN5"
+uri = "file://attached_assets/unical-favicon-white-outline.png"
+type = "image"
+title = "Unical White Outline Favicon (PNG)"
