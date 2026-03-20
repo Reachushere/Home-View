@@ -19,6 +19,8 @@ import globalLogoPath from "@assets/Global_White_1773536754594.png";
 import cbcLogoPath from "@assets/cbc-news-logo-black-and-white_1773536865600.png";
 import msnbcLogoPath from "@assets/MSNBC_1773536950584.png";
 import exampleRedImg from "@assets/Example2_1774037220785.png";
+import greenRectImg from "@assets/Green_Rectangle_1774037460341.png";
+import dueBoxImg from "@assets/Due_1774036824343.png";
 import tmuBoxesLogo from "@assets/TMU_Boxes_1773894223753.png";
 import d2lTickerLabel from "@assets/D2L_1773894837014.png";
 import newsTickerLabel from "@assets/News_1773894837015.png";
@@ -19454,20 +19456,16 @@ export default function Dashboard() {
                             const hoursUntil = nextSchoolTask ? (getTaskTime(nextSchoolTask) - now.getTime()) / (1000 * 60 * 60) : null;
                             const displayTime = hoursUntil !== null ? (hoursUntil < 1 ? `${Math.max(1, Math.round(hoursUntil * 60))}m` : hoursUntil < 10 ? `${hoursUntil.toFixed(1)}h` : `${Math.round(hoursUntil)}h`) : '--';
                             return (
-                              <div className="absolute left-0 right-0 top-0 bottom-0 z-[3] pointer-events-none flex items-stretch" style={{ padding: '1px' }} data-testid="hours-until-next-task">
+                              <div className="absolute top-0 bottom-0 z-[3] pointer-events-none flex items-stretch" style={{ left: `${gridSizes.timeSlotHeight + 5}px`, right: '1px', padding: '1px 0' }} data-testid="hours-until-next-task">
                                 {missedCount > 0 && (
-                                  <div className="shrink-0" style={{ aspectRatio: '1', background: 'linear-gradient(180deg, #f5c842 0%, #d4a017 100%)', borderRadius: '5px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(180, 120, 0, 0.5)', boxShadow: '0 1px 3px rgba(0,0,0,0.2)', padding: '2px', marginRight: '2px' }} data-testid="missed-tasks-indicator">
-                                    <div style={{ backgroundColor: '#ef4444', borderRadius: '4px', flex: 1, width: '80%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), 0 1px 2px rgba(0,0,0,0.15)' }}>
-                                      <span style={{ fontSize: '13px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{missedCount}</span>
-                                    </div>
-                                    <span style={{ fontSize: '7px', color: '#1a1a1a', fontWeight: 900, lineHeight: 1, marginTop: '1px' }}>Due</span>
+                                  <div className="shrink-0" style={{ aspectRatio: '1', position: 'relative', marginRight: '2px' }} data-testid="missed-tasks-indicator">
+                                    <img src={dueBoxImg} alt="" style={{ width: '100%', height: '100%', objectFit: 'fill', borderRadius: '5px', display: 'block' }} />
+                                    <span style={{ position: 'absolute', top: '15%', left: 0, right: 0, textAlign: 'center', fontSize: '13px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{missedCount}</span>
                                   </div>
                                 )}
-                                <div className="flex-1" style={{ background: 'linear-gradient(180deg, #f5c842 0%, #d4a017 100%)', borderRadius: '5px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 4px 0 6px', border: '1px solid rgba(180, 120, 0, 0.5)', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>
-                                  <span style={{ fontSize: '8px', color: '#1a1a1a', fontWeight: 800, lineHeight: 1.15, whiteSpace: 'nowrap' }}>Hours to<br/>next task:</span>
-                                  <div style={{ backgroundColor: '#16a34a', borderRadius: '5px', padding: '3px 6px', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '24px', alignSelf: 'stretch', marginTop: '3px', marginBottom: '3px', border: '1px solid rgba(22, 120, 60, 0.4)' }}>
-                                    <span style={{ fontSize: '14px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{displayTime}</span>
-                                  </div>
+                                <div className="flex-1" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+                                  <img src={greenRectImg} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'fill', borderRadius: '5px' }} />
+                                  <span style={{ position: 'relative', zIndex: 1, fontSize: '14px', color: 'white', fontWeight: 900, lineHeight: 1, marginRight: '6px' }}>{displayTime}</span>
                                 </div>
                               </div>
                             );
