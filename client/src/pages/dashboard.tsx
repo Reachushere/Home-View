@@ -4316,6 +4316,8 @@ export default function Dashboard() {
     let classEndTime = '';
     let classTime2 = '';
     let classEndTime2 = '';
+    let startDate = '';
+    let endDate = '';
     let zoomLink = '';
     let professor = matchedCourse?.professor || '';
     let professorEmail = matchedCourse?.professorEmail || '';
@@ -4350,7 +4352,17 @@ export default function Dashboard() {
           } else if (semType === 'fall' || semType === 'winter') {
             semesterTerm = semType;
           }
-          const semStart = (sem as any).semesterStartDate;
+          const courseStartDate = (sem as any)[`${prefix}StartDate`];
+          const courseEndDate = (sem as any)[`${prefix}EndDate`];
+          const semStart = courseStartDate || (sem as any).semesterStartDate;
+          if (courseStartDate) {
+            const sd = new Date(courseStartDate);
+            startDate = `${sd.getFullYear()}-${(sd.getMonth()+1).toString().padStart(2,'0')}-${sd.getDate().toString().padStart(2,'0')}`;
+          }
+          if (courseEndDate) {
+            const ed = new Date(courseEndDate);
+            endDate = `${ed.getFullYear()}-${(ed.getMonth()+1).toString().padStart(2,'0')}-${ed.getDate().toString().padStart(2,'0')}`;
+          }
           if (semStart) {
             year = new Date(semStart).getFullYear().toString();
           }
@@ -4397,6 +4409,8 @@ export default function Dashboard() {
       classEndTime,
       classTime2,
       classEndTime2,
+      startDate,
+      endDate,
       zoomLink,
       courseType,
       semesterTerm,
@@ -12978,7 +12992,9 @@ export default function Dashboard() {
                       if (updates.professorEmail !== undefined) payload[`${prefix}ProfessorEmail`] = updates.professorEmail;
                       if (updates.color !== undefined) payload[`${prefix}Color`] = updates.color;
                       if (updates.colorEnd !== undefined) payload[`${prefix}ColorEnd`] = updates.colorEnd;
-                      if (updates.semesterTerm && updates.year) {
+                      if ((updates as any).startDate) payload[`${prefix}StartDate`] = new Date((updates as any).startDate).toISOString();
+                      if ((updates as any).endDate) payload[`${prefix}EndDate`] = new Date((updates as any).endDate).toISOString();
+                      if (updates.semesterTerm && updates.year && !(updates as any).startDate) {
                         const dates = computeSemesterDates(updates.semesterTerm, updates.year);
                         if (dates.startDate) {
                           payload[`${prefix}StartDate`] = new Date(dates.startDate).toISOString();

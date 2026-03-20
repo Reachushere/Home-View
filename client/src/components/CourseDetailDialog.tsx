@@ -93,7 +93,7 @@ interface CourseInfo {
 interface CourseDetailDialogProps {
   courseInfo: CourseInfo;
   onClose: () => void;
-  onSaveCourseInfo?: (updates: { professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; classTime2?: string; classEndTime2?: string; zoomLink?: string; semesterTerm?: string; year?: string; color?: string; colorEnd?: string }) => void;
+  onSaveCourseInfo?: (updates: { professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; classTime2?: string; classEndTime2?: string; zoomLink?: string; semesterTerm?: string; year?: string; startDate?: string; endDate?: string; color?: string; colorEnd?: string }) => void;
   onGradeCalculated?: (grade: string, percent: string) => void;
   onDeleteCourse?: () => void;
   onOpenEditTask?: (task: Task) => void;
@@ -278,6 +278,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
     zoomLink: courseInfo.zoomLink || '',
     semesterTerm: courseInfo.semesterTerm || '',
     year: courseInfo.year || '',
+    startDate: courseInfo.startDate || '',
+    endDate: courseInfo.endDate || '',
     color: courseInfo.color || '#3b82f6',
     colorEnd: courseInfo.colorEnd || courseInfo.color || '#3b82f6',
   });
@@ -1265,6 +1267,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                         classTime2: courseInfo.classTime2 || '',
                         classEndTime2: courseInfo.classEndTime2 || '',
                         zoomLink: courseInfo.zoomLink || '',
+                        startDate: courseInfo.startDate || '',
+                        endDate: courseInfo.endDate || '',
                       });
                       setIsEditingInfo(false);
                     }}
@@ -1349,13 +1353,23 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     </select>
                   </div>
                 </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-white text-[9px] mb-0.5 block">Start Date</label>
+                    <input type="date" className="w-full h-6 text-[10px] bg-white/10 border border-white/15 rounded px-1" style={{ color: 'white', colorScheme: 'dark' }} value={editInfo.startDate} onChange={(e) => setEditInfo({...editInfo, startDate: e.target.value})} data-testid="input-edit-start-date" />
+                  </div>
+                  <div>
+                    <label className="text-white text-[9px] mb-0.5 block">End Date</label>
+                    <input type="date" className="w-full h-6 text-[10px] bg-white/10 border border-white/15 rounded px-1" style={{ color: 'white', colorScheme: 'dark' }} value={editInfo.endDate} onChange={(e) => setEditInfo({...editInfo, endDate: e.target.value})} data-testid="input-edit-end-date" />
+                  </div>
+                </div>
                 {editInfo.deliveryMode !== 'online' && (() => {
                   const isSpSu = editInfo.semesterTerm?.startsWith('spring_summer');
                   return (
                     <div className="space-y-2">
                       <div className="grid gap-2 grid-cols-3">
                         <div>
-                          <label className="text-white text-[9px] mb-0.5 block">{isSpSu ? 'Day 1' : 'Day'}</label>
+                          <label className="text-white text-[9px] mb-0.5 block">{isSpSu ? 'Day of Week 1' : 'Day of Week'}</label>
                           <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.classDay} onChange={(e) => setEditInfo({...editInfo, classDay: e.target.value})} data-testid="select-edit-day1">
                             <option value="" className="bg-gray-800">—</option>
                             {['monday','tuesday','wednesday','thursday','friday','saturday','sunday'].map(d => <option key={d} value={d} className="bg-gray-800 capitalize">{d.charAt(0).toUpperCase()+d.slice(1)}</option>)}
@@ -1373,7 +1387,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                       {isSpSu && (
                         <div className="grid gap-2 grid-cols-3">
                           <div>
-                            <label className="text-white text-[9px] mb-0.5 block">Day 2</label>
+                            <label className="text-white text-[9px] mb-0.5 block">Day of Week 2</label>
                             <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.classDay2} onChange={(e) => setEditInfo({...editInfo, classDay2: e.target.value})} data-testid="select-edit-day2">
                               <option value="" className="bg-gray-800">—</option>
                               {['monday','tuesday','wednesday','thursday','friday','saturday','sunday'].map(d => <option key={d} value={d} className="bg-gray-800 capitalize">{d.charAt(0).toUpperCase()+d.slice(1)}</option>)}
@@ -1514,6 +1528,17 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     <span className="text-white">Certificate:</span>
                     <span className="text-white text-[9px]">{certificateName || certificateType || '—'}</span>
                   </div>
+                  {(courseInfo.startDate || courseInfo.endDate) && (
+                    <div style={{ display: 'grid', gridTemplateColumns: '12px 58px 1fr', gap: '6px', alignItems: 'center' }}>
+                      <Calendar className="h-3 w-3 text-white flex-shrink-0" />
+                      <span className="text-white">Dates:</span>
+                      <span className="text-white">
+                        {courseInfo.startDate ? new Date(courseInfo.startDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
+                        {' – '}
+                        {courseInfo.endDate ? new Date(courseInfo.endDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
+                      </span>
+                    </div>
+                  )}
                   {courseInfo.deliveryMode !== "online" && (() => {
                     const fmt = (t: string) => { const [h,m] = t.split(':').map(Number); const p = h >= 12 ? 'PM' : 'AM'; const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h; return `${h12}:${m.toString().padStart(2,'0')} ${p}`; };
                     const isSpSu = courseInfo.semesterTerm?.startsWith('spring_summer');
