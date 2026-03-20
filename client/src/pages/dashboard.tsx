@@ -22433,9 +22433,25 @@ export default function Dashboard() {
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 {(() => {
                                   const lastWeek = group.weeks[group.weeks.length - 1];
-                                  const weeksFromNow = Math.round((lastWeek.getTime() - startOfWeek(new Date(), { weekStartsOn: 0 }).getTime()) / (7 * 24 * 60 * 60 * 1000));
-                                  const names = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve'];
-                                  return `${names[weeksFromNow - 1] || weeksFromNow} weeks`;
+                                  const lastWeekEnd = addDays(lastWeek, 6);
+                                  const tlEntry = hwWeeklyTimeline.find(w => {
+                                    const wStart = startOfDay(w.weekStart);
+                                    return Math.abs(lastWeek.getTime() - wStart.getTime()) < 2 * 86400000;
+                                  });
+                                  if (tlEntry && tlEntry.semLabel) {
+                                    if (tlEntry.weekNum === 1) {
+                                      const semName = tlEntry.semLabel.startsWith('Spring') ? 'Spring' : tlEntry.semLabel.startsWith('Fall') ? 'Fall' : 'Winter';
+                                      return `${semName} Week 1`;
+                                    }
+                                    const dateRange = lastWeek.getMonth() === lastWeekEnd.getMonth()
+                                      ? `${format(lastWeek, 'MMM d')}-${format(lastWeekEnd, 'd')}`
+                                      : `${format(lastWeek, 'MMM d')} - ${format(lastWeekEnd, 'MMM d')}`;
+                                    return `Week ${tlEntry.weekNum} - ${dateRange}`;
+                                  }
+                                  if (lastWeek.getMonth() === lastWeekEnd.getMonth()) {
+                                    return `${format(lastWeek, 'MMMM d')}-${format(lastWeekEnd, 'd, yyyy')}`;
+                                  }
+                                  return `${format(lastWeek, 'MMMM d')} - ${format(lastWeekEnd, 'MMMM d')}`;
                                 })()}
                               </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
