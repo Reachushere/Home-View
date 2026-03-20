@@ -704,10 +704,75 @@ export default function Dashboard() {
   const homeworkScrollRef = useRef<HTMLDivElement>(null);
   const [hwIsScrolling, setHwIsScrolling] = useState(false);
   const hwScrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [hwFloating, setHwFloatingRaw] = useState(() => {
+    const saved = localStorage.getItem('hwFloating');
+    return saved ? JSON.parse(saved) : { detached: false, minimized: false, x: 100, y: 100 };
+  });
+  const setHwFloating = (val: any) => {
+    setHwFloatingRaw((prev: any) => {
+      const next = typeof val === 'function' ? val(prev) : val;
+      localStorage.setItem('hwFloating', JSON.stringify(next));
+      return next;
+    });
+  };
+  const hwDragRef = useRef<{ startX: number; startY: number; origX: number; origY: number; moved: boolean } | null>(null);
+  const hwFloatingHandlers = useMemo(() => ({
+    onDetach: () => {
+      const el = homeworkSectionRef.current;
+      const rect = el?.getBoundingClientRect();
+      setHwFloating((p: any) => ({ ...p, detached: true, minimized: false, x: rect ? rect.left : 200, y: rect ? rect.top : 100 }));
+    },
+    onDock: () => {
+      setHwFloating((p: any) => ({ ...p, detached: false, minimized: false }));
+    },
+    onMinToggle: () => {
+      setHwFloating((p: any) => ({ ...p, minimized: !p.minimized }));
+    },
+    onDragStart: (e: React.MouseEvent | React.TouchEvent) => {
+      e.preventDefault();
+      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+      const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+      hwDragRef.current = { startX: clientX, startY: clientY, origX: hwFloating.x, origY: hwFloating.y, moved: false };
+      const onMove = (ev: MouseEvent | TouchEvent) => {
+        if (!hwDragRef.current) return;
+        const cx = 'touches' in ev ? ev.touches[0].clientX : ev.clientX;
+        const cy = 'touches' in ev ? ev.touches[0].clientY : ev.clientY;
+        hwDragRef.current.moved = true;
+        const nx = hwDragRef.current.origX + (cx - hwDragRef.current.startX);
+        const ny = hwDragRef.current.origY + (cy - hwDragRef.current.startY);
+        setHwFloating((p: any) => ({ ...p, x: Math.max(0, nx), y: Math.max(0, ny) }));
+      };
+      const onUp = () => {
+        if (hwDragRef.current) {
+          const snapMargin = 20;
+          const vw = window.innerWidth;
+          const vh = window.innerHeight;
+          setHwFloating((p: any) => {
+            let fx = p.x, fy = p.y;
+            if (fx < snapMargin) fx = 4;
+            if (fy < snapMargin) fy = 4;
+            if (fx + 340 > vw - snapMargin) fx = vw - 344;
+            if (fy + 50 > vh - snapMargin) fy = vh - 54;
+            return { ...p, x: fx, y: fy };
+          });
+        }
+        hwDragRef.current = null;
+        window.removeEventListener('mousemove', onMove);
+        window.removeEventListener('mouseup', onUp);
+        window.removeEventListener('touchmove', onMove);
+        window.removeEventListener('touchend', onUp);
+      };
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('mouseup', onUp);
+      window.addEventListener('touchmove', onMove);
+      window.addEventListener('touchend', onUp);
+    },
+  }), [hwFloating.x, hwFloating.y]);
   const [hwDividerPercent, setHwDividerPercent] = useState(() => {
     const saved = localStorage.getItem('hwDividerPercent');
     return saved ? parseFloat(saved) : 33;
   });
+  const effectiveDividerPct = hwFloating.detached ? 0 : hwDividerPercent;
   const hwDividerDragRef = useRef<{ startX: number; startPercent: number; containerWidth: number } | null>(null);
   const [hwGroupBarWidth, setHwGroupBarWidth] = useState(() => {
     const saved = localStorage.getItem('hwGroupBarWidth');
@@ -21165,8 +21230,29 @@ export default function Dashboard() {
           }}
           data-testid="section-coming-up"
         >
+          {!hwFloating.detached ? (
+            <button
+              onClick={hwFloatingHandlers.onDetach}
+              className="absolute z-[70] w-5 h-5 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
+              style={{ top: '4px', left: '4px', fontSize: '10px', color: 'rgba(255,255,255,0.5)', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+              data-testid="hw-detach-button"
+              title="Pop out progress as floating window"
+            >
+              ⇱
+            </button>
+          ) : (
+            <button
+              onClick={hwFloatingHandlers.onDock}
+              className="absolute z-[70] rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
+              style={{ top: '4px', left: '4px', fontSize: '9px', color: 'rgba(255,255,255,0.6)', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', padding: '2px 6px' }}
+              data-testid="hw-dock-button"
+              title="Dock progress bars back"
+            >
+              ⏎ Dock
+            </button>
+          )}
           {/* Homework Width Resize Handle — outside left side, near bottom */}
-          <div
+          {!hwFloating.detached && <div
             className="absolute z-[60]"
             style={{ left: '-16px', bottom: '19px', width: '15px', height: '181px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto' }}
             data-testid="resize-handle-homework"
@@ -21178,7 +21264,7 @@ export default function Dashboard() {
               <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
               <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => { const v = Math.max(0, prev - 2); localStorage.setItem('calendarReduction', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => { const v = Math.max(0, prev - 2); localStorage.setItem('calendarReduction', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▶</span></div>
             </div>
-          </div>
+          </div>}
           {(() => {
             const allSemDefs: Array<{ letter: string; year: string; semLabel: string; endDate: Date }> = [];
             for (let y = 2026; y <= 2029; y++) {
@@ -21194,7 +21280,7 @@ export default function Dashboard() {
             return (
               <div
                 className="absolute"
-                style={{ right: '-16px', bottom: '28px', pointerEvents: 'auto', zIndex: 0, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'block', width: '18px', height: `${semTabs.length * 53 + 23}px` }}
+                style={{ right: '-16px', bottom: '28px', pointerEvents: 'auto', zIndex: 0, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || hwFloating.detached) ? 'none' : 'block', width: '18px', height: `${semTabs.length * 53 + 23}px` }}
               >
                 {semTabs.map((tab, tabIdx) => {
                   const isActive = currentSemLabel === tab.semLabel;
@@ -21394,7 +21480,7 @@ export default function Dashboard() {
                   position: 'absolute',
                   top: `${rowTop}px`,
                   left: 0,
-                  width: `${hwDividerPercent}%`,
+                  width: `${effectiveDividerPct}%`,
                   height: `${rowHeight}px`,
                   background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
                   zIndex: 1,
@@ -21402,7 +21488,7 @@ export default function Dashboard() {
                 <div key={`${pd.courseCode}-right-fill-ext`} style={{
                   position: 'absolute',
                   top: `${rowTop}px`,
-                  left: `${hwDividerPercent}%`,
+                  left: `${effectiveDividerPct}%`,
                   right: 0,
                   height: `${rowHeight}px`,
                   background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
@@ -21532,7 +21618,7 @@ export default function Dashboard() {
                     position: 'absolute',
                     top: `${offsetFromUpcoming}px`,
                     left: 0,
-                    width: `${hwDividerPercent}%`,
+                    width: `${effectiveDividerPct}%`,
                     height: `${rowHeight}px`,
                     background: 'transparent',
                     zIndex: 40,
@@ -21620,14 +21706,14 @@ export default function Dashboard() {
               );
             });
 
-            courseRows.push(
+            if (!hwFloating.detached) courseRows.push(
               <div
                 key="hw-divider-handle"
                 style={{
                   position: 'absolute',
                   top: 0,
                   bottom: 0,
-                  left: `${hwDividerPercent}%`,
+                  left: `${effectiveDividerPct}%`,
                   width: '6px',
                   marginLeft: '-3px',
                   cursor: 'col-resize',
@@ -21668,7 +21754,7 @@ export default function Dashboard() {
                     position: 'absolute',
                     top: `${otherTop}px`,
                     left: 0,
-                    width: `${hwDividerPercent}%`,
+                    width: `${effectiveDividerPct}%`,
                     height: `${otherRowHeight}px`,
                     background: 'linear-gradient(180deg, #374151 0%, #9ca3af 100%)',
                     zIndex: 41,
@@ -21683,7 +21769,7 @@ export default function Dashboard() {
                   <div key="other-progress-tasks" style={{
                     position: 'absolute',
                     top: `${otherTop}px`,
-                    left: `${hwDividerPercent}%`,
+                    left: `${effectiveDividerPct}%`,
                     right: 0,
                     height: `${otherRowHeight}px`,
                     background: 'linear-gradient(180deg, #374151 0%, #9ca3af 100%)',
@@ -22614,6 +22700,96 @@ export default function Dashboard() {
           </div>
           </div>
         </section>
+
+        {hwFloating.detached && (
+          <div
+            className="rounded-[12px] flex flex-col fixed"
+            style={{
+              zIndex: 9999,
+              left: `${hwFloating.x}px`,
+              top: `${hwFloating.y}px`,
+              width: hwFloating.minimized ? '220px' : '300px',
+              height: hwFloating.minimized ? '34px' : 'auto',
+              maxHeight: hwFloating.minimized ? '34px' : '70vh',
+              overflow: hwFloating.minimized ? 'hidden' : 'auto',
+              background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
+              boxShadow: '0 12px 48px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.3)',
+              border: '1px solid rgba(255,255,255,0.5)',
+              transition: hwDragRef.current ? 'none' : 'width 0.25s ease, max-height 0.25s ease',
+            }}
+            data-testid="hw-floating-panel"
+          >
+            <div
+              className="flex items-center justify-between px-2 flex-shrink-0 cursor-grab active:cursor-grabbing select-none"
+              style={{ height: '32px', background: 'rgba(255,255,255,0.08)', borderBottom: '1px solid rgba(255,255,255,0.15)', borderRadius: '12px 12px 0 0', touchAction: 'none' }}
+              onMouseDown={hwFloatingHandlers.onDragStart}
+              onTouchStart={hwFloatingHandlers.onDragStart}
+              data-testid="hw-floating-titlebar"
+            >
+              <div className="flex items-center gap-1.5">
+                <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>⋮⋮</span>
+                <span className="text-[11px] font-medium text-white/80">Homework Progress</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={(e) => { e.stopPropagation(); hwFloatingHandlers.onMinToggle(); }}
+                  className="w-5 h-5 rounded flex items-center justify-center hover:bg-white/15 transition-colors"
+                  style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', lineHeight: 1 }}
+                  data-testid="hw-floating-minimize"
+                  title={hwFloating.minimized ? 'Expand' : 'Minimize'}
+                >
+                  {hwFloating.minimized ? '□' : '—'}
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); hwFloatingHandlers.onDock(); }}
+                  className="w-5 h-5 rounded flex items-center justify-center hover:bg-white/15 transition-colors"
+                  style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', lineHeight: 1 }}
+                  data-testid="hw-floating-dock"
+                  title="Snap back to sidebar"
+                >
+                  ⏎
+                </button>
+              </div>
+            </div>
+            {!hwFloating.minimized && (
+              <div className="flex flex-col gap-1 p-2" style={{ scrollbarWidth: 'none' }}>
+                {courseProgressDataRef.current.map((pd, idx) => {
+                  if (!pd) return null;
+                  const getProgressColor = (percent: number) => {
+                    if (percent === 100) return '#22c55e';
+                    if (percent > 0) return '#f97316';
+                    return '#ef4444';
+                  };
+                  return (
+                    <div key={pd.courseCode} className="flex flex-col gap-0.5" style={{ padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                      <span className="text-[10px] font-bold text-white/90">{pd.courseCode}</span>
+                      {pd.hasNoData ? (
+                        <span className="text-[9px] text-white/50">N/A</span>
+                      ) : (
+                        <>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[9px] text-white/60 w-[50px]">Module</span>
+                            <div className="flex-1 h-[6px] rounded-full bg-white/10 overflow-hidden">
+                              <div className="h-full rounded-full transition-all" style={{ width: `${pd.moduleP.percent}%`, background: getProgressColor(pd.moduleP.percent) }} />
+                            </div>
+                            <span className="text-[9px] text-white/70 w-[32px] text-right">{Math.round(pd.moduleP.percent)}%</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[9px] text-white/60 w-[50px]">Reading</span>
+                            <div className="flex-1 h-[6px] rounded-full bg-white/10 overflow-hidden">
+                              <div className="h-full rounded-full transition-all" style={{ width: `${pd.readingP.percent}%`, background: getProgressColor(pd.readingP.percent) }} />
+                            </div>
+                            <span className="text-[9px] text-white/70 w-[32px] text-right">{Math.round(pd.readingP.percent)}%</span>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
 
         {dashboardCommentTarget && createPortal(
           <div
