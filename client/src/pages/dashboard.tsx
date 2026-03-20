@@ -21734,7 +21734,7 @@ export default function Dashboard() {
                 {dueTodayTasks.length === 0 ? (
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks due today</div>
                 ) : (
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', marginTop: '4px' }}>
                     <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginLeft: '10px', marginRight: '4px', overflow: 'visible' }}>
                       <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                         {format(new Date(), 'MMMM d')}
@@ -22066,7 +22066,7 @@ export default function Dashboard() {
                 {dueNextWeekTasks.length === 0 ? (
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks next week</div>
                 ) : (
-                  <div className="flex flex-col gap-0.5" style={{ marginTop: '-3px' }}>
+                  <div className="flex flex-col gap-0.5" style={{ marginTop: '5px' }}>
                     {(() => {
                       const today = startOfDay(new Date());
                       const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
