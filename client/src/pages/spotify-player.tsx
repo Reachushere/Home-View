@@ -236,10 +236,10 @@ function CherryBlossoms() {
     return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
   }, []);
 
-  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 1 }} />;
+  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 3 }} />;
 }
 
-function HoloCircuitLines({ accent }: { accent: string }) {
+function HoloCircuitLines({ accent, sakura = false }: { accent: string; sakura?: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animRef = useRef<number>();
 
@@ -356,7 +356,7 @@ function HoloCircuitLines({ accent }: { accent: string }) {
     return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
   }, [accent]);
 
-  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0, opacity: 0.85 }} />;
+  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0, opacity: sakura ? 0.4 : 0.85 }} />;
 }
 
 function HoloScanLine() {
@@ -863,7 +863,7 @@ export default function SpotifyPlayerPage() {
         src={isPlaying ? massBg : musicBg}
         alt=""
         className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
-        style={{ opacity: isPlaying ? 0.45 : 0.3, filter: isSakura ? "brightness(1.15) saturate(1.2) hue-rotate(195deg)" : "brightness(1.1) saturate(1.2) hue-rotate(200deg)" }}
+        style={{ opacity: isPlaying ? 0.35 : 0.2, filter: isSakura ? "brightness(0.8) saturate(0.6) hue-rotate(200deg)" : "brightness(1.1) saturate(1.2) hue-rotate(200deg)" }}
       />
 
       <div className="absolute inset-0" style={{
@@ -894,7 +894,7 @@ export default function SpotifyPlayerPage() {
         }} />
       )}
 
-      <HoloCircuitLines accent={profile.accent} />
+      <HoloCircuitLines accent={profile.accent} sakura={isSakura} />
       {isSakura && <CherryBlossoms />}
       <HoloScanLine />
 
