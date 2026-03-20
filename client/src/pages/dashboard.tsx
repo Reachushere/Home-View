@@ -21739,7 +21739,7 @@ export default function Dashboard() {
                       <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                         {format(new Date(), 'MMMM d')}
                       </span>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-end' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
                         <div style={{ display: 'flex', gap: '2px', padding: '0 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
                           {['S','M','T','W','T','F','S'].map((dl, dli) => (
                             <div key={dli} style={{ width: '13px', fontSize: '6px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
@@ -21748,21 +21748,27 @@ export default function Dashboard() {
                         {(() => {
                           const todayDate = startOfDay(new Date());
                           const weekStart = startOfWeek(todayDate, { weekStartsOn: 0 });
-                          const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
+                          const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 5) });
+                          const dueDates = dueTodayTasks.map(t => ({ date: startOfDay(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                           return (
-                            <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                              <div style={{ position: 'absolute', top: '-2px', bottom: '-2px', left: '-3px', right: '-3px', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.15)', border: '0.5px solid rgba(255,255,255,0.55)' }} />
-                              <div style={{ position: 'relative', display: 'flex', gap: '2px', padding: '2px 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
-                                {days.map((d, di) => {
-                                  const isToday = isSameDay(d, todayDate);
-                                  const isPast = d < todayDate && !isToday;
-                                  return (
-                                    <div key={di} style={{ width: '13px', height: '13px', borderRadius: '3px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7px', fontWeight: isToday ? 700 : 500, color: isPast ? 'rgba(255,255,255,0.25)' : isToday ? '#fff' : 'rgba(255,255,255,0.6)', backgroundColor: isToday ? 'rgb(255, 0, 0)' : 'transparent', border: isToday ? '1px solid rgba(255,80,80,0.6)' : '1px solid transparent' }}>
-                                      {format(d, 'd')}
-                                    </div>
-                                  );
-                                })}
-                              </div>
+                            <div style={{ display: 'flex', gap: '2px', padding: '1px 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.15)', border: '0.5px solid rgba(255,255,255,0.55)' }}>
+                              {days.map((d, di) => {
+                                const isToday = isSameDay(d, todayDate);
+                                const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
+                                const isDue = !!dueMatch;
+                                const dueColor = dueMatch ? (dueMatch.courseCode === 'CPPA122' ? '#22c55e' : dueMatch.courseCode === 'CFNF400' ? '#ff69b4' : dueMatch.courseCode === 'CASL101' ? '#b388ff' : getCourseGradientColors(dueMatch.courseCode).start) : '';
+                                return (
+                                  <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
+                                    width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                                    color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
+                                    backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.15)',
+                                    border: isDue && !isToday ? `1px solid ${dueColor}` : 'none',
+                                  }} data-testid={`mini-cal-today-${format(d, 'yyyy-MM-dd')}`}>
+                                    {d.getDate()}
+                                  </div>
+                                );
+                              })}
                             </div>
                           );
                         })()}
