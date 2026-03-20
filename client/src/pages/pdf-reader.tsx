@@ -2822,7 +2822,7 @@ export default function PDFReaderPage() {
             </div>
           </div>
         )}
-        {(!ctrlFloating.detached || !ctrlFloating.minimized) && <div className={ctrlFloating.detached ? "rounded-[12px]" : "rounded-2xl mx-auto"} style={ctrlFloating.detached ? { overflow: 'visible', background: 'rgba(15,15,30,0.95)', backdropFilter: 'blur(24px)', border: `1px solid ${waveColor}44`, boxShadow: `0 0 30px ${waveColor}33, 0 0 60px ${waveColor}18, 0 12px 48px rgba(0,0,0,0.5)` } : { background: 'rgba(255,255,255,0.16)', backdropFilter: 'blur(24px)', border: `1px solid ${waveColor}44`, maxWidth: '1200px', width: '100%', overflow: 'visible', boxShadow: `0 0 30px ${waveColor}33, 0 0 60px ${waveColor}18, inset 0 1px 0 rgba(255,255,255,0.15)` }}>
+        {(!ctrlFloating.detached || !ctrlFloating.minimized) && <div className={ctrlFloating.detached ? "rounded-2xl" : "rounded-2xl mx-auto"} style={ctrlFloating.detached ? { overflow: 'visible', background: 'rgba(255,255,255,0.16)', backdropFilter: 'blur(24px)', border: `1px solid ${waveColor}44`, maxWidth: '1200px', width: '100%', boxShadow: `0 0 30px ${waveColor}33, 0 0 60px ${waveColor}18, inset 0 1px 0 rgba(255,255,255,0.15)` } : { background: 'rgba(255,255,255,0.16)', backdropFilter: 'blur(24px)', border: `1px solid ${waveColor}44`, maxWidth: '1200px', width: '100%', overflow: 'visible', boxShadow: `0 0 30px ${waveColor}33, 0 0 60px ${waveColor}18, inset 0 1px 0 rgba(255,255,255,0.15)` }}>
           <div className="relative px-4 pb-3 pt-2" style={{ overflow: 'visible' }}>
             {!ctrlFloating.detached && (
               <button
