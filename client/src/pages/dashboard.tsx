@@ -16100,18 +16100,6 @@ export default function Dashboard() {
                           draftRef={draftCoursePlayPriorityRef}
                           courseCode={semCourse.code}
                         />
-                        <button
-                          className="flex-shrink-0 p-0.5 rounded hover:bg-white/10"
-                          style={{ marginLeft: '4px' }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            const certKey = pastEntry?.certKey || semCourse.code;
-                            startTransition(() => setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey }));
-                          }}
-                          data-testid={`button-edit-course-${semCourse.code}`}
-                        >
-                          <Pencil className="w-3 h-3 text-white hover:text-white/80" strokeWidth={2.5} />
-                        </button>
                         <div
                           className={`flex flex-col items-center cursor-pointer hover:opacity-80 transition-opacity flex-shrink-0 ${!(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) && hasSemStarted(semKey) ? 'aas-unchecked-pulse' : ''}`}
                           style={{ width: '28px', marginLeft: '-2px', marginTop: '2px' }}
@@ -16163,6 +16151,18 @@ export default function Dashboard() {
                             );
                           })()}
                         </div>
+                        <button
+                          className="flex-shrink-0 p-0.5 rounded hover:bg-white/10"
+                          style={{ marginLeft: '3px' }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const certKey = pastEntry?.certKey || semCourse.code;
+                            startTransition(() => setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey }));
+                          }}
+                          data-testid={`button-edit-course-${semCourse.code}`}
+                        >
+                          <Pencil className="w-3 h-3 text-white hover:text-white/80" strokeWidth={2.5} />
+                        </button>
                       </div>
                     );
                   };
