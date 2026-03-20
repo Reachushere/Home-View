@@ -21480,7 +21480,7 @@ export default function Dashboard() {
               </div>
             );
           })()}
-          <div style={{ padding: '0 8px', height: '46px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 42, overflow: 'visible', marginBottom: '-12px' }}>
+          <div style={{ padding: '0 8px', height: '46px', backgroundColor: `color-mix(in srgb, ${colorSettings.headerBar} 70%, black)`, position: 'relative', zIndex: 42, overflow: 'visible', marginBottom: '-12px' }}>
             <div style={{ position: 'absolute', top: '15px', left: '22px', right: 0, height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)' }} />
             <span className="text-xs font-medium text-white" style={{ position: 'absolute', left: '6px', top: '30px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Homework Progress</span>
             <span className="text-xs font-medium text-white" style={{ position: 'absolute', left: '161px', top: '30px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Assignments</span>
@@ -22785,43 +22785,50 @@ export default function Dashboard() {
             data-testid="hw-floating-panel"
           >
             <div
-              className="flex items-center justify-between select-none cursor-grab active:cursor-grabbing"
-              style={{ padding: '4px 8px', background: 'rgba(255,255,255,0.12)', borderRadius: '10px 10px 0 0', borderBottom: '1px solid rgba(255,255,255,0.15)', touchAction: 'none' }}
-              onMouseDown={hwFloatingHandlers.onDragStart}
-              onTouchStart={hwFloatingHandlers.onDragStart}
+              style={{ position: 'relative', width: '100%', height: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', touchAction: 'none' }}
               data-testid="hw-floating-titlebar"
             >
-              <div className="flex items-center gap-1.5">
-                <GripHorizontal className="h-4 w-4 text-white/40" />
-                <span className="text-[10px] font-medium text-white/60 uppercase tracking-wide">Homework Player</span>
-              </div>
-              <div className="flex items-center gap-1">
+              <div style={{ width: '191px', height: '14px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.35)', border: '1px solid rgba(255,255,255,0.55)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
                 <button
+                  className="cursor-pointer"
+                  style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto', background: 'none', border: 'none', padding: 0 }}
                   onClick={(e) => { e.stopPropagation(); hwFloatingHandlers.onMinToggle(); }}
                   onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); hwFloatingHandlers.onMinToggle(); }}
-                  className="w-6 h-6 rounded flex items-center justify-center hover:bg-white/20 active:bg-white/30 transition-colors"
                   data-testid="hw-floating-minimize"
                   title={hwFloating.minimized ? 'Expand' : 'Minimize'}
                 >
-                  {hwFloating.minimized ? <Maximize2 className="h-3 w-3 text-white/70" /> : <Minus className="h-3 w-3 text-white/70" />}
+                  {hwFloating.minimized ? <Maximize2 style={{ height: '8px', width: '8px', color: 'white' }} /> : <Minus style={{ height: '8px', width: '8px', color: 'white' }} />}
                 </button>
+                <span style={{ width: '1px', height: '6px', background: 'rgba(255,255,255,0.4)', flexShrink: 0 }} />
+                <div
+                  className="cursor-grab active:cursor-grabbing select-none"
+                  style={{ flex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }}
+                  onMouseDown={hwFloatingHandlers.onDragStart}
+                  onTouchStart={hwFloatingHandlers.onDragStart}
+                >
+                  <span style={{ fontSize: '13px', lineHeight: '1', color: 'white', letterSpacing: '-1px', writingMode: 'vertical-lr' }}>⋮⋮</span>
+                </div>
+                <span style={{ width: '1px', height: '6px', background: 'rgba(255,255,255,0.4)', flexShrink: 0 }} />
                 <button
+                  className="cursor-pointer"
+                  style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto', background: 'none', border: 'none', padding: 0 }}
                   onClick={(e) => { e.stopPropagation(); setHwFloating(prev => ({ ...prev, showControls: !prev.showControls })); }}
                   onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setHwFloating(prev => ({ ...prev, showControls: !prev.showControls })); }}
-                  className="w-6 h-6 rounded flex items-center justify-center hover:bg-white/20 active:bg-white/30 transition-colors"
                   data-testid="hw-floating-controls-toggle"
                   title="Toggle player controls"
                 >
-                  <Play className="h-3 w-3 text-white/70" />
+                  <Play style={{ height: '8px', width: '8px', color: 'white' }} />
                 </button>
+                <span style={{ width: '1px', height: '6px', background: 'rgba(255,255,255,0.4)', flexShrink: 0 }} />
                 <button
+                  className="cursor-pointer"
+                  style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto', background: 'none', border: 'none', padding: 0 }}
                   onClick={(e) => { e.stopPropagation(); hwFloatingHandlers.onDock(); }}
                   onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); hwFloatingHandlers.onDock(); }}
-                  className="w-6 h-6 rounded flex items-center justify-center hover:bg-white/20 active:bg-white/30 transition-colors"
                   data-testid="hw-floating-dock"
                   title="Snap back to sidebar"
                 >
-                  <ArrowDownToLine className="h-3 w-3 text-white/70" />
+                  <ArrowDownToLine style={{ height: '8px', width: '8px', color: 'white' }} />
                 </button>
               </div>
             </div>
