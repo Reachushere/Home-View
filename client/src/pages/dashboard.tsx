@@ -21821,7 +21821,7 @@ export default function Dashboard() {
                               </div>
                               {cfp && cfp.moduleP.hasFiles && (
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '2px', paddingTop: '2px' }}>
-                                  <span className="text-[11px] text-white font-medium" style={{ width: '12px', flexShrink: 0, marginLeft: '-2px', lineHeight: 1 }}>M</span>
+                                  <span className="text-[11px] text-white font-medium" style={{ marginLeft: '0px', lineHeight: 1 }}>M</span>
                                   <div style={{ width: '17px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(255,255,255,0.15)', overflow: 'hidden' }}>
                                     {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
                                   </div>
