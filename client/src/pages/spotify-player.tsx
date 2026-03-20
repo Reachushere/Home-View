@@ -157,60 +157,98 @@ function CherryBlossoms() {
     const petalColors = [
       [255, 183, 197], [255, 192, 210], [255, 175, 195],
       [255, 200, 215], [248, 170, 190], [255, 210, 220],
+      [255, 218, 228], [252, 165, 185], [255, 205, 218],
     ];
 
     interface Petal {
       x: number; y: number; r: number; vx: number; vy: number; vr: number;
       alpha: number; size: number; color: number[]; delay: number;
       wobbleSpeed: number; wobbleAmp: number; flutter: number;
+      curl: number; tilt3d: number; tiltSpeed: number;
+      shape: number;
     }
 
     const petals: Petal[] = [];
-    for (let i = 0; i < 65; i++) {
+    for (let i = 0; i < 70; i++) {
       petals.push({
         x: Math.random() * W, y: Math.random() * H * 2 - H,
         r: Math.random() * Math.PI * 2,
-        vx: (Math.random() - 0.3) * 0.6, vy: 0.2 + Math.random() * 0.7,
-        vr: (Math.random() - 0.5) * 0.025,
-        alpha: 0.4 + Math.random() * 0.5,
-        size: 5 + Math.random() * 9,
+        vx: (Math.random() - 0.3) * 0.5, vy: 0.15 + Math.random() * 0.55,
+        vr: (Math.random() - 0.5) * 0.018,
+        alpha: 0.45 + Math.random() * 0.45,
+        size: 4 + Math.random() * 10,
         color: petalColors[Math.floor(Math.random() * petalColors.length)],
         delay: Math.random() * 6000,
-        wobbleSpeed: 1500 + Math.random() * 2000,
-        wobbleAmp: 0.3 + Math.random() * 0.5,
-        flutter: Math.random() * 0.02,
+        wobbleSpeed: 2000 + Math.random() * 2500,
+        wobbleAmp: 0.4 + Math.random() * 0.8,
+        flutter: Math.random() * 0.015,
+        curl: 0.2 + Math.random() * 0.6,
+        tilt3d: Math.random() * Math.PI * 2,
+        tiltSpeed: 800 + Math.random() * 1200,
+        shape: Math.floor(Math.random() * 3),
       });
     }
+
+    const drawSinglePetal = (ctx: CanvasRenderingContext2D, s: number, cr: number, cg: number, cb: number, curl: number) => {
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.bezierCurveTo(s * 0.4, -s * 0.6, s * 0.9, -s * 0.5, s * 0.5, -s * 0.05);
+      ctx.bezierCurveTo(s * 0.9, s * (0.4 + curl * 0.2), s * 0.4, s * 0.55, 0, 0);
+      const grad = ctx.createLinearGradient(0, -s * 0.5, s * 0.3, s * 0.3);
+      grad.addColorStop(0, `rgba(${cr},${cg},${cb},0.92)`);
+      grad.addColorStop(0.5, `rgba(${Math.min(cr+15,255)},${Math.min(cg+10,255)},${Math.min(cb+10,255)},0.85)`);
+      grad.addColorStop(1, `rgba(${cr-15},${cg-10},${cb-8},0.75)`);
+      ctx.fillStyle = grad;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.quadraticCurveTo(s * 0.35, -s * 0.15, s * 0.5, -s * 0.05);
+      ctx.strokeStyle = `rgba(${cr-30},${cg-25},${cb-20},0.25)`;
+      ctx.lineWidth = 0.4;
+      ctx.stroke();
+    };
 
     const drawPetal = (ctx: CanvasRenderingContext2D, p: Petal, t: number) => {
       ctx.save();
       ctx.translate(p.x, p.y);
       ctx.rotate(p.r);
-      const breathe = 1 + Math.sin(t / 3000 + p.delay) * 0.08;
-      ctx.scale(breathe, breathe);
-      ctx.globalAlpha = p.alpha;
+      const tilt = Math.sin((t + p.delay) / p.tiltSpeed) * 0.5;
+      ctx.scale(1, 0.4 + Math.abs(Math.cos(tilt)) * 0.6);
+      ctx.globalAlpha = p.alpha * (0.7 + Math.abs(Math.cos(tilt)) * 0.3);
 
       const [cr, cg, cb] = p.color;
-      for (let i = 0; i < 5; i++) {
-        const angle = (i / 5) * Math.PI * 2 - Math.PI / 2;
-        const px = Math.cos(angle) * p.size * 0.45;
-        const py = Math.sin(angle) * p.size * 0.45;
+      const s = p.size;
+
+      if (p.shape === 0) {
+        drawSinglePetal(ctx, s, cr, cg, cb, p.curl);
+      } else if (p.shape === 1) {
+        ctx.save();
+        drawSinglePetal(ctx, s, cr, cg, cb, p.curl);
+        ctx.rotate(Math.PI * 0.4);
+        drawSinglePetal(ctx, s * 0.85, cr, cg, cb, p.curl);
+        ctx.restore();
+      } else {
+        for (let i = 0; i < 5; i++) {
+          ctx.save();
+          ctx.rotate((i / 5) * Math.PI * 2);
+          drawSinglePetal(ctx, s * 0.7, cr, cg, cb, p.curl);
+          ctx.restore();
+        }
         ctx.beginPath();
-        ctx.ellipse(px, py, p.size * 0.55, p.size * 0.3, angle + Math.PI / 2, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${cr},${cg},${cb},0.85)`;
+        ctx.arc(0, 0, s * 0.1, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,225,180,0.9)`;
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(0, 0, s * 0.06, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(240,180,120,0.7)`;
         ctx.fill();
       }
 
+      ctx.globalAlpha = p.alpha * 0.15;
       ctx.beginPath();
-      ctx.arc(0, 0, p.size * 0.15, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255,220,180,0.9)`;
-      ctx.fill();
-
-      ctx.globalAlpha = p.alpha * 0.3;
-      ctx.beginPath();
-      ctx.arc(0, 0, p.size * 1.2, 0, Math.PI * 2);
-      const glow = ctx.createRadialGradient(0, 0, 0, 0, 0, p.size * 1.2);
-      glow.addColorStop(0, `rgba(${cr},${cg},${cb},0.25)`);
+      ctx.arc(0, 0, s * 1.5, 0, Math.PI * 2);
+      const glow = ctx.createRadialGradient(0, 0, 0, 0, 0, s * 1.5);
+      glow.addColorStop(0, `rgba(${cr},${cg},${cb},0.2)`);
       glow.addColorStop(1, `rgba(${cr},${cg},${cb},0)`);
       ctx.fillStyle = glow;
       ctx.fill();
@@ -222,12 +260,13 @@ function CherryBlossoms() {
       const t = Date.now();
       ctx.clearRect(0, 0, W, H);
       for (const p of petals) {
-        p.x += p.vx + Math.sin((t + p.delay) / p.wobbleSpeed) * p.wobbleAmp;
-        p.y += p.vy;
+        const windGust = Math.sin(t / 8000) * 0.3 + Math.sin(t / 3000 + p.delay) * 0.15;
+        p.x += p.vx + Math.sin((t + p.delay) / p.wobbleSpeed) * p.wobbleAmp + windGust;
+        p.y += p.vy + Math.sin((t + p.delay) / 2500) * 0.1;
         p.r += p.vr + Math.sin((t + p.delay) / 1800) * p.flutter;
         if (p.y > H + 30) { p.y = -30; p.x = Math.random() * W; }
-        if (p.x > W + 30) p.x = -30;
-        if (p.x < -30) p.x = W + 30;
+        if (p.x > W + 40) p.x = -40;
+        if (p.x < -40) p.x = W + 40;
         drawPetal(ctx, p, t);
       }
       animRef.current = requestAnimationFrame(animate);
@@ -237,6 +276,26 @@ function CherryBlossoms() {
   }, []);
 
   return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 40 }} />;
+}
+
+function JapaneseWaves({ accent }: { accent: string }) {
+  return (
+    <div className="absolute bottom-0 left-0 right-0 pointer-events-none overflow-hidden" style={{ height: 80, zIndex: 1, opacity: 0.12 }}>
+      <svg viewBox="0 0 1920 80" preserveAspectRatio="none" className="w-full h-full">
+        <defs>
+          <pattern id="seigaiha" x="0" y="0" width="60" height="30" patternUnits="userSpaceOnUse">
+            <path d="M30 30 Q30 0 0 0" fill="none" stroke={accent} strokeWidth="0.8" opacity="0.6" />
+            <path d="M30 30 Q30 0 60 0" fill="none" stroke={accent} strokeWidth="0.8" opacity="0.6" />
+            <path d="M30 30 Q30 5 5 5" fill="none" stroke={accent} strokeWidth="0.5" opacity="0.4" />
+            <path d="M30 30 Q30 5 55 5" fill="none" stroke={accent} strokeWidth="0.5" opacity="0.4" />
+            <path d="M30 30 Q30 10 10 10" fill="none" stroke={accent} strokeWidth="0.4" opacity="0.3" />
+            <path d="M30 30 Q30 10 50 10" fill="none" stroke={accent} strokeWidth="0.4" opacity="0.3" />
+          </pattern>
+        </defs>
+        <rect width="1920" height="80" fill="url(#seigaiha)" />
+      </svg>
+    </div>
+  );
 }
 
 function HoloCircuitLines({ accent, sakura = false }: { accent: string; sakura?: boolean }) {
@@ -898,6 +957,7 @@ export default function SpotifyPlayerPage() {
 
       <HoloCircuitLines accent={profile.accent} sakura={isSakura} />
       {isSakura && <CherryBlossoms />}
+      {isSakura && <JapaneseWaves accent={profile.accent} />}
       <HoloScanLine />
 
       {notification && (
