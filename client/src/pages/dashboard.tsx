@@ -21827,9 +21827,9 @@ export default function Dashboard() {
                   </div>
                 )}
 
-                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-23px', marginBottom: '2px' }}>
-                  <div style={{ width: '45px', height: '20px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <span style={{ fontSize: '6px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-41px', marginBottom: '2px' }}>
+                  <div style={{ width: '54px', height: '29px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ fontSize: '8px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
                   </div>
                 </div>
                 {/* This Week Section */}
