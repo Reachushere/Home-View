@@ -21697,19 +21697,7 @@ export default function Dashboard() {
 
             return rows;
           })()}
-          <div className="flex-1 px-2 flex flex-col" style={{ marginTop: (() => {
-            const upcomingTop = calendarBorderTop || (calendarTop + 15);
-            if (courseRowRects.length > 0) {
-              const firstOffset = courseRowRects[0] ? (courseRowRects[0].top - upcomingTop - 45) : 0;
-              const lastRect = courseRowRects[courseRowRects.length - 1];
-              if (lastRect) {
-                const lastBottom = lastRect.top + lastRect.height - upcomingTop - firstOffset;
-                const otherRowH = gridSizes.courseRowHeight || 48;
-                return `${lastBottom + otherRowH - 34 + 12}px`;
-              }
-            }
-            return '26px';
-          })(), paddingBottom: '0px', overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', zIndex: 2 }} ref={homeworkScrollRef} onScroll={() => { setHwIsScrolling(true); if (hwScrollTimerRef.current) clearTimeout(hwScrollTimerRef.current); hwScrollTimerRef.current = setTimeout(() => setHwIsScrolling(false), 300); }}>
+          <div className="flex-1 px-2 flex flex-col" style={{ marginTop: '10px', height: 'calc(100% - 36px)', paddingBottom: '0px', overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', zIndex: 2 }} ref={homeworkScrollRef} onScroll={() => { setHwIsScrolling(true); if (hwScrollTimerRef.current) clearTimeout(hwScrollTimerRef.current); hwScrollTimerRef.current = setTimeout(() => setHwIsScrolling(false), 300); }}>
             {isLoading ? (
               <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
             ) : (
