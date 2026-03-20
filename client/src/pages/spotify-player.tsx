@@ -847,14 +847,17 @@ export default function SpotifyPlayerPage() {
             </div>
 
             <div className="mt-auto flex flex-col gap-0.5 px-1 pb-1">
-              {!isEmbedded && menuOpen && (
-                <button onClick={() => { const p = new URLSearchParams(window.location.search); window.location.href = "/" + (p.get("auth") ? `?auth=${p.get("auth")}` : ""); }}
-                  className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg transition-colors mb-1" style={{ color: 'rgba(80,180,255,0.45)' }}
-                  data-testid="back-to-dashboard">
-                  <ChevronLeft className="h-3.5 w-3.5 flex-shrink-0" />
-                  <span className="text-[12px] whitespace-nowrap">Dashboard</span>
-                </button>
-              )}
+              <button onClick={() => { const p = new URLSearchParams(window.location.search); const auth = p.get("auth"); window.location.href = "/" + (auth ? `?auth=${auth}` : ""); }}
+                className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg transition-all hover:scale-105 mb-1"
+                style={{
+                  color: 'rgba(120,200,255,0.7)',
+                  background: 'rgba(40,120,255,0.08)',
+                  border: '1px solid rgba(60,150,255,0.15)',
+                }}
+                data-testid="back-to-dashboard">
+                <Home className="h-4 w-4 flex-shrink-0" />
+                {menuOpen && <span className="text-[12px] whitespace-nowrap font-medium">{isSakura ? "ホーム" : "Home"}</span>}
+              </button>
               <div className="mx-2 mb-1 h-[1px]" style={{ background: 'rgba(50,140,255,0.12)' }} />
               {(Object.keys(PROFILES) as ProfileKey[]).map(k => (
                 <button key={k} onClick={() => switchProfile(k)}
