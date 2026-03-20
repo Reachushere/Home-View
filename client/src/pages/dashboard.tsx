@@ -17810,7 +17810,7 @@ export default function Dashboard() {
               );
             })}
           </div>
-          <div style={{ position: 'relative', height: '0px', zIndex: 50, overflow: 'visible' }}>
+          <div className="flex-1 min-h-0 relative" style={{ overflow: 'visible' }}>
             <div
               style={{ position: 'absolute', left: '4px', top: '-18px', width: '191px', height: '18px', touchAction: 'none', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto', overflow: 'visible' }}
               data-testid="calendar-top-resize-handle"
@@ -17826,8 +17826,6 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-          </div>
-          <div className="flex-1 min-h-0 relative" style={{ overflow: 'visible' }}>
           <div ref={calendarBorderRef} className="shadow-lg border border-white flex flex-col relative" style={{ background: '#faf8f5', borderRadius: '8px', overflow: 'hidden', height: 'calc(100% - 2px)', width: 'calc(100%)', marginLeft: '1px', marginTop: '1px' }}>
             {/* Progress/Saturday divider line - red separator on left border of Saturday column */}
             <div className="absolute top-0 bottom-0 w-[3px] z-50 pointer-events-none overflow-hidden red-separator-shimmer" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`, backgroundColor: '#ef4444' }}>
