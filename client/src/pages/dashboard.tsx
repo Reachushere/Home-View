@@ -21093,21 +21093,6 @@ export default function Dashboard() {
           }}
           data-testid="section-coming-up"
         >
-          {/* DEBUG: Large tab preview in center of screen */}
-          <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999, background: 'rgba(0,0,0,0.6)', padding: '40px', borderRadius: '16px', display: 'flex', gap: '30px' }}>
-            <div>
-              <div style={{ color: 'white', fontSize: '12px', marginBottom: '8px', textAlign: 'center' }}>Top tab</div>
-              <svg width="160" height="420" viewBox="0 0 16 42">
-                <path d="M0.00 0.00 L0.00 42.00 L3.55 41.98 C3.56,41.98 3.86,40.68 4.88,39.40 C7.21,37.06 12.79,36.74 15.29,33.10 C15.60,32.64 15.83,32.03 16.00,31.29 L16.00 22.62 L16.00 19.38 L16.00 10.71 C15.83,9.98 15.60,9.36 15.29,8.90 C12.79,5.27 7.21,4.94 4.88,2.60 C4.49,2.59 3.55,0.02 3.55,0.02 L0.00 0.00 Z" fill="rgba(255,255,255,0.35)" stroke="rgba(255,255,255,0.35)" strokeWidth="0.5" />
-              </svg>
-            </div>
-            <div>
-              <div style={{ color: 'white', fontSize: '12px', marginBottom: '8px', textAlign: 'center' }}>Other tabs</div>
-              <svg width="160" height="420" viewBox="0 0 16 42">
-                <path d="M0.00 42.00 L0.00 4.53 L3.55 4.50 C3.56,4.50 3.86,3.06 4.88,1.65 C5.48,0.99 6.28,0.47 7.20,0.00 C9.86,1.37 13.43,2.33 15.29,5.33 C15.60,5.84 15.83,6.52 16.00,7.33 L16.00 16.95 L16.00 20.53 L16.00 30.13 C15.83,30.94 15.60,31.63 15.29,32.14 C12.79,36.17 7.21,36.53 4.88,39.12 C4.49,39.13 3.55,41.98 3.55,41.98 L0.00 42.00 Z" fill="rgba(255,255,255,0.35)" stroke="rgba(255,255,255,0.35)" strokeWidth="0.5" />
-              </svg>
-            </div>
-          </div>
           {/* Homework Width Resize Handle — outside left side, near bottom */}
           <div
             className="absolute z-[60]"
@@ -21145,7 +21130,7 @@ export default function Dashboard() {
                     <div
                       key={tab.semLabel}
                       className={`cursor-pointer${isActive ? ' semester-tab-bounce' : ''}`}
-                      style={{ position: 'relative', width: '16px', height: '36px', flexShrink: 0, marginBottom: '-6px', zIndex: semTabs.length - semTabs.indexOf(tab), clipPath: semTabs.indexOf(tab) > 0 ? 'inset(6px 0 0 0)' : undefined }}
+                      style={{ position: 'relative', width: '16px', height: '36px', flexShrink: 0, marginBottom: '-6px', zIndex: semTabs.length - semTabs.indexOf(tab) }}
                       onClick={() => {
                         if (!homeworkScrollRef.current) return;
                         const idx = hwWeeklyTimeline.findIndex(w => w.semLabel === tab.semLabel);
