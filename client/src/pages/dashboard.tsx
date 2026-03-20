@@ -22022,10 +22022,12 @@ export default function Dashboard() {
                 {/* Next Week Section */}
                 <div data-homework-section="nextweek" data-semester-label={hwWeeklyTimeline[1]?.semLabel || ''} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '20px' }}>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[1]?.label || 'Next week'}</span>
+                    <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px' }}>
+                      <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[1]?.label || 'Next week'}</span>
+                      <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px' }}>({dueNextWeekTasks.length})</span>
+                    </div>
                     {hwWeeklyTimeline[1]?.sublabel && <span className="text-[8px]" style={{ color: '#ffffff', marginTop: '-1px', lineHeight: 1 }}>{hwWeeklyTimeline[1].sublabel}</span>}
                   </div>
-                  <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)' }}>{dueNextWeekTasks.length}</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px', marginTop: '-1px' }}>
                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 200, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                       <div style={{ background: 'rgb(0, 200, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(nextSaturday, 'MMM').toUpperCase()}</div>
