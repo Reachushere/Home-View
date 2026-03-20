@@ -13814,28 +13814,18 @@ Return ONLY the JSON object, no markdown formatting.`;
       const isEcho = entityId.includes("echo") || entityId.includes("_am") || deviceType === "echo" || deviceType === "echo_show";
 
       if (isEcho) {
-        const searchTerm = artistName || (spotifyUri ? spotifyUri.split(":").pop() : "music");
+        const searchTerm = artistName || (spotifyUri ? spotifyUri.split(":").pop()?.replace(/_/g, ' ') : "music");
         const message = `Play ${searchTerm} on Spotify`;
         console.log(`[Spotify] Echo device detected - using notify/alexa_media for ${entityId}: "${message}"`);
-        await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+        const notifyResp = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({
             message: message,
-            data: { type: "announce" },
             target: entityId,
           }),
         });
-        await new Promise(r => setTimeout(r, 500));
-        await fetch(`${haUrl}/api/services/media_player/play_media`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            entity_id: entityId,
-            media_content_id: spotifyUri || artistName || "music",
-            media_content_type: "SPOTIFY",
-          }),
-        });
+        console.log(`[Spotify] notify/alexa_media response: ${notifyResp.status}`);
       } else if (spotifyUri) {
         await fetch(`${haUrl}/api/services/media_player/play_media`, {
           method: 'POST',
