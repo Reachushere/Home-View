@@ -13468,6 +13468,33 @@ Return ONLY the JSON object, no markdown formatting.`;
     }
   });
 
+  app.get("/api/spotify/status", async (_req, res) => {
+    res.json({ connected: spotifyApi.isConnected() });
+  });
+
+  app.get("/api/spotify/login", async (req, res) => {
+    try {
+      const authUrl = spotifyApi.getAuthUrl();
+      res.redirect(authUrl);
+    } catch (error: any) {
+      res.status(500).send("Failed to start Spotify login: " + error.message);
+    }
+  });
+
+  app.get("/api/spotify/callback", async (req, res) => {
+    try {
+      const code = req.query.code as string;
+      if (!code) {
+        return res.status(400).send("No authorization code received");
+      }
+      await spotifyApi.handleCallback(code);
+      res.redirect("/?auth=5747&spotify=connected");
+    } catch (error: any) {
+      console.error("Spotify callback error:", error?.message || error);
+      res.status(500).send("Spotify connection failed: " + error.message);
+    }
+  });
+
   app.get("/api/spotify/now-playing", async (_req, res) => {
     try {
       const playback = await spotifyApi.getNowPlaying();
