@@ -1246,7 +1246,7 @@ export default function SpotifyPlayerPage() {
             {viewMode === "floor" && (
               <>
                 <img src={floorplanImg} alt="Apartment floor plan" className="absolute inset-0 w-full h-full object-contain"
-                  style={{ filter: "brightness(0.65) contrast(1.05) saturate(0.6) hue-rotate(190deg)", opacity: 0.8 }} />
+                  style={{ filter: "brightness(0.9) contrast(1.1) saturate(0.7) hue-rotate(190deg)", opacity: 0.9 }} />
                 <div className="absolute inset-0" style={{
                   background: `radial-gradient(ellipse at center, transparent 30%, rgba(3,8,20,0.6) 100%)`,
                 }} />
