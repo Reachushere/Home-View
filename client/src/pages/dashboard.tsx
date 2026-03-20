@@ -21161,7 +21161,7 @@ export default function Dashboard() {
                           : "M0.00 54.00 L0.00 4.53 L3.55 4.50 C3.56,4.50 3.86,3.06 4.88,1.65 C5.48,0.99 6.28,0.47 7.20,0.00 C9.86,1.37 13.43,2.33 15.29,5.33 C15.60,5.84 15.83,6.52 16.00,7.33 L16.00 16.95 L16.00 20.53 L16.00 42.13 C15.83,42.94 15.60,43.63 15.29,44.14 C12.79,48.17 7.21,48.53 4.88,51.12 C4.49,51.13 3.55,53.98 3.55,53.98 L0.00 54.00 Z"
                         } fill={isActive ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)'} stroke="rgba(255,255,255,0.55)" strokeWidth="1" />
                         {semTabs.indexOf(tab) === semTabs.length - 1 ? (
-                          <text x="8" y="30" textAnchor="middle" fill="white" fontSize="9" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 8, 30)">2029</text>
+                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="11" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">2029</text>
                         ) : (
                           <>
                             <text x="9" y={semTabs.indexOf(tab) === 0 ? 24 : 22} textAnchor="middle" fill="white" fontSize="9" fontWeight="600" fontFamily="system-ui">{tab.letter}</text>
