@@ -707,6 +707,7 @@ export default function Dashboard() {
   const [hwIsScrolling, setHwIsScrolling] = useState(false);
   const hwScrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [hwVisibleSemLabel, setHwVisibleSemLabel] = useState<string | null>(null);
+  const [hwScrolledDown, setHwScrolledDown] = useState(false);
   const [hwFloating, setHwFloatingRaw] = useState(() => {
     const saved = localStorage.getItem('hwFloating');
     return saved ? { showControls: false, ...JSON.parse(saved) } : { detached: false, minimized: false, showControls: false, x: 100, y: 100 };
@@ -21223,13 +21224,13 @@ export default function Dashboard() {
             right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1}px`,
             width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1 - 5 - 2 - 1}px`,
             top: `${(calendarBorderTop || (calendarTop + 15)) - 42}px`,
-            bottom: `${calendarBottom}px`,
+            height: `${window.innerHeight - (calendarBorderTop || (calendarTop + 15)) - calendarBottom}px`,
             background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
             boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08)',
             border: '1px solid white',
-            opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : 1,
+            opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : (hwIsScrolling || hwScrolledDown) ? 0.25 : 1,
             pointerEvents: (isPillMenuOpen && !sidePillIdle) ? 'none' : 'auto',
-            transition: 'opacity 0.2s ease'
+            transition: 'opacity 0.3s ease'
           }}
           data-testid="section-coming-up"
         >
@@ -21839,7 +21840,7 @@ export default function Dashboard() {
               }
             }
             return '12px';
-          })(), flex: 1, paddingBottom: '0px', overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', zIndex: 2 }} ref={homeworkScrollRef} onScroll={() => { setHwIsScrolling(true); if (hwScrollTimerRef.current) clearTimeout(hwScrollTimerRef.current); hwScrollTimerRef.current = setTimeout(() => setHwIsScrolling(false), 300); const sc = homeworkScrollRef.current; if (sc) { const sections = sc.querySelectorAll('[data-semester-label]'); let bestLabel: string | null = null; let bestDist = Infinity; const containerTop = sc.getBoundingClientRect().top; sections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestDist) { bestDist = dist; bestLabel = el.getAttribute('data-semester-label') || null; } }); if (bestLabel) setHwVisibleSemLabel(bestLabel); } }}>
+          })(), flex: 1, paddingBottom: '0px', overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', zIndex: 2 }} ref={homeworkScrollRef} onScroll={() => { setHwIsScrolling(true); if (hwScrollTimerRef.current) clearTimeout(hwScrollTimerRef.current); hwScrollTimerRef.current = setTimeout(() => setHwIsScrolling(false), 300); const sc = homeworkScrollRef.current; if (sc) { setHwScrolledDown(sc.scrollTop > 5); const sections = sc.querySelectorAll('[data-semester-label]'); let bestLabel: string | null = null; let bestDist = Infinity; const containerTop = sc.getBoundingClientRect().top; sections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestDist) { bestDist = dist; bestLabel = el.getAttribute('data-semester-label') || null; } }); if (bestLabel) setHwVisibleSemLabel(bestLabel); } }}>
             {isLoading ? (
               <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
             ) : (
