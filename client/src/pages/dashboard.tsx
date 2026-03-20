@@ -17812,7 +17812,7 @@ export default function Dashboard() {
           </div>
           <div style={{ position: 'relative', height: '0px', zIndex: 50, overflow: 'visible' }}>
             <div
-              style={{ position: 'absolute', left: '4px', top: '-17px', width: '191px', height: '18px', touchAction: 'none', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
+              style={{ position: 'absolute', left: '4px', top: '-15px', width: '191px', height: '16px', touchAction: 'none', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto', overflow: 'visible' }}
               data-testid="calendar-top-resize-handle"
             >
               <div style={{ width: '191px', height: '16px', position: 'relative', display: 'flex', alignItems: 'center' }}>
