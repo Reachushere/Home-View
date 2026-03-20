@@ -34,7 +34,7 @@ export type RepeatType = typeof REPEAT_TYPES[number];
 export type RepeatIntervalUnit = typeof REPEAT_INTERVAL_UNITS[number];
 
 export const COURSES = [
-  { code: "CPPA122", name: "Local Politics", color: "blue" },
+  { code: "CPPA122", name: "Local Politics", color: "green" },
   { code: "CFNF400", name: "Human Sexuality", color: "pink" },
   { code: "CASL101", name: "American Sign Language", color: "yellow" },
 ] as const;

@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import {
   Play, Pause, SkipForward, SkipBack, Music2, Loader2,
-  ChevronLeft, Shuffle, Repeat, Volume2, VolumeX, Speaker, Disc3,
-  Search, ListMusic, Disc, Users, Radio, Menu, X, Home,
+  ChevronLeft, Shuffle, Repeat, Volume2, VolumeX, Speaker,
+  Search, Radio, Menu, X, Home, Zap, Wifi,
 } from "lucide-react";
 import floorplanImg from "@assets/Floorplan11_1774005505273.png";
 import massBg from "@assets/mass-background2_1774005959332.png";
@@ -156,7 +156,88 @@ function CherryBlossoms() {
   return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 1 }} />;
 }
 
-function SpinningVinyl({ albumArt, playing, accent, size = 200 }: { albumArt?: string; playing: boolean; accent: string; size?: number }) {
+function HoloCircuitLines({ accent }: { accent: string }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animRef = useRef<number>();
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const W = canvas.offsetWidth, H = canvas.offsetHeight;
+    canvas.width = W * 2; canvas.height = H * 2;
+    ctx.scale(2, 2);
+
+    const lines: { x1: number; y1: number; x2: number; y2: number; speed: number; offset: number }[] = [];
+    for (let i = 0; i < 12; i++) {
+      const horizontal = Math.random() > 0.5;
+      if (horizontal) {
+        const y = Math.random() * H;
+        lines.push({ x1: 0, y1: y, x2: W, y2: y, speed: 0.5 + Math.random() * 1.5, offset: Math.random() * Math.PI * 2 });
+      } else {
+        const x = Math.random() * W;
+        lines.push({ x1: x, y1: 0, x2: x, y2: H, speed: 0.5 + Math.random() * 1.5, offset: Math.random() * Math.PI * 2 });
+      }
+    }
+
+    const nodes: { x: number; y: number; pulseOffset: number }[] = [];
+    for (let i = 0; i < 20; i++) {
+      nodes.push({ x: Math.random() * W, y: Math.random() * H, pulseOffset: Math.random() * Math.PI * 2 });
+    }
+
+    const animate = () => {
+      ctx.clearRect(0, 0, W, H);
+      const t = Date.now() / 1000;
+
+      for (const line of lines) {
+        const alpha = 0.03 + Math.sin(t * line.speed + line.offset) * 0.02;
+        ctx.strokeStyle = `${accent}${Math.round(alpha * 255).toString(16).padStart(2, '0')}`;
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.moveTo(line.x1, line.y1);
+        ctx.lineTo(line.x2, line.y2);
+        ctx.stroke();
+
+        const travelPos = ((t * line.speed * 30 + line.offset * 100) % (line.x2 === line.x1 ? H : W));
+        const px = line.x2 === line.x1 ? line.x1 : travelPos;
+        const py = line.y2 === line.y1 ? line.y1 : travelPos;
+        ctx.beginPath();
+        ctx.arc(px, py, 2, 0, Math.PI * 2);
+        ctx.fillStyle = `${accent}40`;
+        ctx.fill();
+      }
+
+      for (const node of nodes) {
+        const pulse = Math.sin(t * 2 + node.pulseOffset) * 0.5 + 0.5;
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, 1.5 + pulse * 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = `${accent}${Math.round((0.05 + pulse * 0.1) * 255).toString(16).padStart(2, '0')}`;
+        ctx.fill();
+      }
+
+      animRef.current = requestAnimationFrame(animate);
+    };
+    animate();
+    return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
+  }, [accent]);
+
+  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0, opacity: 0.6 }} />;
+}
+
+function HoloScanLine() {
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 2 }}>
+      <div style={{
+        position: 'absolute', left: 0, right: 0, height: '2px',
+        background: 'linear-gradient(90deg, transparent, rgba(0,210,255,0.15), transparent)',
+        animation: 'holoScan 4s linear infinite',
+      }} />
+    </div>
+  );
+}
+
+function HoloVinyl({ albumArt, playing, accent, size = 220 }: { albumArt?: string; playing: boolean; accent: string; size?: number }) {
   const rotRef = useRef(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animRef = useRef<number>();
@@ -177,44 +258,126 @@ function SpinningVinyl({ albumArt, playing, accent, size = 200 }: { albumArt?: s
       ctx.clearRect(0, 0, size, size);
       if (playing) rotRef.current += 0.012;
       const t = Date.now() / 1000;
+
       ctx.save(); ctx.translate(cx, cy); ctx.rotate(rotRef.current);
       const R = size * 0.42;
+
+      const outerGlow = ctx.createRadialGradient(0, 0, R * 0.9, 0, 0, R * 1.1);
+      outerGlow.addColorStop(0, 'transparent');
+      outerGlow.addColorStop(0.5, playing ? `${accent}15` : 'transparent');
+      outerGlow.addColorStop(1, 'transparent');
+      ctx.beginPath(); ctx.arc(0, 0, R * 1.1, 0, Math.PI * 2);
+      ctx.fillStyle = outerGlow; ctx.fill();
+
       const vg = ctx.createRadialGradient(0, 0, R * 0.35, 0, 0, R);
-      vg.addColorStop(0, "#1a1a20"); vg.addColorStop(0.4, "#111116"); vg.addColorStop(1, "#0a0a0f");
+      vg.addColorStop(0, "#0a0f1a"); vg.addColorStop(0.3, "#0d1420"); vg.addColorStop(0.6, "#080e18"); vg.addColorStop(1, "#050a12");
       ctx.beginPath(); ctx.arc(0, 0, R, 0, Math.PI * 2); ctx.fillStyle = vg; ctx.fill();
-      for (let g = 0; g < 20; g++) {
-        const r = R * 0.35 + g * (R * 0.033);
+
+      ctx.beginPath(); ctx.arc(0, 0, R, 0, Math.PI * 2);
+      ctx.strokeStyle = playing ? `${accent}40` : 'rgba(0,180,255,0.15)';
+      ctx.lineWidth = 1.5; ctx.stroke();
+
+      for (let g = 0; g < 24; g++) {
+        const r = R * 0.35 + g * (R * 0.028);
         if (r > R) break;
         ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2);
-        const hue = playing ? (280 + g * 12 + t * 40) % 360 : 0;
-        ctx.strokeStyle = playing ? `hsla(${hue},100%,60%,${0.1 + Math.sin(t * 3 + g * 0.5) * 0.06})` : `rgba(255,255,255,0.03)`;
-        ctx.lineWidth = 0.6; ctx.stroke();
+        const baseHue = playing ? 200 : 210;
+        const hue = (baseHue + g * 8 + (playing ? t * 30 : 0)) % 360;
+        const alpha = playing
+          ? 0.08 + Math.sin(t * 3 + g * 0.5) * 0.05
+          : 0.03 + Math.sin(t * 0.5 + g * 0.3) * 0.015;
+        ctx.strokeStyle = `hsla(${hue},80%,60%,${alpha})`;
+        ctx.lineWidth = 0.5; ctx.stroke();
       }
+
+      for (let i = 0; i < 6; i++) {
+        const angle = (Math.PI * 2 / 6) * i + t * 0.3;
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(angle) * R * 0.36, Math.sin(angle) * R * 0.36);
+        ctx.lineTo(Math.cos(angle) * R * 0.95, Math.sin(angle) * R * 0.95);
+        ctx.strokeStyle = playing ? `${accent}10` : 'rgba(0,180,255,0.04)';
+        ctx.lineWidth = 0.3; ctx.stroke();
+      }
+
       const lr = R * 0.33;
       if (imgEl && imgEl.complete && imgEl.naturalWidth > 0) {
         ctx.save(); ctx.beginPath(); ctx.arc(0, 0, lr, 0, Math.PI * 2); ctx.clip();
-        ctx.drawImage(imgEl, -lr, -lr, lr * 2, lr * 2); ctx.restore();
-      } else {
+        ctx.drawImage(imgEl, -lr, -lr, lr * 2, lr * 2);
+        ctx.restore();
         ctx.beginPath(); ctx.arc(0, 0, lr, 0, Math.PI * 2);
-        ctx.fillStyle = playing ? accent : "#222"; ctx.fill();
+        ctx.strokeStyle = playing ? `${accent}50` : 'rgba(0,180,255,0.2)';
+        ctx.lineWidth = 1; ctx.stroke();
+      } else {
+        const labelGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, lr);
+        labelGrad.addColorStop(0, playing ? accent : '#0a2040');
+        labelGrad.addColorStop(1, playing ? `${accent}80` : '#061530');
+        ctx.beginPath(); ctx.arc(0, 0, lr, 0, Math.PI * 2);
+        ctx.fillStyle = labelGrad; ctx.fill();
+        ctx.strokeStyle = 'rgba(0,180,255,0.3)'; ctx.lineWidth = 1; ctx.stroke();
       }
-      ctx.beginPath(); ctx.arc(0, 0, 3, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(255,255,255,0.3)"; ctx.fill();
+
+      ctx.beginPath(); ctx.arc(0, 0, 4, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(0,200,255,0.4)"; ctx.fill();
+      ctx.beginPath(); ctx.arc(0, 0, 2, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255,255,255,0.6)"; ctx.fill();
+
       ctx.restore();
+
       if (playing) {
-        for (let i = 0; i < 2; i++) {
-          ctx.beginPath(); ctx.arc(cx, cy, R + 4 + i * 8, 0, Math.PI * 2);
-          ctx.strokeStyle = `${accent}${Math.round((0.15 + Math.sin(t * 2 + i) * 0.1) * 255).toString(16).padStart(2, "0")}`;
-          ctx.lineWidth = 1.5; ctx.stroke();
+        for (let i = 0; i < 3; i++) {
+          const ringR = R + 6 + i * 10;
+          const alpha = 0.12 + Math.sin(t * 2 + i * 1.2) * 0.08;
+          ctx.beginPath(); ctx.arc(cx, cy, ringR, 0, Math.PI * 2);
+          ctx.strokeStyle = `${accent}${Math.round(alpha * 255).toString(16).padStart(2, '0')}`;
+          ctx.lineWidth = 1; ctx.stroke();
+        }
+
+        for (let i = 0; i < 8; i++) {
+          const angle = (Math.PI * 2 / 8) * i + t * 0.5;
+          const eqH = 4 + Math.sin(t * 4 + i * 0.8) * 8;
+          const eqR = R + 20;
+          const px = cx + Math.cos(angle) * eqR;
+          const py = cy + Math.sin(angle) * eqR;
+          ctx.save();
+          ctx.translate(px, py);
+          ctx.rotate(angle + Math.PI / 2);
+          ctx.fillStyle = `${accent}${Math.round((0.3 + Math.sin(t * 3 + i) * 0.2) * 255).toString(16).padStart(2, '0')}`;
+          ctx.fillRect(-1, -eqH / 2, 2, eqH);
+          ctx.restore();
         }
       }
+
       animRef.current = requestAnimationFrame(animate);
     };
     animate();
     return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
   }, [albumArt, playing, accent, size]);
 
-  return <canvas ref={canvasRef} style={{ width: size * 0.8, height: size * 0.8 }} data-testid="spinning-vinyl" />;
+  return <canvas ref={canvasRef} style={{ width: size * 0.85, height: size * 0.85 }} data-testid="spinning-vinyl" />;
+}
+
+function HoloPanel({ children, className = "", accent, glow = false, style = {} }: {
+  children: React.ReactNode; className?: string; accent: string; glow?: boolean; style?: React.CSSProperties;
+}) {
+  return (
+    <div className={`relative rounded-xl overflow-hidden ${className}`} style={{
+      background: 'rgba(5,10,25,0.65)',
+      backdropFilter: 'blur(30px)',
+      border: `1px solid ${glow ? accent + '30' : 'rgba(0,180,255,0.12)'}`,
+      boxShadow: glow
+        ? `0 0 30px ${accent}15, inset 0 1px 0 rgba(0,180,255,0.08), inset 0 0 60px rgba(0,10,40,0.3)`
+        : 'inset 0 1px 0 rgba(0,180,255,0.06), inset 0 0 40px rgba(0,10,40,0.2)',
+      ...style,
+    }}>
+      <div className="absolute inset-0 pointer-events-none" style={{
+        background: 'linear-gradient(180deg, rgba(0,180,255,0.03) 0%, transparent 30%, transparent 70%, rgba(0,100,200,0.02) 100%)',
+      }} />
+      <div className="absolute top-0 left-0 right-0 h-[1px] pointer-events-none" style={{
+        background: `linear-gradient(90deg, transparent, ${glow ? accent + '40' : 'rgba(0,180,255,0.2)'}, transparent)`,
+      }} />
+      <div className="relative z-10">{children}</div>
+    </div>
+  );
 }
 
 export default function SpotifyPlayerPage() {
@@ -235,6 +398,10 @@ export default function SpotifyPlayerPage() {
   const [activeRooms, setActiveRooms] = useState<Set<string>>(new Set());
   const [viewMode, setViewMode] = useState<ViewMode>("floor");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
 
   const searchParams = new URLSearchParams(window.location.search);
   const authParam = searchParams.get("auth");
@@ -242,6 +409,7 @@ export default function SpotifyPlayerPage() {
   const isEmbedded = searchParams.get("embed") === "true";
   const profile = PROFILES[activeProfile];
   const notifTimeout = useRef<any>(null);
+  const searchTimeout = useRef<any>(null);
 
   const showNotif = (msg: string) => {
     setNotification(msg);
@@ -283,6 +451,18 @@ export default function SpotifyPlayerPage() {
     setArtistImages(imgs);
   }, [authQuery]);
 
+  const doSearch = useCallback(async (q: string) => {
+    if (!q.trim()) { setSearchResults([]); return; }
+    setSearching(true);
+    try {
+      const res = await fetch(`/api/spotify/search?q=${encodeURIComponent(q)}&${authQuery.slice(1)}`);
+      if (res.ok) {
+        const data = await res.json();
+        setSearchResults([...(data.tracks || []).slice(0, 6), ...(data.artists || []).slice(0, 4)]);
+      }
+    } catch {} finally { setSearching(false); }
+  }, [authQuery]);
+
   useEffect(() => {
     fetchNowPlaying(); fetchRooms(); fetchPlaybackState(); fetchArtistImages();
     const interval = setInterval(fetchNowPlaying, 4000);
@@ -312,29 +492,22 @@ export default function SpotifyPlayerPage() {
     const groupSpeaker = roomGroup?.speakers.find(s => s.type === "group") || roomGroup?.speakers[0];
     const entityId = groupSpeaker?.entityId || hotspot?.groupEntityId || hotspot?.entityId;
     const deviceType = hotspot?.deviceType || "echo";
-    if (!entityId) {
-      showNotif(`No speakers in ${roomName}`);
-      return;
-    }
+    if (!entityId) { showNotif(`No speakers in ${roomName}`); return; }
     try {
       await fetch(`/api/spotify/play-on-speaker${authQuery}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ entityId, spotifyUri: artistData.uri, artistName: artistData.name, deviceType }),
       });
       setActiveRooms(prev => new Set(prev).add(roomName));
       showNotif(`Playing ${artistData.name} in ${roomName}`);
-    } catch {
-      showNotif("Failed to play");
-    }
+    } catch { showNotif("Failed to play"); }
   };
 
   const playStation = async (station: StationShortcut) => {
     if (station.uri) {
       try {
         await fetch(`/api/spotify/play-context${authQuery}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+          method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ contextUri: station.uri, shuffle: true }),
         });
         showNotif(`Playing ${station.name}`);
@@ -353,15 +526,12 @@ export default function SpotifyPlayerPage() {
     const tgtSpeaker = tgt.speakers.find(s => s.type === "group") || tgt.speakers[0];
     try {
       await fetch(`/api/spotify/group-speakers${authQuery}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sourceEntityId: srcSpeaker.entityId, targetEntityId: tgtSpeaker.entityId }),
       });
       setActiveRooms(prev => { const n = new Set(prev); n.add(sourceRoom); n.add(targetRoom); return n; });
       showNotif(`Grouped ${sourceRoom} + ${targetRoom}`);
-    } catch {
-      showNotif("Failed to group");
-    }
+    } catch { showNotif("Failed to group"); }
   };
 
   const handleDragStart = (type: "artist" | "room", data: any) => (e: React.DragEvent) => {
@@ -371,24 +541,18 @@ export default function SpotifyPlayerPage() {
   };
 
   const handleRoomDrop = (roomName: string) => (e: React.DragEvent) => {
-    e.preventDefault();
-    setDropTarget(null);
+    e.preventDefault(); setDropTarget(null);
     try {
       const raw = e.dataTransfer.getData("text/plain");
       const parsed = JSON.parse(raw);
-      if (parsed.type === "artist") {
-        playOnRoom(roomName, parsed.data);
-      } else if (parsed.type === "room" && parsed.data.room !== roomName) {
-        groupRooms(parsed.data.room, roomName);
-      }
+      if (parsed.type === "artist") playOnRoom(roomName, parsed.data);
+      else if (parsed.type === "room" && parsed.data.room !== roomName) groupRooms(parsed.data.room, roomName);
     } catch {}
     setDragItem(null);
   };
 
   const handleDragOver = (roomName: string) => (e: React.DragEvent) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-    setDropTarget(roomName);
+    e.preventDefault(); e.dataTransfer.dropEffect = "move"; setDropTarget(roomName);
   };
 
   const switchProfile = (p: ProfileKey) => {
@@ -402,27 +566,38 @@ export default function SpotifyPlayerPage() {
   const isSakura = activeProfile === "yasu";
 
   return (
-    <div className="fixed inset-0 flex flex-col overflow-hidden select-none" style={{ fontFamily: "'Inter', system-ui, sans-serif" }} data-testid="spotify-player-page">
+    <div className="fixed inset-0 flex flex-col overflow-hidden select-none" style={{ fontFamily: "'Inter', system-ui, sans-serif", background: '#030810' }} data-testid="spotify-player-page">
       <img
         src={isPlaying ? massBg : musicBg}
         alt=""
         className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
-        style={{ opacity: isPlaying ? 0.6 : 0.4, filter: "brightness(0.5)" }}
+        style={{ opacity: isPlaying ? 0.35 : 0.2, filter: "brightness(0.4) saturate(0.7) hue-rotate(200deg)" }}
       />
-      <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.7) 100%)" }} />
 
-      {isSakura && <CherryBlossoms />}
-
-      <div className="absolute inset-0 pointer-events-none" style={{
-        background: isSakura
-          ? "radial-gradient(ellipse at 50% 30%, rgba(244,114,182,0.06) 0%, transparent 60%)"
-          : "radial-gradient(ellipse at 30% 40%, rgba(168,85,247,0.06) 0%, transparent 50%)",
+      <div className="absolute inset-0" style={{
+        background: `
+          radial-gradient(ellipse at 20% 50%, rgba(0,40,100,0.15) 0%, transparent 50%),
+          radial-gradient(ellipse at 80% 30%, ${isSakura ? 'rgba(244,114,182,0.06)' : 'rgba(100,40,200,0.06)'} 0%, transparent 40%),
+          radial-gradient(ellipse at 50% 80%, rgba(0,20,60,0.3) 0%, transparent 60%),
+          linear-gradient(180deg, rgba(0,5,15,0.4) 0%, rgba(0,10,30,0.6) 100%)
+        `,
       }} />
 
+      <HoloCircuitLines accent={profile.accent} />
+      {isSakura && <CherryBlossoms />}
+      <HoloScanLine />
+
       {notification && (
-        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-50 px-5 py-2 rounded-xl text-xs font-medium text-white"
-          style={{ background: `${profile.accent}40`, border: `1px solid ${profile.accent}50`, backdropFilter: "blur(20px)", boxShadow: `0 0 30px ${profile.glow}`, animation: "fadeInUp 0.3s ease" }}
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 px-6 py-2.5 rounded-lg text-xs font-medium text-white/90"
+          style={{
+            background: 'rgba(5,15,35,0.85)',
+            border: `1px solid ${profile.accent}40`,
+            backdropFilter: "blur(20px)",
+            boxShadow: `0 0 30px ${profile.glow}, 0 0 60px rgba(0,0,0,0.5)`,
+            animation: "fadeInUp 0.3s ease",
+          }}
           data-testid="notification">
+          <Zap className="inline h-3 w-3 mr-1.5" style={{ color: profile.accent }} />
           {notification}
         </div>
       )}
@@ -433,66 +608,89 @@ export default function SpotifyPlayerPage() {
         transition: "transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease",
       }}>
 
-        <div className="flex flex-col flex-shrink-0 relative" style={{ width: menuOpen ? 220 : 50, transition: "width 0.3s ease" }}>
-          <div className="absolute inset-0 rounded-r-2xl" style={{
-            background: "rgba(0,0,0,0.5)",
+        <div className="flex flex-col flex-shrink-0 relative" style={{ width: menuOpen ? 200 : 48, transition: "width 0.3s ease" }}>
+          <div className="absolute inset-0" style={{
+            background: 'rgba(3,8,20,0.7)',
             backdropFilter: "blur(30px)",
-            borderRight: `1px solid rgba(255,255,255,0.06)`,
+            borderRight: '1px solid rgba(0,180,255,0.08)',
+          }} />
+          <div className="absolute top-0 right-0 bottom-0 w-[1px]" style={{
+            background: 'linear-gradient(180deg, rgba(0,180,255,0.2), rgba(0,180,255,0.05), rgba(0,180,255,0.15))',
           }} />
 
-          <div className="relative z-10 flex flex-col h-full py-3">
-            <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="w-full flex items-center justify-center py-2 mb-2 hover:bg-white/5 transition-colors"
-              data-testid="menu-toggle"
-            >
-              {menuOpen ? <X className="h-5 w-5 text-white/50" /> : <Menu className="h-5 w-5 text-white/50" />}
+          <div className="relative z-10 flex flex-col h-full py-2">
+            <button onClick={() => setMenuOpen(!menuOpen)}
+              className="w-full flex items-center justify-center py-2.5 mb-1 transition-colors"
+              style={{ color: 'rgba(0,180,255,0.4)' }}
+              data-testid="menu-toggle">
+              {menuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </button>
 
             {!isEmbedded && (
               <button onClick={() => { const p = new URLSearchParams(window.location.search); window.location.href = "/" + (p.get("auth") ? `?auth=${p.get("auth")}` : ""); }}
-                className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-white/5 transition-colors" data-testid="back-to-dashboard">
-                <ChevronLeft className="h-4 w-4 text-white/30 flex-shrink-0" />
-                {menuOpen && <span className="text-xs text-white/30 whitespace-nowrap">Dashboard</span>}
+                className="w-full flex items-center gap-3 px-3 py-2 transition-colors" style={{ color: 'rgba(0,180,255,0.25)' }}
+                data-testid="back-to-dashboard">
+                <ChevronLeft className="h-4 w-4 flex-shrink-0" />
+                {menuOpen && <span className="text-[10px] whitespace-nowrap">Dashboard</span>}
               </button>
             )}
 
-            <div className="flex-1 flex flex-col gap-1 mt-2">
+            <div className="flex-1 flex flex-col gap-0.5 mt-2 px-1">
               {([
-                { mode: "floor" as ViewMode, icon: <Home className="h-4 w-4" />, label: "Floor Plan" },
-                { mode: "stations" as ViewMode, icon: <Radio className="h-4 w-4" />, label: "Stations" },
-                { mode: "rooms" as ViewMode, icon: <Speaker className="h-4 w-4" />, label: "Rooms" },
+                { mode: "floor" as ViewMode, icon: <Home className="h-3.5 w-3.5" />, label: "Floor Plan" },
+                { mode: "stations" as ViewMode, icon: <Radio className="h-3.5 w-3.5" />, label: "Stations" },
+                { mode: "rooms" as ViewMode, icon: <Speaker className="h-3.5 w-3.5" />, label: "Rooms" },
               ]).map(item => (
                 <button key={item.mode}
                   onClick={() => setViewMode(item.mode)}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all"
+                  className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg transition-all"
                   style={{
-                    background: viewMode === item.mode ? `${profile.accent}15` : "transparent",
-                    color: viewMode === item.mode ? profile.accent : "rgba(255,255,255,0.35)",
+                    background: viewMode === item.mode ? `${profile.accent}12` : "transparent",
+                    color: viewMode === item.mode ? profile.accent : "rgba(0,180,255,0.3)",
+                    borderLeft: viewMode === item.mode ? `2px solid ${profile.accent}` : '2px solid transparent',
                   }}
-                  data-testid={`nav-${item.mode}`}
-                >
+                  data-testid={`nav-${item.mode}`}>
                   <div className="flex-shrink-0">{item.icon}</div>
-                  {menuOpen && <span className="text-xs whitespace-nowrap">{item.label}</span>}
+                  {menuOpen && <span className="text-[10px] whitespace-nowrap font-medium">{item.label}</span>}
                 </button>
               ))}
+
+              <div className="my-2 mx-2 h-[1px]" style={{ background: 'rgba(0,180,255,0.08)' }} />
+
+              <button onClick={() => setShowSearch(!showSearch)}
+                className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg transition-all"
+                style={{ color: showSearch ? profile.accent : 'rgba(0,180,255,0.3)' }}
+                data-testid="nav-search">
+                <Search className="h-3.5 w-3.5 flex-shrink-0" />
+                {menuOpen && <span className="text-[10px] whitespace-nowrap font-medium">Search</span>}
+              </button>
             </div>
 
-            <div className="mt-auto flex flex-col gap-1 px-1">
+            <div className="mt-auto flex flex-col gap-0.5 px-1 pb-1">
+              <div className="mx-2 mb-1 h-[1px]" style={{ background: 'rgba(0,180,255,0.08)' }} />
               {(Object.keys(PROFILES) as ProfileKey[]).map(k => (
                 <button key={k} onClick={() => switchProfile(k)}
-                  className="w-full flex items-center gap-3 px-2 py-2 rounded-lg transition-all"
+                  className="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-lg transition-all"
                   style={{
-                    background: activeProfile === k ? `${PROFILES[k].accent}20` : "transparent",
-                    color: activeProfile === k ? PROFILES[k].accent : "rgba(255,255,255,0.3)",
-                    boxShadow: activeProfile === k ? `0 0 15px ${PROFILES[k].glow}` : "none",
+                    background: activeProfile === k ? `${PROFILES[k].accent}15` : "transparent",
+                    boxShadow: activeProfile === k ? `0 0 20px ${PROFILES[k].glow}, inset 0 0 15px ${PROFILES[k].glow}` : "none",
                   }}
                   data-testid={`profile-${k}`}>
-                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs flex-shrink-0"
-                    style={{ background: `${PROFILES[k].accent}30`, border: `1px solid ${PROFILES[k].accent}50` }}>
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0"
+                    style={{
+                      background: activeProfile === k
+                        ? `linear-gradient(135deg, ${PROFILES[k].accent}40, ${PROFILES[k].accent}20)`
+                        : 'rgba(0,180,255,0.08)',
+                      border: `1px solid ${activeProfile === k ? PROFILES[k].accent + '60' : 'rgba(0,180,255,0.15)'}`,
+                      color: activeProfile === k ? PROFILES[k].accent : 'rgba(0,180,255,0.4)',
+                      boxShadow: activeProfile === k ? `0 0 10px ${PROFILES[k].glow}` : 'none',
+                    }}>
                     {PROFILES[k].label[0]}
                   </div>
-                  {menuOpen && <span className="text-xs whitespace-nowrap">{PROFILES[k].label}</span>}
+                  {menuOpen && <span className="text-[10px] whitespace-nowrap font-medium"
+                    style={{ color: activeProfile === k ? PROFILES[k].accent : 'rgba(0,180,255,0.3)' }}>
+                    {PROFILES[k].label}
+                  </span>}
                 </button>
               ))}
             </div>
@@ -501,77 +699,141 @@ export default function SpotifyPlayerPage() {
 
         <div className="flex-1 flex gap-3 p-3 overflow-hidden">
 
-          <div className="flex flex-col gap-3 flex-shrink-0" style={{ width: 280 }}>
-            <div className="rounded-2xl p-3 flex flex-col items-center" style={{
-              background: "rgba(0,0,0,0.4)", border: "1px solid rgba(255,255,255,0.06)", backdropFilter: "blur(30px)",
-            }}>
-              <div className="relative p-2 rounded-2xl" style={{
-                background: "linear-gradient(135deg, rgba(20,20,25,0.9), rgba(15,15,20,0.95))",
-                border: "1px solid rgba(255,255,255,0.06)",
-                boxShadow: isPlaying ? `0 0 40px ${profile.glow}, inset 0 1px 0 rgba(255,255,255,0.05)` : "inset 0 1px 0 rgba(255,255,255,0.03)",
-              }}>
-                <SpinningVinyl albumArt={nowPlaying?.albumArt} playing={isPlaying} accent={profile.accent} size={200} />
+          <div className="flex flex-col gap-3 flex-shrink-0" style={{ width: 260 }}>
+            <HoloPanel accent={profile.accent} glow={isPlaying} className="p-3 flex flex-col items-center">
+              <div className="relative flex items-center justify-center" style={{ minHeight: 170 }}>
+                <HoloVinyl albumArt={nowPlaying?.albumArt} playing={isPlaying} accent={profile.accent} size={210} />
               </div>
 
-              <div className="text-center mt-3 w-full px-2">
-                <p className="text-sm font-bold text-white/90 truncate" data-testid="track-name" style={{ fontSize: 15 }}>
+              <div className="text-center mt-1 w-full px-2">
+                <p className="text-sm font-bold truncate" data-testid="track-name"
+                  style={{ color: 'rgba(200,230,255,0.95)', textShadow: isPlaying ? `0 0 20px ${profile.glow}` : 'none' }}>
                   {nowPlaying?.name || "Nothing Playing"}
                 </p>
-                <p className="text-xs truncate mt-0.5" style={{ color: isPlaying ? profile.accent : "rgba(255,255,255,0.25)" }} data-testid="track-artist">
+                <p className="text-xs truncate mt-0.5 font-medium" data-testid="track-artist"
+                  style={{ color: isPlaying ? profile.accent : "rgba(0,180,255,0.35)" }}>
                   {nowPlaying?.artist || "Select an artist or station"}
                 </p>
                 {nowPlaying?.album && (
-                  <p className="text-[10px] text-white/20 truncate mt-0.5" data-testid="track-album">{nowPlaying.album}</p>
+                  <p className="text-[9px] truncate mt-0.5" data-testid="track-album"
+                    style={{ color: 'rgba(0,180,255,0.2)' }}>{nowPlaying.album}</p>
                 )}
               </div>
-            </div>
+            </HoloPanel>
 
-            <div className="flex-1 overflow-y-auto rounded-2xl p-3" style={{
-              background: "rgba(0,0,0,0.4)", border: "1px solid rgba(255,255,255,0.06)",
-              backdropFilter: "blur(30px)", scrollbarWidth: "none",
-            }}>
-              <div className="text-[9px] uppercase tracking-[0.2em] font-bold mb-2 px-1" style={{ color: `${profile.accent}80` }}>
+            <HoloPanel accent={profile.accent} className="flex-1 overflow-hidden p-3">
+              <div className="text-[9px] uppercase tracking-[0.2em] font-bold mb-2 px-1 flex items-center gap-1.5"
+                style={{ color: `${profile.accent}80` }}>
+                <Wifi className="h-2.5 w-2.5" />
                 {isSakura ? "お気に入り • Favorites" : "Favorites"}
               </div>
-              <div className="grid grid-cols-2 gap-1.5">
-                {profile.artists.map((artist, i) => (
-                  <div key={artist.name} draggable
-                    onDragStart={handleDragStart("artist", artist)}
-                    onDragEnd={() => setDragItem(null)}
-                    className="flex flex-col items-center gap-1 p-2 rounded-xl cursor-grab active:cursor-grabbing transition-all hover:scale-105 active:scale-95 group"
-                    style={{
-                      background: "rgba(255,255,255,0.03)",
-                      border: `1px solid rgba(255,255,255,0.05)`,
-                      animation: `fadeInUp 0.4s ease ${i * 60}ms both`,
-                    }}
-                    data-testid={`artist-card-${artist.name.toLowerCase().replace(/\s/g, "-")}`}>
-                    <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 ring-1 transition-all"
+              <div className="overflow-y-auto flex-1" style={{ scrollbarWidth: "none", maxHeight: 'calc(100% - 24px)' }}>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {profile.artists.map((artist, i) => (
+                    <div key={artist.name} draggable
+                      onDragStart={handleDragStart("artist", artist)}
+                      onDragEnd={() => setDragItem(null)}
+                      className="flex flex-col items-center gap-1 p-2 rounded-lg cursor-grab active:cursor-grabbing transition-all group"
                       style={{
-                        ringColor: `${profile.accent}20`,
-                        boxShadow: `0 0 12px ${profile.glow}`,
-                        background: artistImages[artist.name] ? `url(${artistImages[artist.name]}) center/cover` : `linear-gradient(135deg, ${profile.accent}40, ${profile.accent}20)`,
-                      }}>
-                      {!artistImages[artist.name] && <div className="w-full h-full flex items-center justify-center"><Music2 className="h-4 w-4 text-white/15" /></div>}
+                        background: "rgba(0,20,50,0.4)",
+                        border: '1px solid rgba(0,180,255,0.08)',
+                        animation: `fadeInUp 0.4s ease ${i * 60}ms both`,
+                      }}
+                      data-testid={`artist-card-${artist.name.toLowerCase().replace(/\s/g, "-")}`}>
+                      <div className="w-11 h-11 rounded-full overflow-hidden flex-shrink-0 transition-all"
+                        style={{
+                          border: `1.5px solid ${profile.accent}30`,
+                          boxShadow: `0 0 12px ${profile.glow}`,
+                          background: artistImages[artist.name]
+                            ? `url(${artistImages[artist.name]}) center/cover`
+                            : `linear-gradient(135deg, ${profile.accent}30, rgba(0,20,60,0.6))`,
+                        }}>
+                        {!artistImages[artist.name] && <div className="w-full h-full flex items-center justify-center"><Music2 className="h-3.5 w-3.5" style={{ color: `${profile.accent}40` }} /></div>}
+                      </div>
+                      <span className="text-[8px] truncate w-full text-center font-medium transition-colors"
+                        style={{ color: 'rgba(0,180,255,0.4)' }}>{artist.name}</span>
                     </div>
-                    <span className="text-[9px] text-white/50 truncate w-full text-center font-medium group-hover:text-white/80 transition-colors">{artist.name}</span>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            </HoloPanel>
           </div>
 
-          <div className="flex-1 relative rounded-2xl overflow-hidden" style={{
-            border: `1px solid ${dragItem ? `${profile.accent}30` : "rgba(255,255,255,0.06)"}`,
-            transition: "border-color 0.3s ease",
-            boxShadow: dragItem ? `0 0 30px ${profile.glow}` : "none",
-            background: "rgba(0,0,0,0.3)",
+          <div className="flex-1 relative rounded-xl overflow-hidden" style={{
+            border: `1px solid ${dragItem ? `${profile.accent}40` : 'rgba(0,180,255,0.1)'}`,
+            transition: "border-color 0.3s ease, box-shadow 0.3s ease",
+            boxShadow: dragItem
+              ? `0 0 40px ${profile.glow}, inset 0 0 30px ${profile.glow}`
+              : 'inset 0 1px 0 rgba(0,180,255,0.06)',
+            background: "rgba(3,8,20,0.5)",
             backdropFilter: "blur(20px)",
           }}>
+            <div className="absolute top-0 left-0 right-0 h-[1px]" style={{
+              background: `linear-gradient(90deg, transparent, rgba(0,180,255,0.15), transparent)`,
+            }} />
+
+            {showSearch && (
+              <div className="absolute inset-0 z-20 p-4 overflow-y-auto" style={{ background: 'rgba(3,8,20,0.9)', backdropFilter: 'blur(20px)', scrollbarWidth: 'none' }}>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-lg" style={{
+                    background: 'rgba(0,20,50,0.5)', border: '1px solid rgba(0,180,255,0.15)',
+                  }}>
+                    <Search className="h-3.5 w-3.5" style={{ color: 'rgba(0,180,255,0.4)' }} />
+                    <input
+                      type="text" value={searchQuery} placeholder="Search songs, artists..."
+                      onChange={e => {
+                        setSearchQuery(e.target.value);
+                        if (searchTimeout.current) clearTimeout(searchTimeout.current);
+                        searchTimeout.current = setTimeout(() => doSearch(e.target.value), 500);
+                      }}
+                      className="flex-1 bg-transparent text-xs outline-none placeholder:text-blue-400/20"
+                      style={{ color: 'rgba(200,230,255,0.8)' }}
+                      data-testid="search-input" autoFocus
+                    />
+                  </div>
+                  <button onClick={() => { setShowSearch(false); setSearchQuery(""); setSearchResults([]); }}
+                    className="p-2 rounded-lg transition-colors" style={{ color: 'rgba(0,180,255,0.4)' }}>
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+                {searching && <div className="flex items-center justify-center py-8"><Loader2 className="h-5 w-5 animate-spin" style={{ color: profile.accent }} /></div>}
+                <div className="grid grid-cols-2 gap-2">
+                  {searchResults.map((r: any, i: number) => (
+                    <button key={i} onClick={() => {
+                      if (r.uri) {
+                        doAction("play-context", "POST", { contextUri: r.uri });
+                        showNotif(`Playing ${r.name}`);
+                        setShowSearch(false);
+                      }
+                    }}
+                      className="flex items-center gap-2 p-2.5 rounded-lg transition-all text-left group"
+                      style={{ background: 'rgba(0,20,50,0.4)', border: '1px solid rgba(0,180,255,0.08)' }}
+                      data-testid={`search-result-${i}`}>
+                      {r.image ? (
+                        <img src={r.image} alt="" className="w-9 h-9 rounded-md object-cover flex-shrink-0"
+                          style={{ border: '1px solid rgba(0,180,255,0.15)' }} />
+                      ) : (
+                        <div className="w-9 h-9 rounded-md flex items-center justify-center flex-shrink-0"
+                          style={{ background: `${profile.accent}15`, border: '1px solid rgba(0,180,255,0.1)' }}>
+                          <Music2 className="h-3.5 w-3.5" style={{ color: `${profile.accent}40` }} />
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] font-medium truncate" style={{ color: 'rgba(200,230,255,0.8)' }}>{r.name}</p>
+                        <p className="text-[9px] truncate" style={{ color: 'rgba(0,180,255,0.3)' }}>{r.artist || r.type}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {viewMode === "floor" && (
               <>
-                <img src={floorplanImg} alt="Apartment floor plan" className="absolute inset-0 w-full h-full object-contain" style={{ filter: "brightness(0.7) contrast(1.1)", opacity: 0.85 }} />
+                <img src={floorplanImg} alt="Apartment floor plan" className="absolute inset-0 w-full h-full object-contain"
+                  style={{ filter: "brightness(0.55) contrast(1.1) saturate(0.5) hue-rotate(190deg)", opacity: 0.75 }} />
                 <div className="absolute inset-0" style={{
-                  background: `radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.5) 100%)`,
+                  background: `radial-gradient(ellipse at center, transparent 30%, rgba(3,8,20,0.6) 100%)`,
                 }} />
                 {ROOM_HOTSPOTS.map(spot => {
                   const isActive = activeRooms.has(spot.room);
@@ -582,19 +844,27 @@ export default function SpotifyPlayerPage() {
                       onDrop={handleRoomDrop(spot.room)}
                       onDragOver={handleDragOver(spot.room)}
                       onDragLeave={() => setDropTarget(null)}
-                      className="absolute rounded-xl cursor-pointer transition-all"
+                      className="absolute rounded-lg cursor-pointer transition-all"
                       style={{
                         left: `${spot.x}%`, top: `${spot.y}%`, width: `${spot.w}%`, height: `${spot.h}%`,
-                        background: isDrop ? `${profile.accent}25` : isActive ? `${profile.accent}12` : "rgba(0,0,0,0.15)",
-                        border: `1.5px solid ${isDrop ? profile.accent : isActive ? `${profile.accent}60` : "rgba(255,255,255,0.08)"}`,
-                        boxShadow: isActive ? `0 0 20px ${profile.glow}, inset 0 0 15px ${profile.glow}` : isDrop ? `0 0 25px ${profile.glow}` : "none",
+                        background: isDrop
+                          ? `${profile.accent}20`
+                          : isActive
+                            ? `rgba(0,180,255,0.08)`
+                            : "rgba(3,8,20,0.25)",
+                        border: `1px solid ${isDrop ? profile.accent : isActive ? `${profile.accent}50` : "rgba(0,180,255,0.08)"}`,
+                        boxShadow: isActive
+                          ? `0 0 25px ${profile.glow}, inset 0 0 20px ${profile.glow}`
+                          : isDrop
+                            ? `0 0 30px ${profile.glow}`
+                            : "none",
                         backdropFilter: "blur(4px)",
                       }}
-                      data-testid={`room-${spot.room.toLowerCase().replace(/\s/g, "-")}`}
-                    >
+                      data-testid={`room-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
                       <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5">
-                        <span className="text-base">{spot.icon}</span>
-                        <span className="text-[8px] font-bold uppercase tracking-wider text-white/60 text-center leading-tight px-1">
+                        <span className="text-base" style={{ filter: isActive ? `drop-shadow(0 0 6px ${profile.accent})` : 'none' }}>{spot.icon}</span>
+                        <span className="text-[7px] font-bold uppercase tracking-wider text-center leading-tight px-1"
+                          style={{ color: isActive ? profile.accent : 'rgba(0,180,255,0.4)', textShadow: isActive ? `0 0 8px ${profile.glow}` : 'none' }}>
                           {spot.room}
                         </span>
                         {isActive && (
@@ -603,12 +873,19 @@ export default function SpotifyPlayerPage() {
                               <div key={i} className="w-0.5 rounded-full" style={{
                                 height: 4 + Math.random() * 6,
                                 background: profile.accent,
+                                boxShadow: `0 0 4px ${profile.accent}`,
                                 animation: `eqBounce ${0.3 + i * 0.15}s ease-in-out infinite alternate`,
                               }} />
                             ))}
                           </div>
                         )}
                       </div>
+                      {isDrop && (
+                        <div className="absolute inset-0 rounded-lg pointer-events-none" style={{
+                          border: `1px dashed ${profile.accent}60`,
+                          animation: 'holoPulse 1s ease-in-out infinite',
+                        }} />
+                      )}
                     </div>
                   );
                 })}
@@ -617,23 +894,24 @@ export default function SpotifyPlayerPage() {
 
             {viewMode === "stations" && (
               <div className="absolute inset-0 p-4 overflow-y-auto" style={{ scrollbarWidth: "none" }}>
-                <div className="text-[10px] uppercase tracking-[0.2em] font-bold mb-3" style={{ color: `${profile.accent}80` }}>
-                  Stations & Shortcuts
+                <div className="text-[9px] uppercase tracking-[0.2em] font-bold mb-3 flex items-center gap-1.5"
+                  style={{ color: `${profile.accent}70` }}>
+                  <Radio className="h-3 w-3" /> Stations & Shortcuts
                 </div>
                 <div className="grid grid-cols-3 gap-2">
-                  {STATION_SHORTCUTS.map((station) => (
+                  {STATION_SHORTCUTS.map((station, i) => (
                     <button key={station.name}
                       onClick={() => playStation(station)}
-                      className="flex items-center gap-2 p-3 rounded-xl transition-all hover:scale-[1.02] active:scale-95"
+                      className="flex items-center gap-2.5 p-3 rounded-lg transition-all group"
                       style={{
-                        background: "rgba(255,255,255,0.04)",
-                        border: "1px solid rgba(255,255,255,0.06)",
-                        backdropFilter: "blur(10px)",
+                        background: "rgba(0,15,40,0.5)",
+                        border: "1px solid rgba(0,180,255,0.08)",
+                        animation: `fadeInUp 0.3s ease ${i * 40}ms both`,
                       }}
-                      data-testid={`station-${station.name.toLowerCase().replace(/\s/g, "-")}`}
-                    >
-                      <span className="text-lg flex-shrink-0">{station.icon}</span>
-                      <span className="text-xs text-white/70 font-medium text-left truncate">{station.name}</span>
+                      data-testid={`station-${station.name.toLowerCase().replace(/\s/g, "-")}`}>
+                      <span className="text-lg flex-shrink-0" style={{ filter: 'drop-shadow(0 0 4px rgba(0,180,255,0.3))' }}>{station.icon}</span>
+                      <span className="text-[10px] font-medium text-left truncate"
+                        style={{ color: 'rgba(0,180,255,0.5)' }}>{station.name}</span>
                     </button>
                   ))}
                 </div>
@@ -642,11 +920,12 @@ export default function SpotifyPlayerPage() {
 
             {viewMode === "rooms" && (
               <div className="absolute inset-0 p-4 overflow-y-auto" style={{ scrollbarWidth: "none" }}>
-                <div className="text-[10px] uppercase tracking-[0.2em] font-bold mb-3" style={{ color: `${profile.accent}80` }}>
-                  Speaker Rooms
+                <div className="text-[9px] uppercase tracking-[0.2em] font-bold mb-3 flex items-center gap-1.5"
+                  style={{ color: `${profile.accent}70` }}>
+                  <Speaker className="h-3 w-3" /> Speaker Rooms
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                  {ROOM_HOTSPOTS.map(spot => {
+                  {ROOM_HOTSPOTS.map((spot, i) => {
                     const isActive = activeRooms.has(spot.room);
                     return (
                       <button key={spot.room}
@@ -657,26 +936,28 @@ export default function SpotifyPlayerPage() {
                             showNotif("Start playing something first");
                           }
                         }}
-                        className="flex items-center gap-3 p-3 rounded-xl transition-all hover:scale-[1.02] active:scale-95"
+                        className="flex items-center gap-3 p-3 rounded-lg transition-all group"
                         style={{
-                          background: isActive ? `${profile.accent}15` : "rgba(255,255,255,0.04)",
-                          border: `1px solid ${isActive ? `${profile.accent}40` : "rgba(255,255,255,0.06)"}`,
-                          boxShadow: isActive ? `0 0 15px ${profile.glow}` : "none",
+                          background: isActive ? `${profile.accent}10` : "rgba(0,15,40,0.5)",
+                          border: `1px solid ${isActive ? `${profile.accent}35` : "rgba(0,180,255,0.08)"}`,
+                          boxShadow: isActive ? `0 0 20px ${profile.glow}, inset 0 0 15px ${profile.glow}` : "none",
+                          animation: `fadeInUp 0.3s ease ${i * 40}ms both`,
                         }}
-                        data-testid={`room-btn-${spot.room.toLowerCase().replace(/\s/g, "-")}`}
-                      >
-                        <span className="text-lg flex-shrink-0">{spot.icon}</span>
+                        data-testid={`room-btn-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
+                        <span className="text-lg flex-shrink-0" style={{ filter: isActive ? `drop-shadow(0 0 6px ${profile.accent})` : 'drop-shadow(0 0 3px rgba(0,180,255,0.2))' }}>{spot.icon}</span>
                         <div className="flex-1 text-left">
-                          <span className="text-xs text-white/70 font-medium block">{spot.room}</span>
-                          <span className="text-[9px] text-white/30">{spot.entityId.split(".")[1]}</span>
+                          <span className="text-[10px] font-medium block"
+                            style={{ color: isActive ? profile.accent : 'rgba(0,180,255,0.5)' }}>{spot.room}</span>
+                          <span className="text-[8px]" style={{ color: 'rgba(0,180,255,0.2)' }}>{spot.entityId.split(".")[1]}</span>
                         </div>
                         {isActive && (
                           <div className="flex gap-0.5">
-                            {[...Array(4)].map((_, i) => (
-                              <div key={i} className="w-0.5 rounded-full" style={{
+                            {[...Array(4)].map((_, j) => (
+                              <div key={j} className="w-0.5 rounded-full" style={{
                                 height: 6 + Math.random() * 8,
                                 background: profile.accent,
-                                animation: `eqBounce ${0.3 + i * 0.12}s ease-in-out infinite alternate`,
+                                boxShadow: `0 0 4px ${profile.accent}`,
+                                animation: `eqBounce ${0.3 + j * 0.12}s ease-in-out infinite alternate`,
                               }} />
                             ))}
                           </div>
@@ -691,66 +972,81 @@ export default function SpotifyPlayerPage() {
         </div>
       </div>
 
-      <div className="relative z-10 px-4 pb-3 pt-1" style={{
-        background: "linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%)",
+      <div className="relative z-10" style={{
+        background: 'rgba(3,8,20,0.75)',
+        backdropFilter: 'blur(30px)',
+        borderTop: '1px solid rgba(0,180,255,0.08)',
       }}>
-        <div className="flex items-center gap-2 mb-1.5">
-          <span className="text-[10px] text-white/30 tabular-nums w-8 text-right">{formatMs(localProgress)}</span>
-          <div className="flex-1 h-1 rounded-full overflow-hidden cursor-pointer group" style={{ background: "rgba(255,255,255,0.08)" }}
-            onClick={e => {
-              if (!nowPlaying?.duration) return;
-              const rect = e.currentTarget.getBoundingClientRect();
-              const pct = (e.clientX - rect.left) / rect.width;
-              doAction("seek", "POST", { positionMs: Math.round(pct * nowPlaying.duration) });
-            }}
-            data-testid="progress-bar">
-            <div className="h-full rounded-full transition-all relative" style={{
-              width: `${progressPct}%`, background: `linear-gradient(90deg, ${profile.accent}, ${profile.accent}cc)`,
-              boxShadow: `0 0 8px ${profile.glow}`,
-            }}>
-              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                style={{ background: profile.accent, boxShadow: `0 0 6px ${profile.accent}` }} />
+        <div className="absolute top-0 left-0 right-0 h-[1px]" style={{
+          background: 'linear-gradient(90deg, transparent, rgba(0,180,255,0.15), transparent)',
+        }} />
+
+        <div className="px-6 pt-2 pb-1">
+          <div className="flex items-center gap-3 mb-1">
+            <span className="text-[10px] tabular-nums w-8 text-right" style={{ color: 'rgba(0,180,255,0.3)' }}>{formatMs(localProgress)}</span>
+            <div className="flex-1 h-[3px] rounded-full overflow-hidden cursor-pointer group relative"
+              style={{ background: 'rgba(0,180,255,0.08)' }}
+              onClick={e => {
+                if (!nowPlaying?.duration) return;
+                const rect = e.currentTarget.getBoundingClientRect();
+                const pct = (e.clientX - rect.left) / rect.width;
+                doAction("seek", "POST", { positionMs: Math.round(pct * nowPlaying.duration) });
+              }}
+              data-testid="progress-bar">
+              <div className="h-full rounded-full transition-all relative" style={{
+                width: `${progressPct}%`,
+                background: `linear-gradient(90deg, rgba(0,180,255,0.4), ${profile.accent})`,
+                boxShadow: `0 0 10px ${profile.glow}, 0 0 20px ${profile.glow}`,
+              }}>
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  style={{ background: profile.accent, boxShadow: `0 0 8px ${profile.accent}, 0 0 16px ${profile.glow}` }} />
+              </div>
             </div>
+            <span className="text-[10px] tabular-nums w-8" style={{ color: 'rgba(0,180,255,0.3)' }}>{formatMs(nowPlaying?.duration || 0)}</span>
           </div>
-          <span className="text-[10px] text-white/30 tabular-nums w-8">{formatMs(nowPlaying?.duration || 0)}</span>
-        </div>
 
-        <div className="flex items-center justify-center gap-5">
-          <button onClick={() => doAction("shuffle", "POST")} className="transition-all hover:scale-110"
-            style={{ color: shuffleOn ? profile.accent : "rgba(255,255,255,0.25)" }} data-testid="btn-shuffle">
-            <Shuffle className="h-4 w-4" />
-          </button>
-          <button onClick={() => doAction("previous")} className="text-white/50 hover:text-white hover:scale-110 transition-all" data-testid="btn-prev">
-            <SkipBack className="h-5 w-5" />
-          </button>
-          <button onClick={() => doAction(isPlaying ? "pause" : "play")}
-            className="w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-105 active:scale-95"
-            style={{
-              background: `linear-gradient(135deg, ${profile.accent}, ${profile.accent}cc)`,
-              boxShadow: `0 0 25px ${profile.glow}, 0 4px 15px rgba(0,0,0,0.3)`,
-            }}
-            data-testid="btn-play-pause">
-            {actionPending ? <Loader2 className="h-5 w-5 text-white animate-spin" /> :
-              isPlaying ? <Pause className="h-5 w-5 text-white" /> : <Play className="h-5 w-5 text-white ml-0.5" />}
-          </button>
-          <button onClick={() => doAction("next")} className="text-white/50 hover:text-white hover:scale-110 transition-all" data-testid="btn-next">
-            <SkipForward className="h-5 w-5" />
-          </button>
-          <button onClick={() => doAction("repeat", "POST")} className="transition-all hover:scale-110"
-            style={{ color: repeatMode !== "off" ? profile.accent : "rgba(255,255,255,0.25)" }} data-testid="btn-repeat">
-            <Repeat className="h-4 w-4" />
-            {repeatMode === "track" && <span className="text-[6px] absolute mt-[-2px]">1</span>}
-          </button>
-
-          <div className="ml-6 flex items-center gap-2">
-            <button onClick={() => doAction("volume", "POST", { volume: volume > 0 ? 0 : 30 })}
-              className="text-white/30 hover:text-white/60 transition-colors" data-testid="btn-mute">
-              {volume === 0 ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+          <div className="flex items-center justify-center gap-6 pb-1">
+            <button onClick={() => doAction("shuffle", "POST")} className="transition-all hover:scale-110"
+              style={{ color: shuffleOn ? profile.accent : "rgba(0,180,255,0.2)", filter: shuffleOn ? `drop-shadow(0 0 6px ${profile.glow})` : 'none' }}
+              data-testid="btn-shuffle">
+              <Shuffle className="h-4 w-4" />
             </button>
-            <input type="range" min={0} max={100} value={volume}
-              onChange={e => { setVolume(+e.target.value); doAction("volume", "POST", { volume: +e.target.value }); }}
-              className="w-24 accent-current" style={{ color: profile.accent, height: 3 }}
-              data-testid="volume-slider" />
+            <button onClick={() => doAction("previous")} className="hover:scale-110 transition-all"
+              style={{ color: 'rgba(0,180,255,0.35)' }} data-testid="btn-prev">
+              <SkipBack className="h-5 w-5" />
+            </button>
+            <button onClick={() => doAction(isPlaying ? "pause" : "play")}
+              className="w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-105 active:scale-95"
+              style={{
+                background: `linear-gradient(135deg, ${profile.accent}cc, ${profile.accent})`,
+                boxShadow: `0 0 30px ${profile.glow}, 0 0 60px ${profile.glow}, inset 0 1px 0 rgba(255,255,255,0.15)`,
+                border: `1px solid ${profile.accent}60`,
+              }}
+              data-testid="btn-play-pause">
+              {actionPending ? <Loader2 className="h-5 w-5 text-white animate-spin" /> :
+                isPlaying ? <Pause className="h-5 w-5 text-white" /> : <Play className="h-5 w-5 text-white ml-0.5" />}
+            </button>
+            <button onClick={() => doAction("next")} className="hover:scale-110 transition-all"
+              style={{ color: 'rgba(0,180,255,0.35)' }} data-testid="btn-next">
+              <SkipForward className="h-5 w-5" />
+            </button>
+            <button onClick={() => doAction("repeat", "POST")} className="transition-all hover:scale-110 relative"
+              style={{ color: repeatMode !== "off" ? profile.accent : "rgba(0,180,255,0.2)", filter: repeatMode !== "off" ? `drop-shadow(0 0 6px ${profile.glow})` : 'none' }}
+              data-testid="btn-repeat">
+              <Repeat className="h-4 w-4" />
+              {repeatMode === "track" && <span className="absolute -top-1 -right-1 text-[6px] font-bold" style={{ color: profile.accent }}>1</span>}
+            </button>
+
+            <div className="ml-8 flex items-center gap-2">
+              <button onClick={() => doAction("volume", "POST", { volume: volume > 0 ? 0 : 30 })}
+                className="transition-colors" style={{ color: 'rgba(0,180,255,0.25)' }} data-testid="btn-mute">
+                {volume === 0 ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+              </button>
+              <input type="range" min={0} max={100} value={volume}
+                onChange={e => { setVolume(+e.target.value); doAction("volume", "POST", { volume: +e.target.value }); }}
+                className="w-24 holo-range" style={{ height: 3 }}
+                data-testid="volume-slider" />
+            </div>
           </div>
         </div>
       </div>
@@ -758,8 +1054,40 @@ export default function SpotifyPlayerPage() {
       <style>{`
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes eqBounce { from { height: 3px; } to { height: 12px; } }
-        input[type="range"] { -webkit-appearance: none; background: rgba(255,255,255,0.08); border-radius: 4px; outline: none; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; border-radius: 50%; background: currentColor; cursor: pointer; }
+        @keyframes holoScan {
+          0% { top: -2px; opacity: 0; }
+          10% { opacity: 1; }
+          90% { opacity: 1; }
+          100% { top: 100%; opacity: 0; }
+        }
+        @keyframes holoPulse {
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 0.8; }
+        }
+        .holo-range {
+          -webkit-appearance: none;
+          background: rgba(0,180,255,0.08);
+          border-radius: 4px;
+          outline: none;
+        }
+        .holo-range::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background: ${profile.accent};
+          cursor: pointer;
+          box-shadow: 0 0 8px ${profile.glow}, 0 0 16px ${profile.glow};
+        }
+        .holo-range::-moz-range-thumb {
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background: ${profile.accent};
+          cursor: pointer;
+          box-shadow: 0 0 8px ${profile.glow}, 0 0 16px ${profile.glow};
+          border: none;
+        }
       `}</style>
     </div>
   );
