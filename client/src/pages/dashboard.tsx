@@ -13547,91 +13547,32 @@ export default function Dashboard() {
         </svg>
       </div>
 
-      {/* Right binder tabs - Semester navigation */}
-      {(() => {
-        const SEMESTER_TAB_DEFS: Array<{ label: string; targetDate: string; endDate: string }> = [
-          { label: "S 26", targetDate: "2026-06-22", endDate: "2026-08-04" },
-          { label: "F 26", targetDate: "2026-09-14", endDate: "2026-12-07" },
-          { label: "W 27", targetDate: "2027-01-11", endDate: "2027-04-09" },
-          { label: "S 27", targetDate: "2027-05-03", endDate: "2027-06-20" },
-          { label: "S 27", targetDate: "2027-06-28", endDate: "2027-08-13" },
-          { label: "F 27", targetDate: "2027-09-13", endDate: "2027-12-06" },
-          { label: "W 28", targetDate: "2028-01-10", endDate: "2028-04-07" },
-          { label: "S 28", targetDate: "2028-05-01", endDate: "2028-06-16" },
-          { label: "S 28", targetDate: "2028-06-19", endDate: "2028-08-04" },
-          { label: "F 28", targetDate: "2028-09-11", endDate: "2028-12-04" },
-          { label: "W 29", targetDate: "2029-01-15", endDate: "2029-04-13" },
-        ];
-        const now = new Date();
-        const activeTabs = SEMESTER_TAB_DEFS.filter(t => new Date(t.endDate) > now);
-        const maxVisible = 7;
-        const visibleTabs = activeTabs.slice(0, maxVisible);
-        const tabH = 42;
-        const tabGap = 2;
-        const totalH = visibleTabs.length * (tabH + tabGap) + tabH;
-        const startY = `calc(50vh - ${totalH / 2}px)`;
-        const navigateToDate = (targetDateStr: string) => {
-          const targetDate = new Date(targetDateStr + 'T12:00:00');
-          const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date(2026, 0, 10);
-          const readingWeek = semesterSettings?.readingWeekStart || null;
-          const weekNum = getWeekNumber(targetDate, semStart, readingWeek);
-          startTransition(() => setSelectedWeek(weekNum));
-          if (weekNum >= FIRST_WEEK && weekNum <= LAST_WEEK) scrollHomeworkToWeek(weekNum);
-        };
-        const navigateToCurrent = () => {
-          const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date(2026, 0, 10);
-          const readingWeek = semesterSettings?.readingWeekStart || null;
-          const weekNum = getWeekNumber(new Date(), semStart, readingWeek);
-          startTransition(() => setSelectedWeek(weekNum));
-          if (weekNum >= FIRST_WEEK && weekNum <= LAST_WEEK) scrollHomeworkToWeek(weekNum);
-        };
-        return (
-          <div
-            className="fixed z-[10002] flex flex-col"
-            style={{
-              right: '-8px',
-              top: startY,
-              gap: `${tabGap}px`,
-              pointerEvents: 'auto',
-              display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined,
-            }}
-          >
-            <div
-              className="cursor-pointer hover:brightness-125 transition-all"
-              onClick={navigateToCurrent}
-              data-testid="right-tab-current"
-              title="Go to current week"
-            >
-              <svg width="28" height={tabH} viewBox={`0 0 28 ${tabH}`} style={{ display: 'block' }}>
-                <path d={`M28,0 L28,${tabH} L16,${tabH} Q16,${tabH - 6} 10,${tabH - 6} L9,${tabH - 6} Q0,${tabH - 6} 0,${tabH - 16} L0,16 Q0,6 9,6 L10,6 Q16,6 16,0 Z`} fill="rgba(100,180,255,0.3)" stroke="rgba(140,200,255,0.5)" strokeWidth="1" />
-                <text x="13" y={tabH / 2 + 1} textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.9)" fontSize="7" fontWeight="700" letterSpacing="0.3">NOW</text>
-              </svg>
-            </div>
-            {visibleTabs.map((tab, i) => {
-              const isFall = tab.label.startsWith('F');
-              const isWinter = tab.label.startsWith('W');
-              const isSpring = tab.label.startsWith('S');
-              const fillColor = isFall ? 'rgba(255,160,60,0.25)' : isWinter ? 'rgba(100,180,255,0.25)' : 'rgba(100,220,130,0.25)';
-              const strokeColor = isFall ? 'rgba(255,180,100,0.45)' : isWinter ? 'rgba(140,200,255,0.45)' : 'rgba(130,230,150,0.45)';
-              const textColor = isFall ? 'rgba(255,200,130,0.9)' : isWinter ? 'rgba(180,220,255,0.9)' : 'rgba(150,240,170,0.9)';
-              return (
-                <div
-                  key={`${tab.label}-${tab.targetDate}`}
-                  className="cursor-pointer hover:brightness-125 transition-all"
-                  onClick={() => navigateToDate(tab.targetDate)}
-                  data-testid={`right-tab-${tab.label.toLowerCase().replace(/\s/g, '')}-${i}`}
-                  title={`Jump to ${tab.label}`}
-                >
-                  <svg width="28" height={tabH} viewBox={`0 0 28 ${tabH}`} style={{ display: 'block' }}>
-                    <path d={`M28,0 L28,${tabH} L16,${tabH} Q16,${tabH - 6} 10,${tabH - 6} L9,${tabH - 6} Q0,${tabH - 6} 0,${tabH - 16} L0,16 Q0,6 9,6 L10,6 Q16,6 16,0 Z`} fill={fillColor} stroke={strokeColor} strokeWidth="1" />
-                    <text x="13" y={tabH / 2 + 1} textAnchor="middle" dominantBaseline="middle" fill={textColor} fontSize="7.5" fontWeight="700" letterSpacing="0.2">{tab.label}</text>
-                  </svg>
-                </div>
-              );
-            })}
-          </div>
-        );
-      })()}
+      {/* Right binder tab - Projects */}
+      <div
+        className="fixed z-[10002] cursor-pointer right-tab-bounce"
+        style={{
+          right: '-10px',
+          top: '50vh',
+          transform: 'translateY(-50%)',
+          pointerEvents: 'auto',
+          display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined,
+        }}
+        onClick={() => {
+          window.location.href = '/projects';
+        }}
+        data-testid="right-projects-tab"
+        title="Projects"
+      >
+        <svg width="25" height="84" viewBox="0 0 25 84" style={{ display: 'block' }}>
+          <path d="M25,0 L25,84 L16,84 Q16,75 10,75 L9,75 Q0,75 0,63 L0,21 Q0,9 9,9 L10,9 Q16,9 16,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+          <g transform="translate(2, 36)">
+            <rect x="1" y="1" width="4" height="4" rx="0.5" fill="rgba(255,255,255,0.8)" stroke="rgba(255,255,255,0.8)" strokeWidth="0.3" />
+            <rect x="7" y="1" width="4" height="4" rx="0.5" fill="rgba(255,255,255,0.8)" stroke="rgba(255,255,255,0.8)" strokeWidth="0.3" />
+            <rect x="1" y="7" width="4" height="4" rx="0.5" fill="rgba(255,255,255,0.8)" stroke="rgba(255,255,255,0.8)" strokeWidth="0.3" />
+            <rect x="7" y="7" width="4" height="4" rx="0.5" fill="rgba(255,255,255,0.8)" stroke="rgba(255,255,255,0.8)" strokeWidth="0.3" />
+          </g>
+        </svg>
+      </div>
 
       {/* Spring out honeycombs for course readings - moved outside files button */}
       {/* CPPA122 */}
