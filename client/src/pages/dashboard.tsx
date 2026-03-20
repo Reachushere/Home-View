@@ -21744,10 +21744,8 @@ export default function Dashboard() {
                         })()}
                       </div>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', alignSelf: 'stretch', zIndex: 2 }}>
-                        <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0, maxHeight: '80px', overflowY: 'auto', scrollbarWidth: 'none' }}>
+                    <div style={{ flex: 1, minWidth: 0, maxHeight: '80px', overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', marginLeft: '15px' }}>
+                  <div style={{ position: 'absolute', left: '-12px', top: '0', bottom: '0', width: '3px', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)', zIndex: 2 }} />
                   <div className="flex flex-col gap-0.5">
                     {dueTodayTasks.map((task, tIdx) => {
                       const progressBarWidth = getProgressBarWidth(task);
@@ -21758,7 +21756,7 @@ export default function Dashboard() {
                       const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
                       const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                       return (
-                        <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '0px', backgroundColor: tIdx % 2 === 0 ? '#051729' : 'transparent', marginLeft: '-17px', marginRight: '-12px', paddingLeft: '17px', paddingRight: '12px' }}
+                        <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '0px', backgroundColor: tIdx % 2 === 0 ? '#051729' : 'transparent', marginLeft: '-15px', marginRight: '-12px', paddingLeft: '15px', paddingRight: '12px' }}
                           onMouseEnter={() => setHoveredCountdownTaskIdDebounced(task.id)}
                           onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                           ref={(rowEl) => {
