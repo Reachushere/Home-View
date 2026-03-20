@@ -13,13 +13,10 @@ import {
   ListMusic,
   Clock,
   Search,
-  Disc3,
   Library,
   Mic2,
   Volume2,
   VolumeX,
-  Menu,
-  X,
   Heart,
   Radio,
 } from "lucide-react";
@@ -113,56 +110,6 @@ function timeAgo(dateStr: string) {
   return `${Math.floor(hrs / 24)}d ago`;
 }
 
-function Visualizer({ playing }: { playing: boolean }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const barsRef = useRef<number[]>(Array.from({ length: 32 }, () => 0));
-  const animRef = useRef<number>();
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    const dpr = 2;
-    canvas.width = 400 * dpr;
-    canvas.height = 30 * dpr;
-    ctx.scale(dpr, dpr);
-    const w = 400, h = 30;
-    const animate = () => {
-      ctx.clearRect(0, 0, w, h);
-      const barCount = 32, gap = 2;
-      const barW = (w - (barCount - 1) * gap) / barCount;
-      for (let i = 0; i < barCount; i++) {
-        const centerDist = Math.abs(i - barCount / 2) / (barCount / 2);
-        const target = playing
-          ? (0.2 + Math.sin(Date.now() / 200 + i * 0.4) * 0.25 + Math.cos(Date.now() / 350 + i * 0.7) * 0.15 + Math.random() * 0.1) * (1 - centerDist * 0.3)
-          : 0.03 + Math.sin(Date.now() / 3000 + i * 0.2) * 0.02;
-        barsRef.current[i] += (target - barsRef.current[i]) * (playing ? 0.15 : 0.05);
-        const barH = Math.max(2, barsRef.current[i] * h);
-        const gradient = ctx.createLinearGradient(0, h, 0, h - barH);
-        if (playing) {
-          gradient.addColorStop(0, "rgba(29, 185, 84, 0.9)");
-          gradient.addColorStop(0.5, "rgba(29, 185, 84, 0.6)");
-          gradient.addColorStop(1, "rgba(29, 185, 84, 0.3)");
-        } else {
-          gradient.addColorStop(0, "rgba(255, 255, 255, 0.12)");
-          gradient.addColorStop(1, "rgba(255, 255, 255, 0.04)");
-        }
-        const x = i * (barW + gap);
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.roundRect(x, h - barH, barW, barH, barW / 2);
-        ctx.fill();
-      }
-      animRef.current = requestAnimationFrame(animate);
-    };
-    animate();
-    return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
-  }, [playing]);
-
-  return <canvas ref={canvasRef} style={{ width: "100%", height: "30px" }} data-testid="audio-visualizer" />;
-}
-
 export default function SpotifyPlayerPage() {
   const [, navigate] = useLocation();
   const [nowPlaying, setNowPlaying] = useState<NowPlaying | null>(null);
@@ -173,10 +120,9 @@ export default function SpotifyPlayerPage() {
   const [actionPending, setActionPending] = useState(false);
   const [localProgress, setLocalProgress] = useState(0);
 
-  const [menuOpen, setMenuOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<MenuCategory>("playlists");
-  const [showVolume, setShowVolume] = useState(false);
   const [volume, setVolume] = useState(50);
+  const [showVolume, setShowVolume] = useState(false);
   const [shuffleOn, setShuffleOn] = useState(false);
   const [repeatMode, setRepeatMode] = useState("off");
 
@@ -296,7 +242,6 @@ export default function SpotifyPlayerPage() {
 
   const handleCategorySelect = (cat: MenuCategory) => {
     setActiveCategory(cat);
-    setMenuOpen(false);
     if (cat !== "search") fetchBrowseData(cat);
   };
 
@@ -343,7 +288,7 @@ export default function SpotifyPlayerPage() {
   const progressPercent = nowPlaying?.duration ? (localProgress / nowPlaying.duration) * 100 : 0;
   const isPlaying = !!nowPlaying?.playing;
 
-  const menuCategories: { key: MenuCategory; label: string; icon: any }[] = [
+  const menuItems: { key: MenuCategory; label: string; icon: any }[] = [
     { key: "search", label: "Search", icon: Search },
     { key: "playlists", label: "Playlists", icon: ListMusic },
     { key: "albums", label: "Albums", icon: Library },
@@ -356,50 +301,67 @@ export default function SpotifyPlayerPage() {
     if (activeCategory === "search") {
       return (
         <div className="flex-1 flex flex-col overflow-hidden">
-          <div className="px-3 pt-3 pb-2">
-            <div className="flex items-center gap-2 px-3 py-2 rounded-xl"
+          <div className="px-4 pt-4 pb-3">
+            <div className="flex items-center gap-3 px-4 py-3 rounded-2xl"
               style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}>
-              <Search className="h-4 w-4 text-white/30 flex-shrink-0" />
+              <Search className="h-5 w-5 text-white/30 flex-shrink-0" />
               <input type="text" value={searchQuery} onChange={(e) => handleSearch(e.target.value)}
                 placeholder="Search songs, artists, albums..."
-                className="flex-1 bg-transparent text-sm text-white/90 placeholder:text-white/25 outline-none"
+                className="flex-1 bg-transparent text-base text-white/90 placeholder:text-white/20 outline-none"
                 autoFocus data-testid="search-input" />
-              {searchLoading && <Loader2 className="h-3.5 w-3.5 animate-spin text-white/20" />}
+              {searchLoading && <Loader2 className="h-4 w-4 animate-spin text-white/20" />}
             </div>
           </div>
-          <div className="flex-1 overflow-y-auto px-3 pb-3" style={{ scrollbarWidth: "none" }}>
+          <div className="flex-1 overflow-y-auto px-4 pb-4" style={{ scrollbarWidth: "none" }}>
             {searchResults && (
               <>
                 {searchResults.tracks.length > 0 && (
-                  <div className="mb-3">
-                    <h3 className="text-[9px] uppercase tracking-[0.2em] text-white/30 font-semibold mb-1.5 px-1">Tracks</h3>
-                    {searchResults.tracks.slice(0, 5).map((t) => (
+                  <div className="mb-4">
+                    <h3 className="text-xs uppercase tracking-[0.15em] text-white/25 font-semibold mb-2 px-1">Tracks</h3>
+                    {searchResults.tracks.slice(0, 6).map((t) => (
                       <button key={t.id} onClick={() => playTrack(t.uri)}
-                        className="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-white/[0.04] transition-colors"
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.04] transition-colors"
                         data-testid={`search-track-${t.id}`}>
-                        <div className="w-8 h-8 rounded flex-shrink-0 overflow-hidden"
+                        <div className="w-10 h-10 rounded-lg flex-shrink-0 overflow-hidden"
                           style={{ background: t.imageSmall ? `url(${t.imageSmall}) center/cover` : "rgba(255,255,255,0.05)" }} />
                         <div className="flex-1 min-w-0 text-left">
-                          <p className="text-[11px] text-white/80 truncate font-medium">{t.name}</p>
-                          <p className="text-[9px] text-white/30 truncate">{t.artist}</p>
+                          <p className="text-sm text-white/80 truncate font-medium">{t.name}</p>
+                          <p className="text-xs text-white/30 truncate">{t.artist}</p>
                         </div>
-                        <span className="text-[9px] text-white/15 font-mono">{formatMs(t.duration)}</span>
+                        <span className="text-xs text-white/15 font-mono">{formatMs(t.duration)}</span>
                       </button>
                     ))}
                   </div>
                 )}
                 {searchResults.albums.length > 0 && (
-                  <div className="mb-3">
-                    <h3 className="text-[9px] uppercase tracking-[0.2em] text-white/30 font-semibold mb-1.5 px-1">Albums</h3>
+                  <div className="mb-4">
+                    <h3 className="text-xs uppercase tracking-[0.15em] text-white/25 font-semibold mb-2 px-1">Albums</h3>
                     {searchResults.albums.slice(0, 4).map((a) => (
                       <button key={a.id} onClick={() => playItem(a.uri)}
-                        className="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-white/[0.04] transition-colors"
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.04] transition-colors"
                         data-testid={`search-album-${a.id}`}>
-                        <div className="w-8 h-8 rounded flex-shrink-0 overflow-hidden"
+                        <div className="w-10 h-10 rounded-lg flex-shrink-0 overflow-hidden"
                           style={{ background: a.imageSmall ? `url(${a.imageSmall}) center/cover` : "rgba(255,255,255,0.05)" }} />
                         <div className="flex-1 min-w-0 text-left">
-                          <p className="text-[11px] text-white/80 truncate font-medium">{a.name}</p>
-                          <p className="text-[9px] text-white/30 truncate">{a.artist}</p>
+                          <p className="text-sm text-white/80 truncate font-medium">{a.name}</p>
+                          <p className="text-xs text-white/30 truncate">{a.artist}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {searchResults.artists.length > 0 && (
+                  <div className="mb-4">
+                    <h3 className="text-xs uppercase tracking-[0.15em] text-white/25 font-semibold mb-2 px-1">Artists</h3>
+                    {searchResults.artists.slice(0, 4).map((a) => (
+                      <button key={a.id} onClick={() => playItem(a.uri)}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.04] transition-colors"
+                        data-testid={`search-artist-${a.id}`}>
+                        <div className="w-10 h-10 rounded-full flex-shrink-0 overflow-hidden"
+                          style={{ background: a.imageSmall ? `url(${a.imageSmall}) center/cover` : "rgba(255,255,255,0.05)" }} />
+                        <div className="flex-1 min-w-0 text-left">
+                          <p className="text-sm text-white/80 truncate font-medium">{a.name}</p>
+                          <p className="text-xs text-white/30 truncate">{a.genres?.slice(0, 2).join(", ")}</p>
                         </div>
                       </button>
                     ))}
@@ -408,9 +370,9 @@ export default function SpotifyPlayerPage() {
               </>
             )}
             {!searchResults && !searchQuery && (
-              <div className="flex flex-col items-center justify-center h-full opacity-30">
-                <Search className="h-10 w-10 mb-2" />
-                <p className="text-[10px]">Search for music</p>
+              <div className="flex flex-col items-center justify-center h-full opacity-20">
+                <Search className="h-12 w-12 mb-3" />
+                <p className="text-sm">Search for music</p>
               </div>
             )}
           </div>
@@ -419,25 +381,25 @@ export default function SpotifyPlayerPage() {
     }
 
     if (browseLoading) {
-      return <div className="flex-1 flex items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-white/20" /></div>;
+      return <div className="flex-1 flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-white/15" /></div>;
     }
 
     if (activeCategory === "playlists") {
       return (
-        <div className="flex-1 overflow-y-auto px-3 py-2" style={{ scrollbarWidth: "none" }}>
-          <div className="grid grid-cols-2 gap-2">
+        <div className="flex-1 overflow-y-auto px-4 py-3" style={{ scrollbarWidth: "none" }}>
+          <div className="grid grid-cols-3 gap-3">
             {playlists.map((p) => (
               <button key={p.id} onClick={() => playItem(p.uri)}
-                className="flex flex-col rounded-lg overflow-hidden hover:bg-white/[0.04] transition-colors text-left"
-                style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.04)" }}
+                className="flex flex-col rounded-xl overflow-hidden hover:bg-white/[0.06] transition-all text-left group"
+                style={{ background: "rgba(255,255,255,0.02)" }}
                 data-testid={`playlist-${p.id}`}>
-                <div className="aspect-square w-full overflow-hidden"
-                  style={{ background: p.image ? `url(${p.image}) center/cover` : "rgba(255,255,255,0.05)" }}>
-                  {!p.image && <div className="w-full h-full flex items-center justify-center"><ListMusic className="h-6 w-6 text-white/10" /></div>}
+                <div className="aspect-square w-full overflow-hidden rounded-t-xl"
+                  style={{ background: p.image ? `url(${p.image}) center/cover` : "rgba(255,255,255,0.04)" }}>
+                  {!p.image && <div className="w-full h-full flex items-center justify-center"><ListMusic className="h-8 w-8 text-white/8" /></div>}
                 </div>
-                <div className="p-2">
-                  <p className="text-[10px] text-white/80 truncate font-medium">{p.name}</p>
-                  <p className="text-[8px] text-white/25 truncate mt-0.5">{p.trackCount} tracks</p>
+                <div className="p-2.5">
+                  <p className="text-sm text-white/70 truncate font-medium group-hover:text-white/90 transition-colors">{p.name}</p>
+                  <p className="text-[10px] text-white/20 truncate mt-0.5">{p.trackCount} tracks</p>
                 </div>
               </button>
             ))}
@@ -448,20 +410,20 @@ export default function SpotifyPlayerPage() {
 
     if (activeCategory === "albums") {
       return (
-        <div className="flex-1 overflow-y-auto px-3 py-2" style={{ scrollbarWidth: "none" }}>
-          <div className="grid grid-cols-2 gap-2">
+        <div className="flex-1 overflow-y-auto px-4 py-3" style={{ scrollbarWidth: "none" }}>
+          <div className="grid grid-cols-3 gap-3">
             {albums.map((a) => (
               <button key={a.id} onClick={() => playItem(a.uri)}
-                className="flex flex-col rounded-lg overflow-hidden hover:bg-white/[0.04] transition-colors text-left"
-                style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.04)" }}
+                className="flex flex-col rounded-xl overflow-hidden hover:bg-white/[0.06] transition-all text-left group"
+                style={{ background: "rgba(255,255,255,0.02)" }}
                 data-testid={`album-${a.id}`}>
-                <div className="aspect-square w-full overflow-hidden"
-                  style={{ background: a.image ? `url(${a.image}) center/cover` : "rgba(255,255,255,0.05)" }}>
-                  {!a.image && <div className="w-full h-full flex items-center justify-center"><Library className="h-6 w-6 text-white/10" /></div>}
+                <div className="aspect-square w-full overflow-hidden rounded-t-xl"
+                  style={{ background: a.image ? `url(${a.image}) center/cover` : "rgba(255,255,255,0.04)" }}>
+                  {!a.image && <div className="w-full h-full flex items-center justify-center"><Library className="h-8 w-8 text-white/8" /></div>}
                 </div>
-                <div className="p-2">
-                  <p className="text-[10px] text-white/80 truncate font-medium">{a.name}</p>
-                  <p className="text-[8px] text-white/25 truncate mt-0.5">{a.artist} {a.year && `· ${a.year}`}</p>
+                <div className="p-2.5">
+                  <p className="text-sm text-white/70 truncate font-medium group-hover:text-white/90 transition-colors">{a.name}</p>
+                  <p className="text-[10px] text-white/20 truncate mt-0.5">{a.artist} {a.year && `· ${a.year}`}</p>
                 </div>
               </button>
             ))}
@@ -472,17 +434,17 @@ export default function SpotifyPlayerPage() {
 
     if (activeCategory === "artists") {
       return (
-        <div className="flex-1 overflow-y-auto px-3 py-2" style={{ scrollbarWidth: "none" }}>
-          <div className="grid grid-cols-2 gap-3">
+        <div className="flex-1 overflow-y-auto px-4 py-3" style={{ scrollbarWidth: "none" }}>
+          <div className="grid grid-cols-3 gap-4">
             {artists.map((a) => (
               <button key={a.id} onClick={() => playItem(a.uri)}
-                className="flex flex-col items-center gap-1.5 p-2 rounded-lg hover:bg-white/[0.04] transition-colors"
+                className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-white/[0.04] transition-colors group"
                 data-testid={`artist-${a.id}`}>
-                <div className="w-16 h-16 rounded-full overflow-hidden"
-                  style={{ background: a.image ? `url(${a.image}) center/cover` : "rgba(255,255,255,0.05)", border: "2px solid rgba(255,255,255,0.06)" }}>
-                  {!a.image && <div className="w-full h-full flex items-center justify-center"><Mic2 className="h-5 w-5 text-white/10" /></div>}
+                <div className="w-20 h-20 rounded-full overflow-hidden"
+                  style={{ background: a.image ? `url(${a.image}) center/cover` : "rgba(255,255,255,0.04)", border: "2px solid rgba(255,255,255,0.06)" }}>
+                  {!a.image && <div className="w-full h-full flex items-center justify-center"><Mic2 className="h-6 w-6 text-white/8" /></div>}
                 </div>
-                <p className="text-[10px] text-white/80 truncate w-full text-center font-medium">{a.name}</p>
+                <p className="text-sm text-white/70 truncate w-full text-center font-medium group-hover:text-white/90 transition-colors">{a.name}</p>
               </button>
             ))}
           </div>
@@ -492,19 +454,19 @@ export default function SpotifyPlayerPage() {
 
     if (activeCategory === "tracks") {
       return (
-        <div className="flex-1 overflow-y-auto px-3 py-2" style={{ scrollbarWidth: "none" }}>
+        <div className="flex-1 overflow-y-auto px-4 py-3" style={{ scrollbarWidth: "none" }}>
           {tracks.map((t, i) => (
             <button key={t.id} onClick={() => playTrack(t.uri)}
-              className="w-full flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-white/[0.04] transition-colors"
+              className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-white/[0.04] transition-colors"
               style={{ borderBottom: i < tracks.length - 1 ? "1px solid rgba(255,255,255,0.03)" : "none" }}
               data-testid={`track-${t.id}`}>
-              <div className="w-8 h-8 rounded flex-shrink-0 overflow-hidden"
-                style={{ background: t.imageSmall ? `url(${t.imageSmall}) center/cover` : "rgba(255,255,255,0.05)" }} />
+              <div className="w-10 h-10 rounded-lg flex-shrink-0 overflow-hidden"
+                style={{ background: t.imageSmall ? `url(${t.imageSmall}) center/cover` : "rgba(255,255,255,0.04)" }} />
               <div className="flex-1 min-w-0 text-left">
-                <p className="text-[11px] text-white/80 truncate font-medium">{t.name}</p>
-                <p className="text-[9px] text-white/30 truncate">{t.artist}</p>
+                <p className="text-sm text-white/80 truncate font-medium">{t.name}</p>
+                <p className="text-xs text-white/30 truncate">{t.artist}</p>
               </div>
-              <span className="text-[9px] text-white/15 font-mono flex-shrink-0">{formatMs(t.duration)}</span>
+              <span className="text-xs text-white/15 font-mono flex-shrink-0">{formatMs(t.duration)}</span>
             </button>
           ))}
         </div>
@@ -513,23 +475,23 @@ export default function SpotifyPlayerPage() {
 
     if (activeCategory === "recent") {
       return (
-        <div className="flex-1 overflow-y-auto px-3 py-2" style={{ scrollbarWidth: "none" }}>
+        <div className="flex-1 overflow-y-auto px-4 py-3" style={{ scrollbarWidth: "none" }}>
           {recent.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full opacity-30">
-              <Clock className="h-10 w-10 mb-2" /><p className="text-[10px]">No recent tracks</p>
+            <div className="flex flex-col items-center justify-center h-full opacity-20">
+              <Clock className="h-12 w-12 mb-3" /><p className="text-sm">No recent tracks</p>
             </div>
           ) : recent.map((track, i) => (
             <a key={i} href={track.trackUrl} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-white/[0.04] transition-colors group"
+              className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-white/[0.04] transition-colors group"
               style={{ borderBottom: i < recent.length - 1 ? "1px solid rgba(255,255,255,0.03)" : "none" }}
               data-testid={`recent-track-${i}`}>
-              <div className="w-8 h-8 rounded flex-shrink-0 overflow-hidden"
-                style={{ background: track.albumArtSmall ? `url(${track.albumArtSmall}) center/cover` : "rgba(255,255,255,0.05)" }} />
+              <div className="w-10 h-10 rounded-lg flex-shrink-0 overflow-hidden"
+                style={{ background: track.albumArtSmall ? `url(${track.albumArtSmall}) center/cover` : "rgba(255,255,255,0.04)" }} />
               <div className="flex-1 min-w-0">
-                <p className="text-[11px] text-white/70 truncate group-hover:text-white transition-colors font-medium">{track.name}</p>
-                <p className="text-[9px] text-white/25 truncate">{track.artist}</p>
+                <p className="text-sm text-white/70 truncate group-hover:text-white transition-colors font-medium">{track.name}</p>
+                <p className="text-xs text-white/25 truncate">{track.artist}</p>
               </div>
-              <span className="text-[8px] text-white/15 flex-shrink-0 font-mono">{timeAgo(track.playedAt)}</span>
+              <span className="text-[10px] text-white/15 flex-shrink-0 font-mono">{timeAgo(track.playedAt)}</span>
             </a>
           ))}
         </div>
@@ -542,283 +504,242 @@ export default function SpotifyPlayerPage() {
   return (
     <div
       className="fixed inset-0 flex flex-col overflow-hidden select-none"
-      style={{ background: "#0a0a0f", fontFamily: "'Inter', system-ui, sans-serif" }}
+      style={{ background: "#0d0d12", fontFamily: "'Inter', system-ui, sans-serif" }}
       data-testid="spotify-player-page"
     >
       <div className="absolute inset-0 pointer-events-none" style={{
         backgroundImage: nowPlaying?.albumArt ? `url(${nowPlaying.albumArt})` : "none",
         backgroundSize: "cover", backgroundPosition: "center",
-        filter: "blur(80px) brightness(0.15) saturate(1.5)", transform: "scale(1.2)",
-        transition: "background-image 1s ease",
+        filter: "blur(60px) grayscale(50%) brightness(0.15) saturate(1.2)", transform: "scale(1.3)",
+        transition: "background-image 1.5s ease",
       }} />
-      <div className="absolute inset-0 pointer-events-none" style={{ background: "rgba(0,0,0,0.5)" }} />
+      <div className="absolute inset-0 pointer-events-none" style={{ background: "rgba(0,0,0,0.45)" }} />
 
-      {menuOpen && (
-        <div className="fixed inset-0 z-40" style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)" }}
-          onClick={() => setMenuOpen(false)} data-testid="menu-overlay" />
-      )}
+      <div className="relative z-10 flex-1 flex overflow-hidden">
 
-      <div className="fixed top-0 left-0 bottom-0 z-50 flex flex-col" style={{
-        width: 220,
-        background: "linear-gradient(180deg, rgba(18,18,24,0.98) 0%, rgba(10,10,15,0.98) 100%)",
-        borderRight: "1px solid rgba(255,255,255,0.06)",
-        transform: menuOpen ? "translateX(0)" : "translateX(-100%)",
-        transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-        backdropFilter: "blur(20px)",
-        boxShadow: menuOpen ? "4px 0 30px rgba(0,0,0,0.5)" : "none",
-      }} data-testid="side-menu">
-        <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "linear-gradient(135deg, #1DB954, #1ed760)" }}>
-              <Music2 className="h-3.5 w-3.5 text-black" />
-            </div>
-            <span className="text-xs font-semibold text-white/90">Music</span>
-          </div>
-          <button onClick={() => setMenuOpen(false)} className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors" data-testid="close-menu">
-            <X className="h-3.5 w-3.5 text-white/50" />
-          </button>
-        </div>
-        <div className="flex-1 py-2 overflow-y-auto" style={{ scrollbarWidth: "none" }}>
-          {menuCategories.map(({ key, label, icon: Icon }) => (
+        <div className="flex flex-col py-8 px-2" style={{
+          width: 200,
+          flexShrink: 0,
+          background: "rgba(0,0,0,0.25)",
+          borderRight: "1px solid rgba(255,255,255,0.04)",
+        }} data-testid="side-menu">
+          {menuItems.map(({ key, label, icon: Icon }) => (
             <button key={key} onClick={() => handleCategorySelect(key)}
-              className="w-full flex items-center gap-2.5 px-4 py-2.5 transition-all"
+              className="flex items-center gap-3 w-full px-5 py-4 transition-all text-left"
               style={{
-                background: activeCategory === key ? "rgba(29,185,84,0.12)" : "transparent",
-                borderLeft: activeCategory === key ? "3px solid #1DB954" : "3px solid transparent",
+                color: activeCategory === key ? "#ffffffd0" : "#ffffff60",
+                background: activeCategory === key ? "rgba(255,255,255,0.06)" : "transparent",
+                borderRadius: 12,
               }} data-testid={`menu-${key}`}>
-              <Icon style={{ color: activeCategory === key ? "#1DB954" : "rgba(255,255,255,0.4)", width: 16, height: 16 }} />
-              <span className="text-xs font-medium" style={{ color: activeCategory === key ? "#1DB954" : "rgba(255,255,255,0.6)" }}>{label}</span>
+              <Icon style={{ width: 22, height: 22, opacity: activeCategory === key ? 1 : 0.5 }} />
+              <span style={{ fontSize: 22, fontWeight: 500, letterSpacing: "-0.01em" }}>{label}</span>
             </button>
           ))}
+
+          <div className="flex-1" />
+
+          {!isEmbedded && (
+            <button onClick={() => {
+              const p = new URLSearchParams(window.location.search);
+              window.location.href = "/" + (p.get("auth") ? `?auth=${p.get("auth")}` : "");
+            }}
+              className="flex items-center gap-3 w-full px-5 py-4 transition-all text-left"
+              style={{ color: "#ffffff40", borderRadius: 12 }}
+              data-testid="back-to-dashboard">
+              <ChevronLeft style={{ width: 22, height: 22 }} />
+              <span style={{ fontSize: 18, fontWeight: 500 }}>Back</span>
+            </button>
+          )}
+        </div>
+
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {renderBrowseContent()}
+        </div>
+
+        <div className="flex flex-col items-center justify-center px-6" style={{
+          width: 340,
+          flexShrink: 0,
+          background: "rgba(0,0,0,0.2)",
+          borderLeft: "1px solid rgba(255,255,255,0.04)",
+        }}>
+          {loading ? (
+            <div className="flex flex-col items-center gap-3">
+              <Loader2 className="h-10 w-10 animate-spin" style={{ color: "rgba(255,255,255,0.15)" }} />
+              <span className="text-[10px] uppercase tracking-[0.3em] text-white/15">Connecting</span>
+            </div>
+          ) : connectionError || notConnected ? (
+            <div className="flex flex-col items-center gap-4 text-center px-4">
+              <div className="w-20 h-20 rounded-full flex items-center justify-center" style={{
+                background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
+              }}>
+                <Music2 className="h-10 w-10 text-white/10" />
+              </div>
+              <div>
+                <p className="text-sm text-white/40 font-medium mb-1">
+                  {notConnected ? "Spotify Not Connected" : "Connection Issue"}
+                </p>
+                <p className="text-xs text-white/20">
+                  {notConnected ? "Connect your account" : "Unable to reach Spotify"}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                {notConnected && (
+                  <a href="/api/spotify/login"
+                    className="px-5 py-2.5 rounded-full text-xs font-semibold text-black transition-all hover:scale-105"
+                    style={{ background: "#1DB954" }}
+                    data-testid="connect-spotify">
+                    Connect
+                  </a>
+                )}
+                <button onClick={fetchNowPlaying}
+                  className="px-5 py-2.5 rounded-full text-xs font-medium text-white/50 hover:text-white transition-all"
+                  style={{ background: "rgba(255,255,255,0.06)" }}
+                  data-testid="retry-spotify">
+                  Retry
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-4 w-full">
+              <div className="rounded-2xl overflow-hidden" style={{
+                width: "min(260px, 38vh)", height: "min(260px, 38vh)",
+                boxShadow: isPlaying
+                  ? "0 12px 60px rgba(0,0,0,0.7), 0 0 30px rgba(255,255,255,0.02)"
+                  : "0 8px 40px rgba(0,0,0,0.5)",
+                transition: "box-shadow 0.5s",
+              }}>
+                {nowPlaying?.albumArt ? (
+                  <img src={nowPlaying.albumArt} alt={nowPlaying.album || ""}
+                    className="w-full h-full object-cover" data-testid="album-art" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center" style={{ background: "linear-gradient(135deg, #1a1a2e, #16213e)" }}>
+                    <Music2 className="h-14 w-14 text-white/8" />
+                  </div>
+                )}
+              </div>
+
+              <div className="text-center w-full px-2">
+                <h1 className="text-xl font-bold text-white/90 truncate" data-testid="track-name">
+                  {nowPlaying?.name || "Nothing Playing"}
+                </h1>
+                <p className="text-base mt-1 truncate text-white/50 font-medium" data-testid="track-artist">
+                  {nowPlaying?.artist || "Play something on Spotify"}
+                </p>
+                {nowPlaying?.album && (
+                  <p className="text-xs mt-1 truncate text-white/20 italic" data-testid="track-album">{nowPlaying.album}</p>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="relative z-10 flex-1 flex flex-col overflow-hidden">
-        <div className="flex-1 flex overflow-hidden">
-
-          <div className="flex flex-col items-center justify-center px-4" style={{
-            width: "45%", minWidth: 280,
-            borderRight: "1px solid rgba(255,255,255,0.05)",
-            background: "rgba(0,0,0,0.15)",
-          }}>
-            {loading ? (
-              <div className="flex flex-col items-center gap-3">
-                <Loader2 className="h-12 w-12 animate-spin" style={{ color: "rgba(29,185,84,0.4)" }} />
-                <span className="text-[9px] uppercase tracking-[0.3em] text-white/20">Connecting</span>
-              </div>
-            ) : connectionError || notConnected ? (
-              <div className="flex flex-col items-center gap-4 text-center px-6">
-                <div className="w-20 h-20 rounded-full flex items-center justify-center" style={{
-                  background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
-                }}>
-                  <Music2 className="h-10 w-10 text-white/15" />
-                </div>
-                <div>
-                  <p className="text-xs text-white/50 font-medium mb-1">
-                    {notConnected ? "Spotify Not Connected" : "Connection Issue"}
-                  </p>
-                  <p className="text-[10px] text-white/25 max-w-xs">
-                    {notConnected ? "Connect your account to get started" : "Unable to reach Spotify"}
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  {notConnected && (
-                    <a href="/api/spotify/login"
-                      className="px-4 py-2 rounded-full text-[10px] font-semibold text-black transition-all hover:scale-105"
-                      style={{ background: "#1DB954", boxShadow: "0 0 15px rgba(29,185,84,0.3)" }}
-                      data-testid="connect-spotify">
-                      Connect Spotify
-                    </a>
-                  )}
-                  <button onClick={fetchNowPlaying}
-                    className="px-4 py-2 rounded-full text-[10px] font-medium text-white/60 hover:text-white transition-all"
-                    style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}
-                    data-testid="retry-spotify">
-                    Retry
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center gap-3 w-full" style={{ maxWidth: 320 }}>
-                <div className="relative rounded-2xl overflow-hidden" style={{
-                  width: "min(220px, 35vh)", height: "min(220px, 35vh)",
-                  boxShadow: isPlaying
-                    ? "0 8px 50px rgba(0,0,0,0.6), 0 0 30px rgba(29,185,84,0.1)"
-                    : "0 8px 30px rgba(0,0,0,0.5)",
-                  transition: "box-shadow 0.5s",
-                }}>
-                  {nowPlaying?.albumArt ? (
-                    <img src={nowPlaying.albumArt} alt={nowPlaying.album || ""}
-                      className="w-full h-full object-cover"
-                      style={{ animation: isPlaying ? "subtlePulse 4s ease-in-out infinite" : "none" }}
-                      data-testid="album-art" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center" style={{ background: "linear-gradient(135deg, #1a1a2e, #16213e)" }}>
-                      <Music2 className="h-12 w-12 text-white/10" />
-                    </div>
-                  )}
-                </div>
-
-                <div className="text-center w-full">
-                  <h1 className="text-base font-bold text-white truncate" data-testid="track-name">
-                    {nowPlaying?.name || "Nothing Playing"}
-                  </h1>
-                  <p className="text-xs mt-0.5 truncate font-medium"
-                    style={{ color: isPlaying ? "#1DB954" : "rgba(255,255,255,0.35)" }}
-                    data-testid="track-artist">
-                    {nowPlaying?.artist || "Play something on Spotify"}
-                  </p>
-                  {nowPlaying?.album && (
-                    <p className="text-[10px] mt-0.5 truncate text-white/20 italic" data-testid="track-album">{nowPlaying.album}</p>
-                  )}
-                </div>
-
-                <Visualizer playing={isPlaying} />
-
-                {nowPlaying?.duration && (
-                  <div className="w-full px-1">
-                    <div className="relative rounded-full overflow-hidden cursor-pointer group"
-                      style={{ height: 3, background: "rgba(255,255,255,0.08)" }} data-testid="progress-bar">
-                      <div className="absolute inset-y-0 left-0 rounded-full" style={{
-                        width: `${progressPercent}%`, background: "#1DB954",
-                        boxShadow: "0 0 6px rgba(29,185,84,0.3)", transition: "width 0.5s linear",
-                      }} />
-                    </div>
-                    <div className="flex justify-between mt-1">
-                      <span className="text-[9px] text-white/25 font-mono tabular-nums" data-testid="progress-current">{formatMs(localProgress)}</span>
-                      <span className="text-[9px] text-white/25 font-mono tabular-nums" data-testid="progress-total">{formatMs(nowPlaying.duration)}</span>
-                    </div>
-                  </div>
-                )}
-
-                <div className="flex items-center gap-2">
-                  <button onClick={handleToggleShuffle}
-                    className="w-8 h-8 rounded-full flex items-center justify-center transition-all"
-                    style={{ color: shuffleOn ? "#1DB954" : "rgba(255,255,255,0.25)" }}
-                    data-testid="button-shuffle">
-                    <Shuffle className="h-3.5 w-3.5" />
-                  </button>
-                  <button onClick={() => doAction("previous")} disabled={actionPending}
-                    className="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95 disabled:opacity-30"
-                    style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}
-                    data-testid="button-previous">
-                    <SkipBack className="h-4 w-4 text-white/70 fill-white/70" />
-                  </button>
-                  <button onClick={() => doAction(isPlaying ? "pause" : "play", "PUT")} disabled={actionPending}
-                    className="w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
-                    style={{
-                      background: "#1DB954",
-                      boxShadow: isPlaying ? "0 0 25px rgba(29,185,84,0.4), 0 4px 12px rgba(0,0,0,0.4)" : "0 0 12px rgba(29,185,84,0.2), 0 4px 12px rgba(0,0,0,0.4)",
-                    }} data-testid="button-play-pause">
-                    {actionPending ? (
-                      <Loader2 className="h-5 w-5 text-black animate-spin" />
-                    ) : isPlaying ? (
-                      <Pause className="h-5 w-5 text-black fill-black" />
-                    ) : (
-                      <Play className="h-5 w-5 text-black fill-black ml-0.5" />
-                    )}
-                  </button>
-                  <button onClick={() => doAction("next")} disabled={actionPending}
-                    className="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95 disabled:opacity-30"
-                    style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}
-                    data-testid="button-next">
-                    <SkipForward className="h-4 w-4 text-white/70 fill-white/70" />
-                  </button>
-                  <button onClick={handleToggleRepeat}
-                    className="w-8 h-8 rounded-full flex items-center justify-center transition-all relative"
-                    style={{ color: repeatMode !== "off" ? "#1DB954" : "rgba(255,255,255,0.25)" }}
-                    data-testid="button-repeat">
-                    <Repeat className="h-3.5 w-3.5" />
-                    {repeatMode === "track" && (
-                      <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full text-[6px] font-bold flex items-center justify-center"
-                        style={{ background: "#1DB954", color: "black" }}>1</span>
-                    )}
-                  </button>
-                </div>
-
-                {showVolume && (
-                  <div className="w-full flex items-center gap-2 px-1" data-testid="volume-slider-container">
-                    <VolumeX className="h-3 w-3 text-white/30 cursor-pointer hover:text-white/60 transition-colors flex-shrink-0"
-                      onClick={() => handleVolumeChange(0)} />
-                    <div className="flex-1 relative h-6 flex items-center group cursor-pointer"
-                      onClick={(e) => {
-                        const rect = e.currentTarget.getBoundingClientRect();
-                        const pct = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
-                        handleVolumeChange(Math.round(pct));
-                      }}>
-                      <div className="w-full h-1 rounded-full" style={{ background: "rgba(255,255,255,0.08)" }}>
-                        <div className="h-full rounded-full transition-all" style={{
-                          width: `${volume}%`, background: "linear-gradient(90deg, #1DB954, #1ed760)",
-                          boxShadow: "0 0 6px rgba(29,185,84,0.3)",
-                        }} />
-                      </div>
-                    </div>
-                    <Volume2 className="h-3 w-3 text-white/30 cursor-pointer hover:text-white/60 transition-colors flex-shrink-0"
-                      onClick={() => handleVolumeChange(100)} />
-                    <span className="text-[9px] text-white/30 font-mono w-6 text-right">{volume}%</span>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "rgba(0,0,0,0.1)" }}>
-            <div className="flex items-center px-3 py-2 gap-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-              <button onClick={() => setMenuOpen(true)}
-                className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/8 transition-colors flex-shrink-0"
-                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}
-                data-testid="hamburger-menu">
-                <Menu className="h-3.5 w-3.5 text-white/60" />
-              </button>
-
-              <div className="flex-1 flex items-center gap-1 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
-                {menuCategories.map(({ key, label, icon: Icon }) => (
-                  <button key={key} onClick={() => handleCategorySelect(key)}
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full whitespace-nowrap transition-all flex-shrink-0"
-                    style={{
-                      background: activeCategory === key ? "rgba(29,185,84,0.15)" : "rgba(255,255,255,0.04)",
-                      border: `1px solid ${activeCategory === key ? "rgba(29,185,84,0.3)" : "rgba(255,255,255,0.06)"}`,
-                    }}
-                    data-testid={`tab-${key}`}>
-                    <Icon style={{ width: 12, height: 12, color: activeCategory === key ? "#1DB954" : "rgba(255,255,255,0.4)" }} />
-                    <span className="text-[10px] font-medium" style={{ color: activeCategory === key ? "#1DB954" : "rgba(255,255,255,0.5)" }}>{label}</span>
-                  </button>
-                ))}
-              </div>
-
-              <div className="flex items-center gap-1 flex-shrink-0">
-                <button onClick={() => setShowVolume(!showVolume)}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/8 transition-colors"
-                  style={{
-                    background: showVolume ? "rgba(29,185,84,0.15)" : "rgba(255,255,255,0.04)",
-                    border: `1px solid ${showVolume ? "rgba(29,185,84,0.3)" : "rgba(255,255,255,0.06)"}`,
-                  }} data-testid="toggle-volume">
-                  <Volume2 className="h-3.5 w-3.5" style={{ color: showVolume ? "#1DB954" : "rgba(255,255,255,0.4)" }} />
-                </button>
-                {!isEmbedded && (
-                  <button onClick={() => {
-                    const p = new URLSearchParams(window.location.search);
-                    window.location.href = "/" + (p.get("auth") ? `?auth=${p.get("auth")}` : "");
-                  }}
-                    className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/8 transition-colors"
-                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}
-                    data-testid="back-to-dashboard">
-                    <ChevronLeft className="h-3.5 w-3.5 text-white/40" />
-                  </button>
-                )}
-              </div>
+      <div style={{
+        background: "rgba(0,0,0,0.35)",
+        borderTop: "1px solid rgba(255,255,255,0.04)",
+        backdropFilter: "blur(20px)",
+      }} className="relative z-10">
+        {nowPlaying?.duration && (
+          <div className="w-full px-6">
+            <div className="relative rounded-full overflow-hidden cursor-pointer" style={{ height: 4, background: "rgba(255,255,255,0.06)" }}
+              onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                const newMs = Math.round(pct * (nowPlaying.duration || 0));
+                setLocalProgress(newMs);
+              }}
+              data-testid="progress-bar">
+              <div className="absolute inset-y-0 left-0 rounded-full" style={{
+                width: `${progressPercent}%`, background: "#ffffffb0",
+                transition: "width 0.5s linear",
+              }} />
             </div>
-
-            {renderBrowseContent()}
+            <div className="flex justify-between mt-1 mb-1">
+              <span className="text-[10px] text-white/20 font-mono tabular-nums" data-testid="progress-current">{formatMs(localProgress)}</span>
+              <span className="text-[10px] text-white/20 font-mono tabular-nums" data-testid="progress-total">{formatMs(nowPlaying.duration)}</span>
+            </div>
           </div>
+        )}
+
+        <div className="flex items-center justify-center gap-4 py-3 px-6">
+          <button onClick={handleToggleShuffle}
+            className="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:bg-white/[0.06]"
+            style={{ color: shuffleOn ? "#ffffffd0" : "rgba(255,255,255,0.2)" }}
+            data-testid="button-shuffle">
+            <Shuffle className="h-5 w-5" />
+          </button>
+
+          <button onClick={() => doAction("previous")} disabled={actionPending}
+            className="w-14 h-14 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95 disabled:opacity-30 hover:bg-white/[0.06]"
+            data-testid="button-previous">
+            <SkipBack className="h-6 w-6 text-white/60 fill-white/60" />
+          </button>
+
+          <button onClick={() => doAction(isPlaying ? "pause" : "play", "PUT")} disabled={actionPending}
+            className="w-16 h-16 rounded-full flex items-center justify-center transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
+            style={{
+              background: "rgba(255,255,255,0.12)",
+              border: "1px solid rgba(255,255,255,0.15)",
+              backdropFilter: "blur(10px)",
+            }} data-testid="button-play-pause">
+            {actionPending ? (
+              <Loader2 className="h-7 w-7 text-white/80 animate-spin" />
+            ) : isPlaying ? (
+              <Pause className="h-7 w-7 text-white/90 fill-white/90" />
+            ) : (
+              <Play className="h-7 w-7 text-white/90 fill-white/90 ml-1" />
+            )}
+          </button>
+
+          <button onClick={() => doAction("next")} disabled={actionPending}
+            className="w-14 h-14 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95 disabled:opacity-30 hover:bg-white/[0.06]"
+            data-testid="button-next">
+            <SkipForward className="h-6 w-6 text-white/60 fill-white/60" />
+          </button>
+
+          <button onClick={handleToggleRepeat}
+            className="w-10 h-10 rounded-full flex items-center justify-center transition-all relative hover:bg-white/[0.06]"
+            style={{ color: repeatMode !== "off" ? "#ffffffd0" : "rgba(255,255,255,0.2)" }}
+            data-testid="button-repeat">
+            <Repeat className="h-5 w-5" />
+            {repeatMode === "track" && (
+              <span className="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full text-[7px] font-bold flex items-center justify-center"
+                style={{ background: "rgba(255,255,255,0.8)", color: "#0d0d12" }}>1</span>
+            )}
+          </button>
+
+          <div className="w-px h-8 mx-2" style={{ background: "rgba(255,255,255,0.06)" }} />
+
+          <button onClick={() => setShowVolume(!showVolume)}
+            className="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:bg-white/[0.06]"
+            style={{ color: showVolume ? "#ffffffa0" : "rgba(255,255,255,0.25)" }}
+            data-testid="toggle-volume">
+            <Volume2 className="h-5 w-5" />
+          </button>
+
+          {showVolume && (
+            <div className="flex items-center gap-2" data-testid="volume-slider-container">
+              <VolumeX className="h-3.5 w-3.5 text-white/20 cursor-pointer hover:text-white/50 transition-colors flex-shrink-0"
+                onClick={() => handleVolumeChange(0)} />
+              <div className="relative h-8 flex items-center cursor-pointer" style={{ width: 120 }}
+                onClick={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const pct = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+                  handleVolumeChange(Math.round(pct));
+                }}>
+                <div className="w-full h-1 rounded-full" style={{ background: "rgba(255,255,255,0.06)" }}>
+                  <div className="h-full rounded-full transition-all" style={{
+                    width: `${volume}%`, background: "rgba(255,255,255,0.5)",
+                  }} />
+                </div>
+              </div>
+              <span className="text-[10px] text-white/20 font-mono w-7 text-right">{volume}%</span>
+            </div>
+          )}
         </div>
       </div>
 
       <style>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
         @keyframes subtlePulse {
           0%, 100% { transform: scale(1); }
           50% { transform: scale(1.01); }
