@@ -13,6 +13,42 @@ export const openai = new OpenAI({
 });
 
 let useEdgeTTSFallback = false;
+let rateLimitResetTime: number | null = null;
+
+export async function initTTSFallbackStatus() {
+  try {
+    const { db } = await import("../db");
+    const { appState } = await import("../../shared/schema");
+    const { eq } = await import("drizzle-orm");
+    const rows = await db.select().from(appState).where(eq(appState.key, 'tts_rate_limit_reset'));
+    if (rows.length > 0) {
+      const resetMs = parseInt(rows[0].value);
+      if (resetMs > Date.now()) {
+        useEdgeTTSFallback = true;
+        rateLimitResetTime = resetMs;
+        console.log(`[TTS] Rate limit active until ${new Date(resetMs).toISOString()} — using Edge TTS`);
+      } else {
+        useEdgeTTSFallback = false;
+        rateLimitResetTime = null;
+        await db.delete(appState).where(eq(appState.key, 'tts_rate_limit_reset'));
+        console.log(`[TTS] Rate limit has expired — using OpenAI TTS`);
+      }
+    }
+  } catch (e: any) {
+    console.error(`[TTS] Failed to check rate limit status: ${e.message}`);
+  }
+}
+
+async function saveRateLimitReset(resetMs: number) {
+  try {
+    const { db } = await import("../db");
+    const { appState } = await import("../../shared/schema");
+    await db.insert(appState).values({ key: 'tts_rate_limit_reset', value: String(resetMs) })
+      .onConflictDoUpdate({ target: appState.key, set: { value: String(resetMs) } });
+  } catch (e: any) {
+    console.error(`[TTS] Failed to save rate limit reset: ${e.message}`);
+  }
+}
 
 const edgeVoiceMap: Record<string, string> = {
   echo: "en-US-AndrewMultilingualNeural",
@@ -247,8 +283,12 @@ export async function textToSpeech(
     return Buffer.from(audioData, "base64");
   } catch (err: any) {
     if (err?.status === 429 || err?.code === 'RATELIMIT_EXCEEDED') {
-      console.log(`[TTS] Rate limited — switching to Edge TTS fallback for remaining requests`);
+      const resetHeader = err?.headers?.get?.('x-ratelimit-reset') || err?.headers?.['x-ratelimit-reset'];
+      const resetMs = resetHeader ? parseInt(String(resetHeader)) : Date.now() + 30 * 24 * 60 * 60 * 1000;
+      console.log(`[TTS] Rate limited — switching to Edge TTS until ${new Date(resetMs).toISOString()}`);
       useEdgeTTSFallback = true;
+      rateLimitResetTime = resetMs;
+      await saveRateLimitReset(resetMs);
       return edgeTTSGenerate(text, voice);
     }
     throw err;

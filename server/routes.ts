@@ -16,7 +16,7 @@ import { objectStorageClient } from "./replit_integrations/object_storage/object
 import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent, createEventInCalendar, deleteEventFromCalendar, createRecurringClassEvent, findExistingEventBySummary, findAndDeleteDuplicateEvents, createYearlyScholarshipEvent } from "./googleCalendar";
 import { getSecondAccountAuthUrl, exchangeCodeForTokens, isSecondAccountConnected, disconnectSecondAccount, createEventInSecondAccount, createPrepEventInSecondAccount, deleteEventFromSecondAccount, updateEventInSecondAccount, getEventsFromSecondAccount } from "./secondGoogleAccount";
 import { getThirdAccountAuthUrl, exchangeCodeForTokensThird, isThirdAccountConnected, disconnectThirdAccount, getEventsFromThirdAccount, listThirdAccountCalendars, getEventsFromThirdAccountCalendar } from "./thirdGoogleAccount";
-import { textToSpeech } from "./replit_integrations/audio/client";
+import { textToSpeech, initTTSFallbackStatus } from "./replit_integrations/audio/client";
 import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, sendTestHaPush, sendHaTaskReminder, sendEchoVoiceAnnouncement, type TaskReminder } from "./email";
 import { parseTickerCommand, extractInlineExpiry } from "./gmailTicker";
 import { getSchedulerStatus } from "./reminderScheduler";
@@ -683,6 +683,8 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+
+  await initTTSFallbackStatus();
 
   try {
     const fixResult = await db.execute(sql`UPDATE files SET folder = REPLACE(folder, 'casl101-other', 'casl101-module') WHERE folder LIKE '%casl101-other%'`);
