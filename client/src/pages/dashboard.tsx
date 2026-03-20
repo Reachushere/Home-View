@@ -19472,14 +19472,14 @@ export default function Dashboard() {
                                   <div className="absolute top-0 bottom-0 z-[3] pointer-events-none" style={{ left: '0px', width: `${gridSizes.timeSlotHeight + 3}px`, padding: '0px' }} data-testid="missed-tasks-indicator">
                                     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
                                       <img src={dueBoxImg} alt="" style={{ width: '100%', height: '100%', objectFit: 'fill', borderRadius: '5px', display: 'block' }} />
-                                      <span style={{ position: 'absolute', top: '15%', left: 0, right: 0, textAlign: 'center', fontSize: '18px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{missedCount}</span>
+                                      <span style={{ position: 'absolute', top: '38%', left: '50%', transform: 'translate(-50%, -50%)', fontSize: '18px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{missedCount}</span>
                                     </div>
                                   </div>
                                 )}
                                 <div className="absolute top-0 bottom-0 z-[3] pointer-events-none" style={{ left: `${gridSizes.timeSlotHeight + 5}px`, right: '1px' }} data-testid="hours-until-next-task">
                                   <div style={{ width: '100%', height: '100%', position: 'relative' }}>
                                     <img src={greenRectImg} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'fill', borderRadius: '5px', opacity: 0.5 }} />
-                                    <span style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1, fontSize: '20px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{displayTime}</span>
+                                    <span style={{ position: 'absolute', top: '50%', left: '73%', transform: 'translate(-50%, -50%)', zIndex: 1, fontSize: '20px', color: 'black', fontWeight: 900, lineHeight: 1 }}>{displayTime}</span>
                                   </div>
                                 </div>
                               </>
