@@ -5,11 +5,46 @@ import { writeFile, unlink, readFile } from "fs/promises";
 import { randomUUID } from "crypto";
 import { tmpdir } from "os";
 import { join } from "path";
+import { EdgeTTS } from "node-edge-tts";
 
 export const openai = new OpenAI({
   apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
   baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
 });
+
+let useEdgeTTSFallback = false;
+
+const edgeVoiceMap: Record<string, string> = {
+  echo: "en-US-AndrewMultilingualNeural",
+  alloy: "en-US-AvaMultilingualNeural",
+  fable: "en-GB-RyanNeural",
+  onyx: "en-US-GuyNeural",
+  nova: "en-US-JennyNeural",
+  shimmer: "en-US-AriaNeural",
+};
+
+async function edgeTTSGenerate(text: string, voice: string, retries = 2): Promise<Buffer> {
+  const edgeVoice = edgeVoiceMap[voice] || edgeVoiceMap.echo;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const outPath = join(tmpdir(), `edge-tts-${randomUUID()}.mp3`);
+      const tts = new EdgeTTS({ voice: edgeVoice });
+      await tts.ttsPromise(text, outPath);
+      const buf = await readFile(outPath);
+      await unlink(outPath).catch(() => {});
+      if (buf.length === 0) throw new Error("Edge TTS returned empty audio");
+      return buf;
+    } catch (err: any) {
+      console.error(`[Edge TTS] Attempt ${attempt + 1} failed: ${err?.message || err}`);
+      if (attempt < retries) {
+        await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
+      } else {
+        throw err;
+      }
+    }
+  }
+  throw new Error("Edge TTS failed after retries");
+}
 
 export type AudioFormat = "wav" | "mp3" | "webm" | "mp4" | "ogg" | "unknown";
 
@@ -190,20 +225,34 @@ export async function textToSpeech(
   format: "wav" | "mp3" | "flac" | "opus" | "pcm16" = "wav",
   slowPace: boolean = false
 ): Promise<Buffer> {
-  const systemContent = slowPace
-    ? "You are an assistant that performs text-to-speech. Speak at a slow, measured pace — slightly slower than normal conversational speed. Enunciate clearly."
-    : "You are an assistant that performs text-to-speech. Read the text naturally and clearly.";
-  const response = await openai.chat.completions.create({
-    model: "gpt-audio",
-    modalities: ["text", "audio"],
-    audio: { voice, format },
-    messages: [
-      { role: "system", content: systemContent },
-      { role: "user", content: `Repeat the following text verbatim: ${text}` },
-    ],
-  });
-  const audioData = (response.choices[0]?.message as any)?.audio?.data ?? "";
-  return Buffer.from(audioData, "base64");
+  if (useEdgeTTSFallback) {
+    console.log(`[TTS] Using Edge TTS fallback (voice: ${edgeVoiceMap[voice] || edgeVoiceMap.echo})`);
+    return edgeTTSGenerate(text, voice);
+  }
+
+  try {
+    const systemContent = slowPace
+      ? "You are an assistant that performs text-to-speech. Speak at a slow, measured pace — slightly slower than normal conversational speed. Enunciate clearly."
+      : "You are an assistant that performs text-to-speech. Read the text naturally and clearly.";
+    const response = await openai.chat.completions.create({
+      model: "gpt-audio",
+      modalities: ["text", "audio"],
+      audio: { voice, format },
+      messages: [
+        { role: "system", content: systemContent },
+        { role: "user", content: `Repeat the following text verbatim: ${text}` },
+      ],
+    });
+    const audioData = (response.choices[0]?.message as any)?.audio?.data ?? "";
+    return Buffer.from(audioData, "base64");
+  } catch (err: any) {
+    if (err?.status === 429 || err?.code === 'RATELIMIT_EXCEEDED') {
+      console.log(`[TTS] Rate limited — switching to Edge TTS fallback for remaining requests`);
+      useEdgeTTSFallback = true;
+      return edgeTTSGenerate(text, voice);
+    }
+    throw err;
+  }
 }
 
 /**
