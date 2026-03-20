@@ -19382,7 +19382,7 @@ export default function Dashboard() {
                               borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined
                             }}
                           />
-                          <div className="absolute top-0 bottom-0 z-[1] pointer-events-none" style={{ left: `${gridSizes.timeSlotHeight}px`, width: '1px', borderLeft: '1px dotted rgba(180, 180, 180, 0.45)' }} />
+                          <div className="absolute top-0 bottom-0 z-[1] pointer-events-none" style={{ left: `${gridSizes.timeSlotHeight + 3}px`, width: '1px', borderLeft: '1px dotted rgba(180, 180, 180, 0.45)' }} />
                           {sleepLabelStart && !isToday && (
                             <div style={{
                               position: 'absolute',
