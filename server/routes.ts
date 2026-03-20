@@ -13859,9 +13859,11 @@ Return ONLY the JSON object, no markdown formatting.`;
           const type = parts[1];
           const id = parts[2];
           if (type === "artist") {
-            const data = await spotifyApi.getArtistById(id);
-            if (data?.images?.[0]?.url) images[item.name] = data.images[0].url;
-            if (data?.id) ids[item.name] = data.id;
+            try {
+              const data = await spotifyApi.getArtistById(id);
+              if (data?.images?.[0]?.url) images[item.name] = data.images[0].url;
+              if (data?.id) ids[item.name] = data.id;
+            } catch {}
             if (!images[item.name]) {
               const q = item.searchQuery || item.name;
               const searchData = await spotifyApi.search(q, 'artist', 3);
@@ -13893,6 +13895,9 @@ Return ONLY the JSON object, no markdown formatting.`;
           console.error(`[Spotify] Bulk image fetch failed for ${item.name}:`, e.message);
         }
       }
+      const found = Object.keys(images);
+      const missing = items.map(i => i.name).filter(n => !images[n]);
+      console.log(`[Spotify] Bulk images: ${found.length} found, ${missing.length} missing${missing.length ? ': ' + missing.join(', ') : ''}`);
       res.json({ images, ids });
     } catch (error: any) {
       console.error("[Spotify] Bulk images error:", error.message);

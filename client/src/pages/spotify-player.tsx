@@ -509,12 +509,12 @@ function RoomIcon({ icon, size = 18, color }: { icon: string; size?: number; col
 function HoloPanel({ children, className = "", accent, glow = false, style = {}, sakura = false }: {
   children: React.ReactNode; className?: string; accent: string; glow?: boolean; style?: React.CSSProperties; sakura?: boolean;
 }) {
-  const bg = sakura ? 'rgba(14,38,65,0.75)' : 'rgba(25,50,95,0.75)';
-  const borderIdle = sakura ? 'rgba(56,189,248,0.28)' : 'rgba(80,160,255,0.3)';
-  const innerGlowIdle = sakura ? 'rgba(20,60,120,0.2)' : 'rgba(30,70,140,0.2)';
-  const topLineIdle = sakura ? 'rgba(56,189,248,0.4)' : 'rgba(80,180,255,0.4)';
-  const gradTop = sakura ? 'rgba(40,160,240,0.08)' : 'rgba(60,140,255,0.08)';
-  const gradBot = sakura ? 'rgba(35,150,230,0.06)' : 'rgba(50,120,240,0.06)';
+  const bg = sakura ? 'rgba(22,50,82,0.7)' : 'rgba(25,50,95,0.75)';
+  const borderIdle = sakura ? 'rgba(56,189,248,0.35)' : 'rgba(80,160,255,0.3)';
+  const innerGlowIdle = sakura ? 'rgba(40,100,160,0.25)' : 'rgba(30,70,140,0.2)';
+  const topLineIdle = sakura ? 'rgba(56,189,248,0.5)' : 'rgba(80,180,255,0.4)';
+  const gradTop = sakura ? 'rgba(50,170,245,0.12)' : 'rgba(60,140,255,0.08)';
+  const gradBot = sakura ? 'rgba(45,160,235,0.08)' : 'rgba(50,120,240,0.06)';
   return (
     <div className={`relative rounded-xl overflow-hidden ${className}`} style={{
       background: bg,
@@ -858,23 +858,23 @@ export default function SpotifyPlayerPage() {
   };
 
   return (
-    <div className="fixed inset-0 flex flex-col overflow-hidden select-none" style={{ fontFamily: "'Inter', system-ui, sans-serif", background: isSakura ? '#0c2240' : '#152e54' }} data-testid="spotify-player-page">
+    <div className="fixed inset-0 flex flex-col overflow-hidden select-none" style={{ fontFamily: "'Inter', system-ui, sans-serif", background: isSakura ? '#102a4a' : '#152e54' }} data-testid="spotify-player-page">
       <img
         src={isPlaying ? massBg : musicBg}
         alt=""
         className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
-        style={{ opacity: isPlaying ? 0.25 : 0.15, filter: isSakura ? "brightness(0.7) saturate(0.4) hue-rotate(200deg)" : "brightness(1.1) saturate(1.2) hue-rotate(200deg)" }}
+        style={{ opacity: isPlaying ? 0.3 : 0.2, filter: isSakura ? "brightness(1.1) saturate(0.5) hue-rotate(200deg)" : "brightness(1.1) saturate(1.2) hue-rotate(200deg)" }}
       />
 
       <div className="absolute inset-0" style={{
         background: isSakura
           ? `
-            radial-gradient(ellipse at 15% 30%, rgba(255,183,197,0.25) 0%, transparent 45%),
-            radial-gradient(ellipse at 85% 20%, rgba(56,189,248,0.35) 0%, transparent 40%),
-            radial-gradient(ellipse at 50% 70%, rgba(255,192,203,0.18) 0%, transparent 50%),
-            radial-gradient(ellipse at 70% 80%, rgba(56,189,248,0.3) 0%, transparent 45%),
-            radial-gradient(ellipse at 30% 50%, rgba(100,200,255,0.12) 0%, transparent 50%),
-            linear-gradient(180deg, rgba(15,45,80,0.2) 0%, rgba(12,34,64,0.3) 100%)
+            radial-gradient(ellipse at 15% 30%, rgba(255,183,197,0.3) 0%, transparent 45%),
+            radial-gradient(ellipse at 85% 20%, rgba(56,189,248,0.4) 0%, transparent 40%),
+            radial-gradient(ellipse at 50% 70%, rgba(255,192,203,0.2) 0%, transparent 50%),
+            radial-gradient(ellipse at 70% 80%, rgba(56,189,248,0.35) 0%, transparent 45%),
+            radial-gradient(ellipse at 30% 50%, rgba(100,200,255,0.18) 0%, transparent 50%),
+            linear-gradient(180deg, rgba(20,55,90,0.15) 0%, rgba(16,40,70,0.2) 100%)
           `
           : `
             radial-gradient(ellipse at 20% 50%, rgba(50,130,240,0.3) 0%, transparent 50%),
@@ -902,7 +902,7 @@ export default function SpotifyPlayerPage() {
       {notification && (
         <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 px-6 py-2.5 rounded-lg text-xs font-medium text-white/95"
           style={{
-            background: isSakura ? 'rgba(15,42,66,0.92)' : 'rgba(25,55,105,0.92)',
+            background: isSakura ? 'rgba(20,50,80,0.9)' : 'rgba(25,55,105,0.92)',
             border: `1px solid ${profile.accent}60`,
             backdropFilter: "blur(20px)",
             boxShadow: `0 0 30px ${profile.glow}, 0 0 60px rgba(0,0,0,0.3)`,
@@ -922,7 +922,7 @@ export default function SpotifyPlayerPage() {
 
         <div className="flex flex-col flex-shrink-0 relative" style={{ width: menuOpen ? 200 : 48, transition: "width 0.3s ease" }}>
           <div className="absolute inset-0" style={{
-            background: isSakura ? 'rgba(14,38,62,0.8)' : 'rgba(22,48,90,0.8)',
+            background: isSakura ? 'rgba(20,50,80,0.75)' : 'rgba(22,48,90,0.8)',
             backdropFilter: "blur(30px)",
             borderRight: isSakura ? '1px solid rgba(56,189,248,0.22)' : '1px solid rgba(70,160,255,0.25)',
           }} />
@@ -1092,7 +1092,7 @@ export default function SpotifyPlayerPage() {
                       onDragEnd={() => setDragItem(null)}
                       className="flex flex-col items-center gap-1 p-2 rounded-lg cursor-grab active:cursor-grabbing transition-all group hover:scale-105"
                       style={{
-                        background: isSakura ? "rgba(16,40,65,0.6)" : "rgba(30,60,110,0.6)",
+                        background: isSakura ? "rgba(22,52,82,0.55)" : "rgba(30,60,110,0.6)",
                         border: `1px solid ${tc.cardBorder}`,
                         animation: `fadeInUp 0.4s ease ${i * 60}ms both`,
                       }}
@@ -1187,10 +1187,10 @@ export default function SpotifyPlayerPage() {
             }} />
 
             {showSearch && (
-              <div className="absolute inset-0 z-20 p-4 overflow-y-auto" style={{ background: isSakura ? 'rgba(12,35,58,0.94)' : 'rgba(22,48,88,0.94)', backdropFilter: 'blur(20px)', scrollbarWidth: 'none' }}>
+              <div className="absolute inset-0 z-20 p-4 overflow-y-auto" style={{ background: isSakura ? 'rgba(18,45,72,0.92)' : 'rgba(22,48,88,0.94)', backdropFilter: 'blur(20px)', scrollbarWidth: 'none' }}>
                 <div className="flex items-center gap-2 mb-3">
                   <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-lg" style={{
-                    background: isSakura ? 'rgba(16,40,65,0.6)' : 'rgba(28,55,100,0.6)', border: `1px solid ${tc.cardBorder}`,
+                    background: isSakura ? 'rgba(22,52,82,0.55)' : 'rgba(28,55,100,0.6)', border: `1px solid ${tc.cardBorder}`,
                   }}>
                     <Search className="h-3.5 w-3.5" style={{ color: tc.voiceOff }} />
                     <input
@@ -1222,7 +1222,7 @@ export default function SpotifyPlayerPage() {
                       }
                     }}
                       className="flex items-center gap-2 p-2.5 rounded-lg transition-all text-left group"
-                      style={{ background: isSakura ? 'rgba(16,40,65,0.55)' : 'rgba(28,55,100,0.55)', border: `1px solid ${tc.cardBorder}` }}
+                      style={{ background: isSakura ? 'rgba(22,52,82,0.5)' : 'rgba(28,55,100,0.55)', border: `1px solid ${tc.cardBorder}` }}
                       data-testid={`search-result-${i}`}>
                       {r.image ? (
                         <img src={r.image} alt="" className="w-9 h-9 rounded-md object-cover flex-shrink-0"
@@ -1288,7 +1288,7 @@ export default function SpotifyPlayerPage() {
                         {speakerCount > 0 && (
                           <div className="flex items-center gap-0.5 mt-0.5 px-1.5 py-0.5 rounded-full"
                             style={{
-                              background: isActive ? `${profile.accent}20` : (isSakura ? 'rgba(14,38,62,0.6)' : 'rgba(25,50,90,0.6)'),
+                              background: isActive ? `${profile.accent}20` : (isSakura ? 'rgba(22,52,82,0.55)' : 'rgba(25,50,90,0.6)'),
                               border: `1px solid ${isActive ? `${profile.accent}40` : tc.roomBorder}`,
                             }}>
                             {[...Array(Math.min(speakerCount, 4))].map((_, si) => (
@@ -1355,7 +1355,7 @@ export default function SpotifyPlayerPage() {
                       onClick={() => playStation(station)}
                       className="flex items-center gap-2.5 p-3 rounded-lg transition-all group hover:scale-[1.02]"
                       style={{
-                        background: isSakura ? "rgba(16,40,65,0.6)" : "rgba(28,55,100,0.6)",
+                        background: isSakura ? "rgba(22,52,82,0.55)" : "rgba(28,55,100,0.6)",
                         border: `1px solid ${tc.cardBorder}`,
                         animation: `fadeInUp 0.3s ease ${i * 40}ms both`,
                       }}
@@ -1394,7 +1394,7 @@ export default function SpotifyPlayerPage() {
                     return (
                       <div key={spot.room} className="rounded-lg transition-all overflow-hidden"
                         style={{
-                          background: isActive ? `${profile.accent}15` : (isSakura ? "rgba(16,40,65,0.6)" : "rgba(28,55,100,0.6)"),
+                          background: isActive ? `${profile.accent}15` : (isSakura ? "rgba(22,52,82,0.55)" : "rgba(28,55,100,0.6)"),
                           border: `1px solid ${isActive ? `${profile.accent}40` : tc.cardBorder}`,
                           boxShadow: isActive ? `0 0 20px ${profile.glow}, inset 0 0 15px ${profile.glow}` : "none",
                           animation: `fadeInUp 0.3s ease ${i * 40}ms both`,
@@ -1462,7 +1462,7 @@ export default function SpotifyPlayerPage() {
                               return (
                                 <div key={spk.entityId} className="rounded-lg overflow-hidden"
                                   style={{
-                                    background: isSakura ? 'rgba(14,38,62,0.6)' : 'rgba(22,45,85,0.6)',
+                                    background: isSakura ? 'rgba(22,52,82,0.55)' : 'rgba(22,45,85,0.6)',
                                     border: `1px solid ${tc.speakerBorder}`,
                                   }}>
                                   <button className="flex items-center gap-2 w-full text-left px-2.5 py-2"
@@ -1555,7 +1555,7 @@ export default function SpotifyPlayerPage() {
       </div>
 
       <div className="relative z-10" style={{
-        background: isSakura ? 'rgba(14,38,62,0.85)' : 'rgba(22,48,88,0.85)',
+        background: isSakura ? 'rgba(20,50,80,0.8)' : 'rgba(22,48,88,0.85)',
         backdropFilter: 'blur(30px)',
         borderTop: isSakura ? '1px solid rgba(56,189,248,0.22)' : '1px solid rgba(70,160,255,0.25)',
       }}>
