@@ -21744,10 +21744,8 @@ export default function Dashboard() {
                         })()}
                       </div>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', alignSelf: 'stretch' }}>
-                      {dueTodayTasks.length > 1 && (
+                    <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', alignSelf: 'stretch', zIndex: 2 }}>
                         <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
-                      )}
                     </div>
                     <div style={{ flex: 1, minWidth: 0, maxHeight: '80px', overflowY: 'auto', scrollbarWidth: 'none' }}>
                   <div className="flex flex-col gap-0.5">
@@ -21760,7 +21758,7 @@ export default function Dashboard() {
                       const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
                       const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                       return (
-                        <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '0px', backgroundColor: tIdx % 2 === 0 ? '#051729' : 'transparent', marginLeft: '-9px', marginRight: '-7px', paddingLeft: '9px', paddingRight: '7px' }}
+                        <div key={task.id} className="" style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '0px', backgroundColor: tIdx % 2 === 0 ? '#051729' : 'transparent', marginLeft: '0px', marginRight: '-12px', paddingLeft: '0px', paddingRight: '12px' }}
                           onMouseEnter={() => setHoveredCountdownTaskIdDebounced(task.id)}
                           onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                           ref={(rowEl) => {
@@ -21810,7 +21808,7 @@ export default function Dashboard() {
                                 </div>
                               )}
                             </div>
-                            <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px', marginLeft: '0px' }}>
+                            <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
                               <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil === 0 ? 'Today' : `${daysUntil} day${daysUntil === 1 ? '' : 's'}`}</span>
                               <div style={{ width: '48px', position: 'relative', height: '3px' }}>
                                 <div className="rounded-full transition-opacity duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${daysUntil === 0 ? 48 : Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: daysUntil === 0 ? '#ef4444' : progressColor, opacity: 0.9 }} />
