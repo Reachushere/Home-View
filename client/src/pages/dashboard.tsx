@@ -21137,11 +21137,17 @@ export default function Dashboard() {
                         if (!homeworkScrollRef.current) return;
                         const idx = hwWeeklyTimeline.findIndex(w => w.semLabel === tab.semLabel);
                         if (idx < 0) return;
+                        const scrollContainer = homeworkScrollRef.current!;
+                        const semEl = scrollContainer.querySelector(`[data-semester-label="${tab.semLabel}"]`);
+                        if (semEl) {
+                          const elTop = (semEl as HTMLElement).offsetTop - scrollContainer.offsetTop;
+                          scrollContainer.scrollTo({ top: elTop - 4, behavior: 'smooth' });
+                          return;
+                        }
                         const sectionIds = ['thisweek', 'nextweek', 'twoweeks', 'threeweeks'];
                         const sectionId = idx < 4 ? sectionIds[idx] : 'threeweeks';
-                        const el = homeworkScrollRef.current!.querySelector(`[data-homework-section="${sectionId}"]`);
+                        const el = scrollContainer.querySelector(`[data-homework-section="${sectionId}"]`);
                         if (el) {
-                          const scrollContainer = homeworkScrollRef.current!;
                           const elTop = (el as HTMLElement).offsetTop - scrollContainer.offsetTop;
                           scrollContainer.scrollTo({ top: elTop - 4, behavior: 'smooth' });
                         }
@@ -21783,7 +21789,7 @@ export default function Dashboard() {
                 )}
 
                 {/* This Week Section */}
-                <div data-homework-section="thisweek" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '5px' }}>
+                <div data-homework-section="thisweek" data-semester-label={hwWeeklyTimeline[0]?.semLabel || ''} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 8px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '5px' }}>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <span className="text-[12px] font-semibold" style={{ color: isSameDay(startOfWeek(new Date(), { weekStartsOn: 6 }), startOfDay(hwWeeklyTimeline[0]?.weekStart)) ? '#ffff00' : '#ffffff' }}>{hwWeeklyTimeline[0]?.label || 'This week'}</span>
                     {hwWeeklyTimeline[0]?.sublabel && <span className="text-[8px]" style={{ color: 'rgba(255,255,255,0.55)', marginTop: '-1px', lineHeight: 1 }}>{hwWeeklyTimeline[0].sublabel}</span>}
@@ -21970,7 +21976,7 @@ export default function Dashboard() {
                   </div>
                 )}
                 {/* Next Week Section */}
-                <div data-homework-section="nextweek" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '20px' }}>
+                <div data-homework-section="nextweek" data-semester-label={hwWeeklyTimeline[1]?.semLabel || ''} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '20px' }}>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[1]?.label || 'Next week'}</span>
                     {hwWeeklyTimeline[1]?.sublabel && <span className="text-[8px]" style={{ color: 'rgba(255,255,255,0.55)', marginTop: '-1px', lineHeight: 1 }}>{hwWeeklyTimeline[1].sublabel}</span>}
@@ -22161,7 +22167,7 @@ export default function Dashboard() {
                   </div>
                 )}
                 {/* 2 Weeks Section */}
-                <div data-homework-section="twoweeks" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 1px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '20px' }}>
+                <div data-homework-section="twoweeks" data-semester-label={hwWeeklyTimeline[2]?.semLabel || ''} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 1px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '20px' }}>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[2]?.label || 'Two weeks'}</span>
                     {hwWeeklyTimeline[2]?.sublabel && <span className="text-[8px]" style={{ color: 'rgba(255,255,255,0.55)', marginTop: '-1px', lineHeight: 1 }}>{hwWeeklyTimeline[2].sublabel}</span>}
@@ -22332,7 +22338,7 @@ export default function Dashboard() {
                   </div>
                 )}
                 {/* 3 Weeks and Beyond Section */}
-                <div data-homework-section="threeweeks" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '20px' }}>
+                <div data-homework-section="threeweeks" data-semester-label={hwWeeklyTimeline[3]?.semLabel || ''} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '20px' }}>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[3]?.label ? hwWeeklyTimeline[3].label + ' +' : 'Three weeks +'}</span>
                     {hwWeeklyTimeline[3]?.sublabel && <span className="text-[8px]" style={{ color: 'rgba(255,255,255,0.55)', marginTop: '-1px', lineHeight: 1 }}>{hwWeeklyTimeline[3].sublabel + ' +'}</span>}
