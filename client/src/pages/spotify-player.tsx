@@ -169,50 +169,101 @@ function HoloCircuitLines({ accent }: { accent: string }) {
     canvas.width = W * 2; canvas.height = H * 2;
     ctx.scale(2, 2);
 
-    const lines: { x1: number; y1: number; x2: number; y2: number; speed: number; offset: number }[] = [];
-    for (let i = 0; i < 12; i++) {
-      const horizontal = Math.random() > 0.5;
-      if (horizontal) {
-        const y = Math.random() * H;
-        lines.push({ x1: 0, y1: y, x2: W, y2: y, speed: 0.5 + Math.random() * 1.5, offset: Math.random() * Math.PI * 2 });
-      } else {
-        const x = Math.random() * W;
-        lines.push({ x1: x, y1: 0, x2: x, y2: H, speed: 0.5 + Math.random() * 1.5, offset: Math.random() * Math.PI * 2 });
+    interface CircuitPath { points: { x: number; y: number }[]; speed: number; offset: number }
+    const paths: CircuitPath[] = [];
+    for (let i = 0; i < 30; i++) {
+      const pts: { x: number; y: number }[] = [];
+      let cx = Math.random() * W, cy = Math.random() * H;
+      pts.push({ x: cx, y: cy });
+      const segs = 3 + Math.floor(Math.random() * 5);
+      for (let s = 0; s < segs; s++) {
+        if (Math.random() > 0.5) cx += (Math.random() - 0.3) * 200;
+        else cy += (Math.random() - 0.3) * 150;
+        cx = Math.max(0, Math.min(W, cx));
+        cy = Math.max(0, Math.min(H, cy));
+        pts.push({ x: cx, y: cy });
       }
+      paths.push({ points: pts, speed: 0.3 + Math.random() * 1.2, offset: Math.random() * Math.PI * 2 });
     }
 
-    const nodes: { x: number; y: number; pulseOffset: number }[] = [];
-    for (let i = 0; i < 20; i++) {
-      nodes.push({ x: Math.random() * W, y: Math.random() * H, pulseOffset: Math.random() * Math.PI * 2 });
+    const nodes: { x: number; y: number; pulseOffset: number; size: number }[] = [];
+    for (let i = 0; i < 40; i++) {
+      nodes.push({ x: Math.random() * W, y: Math.random() * H, pulseOffset: Math.random() * Math.PI * 2, size: 1 + Math.random() * 2 });
+    }
+
+    const junctions: { x: number; y: number; size: number; pulseOffset: number }[] = [];
+    for (let i = 0; i < 15; i++) {
+      junctions.push({ x: Math.random() * W, y: Math.random() * H, size: 3 + Math.random() * 4, pulseOffset: Math.random() * Math.PI * 2 });
     }
 
     const animate = () => {
       ctx.clearRect(0, 0, W, H);
       const t = Date.now() / 1000;
 
-      for (const line of lines) {
-        const alpha = 0.03 + Math.sin(t * line.speed + line.offset) * 0.02;
+      for (const path of paths) {
+        const alpha = 0.06 + Math.sin(t * path.speed + path.offset) * 0.04;
         ctx.strokeStyle = `${accent}${Math.round(alpha * 255).toString(16).padStart(2, '0')}`;
-        ctx.lineWidth = 0.5;
+        ctx.lineWidth = 0.6;
         ctx.beginPath();
-        ctx.moveTo(line.x1, line.y1);
-        ctx.lineTo(line.x2, line.y2);
+        for (let p = 0; p < path.points.length; p++) {
+          if (p === 0) ctx.moveTo(path.points[p].x, path.points[p].y);
+          else ctx.lineTo(path.points[p].x, path.points[p].y);
+        }
         ctx.stroke();
 
-        const travelPos = ((t * line.speed * 30 + line.offset * 100) % (line.x2 === line.x1 ? H : W));
-        const px = line.x2 === line.x1 ? line.x1 : travelPos;
-        const py = line.y2 === line.y1 ? line.y1 : travelPos;
+        let totalLen = 0;
+        for (let p = 1; p < path.points.length; p++) {
+          totalLen += Math.hypot(path.points[p].x - path.points[p-1].x, path.points[p].y - path.points[p-1].y);
+        }
+        const travelDist = ((t * path.speed * 40 + path.offset * 100) % totalLen);
+        let accum = 0;
+        for (let p = 1; p < path.points.length; p++) {
+          const segLen = Math.hypot(path.points[p].x - path.points[p-1].x, path.points[p].y - path.points[p-1].y);
+          if (accum + segLen >= travelDist) {
+            const frac = (travelDist - accum) / segLen;
+            const px = path.points[p-1].x + (path.points[p].x - path.points[p-1].x) * frac;
+            const py = path.points[p-1].y + (path.points[p].y - path.points[p-1].y) * frac;
+            ctx.beginPath();
+            ctx.arc(px, py, 2.5, 0, Math.PI * 2);
+            ctx.fillStyle = `${accent}60`;
+            ctx.fill();
+            const grd = ctx.createRadialGradient(px, py, 0, px, py, 8);
+            grd.addColorStop(0, `${accent}30`);
+            grd.addColorStop(1, 'transparent');
+            ctx.beginPath();
+            ctx.arc(px, py, 8, 0, Math.PI * 2);
+            ctx.fillStyle = grd;
+            ctx.fill();
+            break;
+          }
+          accum += segLen;
+        }
+
+        for (const pt of path.points) {
+          ctx.beginPath();
+          ctx.arc(pt.x, pt.y, 1.5, 0, Math.PI * 2);
+          ctx.fillStyle = `${accent}25`;
+          ctx.fill();
+        }
+      }
+
+      for (const junc of junctions) {
+        const pulse = Math.sin(t * 1.5 + junc.pulseOffset) * 0.5 + 0.5;
+        const s = junc.size;
+        ctx.strokeStyle = `${accent}${Math.round((0.08 + pulse * 0.12) * 255).toString(16).padStart(2, '0')}`;
+        ctx.lineWidth = 0.8;
+        ctx.strokeRect(junc.x - s / 2, junc.y - s / 2, s, s);
         ctx.beginPath();
-        ctx.arc(px, py, 2, 0, Math.PI * 2);
-        ctx.fillStyle = `${accent}40`;
+        ctx.arc(junc.x, junc.y, 1, 0, Math.PI * 2);
+        ctx.fillStyle = `${accent}${Math.round((0.15 + pulse * 0.2) * 255).toString(16).padStart(2, '0')}`;
         ctx.fill();
       }
 
       for (const node of nodes) {
         const pulse = Math.sin(t * 2 + node.pulseOffset) * 0.5 + 0.5;
         ctx.beginPath();
-        ctx.arc(node.x, node.y, 1.5 + pulse * 1.5, 0, Math.PI * 2);
-        ctx.fillStyle = `${accent}${Math.round((0.05 + pulse * 0.1) * 255).toString(16).padStart(2, '0')}`;
+        ctx.arc(node.x, node.y, node.size + pulse * 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = `${accent}${Math.round((0.08 + pulse * 0.14) * 255).toString(16).padStart(2, '0')}`;
         ctx.fill();
       }
 
@@ -222,7 +273,7 @@ function HoloCircuitLines({ accent }: { accent: string }) {
     return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
   }, [accent]);
 
-  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0, opacity: 0.6 }} />;
+  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0, opacity: 0.85 }} />;
 }
 
 function HoloScanLine() {
@@ -397,6 +448,7 @@ export default function SpotifyPlayerPage() {
   const [profileSpinning, setProfileSpinning] = useState(false);
   const [activeRooms, setActiveRooms] = useState<Set<string>>(new Set());
   const [viewMode, setViewMode] = useState<ViewMode>("floor");
+  const [viewSpinning, setViewSpinning] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
@@ -577,25 +629,31 @@ export default function SpotifyPlayerPage() {
     setTimeout(() => { setActiveProfile(p); setTimeout(() => setProfileSpinning(false), 50); }, 350);
   };
 
+  const switchView = (v: ViewMode) => {
+    if (v === viewMode) return;
+    setViewSpinning(true);
+    setTimeout(() => { setViewMode(v); setTimeout(() => setViewSpinning(false), 50); }, 300);
+  };
+
   const isPlaying = !!nowPlaying?.playing;
   const progressPct = nowPlaying?.duration ? (localProgress / nowPlaying.duration) * 100 : 0;
   const isSakura = activeProfile === "yasu";
 
   return (
-    <div className="fixed inset-0 flex flex-col overflow-hidden select-none" style={{ fontFamily: "'Inter', system-ui, sans-serif", background: '#030810' }} data-testid="spotify-player-page">
+    <div className="fixed inset-0 flex flex-col overflow-hidden select-none" style={{ fontFamily: "'Inter', system-ui, sans-serif", background: '#040c1a' }} data-testid="spotify-player-page">
       <img
         src={isPlaying ? massBg : musicBg}
         alt=""
         className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
-        style={{ opacity: isPlaying ? 0.35 : 0.2, filter: "brightness(0.4) saturate(0.7) hue-rotate(200deg)" }}
+        style={{ opacity: isPlaying ? 0.4 : 0.25, filter: "brightness(0.5) saturate(0.8) hue-rotate(200deg)" }}
       />
 
       <div className="absolute inset-0" style={{
         background: `
-          radial-gradient(ellipse at 20% 50%, rgba(0,40,100,0.15) 0%, transparent 50%),
-          radial-gradient(ellipse at 80% 30%, ${isSakura ? 'rgba(244,114,182,0.06)' : 'rgba(100,40,200,0.06)'} 0%, transparent 40%),
-          radial-gradient(ellipse at 50% 80%, rgba(0,20,60,0.3) 0%, transparent 60%),
-          linear-gradient(180deg, rgba(0,5,15,0.4) 0%, rgba(0,10,30,0.6) 100%)
+          radial-gradient(ellipse at 20% 50%, rgba(0,60,140,0.2) 0%, transparent 50%),
+          radial-gradient(ellipse at 80% 30%, ${isSakura ? 'rgba(244,114,182,0.08)' : 'rgba(30,80,200,0.1)'} 0%, transparent 40%),
+          radial-gradient(ellipse at 50% 80%, rgba(0,30,80,0.25) 0%, transparent 60%),
+          linear-gradient(180deg, rgba(0,10,30,0.3) 0%, rgba(0,15,40,0.5) 100%)
         `,
       }} />
 
@@ -642,15 +700,6 @@ export default function SpotifyPlayerPage() {
               {menuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </button>
 
-            {!isEmbedded && (
-              <button onClick={() => { const p = new URLSearchParams(window.location.search); window.location.href = "/" + (p.get("auth") ? `?auth=${p.get("auth")}` : ""); }}
-                className="w-full flex items-center gap-3 px-3 py-2 transition-colors" style={{ color: 'rgba(0,180,255,0.25)' }}
-                data-testid="back-to-dashboard">
-                <ChevronLeft className="h-4 w-4 flex-shrink-0" />
-                {menuOpen && <span className="text-[12px] whitespace-nowrap">Dashboard</span>}
-              </button>
-            )}
-
             <div className="flex-1 flex flex-col gap-0.5 mt-2 px-1">
               {([
                 { mode: "floor" as ViewMode, icon: <Home className="h-3.5 w-3.5" />, label: "Floor Plan" },
@@ -658,7 +707,7 @@ export default function SpotifyPlayerPage() {
                 { mode: "rooms" as ViewMode, icon: <Speaker className="h-3.5 w-3.5" />, label: "Rooms" },
               ]).map(item => (
                 <button key={item.mode}
-                  onClick={() => setViewMode(item.mode)}
+                  onClick={() => switchView(item.mode)}
                   className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg transition-all"
                   style={{
                     background: viewMode === item.mode ? `${profile.accent}12` : "transparent",
@@ -683,6 +732,14 @@ export default function SpotifyPlayerPage() {
             </div>
 
             <div className="mt-auto flex flex-col gap-0.5 px-1 pb-1">
+              {!isEmbedded && menuOpen && (
+                <button onClick={() => { const p = new URLSearchParams(window.location.search); window.location.href = "/" + (p.get("auth") ? `?auth=${p.get("auth")}` : ""); }}
+                  className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg transition-colors mb-1" style={{ color: 'rgba(0,180,255,0.25)' }}
+                  data-testid="back-to-dashboard">
+                  <ChevronLeft className="h-3.5 w-3.5 flex-shrink-0" />
+                  <span className="text-[12px] whitespace-nowrap">Dashboard</span>
+                </button>
+              )}
               <div className="mx-2 mb-1 h-[1px]" style={{ background: 'rgba(0,180,255,0.08)' }} />
               {(Object.keys(PROFILES) as ProfileKey[]).map(k => (
                 <button key={k} onClick={() => switchProfile(k)}
@@ -717,11 +774,32 @@ export default function SpotifyPlayerPage() {
 
           <div className="flex flex-col gap-3 flex-shrink-0" style={{ width: 260 }}>
             <HoloPanel accent={profile.accent} glow={isPlaying} className="p-3 flex flex-col items-center">
-              <div className="relative flex items-center justify-center" style={{ minHeight: 170 }}>
-                <HoloVinyl albumArt={nowPlaying?.albumArt} playing={isPlaying} accent={profile.accent} size={210} />
-              </div>
+              {isPlaying && nowPlaying?.albumArt ? (
+                <div className="relative w-full flex flex-col items-center">
+                  <div className="relative" style={{ width: 200, height: 200 }}>
+                    <img src={nowPlaying.albumArt} alt={nowPlaying.album || "Album Art"}
+                      className="w-full h-full rounded-lg object-cover"
+                      style={{
+                        border: `2px solid ${profile.accent}40`,
+                        boxShadow: `0 0 30px ${profile.glow}, 0 0 60px ${profile.glow}, 0 4px 20px rgba(0,0,0,0.5)`,
+                        animation: 'albumPulse 3s ease-in-out infinite',
+                      }}
+                      data-testid="album-art-large" />
+                    <div className="absolute inset-0 rounded-lg pointer-events-none" style={{
+                      background: `linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.4) 100%)`,
+                    }} />
+                    <div className="absolute -bottom-2 -right-2 w-12 h-12">
+                      <HoloVinyl albumArt={nowPlaying.albumArt} playing={true} accent={profile.accent} size={48} />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="relative flex items-center justify-center" style={{ minHeight: 180 }}>
+                  <HoloVinyl albumArt={nowPlaying?.albumArt} playing={isPlaying} accent={profile.accent} size={220} />
+                </div>
+              )}
 
-              <div className="text-center mt-1 w-full px-2">
+              <div className="text-center mt-2 w-full px-2">
                 <p className="text-sm font-bold truncate" data-testid="track-name"
                   style={{ color: 'rgba(200,230,255,0.95)', textShadow: isPlaying ? `0 0 20px ${profile.glow}` : 'none' }}>
                   {nowPlaying?.name || "Nothing Playing"}
@@ -732,7 +810,7 @@ export default function SpotifyPlayerPage() {
                 </p>
                 {nowPlaying?.album && (
                   <p className="text-[11px] truncate mt-0.5" data-testid="track-album"
-                    style={{ color: 'rgba(0,180,255,0.2)' }}>{nowPlaying.album}</p>
+                    style={{ color: 'rgba(0,180,255,0.25)' }}>{nowPlaying.album}</p>
                 )}
               </div>
             </HoloPanel>
@@ -783,7 +861,14 @@ export default function SpotifyPlayerPage() {
               : 'inset 0 1px 0 rgba(0,180,255,0.06)',
             background: "rgba(3,8,20,0.5)",
             backdropFilter: "blur(20px)",
+            perspective: '1200px',
           }}>
+            <div className="absolute inset-0" style={{
+              transform: viewSpinning ? 'rotateY(90deg)' : 'rotateY(0deg)',
+              opacity: viewSpinning ? 0 : 1,
+              transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease',
+              transformStyle: 'preserve-3d',
+            }}>
             <div className="absolute top-0 left-0 right-0 h-[1px]" style={{
               background: `linear-gradient(90deg, transparent, rgba(0,180,255,0.15), transparent)`,
             }} />
@@ -1010,6 +1095,7 @@ export default function SpotifyPlayerPage() {
                 </div>
               </div>
             )}
+            </div>
           </div>
         </div>
       </div>
@@ -1096,6 +1182,7 @@ export default function SpotifyPlayerPage() {
       <style>{`
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes eqBounce { from { height: 3px; } to { height: 12px; } }
+        @keyframes albumPulse { 0%, 100% { box-shadow: 0 0 20px rgba(59,130,246,0.2), 0 4px 15px rgba(0,0,0,0.4); } 50% { box-shadow: 0 0 40px rgba(59,130,246,0.35), 0 4px 20px rgba(0,0,0,0.5); } }
         @keyframes holoScan {
           0% { top: -2px; opacity: 0; }
           10% { opacity: 1; }
