@@ -13903,13 +13903,44 @@ Return ONLY the JSON object, no markdown formatting.`;
       if (isEcho) {
         const searchTerm = artistName || (spotifyUri ? spotifyUri.split(":").pop()?.replace(/_/g, ' ') : "music");
         const message = `Play ${searchTerm} on Spotify`;
-        console.log(`[Spotify] Echo device detected - using notify/alexa_media for ${entityId}: "${message}"`);
+
+        let targetEntity = entityId;
+        if (entityId.includes("_group") || entityId.includes("_media_group")) {
+          const roomGroup = FLICK_DEVICES.find(g => 
+            g.devices.some(d => d.entityId === entityId) ||
+            g.speakers?.some((s: any) => s.entityId === entityId)
+          );
+          if (roomGroup) {
+            const echoDevice = roomGroup.devices.find(d => d.type === "echo" && d.entityId.includes("_am"));
+            if (echoDevice) {
+              console.log(`[Spotify] Resolved group ${entityId} → individual Echo: ${echoDevice.entityId}`);
+              targetEntity = echoDevice.entityId;
+            }
+          }
+          if (targetEntity === entityId) {
+            for (const group of FLICK_DEVICES) {
+              for (const dev of group.devices) {
+                if (dev.type === "group" && dev.entityId === entityId) {
+                  const echoInRoom = group.devices.find(d => d.type === "echo" && d.entityId.includes("_am"));
+                  if (echoInRoom) {
+                    console.log(`[Spotify] Resolved group ${entityId} → Echo in ${group.room}: ${echoInRoom.entityId}`);
+                    targetEntity = echoInRoom.entityId;
+                  }
+                  break;
+                }
+              }
+              if (targetEntity !== entityId) break;
+            }
+          }
+        }
+
+        console.log(`[Spotify] Echo device detected - using notify/alexa_media for ${targetEntity}: "${message}"`);
         const notifyResp = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({
             message: message,
-            target: entityId,
+            target: targetEntity,
           }),
         });
         console.log(`[Spotify] notify/alexa_media response: ${notifyResp.status}`);
