@@ -21803,8 +21803,8 @@ export default function Dashboard() {
                           </div>
                           <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
-                            <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: '#FFFF00', textAlign: 'left', lineHeight: 1, marginLeft: '2px', marginRight: '6px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
-                            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '2px' }}>
+                            <span style={{ width: '12px', flexShrink: 0, fontSize: '9px', fontWeight: 700, color: '#FFFF00', textAlign: 'left', lineHeight: 1, marginLeft: '-6px', marginRight: '6px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
+                            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '1px' }}>
                               <div>
                                 <button
                                   className="text-[11px] truncate hover:underline cursor-pointer leading-none w-full"
