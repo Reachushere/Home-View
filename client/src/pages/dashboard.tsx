@@ -18819,9 +18819,19 @@ export default function Dashboard() {
                     const moduleUnread = moduleFolderCount?.unlistened || 0;
                     const readingUnread = readingFolderCount?.unlistened || 0;
                     const progressBg = (() => {
-                      const startColor = courseHexColor;
-                      const endColor = courseHexColorEnd || courseHexColor;
-                      return `linear-gradient(180deg, color-mix(in srgb, ${startColor} 35%, #1a1a2e) 0%, color-mix(in srgb, ${endColor} 35%, #1a1a2e) 100%)`;
+                      const soften = (hex: string, amount: number) => {
+                        const r = parseInt(hex.slice(1, 3), 16);
+                        const g = parseInt(hex.slice(3, 5), 16);
+                        const b = parseInt(hex.slice(5, 7), 16);
+                        const bg = 26;
+                        const mr = Math.round(r * amount + bg * (1 - amount));
+                        const mg = Math.round(g * amount + bg * (1 - amount));
+                        const mb = Math.round(b * amount + bg * (1 - amount));
+                        return `#${mr.toString(16).padStart(2,'0')}${mg.toString(16).padStart(2,'0')}${mb.toString(16).padStart(2,'0')}`;
+                      };
+                      const startColor = soften(courseHexColor, 0.35);
+                      const endColor = soften(courseHexColorEnd || courseHexColor, 0.35);
+                      return `linear-gradient(180deg, ${startColor} 0%, ${endColor} 100%)`;
                     })();
                     const handlePlayFiles = (fileType: 'module' | 'reading') => {
                       const courseCodeLower = courseCode.toLowerCase();
