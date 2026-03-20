@@ -20440,7 +20440,7 @@ export default function Dashboard() {
                             setDraggedFileForMove(null);
                           }}
                         >
-                          {isWeekExpanded ? <ChevronDown className="h-3.5 w-3.5 text-white/60" /> : <ChevronRight className="h-3.5 w-3.5 text-white/60" />}
+                          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '17px', height: '17px', borderRadius: '3px', background: 'white', flexShrink: 0 }}>{isWeekExpanded ? <ChevronDown className="h-3.5 w-3.5 text-black" /> : <ChevronRight className="h-3.5 w-3.5 text-black" />}</span>
                           {isWeekExpanded ? <FolderOpen className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" />}
                           <span className={`text-[13px] truncate ${shouldStrikethrough ? 'text-white/50' : 'text-white/90'}`}>{week.name}</span>
                           <span className="text-[11px] text-white/40 ml-auto">{weekFiles.length}</span>
@@ -20560,7 +20560,7 @@ export default function Dashboard() {
                                                 setDraggedFileForMove(null);
                                               }}
                                             >
-                                              {isContentExpanded ? <ChevronDown className="h-3.5 w-3.5 text-white/60" /> : <ChevronRight className="h-3.5 w-3.5 text-white/60" />}
+                                              <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '17px', height: '17px', borderRadius: '3px', background: 'white', flexShrink: 0 }}>{isContentExpanded ? <ChevronDown className="h-3.5 w-3.5 text-black" /> : <ChevronRight className="h-3.5 w-3.5 text-black" />}</span>
                                               {isContentExpanded ? <FolderOpen className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" />}
                                               <span className="text-[12px] text-white/90 truncate flex-1">{content.name}</span>
                                               <span className="text-[11px] text-white/40">{contentFiles.length}</span>
