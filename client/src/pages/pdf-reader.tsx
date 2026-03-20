@@ -2778,7 +2778,7 @@ export default function PDFReaderPage() {
         </div>
       )}
 
-      {!followOnly && <div className={ctrlFloating.detached ? "fixed flex flex-col rounded-[14px]" : "relative flex-shrink-0 flex justify-center"} style={ctrlFloating.detached ? { zIndex: 9999, left: `${ctrlFloating.x}px`, top: `${ctrlFloating.y}px`, width: ctrlFloating.minimized ? '220px' : '520px', maxHeight: ctrlFloating.minimized ? '40px' : '80vh', overflow: 'hidden', background: 'rgba(15,15,30,0.95)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.35)', boxShadow: '0 12px 48px rgba(0,0,0,0.5), 0 4px 16px rgba(0,0,0,0.3)', transition: ctrlDragRef.current ? 'none' : 'width 0.25s ease, max-height 0.25s ease', touchAction: 'none' } : { zIndex: 10, padding: '5px 20px 14px 20px' }}>
+      {!followOnly && <div className={ctrlFloating.detached ? "fixed flex flex-col rounded-[14px]" : "relative flex-shrink-0 flex justify-center"} style={ctrlFloating.detached ? { zIndex: 9999, left: `${ctrlFloating.x}px`, top: `${ctrlFloating.y}px`, width: ctrlFloating.minimized ? '220px' : '580px', maxHeight: ctrlFloating.minimized ? '40px' : '80vh', overflow: 'hidden', background: 'rgba(15,15,30,0.95)', backdropFilter: 'blur(24px)', border: `1px solid ${waveColor}44`, boxShadow: `0 0 30px ${waveColor}33, 0 0 60px ${waveColor}18, 0 12px 48px rgba(0,0,0,0.5)`, transition: ctrlDragRef.current ? 'none' : 'width 0.25s ease, max-height 0.25s ease', touchAction: 'none' } : { zIndex: 10, padding: '5px 20px 14px 20px' }}>
         {ctrlFloating.detached && (
           <div
             className="flex items-center justify-between px-3 flex-shrink-0 cursor-grab active:cursor-grabbing select-none"
@@ -2815,22 +2815,40 @@ export default function PDFReaderPage() {
             </div>
           </div>
         )}
-        {(!ctrlFloating.detached || !ctrlFloating.minimized) && <div className={ctrlFloating.detached ? "" : "rounded-2xl mx-auto"} style={ctrlFloating.detached ? { overflow: 'visible' } : { background: 'rgba(255,255,255,0.16)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.22)', maxWidth: '1200px', width: '100%', overflow: 'visible' }}>
-          <div className="relative px-4 pb-4 pt-1" style={{ overflow: 'visible' }}>
+        {(!ctrlFloating.detached || !ctrlFloating.minimized) && <div className={ctrlFloating.detached ? "" : "rounded-2xl mx-auto"} style={ctrlFloating.detached ? { overflow: 'visible' } : { background: 'rgba(255,255,255,0.16)', backdropFilter: 'blur(24px)', border: `1px solid ${waveColor}44`, maxWidth: '1200px', width: '100%', overflow: 'visible', boxShadow: `0 0 30px ${waveColor}33, 0 0 60px ${waveColor}18, inset 0 1px 0 rgba(255,255,255,0.15)` }}>
+          <div className="relative px-4 pb-3 pt-2" style={{ overflow: 'visible' }}>
             {!ctrlFloating.detached && (
               <button
                 onClick={() => setCtrlFloating(prev => ({ ...prev, detached: true }))}
                 onTouchEnd={(e) => { e.preventDefault(); setCtrlFloating(prev => ({ ...prev, detached: true })); }}
-                className="absolute z-[70] w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/20 active:bg-white/30 transition-colors"
-                style={{ top: '6px', right: '6px', fontSize: '12px', color: 'rgba(255,255,255,0.5)', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                className="absolute z-[70] w-7 h-7 rounded flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors"
+                style={{ top: '6px', left: '6px', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)' }}
                 data-testid="ctrl-detach-button"
                 title="Pop out controls as floating window"
               >
-                ⇱
+                <Maximize2 className="h-3.5 w-3.5 text-white" />
               </button>
             )}
-            <div className="flex items-center justify-between" style={{ overflow: 'visible', gap: '8px' }}>
-              <div style={{ width: '120px', height: '48px', flexShrink: 0 }}>
+
+            <div className="overflow-hidden rounded-lg mb-2" style={{ background: 'rgba(0,0,0,0.4)', border: `1px solid ${waveColor}33`, height: '28px', position: 'relative' }}>
+              <div className="absolute inset-0 flex items-center" style={{ animation: 'ctrl-marquee 18s linear infinite', whiteSpace: 'nowrap', paddingLeft: '100%' }} data-testid="ctrl-scrolling-ticker">
+                <span className="text-[12px] font-medium mx-6" style={{ color: waveColor, fontFamily: "'Courier New', monospace", textShadow: `0 0 8px ${waveColor}88` }}>
+                  {courseCodeFromFolder ? `${courseCodeFromFolder}` : ''}{courseCodeFromFolder ? ' · ' : ''}{rawFileName?.replace(/\.pdf$/i, '') || 'No file loaded'}{totalChunks > 0 ? ` · Chunk ${currentChunk + 1}/${totalChunks}` : ''}{isPlaying ? ' · ▶ Playing' : isPaused ? ' · ⏸ Paused' : ' · ■ Stopped'}
+                </span>
+                <span className="text-[12px] font-medium mx-6" style={{ color: waveColor, fontFamily: "'Courier New', monospace", textShadow: `0 0 8px ${waveColor}88` }}>
+                  {courseCodeFromFolder ? `${courseCodeFromFolder}` : ''}{courseCodeFromFolder ? ' · ' : ''}{rawFileName?.replace(/\.pdf$/i, '') || 'No file loaded'}{totalChunks > 0 ? ` · Chunk ${currentChunk + 1}/${totalChunks}` : ''}{isPlaying ? ' · ▶ Playing' : isPaused ? ' · ⏸ Paused' : ' · ■ Stopped'}
+                </span>
+              </div>
+            </div>
+
+            {totalChunks > 0 && (
+              <div className="mb-2 rounded overflow-hidden" style={{ height: '6px', background: 'rgba(255,255,255,0.1)' }} data-testid="ctrl-chunk-progress">
+                <div className="h-full rounded transition-all duration-500" style={{ width: `${chunkProgress}%`, background: `linear-gradient(90deg, ${waveColor} 0%, ${waveColor}CC 100%)`, boxShadow: `0 0 8px ${waveColor}66` }} />
+              </div>
+            )}
+
+            <div className="flex items-center justify-center" style={{ overflow: 'visible', gap: '6px' }}>
+              <div style={{ width: '90px', height: '48px', flexShrink: 0 }}>
                 <canvas
                   ref={canvasRef}
                   className="w-full h-full pointer-events-none"
@@ -2838,9 +2856,21 @@ export default function PDFReaderPage() {
                 />
               </div>
 
-              <button className="w-10 h-10 flex flex-col items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={restartCurrentChunk} disabled={!isPlaying} title="Restart current chunk" data-testid="button-refresh-chunk-inline">
+              <button className="w-10 h-10 flex flex-col items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={restartCurrentChunk} disabled={!isPlaying} title="Restart current chunk" data-testid="button-refresh-chunk-inline" style={{ marginRight: '10px' }}>
                 <RefreshCw className="h-4 w-4 text-white" />
                 <span className="text-[8px] text-white/70 leading-none mt-0.5">Restart</span>
+              </button>
+
+              <button className="w-10 h-10 flex flex-col items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={() => {
+                setCheckedChunks(new Set());
+                setCurrentChunk(0);
+                const fileKey = getFileKey();
+                const allProgress = JSON.parse(localStorage.getItem('allChunkProgress') || '{}');
+                if (allProgress[fileKey]) { allProgress[fileKey] = { total: allProgress[fileKey].total, checked: 0 }; localStorage.setItem('allChunkProgress', JSON.stringify(allProgress)); }
+                if (file) { fetch(`/api/files/${file.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ lastChunkIndex: 0, listened: false }) }); }
+              }} disabled={checkedChunks.size === 0} title="Reset all progress" data-testid="button-reset-progress">
+                <X className="h-4 w-4 text-white" />
+                <span className="text-[8px] text-white/70 leading-none mt-0.5">Reset</span>
               </button>
 
               <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15); } }} disabled={!isPlaying} data-testid="button-rewind-15" title="Rewind 15s">
@@ -2848,15 +2878,14 @@ export default function PDFReaderPage() {
                 <span className="text-[9px] text-white font-medium ml-0.5">15s</span>
               </button>
 
-              <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 15); } }} disabled={!isPlaying} data-testid="button-forward-15" title="Forward 15s">
-                <span className="text-[9px] text-white font-medium mr-0.5">15s</span>
-                <RotateCw className="h-4 w-4 text-white" />
+              <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={skipBack} disabled={(!isPlaying && !(catWashFollow && followState?.active)) || currentChunk === 0} data-testid="button-skip-back" title="Previous chunk">
+                <SkipBack className="h-5 w-5 text-white" />
               </button>
 
-              {file && file.lastChunkIndex > 0 && !isPlaying && (
+              {file && file.lastChunkIndex > 0 && !isPlaying && !isPaused ? (
                 <button
-                  className="w-14 h-14 flex flex-col items-center justify-center rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 shrink-0"
-                  style={{ outline: '2px solid rgba(255,255,255,0.35)', outlineOffset: '3px' }}
+                  className="w-16 h-16 flex flex-col items-center justify-center rounded-full shrink-0"
+                  style={{ outline: `2px solid ${waveColor}66`, outlineOffset: '3px', background: `${waveColor}22` }}
                   onClick={resumeFromLast}
                   disabled={isLoading || numPages === 0}
                   title={`Resume from chunk ${file.lastChunkIndex + 1}${file.totalChunks ? ` of ${file.totalChunks}` : ''}`}
@@ -2865,9 +2894,7 @@ export default function PDFReaderPage() {
                   {isLoading ? <Loader2 className="h-6 w-6 text-white animate-spin" /> : <RotateCcw className="h-6 w-6 text-white" />}
                   <span className="text-[8px] text-white/70 leading-none mt-0.5">Resume</span>
                 </button>
-              )}
-
-              {catWashFollow && followState?.active ? (
+              ) : catWashFollow && followState?.active ? (
                 <button
                   className="w-16 h-16 flex items-center justify-center rounded-full bg-yellow-600 hover:bg-yellow-500 shrink-0"
                   style={{ outline: '2px solid rgba(255,200,50,0.5)', outlineOffset: '3px' }}
@@ -2895,30 +2922,31 @@ export default function PDFReaderPage() {
                 </button>
               ) : !isPlaying ? (
                 <button
-                  className="w-16 h-16 flex items-center justify-center rounded-full bg-white hover:bg-white/90 disabled:opacity-30 shrink-0"
-                  style={{ outline: '2px solid rgba(255,255,255,0.35)', outlineOffset: '3px' }}
+                  className="w-16 h-16 flex items-center justify-center rounded-full shrink-0"
+                  style={{ outline: `2px solid ${waveColor}88`, outlineOffset: '3px', background: waveColor, boxShadow: `0 0 20px ${waveColor}66` }}
                   onClick={startReading}
                   disabled={isLoading || numPages === 0}
                   data-testid="button-play"
                 >
-                  {isLoading ? <Loader2 className="h-7 w-7 text-gray-900 animate-spin" /> : <Play className="h-7 w-7 text-gray-900 fill-gray-900 ml-0.5" />}
+                  {isLoading ? <Loader2 className="h-7 w-7 text-white animate-spin" /> : <Play className="h-7 w-7 text-white fill-white ml-0.5" />}
                 </button>
               ) : isPaused ? (
-                <button className="w-16 h-16 flex items-center justify-center rounded-full bg-white hover:bg-white/90 shrink-0" style={{ outline: '2px solid rgba(255,255,255,0.35)', outlineOffset: '3px' }} onClick={resumeReading} data-testid="button-resume-play">
-                  <Play className="h-7 w-7 text-gray-900 fill-gray-900 ml-0.5" />
+                <button className="w-16 h-16 flex items-center justify-center rounded-full shrink-0" style={{ outline: `2px solid ${waveColor}88`, outlineOffset: '3px', background: waveColor, boxShadow: `0 0 20px ${waveColor}66` }} onClick={resumeReading} data-testid="button-resume-play">
+                  <Play className="h-7 w-7 text-white fill-white ml-0.5" />
                 </button>
               ) : (
-                <button className="w-16 h-16 flex items-center justify-center rounded-full bg-white hover:bg-white/90 shrink-0" style={{ outline: '2px solid rgba(255,255,255,0.35)', outlineOffset: '3px' }} onClick={stopReading} data-testid="button-stop-center">
-                  <Square className="h-7 w-7 text-gray-900 fill-gray-900" />
+                <button className="w-16 h-16 flex items-center justify-center rounded-full bg-red-600 hover:bg-red-500 shrink-0" style={{ outline: '2px solid rgba(255,80,80,0.5)', outlineOffset: '3px', boxShadow: '0 0 20px rgba(255,50,50,0.4)' }} onClick={stopReading} data-testid="button-stop-center">
+                  <Square className="h-7 w-7 text-white fill-white" />
                 </button>
               )}
 
-              <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={skipBack} disabled={(!isPlaying && !(catWashFollow && followState?.active)) || currentChunk === 0} data-testid="button-skip-back" title="Previous chunk">
-                <SkipBack className="h-5 w-5 text-white" />
-              </button>
-
               <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={skipForward} disabled={(!isPlaying && !(catWashFollow && followState?.active)) || currentChunk >= totalChunks - 1} data-testid="button-skip-forward-left" title="Next chunk">
                 <SkipForward className="h-5 w-5 text-white" />
+              </button>
+
+              <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 15); } }} disabled={!isPlaying} data-testid="button-forward-15" title="Forward 15s">
+                <span className="text-[9px] text-white font-medium mr-0.5">15s</span>
+                <RotateCw className="h-4 w-4 text-white" />
               </button>
 
               <button className="w-10 h-10 flex flex-col items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={() => {

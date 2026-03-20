@@ -162,6 +162,7 @@ import {
   Search,
   Replace,
   Maximize,
+  Maximize2,
   Minimize2,
   Cast,
   Monitor,
@@ -21234,23 +21235,23 @@ export default function Dashboard() {
             <button
               onClick={hwFloatingHandlers.onDetach}
               onTouchEnd={(e) => { e.preventDefault(); hwFloatingHandlers.onDetach(); }}
-              className="absolute z-[70] w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/20 active:bg-white/30 transition-colors"
-              style={{ top: '4px', left: '4px', fontSize: '12px', color: 'rgba(255,255,255,0.5)', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+              className="absolute z-[70] w-7 h-7 rounded flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors"
+              style={{ top: '3px', left: '3px', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)' }}
               data-testid="hw-detach-button"
               title="Pop out progress as floating window"
             >
-              ⇱
+              <Maximize2 className="h-3.5 w-3.5 text-white" />
             </button>
           ) : (
             <button
               onClick={hwFloatingHandlers.onDock}
               onTouchEnd={(e) => { e.preventDefault(); hwFloatingHandlers.onDock(); }}
-              className="absolute z-[70] rounded-full flex items-center justify-center hover:bg-white/20 active:bg-white/30 transition-colors"
-              style={{ top: '4px', left: '4px', fontSize: '10px', color: 'rgba(255,255,255,0.6)', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', padding: '4px 10px', minHeight: '28px' }}
+              className="absolute z-[70] w-7 h-7 rounded flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors"
+              style={{ top: '3px', left: '3px', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)' }}
               data-testid="hw-dock-button"
               title="Dock progress bars back"
             >
-              ⏎ Dock
+              <Minimize2 className="h-3.5 w-3.5 text-white" />
             </button>
           )}
           {/* Homework Width Resize Handle — outside left side, near bottom */}

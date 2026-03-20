@@ -337,6 +337,11 @@ button[role="combobox"] > span {
   100% { transform: scale(1); opacity: 1; }
 }
 
+@keyframes ctrl-marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
 .top-pill-container-idle {
   animation: top-pill-container-nudge 6s ease-in-out infinite;
 }
