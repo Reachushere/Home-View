@@ -21033,21 +21033,7 @@ export default function Dashboard() {
                   {/* Col 3: Days count + progress bar */}
                   <div style={{ width: '36px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px' }}>
                     <span className="text-[9px] font-bold" style={{ color: progressColor, lineHeight: 1 }}>{daysUntil}d</span>
-                    <div style={{ width: '100%', position: 'relative', height: '3px' }}>
-                      <div 
-                        className="rounded-full transition-opacity duration-300"
-                        style={{ 
-                          position: 'absolute',
-                          top: 0,
-                          left: 0,
-                          width: `${Math.min(progressBarWidth, 36)}px`, 
-                          height: '3px', 
-                          backgroundColor: progressColor,
-                          opacity: 0.9
-                        }}
-                        title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
-                      />
-                    </div>
+                    
                     <span className="text-[9px] font-bold" style={{ color: progressColor, lineHeight: 1, whiteSpace: 'nowrap' }}>{format(new Date(task.dueDate), 'MMM d')}</span>
                   </div>
                   <div style={{ width: '3px', flexShrink: 0 }} />
@@ -22018,9 +22004,7 @@ export default function Dashboard() {
                                         </div>
                                         <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px', marginLeft: '-3px' }}>
                                           <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
-                                          <div style={{ width: '48px', position: 'relative', height: '3px' }}>
-                                            <div className="rounded-full transition-opacity duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
-                                          </div>
+
                                         </div>
                                         
                                       </div>
@@ -22211,9 +22195,7 @@ export default function Dashboard() {
                                         </div>
                                         <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px', marginLeft: '-3px', position: 'relative', left: '-9px' }}>
                                           <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
-                                          <div style={{ width: '48px', position: 'relative', height: '3px' }}>
-                                            <div className="rounded-full transition-opacity duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
-                                          </div>
+
                                         </div>
                                         
                                       </div>
@@ -22383,9 +22365,7 @@ export default function Dashboard() {
                                         </div>
                                         <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px', marginLeft: '-3px', position: 'relative', left: '-9px' }}>
                                           <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
-                                          <div style={{ width: '48px', position: 'relative', height: '3px' }}>
-                                            <div className="rounded-full transition-opacity duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(maxDaysUntil, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
-                                          </div>
+
                                         </div>
                                         
                                       </div>
@@ -22590,9 +22570,6 @@ export default function Dashboard() {
                                         </div>
                                         <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px', marginLeft: '-3px', position: 'relative', left: '-9px' }}>
                                           <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
-                                          <div style={{ width: '48px', position: 'relative', height: '3px' }}>
-                                            <div className="rounded-full transition-opacity duration-300" style={{ position: 'absolute', top: 0, right: 0, width: `${Math.min(Math.round((daysUntil / Math.max(30, 1)) * 48), 48)}px`, height: '3px', backgroundColor: progressColor, opacity: 0.9 }} />
-                                          </div>
                                         </div>
                                       </div>
                                     </div>
