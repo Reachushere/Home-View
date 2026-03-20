@@ -17836,7 +17836,7 @@ export default function Dashboard() {
           </div>
           <div className="flex-1 min-h-0 relative" style={{ overflow: 'visible' }}>
             <div
-              style={{ position: 'absolute', left: '4px', top: '-27px', width: '191px', height: '18px', touchAction: 'none', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto', overflow: 'visible' }}
+              style={{ position: 'absolute', left: '4px', top: '-32px', width: '191px', height: '18px', touchAction: 'none', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto', overflow: 'visible' }}
               data-testid="calendar-top-resize-handle"
             >
               <div style={{ width: '191px', height: '18px', position: 'relative', display: 'flex', alignItems: 'center' }}>
