@@ -509,7 +509,7 @@ export default function SpotifyPlayerPage() {
   const [expandedSpeaker, setExpandedSpeaker] = useState<string | null>(null);
   const [recommendations, setRecommendations] = useState<{ name: string; image: string; uri: string; id: string }[]>([]);
   const [recoIndex, setRecoIndex] = useState(0);
-  const [voiceConfirm, setVoiceConfirm] = useState(() => localStorage.getItem("holomusic-voice") === "true");
+  const [voiceConfirm, setVoiceConfirm] = useState(() => { const v = localStorage.getItem("holomusic-voice"); return v === null ? true : v === "true"; });
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
@@ -530,13 +530,17 @@ export default function SpotifyPlayerPage() {
     notifTimeout.current = setTimeout(() => setNotification(null), 3000);
   };
 
-  const announceTrack = useCallback((trackName: string, artistName: string) => {
+  const announceTrack = useCallback((trackName: string, artistName: string, roomName?: string) => {
     if (!voiceConfirm || !window.speechSynthesis) return;
     window.speechSynthesis.cancel();
     const lang = activeProfile === "yasu" ? "ja-JP" : "en-US";
     const text = activeProfile === "yasu"
-      ? `${artistName}の${trackName}を再生します`
-      : `Now playing ${trackName} by ${artistName}`;
+      ? roomName
+        ? `${artistName}の${trackName}を${roomName}で再生します`
+        : `${artistName}の${trackName}を再生します`
+      : roomName
+        ? `Now playing ${trackName} by ${artistName} on the ${roomName}`
+        : `Now playing ${trackName} by ${artistName}`;
     const utter = new SpeechSynthesisUtterance(text);
     utter.lang = lang;
     utter.rate = 1.05;
@@ -664,8 +668,9 @@ export default function SpotifyPlayerPage() {
         body: JSON.stringify({ entityId, spotifyUri: artistData.uri, artistName: artistData.name, deviceType }),
       });
       setActiveRooms(prev => new Set(prev).add(roomName));
-      announceTrack(artistData.name, artistData.name);
+      announceTrack(artistData.name, artistData.name, roomName);
       showNotif(`Playing ${artistData.name} in ${roomName}`);
+      setTimeout(fetchNowPlaying, 1500);
     } catch { showNotif("Failed to play"); }
   };
 
