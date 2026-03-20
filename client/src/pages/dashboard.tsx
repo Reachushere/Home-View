@@ -21122,7 +21122,7 @@ export default function Dashboard() {
             return (
               <div
                 className="absolute z-50"
-                style={{ right: '-14px', top: '30px', bottom: '10px', flexDirection: 'column', justifyContent: 'space-evenly', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex' }}
+                style={{ right: '-15px', top: '30px', bottom: '10px', flexDirection: 'column', justifyContent: 'space-evenly', pointerEvents: 'auto', display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex' }}
               >
                 {semTabs.map((tab) => {
                   const isActive = currentSemLabel === tab.semLabel;
@@ -21130,7 +21130,7 @@ export default function Dashboard() {
                     <div
                       key={tab.semLabel}
                       className={`cursor-pointer${isActive ? ' semester-tab-bounce' : ''}`}
-                      style={{ position: 'relative', width: '10px', height: '42px', flexShrink: 0 }}
+                      style={{ position: 'relative', width: '13px', height: '42px', flexShrink: 0 }}
                       onClick={() => {
                         if (!homeworkScrollRef.current) return;
                         const idx = hwWeeklyTimeline.findIndex(w => w.semLabel === tab.semLabel);
@@ -21147,10 +21147,10 @@ export default function Dashboard() {
                       data-testid={`semester-tab-${tab.letter.toLowerCase()}${tab.year}`}
                       title={tab.semLabel}
                     >
-                      <svg width="10" height="42" viewBox="0 0 10 42" style={{ display: 'block' }}>
-                        <path d="M0,0 L0,42 L3,42 Q3,38 6,38 L6.5,38 Q10,38 10,32 L10,10 Q10,4 6.5,4 L6,4 Q3,4 3,0 Z" fill={isActive ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)'} stroke="rgba(255,255,255,0.35)" strokeWidth="1" />
-                        <text x="5.5" y="19" textAnchor="middle" fill="white" fontSize="7" fontWeight="bold" fontFamily="system-ui">{tab.letter}</text>
-                        <text x="5.5" y="31" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="6" fontWeight="600" fontFamily="system-ui">{tab.year}</text>
+                      <svg width="13" height="42" viewBox="0 0 13 42" style={{ display: 'block' }}>
+                        <path d="M0,0 L0,42 L5,42 Q5,38 8,38 L8.5,38 Q13,38 13,32 L13,10 Q13,4 8.5,4 L8,4 Q5,4 5,0 Z" fill={isActive ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)'} stroke="rgba(255,255,255,0.35)" strokeWidth="1" />
+                        <text x="7" y="19" textAnchor="middle" fill="white" fontSize="7" fontWeight="bold" fontFamily="system-ui">{tab.letter}</text>
+                        <text x="7" y="31" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="6" fontWeight="600" fontFamily="system-ui">{tab.year}</text>
                       </svg>
                     </div>
                   );
