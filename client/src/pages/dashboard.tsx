@@ -18,7 +18,7 @@ import cnnLogoPath from "@assets/CNN_1773536484180.png";
 import globalLogoPath from "@assets/Global_White_1773536754594.png";
 import cbcLogoPath from "@assets/cbc-news-logo-black-and-white_1773536865600.png";
 import msnbcLogoPath from "@assets/MSNBC_1773536950584.png";
-import exampleRedImg from "@assets/Example_red_1774037060057.png";
+import exampleRedImg from "@assets/Example2_1774037220785.png";
 import tmuBoxesLogo from "@assets/TMU_Boxes_1773894223753.png";
 import d2lTickerLabel from "@assets/D2L_1773894837014.png";
 import newsTickerLabel from "@assets/News_1773894837015.png";
