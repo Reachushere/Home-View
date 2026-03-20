@@ -1122,8 +1122,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
               </select>
             </div>
           </div>
-          <div className="flex items-center justify-end gap-2 pt-1">
-            <Button size="sm" variant="ghost" onClick={() => { setExpandedTaskId(null); setEditTaskFields(null); }} className="h-7 text-[10px] text-white hover:text-white hover:bg-white/10" data-testid={`button-inline-cancel-${task.id}`}>Cancel</Button>
+          <div className="flex items-center justify-end gap-3 pt-2">
+            <Button size="sm" variant="ghost" onClick={() => { setExpandedTaskId(null); setEditTaskFields(null); }} className="h-9 px-4 text-[13px] font-semibold text-white hover:text-white hover:bg-white/10 border border-white/20" data-testid={`button-inline-cancel-${task.id}`}>Cancel</Button>
             <Button
               size="sm"
               onClick={() => {
@@ -1158,7 +1158,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 setEditTaskFields(null);
                 toast({ title: "Task updated" });
               }}
-              className="h-7 text-[10px] bg-white/20 hover:bg-white/30 text-white"
+              className="h-9 px-5 text-[13px] font-semibold bg-blue-600 hover:bg-blue-500 text-white"
               data-testid={`button-inline-save-${task.id}`}
             >
               Save Changes
@@ -2172,15 +2172,16 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
           )}
         </div>
 
-        <div className="px-4 py-3 border-t border-white/20 flex items-center justify-end flex-shrink-0" style={{ background: 'rgba(255,255,255,0.08)', position: 'relative', zIndex: 10 }}>
+        <div className="px-4 py-3 border-t border-white/20 flex items-center justify-end flex-shrink-0" style={{ background: 'rgba(255,255,255,0.08)', position: 'relative', zIndex: 10, opacity: expandedTaskId !== null ? 0.35 : 1, pointerEvents: expandedTaskId !== null ? 'none' : 'auto' }}>
           <div className="flex gap-2">
             <Button
               type="button"
               variant="outline"
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClose(); }}
               onPointerDown={(e) => { e.stopPropagation(); }}
-              className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-all duration-200 h-6 w-[110px] cursor-pointer"
-              style={{ fontSize: '12px', pointerEvents: 'auto', position: 'relative', zIndex: 99999 }}
+              disabled={expandedTaskId !== null}
+              className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-all duration-200 h-6 w-[110px] cursor-pointer disabled:cursor-not-allowed"
+              style={{ fontSize: '12px', pointerEvents: expandedTaskId !== null ? 'none' : 'auto', position: 'relative', zIndex: 99999 }}
               data-testid="button-cancel-course-detail"
             >
               Cancel
@@ -2200,9 +2201,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 }
                 onClose();
               }}
-              className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-6 w-[110px]"
+              disabled={expandedTaskId !== null}
+              className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-6 w-[110px] disabled:cursor-not-allowed"
               style={{
-                boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
+                boxShadow: expandedTaskId !== null ? 'none' : '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
                 fontSize: '12px'
               }}
               data-testid="button-save-course-detail"
