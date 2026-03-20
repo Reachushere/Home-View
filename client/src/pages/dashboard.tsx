@@ -21690,7 +21690,7 @@ export default function Dashboard() {
               if (lastRect) {
                 const lastBottom = lastRect.top + lastRect.height - upcomingTop - firstOffset;
                 const otherRowH = gridSizes.courseRowHeight || 48;
-                return `${lastBottom + otherRowH + 4 - 14}px`;
+                return `${lastBottom + otherRowH + 4 - 14 + 9}px`;
               }
             }
             return '22px';
