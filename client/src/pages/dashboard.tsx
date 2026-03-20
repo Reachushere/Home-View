@@ -21132,7 +21132,7 @@ export default function Dashboard() {
                     <div
                       key={tab.semLabel}
                       className={`cursor-pointer${isActive ? ' semester-tab-bounce' : ''}`}
-                      style={{ position: 'absolute', bottom: `${reversedIdx * 53 + reversedIdx * 3 + 2 + (tabIdx === 0 ? 1 : 0)}px`, width: '18px', height: '88px', zIndex: semTabs.length - tabIdx, clipPath: reversedIdx === 0 ? 'inset(0 0 0 2px)' : ((tab.letter === 'F' && tab.year === '27') || (tab.letter === 'F' && tab.year === '28')) ? 'inset(0 0 0 2px)' : undefined }}
+                      style={{ position: 'absolute', bottom: `${reversedIdx * 53 + reversedIdx * 3 + 2 + (tabIdx === 0 ? 1 : 0)}px`, width: '18px', height: '88px', zIndex: semTabs.length - tabIdx, clipPath: reversedIdx === 0 ? 'inset(0 0 0 2px)' : ((tab.letter === 'F' && tab.year === '28')) ? 'inset(0 0 0 2px)' : undefined }}
                       onClick={() => {
                         if (!homeworkScrollRef.current) return;
                         const idx = hwWeeklyTimeline.findIndex(w => w.semLabel === tab.semLabel);
@@ -21177,7 +21177,9 @@ export default function Dashboard() {
                         ) : (tab.letter === 'W' && tab.year === '27') ? (
                           <text x="5" y="26" textAnchor="middle" fill="white" fontSize="10" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">May 26</text>
                         ) : (tab.letter === 'S' && tab.year === '27') ? (
-                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="10" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">S 27</text>
+                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="10" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">Jun 26</text>
+                        ) : (tab.letter === 'F' && tab.year === '27') ? (
+                          <text x="5" y="26" textAnchor="middle" fill="white" fontSize="10" fontWeight="600" fontFamily="system-ui" transform="rotate(90, 5, 26)">Jul 26</text>
                         ) : (
                           <>
                             <text x="9" y={semTabs.indexOf(tab) === 0 ? 24 : 22} textAnchor="middle" fill="white" fontSize="9" fontWeight="600" fontFamily="system-ui">{tab.letter}</text>
