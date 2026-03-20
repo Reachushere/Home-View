@@ -21155,7 +21155,7 @@ export default function Dashboard() {
                           : "M0.00 42.00 L0.00 4.53 L3.55 4.50 C3.56,4.50 3.86,3.06 4.88,1.65 C5.48,0.99 6.28,0.47 7.20,0.00 C9.86,1.37 13.43,2.33 15.29,5.33 C15.60,5.84 15.83,6.52 16.00,7.33 L16.00 16.95 L16.00 20.53 L16.00 30.13 C15.83,30.94 15.60,31.63 15.29,32.14 C12.79,36.17 7.21,36.53 4.88,39.12 C4.49,39.13 3.55,41.98 3.55,41.98 L0.00 42.00 Z"
                         } fill={isActive ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)'} stroke="rgba(255,255,255,0.35)" strokeWidth="1" />
                         <text x="8" y="17" textAnchor="middle" fill="white" fontSize="11" fontWeight="600" fontFamily="system-ui">{tab.letter}</text>
-                        <text x="8" y="30" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="12" fontWeight="600" fontFamily="system-ui">{tab.year}</text>
+                        <text x="8" y="30" textAnchor="middle" fill="white" fontSize="12" fontWeight="600" fontFamily="system-ui">{tab.year}</text>
                       </svg>
                     </div>
                   );
