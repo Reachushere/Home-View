@@ -12,3 +12,21 @@ id = "Bc6n7_mGe4RXg8AvakfN5"
 uri = "file://attached_assets/unical-favicon-white-outline.png"
 type = "image"
 title = "Unical White Outline Favicon (PNG)"
+
+[[outputs]]
+id = "puYD65BdQfcbnwJQyr8Og"
+uri = "file://attached_assets/glass_icon_purple_blue.png"
+type = "image"
+title = "Glass Icon - Purple Blue"
+
+[[outputs]]
+id = "bf8nL6Vew6O_q_bIVXAIO"
+uri = "file://attached_assets/glass_icon_teal_blue.png"
+type = "image"
+title = "Glass Icon - Teal Blue"
+
+[[outputs]]
+id = "CdHC_-8HCcF1K691gsfQh"
+uri = "file://attached_assets/glass_icon_pink_coral.png"
+type = "image"
+title = "Glass Icon - Pink Coral"
