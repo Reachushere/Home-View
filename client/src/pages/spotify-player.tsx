@@ -1489,16 +1489,16 @@ export default function SpotifyPlayerPage() {
                 </div>
               )}
 
-              <div className="text-center mt-2 w-full px-2 overflow-hidden" style={{ maxWidth: '100%' }}>
+              <div className="text-center mt-2 px-2 min-w-0" style={{ width: '100%', maxWidth: '236px' }}>
                 <p className="text-sm font-bold truncate" data-testid="track-name"
-                  style={{ color: 'rgba(200,230,255,0.95)', textShadow: isPlaying ? `0 0 20px ${profile.glow}` : 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  style={{ color: 'rgba(200,230,255,0.95)', textShadow: isPlaying ? `0 0 20px ${profile.glow}` : 'none' }}>
                   {ja(nowPlaying?.name) || (isSakura ? "再生なし" : "Nothing Playing")}
                 </p>
                 {isPlaying && nowPlaying?.artist && (() => {
                   const firstArtist = nowPlaying.artist.split(",")[0].trim();
                   const artistImg = artistImages[firstArtist];
                   return (
-                    <div className="flex items-center justify-center gap-1.5 mt-1 overflow-hidden">
+                    <div className="flex items-center justify-center gap-1.5 mt-1 min-w-0">
                       {artistImg && (
                         <div className="w-5 h-5 rounded-full overflow-hidden flex-shrink-0"
                           style={{
@@ -1507,8 +1507,8 @@ export default function SpotifyPlayerPage() {
                             background: `url(${artistImg}) center/cover`,
                           }} />
                       )}
-                      <p className="text-sm truncate font-medium" data-testid="track-artist"
-                        style={{ color: profile.accent, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <p className="text-sm truncate font-medium min-w-0" data-testid="track-artist"
+                        style={{ color: profile.accent }}>
                         {nowPlaying.artist}
                       </p>
                     </div>
