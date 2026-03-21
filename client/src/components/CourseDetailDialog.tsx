@@ -1013,7 +1013,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
         >
           {task.isCompleted && <CheckCircle2 className="h-3 w-3 text-white" />}
         </button>
-        <TypeIcon className={`h-[19px] w-[19px] flex-shrink-0 ${task.isCompleted ? "text-white/50" : "text-white"}`} style={{ marginRight: '10px' }} />
+        <MessageSquare className={`h-[19px] w-[19px] flex-shrink-0 cursor-pointer hover:opacity-70 transition-opacity ${task.isCompleted ? "text-white/50" : "text-white"}`} style={{ marginRight: '10px' }} onClick={(e) => { e.stopPropagation(); if (expandedTaskId === task.id) { setExpandedTaskId(null); setEditTaskFields(null); } else { setExpandedTaskId(task.id); const d = task.dueDate ? new Date(task.dueDate) : null; setEditTaskFields({ title: task.title || '', type: task.type || 'other', dueDate: d ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` : '', dueTime: d ? `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` : '', description: task.description || '', gradeWeight: task.gradeWeight?.toString() || '', gradeTotal: task.gradeTotal?.toString() || '', gradeValue: task.gradeValue?.toString() || '', reminder1: task.reminder1 ?? 30, reminder2: task.reminder2 ?? 120, reminder3: task.reminder3 ?? null, reminder4: task.reminder4 ?? null }); } }} data-testid={`button-comments-${task.id}`} />
         <div className="flex-1 min-w-0">
           <div
             className={`text-[10px] font-medium truncate flex items-center gap-1 cursor-pointer hover:underline ${task.isCompleted ? "line-through text-white/50" : "text-white"}`}
@@ -2590,7 +2590,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     <span className="text-[7px] font-bold text-white">Assign</span>
                   </div>
                   <div className="flex-shrink-0" style={{ width: '16px' }} />
-                  <div className="flex-shrink-0" style={{ width: '19px', marginRight: '10px' }} />
+                  <div className="flex-shrink-0 text-center" style={{ width: '19px', marginRight: '10px' }}>
+                    <span className="text-[7px] font-bold text-white">Comments</span>
+                  </div>
                   <div className={`flex-1 min-w-0 ${hdrCls('title')}`} onClick={() => toggleSort('title')} data-testid="sort-title">
                     Assignment<SortIcon field="title" />
                   </div>
