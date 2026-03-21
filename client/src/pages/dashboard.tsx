@@ -19440,6 +19440,9 @@ export default function Dashboard() {
                           )}
                           {isToday && isCurrentHour && (() => {
                             const now = new Date();
+                            const currentHourNow = now.getHours();
+                            const isNightTime = currentHourNow >= 21 || currentHourNow < 6;
+                            if (isNightTime) return null;
                             const narrowColWidth = gridSizes.timeSlotHeight;
                             const getTaskTime = (t: any) => {
                               if (t.eventStartTime) {
