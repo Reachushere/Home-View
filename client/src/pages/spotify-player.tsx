@@ -432,8 +432,16 @@ function HoloScanLine() {
 
 function HoloVinyl({ albumArt, playing, accent, size = 220 }: { albumArt?: string; playing: boolean; accent: string; size?: number }) {
   const rotRef = useRef(0);
+  const wasPlayingRef = useRef(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animRef = useRef<number>();
+
+  useEffect(() => {
+    if (playing && !wasPlayingRef.current) {
+      rotRef.current = 0;
+    }
+    wasPlayingRef.current = playing;
+  }, [playing]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -449,7 +457,7 @@ function HoloVinyl({ albumArt, playing, accent, size = 220 }: { albumArt?: strin
 
     const animate = () => {
       ctx.clearRect(0, 0, size, size);
-      rotRef.current += playing ? 0.015 : 0.004;
+      if (playing) rotRef.current += 0.015;
       const t = Date.now() / 1000;
 
       ctx.save(); ctx.translate(cx, cy); ctx.rotate(rotRef.current);
