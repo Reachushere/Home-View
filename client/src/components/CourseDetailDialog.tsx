@@ -2158,7 +2158,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                           </button>
                         </div>
                         <div className="grid grid-cols-7 gap-0.5 mb-1">
-                          {dayLabels.map(d => <div key={d} className="text-[7px] text-white/50 text-center font-medium">{d}</div>)}
+                          {dayLabels.map(d => <div key={d} className="text-[8px] text-white text-center font-medium">{d}</div>)}
                         </div>
                         <div className="grid grid-cols-7 gap-0.5">
                           {Array.from({ length: firstDay }, (_, i) => <div key={`e${i}`} />)}
@@ -2173,10 +2173,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                               <button
                                 key={day}
                                 onClick={() => handleDayClick(day)}
-                                className={`h-5 text-[8px] rounded transition-colors ${
+                                className={`h-6 text-[11px] rounded transition-colors ${
                                   isWeek1Start ? 'bg-green-500 text-white font-bold' :
-                                  isInWeek1 ? 'bg-green-500/30 text-green-200' :
-                                  isExcludedWeek ? 'bg-amber-500/20 text-amber-300' :
+                                  isInWeek1 ? 'bg-green-500/30 text-white' :
+                                  isExcludedWeek ? 'bg-amber-500/20 text-white' :
                                   'text-white hover:bg-white/15'
                                 }`}
                                 data-testid={`week-cal-day-${day}`}
@@ -2326,7 +2326,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                           setWeekMappingEdits(prev => ({ ...prev, [weekNum]: { ...edit, courseWeekLabel: e.target.value } }));
                         }}
                         onBlur={() => saveWeekMapping(weekNum, edit)}
-                        className="w-20 h-5 text-[8px] bg-white/10 border border-white/25 rounded px-1.5 text-white placeholder:text-white/40 focus:border-white/50 outline-none"
+                        className="w-20 h-5 text-[8px] bg-white/10 border border-white/25 rounded px-1.5 text-white placeholder:text-white/70 focus:border-white/50 outline-none"
                         data-testid={`input-course-week-label-${weekNum}`}
                       />
 
@@ -2338,7 +2338,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                           setWeekMappingEdits(prev => ({ ...prev, [weekNum]: { ...edit, notes: e.target.value } }));
                         }}
                         onBlur={() => saveWeekMapping(weekNum, edit)}
-                        className="w-24 h-5 text-[8px] bg-white/10 border border-white/25 rounded px-1.5 text-white placeholder:text-white/40 focus:border-white/50 outline-none"
+                        className="w-24 h-5 text-[8px] bg-white/10 border border-white/25 rounded px-1.5 text-white placeholder:text-white/70 focus:border-white/50 outline-none"
                         data-testid={`input-week-notes-${weekNum}`}
                       />
                     </div>
