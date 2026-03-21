@@ -1618,13 +1618,16 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     </div>
                     );
                   })()}
-                  <div style={{ width: '60px' }}>
+                  <div style={{ marginLeft: '4px' }}>
                     <label className="text-white text-[9px] mb-1 block">Border</label>
-                    <div className="flex items-center gap-1.5">
-                      <input type="color" value={editInfo.borderColor || editInfo.color} onChange={(e) => setEditInfo({...editInfo, borderColor: e.target.value})} className="w-7 h-7 rounded border border-white/30 cursor-pointer shrink-0" style={{ padding: 0, background: 'transparent', WebkitAppearance: 'none', appearance: 'none' }} data-testid="input-border-color" />
+                    <div className="flex items-center gap-1">
+                      <div className="relative shrink-0" style={{ width: '20px', height: '20px' }}>
+                        <div className="absolute inset-0 rounded-sm border border-white/30" style={{ backgroundColor: editInfo.borderColor || editInfo.color }} />
+                        <input type="color" value={editInfo.borderColor || editInfo.color} onChange={(e) => setEditInfo({...editInfo, borderColor: e.target.value})} className="absolute inset-0 opacity-0 cursor-pointer" style={{ width: '20px', height: '20px' }} data-testid="input-border-color" />
+                      </div>
                       {editInfo.borderColor && (
-                        <button className="text-white/40 hover:text-white/70 text-[8px]" onClick={() => setEditInfo({...editInfo, borderColor: ''})} title="Reset to auto">
-                          <X className="h-3 w-3" />
+                        <button className="text-white/40 hover:text-white/70" onClick={() => setEditInfo({...editInfo, borderColor: ''})} title="Reset to auto">
+                          <X className="h-2.5 w-2.5" />
                         </button>
                       )}
                     </div>
