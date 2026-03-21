@@ -1055,27 +1055,24 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             <span className="capitalize">{task.type}</span>
           </div>
         </div>
-        <div className="flex items-center flex-shrink-0" style={{ gap: '5px', opacity: task.excludeFromGpa ? 0.35 : 1 }} onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center flex-shrink-0" style={{ gap: '5px' }} onClick={(e) => e.stopPropagation()}>
           <DebouncedGradeInput
             value={task.gradeValue}
             onSave={(val) => updateGradeValueMutation.mutate({ id: task.id, gradeValue: val, _task: task })}
             placeholder="Scr"
             testId={`input-grade-value-${task.id}`}
-            disabled={!!task.excludeFromGpa}
           />
           <DebouncedGradeInput
             value={task.gradeTotal}
             onSave={(val) => updateTaskMutation.mutate({ id: task.id, data: { gradeTotal: val }, _task: task })}
             placeholder="Tot"
             testId={`input-grade-total-${task.id}`}
-            disabled={!!task.excludeFromGpa}
           />
           <DebouncedGradeInput
             value={task.gradeWeight}
             onSave={(val) => updateTaskMutation.mutate({ id: task.id, data: { gradeWeight: val }, _task: task })}
             placeholder="Wt"
             testId={`input-grade-weight-${task.id}`}
-            disabled={!!task.excludeFromGpa}
           />
           <span className="text-[9px] text-white w-[33px] text-center" style={{ marginLeft: '5px' }} data-testid={`text-grade-percent-${task.id}`}>
             {task.gradeValue !== null && task.gradeValue !== undefined && task.gradeTotal ? `${((task.gradeValue / task.gradeTotal) * 100).toFixed(2)}%` : '—'}
