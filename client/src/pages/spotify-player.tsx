@@ -145,8 +145,8 @@ function VolumeKnob({ value, onChange, size = 54, accent = "#3b82f6", glow = "rg
   const knobRef = useRef<SVGSVGElement>(null);
   const dragging = useRef(false);
 
-  const startAngle = 135;
-  const endAngle = 405;
+  const startAngle = 225;
+  const endAngle = 495;
   const range = endAngle - startAngle;
   const currentAngle = startAngle + (value / 100) * range;
 
