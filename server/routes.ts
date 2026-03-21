@@ -14008,6 +14008,7 @@ Return ONLY the JSON object, no markdown formatting.`;
         }
 
         const isArtistUri = spotifyUri && spotifyUri.startsWith("spotify:artist:");
+        const groupEntityId = entityId !== targetEntity ? entityId : null;
         
         if (isArtistUri || !spotifyUri) {
           const searchTerm = artistName || "music";
@@ -14024,13 +14025,29 @@ Return ONLY the JSON object, no markdown formatting.`;
           });
           const playText = await playResp.text();
           console.log(`[Spotify] CUSTOM play_media response: ${playResp.status} body=${playText.substring(0, 300)}`);
+
+          if (groupEntityId) {
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            console.log(`[Spotify] Sending same voice command to group: ${groupEntityId}`);
+            const groupResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                entity_id: groupEntityId,
+                media_content_id: voiceCommand,
+                media_content_type: "custom",
+              }),
+            });
+            const groupText = await groupResp.text();
+            console.log(`[Spotify] Group play response: ${groupResp.status} body=${groupText.substring(0, 300)}`);
+          }
         } else {
-          console.log(`[Spotify] Echo - play_media SPOTIFY URI for ${targetEntity}: ${spotifyUri}`);
+          console.log(`[Spotify] Echo - play_media SPOTIFY URI for ${groupEntityId || targetEntity}: ${spotifyUri}`);
           const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              entity_id: targetEntity,
+              entity_id: groupEntityId || targetEntity,
               media_content_id: spotifyUri,
               media_content_type: "spotify",
             }),
