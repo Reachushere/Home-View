@@ -128,7 +128,7 @@ const ROOM_HOTSPOTS: { room: string; x: number; y: number; w: number; h: number;
   { room: "Hallway", x: 19, y: 5, w: 16, h: 32, entityId: "media_player.hallway_2", groupEntityId: "media_player.hallway_media_group", deviceType: "echo", icon: "hallway", nightImg: hallwayNight, labelOffsetX: 0, labelOffsetY: 0 },
   { room: "Kitchen", x: 36, y: 5, w: 28, h: 45, entityId: "media_player.kitchen_lr", groupEntityId: "media_player.kitchen_media_group", deviceType: "echo", icon: "kitchen", nightImg: kitchenNight, labelOffsetX: -20, labelOffsetY: 110 },
   { room: "Living Room", x: 36, y: 52, w: 28, h: 45, entityId: "media_player.kitchen_lr", groupEntityId: "media_player.living_room_media_group", deviceType: "echo", icon: "sofa", nightImg: livingRoomNight, labelOffsetX: -5, labelOffsetY: -55 },
-  { room: "King Bedroom", x: 65, y: 30, w: 33, h: 50, entityId: "media_player.king_bedroom", groupEntityId: "media_player.king_bedroom_media_group", deviceType: "echo", icon: "crown", nightImg: kingNight, labelOffsetX: -100, labelOffsetY: -29 },
+  { room: "King Bedroom", x: 65, y: 30, w: 33, h: 50, entityId: "media_player.king_bedroom", groupEntityId: "media_player.king_bedroom_media_group", deviceType: "echo", icon: "crown", nightImg: kingNight, labelOffsetX: -100, labelOffsetY: -59 },
   { room: "Cat Washroom", x: 84, y: 3, w: 14, h: 26, entityId: "media_player.cat_speakers", groupEntityId: "media_player.cat_washroom_media_group", deviceType: "echo", icon: "bath", nightImg: catNight, labelOffsetX: -250, labelOffsetY: 30 },
   { room: "Closet", x: 65, y: 3, w: 18, h: 26, entityId: "media_player.echo_closet_am", groupEntityId: "media_player.closet_media_group", deviceType: "echo", icon: "closet", nightImg: closetNight },
   { room: "Everywhere", x: 84, y: 78, w: 14, h: 18, entityId: "media_player.byhome", groupEntityId: "media_player.byhome", deviceType: "echo", icon: "everywhere" },
@@ -1831,7 +1831,7 @@ export default function SpotifyPlayerPage() {
                               </div>
                             )}
                             {spot.room === "Living Room" && (
-                              <div className="absolute" style={{ left: '-58px', top: '50%', transform: 'translateY(-50%)', zIndex: 10 }} onClick={(e) => e.stopPropagation()} data-testid="volume-knob-living-room">
+                              <div className="absolute" style={{ left: 'calc(100% + 8px)', top: '50%', transform: 'translateY(-50%)', zIndex: 10 }} onClick={(e) => e.stopPropagation()} data-testid="volume-knob-living-room">
                                 <VolumeKnob value={roomVolumes[spot.room] ?? 30} onChange={(v) => setRoomVolume(spot.room, v)} size={50} accent={profile.accent} glow={profile.glow} />
                               </div>
                             )}
@@ -1865,9 +1865,23 @@ export default function SpotifyPlayerPage() {
                         }} />
                       )}
                       {!isActive && activeRooms.has("Everywhere") && spot.room !== "Everywhere" && !spot.hideLabel && (
-                        <div className="absolute inset-0 flex items-center justify-center" style={{ zIndex: 3 }}
+                        <div className="absolute inset-0 flex items-center justify-center" style={{ zIndex: 3, transform: `translate(${spot.labelOffsetX || 0}px, ${spot.labelOffsetY || 0}px)` }}
                           onClick={(e) => e.stopPropagation()}>
-                          <VolumeKnob value={roomVolumes[spot.room] ?? 30} onChange={(v) => setRoomVolume(spot.room, v)} size={44} accent={`${profile.accent}aa`} glow={profile.glow} />
+                          {(spot.room === "Living Room" || spot.room === "Kitchen") ? (
+                            <div className="absolute" style={{ left: 'calc(100% + 8px)', top: '50%', transform: 'translateY(-50%)' }}>
+                              <VolumeKnob value={roomVolumes[spot.room] ?? 30} onChange={(v) => setRoomVolume(spot.room, v)} size={44} accent={`${profile.accent}aa`} glow={profile.glow} />
+                            </div>
+                          ) : spot.room === "Pug Washroom" ? (
+                            <div className="absolute" style={{ left: '-60px', top: '50%', transform: 'translateY(calc(-50% + 35px))' }}>
+                              <VolumeKnob value={roomVolumes[spot.room] ?? 30} onChange={(v) => setRoomVolume(spot.room, v)} size={44} accent={`${profile.accent}aa`} glow={profile.glow} />
+                            </div>
+                          ) : spot.room === "Hallway" ? (
+                            <div className="absolute" style={{ right: '-78px', top: '-20px' }}>
+                              <VolumeKnob value={roomVolumes[spot.room] ?? 30} onChange={(v) => setRoomVolume(spot.room, v)} size={44} accent={`${profile.accent}aa`} glow={profile.glow} />
+                            </div>
+                          ) : (
+                            <VolumeKnob value={roomVolumes[spot.room] ?? 30} onChange={(v) => setRoomVolume(spot.room, v)} size={44} accent={`${profile.accent}aa`} glow={profile.glow} />
+                          )}
                         </div>
                       )}
                     </div>
