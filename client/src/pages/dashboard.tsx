@@ -19205,8 +19205,8 @@ export default function Dashboard() {
                               isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""
                             } ${task.isCompleted ? "text-gray-400" : "text-black"}`}
                             style={{
-                              backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
-                              borderColor: task.isCompleted ? '#d1d5db' : (colors?.hex || colors?.border || '#9ca3af')
+                              backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#dbeafe'),
+                              borderColor: task.isCompleted ? '#d1d5db' : (colors?.hex || colors?.border || '#60a5fa')
                             }}
                             onContextMenu={(e) => {
                               e.preventDefault();
