@@ -776,7 +776,24 @@ export default function SpotifyPlayerPage() {
   const fetchPlaybackState = useCallback(async () => {
     try {
       const res = await fetch(`/api/spotify/playback-state${authQuery}`);
-      if (res.ok) { const d = await res.json(); if (d.active) { setVolume(d.volume); setShuffleOn(d.shuffle); setRepeatMode(d.repeat); } }
+      if (res.ok) {
+        const d = await res.json();
+        if (d.active) {
+          setVolume(d.volume); setShuffleOn(d.shuffle); setRepeatMode(d.repeat);
+          const dn = (d.deviceName || "").toLowerCase();
+          if (dn === "byhome" || dn.includes("everywhere")) {
+            setActiveRooms(prev => { const n = new Set(prev); n.add("Everywhere"); return n; });
+          } else {
+            const matchedRoom = ROOM_HOTSPOTS.find(spot => {
+              const eid = spot.entityId.toLowerCase();
+              return eid.includes(dn.replace(/[^a-z0-9]/g, ''));
+            });
+            if (matchedRoom) {
+              setActiveRooms(prev => { const n = new Set(prev); n.add(matchedRoom.room); return n; });
+            }
+          }
+        }
+      }
     } catch {}
   }, [authQuery]);
 
