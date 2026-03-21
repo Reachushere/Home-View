@@ -5668,6 +5668,58 @@ html,body{height:100%;overflow:hidden;background:transparent}
     res.json({ message: "Pomodoro skipped", mode: pomodoroState.mode, remaining: pomodoroState.duration, count: pomodoroState.count });
   });
 
+  const translationCache = new Map<string, string>();
+  app.post("/api/translate-ja", async (req, res) => {
+    try {
+      const { texts } = req.body as { texts: string[] };
+      if (!texts || !Array.isArray(texts) || texts.length === 0) {
+        return res.status(400).json({ error: "texts array required" });
+      }
+      const results: Record<string, string> = {};
+      const toTranslate: string[] = [];
+      for (const t of texts) {
+        if (translationCache.has(t)) {
+          results[t] = translationCache.get(t)!;
+        } else if (/^[\u3000-\u303F\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\uFF00-\uFFEF\s\d\-.,!?()]+$/.test(t)) {
+          results[t] = t;
+          translationCache.set(t, t);
+        } else {
+          toTranslate.push(t);
+        }
+      }
+      if (toTranslate.length > 0) {
+        const OpenAI = (await import("openai")).default;
+        const openai = new OpenAI({
+          apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+          baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+        });
+        const batch = toTranslate.slice(0, 20);
+        const prompt = batch.map((t, i) => `${i + 1}. ${t}`).join("\n");
+        const completion = await openai.chat.completions.create({
+          model: "gpt-4o-mini",
+          messages: [
+            { role: "system", content: "Translate each line to Japanese. For song/album/artist names, use the commonly known Japanese title if one exists (e.g. official Japanese release name), otherwise transliterate to katakana. Keep numbers and punctuation. Return ONLY the translations, one per line, numbered to match input. Format: '1. translation'" },
+            { role: "user", content: prompt },
+          ],
+          temperature: 0.3,
+          max_tokens: 1000,
+        });
+        const responseText = completion.choices[0]?.message?.content || "";
+        const lines = responseText.split("\n").filter(l => l.trim());
+        for (let i = 0; i < batch.length; i++) {
+          const line = lines[i] || "";
+          const translated = line.replace(/^\d+\.\s*/, "").trim() || batch[i];
+          results[batch[i]] = translated;
+          translationCache.set(batch[i], translated);
+        }
+      }
+      res.json({ translations: results });
+    } catch (err: any) {
+      console.error("[Translate] Error:", err.message);
+      res.status(500).json({ error: "Translation failed" });
+    }
+  });
+
   // POST /api/ha-announce - Send a voice announcement to Echo speakers
   app.post("/api/ha-announce", async (req, res) => {
     try {

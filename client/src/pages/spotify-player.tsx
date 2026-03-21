@@ -628,6 +628,9 @@ export default function SpotifyPlayerPage() {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [searching, setSearching] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [jaTranslations, setJaTranslations] = useState<Record<string, string>>({});
+  const jaTranslationCache = useRef<Record<string, string>>({});
+  const jaTranslationPending = useRef<Set<string>>(new Set());
 
   const searchParams = new URLSearchParams(window.location.search);
   const authParam = searchParams.get("auth");
@@ -999,6 +1002,44 @@ export default function SpotifyPlayerPage() {
   const progressPct = nowPlaying?.duration ? (localProgress / nowPlaying.duration) * 100 : 0;
   const isSakura = activeProfile === "yasu";
 
+  useEffect(() => {
+    if (!isSakura || !nowPlaying) return;
+    const textsToTranslate: string[] = [];
+    const addIfNeeded = (t?: string) => {
+      if (t && !jaTranslationCache.current[t] && !jaTranslationPending.current.has(t)) {
+        textsToTranslate.push(t);
+      }
+    };
+    addIfNeeded(nowPlaying.name);
+    addIfNeeded(nowPlaying.album);
+    if (textsToTranslate.length === 0) return;
+    textsToTranslate.forEach(t => jaTranslationPending.current.add(t));
+    const timer = setTimeout(() => {
+      fetch("/api/translate-ja", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ texts: textsToTranslate }),
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data.translations) {
+            jaTranslationCache.current = { ...jaTranslationCache.current, ...data.translations };
+            setJaTranslations(prev => ({ ...prev, ...data.translations }));
+          }
+          textsToTranslate.forEach(t => jaTranslationPending.current.delete(t));
+        })
+        .catch(() => {
+          textsToTranslate.forEach(t => jaTranslationPending.current.delete(t));
+        });
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [isSakura, nowPlaying?.name, nowPlaying?.album]);
+
+  const ja = (text?: string) => {
+    if (!text || !isSakura) return text;
+    return jaTranslations[text] || text;
+  };
+
   const tc = {
     textMuted: isSakura ? 'rgba(150,210,248,0.8)' : 'rgba(100,180,255,0.65)',
     textSoft: isSakura ? 'rgba(160,220,250,0.6)' : 'rgba(100,180,255,0.45)',
@@ -1214,7 +1255,7 @@ export default function SpotifyPlayerPage() {
               <div className="text-center mt-2 w-full px-2">
                 <p className="text-sm font-bold truncate" data-testid="track-name"
                   style={{ color: 'rgba(200,230,255,0.95)', textShadow: isPlaying ? `0 0 20px ${profile.glow}` : 'none' }}>
-                  {nowPlaying?.name || (isSakura ? "再生なし" : "Nothing Playing")}
+                  {ja(nowPlaying?.name) || (isSakura ? "再生なし" : "Nothing Playing")}
                 </p>
                 {isPlaying && nowPlaying?.artist && (() => {
                   const firstArtist = nowPlaying.artist.split(",")[0].trim();
@@ -1244,7 +1285,7 @@ export default function SpotifyPlayerPage() {
                 )}
                 {nowPlaying?.album && (
                   <p className="text-[11px] truncate mt-0.5" data-testid="track-album"
-                    style={{ color: 'rgba(120,190,255,0.6)' }}>{nowPlaying.album}</p>
+                    style={{ color: 'rgba(120,190,255,0.6)' }}>{ja(nowPlaying.album)}</p>
                 )}
               </div>
             </HoloPanel>
