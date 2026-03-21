@@ -1564,7 +1564,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                         </div>
                         {midStops.length > 0 && <span className="text-white text-[7px] absolute" style={{ bottom: '-10px', left: '50%', transform: 'translateX(-50)' }}>double-click bar to add · drag to move</span>}
                       </div>
-                      {midStops.length === 0 && <div className="text-white text-[7px] text-center mt-0.5">double-click gradient bar to add a colour stop</div>}
+                      {midStops.length === 0 && <div className="text-white text-[9px] text-center mt-0.5">double-click gradient bar to add a colour stop</div>}
                       {activeGradientStop != null && (
                         <div className="mt-1 rounded" style={{ border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(0,0,0,0.4)', padding: '6px' }}>
                           <div className="flex items-center gap-2 mb-1.5">
@@ -1620,7 +1620,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                         </div>
                       )}
                     </div>
-                    <div>
+                    <div style={{ marginLeft: '12px' }}>
                       <label className="text-white text-[9px] mb-1 block">Border</label>
                       <div className="flex items-center gap-1">
                         <div className="relative shrink-0" style={{ width: '20px', height: '20px' }}>
@@ -1633,7 +1633,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                           </button>
                         )}
                       </div>
-                      <span className="text-[7px] text-white mt-0.5 block">{editInfo.borderColor ? editInfo.borderColor.toUpperCase() : 'Auto'}</span>
+                      <span className="text-[9px] text-white mt-0.5 block">{editInfo.borderColor ? editInfo.borderColor.toUpperCase() : 'Auto'}</span>
                     </div>
                     </div>
                     );
