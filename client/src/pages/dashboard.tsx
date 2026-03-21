@@ -19909,16 +19909,11 @@ export default function Dashboard() {
                 })()}
             </div>
           </div>
-          {/* Countdown arrow lines removed */}
+          {/* Overdue task lines from due box — only tasks due today or later */}
           {(() => {
-            return null;
             const now = new Date();
+            const todayStart = startOfDay(now);
             const calStartHour = calStart;
-            const calEndHour = isTravelMode ? 23 : 21;
-            
-            const allBullets = document.querySelectorAll('[data-countdown-bullet]');
-            const firstBullet = allBullets[0] || null;
-            const secondBullet = allBullets[1] || null;
             
             const scrollEl = calendarScrollRef.current;
             const contentEl = calendarContentRef.current;
@@ -19930,6 +19925,33 @@ export default function Dashboard() {
             const flexWidth = containerWidth - fixedLeftWidth;
             const totalFrUnits = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0);
             
+            const getTaskTime = (t: any) => {
+              if (t.eventStartTime) {
+                const [h, m] = t.eventStartTime.split(':').map(Number);
+                const d = new Date(t.dueDate);
+                return new Date(d.getFullYear(), d.getMonth(), d.getDate(), h, m).getTime();
+              }
+              return new Date(t.dueDate).getTime();
+            };
+            
+            const overdueTasks = allTasks.filter(t => {
+              if (!t.courseName) return false;
+              if (t.isCompleted) return false;
+              const taskDueDate = startOfDay(new Date(t.dueDate));
+              if (taskDueDate < todayStart) return false;
+              const taskTime = getTaskTime(t);
+              if (taskTime > now.getTime()) return false;
+              return true;
+            });
+            
+            if (overdueTasks.length === 0) return null;
+            
+            const dueBoxEl = document.querySelector('[data-testid="missed-tasks-indicator"]');
+            if (!dueBoxEl) return null;
+            const dueBoxRect = dueBoxEl.getBoundingClientRect();
+            const startX = dueBoxRect.left + dueBoxRect.width / 2;
+            const startY = dueBoxRect.top + dueBoxRect.height / 2;
+            
             const getDayColumnCenter = (dIdx: number) => {
               let leftFr = 0;
               for (let i = 0; i < dIdx && i < 6; i++) {
@@ -19940,132 +19962,56 @@ export default function Dashboard() {
               return contentRect.left + fixedLeftWidth + (centerFr / totalFrUnits) * flexWidth;
             };
             
-            const whiteBoxOuter = document.querySelector('[data-testid="next-task-countdown"]');
-            const whiteBoxEl = whiteBoxOuter?.firstElementChild as HTMLElement | null;
-            const whiteBoxBottom = whiteBoxEl ? whiteBoxEl.getBoundingClientRect().bottom : 60;
-            const calendarTop = contentRect.top;
-            
-            const getBulletPos = (bullet: Element | null) => {
-              if (!bullet) return null;
-              const bRect = bullet.getBoundingClientRect();
-              const pRow = bullet.parentElement;
-              const pRect = pRow ? pRow.getBoundingClientRect() : bRect;
-              return { x: bRect.left + bRect.width / 2, y: pRect.top + pRect.height / 2 };
+            const getTopPx = (hour: number, min: number) => {
+              let px = 0;
+              for (let h = calStartHour; h < hour; h++) {
+                px += getEffectiveRowHeight(h);
+              }
+              px += (min / 60) * getEffectiveRowHeight(hour);
+              return px;
             };
             
-            const nowTimestamp = now.getTime();
             const lines: JSX.Element[] = [];
+            const scrollTop = scrollEl.scrollTop;
+            const scrollRect = scrollEl.getBoundingClientRect();
             
-            if (firstBullet) {
-              const pos = getBulletPos(firstBullet);
-              if (pos) {
-                let nextPrepTask: { task: any; startDayIdx: number; courseName: string } | null = null;
-                let earliestPrepTime = Infinity;
-                
-                allTasks.filter(t => !t.isCompleted && !isCASL101Finished(t)).forEach(t => {
-                  if (!t.startDate) return;
-                  const dueDate = new Date(t.dueDate);
-                  const dIdx = weekDays.findIndex(day => isSameDay(day, dueDate));
-                  if (dIdx < 0) return;
-                  let taskHour: number, taskMin: number;
-                  if (t.eventStartTime) {
-                    [taskHour, taskMin] = t.eventStartTime.split(':').map(Number);
-                  } else {
-                    taskHour = getETHours(dueDate);
-                    taskMin = getETMinutes(dueDate);
-                  }
-                  const taskDate = toET(new Date(dueDate));
-                  taskDate.setHours(taskHour, taskMin, 0, 0);
-                  const taskTimestamp = taskDate.getTime();
-                  if (taskTimestamp > nowTimestamp && taskTimestamp < earliestPrepTime) {
-                    earliestPrepTime = taskTimestamp;
-                    const prepStartDate = new Date(t.startDate!);
-                    const prepDayIdx = weekDays.findIndex(day => isSameDay(day, prepStartDate));
-                    if (prepDayIdx >= 0) {
-                      nextPrepTask = { task: t, startDayIdx: prepDayIdx, courseName: t.courseName || '' };
-                    }
-                  }
-                });
-                
-                if (nextPrepTask) {
-                  const np = nextPrepTask as { task: any; startDayIdx: number; courseName: string };
-                  const courseName = np.courseName.split(' - ')[0].toUpperCase();
-                  const filteredCourses = coursesData.courses.filter(c => c.name).slice(0, 3);
-                  const courseIdx = filteredCourses.findIndex(c => c.name.split(' - ')[0].toUpperCase() === courseName);
-                  
-                  const courseRowsEl = courseRowsRef.current;
-                  if (courseRowsEl) {
-                    const courseRowsRect = courseRowsEl.getBoundingClientRect();
-                    const numCourses = filteredCourses.length || 1;
-                    const singleRowHeight = courseRowsRect.height / numCourses;
-                    const courseRowTop = courseRowsRect.top + (courseIdx >= 0 ? courseIdx : 0) * singleRowHeight;
-                    const endY = courseRowTop - 6;
-                    const getDayColumnLeft = (dIdx: number) => {
-                      let leftFr = 0;
-                      for (let i = 0; i < dIdx && i < 6; i++) {
-                        leftFr += gridSizes.dayColumnWidths[i];
-                      }
-                      return contentRect.left + fixedLeftWidth + (leftFr / totalFrUnits) * flexWidth + 38;
-                    };
-                    const endX = getDayColumnLeft(np.startDayIdx);
-                    const startX = pos.x;
-                    const startY = pos.y;
-                    
-                    const midY = startY + (endY - startY) * 0.5;
-                    const pathD = `M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`;
-                    
-                    const tt = 0.95;
-                    const mtt = 1 - tt;
-                    const nearEndX = mtt*mtt*mtt*startX + 3*mtt*mtt*tt*startX + 3*mtt*tt*tt*endX + tt*tt*tt*endX;
-                    const nearEndY = mtt*mtt*mtt*startY + 3*mtt*mtt*tt*midY + 3*mtt*tt*tt*midY + tt*tt*tt*endY;
-                    const dx = endX - nearEndX;
-                    const dy = endY - nearEndY;
-                    const angle = Math.atan2(dy, dx);
-                    const p1x = endX - 10 * Math.cos(angle) + 4 * Math.sin(angle);
-                    const p1y = endY - 10 * Math.sin(angle) - 4 * Math.cos(angle);
-                    const p2x = endX - 10 * Math.cos(angle) - 4 * Math.sin(angle);
-                    const p2y = endY - 10 * Math.sin(angle) + 4 * Math.cos(angle);
-                    
-                    const whiteBoxFrac = Math.min(1, Math.max(0, (whiteBoxBottom - startY) / (endY - startY)));
-                    const isDarkEnd = endY >= courseRowsRect.top - 10;
-                    
-                    lines.push(
-                      <g key="dotted-line">
-                        <defs>
-                          <clipPath id="dotted-clip-over-whitebox">
-                            <rect x="0" y="0" width="9999" height={whiteBoxBottom} />
-                          </clipPath>
-                          <clipPath id="dotted-clip-below-whitebox">
-                            <rect x="0" y={whiteBoxBottom} width="9999" height={endY - whiteBoxBottom + 20} />
-                          </clipPath>
-                        </defs>
-                        <path
-                          d={pathD}
-                          fill="none"
-                          stroke="#000000"
-                          strokeWidth="1"
-                          strokeDasharray="6 3"
-                          clipPath="url(#dotted-clip-over-whitebox)"
-                        />
-                        <path
-                          d={pathD}
-                          fill="none"
-                          stroke="rgba(255,255,255,0.9)"
-                          strokeWidth="1"
-                          strokeDasharray="6 3"
-                          clipPath="url(#dotted-clip-below-whitebox)"
-                        />
-                        <polygon
-                          points={`${endX},${endY} ${p1x},${p1y} ${p2x},${p2y}`}
-                          fill={isDarkEnd ? "rgba(255,255,255,0.9)" : "#000000"}
-                        />
-                      </g>
-                    );
-                  }
-                }
+            overdueTasks.forEach((t, idx) => {
+              const dueDate = new Date(t.dueDate);
+              const dIdx = weekDays.findIndex(day => isSameDay(day, dueDate));
+              if (dIdx < 0) return;
+              let taskHour: number, taskMin: number;
+              if (t.eventStartTime) {
+                [taskHour, taskMin] = t.eventStartTime.split(':').map(Number);
+              } else {
+                taskHour = getETHours(dueDate);
+                taskMin = getETMinutes(dueDate);
               }
-            }
-            
+              const topPxInScroll = getTopPx(taskHour, taskMin);
+              const endY = scrollRect.top + topPxInScroll - scrollTop - 8;
+              const endX = getDayColumnCenter(dIdx);
+              
+              const midY = startY + (endY - startY) * 0.5;
+              const pathD = `M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`;
+              
+              const tt = 0.95;
+              const mtt = 1 - tt;
+              const nearEndX = mtt*mtt*mtt*startX + 3*mtt*mtt*tt*startX + 3*mtt*tt*tt*endX + tt*tt*tt*endX;
+              const nearEndY = mtt*mtt*mtt*startY + 3*mtt*mtt*tt*midY + 3*mtt*tt*tt*midY + tt*tt*tt*endY;
+              const dx = endX - nearEndX;
+              const dy = endY - nearEndY;
+              const angle = Math.atan2(dy, dx);
+              const p1x = endX - 10 * Math.cos(angle) + 4 * Math.sin(angle);
+              const p1y = endY - 10 * Math.sin(angle) - 4 * Math.cos(angle);
+              const p2x = endX - 10 * Math.cos(angle) - 4 * Math.sin(angle);
+              const p2y = endY - 10 * Math.sin(angle) + 4 * Math.cos(angle);
+              
+              lines.push(
+                <g key={`overdue-line-${idx}`}>
+                  <path d={pathD} fill="none" stroke="#ff3b3b" strokeWidth="1.5" strokeDasharray="6 3" />
+                  <polygon points={`${endX},${endY} ${p1x},${p1y} ${p2x},${p2y}`} fill="#ff3b3b" />
+                </g>
+              );
+            });
             
             if (lines.length === 0) return null;
             
