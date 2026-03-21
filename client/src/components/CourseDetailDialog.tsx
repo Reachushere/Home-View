@@ -1237,11 +1237,11 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
               {!isEditingInfo ? (
                 <button
                   onClick={() => setIsEditingInfo(true)}
-                  className="flex items-center gap-1.5 text-[13px] text-white hover:text-white transition-colors font-semibold"
+                  className="flex items-center gap-1.5 text-[11px] text-white hover:text-white transition-colors font-semibold"
                   data-testid="button-edit-course-info"
                 >
-                  <Pencil className="w-4 h-4" />
                   Edit
+                  <Pencil className="w-4 h-4" />
                 </button>
               ) : (
                 <div className="flex items-center gap-1.5">
