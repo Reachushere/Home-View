@@ -1078,7 +1078,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             placeholder="Wt"
             testId={`input-grade-weight-${task.id}`}
           />
-          <span className="text-[9px] text-white w-[33px] text-center" style={{ marginLeft: '4px' }} data-testid={`text-grade-percent-${task.id}`}>
+          <span className="text-[9px] text-white w-[33px] text-center" style={{ marginLeft: '-2px' }} data-testid={`text-grade-percent-${task.id}`}>
             {task.gradeValue !== null && task.gradeValue !== undefined && task.gradeTotal ? `${((task.gradeValue / task.gradeTotal) * 100).toFixed(2)}%` : '—'}
           </span>
         </div>
@@ -2614,7 +2614,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     <span className={`w-[33px] text-center leading-tight ${hdrCls('weight')}`} onClick={() => toggleSort('weight')} style={{ display: 'inline-flex', justifyContent: 'center' }} data-testid="sort-weight">
                       Weight<SortIcon field="weight" />
                     </span>
-                    <span className={`w-[33px] text-center leading-tight ${hdrCls('percent')}`} onClick={() => toggleSort('percent')} style={{ display: 'inline-flex', justifyContent: 'center', marginLeft: '4px' }} data-testid="sort-percent">
+                    <span className={`w-[33px] text-center leading-tight ${hdrCls('percent')}`} onClick={() => toggleSort('percent')} style={{ display: 'inline-flex', justifyContent: 'center', marginLeft: '-2px' }} data-testid="sort-percent">
                       Percent<SortIcon field="percent" />
                     </span>
                   </div>
@@ -2703,7 +2703,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                   }`} data-testid="text-sum-weight">
                     {totalWeight ? totalWeight.toFixed(2) : '—'}
                   </span>
-                  <span className="w-[33px]" style={{ marginLeft: '4px' }} />
+                  <span className="w-[33px]" style={{ marginLeft: '-2px' }} />
                 </div>
                 <div className="flex items-center flex-shrink-0" style={{ gap: '10px', marginLeft: '2px', visibility: 'hidden' }}>
                   <div style={{ width: '24px', height: '14px' }} />
