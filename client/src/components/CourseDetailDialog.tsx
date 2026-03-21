@@ -1082,7 +1082,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             {task.gradeValue !== null && task.gradeValue !== undefined && task.gradeTotal ? `${((task.gradeValue / task.gradeTotal) * 100).toFixed(2)}%` : '—'}
           </span>
         </div>
-        <div className="flex items-center flex-shrink-0" style={{ gap: '10px', marginLeft: '20px' }} onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center flex-shrink-0" style={{ gap: '10px', marginLeft: '14px' }} onClick={(e) => e.stopPropagation()}>
           <label className="flex items-center cursor-pointer" title={task.excludeFromGpa ? "Excluded from grade" : "Included in grade"} data-testid={`toggle-gpa-${task.id}`}>
             <div className="relative" onClick={() => updateTaskMutation.mutate({ id: task.id, data: { excludeFromGpa: !task.excludeFromGpa }, _task: task })}>
               <div className={`w-6 h-3.5 rounded-full transition-colors ${task.excludeFromGpa ? 'bg-red-500/60' : 'bg-green-500/60'}`} />
@@ -2601,7 +2601,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                   <div className="flex-shrink-0" style={{ width: '19px', marginRight: '10px', overflow: 'visible' }}>
                     <span className="text-[9px] font-bold text-white" style={{ whiteSpace: 'nowrap' }}>Comments</span>
                   </div>
-                  <div className={`flex-1 min-w-0 ${hdrCls('title')}`} style={{ paddingLeft: '34px', marginLeft: '10px' }} onClick={() => toggleSort('title')} data-testid="sort-title">
+                  <div className={`flex-1 min-w-0 ${hdrCls('title')}`} style={{ marginLeft: '10px' }} onClick={() => toggleSort('title')} data-testid="sort-title">
                     Assignment<SortIcon field="title" />
                   </div>
                   <div className="flex items-end flex-shrink-0 text-white" style={{ gap: '10px', marginLeft: '10px' }}>
@@ -2618,7 +2618,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                       Percent<SortIcon field="percent" />
                     </span>
                   </div>
-                  <div className="flex items-end flex-shrink-0" style={{ gap: '10px', marginLeft: '20px' }}>
+                  <div className="flex items-end flex-shrink-0" style={{ gap: '10px', marginLeft: '14px' }}>
                     <div style={{ width: '24px', textAlign: 'center', lineHeight: '1.1' }}><span className="text-[9px] font-bold text-white">Grade<br/>Received</span></div>
                     <div style={{ width: '19px', textAlign: 'center' }}><span className="text-[9px] font-bold text-white">Copy</span></div>
                     <div style={{ width: '19px' }} />
@@ -2705,7 +2705,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                   </span>
                   <span className="w-[33px]" style={{ marginLeft: '10px' }} />
                 </div>
-                <div className="flex items-center flex-shrink-0" style={{ gap: '10px', marginLeft: '20px', visibility: 'hidden' }}>
+                <div className="flex items-center flex-shrink-0" style={{ gap: '10px', marginLeft: '14px', visibility: 'hidden' }}>
                   <div style={{ padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
                   <div><div style={{ width: '24px', height: '14px' }} /></div>
                   <div style={{ padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
