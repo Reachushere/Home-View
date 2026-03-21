@@ -925,7 +925,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
         >
           {task.isCompleted && <CheckCircle2 className="h-3 w-3 text-white" />}
         </button>
-        <TypeIcon className={`h-[19px] w-[19px] flex-shrink-0 ${task.isCompleted ? "text-white/50" : "text-white"}`} />
+        <TypeIcon className={`h-[19px] w-[19px] flex-shrink-0 ${task.isCompleted ? "text-white/50" : "text-white"}`} style={{ marginRight: '10px' }} />
         <div className="flex-1 min-w-0">
           <div
             className={`text-[10px] font-medium truncate flex items-center gap-1 cursor-pointer hover:underline ${task.isCompleted ? "line-through text-white/50" : "text-white"}`}
