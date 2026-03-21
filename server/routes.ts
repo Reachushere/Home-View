@@ -7837,7 +7837,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       return match ? match[1].toLowerCase() : '';
     };
 
-    const partialFiles = allFiles.filter((f: any) => {
+    const isPartiallyListened = (f: any) => {
       if (f.listened || f.id === excludeFileId) return false;
       const hasCheckedChunks = (() => {
         if (!f.checkedChunks) return false;
@@ -7852,13 +7852,22 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         if (hasLastChunk && f.lastChunkIndex >= f.totalChunks) return false;
       }
       return true;
-    });
+    };
+
+    const getFileWeek = (f: any) => {
+      const weekMatch = f.folder?.match(/week-(\d+)/i);
+      return weekMatch ? parseInt(weekMatch[1], 10) : -1;
+    };
+
+    const currentWeekPartials = allFiles.filter((f: any) => isPartiallyListened(f) && getFileWeek(f) === weekNumber);
+    const otherWeekPartials = allFiles.filter((f: any) => isPartiallyListened(f) && getFileWeek(f) !== weekNumber);
+
+    const allPartialIds = new Set([...currentWeekPartials, ...otherWeekPartials].map((f: any) => f.id));
 
     const unlistenedFiles = allFiles.filter((f: any) => {
       if (f.listened || f.id === excludeFileId) return false;
-      if (partialFiles.some((p: any) => p.id === f.id)) return false;
-      const weekMatch = f.folder?.match(/week-(\d+)/i);
-      return weekMatch && parseInt(weekMatch[1], 10) === weekNumber;
+      if (allPartialIds.has(f.id)) return false;
+      return getFileWeek(f) === weekNumber;
     });
 
     const courses = [...new Set(unlistenedFiles.map(getCourseCode))].filter(Boolean);
@@ -7870,7 +7879,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       orderedUnlistened.push(...modules, ...readings);
     }
 
-    const orderedFiles = [...partialFiles, ...orderedUnlistened];
+    const orderedFiles = [...currentWeekPartials, ...orderedUnlistened, ...otherWeekPartials];
     return orderedFiles.length > 0 ? orderedFiles[0] : null;
   }
 
