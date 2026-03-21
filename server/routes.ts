@@ -14012,7 +14012,13 @@ Return ONLY the JSON object, no markdown formatting.`;
 
       if (isEcho) {
         let targetEntity = entityId;
-        if (entityId.includes("_group") || entityId.includes("_media_group")) {
+        if (entityId === "media_player.byhome") {
+          const anyEcho = FLICK_DEVICES.flatMap(g => g.devices).find(d => d.type === "echo" && d.entityId.includes("_am"));
+          if (anyEcho) {
+            console.log(`[Spotify] BYhome group → using Echo for voice command: ${anyEcho.entityId}`);
+            targetEntity = anyEcho.entityId;
+          }
+        } else if (entityId.includes("_group") || entityId.includes("_media_group")) {
           const roomGroup = FLICK_DEVICES.find(g => 
             g.devices.some(d => d.entityId === entityId) ||
             g.speakers?.some((s: any) => s.entityId === entityId)
