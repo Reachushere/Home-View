@@ -77,6 +77,7 @@ interface CourseInfo {
   color: string;
   colorEnd?: string;
   colorStops?: string;
+  borderColor?: string;
   deliveryMode: string;
   classDay: string;
   classDay2?: string;
@@ -95,7 +96,7 @@ interface CourseInfo {
 interface CourseDetailDialogProps {
   courseInfo: CourseInfo;
   onClose: () => void;
-  onSaveCourseInfo?: (updates: { professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; classTime2?: string; classEndTime2?: string; zoomLink?: string; semesterTerm?: string; year?: string; startDate?: string; endDate?: string; color?: string; colorEnd?: string; colorStops?: string }) => void;
+  onSaveCourseInfo?: (updates: { professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; classTime2?: string; classEndTime2?: string; zoomLink?: string; semesterTerm?: string; year?: string; startDate?: string; endDate?: string; color?: string; colorEnd?: string; colorStops?: string; borderColor?: string }) => void;
   onGradeCalculated?: (grade: string, percent: string) => void;
   onDeleteCourse?: () => void;
   onOpenEditTask?: (task: Task) => void;
@@ -299,6 +300,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
     color: courseInfo.color || '#3b82f6',
     colorEnd: courseInfo.colorEnd || courseInfo.color || '#3b82f6',
     colorStops: courseInfo.colorStops || '',
+    borderColor: courseInfo.borderColor || '',
   });
 
   const CERTIFICATE_TYPE_OPTIONS = [
@@ -1615,6 +1617,18 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     </div>
                     );
                   })()}
+                  <div style={{ width: '60px' }}>
+                    <label className="text-white text-[9px] mb-1 block">Border</label>
+                    <div className="flex items-center gap-1.5">
+                      <input type="color" value={editInfo.borderColor || editInfo.color} onChange={(e) => setEditInfo({...editInfo, borderColor: e.target.value})} className="w-7 h-7 rounded border border-white/30 cursor-pointer shrink-0" style={{ padding: 0, background: 'transparent', WebkitAppearance: 'none', appearance: 'none' }} data-testid="input-border-color" />
+                      {editInfo.borderColor && (
+                        <button className="text-white/40 hover:text-white/70 text-[8px]" onClick={() => setEditInfo({...editInfo, borderColor: ''})} title="Reset to auto">
+                          <X className="h-3 w-3" />
+                        </button>
+                      )}
+                    </div>
+                    <span className="text-[7px] text-white/40 mt-0.5 block">{editInfo.borderColor ? editInfo.borderColor.toUpperCase() : 'Auto'}</span>
+                  </div>
                   <div className="flex items-center gap-1.5">
                     {syllabusObjectPath && (
                       <Paperclip

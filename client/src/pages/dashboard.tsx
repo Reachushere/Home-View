@@ -3018,7 +3018,7 @@ export default function Dashboard() {
     return `${gridSizes.timeColumnWidth}px ${allDays}`;
   };
 
-  const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string; colorEnd?: string; colorStops?: string; professor: string; professorEmail?: string }> }>(() => {
+  const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string; colorEnd?: string; colorStops?: string; borderColor?: string; professor: string; professorEmail?: string }> }>(() => {
     const defaultCourses = [
       { name: 'CPPA122 - Local Politics and Government', color: '#0F5004', colorEnd: '#47B045', professor: 'Caryl Arundel', professorEmail: 'carundel@torontomu.ca' },
       { name: 'CFNF400 - Human Sexuality', color: '#DE1864', colorEnd: '#FA67B3', professor: 'Alex McKay', professorEmail: 'a4mckay@torontomu.ca' },
@@ -4445,6 +4445,7 @@ export default function Dashboard() {
     let color = matchedCourse?.color || '#6366F1';
     let colorEnd = (matchedCourse as any)?.colorEnd || '';
     let colorStops = (matchedCourse as any)?.colorStops || '';
+    let borderColor = (matchedCourse as any)?.borderColor || '';
     let courseType = '';
     let semesterTerm = '';
     let year = '';
@@ -4525,6 +4526,7 @@ export default function Dashboard() {
       color,
       colorEnd,
       colorStops,
+      borderColor,
       deliveryMode,
       classDay,
       classDay2,
@@ -13133,6 +13135,7 @@ export default function Dashboard() {
                   ...(updates.color ? { color: updates.color } : {}),
                   ...(updates.colorEnd ? { colorEnd: updates.colorEnd } : {}),
                   ...((updates as any).colorStops !== undefined ? { colorStops: (updates as any).colorStops } : {}),
+                  ...((updates as any).borderColor !== undefined ? { borderColor: (updates as any).borderColor } : {}),
                 };
                 saveCourses({ courses: updatedCourses });
               }
@@ -18317,7 +18320,7 @@ export default function Dashboard() {
                     }
                     return `linear-gradient(180deg, ${startColor} 0%, ${endColor} 100%)`;
                   })(),
-                  darkColor: courseData.color || (() => {
+                  darkColor: courseData.borderColor || courseData.color || (() => {
                     const dR = Math.max(0, rgb.r - 40), dG = Math.max(0, rgb.g - 40), dB = Math.max(0, rgb.b - 40);
                     return `rgb(${dR}, ${dG}, ${dB})`;
                   })(),
