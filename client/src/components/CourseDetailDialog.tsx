@@ -1503,15 +1503,16 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     const hueToHex = (hue: number) => `#${[0,8,4].map(n => { const k = (n + hue/30) % 12; const c2 = 0.5 - 0.5 * Math.max(Math.min(k-3, 9-k, 1), -1); return Math.round(255 * Math.max(0, Math.min(1, c2))).toString(16).padStart(2,'0'); }).join('')}`;
                     const gradBarRef = useRef<HTMLDivElement>(null);
                     return (
+                    <div className="flex items-start gap-3">
                     <div style={{ width: '200px' }}>
                       <div className="flex items-center justify-between mb-1">
                         <label className="text-white text-[9px]">Course Colour</label>
-                        <button className="text-white/50 hover:text-white text-[8px] flex items-center gap-0.5" onClick={() => {
+                        <button className="text-white hover:text-white/80 text-[8px] flex items-center gap-0.5" onClick={() => {
                           const revMid = midStops.map(s => ({ position: 100 - s.position, color: s.color })).reverse();
                           setEditInfo({...editInfo, color: editInfo.colorEnd, colorEnd: editInfo.color, colorStops: revMid.length ? JSON.stringify(revMid) : ''});
                         }} data-testid="button-reverse-gradient"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 4h14M11 1l3 3-3 3M15 12H1M5 9l-3 3 3 3"/></svg><span>Reverse</span></button>
                       </div>
-                      <div ref={gradBarRef} className="rounded" style={{ border: '1px solid rgba(255,255,255,0.2)', padding: '3px', background: 'rgba(0,0,0,0.3)', cursor: 'copy' }}
+                      <div ref={gradBarRef} className="rounded" style={{ border: '1px solid rgba(255,255,255,0.15)', padding: '1px', background: 'rgba(0,0,0,0.2)', cursor: 'copy' }}
                         onDoubleClick={(e) => {
                           const bar = gradBarRef.current;
                           if (!bar) return;
@@ -1561,9 +1562,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                         <div style={{ position: 'absolute', right: '0px', top: 0, cursor: 'pointer' }} onClick={() => setActiveGradientStop(activeGradientStop === 'end' ? null : 'end')} data-testid="gradient-stop-end">
                           <svg width="12" height="12" viewBox="0 0 12 12"><polygon points="6,0 12,10 0,10" fill={editInfo.colorEnd} stroke={activeGradientStop === 'end' ? '#ffffff' : 'rgba(255,255,255,0.4)'} strokeWidth={activeGradientStop === 'end' ? '2' : '1'}/></svg>
                         </div>
-                        {midStops.length > 0 && <span className="text-white/30 text-[7px] absolute" style={{ bottom: '-10px', left: '50%', transform: 'translateX(-50)' }}>double-click bar to add · drag to move</span>}
+                        {midStops.length > 0 && <span className="text-white text-[7px] absolute" style={{ bottom: '-10px', left: '50%', transform: 'translateX(-50)' }}>double-click bar to add · drag to move</span>}
                       </div>
-                      {midStops.length === 0 && <div className="text-white/30 text-[7px] text-center mt-0.5">double-click gradient bar to add a colour stop</div>}
+                      {midStops.length === 0 && <div className="text-white text-[7px] text-center mt-0.5">double-click gradient bar to add a colour stop</div>}
                       {activeGradientStop != null && (
                         <div className="mt-1 rounded" style={{ border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(0,0,0,0.4)', padding: '6px' }}>
                           <div className="flex items-center gap-2 mb-1.5">
@@ -1619,23 +1620,24 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                         </div>
                       )}
                     </div>
+                    <div>
+                      <label className="text-white text-[9px] mb-1 block">Border</label>
+                      <div className="flex items-center gap-1">
+                        <div className="relative shrink-0" style={{ width: '20px', height: '20px' }}>
+                          <div className="absolute inset-0 rounded-sm border border-white/30" style={{ backgroundColor: editInfo.borderColor || editInfo.color }} />
+                          <input type="color" value={editInfo.borderColor || editInfo.color} onChange={(e) => setEditInfo({...editInfo, borderColor: e.target.value})} className="absolute inset-0 opacity-0 cursor-pointer" style={{ width: '20px', height: '20px' }} data-testid="input-border-color" />
+                        </div>
+                        {editInfo.borderColor && (
+                          <button className="text-white/40 hover:text-white/70" onClick={() => setEditInfo({...editInfo, borderColor: ''})} title="Reset to auto">
+                            <X className="h-2.5 w-2.5" />
+                          </button>
+                        )}
+                      </div>
+                      <span className="text-[7px] text-white mt-0.5 block">{editInfo.borderColor ? editInfo.borderColor.toUpperCase() : 'Auto'}</span>
+                    </div>
+                    </div>
                     );
                   })()}
-                  <div style={{ marginLeft: '4px' }}>
-                    <label className="text-white text-[9px] mb-1 block">Border</label>
-                    <div className="flex items-center gap-1">
-                      <div className="relative shrink-0" style={{ width: '20px', height: '20px' }}>
-                        <div className="absolute inset-0 rounded-sm border border-white/30" style={{ backgroundColor: editInfo.borderColor || editInfo.color }} />
-                        <input type="color" value={editInfo.borderColor || editInfo.color} onChange={(e) => setEditInfo({...editInfo, borderColor: e.target.value})} className="absolute inset-0 opacity-0 cursor-pointer" style={{ width: '20px', height: '20px' }} data-testid="input-border-color" />
-                      </div>
-                      {editInfo.borderColor && (
-                        <button className="text-white/40 hover:text-white/70" onClick={() => setEditInfo({...editInfo, borderColor: ''})} title="Reset to auto">
-                          <X className="h-2.5 w-2.5" />
-                        </button>
-                      )}
-                    </div>
-                    <span className="text-[7px] text-white/40 mt-0.5 block">{editInfo.borderColor ? editInfo.borderColor.toUpperCase() : 'Auto'}</span>
-                  </div>
                   <div className="flex items-center gap-1.5">
                     {syllabusObjectPath && (
                       <Paperclip
@@ -1695,7 +1697,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     </label>
                   </div>
                 </div>
-              </div>
             ) : (
               <>
                 <div className="grid grid-cols-[1fr_1fr] gap-x-4 gap-y-1.5 text-[10px]">
