@@ -14072,6 +14072,19 @@ Return ONLY the JSON object, no markdown formatting.`;
         if (isArtistUri || isTrackUri || !spotifyUri) {
           const searchTerm = searchQuery || artistName || "music";
           const voiceCommand = `play ${searchTerm} on Spotify`;
+          
+          console.log(`[Spotify] Waking up Echo before voice command: ${targetEntity}`);
+          try {
+            await fetch(`${haUrl}/api/services/media_player/turn_on`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ entity_id: targetEntity }),
+            });
+            await new Promise(resolve => setTimeout(resolve, 1500));
+          } catch (wakeErr: any) {
+            console.log(`[Spotify] Wake-up failed (continuing): ${wakeErr.message}`);
+          }
+
           console.log(`[Spotify] Echo - CUSTOM voice command for ${targetEntity}: "${voiceCommand}"`);
           const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
             method: 'POST',
