@@ -19494,7 +19494,7 @@ export default function Dashboard() {
                                     </div>
                                   </div>
                                 )}
-                                <div className="absolute top-0 bottom-0 z-[3] pointer-events-none" style={{ left: `${missedCount > 0 ? gridSizes.timeSlotHeight + 5 : 0}px`, right: '1px', display: 'flex', gap: '4px' }} data-testid="hours-until-next-task">
+                                <div className="absolute top-0 bottom-0 z-[3] pointer-events-none" style={{ left: `${missedCount > 0 ? gridSizes.timeSlotHeight + 5 : 2}px`, right: '1px', display: 'flex', gap: '4px' }} data-testid="hours-until-next-task">
                                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, lineHeight: 1.1 }} data-testid="things-to-do-label">
                                     <span style={{ fontSize: '8px', fontWeight: 800, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Things</span>
                                     <span style={{ fontSize: '8px', fontWeight: 800, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>to do</span>
