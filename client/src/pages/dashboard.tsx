@@ -18260,7 +18260,7 @@ export default function Dashboard() {
                   name: courseName, 
                   bg: (() => {
                     const end = courseData.colorEnd ? hexToRgb(courseData.colorEnd) : rgb;
-                    return `rgba(${end.r}, ${end.g}, ${end.b}, 0.55)`;
+                    return `rgb(${end.r}, ${end.g}, ${end.b})`;
                   })(), 
                   label: (() => {
                     const startColor = courseData.color || `rgb(${Math.max(0, rgb.r - 40)}, ${Math.max(0, rgb.g - 40)}, ${Math.max(0, rgb.b - 40)})`;
