@@ -22096,10 +22096,10 @@ export default function Dashboard() {
                           </div>
                           <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
-                            <div style={{ width: '16px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0px', marginLeft: '-5px', marginRight: '4px' }}>
+                            <div style={{ width: '16px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', marginLeft: '-5px', marginRight: '4px' }}>
                               <span style={{ fontSize: '7px', fontWeight: 700, color: '#FFFF00', lineHeight: 1, textTransform: 'uppercase' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
-                              <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <span style={{ fontSize: '7px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1 }}>{format(new Date(task.dueDate), 'd')}</span>
+                              <div style={{ width: '13px', height: '13px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <span style={{ fontSize: '8px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1 }}>{format(new Date(task.dueDate), 'd')}</span>
                               </div>
                             </div>
                             <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '1px' }}>
@@ -22271,10 +22271,10 @@ export default function Dashboard() {
                                     </div>
                                     <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
-                                        <div style={{ width: '16px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0px', marginLeft: '-5px', marginRight: '4px' }}>
+                                        <div style={{ width: '16px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', marginLeft: '-5px', marginRight: '4px' }}>
                                           <span style={{ fontSize: '7px', fontWeight: 700, color: '#FFFF00', lineHeight: 1, textTransform: 'uppercase' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
-                                          <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            <span style={{ fontSize: '7px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1 }}>{format(new Date(task.dueDate), 'd')}</span>
+                                          <div style={{ width: '13px', height: '13px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <span style={{ fontSize: '8px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1 }}>{format(new Date(task.dueDate), 'd')}</span>
                                           </div>
                                         </div>
                                         <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '1px' }}>
@@ -22465,10 +22465,10 @@ export default function Dashboard() {
                                     </div>
                                     <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
-                                        <div style={{ width: '16px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0px', marginLeft: '-5px', marginRight: '4px' }}>
+                                        <div style={{ width: '16px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', marginLeft: '-5px', marginRight: '4px' }}>
                                           <span style={{ fontSize: '7px', fontWeight: 700, color: '#FFFF00', lineHeight: 1, textTransform: 'uppercase' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
-                                          <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            <span style={{ fontSize: '7px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1 }}>{format(new Date(task.dueDate), 'd')}</span>
+                                          <div style={{ width: '13px', height: '13px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <span style={{ fontSize: '8px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1 }}>{format(new Date(task.dueDate), 'd')}</span>
                                           </div>
                                         </div>
                                         <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '2px' }}>
@@ -22660,10 +22660,10 @@ export default function Dashboard() {
                                     </div>
                                     <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
-                                        <div style={{ width: '16px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0px', marginLeft: '-5px', marginRight: '4px' }}>
+                                        <div style={{ width: '16px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', marginLeft: '-5px', marginRight: '4px' }}>
                                           <span style={{ fontSize: '7px', fontWeight: 700, color: '#FFFF00', lineHeight: 1, textTransform: 'uppercase' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
-                                          <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            <span style={{ fontSize: '7px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1 }}>{format(new Date(task.dueDate), 'd')}</span>
+                                          <div style={{ width: '13px', height: '13px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <span style={{ fontSize: '8px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1 }}>{format(new Date(task.dueDate), 'd')}</span>
                                           </div>
                                         </div>
                                         <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '2px' }}>
@@ -22856,10 +22856,10 @@ export default function Dashboard() {
                                     </div>
                                     <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
-                                        <div style={{ width: '16px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0px', marginLeft: '-5px', marginRight: '4px' }}>
+                                        <div style={{ width: '16px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', marginLeft: '-5px', marginRight: '4px' }}>
                                           <span style={{ fontSize: '7px', fontWeight: 700, color: '#FFFF00', lineHeight: 1, textTransform: 'uppercase' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
-                                          <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            <span style={{ fontSize: '7px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1 }}>{format(new Date(task.dueDate), 'd')}</span>
+                                          <div style={{ width: '13px', height: '13px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <span style={{ fontSize: '8px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1 }}>{format(new Date(task.dueDate), 'd')}</span>
                                           </div>
                                         </div>
                                         <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '2px' }}>
