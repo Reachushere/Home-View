@@ -134,6 +134,7 @@ const FLICK_DEVICES: FlickRoomGroup[] = [
     devices: [
       { id: "lr_tablet", name: "Fire Tablet (11)", entityId: "media_player.tablet_11", type: "tablet", canDisplay: true, room: "Living Room" },
       { id: "lr_echo_couch_l", name: "Echo (Couch L)", entityId: "media_player.echo_lr_couch_l_am", type: "echo", canDisplay: false, room: "Living Room" },
+      { id: "lr_echo_couch_r", name: "Echo (Couch R)", entityId: "media_player.echo_lr_couch_r_am", type: "echo", canDisplay: false, room: "Living Room" },
       { id: "lr_echo_hub", name: "Echo (Hub)", entityId: "media_player.echo_lr_hub_am", type: "echo", canDisplay: false, room: "Living Room" },
       { id: "lr_echo_studio", name: "Echo Studio (White)", entityId: "media_player.echo_lr_studio_white_am", type: "echo", canDisplay: false, room: "Living Room" },
       { id: "lr_echo_tv_shelf", name: "Echo (TV Shelf)", entityId: "media_player.echo_lr_tv_shelf_am", type: "echo", canDisplay: false, room: "Living Room" },
