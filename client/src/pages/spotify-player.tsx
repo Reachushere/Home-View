@@ -1853,7 +1853,7 @@ export default function SpotifyPlayerPage() {
                           </>
                         )}
                         {spot.room === "Everywhere" && activeRooms.has("Everywhere") && (
-                          <div className="mt-1" onClick={(e) => e.stopPropagation()} data-testid="volume-knob-everywhere-global">
+                          <div className="absolute" style={{ left: 'calc(100% + 8px)', top: '50%', transform: 'translateY(-50%)', zIndex: 10 }} onClick={(e) => e.stopPropagation()} data-testid="volume-knob-everywhere-global">
                             <VolumeKnob value={roomVolumes["Everywhere"] ?? 30} onChange={(v) => setRoomVolume("Everywhere", v)} size={56} accent={profile.accent} glow={profile.glow} />
                           </div>
                         )}
