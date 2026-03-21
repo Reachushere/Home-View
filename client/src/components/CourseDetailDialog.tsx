@@ -2592,14 +2592,14 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
               const hdrCls = (field: SortField) =>
                 `cursor-pointer select-none hover:text-white/80 transition-colors ${sortField === field ? 'text-white/90' : ''}`;
               return (
-                <div className="flex items-end px-1.5 py-1 text-[9px] font-bold text-white" style={{ margin: '0 4px', letterSpacing: '0' }}>
+                <div className="flex items-end px-1.5 py-1 text-[8px] font-bold text-white" style={{ margin: '0 4px', letterSpacing: '0' }}>
                   <div className="flex-shrink-0" style={{ width: '14px', marginRight: '10px' }} />
                   <div className="flex-shrink-0 text-center" style={{ width: '19px', marginRight: '10px' }}>
-                    <span className="text-[9px] font-bold text-white">Assign</span>
+                    <span className="text-[8px] font-bold text-white">Assign</span>
                   </div>
                   <div className="flex-shrink-0" style={{ width: '16px', marginRight: '10px' }} />
                   <div className="flex-shrink-0" style={{ width: '19px', marginRight: '10px', overflow: 'visible' }}>
-                    <span className="text-[9px] font-bold text-white" style={{ whiteSpace: 'nowrap' }}>Comments</span>
+                    <span className="text-[8px] font-bold text-white" style={{ whiteSpace: 'nowrap' }}>Comments</span>
                   </div>
                   <div className={`flex-1 min-w-0 ${hdrCls('title')}`} style={{ marginLeft: '16px' }} onClick={() => toggleSort('title')} data-testid="sort-title">
                     Assignment<SortIcon field="title" />
@@ -2619,8 +2619,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     </span>
                   </div>
                   <div className="flex items-end flex-shrink-0" style={{ gap: '10px', marginLeft: '2px' }}>
-                    <div style={{ width: '24px', textAlign: 'center', lineHeight: '1.1' }}><span className="text-[9px] font-bold text-white">Grade<br/>Received</span></div>
-                    <div style={{ width: '19px', textAlign: 'center' }}><span className="text-[9px] font-bold text-white">Copy</span></div>
+                    <div style={{ width: '24px', textAlign: 'center', lineHeight: '1.1' }}><span className="text-[8px] font-bold text-white">Grade<br/>Received</span></div>
+                    <div style={{ width: '19px', textAlign: 'center' }}><span className="text-[8px] font-bold text-white">Copy</span></div>
                     <div style={{ width: '19px' }} />
                   </div>
                 </div>
@@ -2706,8 +2706,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                   <span className="w-[33px]" style={{ marginLeft: '4px' }} />
                 </div>
                 <div className="flex items-center flex-shrink-0" style={{ gap: '10px', marginLeft: '2px', visibility: 'hidden' }}>
-                  <div style={{ padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
-                  <div><div style={{ width: '24px', height: '14px' }} /></div>
+                  <div style={{ width: '24px', height: '14px' }} />
                   <div style={{ padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
                   <div style={{ padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
                 </div>
