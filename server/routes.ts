@@ -7879,7 +7879,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       orderedUnlistened.push(...modules, ...readings);
     }
 
-    const orderedFiles = [...currentWeekPartials, ...orderedUnlistened, ...otherWeekPartials];
+    const orderedFiles = [...currentWeekPartials, ...orderedUnlistened];
     return orderedFiles.length > 0 ? orderedFiles[0] : null;
   }
 
