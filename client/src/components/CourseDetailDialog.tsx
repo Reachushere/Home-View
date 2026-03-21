@@ -2333,7 +2333,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
           <div className="p-3">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <h3 className="text-[11px] font-medium text-white">Assignments</h3>
+                <h3 className="text-[11px] font-medium text-white uppercase">Assignments</h3>
                 <span className="text-[9px] text-white">
                   {completedCount}/{courseTasks.length} done
                   {totalWeight > 0 && ` · ${totalWeight.toFixed(2)}% weight`}
