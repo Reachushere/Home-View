@@ -1277,11 +1277,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             ) : courseInfo.deliveryMode === "online" ? (
               <span className="flex items-center gap-0.5"><img src={wifiLogoPath} alt="Online" style={{ width: '14px', height: 'auto' }} /> Online</span>
             ) : null}
-            {courseInfo.courseType && (
-              <span className="bg-white/20 px-1.5 py-0.5 rounded text-[8px]">
-                {courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Elective" : "Liberal Studies"}
-              </span>
-            )}
             {onDeleteCourse && (
               <button
                 onClick={() => setShowDeleteConfirm(true)}
