@@ -14069,23 +14069,54 @@ Return ONLY the JSON object, no markdown formatting.`;
         const isTrackUri = spotifyUri && spotifyUri.startsWith("spotify:track:");
         const groupEntityId = entityId !== targetEntity ? entityId : null;
         
-        if (isArtistUri || isTrackUri || !spotifyUri) {
-          const searchTerm = searchQuery || artistName || "music";
-          const voiceCommand = `play ${searchTerm} on Spotify`;
+        console.log(`[Spotify] Waking up Echo: ${targetEntity}`);
+        try {
+          await fetch(`${haUrl}/api/services/media_player/turn_on`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ entity_id: targetEntity }),
+          });
+          await new Promise(resolve => setTimeout(resolve, 1500));
+        } catch (wakeErr: any) {
+          console.log(`[Spotify] Wake-up failed (continuing): ${wakeErr.message}`);
+        }
+
+        const playTarget = groupEntityId || targetEntity;
+        
+        if (spotifyUri) {
+          console.log(`[Spotify] Playing Spotify URI on ${playTarget}: ${spotifyUri}`);
+          const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              entity_id: playTarget,
+              media_content_id: spotifyUri,
+              media_content_type: "SPOTIFY",
+            }),
+          });
+          const playText = await playResp.text();
+          console.log(`[Spotify] Spotify URI play response: ${playResp.status} body=${playText.substring(0, 300)}`);
           
-          console.log(`[Spotify] Waking up Echo before voice command: ${targetEntity}`);
-          try {
-            await fetch(`${haUrl}/api/services/media_player/turn_on`, {
+          if (playResp.status !== 200) {
+            const searchTerm = searchQuery || artistName || "music";
+            const voiceCommand = `play ${searchTerm} on Spotify`;
+            console.log(`[Spotify] URI failed, falling back to voice command: "${voiceCommand}"`);
+            const fallbackResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
               method: 'POST',
               headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({ entity_id: targetEntity }),
+              body: JSON.stringify({
+                entity_id: targetEntity,
+                media_content_id: voiceCommand,
+                media_content_type: "custom",
+              }),
             });
-            await new Promise(resolve => setTimeout(resolve, 1500));
-          } catch (wakeErr: any) {
-            console.log(`[Spotify] Wake-up failed (continuing): ${wakeErr.message}`);
+            const fallbackText = await fallbackResp.text();
+            console.log(`[Spotify] Voice fallback response: ${fallbackResp.status} body=${fallbackText.substring(0, 300)}`);
           }
-
-          console.log(`[Spotify] Echo - CUSTOM voice command for ${targetEntity}: "${voiceCommand}"`);
+        } else {
+          const searchTerm = searchQuery || artistName || "music";
+          const voiceCommand = `play ${searchTerm} on Spotify`;
+          console.log(`[Spotify] No URI, using voice command on ${targetEntity}: "${voiceCommand}"`);
           const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
@@ -14096,36 +14127,7 @@ Return ONLY the JSON object, no markdown formatting.`;
             }),
           });
           const playText = await playResp.text();
-          console.log(`[Spotify] CUSTOM play_media response: ${playResp.status} body=${playText.substring(0, 300)}`);
-
-          if (groupEntityId) {
-            await new Promise(resolve => setTimeout(resolve, 3000));
-            console.log(`[Spotify] Sending same voice command to group: ${groupEntityId}`);
-            const groupResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                entity_id: groupEntityId,
-                media_content_id: voiceCommand,
-                media_content_type: "custom",
-              }),
-            });
-            const groupText = await groupResp.text();
-            console.log(`[Spotify] Group play response: ${groupResp.status} body=${groupText.substring(0, 300)}`);
-          }
-        } else {
-          console.log(`[Spotify] Echo - play_media SPOTIFY URI for ${groupEntityId || targetEntity}: ${spotifyUri}`);
-          const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              entity_id: groupEntityId || targetEntity,
-              media_content_id: spotifyUri,
-              media_content_type: "spotify",
-            }),
-          });
-          const playText = await playResp.text();
-          console.log(`[Spotify] play_media response: ${playResp.status} body=${playText.substring(0, 300)}`);
+          console.log(`[Spotify] Voice command response: ${playResp.status} body=${playText.substring(0, 300)}`);
         }
       } else if (spotifyUri) {
         await fetch(`${haUrl}/api/services/media_player/play_media`, {
