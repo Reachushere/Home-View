@@ -3018,7 +3018,7 @@ export default function Dashboard() {
     return `${gridSizes.timeColumnWidth}px ${allDays}`;
   };
 
-  const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string; colorEnd?: string; professor: string; professorEmail?: string }> }>(() => {
+  const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string; colorEnd?: string; colorStops?: string; professor: string; professorEmail?: string }> }>(() => {
     const defaultCourses = [
       { name: 'CPPA122 - Local Politics and Government', color: '#0F5004', colorEnd: '#47B045', professor: 'Caryl Arundel', professorEmail: 'carundel@torontomu.ca' },
       { name: 'CFNF400 - Human Sexuality', color: '#DE1864', colorEnd: '#FA67B3', professor: 'Alex McKay', professorEmail: 'a4mckay@torontomu.ca' },
@@ -3177,7 +3177,7 @@ export default function Dashboard() {
     toast({ title: "School settings saved", description: "Your school settings have been updated." });
   };
   
-  const saveCourses = (data: { courses: Array<{ name: string; color: string; colorEnd?: string; professor: string; professorEmail?: string }> }) => {
+  const saveCourses = (data: { courses: Array<{ name: string; color: string; colorEnd?: string; colorStops?: string; professor: string; professorEmail?: string }> }) => {
     const prevCourses = coursesData?.courses || [];
     setCoursesData(data);
     localStorage.setItem('coursesData', JSON.stringify(data));
@@ -3191,6 +3191,7 @@ export default function Dashboard() {
       if (course) {
         semPayload[`${prefix}Color`] = course.color || null;
         semPayload[`${prefix}ColorEnd`] = course.colorEnd || null;
+        semPayload[`${prefix}ColorStops`] = course.colorStops || null;
         const parts = course.name.split(' - ');
         const code = (parts[0] || '').trim();
         const name = parts.slice(1).join(' - ').trim();
@@ -4443,6 +4444,7 @@ export default function Dashboard() {
     let professorEmail = matchedCourse?.professorEmail || '';
     let color = matchedCourse?.color || '#6366F1';
     let colorEnd = (matchedCourse as any)?.colorEnd || '';
+    let colorStops = (matchedCourse as any)?.colorStops || '';
     let courseType = '';
     let semesterTerm = '';
     let year = '';
@@ -4522,6 +4524,7 @@ export default function Dashboard() {
       professorEmail,
       color,
       colorEnd,
+      colorStops,
       deliveryMode,
       classDay,
       classDay2,
@@ -5506,17 +5509,18 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!semesterSettings) return;
-    const dbColors: Record<number, { color?: string; colorEnd?: string }> = {};
+    const dbColors: Record<number, { color?: string; colorEnd?: string; colorStops?: string }> = {};
     for (let i = 1; i <= 3; i++) {
       const c = (semesterSettings as any)[`course${i}Color`];
       const ce = (semesterSettings as any)[`course${i}ColorEnd`];
-      if (c) dbColors[i - 1] = { color: c, colorEnd: ce || undefined };
+      const cs = (semesterSettings as any)[`course${i}ColorStops`];
+      if (c) dbColors[i - 1] = { color: c, colorEnd: ce || undefined, colorStops: cs || undefined };
     }
     if (Object.keys(dbColors).length > 0) {
       setCoursesData(prev => {
         const updated = { ...prev, courses: prev.courses.map((course, idx) => {
           const db = dbColors[idx];
-          if (db) return { ...course, color: db.color || course.color, colorEnd: db.colorEnd || course.colorEnd };
+          if (db) return { ...course, color: db.color || course.color, colorEnd: db.colorEnd || course.colorEnd, colorStops: db.colorStops || course.colorStops };
           return course;
         })};
         localStorage.setItem('coursesData', JSON.stringify(updated));
@@ -13128,6 +13132,7 @@ export default function Dashboard() {
                   professorEmail: updates.professorEmail || updatedCourses[matchIdx].professorEmail,
                   ...(updates.color ? { color: updates.color } : {}),
                   ...(updates.colorEnd ? { colorEnd: updates.colorEnd } : {}),
+                  ...((updates as any).colorStops !== undefined ? { colorStops: (updates as any).colorStops } : {}),
                 };
                 saveCourses({ courses: updatedCourses });
               }
@@ -13166,6 +13171,7 @@ export default function Dashboard() {
                       if (updates.professorEmail !== undefined) payload[`${prefix}ProfessorEmail`] = updates.professorEmail;
                       if (updates.color !== undefined) payload[`${prefix}Color`] = updates.color;
                       if (updates.colorEnd !== undefined) payload[`${prefix}ColorEnd`] = updates.colorEnd;
+                      if ((updates as any).colorStops !== undefined) payload[`${prefix}ColorStops`] = (updates as any).colorStops;
                       if ((updates as any).startDate) payload[`${prefix}StartDate`] = new Date((updates as any).startDate).toISOString();
                       if ((updates as any).endDate) payload[`${prefix}EndDate`] = new Date((updates as any).endDate).toISOString();
                       if (updates.semesterTerm && updates.year && !(updates as any).startDate) {
@@ -18300,6 +18306,15 @@ export default function Dashboard() {
                   label: (() => {
                     const startColor = courseData.color || `rgb(${Math.max(0, rgb.r - 40)}, ${Math.max(0, rgb.g - 40)}, ${Math.max(0, rgb.b - 40)})`;
                     const endColor = courseData.colorEnd || `rgb(${Math.min(255, rgb.r + 100)}, ${Math.min(255, rgb.g + 100)}, ${Math.min(255, rgb.b + 100)})`;
+                    if (courseData.colorStops) {
+                      try {
+                        const stops: Array<{position: number; color: string}> = JSON.parse(courseData.colorStops);
+                        if (stops.length > 0) {
+                          const allParts = [`${startColor} 0%`, ...stops.map(s => `${s.color} ${s.position}%`), `${endColor} 100%`];
+                          return `linear-gradient(180deg, ${allParts.join(', ')})`;
+                        }
+                      } catch {}
+                    }
                     return `linear-gradient(180deg, ${startColor} 0%, ${endColor} 100%)`;
                   })(),
                   darkColor: courseData.color || (() => {
