@@ -136,7 +136,7 @@ function DebouncedGradeInput({ value, onSave, placeholder, testId, disabled }: {
       type="text"
       inputMode="decimal"
       pattern="[0-9]*\.?[0-9]*"
-      className="w-[30px] h-5 text-[9px] text-center bg-transparent border border-amber-400/60 rounded text-white placeholder:text-amber-400/50 focus:border-amber-400 focus:ring-1 focus:ring-amber-400/30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none disabled:border-white/20 disabled:text-white/30 disabled:placeholder:text-white/20 disabled:cursor-not-allowed"
+      className="w-[33px] h-[23px] text-[9px] text-center bg-transparent border border-amber-400/60 rounded text-white placeholder:text-amber-400/50 focus:border-amber-400 focus:ring-1 focus:ring-amber-400/30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none disabled:border-white/20 disabled:text-white/30 disabled:placeholder:text-white/20 disabled:cursor-not-allowed"
       placeholder={placeholder}
       value={local}
       disabled={disabled}
@@ -967,7 +967,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             <span className="capitalize">{task.type}</span>
           </div>
         </div>
-        <div className="flex items-center flex-shrink-0" style={{ gap: '6px', opacity: task.excludeFromGpa ? 0.35 : 1 }} onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center flex-shrink-0" style={{ gap: '5px', opacity: task.excludeFromGpa ? 0.35 : 1 }} onClick={(e) => e.stopPropagation()}>
           <DebouncedGradeInput
             value={task.gradeValue}
             onSave={(val) => updateGradeValueMutation.mutate({ id: task.id, gradeValue: val, _task: task })}
@@ -989,27 +989,27 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             testId={`input-grade-weight-${task.id}`}
             disabled={!!task.excludeFromGpa}
           />
-          <span className="text-[9px] text-white w-[30px] text-center" data-testid={`text-grade-percent-${task.id}`}>
+          <span className="text-[9px] text-white w-[33px] text-center" style={{ marginLeft: '5px' }} data-testid={`text-grade-percent-${task.id}`}>
             {task.gradeValue !== null && task.gradeValue !== undefined && task.gradeTotal ? `${((task.gradeValue / task.gradeTotal) * 100).toFixed(2)}%` : '—'}
           </span>
         </div>
-        <div className="flex items-center gap-1 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center flex-shrink-0" style={{ gap: '5px' }} onClick={(e) => e.stopPropagation()}>
           <button
             onClick={() => setCommentTarget(commentTarget?.type === 'task' && commentTarget?.id === String(task.id) ? null : { type: 'task', id: String(task.id), label: task.title })}
-            className="text-white/40 hover:text-yellow-300 transition-colors p-0.5"
+            className="text-white hover:text-yellow-300 transition-colors p-0.5"
+            style={{ marginLeft: '5px' }}
             title="Comments"
             data-testid={`button-comment-task-${task.id}`}
           >
-            <MessageSquare className="h-3 w-3" />
+            <MessageSquare className="h-[15px] w-[15px]" />
           </button>
-          <label className="flex items-center cursor-pointer" title={task.excludeFromGpa ? "Excluded from GPA" : "Counts toward GPA"} data-testid={`toggle-gpa-${task.id}`}>
+          <label className="flex items-center gap-1 cursor-pointer" title={task.isCompleted ? "Completed" : "Not completed"} data-testid={`toggle-gpa-${task.id}`}>
             <div className="relative" onClick={() => updateTaskMutation.mutate({ id: task.id, data: { excludeFromGpa: !task.excludeFromGpa }, _task: task })}>
               <div className={`w-6 h-3.5 rounded-full transition-colors ${task.excludeFromGpa ? 'bg-red-500/60' : 'bg-green-500/60'}`} />
               <div className={`absolute top-0.5 w-2.5 h-2.5 rounded-full bg-white transition-transform ${task.excludeFromGpa ? 'left-0.5' : 'left-3'}`} />
             </div>
+            <span className="text-[7px] text-white/50 select-none">Complete</span>
           </label>
-        </div>
-        <div className="flex items-center gap-0.5 flex-shrink-0">
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -1021,11 +1021,11 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 gradeValue: null,
               });
             }}
-            className="flex-shrink-0 text-white/30 hover:text-blue-400 transition-colors p-0.5"
+            className="flex-shrink-0 text-white hover:text-blue-400 transition-colors p-0.5"
             title="Duplicate task"
             data-testid={`button-duplicate-task-${task.id}`}
           >
-            <Copy className="h-3 w-3" />
+            <Copy className="h-[15px] w-[15px]" />
           </button>
           {assignToGroup === task.id ? (
             <select
@@ -1042,19 +1042,20 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
           ) : (
             <button
               onClick={(e) => { e.stopPropagation(); setAssignToGroup(task.id); }}
-              className="flex-shrink-0 text-white/30 hover:text-white/60 transition-colors p-0.5"
+              className="flex-shrink-0 text-white hover:text-white/60 transition-colors p-0.5"
               title="Assign to group"
               data-testid={`button-assign-group-${task.id}`}
             >
-              <FolderPlus className="h-3 w-3" />
+              <FolderPlus className="h-[15px] w-[15px]" />
             </button>
           )}
           <button
             onClick={(e) => { e.stopPropagation(); deleteTaskMutation.mutate({ id: task.id, _task: task }); }}
             className="flex-shrink-0 text-white hover:text-red-400 transition-colors p-0.5"
+            style={{ marginLeft: '5px' }}
             data-testid={`button-delete-task-${task.id}`}
           >
-            <Trash2 className="h-3 w-3" />
+            <Trash2 className="h-[15px] w-[15px]" />
           </button>
         </div>
       </div>
@@ -2086,27 +2087,26 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                   <div className={`flex-1 min-w-0 ${hdrCls('title')}`} onClick={() => toggleSort('title')} data-testid="sort-title">
                     Assignment<SortIcon field="title" />
                   </div>
-                  <div className="flex items-end flex-shrink-0 text-amber-400/70" style={{ gap: '6px' }}>
-                    <span className={`w-[30px] text-center leading-tight ${hdrCls('score')}`} onClick={() => toggleSort('score')} style={{ display: 'inline-flex', justifyContent: 'center' }} data-testid="sort-score">
+                  <div className="flex items-end flex-shrink-0 text-amber-400/70" style={{ gap: '5px' }}>
+                    <span className={`w-[33px] text-center leading-tight ${hdrCls('score')}`} onClick={() => toggleSort('score')} style={{ display: 'inline-flex', justifyContent: 'center' }} data-testid="sort-score">
                       Scr<SortIcon field="score" />
                     </span>
-                    <span className={`w-[30px] text-center leading-tight ${hdrCls('total')}`} onClick={() => toggleSort('total')} data-testid="sort-total">
+                    <span className={`w-[33px] text-center leading-tight ${hdrCls('total')}`} onClick={() => toggleSort('total')} data-testid="sort-total">
                       Tot<SortIcon field="total" />
                     </span>
-                    <span className={`w-[30px] text-center leading-tight ${hdrCls('weight')}`} onClick={() => toggleSort('weight')} data-testid="sort-weight">
+                    <span className={`w-[33px] text-center leading-tight ${hdrCls('weight')}`} onClick={() => toggleSort('weight')} data-testid="sort-weight">
                       Wt<SortIcon field="weight" />
                     </span>
-                    <span className={`w-[30px] text-center leading-tight ${hdrCls('percent')}`} onClick={() => toggleSort('percent')} data-testid="sort-percent">
+                    <span className={`w-[33px] text-center leading-tight ${hdrCls('percent')}`} onClick={() => toggleSort('percent')} style={{ display: 'inline-flex', justifyContent: 'center', marginLeft: '5px' }} data-testid="sort-percent">
                       %<SortIcon field="percent" />
                     </span>
                   </div>
-                  <div className="flex items-center gap-1 flex-shrink-0">
-                    <div className="p-0.5"><div className="w-3" /></div>
-                    <div style={{ width: '24px' }} />
-                  </div>
-                  <div className="flex items-center gap-0.5 flex-shrink-0">
-                    <div className="p-0.5"><div className="w-3" /></div>
-                    <div className="p-0.5"><div className="w-3" /></div>
+                  <div className="flex items-center flex-shrink-0" style={{ gap: '5px', visibility: 'hidden' }}>
+                    <div style={{ marginLeft: '5px', padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
+                    <div className="flex items-center gap-1"><div style={{ width: '24px', height: '14px' }} /><span className="text-[7px]">Complete</span></div>
+                    <div style={{ padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
+                    <div style={{ padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
+                    <div style={{ marginLeft: '5px', padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
                   </div>
                 </div>
               );
