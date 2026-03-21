@@ -14052,6 +14052,19 @@ Return ONLY the JSON object, no markdown formatting.`;
         });
       }
       console.log(`[Spotify] Playing on ${entityId} (echo=${isEcho}): ${spotifyUri || artistName}`);
+
+      const volumeTarget = isEcho ? (entityId.includes("_group") || entityId.includes("_media_group") ? entityId : targetEntity) : entityId;
+      try {
+        await fetch(`${haUrl}/api/services/media_player/volume_set`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: volumeTarget, volume_level: 0.35 }),
+        });
+        console.log(`[Spotify] Set volume to 35% on ${volumeTarget}`);
+      } catch (volErr: any) {
+        console.log(`[Spotify] Volume set failed (continuing): ${volErr.message}`);
+      }
+
       res.json({ ok: true });
     } catch (error: any) {
       console.error("[Spotify] Play on speaker error:", error);
