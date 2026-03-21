@@ -129,7 +129,7 @@ const ROOM_HOTSPOTS: { room: string; x: number; y: number; w: number; h: number;
   { room: "Kitchen", x: 36, y: 5, w: 28, h: 45, entityId: "media_player.kitchen_lr", groupEntityId: "media_player.kitchen_media_group", deviceType: "echo", icon: "kitchen", nightImg: kitchenNight, labelOffsetX: -20, labelOffsetY: 110 },
   { room: "Living Room", x: 36, y: 52, w: 28, h: 45, entityId: "media_player.kitchen_lr", groupEntityId: "media_player.living_room_media_group", deviceType: "echo", icon: "sofa", nightImg: livingRoomNight, labelOffsetX: -5, labelOffsetY: -55 },
   { room: "King Bedroom", x: 65, y: 30, w: 33, h: 50, entityId: "media_player.king_bedroom", groupEntityId: "media_player.king_bedroom_media_group", deviceType: "echo", icon: "crown", nightImg: kingNight, labelOffsetX: -100, labelOffsetY: -10 },
-  { room: "Cat Washroom", x: 84, y: 3, w: 14, h: 26, entityId: "media_player.cat_speakers", groupEntityId: "media_player.cat_washroom_media_group", deviceType: "echo", icon: "bath", nightImg: catNight, labelOffsetX: -10, labelOffsetY: 30 },
+  { room: "Cat Washroom", x: 84, y: 3, w: 14, h: 26, entityId: "media_player.cat_speakers", groupEntityId: "media_player.cat_washroom_media_group", deviceType: "echo", icon: "bath", nightImg: catNight, labelOffsetX: -60, labelOffsetY: 15 },
   { room: "Closet", x: 65, y: 3, w: 18, h: 26, entityId: "media_player.echo_closet_am", groupEntityId: "media_player.closet_media_group", deviceType: "echo", icon: "closet", nightImg: closetNight },
   { room: "Everywhere", x: 84, y: 78, w: 14, h: 18, entityId: "media_player.byhome", groupEntityId: "media_player.byhome", deviceType: "echo", icon: "everywhere" },
 ];
@@ -1489,16 +1489,16 @@ export default function SpotifyPlayerPage() {
                 </div>
               )}
 
-              <div className="text-center mt-2 w-full px-2">
+              <div className="text-center mt-2 w-full px-2 overflow-hidden" style={{ maxWidth: '100%' }}>
                 <p className="text-sm font-bold truncate" data-testid="track-name"
-                  style={{ color: 'rgba(200,230,255,0.95)', textShadow: isPlaying ? `0 0 20px ${profile.glow}` : 'none' }}>
+                  style={{ color: 'rgba(200,230,255,0.95)', textShadow: isPlaying ? `0 0 20px ${profile.glow}` : 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {ja(nowPlaying?.name) || (isSakura ? "再生なし" : "Nothing Playing")}
                 </p>
                 {isPlaying && nowPlaying?.artist && (() => {
                   const firstArtist = nowPlaying.artist.split(",")[0].trim();
                   const artistImg = artistImages[firstArtist];
                   return (
-                    <div className="flex items-center justify-center gap-1.5 mt-1">
+                    <div className="flex items-center justify-center gap-1.5 mt-1 overflow-hidden">
                       {artistImg && (
                         <div className="w-5 h-5 rounded-full overflow-hidden flex-shrink-0"
                           style={{
@@ -1508,7 +1508,7 @@ export default function SpotifyPlayerPage() {
                           }} />
                       )}
                       <p className="text-sm truncate font-medium" data-testid="track-artist"
-                        style={{ color: profile.accent }}>
+                        style={{ color: profile.accent, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {nowPlaying.artist}
                       </p>
                     </div>
