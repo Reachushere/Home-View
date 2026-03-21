@@ -1776,8 +1776,8 @@ export default function SpotifyPlayerPage() {
                       }}
                       data-testid={`room-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
                       {!spot.hideLabel && <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5" style={{ zIndex: 2, transform: `translate(${spot.labelOffsetX || 0}px, ${spot.labelOffsetY || 0}px)` }}>
-                        <RoomIcon icon={spot.icon} size={20} color={isActive ? profile.accent : 'rgba(255,255,255,0.9)'} />
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-center leading-tight px-1"
+                        <RoomIcon icon={spot.icon} size={16} color={isActive ? profile.accent : 'rgba(255,255,255,0.9)'} />
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-center leading-tight px-1"
                           style={{
                             color: isActive ? profile.accent : 'rgba(255,255,255,0.95)',
                             textShadow: isActive ? `0 0 10px ${profile.glow}` : '0 1px 4px rgba(0,0,0,0.7)',
