@@ -2157,7 +2157,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                           <button onClick={() => setWeekCalendarMonth(new Date(year, mo - 1, 1))} className="text-white/60 hover:text-white p-0.5" data-testid="week-cal-prev">
                             <ChevronLeft className="h-3.5 w-3.5" />
                           </button>
-                          <span className="text-[10px] font-medium text-white">{monthName}</span>
+                          <span className="text-[13px] font-medium text-white">{monthName}</span>
                           <button onClick={() => setWeekCalendarMonth(new Date(year, mo + 1, 1))} className="text-white/60 hover:text-white p-0.5" data-testid="week-cal-next">
                             <ChevronRight className="h-3.5 w-3.5" />
                           </button>
@@ -2191,7 +2191,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                             );
                           })}
                         </div>
-                        <div className="mt-2 text-[8px] text-white/50">
+                        <div className="mt-2 text-[8px] text-white">
                           Click any day to set the Monday of that week as Week 1 start. All subsequent weeks will be numbered automatically.
                         </div>
                       </div>
@@ -2214,7 +2214,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                       >
                         {readingWeekVariable && <span style={{ color: 'black', fontSize: '9px', fontWeight: 'bold', lineHeight: 1 }}>✓</span>}
                       </div>
-                      <span className="text-[8px] text-white">Reading week variable</span>
+                      <span className="text-[10px] text-white">Reading week variable</span>
                     </label>
                   </div>
 
