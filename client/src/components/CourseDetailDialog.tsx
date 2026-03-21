@@ -1078,11 +1078,11 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             placeholder="Wt"
             testId={`input-grade-weight-${task.id}`}
           />
-          <span className="text-[9px] text-white w-[33px] text-center" style={{ marginLeft: '-2px' }} data-testid={`text-grade-percent-${task.id}`}>
+          <span className="text-[9px] text-white w-[33px] text-center" style={{ marginLeft: '-14px' }} data-testid={`text-grade-percent-${task.id}`}>
             {task.gradeValue !== null && task.gradeValue !== undefined && task.gradeTotal ? `${((task.gradeValue / task.gradeTotal) * 100).toFixed(2)}%` : '—'}
           </span>
         </div>
-        <div className="flex items-center flex-shrink-0" style={{ gap: '10px', marginLeft: '-4px' }} onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center flex-shrink-0" style={{ gap: '10px', marginLeft: '8px' }} onClick={(e) => e.stopPropagation()}>
           <label className="flex items-center cursor-pointer" title={task.excludeFromGpa ? "Excluded from grade" : "Included in grade"} data-testid={`toggle-gpa-${task.id}`}>
             <div className="relative" onClick={() => updateTaskMutation.mutate({ id: task.id, data: { excludeFromGpa: !task.excludeFromGpa }, _task: task })}>
               <div className={`w-6 h-3.5 rounded-full transition-colors ${task.excludeFromGpa ? 'bg-red-500/60' : 'bg-green-500/60'}`} />
@@ -2615,11 +2615,11 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     <span className={`w-[33px] text-center leading-tight ${hdrCls('weight')}`} onClick={() => toggleSort('weight')} style={{ display: 'inline-flex', justifyContent: 'center' }} data-testid="sort-weight">
                       Weight<SortIcon field="weight" />
                     </span>
-                    <span className={`w-[33px] text-center leading-tight ${hdrCls('percent')}`} onClick={() => toggleSort('percent')} style={{ display: 'inline-flex', justifyContent: 'center', marginLeft: '-2px' }} data-testid="sort-percent">
+                    <span className={`w-[33px] text-center leading-tight ${hdrCls('percent')}`} onClick={() => toggleSort('percent')} style={{ display: 'inline-flex', justifyContent: 'center', marginLeft: '-14px' }} data-testid="sort-percent">
                       Percent<SortIcon field="percent" />
                     </span>
                   </div>
-                  <div className="flex items-end flex-shrink-0" style={{ gap: '10px', marginLeft: '-4px' }}>
+                  <div className="flex items-end flex-shrink-0" style={{ gap: '10px', marginLeft: '8px' }}>
                     <div style={{ width: '24px', textAlign: 'center', lineHeight: '1.1' }}><span className="text-[8px] font-bold text-white">Grade<br/>Received</span></div>
                     <div style={{ width: '19px', textAlign: 'center', marginLeft: '6px' }}><span className="text-[8px] font-bold text-white">Copy</span></div>
                     <div style={{ width: '19px' }} />
@@ -2704,9 +2704,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                   }`} data-testid="text-sum-weight">
                     {totalWeight ? totalWeight.toFixed(2) : '—'}
                   </span>
-                  <span className="w-[33px]" style={{ marginLeft: '-2px' }} />
+                  <span className="w-[33px]" style={{ marginLeft: '-14px' }} />
                 </div>
-                <div className="flex items-center flex-shrink-0" style={{ gap: '10px', marginLeft: '-4px', visibility: 'hidden' }}>
+                <div className="flex items-center flex-shrink-0" style={{ gap: '10px', marginLeft: '8px', visibility: 'hidden' }}>
                   <div style={{ width: '24px', height: '14px' }} />
                   <div style={{ padding: '2px', marginLeft: '6px' }}><div style={{ width: '15px', height: '15px' }} /></div>
                   <div style={{ padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
