@@ -2079,7 +2079,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
               const hdrCls = (field: SortField) =>
                 `cursor-pointer select-none hover:text-white/80 transition-colors ${sortField === field ? 'text-white/90' : ''}`;
               return (
-                <div className="flex items-center gap-1.5 px-1.5 py-1 text-[7px] text-white/60 uppercase tracking-wider">
+                <div className="flex items-center gap-1.5 px-1.5 py-1 text-[7px] text-white/60 uppercase tracking-wider" style={{ margin: '0 4px' }}>
                   <div className="flex-shrink-0" style={{ width: '14px' }} />
                   <div className="flex-shrink-0 w-4" />
                   <div className="flex-shrink-0 w-3" />
@@ -2175,10 +2175,14 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 );
               })}
 
-              {ungroupedTasks.map(task => renderAssignmentRow(task, null))}
+              {ungroupedTasks.map(task => (
+                <div key={`ungrouped-${task.id}`} style={{ padding: '0 4px' }}>
+                  {renderAssignmentRow(task, null)}
+                </div>
+              ))}
             </div>
             {courseTasks.length > 0 && (
-              <div className="flex items-center gap-1.5 px-1.5 py-1.5 mt-1 rounded-md border border-amber-400/30 bg-amber-400/5" data-testid="grade-totals-row">
+              <div className="flex items-center gap-1.5 px-1.5 py-1.5 mt-1 rounded-md border border-amber-400/30 bg-amber-400/5" style={{ margin: '4px 4px 0 4px' }} data-testid="grade-totals-row">
                 <div className="flex-shrink-0" style={{ width: '14px' }} />
                 <div className="w-4 flex-shrink-0" />
                 <div className="w-3 flex-shrink-0" />
