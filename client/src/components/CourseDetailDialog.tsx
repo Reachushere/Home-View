@@ -2575,9 +2575,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     <span className="text-[7px] font-bold text-white">Assign</span>
                   </div>
                   <div className="flex-shrink-0 w-4" />
-                  <div className="flex-shrink-0" style={{ width: '19px', lineHeight: '1.1', textAlign: 'center' }}>
-                    <span className="text-[7px] font-bold text-white" style={{ whiteSpace: 'nowrap' }}>New Group</span>
-                  </div>
+                  <div className="flex-shrink-0" style={{ width: '19px' }} />
                   <div className={`flex-1 min-w-0 ${hdrCls('title')}`} onClick={() => toggleSort('title')} style={{ paddingLeft: '6px' }} data-testid="sort-title">
                     Assignment<SortIcon field="title" />
                   </div>
@@ -2609,10 +2607,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
               <div className="flex items-center gap-1 px-2 mb-1">
                 <button
                   onClick={() => setShowGroupInput(!showGroupInput)}
-                  className="flex items-center gap-1 text-[8px] text-white/50 hover:text-white/80 transition-colors"
+                  className="flex items-center gap-1 text-[8px] text-white hover:text-white/80 transition-colors font-bold"
                   data-testid="button-create-group"
                 >
-                  <span>New Group</span>
+                  <span style={{ lineHeight: '1.1' }}>New<br/>Group</span>
                 </button>
                 {showGroupInput && (
                   <div className="flex items-center gap-1 ml-1">
