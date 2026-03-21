@@ -18342,7 +18342,7 @@ export default function Dashboard() {
                               <div 
                                 className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded m-0.5 border ${task.isCompleted ? "text-gray-400" : "text-black"}`}
                                 style={{
-                                  backgroundColor: task.isCompleted ? '#e5e7eb' : 'white',
+                                  backgroundColor: task.isCompleted ? '#e5e7eb' : (() => { const cEnd = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === course.name)?.colorEnd; const endRgb = hexToRgb(cEnd || course.darkColor); return `rgba(${endRgb.r},${endRgb.g},${endRgb.b},0.45)`; })(),
                                   borderColor: task.isCompleted ? '#d1d5db' : course.darkColor
                                 }}
                                 data-testid={`course-module-task-static-${task.id}`}
