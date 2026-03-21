@@ -19789,7 +19789,7 @@ export default function Dashboard() {
                         height: `${heightPx}px`,
                         zIndex: hoveredCountdownTaskId === task.id ? 55 : (selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43)),
                         backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
-                        borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af'),
+                        borderColor: task.isCompleted ? '#d1d5db' : (colors?.hex || colors?.border || '#9ca3af'),
                         transform: hoveredCountdownTaskId === task.id ? 'scale(1.08)' : undefined,
                         boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
                         transition: 'transform 0.2s ease, box-shadow 0.2s ease',
