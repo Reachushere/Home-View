@@ -14004,7 +14004,7 @@ Return ONLY the JSON object, no markdown formatting.`;
 
   app.post("/api/spotify/play-on-speaker", async (req, res) => {
     try {
-      const { entityId, spotifyUri, artistName, deviceType, announceMessage } = req.body;
+      const { entityId, spotifyUri, artistName, searchQuery, deviceType, announceMessage } = req.body;
       if (!entityId) return res.status(400).json({ error: "entityId required" });
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
 
@@ -14066,10 +14066,11 @@ Return ONLY the JSON object, no markdown formatting.`;
         }
 
         const isArtistUri = spotifyUri && spotifyUri.startsWith("spotify:artist:");
+        const isTrackUri = spotifyUri && spotifyUri.startsWith("spotify:track:");
         const groupEntityId = entityId !== targetEntity ? entityId : null;
         
-        if (isArtistUri || !spotifyUri) {
-          const searchTerm = artistName || "music";
+        if (isArtistUri || isTrackUri || !spotifyUri) {
+          const searchTerm = searchQuery || artistName || "music";
           const voiceCommand = `play ${searchTerm} on Spotify`;
           console.log(`[Spotify] Echo - CUSTOM voice command for ${targetEntity}: "${voiceCommand}"`);
           const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {

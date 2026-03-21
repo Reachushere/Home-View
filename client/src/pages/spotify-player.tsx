@@ -78,7 +78,7 @@ const PROFILES: Record<ProfileKey, {
     accent: "#38bdf8",
     glow: "rgba(56,189,248,0.35)",
     artists: [
-      { name: "中島みゆき", uri: "spotify:track:59fRFaYL0MkBgctE2KOxHF", searchQuery: "中島みゆき 糸" },
+      { name: "中島みゆき", uri: "spotify:track:59fRFaYL0MkBgctE2KOxHF", searchQuery: "Miyuki Nakajima Ito" },
       { name: "YOASOBI", uri: "spotify:artist:64tJ2EAv1R6UaZqc4iOCyj", searchQuery: "YOASOBI" },
       { name: "Kenshi Yonezu", uri: "spotify:artist:1snhtMLeb2DYoMOcVkiKnR", searchQuery: "Kenshi Yonezu" },
       { name: "Aimyon", uri: "spotify:artist:5Lak6GhYbSqhRimRYhE0dP", searchQuery: "Aimyon" },
@@ -799,11 +799,11 @@ export default function SpotifyPlayerPage() {
     const announceMessage = isJp
       ? `${artistData.name}を${ROOM_JP[roomName] || roomName}で再生します`
       : `Now playing ${artistData.name} on the ${roomName}`;
-    console.log(`[PlayOnRoom] ${roomName}: entity=${entityId}, device=${deviceType}, artist=${artistData.name}, uri=${artistData.uri}`);
+    console.log(`[PlayOnRoom] ${roomName}: entity=${entityId}, device=${deviceType}, artist=${artistData.name}, uri=${artistData.uri}, searchQuery=${artistData.searchQuery}`);
     try {
       const resp = await fetch(`/api/spotify/play-on-speaker${authQuery}`, {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ entityId, spotifyUri: artistData.uri, artistName: artistData.name, deviceType, announceMessage }),
+        body: JSON.stringify({ entityId, spotifyUri: artistData.uri, artistName: artistData.name, searchQuery: artistData.searchQuery, deviceType, announceMessage }),
       });
       const data = await resp.json();
       console.log(`[PlayOnRoom] Response: ${resp.status}`, data);
