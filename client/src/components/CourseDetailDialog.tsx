@@ -2569,34 +2569,33 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
               const hdrCls = (field: SortField) =>
                 `cursor-pointer select-none hover:text-white/80 transition-colors ${sortField === field ? 'text-white/90' : ''}`;
               return (
-                <div className="flex items-center gap-1.5 px-1.5 py-1 text-[7px] font-bold text-white tracking-wider" style={{ margin: '0 4px', letterSpacing: '0' }}>
+                <div className="flex items-end gap-1.5 px-1.5 py-1 text-[7px] font-bold text-white" style={{ margin: '0 4px', letterSpacing: '0' }}>
                   <div className="flex-shrink-0" style={{ width: '14px' }} />
-                  <div className="flex-shrink-0 text-center" style={{ width: '19px', lineHeight: '1.1' }}>
+                  <div className="flex-shrink-0 text-center" style={{ width: '19px' }}>
                     <span className="text-[7px] font-bold text-white">Assign</span>
                   </div>
-                  <div className="flex-shrink-0 w-4" />
-                  <div className="flex-shrink-0" style={{ width: '19px' }} />
-                  <div className={`flex-1 min-w-0 ${hdrCls('title')}`} onClick={() => toggleSort('title')} style={{ paddingLeft: '6px' }} data-testid="sort-title">
+                  <div className="flex-shrink-0" style={{ width: '16px' }} />
+                  <div className="flex-shrink-0" style={{ width: '19px', marginRight: '10px' }} />
+                  <div className={`flex-1 min-w-0 ${hdrCls('title')}`} onClick={() => toggleSort('title')} data-testid="sort-title">
                     Assignment<SortIcon field="title" />
                   </div>
                   <div className="flex items-end flex-shrink-0 text-white" style={{ gap: '5px' }}>
-                    <span className={`w-[33px] text-center leading-tight ${hdrCls('score')}`} onClick={() => toggleSort('score')} style={{ display: 'inline-flex', justifyContent: 'center', paddingRight: '3px' }} data-testid="sort-score">
+                    <span className={`w-[33px] text-center leading-tight ${hdrCls('score')}`} onClick={() => toggleSort('score')} style={{ display: 'inline-flex', justifyContent: 'center' }} data-testid="sort-score">
                       Score<SortIcon field="score" />
                     </span>
-                    <span className={`w-[33px] text-center leading-tight ${hdrCls('total')}`} onClick={() => toggleSort('total')} style={{ display: 'inline-flex', justifyContent: 'center', paddingRight: '2px' }} data-testid="sort-total">
+                    <span className={`w-[33px] text-center leading-tight ${hdrCls('total')}`} onClick={() => toggleSort('total')} style={{ display: 'inline-flex', justifyContent: 'center' }} data-testid="sort-total">
                       Total<SortIcon field="total" />
                     </span>
-                    <span className={`w-[33px] text-center leading-tight ${hdrCls('weight')}`} onClick={() => toggleSort('weight')} style={{ display: 'inline-flex', justifyContent: 'center', paddingRight: '1px' }} data-testid="sort-weight">
+                    <span className={`w-[33px] text-center leading-tight ${hdrCls('weight')}`} onClick={() => toggleSort('weight')} style={{ display: 'inline-flex', justifyContent: 'center' }} data-testid="sort-weight">
                       Weight<SortIcon field="weight" />
                     </span>
                     <span className={`w-[33px] text-center leading-tight ${hdrCls('percent')}`} onClick={() => toggleSort('percent')} style={{ display: 'inline-flex', justifyContent: 'center', marginLeft: '5px' }} data-testid="sort-percent">
                       Percent<SortIcon field="percent" />
                     </span>
                   </div>
-                  <div className="flex items-center flex-shrink-0" style={{ gap: '6px' }}>
-                    <div style={{ width: '19px' }} />
-                    <div style={{ width: '24px', textAlign: 'center', lineHeight: '1.1' }}><span className="text-[7px] font-bold text-white" style={{ letterSpacing: '0' }}>Grade<br/>Received</span></div>
-                    <div style={{ width: '19px', textAlign: 'center' }}><span className="text-[7px] font-bold text-white" style={{ letterSpacing: '0' }}>Copy</span></div>
+                  <div className="flex items-end flex-shrink-0" style={{ gap: '6px' }}>
+                    <div style={{ width: '24px', textAlign: 'center', lineHeight: '1.1' }}><span className="text-[7px] font-bold text-white">Grade<br/>Received</span></div>
+                    <div style={{ width: '19px', textAlign: 'center' }}><span className="text-[7px] font-bold text-white">Copy</span></div>
                     <div style={{ width: '19px' }} />
                   </div>
                 </div>
