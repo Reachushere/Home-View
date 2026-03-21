@@ -11105,6 +11105,17 @@ export default function Dashboard() {
           justifyContent: 'center',
           overflow: 'visible',
         }}
+        onTouchStart={() => {
+          if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
+        }}
+        onTouchEnd={() => {
+          if (isHamburgerOpenRef.current) return;
+          if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
+          topPillTimeoutRef.current = setTimeout(() => {
+            if (isHamburgerOpenRef.current) return;
+            closeTopPill();
+          }, 6000);
+        }}
         onMouseEnter={() => {
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
         }}
@@ -12124,6 +12135,16 @@ export default function Dashboard() {
           cursor: 'pointer',
           pointerEvents: isTopPillOpen ? 'none' : 'auto',
           zIndex: 10002,
+          touchAction: 'manipulation',
+        }}
+        onTouchStart={(e) => {
+          e.preventDefault();
+          openTopPill();
+          if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
+          topPillTimeoutRef.current = setTimeout(() => {
+            if (isHamburgerOpenRef.current) return;
+            closeTopPill();
+          }, 6000);
         }}
         onClick={() => {
           openTopPill();
@@ -12153,6 +12174,16 @@ export default function Dashboard() {
           opacity: isTopPillOpen ? 0 : 0.9,
           transition: 'opacity 0.3s ease-in-out',
           zIndex: 10003,
+          touchAction: 'manipulation',
+        }}
+        onTouchStart={(e) => {
+          e.preventDefault();
+          openTopPill();
+          if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
+          topPillTimeoutRef.current = setTimeout(() => {
+            if (isHamburgerOpenRef.current) return;
+            closeTopPill();
+          }, 6000);
         }}
         onClick={() => {
           openTopPill();
