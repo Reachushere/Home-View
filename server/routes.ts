@@ -183,6 +183,7 @@ const FLICK_DEVICES: FlickRoomGroup[] = [
       { id: "cat_echo_middle", name: "Echo (Middle)", entityId: "media_player.echo_cat_washroom_middle", type: "echo", canDisplay: false, room: "Cat Washroom" },
       { id: "cat_echo_left", name: "Echo (Left)", entityId: "media_player.echo_cat_left_am", type: "echo", canDisplay: false, room: "Cat Washroom" },
       { id: "cat_echo_right", name: "Echo (Right)", entityId: "media_player.echo_cat_right_am", type: "echo", canDisplay: false, room: "Cat Washroom" },
+      { id: "cat_nest", name: "Nest Speaker", entityId: "media_player.nestaudio6787", type: "speaker", canDisplay: false, room: "Cat Washroom" },
       { id: "cat_tv", name: "TV", entityId: "media_player.tv_cat_wr", type: "tv", canDisplay: true, room: "Cat Washroom" },
       { id: "cat_group", name: "All Cat Washroom", entityId: "media_player.cat_washroom_media_group", type: "group", canDisplay: false, room: "Cat Washroom" },
     ]
