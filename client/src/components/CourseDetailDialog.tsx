@@ -912,7 +912,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
         }`}
         data-testid={`assignment-row-${task.id}`}
       >
-        <div className="flex-shrink-0 cursor-grab active:cursor-grabbing text-white/30 hover:text-white/60" data-testid={`drag-handle-${task.id}`}>
+        <div className="flex-shrink-0 cursor-grab active:cursor-grabbing text-white/30 hover:text-white/60" style={{ marginRight: '3px' }} data-testid={`drag-handle-${task.id}`}>
           <GripVertical className="h-3.5 w-3.5" />
         </div>
         <button
@@ -920,11 +920,12 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
           className={`flex-shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${
             task.isCompleted ? "bg-green-500 border-green-500" : "border-white/30 hover:border-white/50"
           }`}
+          style={{ marginRight: '3px' }}
           data-testid={`button-toggle-task-${task.id}`}
         >
           {task.isCompleted && <CheckCircle2 className="h-3 w-3 text-white" />}
         </button>
-        <TypeIcon className={`h-3 w-3 flex-shrink-0 ${task.isCompleted ? "text-white/50" : "text-white"}`} />
+        <TypeIcon className={`h-[19px] w-[19px] flex-shrink-0 ${task.isCompleted ? "text-white/50" : "text-white"}`} />
         <div className="flex-1 min-w-0">
           <div
             className={`text-[10px] font-medium truncate flex items-center gap-1 cursor-pointer hover:underline ${task.isCompleted ? "line-through text-white/50" : "text-white"}`}
@@ -2081,9 +2082,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 `cursor-pointer select-none hover:text-white/80 transition-colors ${sortField === field ? 'text-white/90' : ''}`;
               return (
                 <div className="flex items-center gap-1.5 px-1.5 py-1 text-[7px] text-white/60 uppercase tracking-wider" style={{ margin: '0 4px' }}>
-                  <div className="flex-shrink-0" style={{ width: '14px' }} />
-                  <div className="flex-shrink-0 w-4" />
-                  <div className="flex-shrink-0 w-3" />
+                  <div className="flex-shrink-0" style={{ width: '14px', marginRight: '3px' }} />
+                  <div className="flex-shrink-0 w-4" style={{ marginRight: '3px' }} />
+                  <div className="flex-shrink-0" style={{ width: '19px' }} />
                   <div className={`flex-1 min-w-0 ${hdrCls('title')}`} onClick={() => toggleSort('title')} data-testid="sort-title">
                     Assignment<SortIcon field="title" />
                   </div>
@@ -2183,9 +2184,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             </div>
             {courseTasks.length > 0 && (
               <div className="flex items-center gap-1.5 px-1.5 py-1.5 mt-1 rounded-md border border-amber-400/30 bg-amber-400/5" style={{ margin: '4px 4px 0 4px' }} data-testid="grade-totals-row">
-                <div className="flex-shrink-0" style={{ width: '14px' }} />
-                <div className="w-4 flex-shrink-0" />
-                <div className="w-3 flex-shrink-0" />
+                <div className="flex-shrink-0" style={{ width: '14px', marginRight: '3px' }} />
+                <div className="flex-shrink-0 w-4" style={{ marginRight: '3px' }} />
+                <div className="flex-shrink-0" style={{ width: '19px' }} />
                 <div className="flex-1 min-w-0 text-[11px] font-bold text-white">Totals</div>
                 <div className="flex items-center flex-shrink-0" style={{ gap: '5px' }}>
                   <span className="text-[12px] font-bold w-[33px] text-center text-amber-400" data-testid="text-sum-value">
