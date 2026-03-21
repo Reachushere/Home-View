@@ -119,7 +119,7 @@ interface NewTaskForm {
 }
 
 function DebouncedGradeInput({ value, onSave, placeholder, testId, disabled }: { value: number | null | undefined; onSave: (val: number | null) => void; placeholder: string; testId: string; disabled?: boolean }) {
-  const fmt = (v: number | null | undefined) => v != null ? (Number.isInteger(v) ? v.toFixed(2) : String(v)) : '';
+  const fmt = (v: number | null | undefined) => v != null ? v.toFixed(2) : '';
   const [local, setLocal] = useState(fmt(value));
   const [editing, setEditing] = useState(false);
   const lastAcceptedRef = useRef(value);
@@ -456,29 +456,16 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
   const totalWeight = courseTasks.reduce((s, t) => s + (t.gradeWeight || 0), 0);
 
   const gradeCalc = useMemo(() => {
-    const gradedTasks = courseTasks.filter(t => !t.excludeFromGpa && t.gradeWeight && t.gradeTotal && t.gradeValue !== null && t.gradeValue !== undefined && (t.gradeValue !== 0 || t.isCompleted));
+    const gradedTasks = courseTasks.filter(t => !t.excludeFromGpa && t.gradeTotal && t.gradeValue !== null && t.gradeValue !== undefined && (t.gradeValue !== 0 || t.isCompleted));
     if (gradedTasks.length === 0) return null;
-    let weightedSum = 0;
-    let weightedTotal = 0;
-    let rawReceived = 0;
-    let rawTotal = 0;
-    for (const t of gradedTasks) {
-      const pct = (t.gradeValue! / t.gradeTotal!) * 100;
-      weightedSum += pct * (t.gradeWeight! / 100);
-      weightedTotal += t.gradeWeight!;
-      rawReceived += t.gradeValue!;
-      rawTotal += t.gradeTotal!;
-    }
-    const currentPercent = weightedTotal > 0 ? (weightedSum / weightedTotal) * 100 : 0;
-    const projectedPercent = weightedTotal > 0 ? weightedSum / (totalWeight > 0 ? totalWeight : weightedTotal) * 100 : 0;
-    const rawPercent = rawTotal > 0 ? (rawReceived / rawTotal) * 100 : 0;
+    const sumScore = gradedTasks.reduce((s, t) => s + (t.gradeValue || 0), 0);
+    const sumTotal = gradedTasks.reduce((s, t) => s + (t.gradeTotal || 0), 0);
+    const gradedWeight = gradedTasks.reduce((s, t) => s + (t.gradeWeight || 0), 0);
+    const currentPercent = sumTotal > 0 ? (sumScore / sumTotal) * 100 : 0;
     return {
       currentPercent: Math.round(currentPercent * 100) / 100,
-      projectedPercent: Math.round(projectedPercent * 100) / 100,
-      rawPercent: Math.round(rawPercent * 100) / 100,
       currentGrade: percentToLetterGrade(currentPercent),
-      projectedGrade: percentToLetterGrade(projectedPercent),
-      gradedWeight: weightedTotal,
+      gradedWeight,
       gradedCount: gradedTasks.length,
     };
   }, [courseTasks, totalWeight]);
@@ -520,7 +507,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
           data: { taskId: id, taskTitle: _task.title }
         });
       }
-      return apiRequest("PATCH", `/api/tasks/${id}`, { isCompleted });
+      const patch: Record<string, any> = { isCompleted };
+      if (isCompleted) patch.excludeFromGpa = false;
+      return apiRequest("PATCH", `/api/tasks/${id}`, patch);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
@@ -915,6 +904,29 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
         <div className="flex-shrink-0 cursor-grab active:cursor-grabbing text-white/30 hover:text-white/60" style={{ marginRight: '3px' }} data-testid={`drag-handle-${task.id}`}>
           <GripVertical className="h-3.5 w-3.5" />
         </div>
+        {assignToGroup === task.id ? (
+          <select
+            className="h-5 text-[8px] bg-white/10 border border-white/20 rounded text-white px-0.5 flex-shrink-0"
+            value={task.assignmentGroup || ''}
+            onChange={(e) => assignTaskToGroup(task.id, e.target.value || null)}
+            autoFocus
+            onBlur={() => setAssignToGroup(null)}
+            onClick={(e) => e.stopPropagation()}
+            data-testid={`select-group-${task.id}`}
+          >
+            <option value="">No Group</option>
+            {allGroups.map(g => <option key={g} value={g}>{g}</option>)}
+          </select>
+        ) : (
+          <button
+            onClick={(e) => { e.stopPropagation(); setAssignToGroup(task.id); }}
+            className="flex-shrink-0 text-white hover:text-white/60 transition-colors p-0.5"
+            title="Assign to group"
+            data-testid={`button-assign-group-${task.id}`}
+          >
+            <FolderPlus className="h-[15px] w-[15px]" />
+          </button>
+        )}
         <button
           onClick={(e) => { e.stopPropagation(); toggleTaskMutation.mutate({ id: task.id, isCompleted: !task.isCompleted, _task: task }); }}
           className={`flex-shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${
@@ -1004,12 +1016,11 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
           >
             <MessageSquare className="h-[15px] w-[15px]" />
           </button>
-          <label className="flex items-center gap-1 cursor-pointer" title={task.isCompleted ? "Completed" : "Not completed"} data-testid={`toggle-gpa-${task.id}`}>
+          <label className="flex items-center cursor-pointer" title={task.excludeFromGpa ? "Excluded from grade" : "Included in grade"} data-testid={`toggle-gpa-${task.id}`}>
             <div className="relative" onClick={() => updateTaskMutation.mutate({ id: task.id, data: { excludeFromGpa: !task.excludeFromGpa }, _task: task })}>
               <div className={`w-6 h-3.5 rounded-full transition-colors ${task.excludeFromGpa ? 'bg-red-500/60' : 'bg-green-500/60'}`} />
               <div className={`absolute top-0.5 w-2.5 h-2.5 rounded-full bg-white transition-transform ${task.excludeFromGpa ? 'left-0.5' : 'left-3'}`} />
             </div>
-            <span className="text-[7px] text-white/50 select-none">Complete</span>
           </label>
           <button
             onClick={(e) => {
@@ -1028,28 +1039,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
           >
             <Copy className="h-[15px] w-[15px]" />
           </button>
-          {assignToGroup === task.id ? (
-            <select
-              className="h-5 text-[8px] bg-white/10 border border-white/20 rounded text-white px-0.5"
-              value={task.assignmentGroup || ''}
-              onChange={(e) => assignTaskToGroup(task.id, e.target.value || null)}
-              autoFocus
-              onBlur={() => setAssignToGroup(null)}
-              data-testid={`select-group-${task.id}`}
-            >
-              <option value="">No Group</option>
-              {allGroups.map(g => <option key={g} value={g}>{g}</option>)}
-            </select>
-          ) : (
-            <button
-              onClick={(e) => { e.stopPropagation(); setAssignToGroup(task.id); }}
-              className="flex-shrink-0 text-white hover:text-white/60 transition-colors p-0.5"
-              title="Assign to group"
-              data-testid={`button-assign-group-${task.id}`}
-            >
-              <FolderPlus className="h-[15px] w-[15px]" />
-            </button>
-          )}
           <button
             onClick={(e) => { e.stopPropagation(); deleteTaskMutation.mutate({ id: task.id, _task: task }); }}
             className="flex-shrink-0 text-white hover:text-red-400 transition-colors p-0.5"
@@ -2081,33 +2070,35 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
               const hdrCls = (field: SortField) =>
                 `cursor-pointer select-none hover:text-white/80 transition-colors ${sortField === field ? 'text-white/90' : ''}`;
               return (
-                <div className="flex items-center gap-1.5 px-1.5 py-1 text-[7px] text-white/60 uppercase tracking-wider" style={{ margin: '0 4px' }}>
+                <div className="flex items-center gap-1.5 px-1.5 py-1 text-[9px] font-bold text-white/70 uppercase tracking-wider" style={{ margin: '0 4px' }}>
                   <div className="flex-shrink-0" style={{ width: '14px', marginRight: '3px' }} />
+                  <div className="flex-shrink-0 text-center" style={{ width: '19px' }}>
+                    <span className="text-[8px] font-bold text-white/60">Assign</span>
+                  </div>
                   <div className="flex-shrink-0 w-4" style={{ marginRight: '3px' }} />
-                  <div className="flex-shrink-0" style={{ width: '19px' }} />
-                  <div className={`flex-1 min-w-0 ${hdrCls('title')}`} onClick={() => toggleSort('title')} data-testid="sort-title">
+                  <div className="flex-shrink-0" style={{ width: '19px', marginRight: '10px' }} />
+                  <div className={`flex-1 min-w-0 ${hdrCls('title')}`} onClick={() => toggleSort('title')} style={{ paddingLeft: '6px' }} data-testid="sort-title">
                     Assignment<SortIcon field="title" />
                   </div>
                   <div className="flex items-end flex-shrink-0 text-amber-400/70" style={{ gap: '5px' }}>
-                    <span className={`w-[33px] text-center leading-tight ${hdrCls('score')}`} onClick={() => toggleSort('score')} style={{ display: 'inline-flex', justifyContent: 'center' }} data-testid="sort-score">
-                      Scr<SortIcon field="score" />
+                    <span className={`w-[33px] text-center leading-tight ${hdrCls('score')}`} onClick={() => toggleSort('score')} style={{ display: 'inline-flex', justifyContent: 'center', paddingRight: '3px' }} data-testid="sort-score">
+                      Score<SortIcon field="score" />
                     </span>
-                    <span className={`w-[33px] text-center leading-tight ${hdrCls('total')}`} onClick={() => toggleSort('total')} data-testid="sort-total">
-                      Tot<SortIcon field="total" />
+                    <span className={`w-[33px] text-center leading-tight ${hdrCls('total')}`} onClick={() => toggleSort('total')} style={{ display: 'inline-flex', justifyContent: 'center', paddingRight: '2px' }} data-testid="sort-total">
+                      Total<SortIcon field="total" />
                     </span>
-                    <span className={`w-[33px] text-center leading-tight ${hdrCls('weight')}`} onClick={() => toggleSort('weight')} data-testid="sort-weight">
-                      Wt<SortIcon field="weight" />
+                    <span className={`w-[33px] text-center leading-tight ${hdrCls('weight')}`} onClick={() => toggleSort('weight')} style={{ display: 'inline-flex', justifyContent: 'center', paddingRight: '1px' }} data-testid="sort-weight">
+                      Weight<SortIcon field="weight" />
                     </span>
                     <span className={`w-[33px] text-center leading-tight ${hdrCls('percent')}`} onClick={() => toggleSort('percent')} style={{ display: 'inline-flex', justifyContent: 'center', marginLeft: '5px' }} data-testid="sort-percent">
-                      %<SortIcon field="percent" />
+                      Percentage<SortIcon field="percent" />
                     </span>
                   </div>
-                  <div className="flex items-center flex-shrink-0" style={{ gap: '5px', visibility: 'hidden' }}>
-                    <div style={{ marginLeft: '5px', padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
-                    <div className="flex items-center gap-1"><div style={{ width: '24px', height: '14px' }} /><span className="text-[7px]">Complete</span></div>
-                    <div style={{ padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
-                    <div style={{ padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
-                    <div style={{ marginLeft: '5px', padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
+                  <div className="flex items-center flex-shrink-0" style={{ gap: '5px' }}>
+                    <div style={{ marginLeft: '5px', width: '19px', textAlign: 'center' }}><span className="text-[8px] font-bold text-white/60 normal-case" style={{ letterSpacing: '0' }}></span></div>
+                    <div style={{ width: '24px', textAlign: 'center' }}><span className="text-[8px] font-bold text-white/60 normal-case" style={{ letterSpacing: '0' }}>Complete</span></div>
+                    <div style={{ width: '19px', textAlign: 'center' }}><span className="text-[8px] font-bold text-white/60 normal-case" style={{ letterSpacing: '0' }}>Copy</span></div>
+                    <div style={{ marginLeft: '5px', width: '19px' }} />
                   </div>
                 </div>
               );
@@ -2185,41 +2176,27 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             {courseTasks.length > 0 && (
               <div className="flex items-center gap-1.5 px-1.5 py-1.5 mt-1 rounded-md border border-amber-400/30 bg-amber-400/5" style={{ margin: '4px 4px 0 4px' }} data-testid="grade-totals-row">
                 <div className="flex-shrink-0" style={{ width: '14px', marginRight: '3px' }} />
-                <div className="flex-shrink-0 w-4" style={{ marginRight: '3px' }} />
                 <div className="flex-shrink-0" style={{ width: '19px' }} />
+                <div className="flex-shrink-0 w-4" style={{ marginRight: '3px' }} />
+                <div className="flex-shrink-0" style={{ width: '19px', marginRight: '10px' }} />
                 <div className="flex-1 min-w-0 text-[11px] font-bold text-white">Totals</div>
                 <div className="flex items-center flex-shrink-0" style={{ gap: '5px' }}>
                   <span className="text-[12px] font-bold w-[33px] text-center text-amber-400" data-testid="text-sum-value">
-                    {(() => { const v = courseTasks.filter(t => !t.excludeFromGpa).reduce((s, t) => s + (t.gradeValue || 0), 0); return v ? v.toFixed(1) : '—'; })()}
+                    {(() => { const v = courseTasks.filter(t => !t.excludeFromGpa).reduce((s, t) => s + (t.gradeValue || 0), 0); return v ? v.toFixed(2) : '—'; })()}
                   </span>
                   <span className="text-[12px] font-bold w-[33px] text-center text-amber-400" data-testid="text-sum-total">
-                    {(() => { const v = courseTasks.filter(t => !t.excludeFromGpa).reduce((s, t) => s + (t.gradeTotal || 0), 0); return v ? v.toFixed(1) : '—'; })()}
+                    {(() => { const v = courseTasks.filter(t => !t.excludeFromGpa).reduce((s, t) => s + (t.gradeTotal || 0), 0); return v ? v.toFixed(2) : '—'; })()}
                   </span>
                   <span className={`text-[12px] font-bold w-[33px] text-center ${
                     totalWeight === 100 ? 'text-green-400' : totalWeight > 100 ? 'text-red-400' : 'text-amber-400'
                   }`} data-testid="text-sum-weight">
-                    {totalWeight ? totalWeight.toFixed(1) : '—'}
+                    {totalWeight ? totalWeight.toFixed(2) : '—'}
                   </span>
-                  <span className={`text-[12px] font-bold w-[33px] text-center ${
-                    (() => {
-                      const gTasks = courseTasks.filter(t => !t.excludeFromGpa);
-                      const sumTotal = gTasks.reduce((s, t) => s + (t.gradeTotal || 0), 0);
-                      const sumValue = gTasks.reduce((s, t) => s + (t.gradeValue || 0), 0);
-                      return sumTotal > 0 && sumValue > 0 ? 'text-emerald-400' : 'text-amber-400/50';
-                    })()
-                  }`} style={{ marginLeft: '5px' }} data-testid="text-total-percent">
-                    {(() => {
-                      const gTasks = courseTasks.filter(t => !t.excludeFromGpa);
-                      const sumTotal = gTasks.reduce((s, t) => s + (t.gradeTotal || 0), 0);
-                      const sumValue = gTasks.reduce((s, t) => s + (t.gradeValue || 0), 0);
-                      return sumTotal > 0 ? `${((sumValue / sumTotal) * 100).toFixed(1)}%` : '—';
-                    })()}
-                  </span>
+                  <span className="w-[33px]" style={{ marginLeft: '5px' }} />
                 </div>
                 <div className="flex items-center flex-shrink-0" style={{ gap: '5px', visibility: 'hidden' }}>
                   <div style={{ marginLeft: '5px', padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
-                  <div className="flex items-center gap-1"><div style={{ width: '24px', height: '14px' }} /><span className="text-[7px]">Complete</span></div>
-                  <div style={{ padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
+                  <div><div style={{ width: '24px', height: '14px' }} /></div>
                   <div style={{ padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
                   <div style={{ marginLeft: '5px', padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
                 </div>
@@ -2230,14 +2207,14 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
           {gradeCalc && (
             <div className="mx-3 mb-3 p-3 rounded-lg border border-white/20" style={{ background: 'rgba(255,255,255,0.08)' }} data-testid="grade-calculator-box">
               <div className="flex items-center gap-2 mb-2">
-                <GraduationCap className="h-3.5 w-3.5 text-white" />
-                <span className="text-[10px] font-semibold text-white">Grade Calculator</span>
-                <span className="text-[8px] text-white ml-auto">{gradeCalc.gradedCount} graded · {gradeCalc.gradedWeight.toFixed(2)}% of {(totalWeight || gradeCalc.gradedWeight).toFixed(2)}% weight</span>
+                <GraduationCap className="h-4 w-4 text-white" />
+                <span className="text-[13px] font-bold text-white">Grade Calculator</span>
+                <span className="text-[11px] text-white/80 ml-auto">{gradeCalc.gradedCount} graded · {gradeCalc.gradedWeight.toFixed(2)}% of {(totalWeight || gradeCalc.gradedWeight).toFixed(2)}% weight</span>
               </div>
-              <div className="text-center p-2 rounded-md" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }}>
-                <div className="text-[8px] text-white mb-1">Current Grade</div>
-                <div className="text-lg font-bold text-white" data-testid="text-current-grade">{gradeCalc.currentGrade}</div>
-                <div className="text-[9px] text-white" data-testid="text-current-percent">{gradeCalc.currentPercent.toFixed(2)}%</div>
+              <div className="text-center p-3 rounded-md" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }}>
+                <div className="text-[11px] font-semibold text-white/80 mb-1">Current Grade</div>
+                <div className="text-2xl font-bold text-white" data-testid="text-current-grade">{gradeCalc.currentGrade}</div>
+                <div className="text-[14px] font-semibold text-white" data-testid="text-current-percent">{gradeCalc.currentPercent.toFixed(2)}%</div>
               </div>
             </div>
           )}
