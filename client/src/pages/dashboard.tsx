@@ -330,6 +330,22 @@ function getETMinutes(date: Date): number {
   return parseInt(date.toLocaleString('en-US', { minute: 'numeric', timeZone: 'America/Toronto' }), 10);
 }
 
+function startOfDayET(date: Date): Date {
+  const et = toET(date);
+  et.setHours(0, 0, 0, 0);
+  return et;
+}
+
+function isSameDayET(a: Date, b: Date): boolean {
+  const ea = toET(a);
+  const eb = toET(b);
+  return ea.getFullYear() === eb.getFullYear() && ea.getMonth() === eb.getMonth() && ea.getDate() === eb.getDate();
+}
+
+function getETDateString(date: Date): string {
+  return date.toLocaleDateString('en-CA', { timeZone: 'America/Toronto' });
+}
+
 const TICKER_LOGO_MAP: Record<string, { src: string; height: number }> = {
   CNN: { src: cnnLogoPath, height: 33 },
   CBC: { src: cbcLogoPath, height: 78 },
@@ -5089,7 +5105,7 @@ export default function Dashboard() {
           const { clientX: mouseX, clientY: mouseY } = getPointerXY(ev);
           if (mouseY >= allDayRect.top - 20 && mouseY <= allDayRect.bottom + 20 && 
               mouseX >= allDayRect.left && mouseX <= allDayRect.right) {
-            const today = startOfDay(new Date());
+            const today = startOfDayET(new Date());
             const weekStart = startOfWeek(today, { weekStartsOn: 6 });
             const todayIdx = Math.floor((today.getTime() - weekStart.getTime()) / (1000 * 60 * 60 * 24));
             const targetIdx = Math.max(0, todayIdx - 1);
@@ -8722,7 +8738,7 @@ export default function Dashboard() {
 
   // Filter tasks by selected date if a date is clicked
   const displayTasks = selectedDate 
-    ? allTasks.filter(t => isSameDay(new Date(t.dueDate), selectedDate))
+    ? allTasks.filter(t => isSameDayET(new Date(t.dueDate), selectedDate))
     : tasks;
 
   // Sort tasks so ones with attachments come first (for media control alignment)
@@ -8760,8 +8776,8 @@ export default function Dashboard() {
   // Do Today shows ALL tasks due today OR prep tasks starting today (from all tasks, not just selected week)
   const todayTasks = sortByAttachments(allTasks.filter(t => {
     if (t.isMissed || t.isCompleted) return false;
-    const isDueToday = t.dueDate && isSameDay(new Date(t.dueDate), today);
-    const isPrepToday = t.startDate && isSameDay(new Date(t.startDate), today);
+    const isDueToday = t.dueDate && isSameDayET(new Date(t.dueDate), today);
+    const isPrepToday = t.startDate && isSameDayET(new Date(t.startDate), today);
     return isDueToday || isPrepToday;
   }));
   
@@ -8791,15 +8807,15 @@ export default function Dashboard() {
     if (/module/i.test(t.title || '')) return false;
     
     // Check if task is due today
-    if (isSameDay(new Date(t.dueDate), today)) return true;
+    if (isSameDayET(new Date(t.dueDate), today)) return true;
     
     // Check if this is a full-week MODULE/READING task that spans today
     // Full-week tasks have startDate and dueDate on different days (Sunday to Friday)
     // Only apply for module/reading type tasks, not discussions or other types
     if (t.startDate && (t.type === 'module' || t.type === 'reading' || t.type === 'Module' || t.type === 'Reading')) {
-      const taskStartDate = startOfDay(new Date(t.startDate));
-      const taskDueDate = startOfDay(new Date(t.dueDate));
-      const todayStart = startOfDay(today);
+      const taskStartDate = startOfDayET(new Date(t.startDate));
+      const taskDueDate = startOfDayET(new Date(t.dueDate));
+      const todayStart = startOfDayET(today);
       
       // If today falls within the task's planning period, include it
       if (taskStartDate <= todayStart && todayStart <= taskDueDate) {
@@ -8813,7 +8829,7 @@ export default function Dashboard() {
   // This Week: tasks due from tomorrow through end of Friday (school week ends Friday 11:59pm)
   const todayDow = today.getDay();
   const daysUntilFriday = todayDow <= 5 ? (5 - todayDow) : (5 + 7 - todayDow);
-  const thisWeekFriday = startOfDay(addDays(today, daysUntilFriday));
+  const thisWeekFriday = startOfDayET(addDays(today, daysUntilFriday));
   const thisWeekFridayEnd = new Date(thisWeekFriday);
   thisWeekFridayEnd.setHours(23, 59, 59, 999);
   const dueTomorrowTasks = allTasks.filter(t => {
@@ -8822,19 +8838,19 @@ export default function Dashboard() {
     if (!t.dueDate) return false;
     if (/module/i.test(t.title || '')) return false;
     const dueDate = new Date(t.dueDate);
-    const dueDateLocal = startOfDay(dueDate);
-    if (dueDateLocal <= startOfDay(today)) return false;
+    const dueDateLocal = startOfDayET(dueDate);
+    if (dueDateLocal <= startOfDayET(today)) return false;
     if (dueDate > thisWeekFridayEnd) return false;
-    if (isSameDay(dueDate, today)) return false;
+    if (isSameDayET(dueDate, today)) return false;
     return true;
   }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   
   const daysUntilSaturday = todayDow <= 6 ? (6 - todayDow) : 0;
-  const nextSaturday = startOfDay(addDays(today, daysUntilSaturday === 0 ? 7 : daysUntilSaturday));
-  const nextWeekEnd = startOfDay(addDays(nextSaturday, 6));
+  const nextSaturday = startOfDayET(addDays(today, daysUntilSaturday === 0 ? 7 : daysUntilSaturday));
+  const nextWeekEnd = startOfDayET(addDays(nextSaturday, 6));
   nextWeekEnd.setHours(23, 59, 59, 999);
-  const twoWeeksStart = startOfDay(addDays(nextSaturday, 7));
-  const threeWeeksEnd = startOfDay(addDays(nextSaturday, 13));
+  const twoWeeksStart = startOfDayET(addDays(nextSaturday, 7));
+  const threeWeeksEnd = startOfDayET(addDays(nextSaturday, 13));
   threeWeeksEnd.setHours(23, 59, 59, 999);
   const thisWeekStart = nextSaturday;
   const thisWeekEnd = threeWeeksEnd;
@@ -8856,8 +8872,8 @@ export default function Dashboard() {
       return dueDate >= twoWeeksStart && dueDate <= threeWeeksEnd;
     }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   })();
-  const threeWeeksPlusStart = startOfDay(addDays(nextSaturday, 14));
-  const beyondStart = startOfDay(addDays(nextSaturday, 7));
+  const threeWeeksPlusStart = startOfDayET(addDays(nextSaturday, 14));
+  const beyondStart = startOfDayET(addDays(nextSaturday, 7));
   const dueBeyondTasks = (() => {
     return allTasks.filter(t => {
       if (t.isMissed || t.isCompleted) return false;
@@ -8885,7 +8901,7 @@ export default function Dashboard() {
       const fallW1Sat = startOfWeek(fallStart, { weekStartsOn: 6 });
       semDefs.push({ label: 'Fall ' + y, start: fallW1Sat, end: addDays(fallW1Sat, NUM_WEEKS * 7 - 1) });
     }
-    const todayStart = startOfDay(new Date());
+    const todayStart = startOfDayET(new Date());
     const currentWeekSat = startOfWeek(todayStart, { weekStartsOn: 6 });
     const result: Array<{ weekStart: Date; weekEnd: Date; label: string; sublabel: string; semLabel: string | null; weekNum: number | null }> = [];
     let cursor = currentWeekSat;
@@ -8919,16 +8935,16 @@ export default function Dashboard() {
     const now = new Date();
     return upcomingCalendarEvents.filter(e => {
       const eventStart = new Date(e.startDate);
-      if (e.isAllDay) return isSameDay(eventStart, today);
-      return isSameDay(eventStart, today) && eventStart >= now;
+      if (e.isAllDay) return isSameDayET(eventStart, today);
+      return isSameDayET(eventStart, today) && eventStart >= now;
     }).sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
   }, [upcomingCalendarEvents, today]);
 
   const upcomingEventsThisWeek = useMemo(() => {
-    const tomorrowStart = startOfDay(addDays(today, 1));
+    const tomorrowStart = startOfDayET(addDays(today, 1));
     return upcomingCalendarEvents.filter(e => {
       const eventStart = new Date(e.startDate);
-      const eventDay = startOfDay(eventStart);
+      const eventDay = startOfDayET(eventStart);
       return eventDay >= tomorrowStart && eventStart <= thisWeekFridayEnd;
     }).sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
   }, [upcomingCalendarEvents, today, thisWeekFridayEnd]);
@@ -9210,8 +9226,8 @@ export default function Dashboard() {
 
   const isInCurrentWeek = (day: Date) => {
     if (!currentWeekStart || !currentWeekEnd) return false;
-    const dayStart = startOfDay(day);
-    const weekStart = startOfDay(currentWeekStart);
+    const dayStart = startOfDayET(day);
+    const weekStart = startOfDayET(currentWeekStart);
     const weekEnd = endOfDay(currentWeekEnd);
     return isWithinInterval(dayStart, { start: weekStart, end: weekEnd });
   };
@@ -9222,7 +9238,7 @@ export default function Dashboard() {
       if (t.isCompleted) return false; // Completed tasks don't show on calendar
       if (isCASL101Finished(t)) return false; // Auto-hide finished CASL101 tasks
       const dueDate = new Date(t.dueDate);
-      if (!isSameDay(dueDate, day)) return false;
+      if (!isSameDayET(dueDate, day)) return false;
       
       if (t.eventStartTime) {
         const [startHour] = t.eventStartTime.split(':').map(Number);
@@ -9238,7 +9254,7 @@ export default function Dashboard() {
       if (t.isCompleted) return false;
       if (isCASL101Finished(t)) return false; // Auto-hide finished CASL101 tasks
       const dueDate = new Date(t.dueDate);
-      if (!isSameDay(dueDate, day)) return false;
+      if (!isSameDayET(dueDate, day)) return false;
       
       // Only consider tasks with explicit start and end times
       if (!t.eventStartTime || !t.eventEndTime) return false;
@@ -9263,7 +9279,7 @@ export default function Dashboard() {
       
       const dueDate = new Date(t.dueDate);
       // Check if task is in current week view
-      const isInWeek = weekDays.some(day => isSameDay(day, dueDate));
+      const isInWeek = weekDays.some(day => isSameDayET(day, dueDate));
       if (!isInWeek) return false;
       
       const [startHour] = t.eventStartTime.split(':').map(Number);
@@ -9273,7 +9289,7 @@ export default function Dashboard() {
       return endHour > startHour;
     }).map(t => {
       const dueDate = new Date(t.dueDate);
-      const dayIdx = weekDays.findIndex(day => isSameDay(day, dueDate));
+      const dayIdx = weekDays.findIndex(day => isSameDayET(day, dueDate));
       const [startHour, startMin] = t.eventStartTime!.split(':').map(Number);
       const [endHour, endMin] = t.eventEndTime!.split(':').map(Number);
       
@@ -9294,7 +9310,7 @@ export default function Dashboard() {
       
       // For all-day events, check if any task is due on that day
       if (event.isAllDay) {
-        return isSameDay(eventStart, taskDue);
+        return isSameDayET(eventStart, taskDue);
       }
       
       // For timed events, check time overlap
@@ -9307,7 +9323,7 @@ export default function Dashboard() {
       }
       
       // For tasks without specific times, check if event is on same day at same hour
-      if (isSameDay(eventStart, taskDue)) {
+      if (isSameDayET(eventStart, taskDue)) {
         const taskHour = getETHours(taskDue);
         const eventHour = getETHours(eventStart);
         // Consider conflict if within same hour or adjacent hours
@@ -9329,7 +9345,7 @@ export default function Dashboard() {
       if (eventEndDate < now) return false;
       // Only show events that conflict with tasks
       if (!eventConflictsWithTask(e)) return false;
-      return isSameDay(eventDate, day) && getETHours(eventDate) === hour;
+      return isSameDayET(eventDate, day) && getETHours(eventDate) === hour;
     });
   };
   
@@ -9358,7 +9374,7 @@ export default function Dashboard() {
       if (eventDayStart < todayStart) return false;
       // Only show events that conflict with tasks
       if (!eventConflictsWithTask(e)) return false;
-      return isSameDay(eventDate, day);
+      return isSameDayET(eventDate, day);
     });
   };
   
@@ -9370,7 +9386,7 @@ export default function Dashboard() {
       if (t.eventStartTime) return false; // Tasks with explicit start time show at that hour
       const dueDate = new Date(t.dueDate);
       const isMidnight = getETHours(dueDate) === 0 && getETMinutes(dueDate) === 0;
-      return isSameDay(dueDate, day) && isMidnight;
+      return isSameDayET(dueDate, day) && isMidnight;
     });
   };
   
@@ -9397,7 +9413,7 @@ export default function Dashboard() {
       dayEnd.setHours(23, 59, 59, 999);
       
       // Day is in the planning period: startDate <= day < dueDate (not including due date itself)
-      return startDate <= dayEnd && dayStart < dueDate && !isSameDay(day, dueDate);
+      return startDate <= dayEnd && dayStart < dueDate && !isSameDayET(day, dueDate);
     });
   };
 
@@ -9426,18 +9442,18 @@ export default function Dashboard() {
     dayStart.setHours(0, 0, 0, 0);
     const dayEnd = new Date(day);
     dayEnd.setHours(23, 59, 59, 999);
-    return startDate <= dayEnd && dayStart < dueDate && !isSameDay(day, dueDate);
+    return startDate <= dayEnd && dayStart < dueDate && !isSameDayET(day, dueDate);
   };
 
   const weekPlanningTasks = getAllWeekPlanningTasks();
 
   const getTasksForDay = (day: Date) => {
-    return allTasks.filter(t => isSameDay(new Date(t.dueDate), day));
+    return allTasks.filter(t => isSameDayET(new Date(t.dueDate), day));
   };
 
   // Get projects with targetDate on a specific day
   const getProjectsForDay = (day: Date) => {
-    return allProjects.filter(p => p.targetDate && isSameDay(new Date(p.targetDate), day));
+    return allProjects.filter(p => p.targetDate && isSameDayET(new Date(p.targetDate), day));
   };
 
   // Get reminders for a day (tasks due 2 days after this day, and 24-hour urgent reminders)
@@ -9445,13 +9461,13 @@ export default function Dashboard() {
     const twoDayReminders = allTasks.filter(t => {
       const dueDate = new Date(t.dueDate);
       const reminderDate = subDays(dueDate, 2);
-      return isSameDay(reminderDate, day) && !t.isCompleted;
+      return isSameDayET(reminderDate, day) && !t.isCompleted;
     }).map(t => ({ ...t, reminderType: '2day' as const }));
 
     const oneDayReminders = allTasks.filter(t => {
       const dueDate = new Date(t.dueDate);
       const reminderDate = subDays(dueDate, 1);
-      return isSameDay(reminderDate, day) && !t.isCompleted;
+      return isSameDayET(reminderDate, day) && !t.isCompleted;
     }).map(t => ({ ...t, reminderType: '24hr' as const }));
 
     return [...oneDayReminders, ...twoDayReminders];
@@ -9475,7 +9491,7 @@ export default function Dashboard() {
   };
 
   const handleDayClick = (day: Date) => {
-    if (selectedDate && isSameDay(selectedDate, day)) {
+    if (selectedDate && isSameDayET(selectedDate, day)) {
       setSelectedDate(null); // Deselect if clicking same day
     } else {
       setSelectedDate(day);
@@ -9483,7 +9499,7 @@ export default function Dashboard() {
       const weekForDay = weeks.find(w => {
         const start = parseISO(w.startDate);
         const end = parseISO(w.endDate);
-        return isWithinInterval(day, { start: startOfDay(start), end: endOfDay(end) });
+        return isWithinInterval(day, { start: startOfDayET(start), end: endOfDay(end) });
       });
       if (weekForDay) {
         setSelectedWeek(weekForDay.weekNumber);
@@ -15678,11 +15694,11 @@ export default function Dashboard() {
                   {coursesData.courses.filter(course => course.name.trim()).map((course, index) => {
                     const courseCode = course.name.split(' - ')[0];
                     const courseName = course.name.split(' - ').slice(1).join(' - ') || course.name;
-                    const tomorrow = addDays(startOfDay(new Date()), 1);
+                    const tomorrow = addDays(startOfDayET(new Date()), 1);
                     const hasDueTomorrow = allTasks.some(task => 
                       task.courseName?.includes(courseCode) && 
                       !task.isCompleted &&
-                      isSameDay(new Date(task.dueDate), tomorrow)
+                      isSameDayET(new Date(task.dueDate), tomorrow)
                     );
                     const professorEmail = course.professorEmail;
                     const semCourse = semesterSettings ? (() => {
@@ -15833,9 +15849,9 @@ export default function Dashboard() {
                   <Label className="text-[10px] font-medium mb-1 block">Weeks</Label>
                   <div className="flex flex-col flex-1 justify-evenly gap-1">
                   {[...weeks].sort((a, b) => {
-                    const today = startOfDay(new Date());
-                    const aEndDay = startOfDay(parseISO(a.endDate));
-                    const bEndDay = startOfDay(parseISO(b.endDate));
+                    const today = startOfDayET(new Date());
+                    const aEndDay = startOfDayET(parseISO(a.endDate));
+                    const bEndDay = startOfDayET(parseISO(b.endDate));
                     const aFinished = aEndDay < today;
                     const bFinished = bEndDay < today;
                     if (aFinished && !bFinished) return 1;
@@ -15843,7 +15859,7 @@ export default function Dashboard() {
                     return a.weekNumber - b.weekNumber;
                   }).map((week) => {
                     const weekEnd = parseISO(week.endDate);
-                    const isWeekFinished = startOfDay(weekEnd) < startOfDay(new Date());
+                    const isWeekFinished = startOfDayET(weekEnd) < startOfDayET(new Date());
                     const isSelected = selectedWeek === week.weekNumber && !selectedDate;
                     return (
                       <div key={week.weekNumber} className={`flex items-center gap-0.5 rounded-md`} style={isSelected ? { backgroundColor: 'rgba(255,255,255,0.15)' } : undefined}>
@@ -18039,9 +18055,9 @@ export default function Dashboard() {
             <div style={{ minWidth: 0 }} /> {/* Time column spacer */}
             {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0 }} />} {/* Module column spacer */}
             {weekDays.map((day, idx) => {
-              const isToday = isSameDay(day, new Date());
+              const isToday = isSameDayET(day, new Date());
               const todayHasTasks = isToday && allTasks.some(t => 
-                t.dueDate && !t.isCompleted && isSameDay(new Date(t.dueDate), day)
+                t.dueDate && !t.isCompleted && isSameDayET(new Date(t.dueDate), day)
               );
               return (
                 <div key={idx} style={{ minWidth: 0, width: '100%', fontFamily: "'Nunito', 'Avenir', sans-serif" }} className={`text-[11px] font-medium text-white tracking-wide text-center leading-[15px] ${isToday && todayHasTasks ? 'animate-pulse' : ''}`}>
@@ -18055,7 +18071,7 @@ export default function Dashboard() {
             <div />
             {gridSizes.moduleColumnWidth > 0 && <div />}
             {weekDays.map((day, idx) => {
-              const isToday = isSameDay(day, new Date());
+              const isToday = isSameDayET(day, new Date());
               return (
                 <div key={idx} style={{ position: 'relative' }}>
                   {isToday && (
@@ -18108,11 +18124,11 @@ export default function Dashboard() {
               </div>
               {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: colorSettings.headerBar }} />}
               {weekDays.map((day, idx) => {
-                const isToday = isSameDay(day, new Date());
+                const isToday = isSameDayET(day, new Date());
                 const dayName = format(day, "EEE").toUpperCase();
                 const dayNum = format(day, "d");
                 const hasTodayTasks = isToday && allTasks.some(t => 
-                  !t.isCompleted && isSameDay(new Date(t.dueDate), day)
+                  !t.isCompleted && isSameDayET(new Date(t.dueDate), day)
                 );
                 const shiftDateStr = format(day, "yyyy-MM-dd");
                 const shiftForDay = localShiftMap[shiftDateStr];
@@ -18123,7 +18139,7 @@ export default function Dashboard() {
                     style={{ backgroundColor: isToday ? undefined : colorSettings.headerBar, animationDelay: isToday ? `-${Date.now() % 7000}ms` : undefined }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
-                    {!isSameDay(day, subDays(new Date(), 1)) && shiftForDay && (
+                    {!isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && (
                       <div
                         className="absolute left-0 right-0 bottom-0 cursor-pointer z-10"
                         style={{ height: '5px', backgroundColor: shiftForDay === 'day' ? '#ffd000' : '#7c3aed', opacity: sleepDisabledDays.has(shiftDateStr) ? 0.3 : 1 }}
@@ -18134,7 +18150,7 @@ export default function Dashboard() {
                     {(() => {
                       const dayForecast = weatherData?.daily?.find(d => d.date === format(day, 'yyyy-MM-dd'));
                       if (!dayForecast) return null;
-                      const isPastDay = day < startOfDay(new Date());
+                      const isPastDay = day < startOfDayET(new Date());
                       const tempColor = isPastDay ? 'rgba(255,255,255,0.6)' : '#ffffff';
                       const wIcon = ((wc: number | undefined) => {
                         if (wc === undefined) return null;
@@ -18304,11 +18320,11 @@ export default function Dashboard() {
                       </div>
                       <div className="flex-1 min-w-0">
                       {fullWeekTasks.map((task, taskIdx) => {
-                        const today = startOfDay(new Date());
+                        const today = startOfDayET(new Date());
                         const tomorrow = addDays(today, 1);
-                        const taskDueDate = startOfDay(new Date(task.dueDate));
-                        const isDueToday = !task.isCompleted && isSameDay(taskDueDate, today);
-                        const isDueTomorrow = !task.isCompleted && isSameDay(taskDueDate, tomorrow);
+                        const taskDueDate = startOfDayET(new Date(task.dueDate));
+                        const isDueToday = !task.isCompleted && isSameDayET(taskDueDate, today);
+                        const isDueTomorrow = !task.isCompleted && isSameDayET(taskDueDate, tomorrow);
                         
                         const currentDayOfWeek = today.getDay();
                         const isWednesdayOrLater = currentDayOfWeek >= 3 && currentDayOfWeek <= 5;
@@ -18358,7 +18374,7 @@ export default function Dashboard() {
                               const isBeforeToday = dayOfWeek < currentDayOfWeek;
                               const isTodayColumn = dayOfWeek === currentDayOfWeek;
                               const isFriday = dayOfWeek === 5;
-                              const isActualToday = isSameDay(day, today);
+                              const isActualToday = isSameDayET(day, today);
                               const cellBg = isActualToday ? '#e4ecf5' : course.bg;
                               
                               // If this day is before today, show empty cell
@@ -18469,12 +18485,12 @@ export default function Dashboard() {
                 const courseTaskCount = tasks?.filter(task => {
                   if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
                   if (task.isCompleted) return false;
-                  const taskDueDate = startOfDay(new Date(task.dueDate));
-                  const weekStart = startOfDay(weekDays[0]);
-                  const weekEnd = startOfDay(addDays(weekDays[6], 1));
+                  const taskDueDate = startOfDayET(new Date(task.dueDate));
+                  const weekStart = startOfDayET(weekDays[0]);
+                  const weekEnd = startOfDayET(addDays(weekDays[6], 1));
                   if (taskDueDate >= weekStart && taskDueDate < weekEnd) return true;
                   if (task.startDate) {
-                    const taskStartDate = startOfDay(new Date(task.startDate));
+                    const taskStartDate = startOfDayET(new Date(task.startDate));
                     if (taskStartDate < weekEnd && taskDueDate > weekStart) return true;
                   }
                   return false;
@@ -18487,12 +18503,12 @@ export default function Dashboard() {
                   if (projCourseCode !== courseName) return false;
                   if (proj.status === 'completed' || proj.status === 'cancelled') return false;
                   if (!proj.targetDate) return false;
-                  const projTargetDate = startOfDay(new Date(proj.targetDate));
-                  const weekStart = startOfDay(weekDays[0]);
-                  const weekEnd = startOfDay(addDays(weekDays[6], 1));
+                  const projTargetDate = startOfDayET(new Date(proj.targetDate));
+                  const weekStart = startOfDayET(weekDays[0]);
+                  const weekEnd = startOfDayET(addDays(weekDays[6], 1));
                   if (projTargetDate >= weekStart && projTargetDate < weekEnd) return true;
                   if (proj.startDate) {
-                    const projStartDate = startOfDay(new Date(proj.startDate));
+                    const projStartDate = startOfDayET(new Date(proj.startDate));
                     if (projStartDate < weekEnd && projTargetDate > weekStart) return true;
                   }
                   return false;
@@ -18541,15 +18557,15 @@ export default function Dashboard() {
                   </div>
                   {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: course.bg, borderBottom: `1.5px dotted ${courseData.color}dd` }} />}
                   {(() => {
-                    const cwWeekStart = startOfDay(weekDays[0]);
-                    const cwWeekEnd = startOfDay(addDays(weekDays[5], 1));
+                    const cwWeekStart = startOfDayET(weekDays[0]);
+                    const cwWeekEnd = startOfDayET(addDays(weekDays[5], 1));
                     const courseWeekTasks = (allTasks?.filter(task => {
                       if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
                       if (task.isCompleted) return false;
-                      const taskDueDate = startOfDay(new Date(task.dueDate));
+                      const taskDueDate = startOfDayET(new Date(task.dueDate));
                       if (taskDueDate >= cwWeekStart && taskDueDate < cwWeekEnd) return true;
                       if (task.startDate) {
-                        const taskStartDate = startOfDay(new Date(task.startDate));
+                        const taskStartDate = startOfDayET(new Date(task.startDate));
                         if (taskStartDate < cwWeekEnd && taskDueDate >= cwWeekStart) return true;
                       }
                       return false;
@@ -18564,8 +18580,8 @@ export default function Dashboard() {
                     const taskIntervals: { id: number; start: number; end: number; span: number; groupIds?: number[] }[] = [];
                     const groupedTaskIds = new Set<number>();
                     recurringGroups.forEach((tasks, title) => {
-                      if (tasks.length >= 2 && tasks.every(t => !t.startDate || isSameDay(startOfDay(new Date(t.startDate)), startOfDay(new Date(t.dueDate))))) {
-                        const days = tasks.map(t => Math.max(0, Math.floor((startOfDay(new Date(t.dueDate)).getTime() - cwWeekStart.getTime()) / (1000 * 60 * 60 * 24))));
+                      if (tasks.length >= 2 && tasks.every(t => !t.startDate || isSameDayET(startOfDayET(new Date(t.startDate)), startOfDayET(new Date(t.dueDate))))) {
+                        const days = tasks.map(t => Math.max(0, Math.floor((startOfDayET(new Date(t.dueDate)).getTime() - cwWeekStart.getTime()) / (1000 * 60 * 60 * 24))));
                         const minDay = Math.min(...days);
                         const maxDay = Math.max(...days);
                         taskIntervals.push({ id: tasks[0].id, start: minDay, end: maxDay, span: maxDay - minDay, groupIds: tasks.map(t => t.id) });
@@ -18574,9 +18590,9 @@ export default function Dashboard() {
                     });
                     courseWeekTasks.forEach(t => {
                       if (groupedTaskIds.has(t.id)) return;
-                      const dueDay = Math.floor((startOfDay(new Date(t.dueDate)).getTime() - cwWeekStart.getTime()) / (1000 * 60 * 60 * 24));
+                      const dueDay = Math.floor((startOfDayET(new Date(t.dueDate)).getTime() - cwWeekStart.getTime()) / (1000 * 60 * 60 * 24));
                       const startDay = t.startDate
-                        ? Math.floor((startOfDay(new Date(t.startDate)).getTime() - cwWeekStart.getTime()) / (1000 * 60 * 60 * 24))
+                        ? Math.floor((startOfDayET(new Date(t.startDate)).getTime() - cwWeekStart.getTime()) / (1000 * 60 * 60 * 24))
                         : dueDay;
                       taskIntervals.push({ id: t.id, start: Math.max(0, startDay), end: Math.max(0, dueDay), span: Math.max(0, dueDay) - Math.max(0, startDay) });
                     });
@@ -18618,8 +18634,8 @@ export default function Dashboard() {
                       if (taskIds.length < 2) return;
                       const tasks = taskIds.map(id => courseWeekTasks.find(t => t.id === id)!).filter(Boolean);
                       const dayIndices = tasks.map(t => {
-                        const dueDay = startOfDay(new Date(t.dueDate));
-                        return weekDays.findIndex(wd => isSameDay(wd, dueDay));
+                        const dueDay = startOfDayET(new Date(t.dueDate));
+                        return weekDays.findIndex(wd => isSameDayET(wd, dueDay));
                       }).filter(d => d >= 0).sort((a, b) => a - b);
                       if (dayIndices.length < 2) return;
                       const firstDay = dayIndices[0];
@@ -18630,23 +18646,23 @@ export default function Dashboard() {
                     });
 
                     return weekDays.map((day, dayIdx) => {
-                    const isDayToday = isSameDay(day, new Date());
+                    const isDayToday = isSameDayET(day, new Date());
                     const cellBgColor = isDayToday ? '#e4ecf5' : course.bg;
-                    const cellDate = startOfDay(day);
+                    const cellDate = startOfDayET(day);
                     
                     const dueTasks = allTasks?.filter(task => {
                       if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
                       if (task.isCompleted) return false;
-                      const taskDueDate = startOfDay(new Date(task.dueDate));
-                      return isSameDay(taskDueDate, cellDate);
+                      const taskDueDate = startOfDayET(new Date(task.dueDate));
+                      return isSameDayET(taskDueDate, cellDate);
                     }) || [];
                     
                     const prepTasks = allTasks?.filter(task => {
                       if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
                       if (task.isCompleted) return false;
                       if (!task.startDate) return false;
-                      const taskDueDate = startOfDay(new Date(task.dueDate));
-                      const taskStartDate = startOfDay(new Date(task.startDate));
+                      const taskDueDate = startOfDayET(new Date(task.dueDate));
+                      const taskStartDate = startOfDayET(new Date(task.startDate));
                       return cellDate >= taskStartDate && cellDate < taskDueDate;
                     }) || [];
                     
@@ -18688,20 +18704,20 @@ export default function Dashboard() {
                           if (projCourseCode !== course.name) return false;
                           if (proj.status === 'completed' || proj.status === 'cancelled') return false;
                           if (!proj.targetDate) return false;
-                          const projTargetDate = startOfDay(new Date(proj.targetDate));
-                          if (isSameDay(projTargetDate, cellDate)) return true;
+                          const projTargetDate = startOfDayET(new Date(proj.targetDate));
+                          if (isSameDayET(projTargetDate, cellDate)) return true;
                           if (proj.startDate) {
-                            const projStartDate = startOfDay(new Date(proj.startDate));
+                            const projStartDate = startOfDayET(new Date(proj.startDate));
                             return cellDate >= projStartDate && cellDate < projTargetDate;
                           }
                           return false;
                         }).map(proj => {
-                          const today = startOfDay(new Date());
+                          const today = startOfDayET(new Date());
                           const tomorrow = addDays(today, 1);
-                          const projTarget = startOfDay(new Date(proj.targetDate!));
-                          const isDueToday = isSameDay(projTarget, today);
-                          const isDueTomorrow = isSameDay(projTarget, tomorrow);
-                          const isOnTargetDay = isSameDay(projTarget, cellDate);
+                          const projTarget = startOfDayET(new Date(proj.targetDate!));
+                          const isDueToday = isSameDayET(projTarget, today);
+                          const isDueTomorrow = isSameDayET(projTarget, tomorrow);
+                          const isOnTargetDay = isSameDayET(projTarget, cellDate);
                           return (
                             <div
                               key={`proj-${proj.id}`}
@@ -18729,18 +18745,18 @@ export default function Dashboard() {
                             return <div key={`empty-${itemIdx}`} style={{ height: '2px' }} />;
                           }
                           const task = item.task;
-                          const today = startOfDay(new Date());
+                          const today = startOfDayET(new Date());
                           const tomorrow = addDays(today, 1);
-                          const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
-                          const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
+                          const isDueToday = !task.isCompleted && isSameDayET(new Date(task.dueDate), today);
+                          const isDueTomorrow = !task.isCompleted && isSameDayET(new Date(task.dueDate), tomorrow);
                           
                           if (item.isPrep) {
-                            const prepStartDate = startOfDay(new Date(task.startDate!));
-                            const prepDueDate = startOfDay(new Date(task.dueDate));
-                            const cellDate = startOfDay(day);
+                            const prepStartDate = startOfDayET(new Date(task.startDate!));
+                            const prepDueDate = startOfDayET(new Date(task.dueDate));
+                            const cellDate = startOfDayET(day);
                             if (cellDate < today) return null;
-                            const isFirstPrepDay = isSameDay(cellDate, prepStartDate);
-                            const isLastPrepDay = isSameDay(addDays(cellDate, 1), prepDueDate);
+                            const isFirstPrepDay = isSameDayET(cellDate, prepStartDate);
+                            const isLastPrepDay = isSameDayET(addDays(cellDate, 1), prepDueDate);
                             const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
                             const taskCourseCodeLower = taskCourseCode.toLowerCase();
                             const moduleFolderName = `week-${task.weekNumber}-${taskCourseCodeLower}-module`;
@@ -18791,7 +18807,7 @@ export default function Dashboard() {
                           const dueAttachmentLink = !dueAttachmentUrl && task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url && url.startsWith('http')) return url; } return null; })() : null;
                           const dueRefLinkPdf = !dueAttachmentUrl && task.referenceLink ? task.referenceLink : null;
                           const dueModulePdfUrl = dueAttachmentUrl || dueRefLinkPdf || dueModuleFile?.objectPath || null;
-                          const hasPrepDays = task.startDate && !isSameDay(startOfDay(new Date(task.startDate)), startOfDay(new Date(task.dueDate)));
+                          const hasPrepDays = task.startDate && !isSameDayET(startOfDayET(new Date(task.startDate)), startOfDayET(new Date(task.dueDate)));
                           const spanInfo = recurringSpans.get(task.id);
                           const isSpanFirst = spanInfo && dayIdx === spanInfo.firstDayIdx;
                           const isSpanLast = spanInfo && dayIdx === spanInfo.lastDayIdx;
@@ -18992,12 +19008,12 @@ export default function Dashboard() {
                   if (task.type !== 'other' && task.type !== 'meeting' && task.type !== 'reminder') return false;
                   if (task.type === 'meeting' && task.courseName) return false;
                   if (task.isCompleted) return false;
-                  const taskDueDate = startOfDay(new Date(task.dueDate));
-                  const weekStart = startOfDay(weekDays[0]);
-                  const weekEnd = startOfDay(addDays(weekDays[6], 1));
+                  const taskDueDate = startOfDayET(new Date(task.dueDate));
+                  const weekStart = startOfDayET(weekDays[0]);
+                  const weekEnd = startOfDayET(addDays(weekDays[6], 1));
                   if (taskDueDate >= weekStart && taskDueDate < weekEnd) return true;
                   if (task.startDate) {
-                    const taskStartDate = startOfDay(new Date(task.startDate));
+                    const taskStartDate = startOfDayET(new Date(task.startDate));
                     if (taskStartDate < weekEnd && taskDueDate > weekStart) return true;
                   }
                   return false;
@@ -19008,12 +19024,12 @@ export default function Dashboard() {
                   if (!proj.targetDate) return false;
                   const hasCourseMatch = proj.courseName && activeCourseNames.includes(proj.courseName.split(' - ')[0]?.toUpperCase());
                   if (hasCourseMatch) return false;
-                  const projTargetDate = startOfDay(new Date(proj.targetDate));
-                  const weekStart = startOfDay(weekDays[0]);
-                  const weekEnd = startOfDay(addDays(weekDays[6], 1));
+                  const projTargetDate = startOfDayET(new Date(proj.targetDate));
+                  const weekStart = startOfDayET(weekDays[0]);
+                  const weekEnd = startOfDayET(addDays(weekDays[6], 1));
                   if (projTargetDate >= weekStart && projTargetDate < weekEnd) return true;
                   if (proj.startDate) {
-                    const projStartDate = startOfDay(new Date(proj.startDate));
+                    const projStartDate = startOfDayET(new Date(proj.startDate));
                     if (projStartDate < weekEnd && projTargetDate > weekStart) return true;
                   }
                   return false;
@@ -19030,13 +19046,13 @@ export default function Dashboard() {
                       <div style={{ backgroundColor: 'rgba(107, 114, 128, 0.20)' }} />
                     )}
                     {weekDays.map((day, dayIdx) => {
-                      const cellDate = startOfDay(day);
-                      const isOtherToday = isSameDay(day, new Date());
+                      const cellDate = startOfDayET(day);
+                      const isOtherToday = isSameDayET(day, new Date());
                       const dayOtherTasks = otherTasks.filter(task => {
-                        const taskDueDate = startOfDay(new Date(task.dueDate));
-                        if (isSameDay(taskDueDate, cellDate)) return true;
+                        const taskDueDate = startOfDayET(new Date(task.dueDate));
+                        if (isSameDayET(taskDueDate, cellDate)) return true;
                         if (task.startDate) {
-                          const taskStartDate = startOfDay(new Date(task.startDate));
+                          const taskStartDate = startOfDayET(new Date(task.startDate));
                           return cellDate >= taskStartDate && cellDate < taskDueDate;
                         }
                         return false;
@@ -19050,10 +19066,10 @@ export default function Dashboard() {
                         >
                           <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', borderLeft: '1px solid rgba(0,0,0,0.12)', zIndex: 5, pointerEvents: 'none' }} />
                           {dayOtherTasks.map(task => {
-                            const today = startOfDay(new Date());
+                            const today = startOfDayET(new Date());
                             const tomorrow = addDays(today, 1);
-                            const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
-                            const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
+                            const isDueToday = !task.isCompleted && isSameDayET(new Date(task.dueDate), today);
+                            const isDueTomorrow = !task.isCompleted && isSameDayET(new Date(task.dueDate), tomorrow);
                             const isUnackedReminder = task.type === 'reminder' && !(task as any).isAcknowledged;
                             return (
                               <div
@@ -19088,19 +19104,19 @@ export default function Dashboard() {
                             );
                           })}
                           {otherProjects.filter(proj => {
-                            const projTargetDate = startOfDay(new Date(proj.targetDate!));
-                            if (isSameDay(projTargetDate, cellDate)) return true;
+                            const projTargetDate = startOfDayET(new Date(proj.targetDate!));
+                            if (isSameDayET(projTargetDate, cellDate)) return true;
                             if (proj.startDate) {
-                              const projStartDate = startOfDay(new Date(proj.startDate));
+                              const projStartDate = startOfDayET(new Date(proj.startDate));
                               return cellDate >= projStartDate && cellDate < projTargetDate;
                             }
                             return false;
                           }).map(proj => {
-                            const today = startOfDay(new Date());
+                            const today = startOfDayET(new Date());
                             const tomorrow = addDays(today, 1);
-                            const projTarget = startOfDay(new Date(proj.targetDate!));
-                            const isDueToday = isSameDay(projTarget, today);
-                            const isDueTomorrow = isSameDay(projTarget, tomorrow);
+                            const projTarget = startOfDayET(new Date(proj.targetDate!));
+                            const isDueToday = isSameDayET(projTarget, today);
+                            const isDueTomorrow = isSameDayET(projTarget, tomorrow);
                             return (
                               <div
                                 key={`proj-${proj.id}`}
@@ -19140,9 +19156,9 @@ export default function Dashboard() {
                 return (
                   <div 
                     key={dayIdx} 
-                    className={`border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0 ${isSameDay(day, new Date()) ? 'border-b border-black' : 'border-b border-border/50'}`}
+                    className={`border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0 ${isSameDayET(day, new Date()) ? 'border-b border-black' : 'border-b border-border/50'}`}
                     style={{ 
-                      backgroundColor: isSameDay(day, new Date()) ? '#eef2f7' : '#faf8f5',
+                      backgroundColor: isSameDayET(day, new Date()) ? '#eef2f7' : '#faf8f5',
                       paddingLeft: `${2 + DAY_COL_LEFT_REDUCTION}px`,
                     }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
@@ -19151,10 +19167,10 @@ export default function Dashboard() {
                     {allDayTasks.map(task => {
                       const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
                       const colors = dynamicCourseColors[courseCode];
-                      const today = startOfDay(new Date());
+                      const today = startOfDayET(new Date());
                       const tomorrow = addDays(today, 1);
-                      const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
-                      const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
+                      const isDueToday = !task.isCompleted && isSameDayET(new Date(task.dueDate), today);
+                      const isDueTomorrow = !task.isCompleted && isSameDayET(new Date(task.dueDate), tomorrow);
                       const adCourseCodeLower = courseCode.toLowerCase();
                       const adModuleFolderName = `week-${task.weekNumber}-${adCourseCodeLower}-module`;
                       const adReadingFolderName = `week-${task.weekNumber}-${adCourseCodeLower}-reading`;
@@ -19332,12 +19348,12 @@ export default function Dashboard() {
                       const hourCalendarEvents = getCalendarEventsForHour(day, hour);
                       const visibleCalendarEvents = hourCalendarEvents.filter(e => !dismissedCalendarEvents.has(e.id));
                       const isFriday = day.getDay() === 5;
-                      const isToday = isSameDay(day, new Date());
+                      const isToday = isSameDayET(day, new Date());
                       const totalItems = hourTasks.length + visibleCalendarEvents.length;
                       const hasAnyTasks = totalItems > 0 || continuingTasks.length > 0;
                       const columnWidth = totalItems > 0 ? 100 / totalItems : 100;
                       const cellDateStr = format(day, "yyyy-MM-dd");
-                      const isYesterday = isSameDay(day, subDays(new Date(), 1));
+                      const isYesterday = isSameDayET(day, subDays(new Date(), 1));
                       const cellShift = isYesterday ? undefined : localShiftMap[cellDateStr];
                       const sleepDisabledForDay = sleepDisabledDays.has(cellDateStr);
                       const prevDayStr = format(addDays(day, -1), "yyyy-MM-dd");
@@ -19358,7 +19374,7 @@ export default function Dashboard() {
                       return (
                         <div 
                           key={dayIdx} 
-                          className={`border-l relative p-0.5 ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "ring-2 ring-primary ring-inset" : ""}`}
+                          className={`border-l relative p-0.5 ${dragOverSlot && isSameDayET(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "ring-2 ring-primary ring-inset" : ""}`}
                           style={{
                             borderLeftColor: isCurrentHour ? 'rgba(0,0,0,0.15)' : 'hsl(var(--border) / 0.5)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined,
@@ -19394,7 +19410,7 @@ export default function Dashboard() {
                         >
                           {/* Background layer - sits below tasks so they don't get covered */}
                           <div 
-                            className={`absolute inset-0 z-0 ${hasAnyTasks && !isToday && !isCurrentHour ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20" : ""}`}
+                            className={`absolute inset-0 z-0 ${hasAnyTasks && !isToday && !isCurrentHour ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDayET(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20" : ""}`}
                             style={{
                               borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined
                             }}
@@ -19457,11 +19473,11 @@ export default function Dashboard() {
                               }
                               return new Date(t.dueDate).getTime();
                             };
-                            const todayStart = startOfDay(now);
+                            const todayStart = startOfDayET(now);
                             const missedSchoolTasks = allTasks.filter(t => {
                               if (!t.courseName) return false;
                               if (t.isCompleted) return false;
-                              const taskDueDate = startOfDay(new Date(t.dueDate));
+                              const taskDueDate = startOfDayET(new Date(t.dueDate));
                               if (taskDueDate < todayStart) return false;
                               const taskTime = getTaskTime(t);
                               if (taskTime > now.getTime()) return false;
@@ -19476,7 +19492,7 @@ export default function Dashboard() {
                             return (
                               <>
                                 {missedCount > 0 && (
-                                  <div className="absolute top-0 bottom-0 z-[3] pointer-events-none" style={{ left: '0px', width: `${gridSizes.timeSlotHeight + 3}px`, padding: '0px' }} data-testid="missed-tasks-indicator">
+                                  <div className="absolute top-0 bottom-0 z-[3] pointer-events-none animate-due-box-blink" style={{ left: '0px', width: `${gridSizes.timeSlotHeight + 3}px`, padding: '0px' }} data-testid="missed-tasks-indicator">
                                     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
                                       <img src={dueBoxImg} alt="" style={{ width: '100%', height: '100%', objectFit: 'fill', borderRadius: '5px', display: 'block' }} />
                                       <span style={{ position: 'absolute', top: '38%', left: '50%', transform: 'translate(-50%, -50%)', fontSize: '18px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{missedCount}</span>
@@ -19514,10 +19530,10 @@ export default function Dashboard() {
                           }).map((task, taskIdx) => {
                             const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
                             const colors = dynamicCourseColors[courseCode];
-                            const today = startOfDay(new Date());
+                            const today = startOfDayET(new Date());
                             const tomorrow = addDays(today, 1);
-                            const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
-                            const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
+                            const isDueToday = !task.isCompleted && isSameDayET(new Date(task.dueDate), today);
+                            const isDueTomorrow = !task.isCompleted && isSameDayET(new Date(task.dueDate), tomorrow);
                             
                             // Calculate height based on duration for events with start/end times
                             let taskHeight = Math.min(40, rowHeight - 4); // Same height for all tasks, clamped to row
@@ -19717,10 +19733,10 @@ export default function Dashboard() {
                   
                   const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
                   const colors = dynamicCourseColors[courseCode];
-                  const today = startOfDay(new Date());
+                  const today = startOfDayET(new Date());
                   const tomorrow = addDays(today, 1);
-                  const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
-                  const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
+                  const isDueToday = !task.isCompleted && isSameDayET(new Date(task.dueDate), today);
+                  const isDueTomorrow = !task.isCompleted && isSameDayET(new Date(task.dueDate), tomorrow);
                   
                   const taskDay = weekDays[dayIdx];
                   
@@ -19820,8 +19836,8 @@ export default function Dashboard() {
                   const currentRowHeight = getEffectiveRowHeight(currentHour);
                   topPosition += (currentMinutes / 60) * currentRowHeight;
                   
-                  const isTodayInView = weekDays.some(d => isSameDay(d, now));
-                  const todayDayIdx = weekDays.findIndex(d => isSameDay(d, now));
+                  const isTodayInView = weekDays.some(d => isSameDayET(d, now));
+                  const todayDayIdx = weekDays.findIndex(d => isSameDayET(d, now));
                   const isTodaySat = todayDayIdx === 6;
                   const totalFrUnits = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0);
                   const satFr = gridSizes.dayColumnWidths[6];
@@ -19846,7 +19862,7 @@ export default function Dashboard() {
                 
                 {(() => {
                   const now = new Date();
-                  const todayDayIdx = weekDays.findIndex(d => isSameDay(d, now));
+                  const todayDayIdx = weekDays.findIndex(d => isSameDayET(d, now));
                   if (todayDayIdx < 0) return null;
                   const currentHour = now.getHours();
                   const currentMinutes = now.getMinutes();
@@ -19863,7 +19879,7 @@ export default function Dashboard() {
                   const missedSchool = allTasks.filter(t => {
                     if (!t.courseName || t.isCompleted) return false;
                     const d = new Date(t.dueDate);
-                    if (!isSameDay(d, now)) return false;
+                    if (!isSameDayET(d, now)) return false;
                     const tt = getTaskTimeLocal(t);
                     return (tt.hour < currentHour) || (tt.hour === currentHour && tt.min <= currentMinutes);
                   });
@@ -19912,7 +19928,7 @@ export default function Dashboard() {
           {/* Overdue task lines from due box — only tasks due today or later */}
           {(() => {
             const now = new Date();
-            const todayStart = startOfDay(now);
+            const todayStart = startOfDayET(now);
             const calStartHour = calStart;
             
             const scrollEl = calendarScrollRef.current;
@@ -19937,7 +19953,7 @@ export default function Dashboard() {
             const overdueTasks = allTasks.filter(t => {
               if (!t.courseName) return false;
               if (t.isCompleted) return false;
-              const taskDueDate = startOfDay(new Date(t.dueDate));
+              const taskDueDate = startOfDayET(new Date(t.dueDate));
               if (taskDueDate < todayStart) return false;
               const taskTime = getTaskTime(t);
               if (taskTime > now.getTime()) return false;
@@ -19977,7 +19993,7 @@ export default function Dashboard() {
             
             overdueTasks.forEach((t, idx) => {
               const dueDate = new Date(t.dueDate);
-              const dIdx = weekDays.findIndex(day => isSameDay(day, dueDate));
+              const dIdx = weekDays.findIndex(day => isSameDayET(day, dueDate));
               if (dIdx < 0) return;
               let taskHour: number, taskMin: number;
               if (t.eventStartTime) {
@@ -20786,8 +20802,8 @@ export default function Dashboard() {
                   <div className="grid grid-cols-7" style={{ gridTemplateRows: `repeat(${numRows}, 1fr)`, flex: '1 1 0%', minHeight: 0, height: 0 }}>
                     {days.map((day, idx) => {
                       const isCurrentMonth = day.getMonth() === currentMonth.getMonth();
-                      const isToday = isSameDay(day, new Date());
-                      const dayTasks = allTasks.filter(t => isSameDay(new Date(t.dueDate), day));
+                      const isToday = isSameDayET(day, new Date());
+                      const dayTasks = allTasks.filter(t => isSameDayET(new Date(t.dueDate), day));
                       const monthDayStr = format(day, "yyyy-MM-dd");
                       const monthDayShift = localShiftMap[monthDayStr];
                       
@@ -21021,7 +21037,7 @@ export default function Dashboard() {
             
             // Always use time-based progress (days until due)
             // More days until due = longer bar (more time remaining)
-            const daysUntil = differenceInDays(startOfDay(new Date(task.dueDate)), startOfDay(new Date()));
+            const daysUntil = differenceInDays(startOfDayET(new Date(task.dueDate)), startOfDayET(new Date()));
             const maxDays = 7;
             // More days = more fill (capped at 7 days)
             const progressPercent = Math.max(0, Math.min(100, (daysUntil / maxDays) * 100));
@@ -21031,7 +21047,7 @@ export default function Dashboard() {
           // Helper to get progress bar color based on box type and days until due
           const getProgressColor = (task: typeof dueTodayTasks[0] | undefined, boxType: 'today' | 'tomorrow' | 'thisweek' = 'thisweek'): string => {
             if (!task) return '#22c55e';
-            const daysUntil = differenceInDays(startOfDay(new Date(task.dueDate)), startOfDay(new Date()));
+            const daysUntil = differenceInDays(startOfDayET(new Date(task.dueDate)), startOfDayET(new Date()));
             if (boxType === 'today') return '#ef4444';
             if (boxType === 'tomorrow') return '#eab308';
             return daysUntil < 3 ? '#eab308' : '#22c55e';
@@ -21070,7 +21086,7 @@ export default function Dashboard() {
           // Render a single task row
           const renderTask = (task: typeof dueTodayTasks[0], showDaysUntil = false, boxType: 'today' | 'tomorrow' | 'thisweek' = 'today') => {
             const attachments = parseAttachments(task.attachments);
-            const daysUntil = differenceInDays(startOfDay(new Date(task.dueDate)), startOfDay(new Date()));
+            const daysUntil = differenceInDays(startOfDayET(new Date(task.dueDate)), startOfDayET(new Date()));
             
             // Check if this is a module task (has startDate spanning multiple days)
             // and if it's Wednesday or later (should blink)
@@ -21637,7 +21653,7 @@ export default function Dashboard() {
                       const knownCourseCodes = ['CPPA122', 'CFNF400', 'CASL101', 'CECN210', 'CPHL110', 'CHIS105', 'CPPA235'];
                       if (!knownCourseCodes.includes(tc)) return false;
                       const taskDue = new Date(t.dueDate);
-                      if (taskDue < startOfDay(new Date())) return false;
+                      if (taskDue < startOfDayET(new Date())) return false;
                       return true;
                     }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
                     if (courseTasks.length === 0) return <span className="text-[10px] text-white/40 italic">No tasks</span>;
@@ -21681,8 +21697,8 @@ export default function Dashboard() {
                           <span className="truncate" style={{ fontSize: '12px', color: textColor, textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400, flex: 1, minWidth: 0 }}>{t.title}</span>
                           {(() => {
                             const tDueDate = new Date(t.dueDate);
-                            const tDue = startOfDay(tDueDate);
-                            const nowDate = startOfDay(new Date());
+                            const tDue = startOfDayET(tDueDate);
+                            const nowDate = startOfDayET(new Date());
                             const daysUntil = differenceInCalendarDays(tDueDate, new Date());
                             const maxDays = 14;
                             const progressPercent = Math.max(0, Math.min(100, (daysUntil / maxDays) * 100));
@@ -21851,7 +21867,7 @@ export default function Dashboard() {
             const knownCourseCodes = ['CPPA122', 'CFNF400', 'CASL101', 'CECN210', 'CPHL110', 'CHIS105', 'CPPA235'];
             const otherProgressTasks = (allTasks || []).filter(t => {
               if (t.isCompleted) return false;
-              if (new Date(t.dueDate) < startOfDay(new Date())) return false;
+              if (new Date(t.dueDate) < startOfDayET(new Date())) return false;
               const tc = t.courseName?.split(' ')[0]?.toUpperCase() || '';
               if (knownCourseCodes.includes(tc)) return false;
               if (t.weekNumber !== undefined && t.weekNumber !== null) return t.weekNumber === selectedWeek;
@@ -21984,19 +22000,19 @@ export default function Dashboard() {
                           ))}
                         </div>
                         {(() => {
-                          const todayDate = startOfDay(new Date());
+                          const todayDate = startOfDayET(new Date());
                           const weekStart = startOfWeek(todayDate, { weekStartsOn: 0 });
                           const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 5) });
-                          const dueDates = dueTodayTasks.map(t => ({ date: startOfDay(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
+                          const dueDates = dueTodayTasks.map(t => ({ date: startOfDayET(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                           return (
                             <div style={{ display: 'flex', gap: '2px', padding: '1px 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.15)', border: '0.5px solid rgba(255,255,255,0.55)' }}>
                               {days.map((d, di) => {
-                                const isToday = isSameDay(d, todayDate);
-                                const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
+                                const isToday = isSameDayET(d, todayDate);
+                                const dueMatch = dueDates.find(dd => isSameDayET(d, dd.date));
                                 const isDue = !!dueMatch;
                                 const dueColor = dueMatch ? getCourseGradientColors(dueMatch.courseCode).end : '';
                                 return (
-                                  <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
+                                  <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDayET(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
                                     width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
                                     display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                                     color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
@@ -22114,10 +22130,10 @@ export default function Dashboard() {
                 ) : (
                   <div className="flex flex-col gap-0.5">
                     {(() => {
-                      const today = startOfDay(new Date());
+                      const today = startOfDayET(new Date());
                       const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
                       const getCalKey = (task: typeof dueTomorrowTasks[0]) => {
-                        const dueDate = startOfDay(new Date(task.dueDate));
+                        const dueDate = startOfDayET(new Date(task.dueDate));
                         const dueWeekStart = startOfWeek(dueDate, { weekStartsOn: 0 });
                         const weeks: Date[] = [];
                         let ws = todayWeekStart;
@@ -22132,7 +22148,7 @@ export default function Dashboard() {
                         if (groupMap.has(key)) {
                           groups[groupMap.get(key)!].tasks.push(task);
                         } else {
-                          const dueDate = startOfDay(new Date(task.dueDate));
+                          const dueDate = startOfDayET(new Date(task.dueDate));
                           const dueWeekStart = startOfWeek(dueDate, { weekStartsOn: 0 });
                           const weeks: Date[] = [];
                           let ws = todayWeekStart;
@@ -22143,7 +22159,7 @@ export default function Dashboard() {
                         }
                       });
                       return groups.map((group) => {
-                        const dueDates = group.tasks.map(t => ({ date: startOfDay(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
+                        const dueDates = group.tasks.map(t => ({ date: startOfDayET(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
                           <div key={group.key} style={{ display: 'flex', alignItems: 'center' }}>
                             <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginLeft: '10px', marginRight: '4px', overflow: 'visible' }}>
@@ -22162,12 +22178,12 @@ export default function Dashboard() {
                                   return (
                                     <div key={wi} style={{ display: 'flex', gap: '2px', padding: '1px 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end', borderRadius: isLastWeek ? '4px' : '3px', backgroundColor: isLastWeek ? 'rgba(255,255,255,0.15)' : `rgba(255,255,255,${0.08 + wi * 0.04})`, border: isLastWeek ? '0.5px solid rgba(255,255,255,0.55)' : '0.5px solid rgba(255,255,255,0.15)' }}>
                                       {days.map((d, di) => {
-                                        const isToday = isSameDay(d, today);
-                                        const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
+                                        const isToday = isSameDayET(d, today);
+                                        const dueMatch = dueDates.find(dd => isSameDayET(d, dd.date));
                                         const isDue = !!dueMatch;
                                         const dueColor = dueMatch ? getCourseGradientColors(dueMatch.courseCode).end : '';
                                         return (
-                                          <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
+                                          <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDayET(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
                                             width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
@@ -22302,10 +22318,10 @@ export default function Dashboard() {
                 ) : (
                   <div className="flex flex-col gap-0.5" style={{ marginTop: '5px' }}>
                     {(() => {
-                      const today = startOfDay(new Date());
+                      const today = startOfDayET(new Date());
                       const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
                       const getCalKey = (task: any) => {
-                        const dueDate = startOfDay(new Date(task.dueDate));
+                        const dueDate = startOfDayET(new Date(task.dueDate));
                         const dueWeekStart = startOfWeek(dueDate, { weekStartsOn: 0 });
                         const weeks: Date[] = [];
                         let ws = todayWeekStart;
@@ -22320,7 +22336,7 @@ export default function Dashboard() {
                         if (groupMap.has(key)) {
                           groups[groupMap.get(key)!].tasks.push(task);
                         } else {
-                          const dueDate = startOfDay(new Date(task.dueDate));
+                          const dueDate = startOfDayET(new Date(task.dueDate));
                           const dueWeekStart = startOfWeek(dueDate, { weekStartsOn: 0 });
                           const weeks: Date[] = [];
                           let ws = todayWeekStart;
@@ -22331,7 +22347,7 @@ export default function Dashboard() {
                         }
                       });
                       return groups.map((group) => {
-                        const dueDates = group.tasks.map(t => ({ date: startOfDay(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
+                        const dueDates = group.tasks.map(t => ({ date: startOfDayET(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
                           <div key={group.key} style={{ display: 'flex', alignItems: 'center', gap: '0px', marginBottom: '2px' }}>
                             <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginLeft: '10px', marginRight: '4px', overflow: 'visible' }} data-testid={`mini-cal-group-${group.key}`}>
@@ -22350,12 +22366,12 @@ export default function Dashboard() {
                                   return (
                                     <div key={wi} style={{ display: 'flex', gap: '2px', padding: '1px 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end', borderRadius: isLastWeek ? '4px' : '3px', backgroundColor: isLastWeek ? 'rgba(255,255,255,0.15)' : `rgba(255,255,255,${0.08 + wi * 0.04})`, border: isLastWeek ? '0.5px solid rgba(255,255,255,0.55)' : '0.5px solid rgba(255,255,255,0.15)' }}>
                                       {days.map((d, di) => {
-                                        const isToday = isSameDay(d, today);
-                                        const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
+                                        const isToday = isSameDayET(d, today);
+                                        const dueMatch = dueDates.find(dd => isSameDayET(d, dd.date));
                                         const isDue = !!dueMatch;
                                         const dueColor = dueMatch ? getCourseGradientColors(dueMatch.courseCode).end : '';
                                         return (
-                                          <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
+                                          <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDayET(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
                                             width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
@@ -22490,10 +22506,10 @@ export default function Dashboard() {
                 ) : (
                   <div className="flex flex-col gap-0.5" style={{ marginTop: '8px' }}>
                     {(() => {
-                      const today = startOfDay(new Date());
+                      const today = startOfDayET(new Date());
                       const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
                       const getCalKey = (task: any) => {
-                        const dueDate = startOfDay(new Date(task.dueDate));
+                        const dueDate = startOfDayET(new Date(task.dueDate));
                         const dueWeekStart = startOfWeek(dueDate, { weekStartsOn: 0 });
                         const weeks: Date[] = [];
                         let ws = todayWeekStart;
@@ -22508,7 +22524,7 @@ export default function Dashboard() {
                         if (groupMap.has(key)) {
                           groups[groupMap.get(key)!].tasks.push(task);
                         } else {
-                          const dueDate = startOfDay(new Date(task.dueDate));
+                          const dueDate = startOfDayET(new Date(task.dueDate));
                           const dueWeekStart = startOfWeek(dueDate, { weekStartsOn: 0 });
                           const weeks: Date[] = [];
                           let ws = todayWeekStart;
@@ -22521,7 +22537,7 @@ export default function Dashboard() {
                       return groups.map(group => {
                         const dueDates = group.tasks.map(t => {
                           const courseCode = t.courseName?.split(' - ')[0]?.toUpperCase() || '';
-                          return { date: startOfDay(new Date(t.dueDate)), courseCode };
+                          return { date: startOfDayET(new Date(t.dueDate)), courseCode };
                         });
                         return (
                           <div key={group.key} style={{ display: 'flex', alignItems: 'center', gap: '0px', marginBottom: '2px' }}>
@@ -22541,12 +22557,12 @@ export default function Dashboard() {
                                   return (
                                     <div key={wi} style={{ display: 'flex', gap: '2px', padding: '1px 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end', borderRadius: isLastWeek ? '4px' : '3px', backgroundColor: isLastWeek ? 'rgba(255,255,255,0.15)' : `rgba(255,255,255,${0.08 + wi * 0.04})`, border: isLastWeek ? '0.5px solid rgba(255,255,255,0.55)' : '0.5px solid rgba(255,255,255,0.15)' }}>
                                       {days.map((d, di) => {
-                                        const isToday = isSameDay(d, today);
-                                        const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
+                                        const isToday = isSameDayET(d, today);
+                                        const dueMatch = dueDates.find(dd => isSameDayET(d, dd.date));
                                         const isDue = !!dueMatch;
                                         const dueColor = dueMatch ? getCourseGradientColors(dueMatch.courseCode).end : '';
                                         return (
-                                          <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
+                                          <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDayET(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
                                             width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
@@ -22639,12 +22655,12 @@ export default function Dashboard() {
                   const beyondTimeline = hwWeeklyTimeline.slice(3);
                   const tasksByWeek = new Map<number, typeof dueBeyondTasks>();
                   dueBeyondTasks.forEach(task => {
-                    const dueDate = startOfDay(new Date(task.dueDate));
+                    const dueDate = startOfDayET(new Date(task.dueDate));
                     let bestIdx = -1;
                     let bestDist = Infinity;
                     for (let i = 0; i < beyondTimeline.length; i++) {
-                      const wStart = startOfDay(beyondTimeline[i].weekStart);
-                      const wEnd = startOfDay(beyondTimeline[i].weekEnd);
+                      const wStart = startOfDayET(beyondTimeline[i].weekStart);
+                      const wEnd = startOfDayET(beyondTimeline[i].weekEnd);
                       if (dueDate >= wStart && dueDate <= wEnd) { bestIdx = i; break; }
                       const dist = Math.abs(dueDate.getTime() - wStart.getTime());
                       if (dist < bestDist) { bestDist = dist; bestIdx = i; }
@@ -22667,7 +22683,7 @@ export default function Dashboard() {
                       const groupCalDate = tlEntry.weekStart;
                       const group = { key: tlEntry.weekStart.toISOString(), tasks: weekTasks, weeks: [tlEntry.weekStart] };
                       const groupIdx = tlIdx;
-                      const dueDates = weekTasks.map(t => ({ date: startOfDay(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
+                      const dueDates = weekTasks.map(t => ({ date: startOfDayET(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
                           <div key={group.key} data-semester-label={tlEntry.semLabel || ''}>
                           {groupIdx === 0 && (() => {
@@ -22732,12 +22748,12 @@ export default function Dashboard() {
                                   return (
                                     <div key={wi} style={{ display: 'flex', gap: '2px', padding: '1px 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end', borderRadius: isLastWeek ? '4px' : '3px', backgroundColor: isLastWeek ? 'rgba(255,255,255,0.15)' : `rgba(255,255,255,${0.08 + wi * 0.04})`, border: isLastWeek ? '0.5px solid rgba(255,255,255,0.55)' : '0.5px solid rgba(255,255,255,0.15)' }}>
                                       {days.map((d, di) => {
-                                        const isToday = isSameDay(d, today);
-                                        const dueMatch = dueDates.find(dd => isSameDay(d, dd.date));
+                                        const isToday = isSameDayET(d, today);
+                                        const dueMatch = dueDates.find(dd => isSameDayET(d, dd.date));
                                         const isDue = !!dueMatch;
                                         const dueColor = dueMatch ? getCourseGradientColors(dueMatch.courseCode).end : '';
                                         return (
-                                          <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDay(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
+                                          <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDayET(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
                                             width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',

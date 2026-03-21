@@ -224,6 +224,16 @@ button[role="combobox"] > span {
   animation: today-blink 1.5s ease-in-out infinite;
 }
 
+@keyframes due-box-blink {
+  0%, 70% { opacity: 1; }
+  85% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+.animate-due-box-blink {
+  animation: due-box-blink 2s ease-in-out infinite;
+}
+
 @keyframes gentle-jiggle {
   0%, 100% { transform: rotate(0deg); }
   25% { transform: rotate(-2deg); }
