@@ -976,7 +976,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
         }`}
         data-testid={`assignment-row-${task.id}`}
       >
-        <div className="flex-shrink-0 cursor-grab active:cursor-grabbing text-white/30 hover:text-white/60" style={{ marginRight: '3px' }} data-testid={`drag-handle-${task.id}`}>
+        <div className="flex-shrink-0 cursor-grab active:cursor-grabbing text-white/30 hover:text-white/60" data-testid={`drag-handle-${task.id}`}>
           <GripVertical className="h-3.5 w-3.5" />
         </div>
         {assignToGroup === task.id ? (
@@ -1007,7 +1007,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
           className={`flex-shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${
             task.isCompleted ? "bg-green-500 border-green-500" : "border-white/30 hover:border-white/50"
           }`}
-          style={{ marginRight: '3px' }}
           data-testid={`button-toggle-task-${task.id}`}
         >
           {task.isCompleted && <CheckCircle2 className="h-3 w-3 text-white" />}
@@ -1078,16 +1077,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             {task.gradeValue !== null && task.gradeValue !== undefined && task.gradeTotal ? `${((task.gradeValue / task.gradeTotal) * 100).toFixed(2)}%` : '—'}
           </span>
         </div>
-        <div className="flex items-center flex-shrink-0" style={{ gap: '5px' }} onClick={(e) => e.stopPropagation()}>
-          <button
-            onClick={() => setCommentTarget(commentTarget?.type === 'task' && commentTarget?.id === String(task.id) ? null : { type: 'task', id: String(task.id), label: task.title })}
-            className="text-white hover:text-yellow-300 transition-colors p-0.5"
-            style={{ marginLeft: '5px' }}
-            title="Comments"
-            data-testid={`button-comment-task-${task.id}`}
-          >
-            <MessageSquare className="h-[15px] w-[15px]" />
-          </button>
+        <div className="flex items-center flex-shrink-0" style={{ gap: '6px' }} onClick={(e) => e.stopPropagation()}>
           <label className="flex items-center cursor-pointer" title={task.excludeFromGpa ? "Excluded from grade" : "Included in grade"} data-testid={`toggle-gpa-${task.id}`}>
             <div className="relative" onClick={() => updateTaskMutation.mutate({ id: task.id, data: { excludeFromGpa: !task.excludeFromGpa }, _task: task })}>
               <div className={`w-6 h-3.5 rounded-full transition-colors ${task.excludeFromGpa ? 'bg-red-500/60' : 'bg-green-500/60'}`} />
@@ -1114,7 +1104,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
           <button
             onClick={(e) => { e.stopPropagation(); deleteTaskMutation.mutate({ id: task.id, _task: task }); }}
             className="flex-shrink-0 text-white hover:text-red-400 transition-colors p-0.5"
-            style={{ marginLeft: '5px' }}
             data-testid={`button-delete-task-${task.id}`}
           >
             <Trash2 className="h-[15px] w-[15px]" />
