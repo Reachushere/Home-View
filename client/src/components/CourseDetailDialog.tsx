@@ -2576,7 +2576,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                   </div>
                   <div className="flex-shrink-0 w-4" />
                   <div className="flex-shrink-0" style={{ width: '19px', lineHeight: '1.1', textAlign: 'center' }}>
-                    <span className="text-[7px] font-bold text-white">New<br/>Group</span>
+                    <span className="text-[7px] font-bold text-white" style={{ whiteSpace: 'nowrap' }}>New Group</span>
                   </div>
                   <div className={`flex-1 min-w-0 ${hdrCls('title')}`} onClick={() => toggleSort('title')} style={{ paddingLeft: '6px' }} data-testid="sort-title">
                     Assignment<SortIcon field="title" />
