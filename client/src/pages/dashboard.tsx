@@ -13179,12 +13179,10 @@ export default function Dashboard() {
                           if (!old) return old;
                           return old.map((s: any) => s.id === sem.id ? { ...s, ...payload } : s);
                         });
-                        if (updates.deliveryMode !== undefined) {
-                          queryClient.setQueryData(["/api/semester"], (old: any) => {
-                            if (!old || old.id !== sem.id) return old;
-                            return { ...old, ...payload };
-                          });
-                        }
+                        queryClient.setQueryData(["/api/semester"], (old: any) => {
+                          if (!old || old.id !== sem.id) return old;
+                          return { ...old, ...payload };
+                        });
                         apiRequest("PATCH", `/api/semesters/${sem.id}`, payload).then(() => {
                           queryClient.invalidateQueries({ queryKey: ["/api/semesters"] });
                           queryClient.invalidateQueries({ queryKey: ["/api/semester"] });
