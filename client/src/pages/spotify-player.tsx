@@ -1841,7 +1841,7 @@ export default function SpotifyPlayerPage() {
                               </div>
                             )}
                             {spot.room === "Pug Washroom" && (
-                              <div className="absolute" style={{ left: '-60px', top: '50%', transform: 'translateY(calc(-50% + 35px))', zIndex: 10 }} onClick={(e) => e.stopPropagation()} data-testid="volume-knob-pug-washroom">
+                              <div className="mt-1" onClick={(e) => e.stopPropagation()} data-testid="volume-knob-pug-washroom">
                                 <VolumeKnob value={roomVolumes[spot.room] ?? 30} onChange={(v) => setRoomVolume(spot.room, v)} size={50} accent={profile.accent} glow={profile.glow} />
                               </div>
                             )}
@@ -1872,7 +1872,7 @@ export default function SpotifyPlayerPage() {
                               <VolumeKnob value={roomVolumes[spot.room] ?? 30} onChange={(v) => setRoomVolume(spot.room, v)} size={44} accent={`${profile.accent}aa`} glow={profile.glow} />
                             </div>
                           ) : spot.room === "Pug Washroom" ? (
-                            <div className="absolute" style={{ left: '-60px', top: '50%', transform: 'translateY(calc(-50% + 35px))' }}>
+                            <div style={{ marginTop: '4px' }}>
                               <VolumeKnob value={roomVolumes[spot.room] ?? 30} onChange={(v) => setRoomVolume(spot.room, v)} size={44} accent={`${profile.accent}aa`} glow={profile.glow} />
                             </div>
                           ) : spot.room === "Hallway" ? (
