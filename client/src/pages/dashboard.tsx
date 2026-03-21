@@ -19497,19 +19497,17 @@ export default function Dashboard() {
                                     </div>
                                   </div>
                                 )}
-                                <div className="absolute top-0 bottom-0 z-[3] pointer-events-none flex items-center" style={{ left: `${gridSizes.timeSlotHeight + 5}px`, width: '38px' }} data-testid="things-to-do-label">
-                                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', lineHeight: 1.1 }}>
+                                <div className="absolute top-0 bottom-0 z-[3] pointer-events-none" style={{ left: `${gridSizes.timeSlotHeight + 5}px`, right: '1px', display: 'flex', gap: '4px' }} data-testid="hours-until-next-task">
+                                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, lineHeight: 1.1 }} data-testid="things-to-do-label">
                                     <span style={{ fontSize: '8px', fontWeight: 800, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Things</span>
                                     <span style={{ fontSize: '8px', fontWeight: 800, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>to do</span>
                                     <span style={{ fontSize: '8px', fontWeight: 800, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>today:</span>
                                   </div>
-                                </div>
-                                <div className="absolute top-0 bottom-0 z-[3] pointer-events-none" style={{ left: `${gridSizes.timeSlotHeight + 43}px`, right: '1px' }} data-testid="hours-until-next-task">
                                   {(() => {
                                     const courseCode = nextSchoolTask?.courseName?.split(' - ')[0]?.trim() || '';
                                     const gradColors = getCourseGradientColors(courseCode);
                                     return (
-                                      <div style={{ width: '100%', height: '100%', position: 'relative', borderRadius: '5px', overflow: 'hidden', background: `linear-gradient(135deg, ${gradColors.start} 0%, ${gradColors.end} 100%)`, opacity: 0.7, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 8px' }}>
+                                      <div style={{ flex: 1, position: 'relative', borderRadius: '5px', overflow: 'hidden', background: `linear-gradient(135deg, ${gradColors.start} 0%, ${gradColors.end} 100%)`, opacity: 0.7, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 8px' }}>
                                         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.1) 100%)' }} />
                                         <span style={{ zIndex: 1, fontSize: '10px', color: 'rgba(255,255,255,0.9)', fontWeight: 600, textShadow: '0 1px 3px rgba(0,0,0,0.5)', whiteSpace: 'nowrap' }}>Next Task Due In</span>
                                         <span style={{ zIndex: 1, fontSize: '20px', color: 'white', fontWeight: 900, lineHeight: 1, textShadow: '0 1px 3px rgba(0,0,0,0.5)', flexShrink: 0 }}>{displayTime}<span style={{ fontSize: '10px', fontWeight: 600, marginLeft: '2px' }}>{hoursUntil !== null && hoursUntil < 1 ? 'min' : 'hrs'}</span></span>
