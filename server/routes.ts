@@ -14142,7 +14142,7 @@ Return ONLY the JSON object, no markdown formatting.`;
       }
       console.log(`[Spotify] Playing on ${entityId} (echo=${isEcho}): ${spotifyUri || artistName}`);
 
-      const volumeTarget = isEcho ? (entityId.includes("_group") || entityId.includes("_media_group") ? entityId : targetEntity) : entityId;
+      const volumeTarget = entityId;
       try {
         await fetch(`${haUrl}/api/services/media_player/volume_set`, {
           method: 'POST',

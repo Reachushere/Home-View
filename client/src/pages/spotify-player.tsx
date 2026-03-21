@@ -78,7 +78,7 @@ const PROFILES: Record<ProfileKey, {
     accent: "#38bdf8",
     glow: "rgba(56,189,248,0.35)",
     artists: [
-      { name: "中島みゆき", uri: "spotify:track:59fRFaYL0MkBgctE2KOxHF", searchQuery: "Miyuki Nakajima Ito" },
+      { name: "中島みゆき", uri: "spotify:artist:7IKFMPUxJDZhKxFGYOawBo", searchQuery: "Miyuki Nakajima" },
       { name: "YOASOBI", uri: "spotify:artist:64tJ2EAv1R6UaZqc4iOCyj", searchQuery: "YOASOBI" },
       { name: "Kenshi Yonezu", uri: "spotify:artist:1snhtMLeb2DYoMOcVkiKnR", searchQuery: "Kenshi Yonezu" },
       { name: "Aimyon", uri: "spotify:artist:5Lak6GhYbSqhRimRYhE0dP", searchQuery: "Aimyon" },
@@ -86,8 +86,8 @@ const PROFILES: Record<ProfileKey, {
       { name: "Official HIGE DANdism", uri: "spotify:artist:3YMVszTadghiHjPOYaG3PM", searchQuery: "Official HIGE DANdism" },
       { name: "Vaundy", uri: "spotify:artist:6k4bHMbRIf97CqMqmU7Xk4", searchQuery: "Vaundy" },
       { name: "King Gnu", uri: "spotify:artist:6n70eCqbtJhbMgsMet1WVb", searchQuery: "King Gnu" },
-      { name: "Aimer", uri: "spotify:artist:0bAsR2unSRpn6BOpSbGhAu", searchQuery: "Aimer japanese" },
-      { name: "Tokyo Disney", uri: "spotify:track:2PdJJkPFzhJiMqUOT1GKsj", searchQuery: "Living in Color Tokyo Disney Resort" },
+      { name: "Aimer", uri: "spotify:artist:0bAsR2unSRpn6BOpSbGhAu", searchQuery: "Aimer" },
+      { name: "Tokyo Disney", uri: "spotify:track:2PdJJkPFzhJiMqUOT1GKsj", searchQuery: "Tokyo Disney music" },
     ],
   },
   guest: {
