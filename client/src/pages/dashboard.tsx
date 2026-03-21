@@ -21619,12 +21619,21 @@ export default function Dashboard() {
               const rowHeight = courseRowRects[idx].height;
               const halfHeight = rowHeight / 2;
               return [
-                <div key={`${pd.courseCode}-progress-bg`} style={{
+                <div key={`${pd.courseCode}-progress-bg-module`} style={{
                   position: 'absolute',
                   top: `${rowTop}px`,
                   left: 0,
                   width: `${effectiveDividerPct}%`,
-                  height: `${rowHeight}px`,
+                  height: `${halfHeight}px`,
+                  background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
+                  zIndex: 1,
+                }} />,
+                <div key={`${pd.courseCode}-progress-bg-reading`} style={{
+                  position: 'absolute',
+                  top: `${rowTop + halfHeight}px`,
+                  left: 0,
+                  width: `${effectiveDividerPct}%`,
+                  height: `${halfHeight}px`,
                   background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
                   zIndex: 1,
                 }} />,
