@@ -14031,6 +14031,12 @@ Return ONLY the JSON object, no markdown formatting.`;
         } catch (e: any) {
           console.log(`[Spotify] ${command} on ${entityId} failed: ${e.message}`);
         }
+        if (command === "stop") {
+          spotifyActivePlaybacks.delete(entityId);
+          if (spotifyActivePlaybacks.size === 0) clearSpotifyStaleTimer();
+        } else {
+          startSpotifyStaleTimer();
+        }
         return res.json({ ok: true, action: command });
       }
 
@@ -14162,6 +14168,8 @@ Return ONLY the JSON object, no markdown formatting.`;
           });
           const playText = await playResp.text();
           console.log(`[Spotify] SpotifyPlus play response: ${playResp.status} body=${playText.substring(0, 300)}`);
+          trackSpotifyPlayback(entityId, artistName);
+          clearSpotifyStaleTimer();
         } else {
           console.log(`[Spotify] No SpotifyPlus source for ${entityId}, using voice command fallback`);
           const searchTerm = searchQuery || artistName || "music";
@@ -14201,6 +14209,8 @@ Return ONLY the JSON object, no markdown formatting.`;
         });
       }
       console.log(`[Spotify] Play command complete for ${entityId}: "${searchQuery || artistName}"`);
+      trackSpotifyPlayback(entityId, artistName);
+      clearSpotifyStaleTimer();
 
       const volumeTarget = entityId;
       try {
@@ -14237,6 +14247,166 @@ Return ONLY the JSON object, no markdown formatting.`;
     } catch (error: any) {
       console.error("[Spotify] Group speakers error:", error);
       res.status(500).json({ error: "Failed to group speakers" });
+    }
+  });
+
+  let spotifyActivePlaybacks: Map<string, { entityId: string; startedAt: number; artistName?: string }> = new Map();
+  let spotifyStaleTimer: NodeJS.Timeout | null = null;
+  const SPOTIFY_STALE_TIMEOUT_MS = 10 * 60 * 1000;
+
+  function trackSpotifyPlayback(entityId: string, artistName?: string) {
+    spotifyActivePlaybacks.set(entityId, { entityId, startedAt: Date.now(), artistName });
+    console.log(`[Spotify] Tracking playback on ${entityId} (${artistName || 'unknown'}). Active: ${spotifyActivePlaybacks.size}`);
+  }
+
+  function clearSpotifyStaleTimer() {
+    if (spotifyStaleTimer) {
+      clearTimeout(spotifyStaleTimer);
+      spotifyStaleTimer = null;
+    }
+  }
+
+  function startSpotifyStaleTimer() {
+    clearSpotifyStaleTimer();
+    spotifyStaleTimer = setTimeout(async () => {
+      if (spotifyActivePlaybacks.size === 0) return;
+      console.log(`[Spotify] Stale timeout (${SPOTIFY_STALE_TIMEOUT_MS / 1000}s) reached. Clearing ${spotifyActivePlaybacks.size} stale playback(s).`);
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      const SPOTIFYPLUS_ENTITY = "media_player.spotifyplus_byhomeyyz";
+      try {
+        await fetch(`${haUrl}/api/services/media_player/media_stop`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: SPOTIFYPLUS_ENTITY }),
+        });
+        console.log(`[Spotify] Stale cleanup: SpotifyPlus stopped`);
+      } catch (e: any) {
+        console.log(`[Spotify] Stale cleanup: SpotifyPlus stop failed: ${e.message}`);
+      }
+      for (const [, pb] of spotifyActivePlaybacks) {
+        try {
+          await fetch(`${haUrl}/api/services/media_player/media_stop`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ entity_id: pb.entityId }),
+          });
+          console.log(`[Spotify] Stale cleanup: stopped ${pb.entityId}`);
+        } catch (e: any) {
+          console.log(`[Spotify] Stale cleanup: ${pb.entityId} stop failed: ${e.message}`);
+        }
+      }
+      spotifyActivePlaybacks.clear();
+      console.log(`[Spotify] All stale playbacks cleared`);
+    }, SPOTIFY_STALE_TIMEOUT_MS);
+    console.log(`[Spotify] Stale timer started (${SPOTIFY_STALE_TIMEOUT_MS / 1000}s)`);
+  }
+
+  app.post("/api/spotify/stop-all", async (_req, res) => {
+    try {
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      const SPOTIFYPLUS_ENTITY = "media_player.spotifyplus_byhomeyyz";
+      const results: string[] = [];
+      clearSpotifyStaleTimer();
+
+      try {
+        await fetch(`${haUrl}/api/services/media_player/media_stop`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: SPOTIFYPLUS_ENTITY }),
+        });
+        results.push("SpotifyPlus stopped");
+      } catch (e: any) {
+        results.push(`SpotifyPlus stop failed: ${e.message}`);
+      }
+
+      for (const [, pb] of spotifyActivePlaybacks) {
+        try {
+          await fetch(`${haUrl}/api/services/media_player/media_stop`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ entity_id: pb.entityId }),
+          });
+          results.push(`Stopped ${pb.entityId}`);
+        } catch (e: any) {
+          results.push(`${pb.entityId} stop failed: ${e.message}`);
+        }
+      }
+
+      try {
+        await spotifyApi.pause();
+        results.push("Spotify API paused");
+      } catch (e: any) {
+        results.push(`Spotify API pause failed: ${e.message}`);
+      }
+
+      const count = spotifyActivePlaybacks.size;
+      spotifyActivePlaybacks.clear();
+      console.log(`[Spotify] Stop-all: cleared ${count} tracked playbacks. Results: ${results.join(', ')}`);
+      res.json({ ok: true, cleared: count, results });
+    } catch (error: any) {
+      console.error("[Spotify] Stop-all error:", error);
+      res.status(500).json({ error: "Failed to stop all" });
+    }
+  });
+
+  app.post("/api/spotify/flick", async (req, res) => {
+    try {
+      const { deviceId } = req.body;
+      if (!deviceId) return res.status(400).json({ error: "deviceId is required" });
+
+      let device: FlickDevice | undefined;
+      let deviceRoom = "";
+      for (const group of FLICK_DEVICES) {
+        const found = group.devices.find(d => d.id === deviceId);
+        if (found) { device = found; deviceRoom = group.room; break; }
+      }
+      if (!device) return res.status(404).json({ error: "Device not found" });
+
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      const appUrl = `https://${req.get('host') || 'home-view--bkh416.replit.app'}`;
+      const authParam = req.query.auth || "bryn";
+      const spotifyUrl = `${appUrl}/spotify?auth=${authParam}`;
+      console.log(`[Spotify Flick] Sending to ${device.name} (${deviceRoom}): ${spotifyUrl}`);
+
+      const navigateDevice = async (targetDevice: FlickDevice) => {
+        if (!targetDevice.canDisplay) return;
+        try {
+          if (targetDevice.type === "tablet" || targetDevice.type === "echo_show") {
+            const navResp = await fetch(`${haUrl}/api/services/browser_mod/navigate`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ browser_id: targetDevice.entityId, path: spotifyUrl }),
+            });
+            console.log(`[Spotify Flick] Navigated ${targetDevice.entityId} via browser_mod: ${navResp.status}`);
+          } else if (targetDevice.type === "tv") {
+            const castResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ entity_id: targetDevice.entityId, media_content_id: spotifyUrl, media_content_type: "url" }),
+            });
+            console.log(`[Spotify Flick] Cast to TV ${targetDevice.entityId}: ${castResp.status}`);
+          }
+        } catch (navErr: any) {
+          console.error(`[Spotify Flick] Navigation failed for ${targetDevice.name}: ${navErr.message}`);
+        }
+      };
+
+      if (device.canDisplay) {
+        await navigateDevice(device);
+      } else if (device.type === "group") {
+        const roomGroup = FLICK_DEVICES.find(g => g.devices.some(d => d.id === device!.id));
+        if (roomGroup) {
+          const screenDevices = roomGroup.devices.filter(d => d.canDisplay && d.id !== device!.id);
+          for (const screenDevice of screenDevices) {
+            await navigateDevice(screenDevice);
+          }
+        }
+      }
+
+      res.json({ success: true, device: device.name, room: deviceRoom });
+    } catch (error: any) {
+      console.error("[Spotify Flick] Error:", error);
+      res.status(500).json({ error: "Failed to flick", details: error.message });
     }
   });
 

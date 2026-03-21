@@ -4,7 +4,7 @@ import {
   ChevronLeft, ChevronDown, Shuffle, Repeat, Volume2, VolumeX, Speaker,
   Search, Radio, Menu, X, Home, Zap, Wifi, Star, Volume1,
   Bed, Bath, DoorOpen, CookingPot, Sofa, Crown, ShirtIcon, Globe2,
-  Sun,
+  Sun, Cast, Monitor, Square,
 } from "lucide-react";
 import floorplanImg from "@assets/Floorplan11_1774005505273.png";
 import massBg from "@assets/mass-background2_1774005959332.png";
@@ -628,6 +628,9 @@ export default function SpotifyPlayerPage() {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [searching, setSearching] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [showFlickMenu, setShowFlickMenu] = useState(false);
+  const [flickDeviceGroups, setFlickDeviceGroups] = useState<Array<{room: string; icon: string; devices: Array<{id: string; name: string; entityId: string; type: string; canDisplay: boolean; room: string}>}>>([]);
+  const [isFlicking, setIsFlicking] = useState(false);
   const [jaTranslations, setJaTranslations] = useState<Record<string, string>>({});
   const jaTranslationCache = useRef<Record<string, string>>({});
   const jaTranslationPending = useRef<Set<string>>(new Set());
@@ -759,9 +762,41 @@ export default function SpotifyPlayerPage() {
 
   useEffect(() => {
     fetchNowPlaying(); fetchRooms(); fetchPlaybackState(); fetchArtistImages();
+    fetch("/api/flick-devices").then(r => r.ok ? r.json() : []).then(groups => setFlickDeviceGroups(groups)).catch(() => {});
     const interval = setInterval(fetchNowPlaying, 4000);
     return () => clearInterval(interval);
   }, []);
+
+  const handleSpotifyFlick = async (deviceId: string) => {
+    setIsFlicking(true);
+    try {
+      const resp = await fetch(`/api/spotify/flick${authQuery}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ deviceId }),
+      });
+      const data = await resp.json();
+      if (data.success) {
+        showNotif(isSakura ? `${data.device}に転送しました` : `Sent to ${data.device} in ${data.room}`);
+      } else {
+        showNotif(data.error || "Flick failed");
+      }
+    } catch (e: any) {
+      showNotif("Flick failed");
+    } finally {
+      setIsFlicking(false);
+      setShowFlickMenu(false);
+    }
+  };
+
+  const handleStopAll = async () => {
+    setActionPending(true);
+    try {
+      await fetch(`/api/spotify/stop-all${authQuery}`, { method: "POST" });
+      showNotif(isSakura ? "全停止" : "All playback stopped");
+      setTimeout(fetchNowPlaying, 600);
+    } catch {} finally { setActionPending(false); }
+  };
 
   useEffect(() => {
     if (recommendations.length <= 1) return;
@@ -1229,6 +1264,57 @@ export default function SpotifyPlayerPage() {
                 data-testid="nav-search">
                 <Search className="h-3.5 w-3.5 flex-shrink-0" />
                 {menuOpen && <span className="text-[12px] whitespace-nowrap font-medium">Search</span>}
+              </button>
+
+              <div className="my-2 mx-2 h-[1px]" style={{ background: tc.divider }} />
+
+              {flickDeviceGroups.length > 0 && (
+                <div className="relative">
+                  <button onClick={() => setShowFlickMenu(!showFlickMenu)}
+                    className={`w-full flex items-center gap-3 px-2.5 py-2 rounded-lg transition-all ${showFlickMenu ? 'ring-1 ring-blue-400' : ''}`}
+                    style={{ color: showFlickMenu ? profile.accent : tc.navIdle }}
+                    data-testid="nav-flick-cast"
+                    disabled={isFlicking}>
+                    {isFlicking ? <Loader2 className="h-3.5 w-3.5 flex-shrink-0 animate-spin" /> : <Cast className="h-3.5 w-3.5 flex-shrink-0" />}
+                    {menuOpen && <span className="text-[12px] whitespace-nowrap font-medium">{isSakura ? "転送" : "Cast"}</span>}
+                  </button>
+                  {showFlickMenu && (
+                    <div className="absolute left-full top-0 ml-1 w-52 rounded-lg shadow-2xl overflow-hidden z-50"
+                      style={{ background: isSakura ? 'rgba(20,50,80,0.95)' : 'rgba(10,25,50,0.95)', border: `1px solid ${profile.accent}30`, backdropFilter: 'blur(20px)' }}>
+                      <div className="px-2.5 py-1.5 flex items-center justify-between" style={{ borderBottom: `1px solid ${profile.accent}20` }}>
+                        <span className="text-[12px] font-semibold" style={{ color: profile.accent }}>{isSakura ? "転送先..." : "Cast to..."}</span>
+                        <button onClick={() => setShowFlickMenu(false)} style={{ color: tc.navIdle }} data-testid="button-close-flick-menu"><X className="h-3 w-3" /></button>
+                      </div>
+                      <div className="max-h-[400px] overflow-y-auto">
+                        {flickDeviceGroups.map((group) => (
+                          <div key={group.room}>
+                            <div className="px-2.5 py-1 flex items-center gap-1.5 sticky top-0" style={{ background: isSakura ? 'rgba(30,60,90,0.8)' : 'rgba(15,35,65,0.8)' }}>
+                              <span className="text-[11px]">{group.icon}</span>
+                              <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(200,220,255,0.6)' }}>{group.room}</span>
+                            </div>
+                            {group.devices.filter(d => d.canDisplay).map((device) => (
+                              <button key={device.id} data-testid={`button-flick-${device.id}`}
+                                className="w-full px-2.5 py-1.5 pl-5 flex items-center gap-2 transition-colors text-left hover:brightness-125"
+                                style={{ color: 'rgba(200,220,255,0.85)' }}
+                                onClick={() => handleSpotifyFlick(device.id)} disabled={isFlicking}>
+                                <Monitor className="h-3 w-3 flex-shrink-0" style={{ color: profile.accent }} />
+                                <span className="text-[12px] truncate">{device.name}</span>
+                              </button>
+                            ))}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <button onClick={handleStopAll}
+                className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg transition-all hover:scale-105"
+                style={{ color: 'rgba(255,100,100,0.7)' }}
+                data-testid="nav-stop-all">
+                <Square className="h-3.5 w-3.5 flex-shrink-0" fill="currentColor" />
+                {menuOpen && <span className="text-[12px] whitespace-nowrap font-medium">{isSakura ? "全停止" : "Stop All"}</span>}
               </button>
             </div>
 
