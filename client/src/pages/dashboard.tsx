@@ -3373,15 +3373,12 @@ export default function Dashboard() {
       const hexEnd = course.colorEnd;
       const displayHex = hexEnd || hex;
       const rgb = hexToRgb(displayHex);
-      
-      const tintR = Math.round(rgb.r + (255 - rgb.r) * 0.85);
-      const tintG = Math.round(rgb.g + (255 - rgb.g) * 0.85);
-      const tintB = Math.round(rgb.b + (255 - rgb.b) * 0.85);
+      const endRgb = hexEnd ? hexToRgb(hexEnd) : rgb;
       
       colors[courseCode] = {
         hex,
         hexEnd,
-        bg: `rgb(${tintR}, ${tintG}, ${tintB})`,
+        bg: `rgba(${endRgb.r}, ${endRgb.g}, ${endRgb.b}, 0.45)`,
         border: displayHex,
         text: displayHex,
         dot: displayHex,
@@ -18263,7 +18260,7 @@ export default function Dashboard() {
                   name: courseName, 
                   bg: (() => {
                     const end = courseData.colorEnd ? hexToRgb(courseData.colorEnd) : rgb;
-                    return `rgba(${end.r}, ${end.g}, ${end.b}, 0.28)`;
+                    return `rgba(${end.r}, ${end.g}, ${end.b}, 0.55)`;
                   })(), 
                   label: (() => {
                     const startColor = courseData.color || `rgb(${Math.max(0, rgb.r - 40)}, ${Math.max(0, rgb.g - 40)}, ${Math.max(0, rgb.b - 40)})`;
@@ -18777,7 +18774,7 @@ export default function Dashboard() {
                                 <div
                                   className="flex items-center text-[9px] rounded border cursor-pointer relative w-full"
                                   style={{ 
-                                    backgroundColor: (() => { const cEnd = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === course.name)?.colorEnd; const endRgb = hexToRgb(cEnd || course.darkColor); return `rgba(${endRgb.r},${endRgb.g},${endRgb.b},0.18)`; })(),
+                                    backgroundColor: (() => { const cEnd = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === course.name)?.colorEnd; const endRgb = hexToRgb(cEnd || course.darkColor); return `rgba(${endRgb.r},${endRgb.g},${endRgb.b},0.45)`; })(),
                                     borderColor: course.darkColor,
                                     zIndex: hoveredCountdownTaskId === task.id ? 55 : 1,
                                     transform: hoveredCountdownTaskId === task.id ? 'scale(1.12)' : undefined,
@@ -18823,7 +18820,7 @@ export default function Dashboard() {
                             <div 
                               className={`flex flex-col gap-0 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer w-full min-w-0 ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                               style={{ 
-                                backgroundColor: (() => { const cEnd = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === course.name)?.colorEnd; const endRgb = hexToRgb(cEnd || course.darkColor); const isSummaryType = task.type === 'module' || task.type === 'reading' || task.type === 'Module' || task.type === 'Reading'; return `rgba(${endRgb.r},${endRgb.g},${endRgb.b},${isSummaryType ? 0.12 : 0.22})`; })(),
+                                backgroundColor: (() => { const cEnd = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === course.name)?.colorEnd; const endRgb = hexToRgb(cEnd || course.darkColor); return `rgba(${endRgb.r},${endRgb.g},${endRgb.b},0.45)`; })(),
                                 borderColor: course.darkColor,
                                 transform: hoveredCountdownTaskId === task.id ? 'scale(1.12)' : undefined,
                                 boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
