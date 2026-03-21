@@ -19206,7 +19206,8 @@ export default function Dashboard() {
                             } ${task.isCompleted ? "text-gray-400" : "text-black"}`}
                             style={{
                               backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#dbeafe'),
-                              borderColor: task.isCompleted ? '#d1d5db' : (colors?.hex || colors?.border || '#60a5fa')
+                              borderColor: task.isCompleted ? '#d1d5db' : (colors?.hex || '#60a5fa'),
+                              borderWidth: '1.5px'
                             }}
                             onContextMenu={(e) => {
                               e.preventDefault();
@@ -22145,7 +22146,7 @@ export default function Dashboard() {
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px' }}>
                       <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[0]?.label || 'This week'}</span>
-                      <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', position: 'relative', top: '-3px' }}>({dueTomorrowTasks.filter(t => { const dd = startOfDayET(new Date(t.dueDate)); return dd >= startOfWeek(startOfDayET(new Date()), { weekStartsOn: 0 }) && dd <= addDays(startOfWeek(startOfDayET(new Date()), { weekStartsOn: 0 }), 6); }).length})</span>
+                      <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', position: 'relative', top: '-3px' }}>({dueTomorrowTasks.length})</span>
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: 'auto', flexShrink: 0, width: '42px', marginTop: '5px' }}>
@@ -22196,7 +22197,7 @@ export default function Dashboard() {
                       return groups.map((group) => {
                         const dueDates = group.tasks.map(t => ({ date: startOfDayET(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
-                          <div key={group.key} style={{ display: 'flex', alignItems: 'center', backgroundColor: '#051729', borderRadius: '4px' }}>
+                          <div key={group.key} style={{ display: 'flex', alignItems: 'center' }}>
                             <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginLeft: '10px', marginRight: '4px', overflow: 'visible' }}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 {hwWeeklyTimeline[0]?.sublabel || ''}
@@ -22216,7 +22217,7 @@ export default function Dashboard() {
                                         const isToday = isSameDayET(d, today);
                                         const dueMatch = dueDates.find(dd => isSameDayET(d, dd.date));
                                         const isDue = !!dueMatch;
-                                        const dueColor = dueMatch ? getCourseGradientColors(dueMatch.courseCode).end : '';
+                                        const dueColor = dueMatch ? (dynamicCourseColors[dueMatch.courseCode]?.hex || getCourseGradientColors(dueMatch.courseCode).start) : '';
                                         return (
                                           <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDayET(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
                                             width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
@@ -22237,7 +22238,7 @@ export default function Dashboard() {
                             <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', alignSelf: 'stretch' }}>
                               <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
                             </div>
-                            <div style={{ flex: 1, minWidth: 0, marginRight: '-7px' }}><div style={{ overflow: 'visible' }}>
+                            <div style={{ flex: 1, minWidth: 0, marginRight: '-7px' }}><div style={{ overflow: 'visible', scrollbarWidth: 'none' }}>
                               {group.tasks.filter((t, i, arr) => t.type !== "class" || arr.findIndex(x => x.type === "class" && x.title === t.title && x.courseName === t.courseName) === i).map((task, taskIdx) => {
                                 const progressColor = getProgressColor(task, 'tomorrow');
                                 const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
@@ -22247,7 +22248,7 @@ export default function Dashboard() {
                                 const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                                 const isLastTask = taskIdx === group.tasks.length - 1;
                                 return (
-                                  <div key={task.id} style={{ position: 'relative', overflow: 'visible', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, marginLeft: '0px', marginRight: '-7px', paddingLeft: '0px', paddingRight: '7px' }}
+                                  <div key={task.id} style={{ position: 'relative', overflow: 'visible', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: taskIdx % 2 === 0 ? '#051729' : 'transparent', marginLeft: '-8px', marginRight: '-7px', paddingLeft: '8px', paddingRight: '7px' }}
                                     onMouseEnter={() => setHoveredCountdownTaskIdDebounced(task.id)}
                                     onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                                     ref={(rowEl) => {
@@ -22409,7 +22410,7 @@ export default function Dashboard() {
                                         const isToday = isSameDayET(d, today);
                                         const dueMatch = dueDates.find(dd => isSameDayET(d, dd.date));
                                         const isDue = !!dueMatch;
-                                        const dueColor = dueMatch ? getCourseGradientColors(dueMatch.courseCode).end : '';
+                                        const dueColor = dueMatch ? (dynamicCourseColors[dueMatch.courseCode]?.hex || getCourseGradientColors(dueMatch.courseCode).start) : '';
                                         return (
                                           <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDayET(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
                                             width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
@@ -22605,7 +22606,7 @@ export default function Dashboard() {
                                         const isToday = isSameDayET(d, today);
                                         const dueMatch = dueDates.find(dd => isSameDayET(d, dd.date));
                                         const isDue = !!dueMatch;
-                                        const dueColor = dueMatch ? getCourseGradientColors(dueMatch.courseCode).end : '';
+                                        const dueColor = dueMatch ? (dynamicCourseColors[dueMatch.courseCode]?.hex || getCourseGradientColors(dueMatch.courseCode).start) : '';
                                         return (
                                           <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDayET(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
                                             width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
@@ -22801,7 +22802,7 @@ export default function Dashboard() {
                                         const isToday = isSameDayET(d, today);
                                         const dueMatch = dueDates.find(dd => isSameDayET(d, dd.date));
                                         const isDue = !!dueMatch;
-                                        const dueColor = dueMatch ? getCourseGradientColors(dueMatch.courseCode).end : '';
+                                        const dueColor = dueMatch ? (dynamicCourseColors[dueMatch.courseCode]?.hex || getCourseGradientColors(dueMatch.courseCode).start) : '';
                                         return (
                                           <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDayET(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
                                             width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
