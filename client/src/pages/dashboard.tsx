@@ -185,6 +185,7 @@ import { useAccessMode } from "@/components/access-gate";
 import StickyNoteItem from "@/components/StickyNoteItem";
 import type { Task, SemesterSettings, Subtask, Project, StickyNote as StickyNoteType, TaskLink } from "@shared/schema";
 import { TASK_TYPES, COURSES, getWeekNumber, getWeekDates, REMINDER_OPTIONS, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, REPEAT_TYPES, REPEAT_INTERVAL_UNITS, FIRST_WEEK, LAST_WEEK, LINK_TYPES } from "@shared/schema";
+import type { CourseWeekMapping } from "@shared/schema";
 import { getUpcomingSemesterToConfirm, getNextSemesterByStartDate, FUTURE_SEMESTER_SCHEDULE, type FutureSemesterDates } from "@shared/semesterUtils";
 import { LIBERAL_STUDIES_COURSES, OPEN_ELECTIVE_COURSES, POG_COURSES, getCoursesForLevel, type ElectiveCourse } from "@shared/electiveCourses";
 import { format, addDays, subDays, addWeeks, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, isWithinInterval, parseISO, startOfDay, endOfDay, differenceInDays, differenceInCalendarDays, isBefore } from "date-fns";
@@ -4814,6 +4815,21 @@ export default function Dashboard() {
   const { data: weeks = [] } = useQuery<WeekInfo[]>({
     queryKey: ["/api/weeks"],
   });
+
+  const { data: allCourseWeekMappings = [] } = useQuery<CourseWeekMapping[]>({
+    queryKey: ["/api/course-week-mappings"],
+  });
+
+  const courseWeekVariants = useMemo(() => {
+    const variants: Record<number, { courseCode: string; label: string }[]> = {};
+    for (const m of allCourseWeekMappings) {
+      if (m.courseWeekLabel && m.courseWeekLabel.trim()) {
+        if (!variants[m.weekNumber]) variants[m.weekNumber] = [];
+        variants[m.weekNumber].push({ courseCode: m.courseCode, label: m.courseWeekLabel });
+      }
+    }
+    return variants;
+  }, [allCourseWeekMappings]);
 
   // Automatically set selectedWeek based on today's date (re-checks when date changes)
   const lastAutoWeekDateRef = useRef(new Date().getDate());
@@ -13373,7 +13389,7 @@ export default function Dashboard() {
       {!isSettingsPanelOpen && !isSchoolCoursesDialogOpen && (
       <div className="fixed z-50 flex items-end justify-end gap-2" data-tpo data-tpo-opacity="1" style={{ top: `${calendarTop - 26}px`, right: '14px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
         <div className="flex items-center gap-1">
-          <span className="text-[10.5px] text-white font-medium leading-tight whitespace-nowrap" style={{ marginRight: '4px' }}>{selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? `Week ${selectedWeek}` : ''}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek && selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? <span className="text-[10px] text-white/60 font-normal ml-1">(current)</span> : null; })()}</span>
+          <span className="text-[10.5px] text-white font-medium leading-tight whitespace-nowrap" style={{ marginRight: '4px' }}>{selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? `Week ${selectedWeek}` : ''}{(() => { const variants = courseWeekVariants[selectedWeek]; if (variants && variants.length > 0) { const uniqueLabels = [...new Set(variants.map(v => v.label))]; return <span className="text-[9px] text-amber-300/80 font-normal ml-1">({uniqueLabels.map((label, i) => <span key={i}>{i > 0 ? ', ' : ''}{variants.find(v => v.label === label)?.courseCode}: Wk {label}</span>)})</span>; } return null; })()}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek && selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? <span className="text-[10px] text-white/60 font-normal ml-1">(current)</span> : null; })()}</span>
           <div 
             className="cursor-pointer hover:bg-white/20 rounded flex items-center justify-center"
             style={{ marginLeft: '2px', padding: '4px 6px', minWidth: '28px', minHeight: '28px' }}
@@ -25800,6 +25816,58 @@ function SemesterSettingsFormBody({ semKey, existing, onCancel, onSave }: {
   );
 }
 
+function WeekVariantsSection({ semesterSettings, week1StartDate }: { semesterSettings: SemesterSettings | null | undefined; week1StartDate: string }) {
+  const { data: mappings = [] } = useQuery<CourseWeekMapping[]>({
+    queryKey: ["/api/course-week-mappings"],
+  });
+
+  const variantsByWeek = useMemo(() => {
+    const result: Record<number, { courseCode: string; label: string }[]> = {};
+    for (const m of mappings) {
+      if (m.courseWeekLabel && m.courseWeekLabel.trim()) {
+        if (!result[m.weekNumber]) result[m.weekNumber] = [];
+        result[m.weekNumber].push({ courseCode: m.courseCode, label: m.courseWeekLabel });
+      }
+    }
+    return result;
+  }, [mappings]);
+
+  const weeksWithVariants = Object.keys(variantsByWeek).map(Number).sort((a, b) => a - b);
+  if (weeksWithVariants.length === 0) return null;
+
+  const semStart = week1StartDate ? new Date(week1StartDate) : (semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : null);
+  const readingWeek = semesterSettings?.readingWeekStart || null;
+  const currentWeek = semStart ? getWeekNumber(new Date(), semStart, readingWeek) : null;
+
+  return (
+    <div className="border rounded-lg p-3 space-y-2" style={{ marginTop: '12px' }} data-testid="week-variants-section">
+      <Label className="text-[10px] font-medium">Course Week Variants</Label>
+      <span className="text-[9px] text-white/50 block">Courses using different week numbering than the TMU standard</span>
+      <div className="space-y-1 text-[10px]">
+        {weeksWithVariants.map(weekNum => {
+          const variants = variantsByWeek[weekNum];
+          const isCurrent = weekNum === currentWeek;
+          return (
+            <div key={weekNum} className={`flex items-center justify-between py-1.5 px-2 rounded ${isCurrent ? 'bg-blue-500/10 border border-blue-500/20' : 'hover:bg-white/5'}`} data-testid={`week-variant-row-${weekNum}`}>
+              <div className="flex items-center gap-2">
+                <span className={`text-white font-medium ${isCurrent ? 'text-blue-300' : ''}`}>Week {weekNum}</span>
+                {isCurrent && <span className="text-[7px] px-1 py-0.5 bg-blue-500/20 text-blue-300 rounded">Current</span>}
+              </div>
+              <div className="flex items-center gap-2">
+                {variants.map((v, i) => (
+                  <span key={i} className="text-[8px] px-1.5 py-0.5 bg-amber-500/15 text-amber-300 rounded border border-amber-500/20">
+                    {v.courseCode}: Wk {v.label}
+                  </span>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function SchoolForm({ 
   schoolData, 
   semesterSettings,
@@ -26008,6 +26076,8 @@ function SchoolForm({
           })}
         </div>
       </div>
+
+      <WeekVariantsSection semesterSettings={semesterSettings} week1StartDate={week1StartDate} />
       
     </form>
   );

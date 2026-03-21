@@ -1675,6 +1675,74 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
     }
   });
 
+  app.get("/api/course-week-mappings", async (req, res) => {
+    try {
+      const semester = await storage.getActiveSemesterSettings();
+      if (!semester) return res.json([]);
+      const mappings = await storage.getAllCourseWeekMappings(semester.id);
+      res.json(mappings);
+    } catch (err) {
+      console.error("Error fetching all course week mappings:", err);
+      res.status(500).json({ error: "Failed to fetch course week mappings" });
+    }
+  });
+
+  app.get("/api/course-week-mappings/:courseCode", async (req, res) => {
+    try {
+      const semester = await storage.getActiveSemesterSettings();
+      if (!semester) return res.json([]);
+      const mappings = await storage.getCourseWeekMappings(req.params.courseCode, semester.id);
+      res.json(mappings);
+    } catch (err) {
+      console.error("Error fetching course week mappings:", err);
+      res.status(500).json({ error: "Failed to fetch course week mappings" });
+    }
+  });
+
+  app.put("/api/course-week-mappings", async (req, res) => {
+    try {
+      const semester = await storage.getActiveSemesterSettings();
+      if (!semester) return res.status(400).json({ error: "No active semester" });
+      const { courseCode, weekNumber, confirmed, courseWeekLabel, notes } = req.body;
+      const mapping = await storage.upsertCourseWeekMapping({
+        courseCode,
+        semesterSettingsId: semester.id,
+        weekNumber,
+        confirmed,
+        courseWeekLabel: courseWeekLabel || null,
+        notes: notes || null,
+      });
+      res.json(mapping);
+    } catch (err) {
+      console.error("Error updating course week mapping:", err);
+      res.status(500).json({ error: "Failed to update course week mapping" });
+    }
+  });
+
+  app.put("/api/course-week-mappings/bulk", async (req, res) => {
+    try {
+      const semester = await storage.getActiveSemesterSettings();
+      if (!semester) return res.status(400).json({ error: "No active semester" });
+      const { courseCode, mappings } = req.body;
+      const results = [];
+      for (const m of mappings) {
+        const mapping = await storage.upsertCourseWeekMapping({
+          courseCode,
+          semesterSettingsId: semester.id,
+          weekNumber: m.weekNumber,
+          confirmed: m.confirmed,
+          courseWeekLabel: m.courseWeekLabel || null,
+          notes: m.notes || null,
+        });
+        results.push(mapping);
+      }
+      res.json(results);
+    } catch (err) {
+      console.error("Error bulk updating course week mappings:", err);
+      res.status(500).json({ error: "Failed to bulk update course week mappings" });
+    }
+  });
+
   const weatherCache: { data: any | null; timestamp: number } = { data: null, timestamp: 0 };
 
   app.get("/api/weather", async (_req, res) => {

@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { tasks, files, semesterSettings, secondGoogleAccount, thirdGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, accessTokens, shiftSchedule, semesterChecklist, scholarships, keyContacts, announcements, entityComments, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type ThirdGoogleAccount, type InsertThirdGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, type AccessToken, type InsertAccessToken, type ShiftScheduleEntry, type InsertShiftScheduleEntry, type SemesterChecklistItem, type InsertSemesterChecklistItem, type Scholarship, type InsertScholarship, type KeyContact, type InsertKeyContact, type Announcement, type InsertAnnouncement, type EntityComment, getWeekNumber } from "@shared/schema";
+import { tasks, files, semesterSettings, secondGoogleAccount, thirdGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, accessTokens, shiftSchedule, semesterChecklist, courseWeekMappings, scholarships, keyContacts, announcements, entityComments, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type ThirdGoogleAccount, type InsertThirdGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, type AccessToken, type InsertAccessToken, type ShiftScheduleEntry, type InsertShiftScheduleEntry, type SemesterChecklistItem, type InsertSemesterChecklistItem, type CourseWeekMapping, type InsertCourseWeekMapping, type Scholarship, type InsertScholarship, type KeyContact, type InsertKeyContact, type Announcement, type InsertAnnouncement, type EntityComment, getWeekNumber } from "@shared/schema";
 import { eq, and, gte, lte, desc, or, isNull } from "drizzle-orm";
 
 export interface IStorage {
@@ -79,6 +79,9 @@ export interface IStorage {
   getSemesterChecklist(semesterSettingsId: number): Promise<SemesterChecklistItem[]>;
   upsertSemesterChecklistItem(item: InsertSemesterChecklistItem): Promise<SemesterChecklistItem>;
   initSemesterChecklist(semesterSettingsId: number, courseCodes: string[]): Promise<SemesterChecklistItem[]>;
+  getCourseWeekMappings(courseCode: string, semesterSettingsId: number): Promise<CourseWeekMapping[]>;
+  getAllCourseWeekMappings(semesterSettingsId: number): Promise<CourseWeekMapping[]>;
+  upsertCourseWeekMapping(data: InsertCourseWeekMapping): Promise<CourseWeekMapping>;
   getScholarships(): Promise<Scholarship[]>;
   getScholarship(id: number): Promise<Scholarship | undefined>;
   createScholarship(data: InsertScholarship): Promise<Scholarship>;
@@ -670,6 +673,37 @@ export class DatabaseStorage implements IStorage {
     }
     return items;
   }
+  async getCourseWeekMappings(courseCode: string, semesterSettingsId: number): Promise<CourseWeekMapping[]> {
+    return await db.select().from(courseWeekMappings).where(
+      and(eq(courseWeekMappings.courseCode, courseCode), eq(courseWeekMappings.semesterSettingsId, semesterSettingsId))
+    );
+  }
+
+  async getAllCourseWeekMappings(semesterSettingsId: number): Promise<CourseWeekMapping[]> {
+    return await db.select().from(courseWeekMappings).where(
+      eq(courseWeekMappings.semesterSettingsId, semesterSettingsId)
+    );
+  }
+
+  async upsertCourseWeekMapping(data: InsertCourseWeekMapping): Promise<CourseWeekMapping> {
+    const existing = await db.select().from(courseWeekMappings).where(
+      and(
+        eq(courseWeekMappings.courseCode, data.courseCode),
+        eq(courseWeekMappings.semesterSettingsId, data.semesterSettingsId),
+        eq(courseWeekMappings.weekNumber, data.weekNumber)
+      )
+    );
+    if (existing.length > 0) {
+      const [updated] = await db.update(courseWeekMappings)
+        .set({ confirmed: data.confirmed, courseWeekLabel: data.courseWeekLabel, notes: data.notes })
+        .where(eq(courseWeekMappings.id, existing[0].id))
+        .returning();
+      return updated;
+    }
+    const [created] = await db.insert(courseWeekMappings).values(data).returning();
+    return created;
+  }
+
   async getScholarships(): Promise<Scholarship[]> {
     return await db.select().from(scholarships);
   }

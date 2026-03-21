@@ -526,6 +526,20 @@ export const insertSemesterChecklistSchema = createInsertSchema(semesterChecklis
 export type SemesterChecklistItem = typeof semesterChecklist.$inferSelect;
 export type InsertSemesterChecklistItem = z.infer<typeof insertSemesterChecklistSchema>;
 
+export const courseWeekMappings = pgTable("course_week_mappings", {
+  id: serial("id").primaryKey(),
+  courseCode: text("course_code").notNull(),
+  semesterSettingsId: integer("semester_settings_id").notNull(),
+  weekNumber: integer("week_number").notNull(),
+  confirmed: boolean("confirmed").default(false),
+  courseWeekLabel: text("course_week_label"),
+  notes: text("notes"),
+});
+
+export const insertCourseWeekMappingSchema = createInsertSchema(courseWeekMappings).omit({ id: true });
+export type CourseWeekMapping = typeof courseWeekMappings.$inferSelect;
+export type InsertCourseWeekMapping = z.infer<typeof insertCourseWeekMappingSchema>;
+
 export const scholarships = pgTable("scholarships", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),

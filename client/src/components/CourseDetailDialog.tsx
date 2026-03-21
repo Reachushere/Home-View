@@ -40,8 +40,8 @@ import wifiLogoPath from "@assets/Wifi_1773656687145.png";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useUpload } from "@/hooks/use-upload";
-import { TASK_TYPES, getWeekNumber, REMINDER_OPTIONS, REPEAT_TYPES, REPEAT_INTERVAL_UNITS } from "@shared/schema";
-import type { Task } from "@shared/schema";
+import { TASK_TYPES, getWeekNumber, getWeekDates, FIRST_WEEK, LAST_WEEK, REMINDER_OPTIONS, REPEAT_TYPES, REPEAT_INTERVAL_UNITS } from "@shared/schema";
+import type { Task, CourseWeekMapping } from "@shared/schema";
 
 const TASK_TYPE_OPTIONS = [
   { value: "reading", label: "Reading", icon: BookOpen },
@@ -263,6 +263,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
         } catch {}
       });
   }, [courseInfo.courseCode]);
+  const [showWeekMappings, setShowWeekMappings] = useState(false);
+  const [weekMappingEdits, setWeekMappingEdits] = useState<Record<number, { confirmed: boolean; courseWeekLabel: string; notes: string }>>({});
   const [weekStyleChoice, setWeekStyleChoice] = useState<string | null>(null);
   const { uploadFile, isUploading } = useUpload();
   const [editInfo, setEditInfo] = useState({
@@ -332,6 +334,58 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
       .filter((t) => t.courseName === courseInfo.fullName && t.type !== 'class' && t.type !== 'module')
       .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0) || new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   }, [allTasks, courseInfo.fullName]);
+
+  const { data: weekMappingsData } = useQuery<CourseWeekMapping[]>({
+    queryKey: ['/api/course-week-mappings', courseInfo.courseCode],
+    queryFn: () => fetch(`/api/course-week-mappings/${courseInfo.courseCode}`).then(r => r.json()),
+  });
+
+  useEffect(() => {
+    if (weekMappingsData && weekMappingsData.length > 0) {
+      const edits: Record<number, { confirmed: boolean; courseWeekLabel: string; notes: string }> = {};
+      for (const m of weekMappingsData) {
+        edits[m.weekNumber] = { confirmed: m.confirmed ?? false, courseWeekLabel: m.courseWeekLabel || '', notes: m.notes || '' };
+      }
+      setWeekMappingEdits(prev => {
+        const merged = { ...prev };
+        for (const [k, v] of Object.entries(edits)) {
+          if (!(Number(k) in merged)) merged[Number(k)] = v;
+        }
+        return merged;
+      });
+    }
+  }, [weekMappingsData]);
+
+  const saveWeekMapping = useCallback(async (weekNumber: number, data: { confirmed: boolean; courseWeekLabel: string; notes: string }) => {
+    try {
+      await fetch('/api/course-week-mappings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ courseCode: courseInfo.courseCode, weekNumber, ...data }),
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/course-week-mappings', courseInfo.courseCode] });
+    } catch {}
+  }, [courseInfo.courseCode]);
+
+  const confirmAllWeeks = useCallback(async () => {
+    const mappings = [];
+    for (let w = FIRST_WEEK; w <= LAST_WEEK; w++) {
+      const existing = weekMappingEdits[w];
+      mappings.push({ weekNumber: w, confirmed: true, courseWeekLabel: existing?.courseWeekLabel || '', notes: existing?.notes || '' });
+    }
+    try {
+      await fetch('/api/course-week-mappings/bulk', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ courseCode: courseInfo.courseCode, mappings }),
+      });
+      const edits: Record<number, { confirmed: boolean; courseWeekLabel: string; notes: string }> = {};
+      for (const m of mappings) edits[m.weekNumber] = { confirmed: true, courseWeekLabel: m.courseWeekLabel, notes: m.notes };
+      setWeekMappingEdits(edits);
+      queryClient.invalidateQueries({ queryKey: ['/api/course-week-mappings', courseInfo.courseCode] });
+      toast({ title: 'All weeks confirmed' });
+    } catch {}
+  }, [courseInfo.courseCode, weekMappingEdits, toast]);
 
   type SortField = 'manual' | 'title' | 'dueDate' | 'score' | 'total' | 'weight' | 'percent';
   const [sortField, setSortField] = useState<SortField>('manual');
@@ -1830,6 +1884,124 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
               </div>
             </div>
           )}
+
+          <div className="p-3 border-t border-white/10">
+            <div
+              className="flex items-center justify-between cursor-pointer group"
+              onClick={() => setShowWeekMappings(!showWeekMappings)}
+              data-testid="button-toggle-week-mappings"
+            >
+              <div className="flex items-center gap-2">
+                <Calendar className="h-3.5 w-3.5 text-white/70" />
+                <h3 className="text-[11px] font-medium text-white">Week Numbers</h3>
+                {(() => {
+                  const confirmed = Object.values(weekMappingEdits).filter(v => v.confirmed).length;
+                  const total = LAST_WEEK - FIRST_WEEK + 1;
+                  return (
+                    <span className={`text-[9px] ${confirmed === total ? 'text-green-400' : 'text-white/50'}`}>
+                      {confirmed}/{total} confirmed
+                    </span>
+                  );
+                })()}
+              </div>
+              <div className="flex items-center gap-1">
+                {showWeekMappings ? <ChevronDown className="h-3 w-3 text-white/50" /> : <ChevronRight className="h-3 w-3 text-white/50" />}
+              </div>
+            </div>
+
+            {showWeekMappings && (
+              <div className="mt-2 bg-white/5 border border-white/15 rounded-lg p-3 space-y-1" data-testid="week-mappings-panel">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[9px] text-white/60">Confirm each week follows the standard TMU academic calendar for this course</span>
+                  <Button
+                    size="sm"
+                    onClick={confirmAllWeeks}
+                    className="h-5 px-2 text-[8px] bg-green-500/20 hover:bg-green-500/30 text-green-300 border border-green-500/30"
+                    data-testid="button-confirm-all-weeks"
+                  >
+                    <Check className="h-2.5 w-2.5 mr-1" />
+                    Confirm All
+                  </Button>
+                </div>
+
+                {Array.from({ length: LAST_WEEK - FIRST_WEEK + 1 }, (_, i) => i + FIRST_WEEK).map((weekNum) => {
+                  const weekDates = getWeekDates(weekNum, semesterStart, readingWeekStart);
+                  const weekStart = new Date(weekDates.start);
+                  const weekEnd = new Date(weekDates.end);
+                  const formatDate = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                  const dateRange = `${formatDate(weekStart)} - ${formatDate(weekEnd)}`;
+                  const edit = weekMappingEdits[weekNum] || { confirmed: false, courseWeekLabel: '', notes: '' };
+                  const isConfirmed = edit.confirmed;
+                  const hasCustomLabel = edit.courseWeekLabel && edit.courseWeekLabel !== '';
+                  const currentWeek = getWeekNumber(new Date(), semesterStart, null);
+                  const isCurrent = weekNum === currentWeek;
+
+                  return (
+                    <div
+                      key={weekNum}
+                      className={`flex items-center gap-2 px-2 py-1.5 rounded ${isCurrent ? 'bg-blue-500/10 border border-blue-500/20' : 'hover:bg-white/5'}`}
+                      data-testid={`week-mapping-row-${weekNum}`}
+                    >
+                      <button
+                        onClick={() => {
+                          const newState = { ...edit, confirmed: !isConfirmed };
+                          setWeekMappingEdits(prev => ({ ...prev, [weekNum]: newState }));
+                          saveWeekMapping(weekNum, newState);
+                        }}
+                        className={`flex-shrink-0 w-5 h-5 rounded border flex items-center justify-center transition-colors ${
+                          isConfirmed
+                            ? 'bg-green-500/30 border-green-500/50 text-green-300'
+                            : 'bg-white/5 border-white/20 text-white/30 hover:border-white/40'
+                        }`}
+                        data-testid={`button-confirm-week-${weekNum}`}
+                      >
+                        {isConfirmed && <Check className="h-3 w-3" />}
+                      </button>
+
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <span className={`text-[10px] font-medium ${isCurrent ? 'text-blue-300' : 'text-white'}`}>
+                            Week {weekNum}
+                          </span>
+                          <span className="text-[8px] text-white/40">{dateRange}</span>
+                          {isCurrent && <span className="text-[7px] px-1 py-0.5 bg-blue-500/20 text-blue-300 rounded">Current</span>}
+                          {hasCustomLabel && (
+                            <span className="text-[8px] px-1 py-0.5 bg-amber-500/15 text-amber-300 rounded">
+                              Course: {edit.courseWeekLabel}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <input
+                        type="text"
+                        placeholder="Course week"
+                        value={edit.courseWeekLabel}
+                        onChange={(e) => {
+                          setWeekMappingEdits(prev => ({ ...prev, [weekNum]: { ...edit, courseWeekLabel: e.target.value } }));
+                        }}
+                        onBlur={() => saveWeekMapping(weekNum, edit)}
+                        className="w-20 h-5 text-[8px] bg-white/5 border border-white/15 rounded px-1.5 text-white placeholder:text-white/20 focus:border-white/30 outline-none"
+                        data-testid={`input-course-week-label-${weekNum}`}
+                      />
+
+                      <input
+                        type="text"
+                        placeholder="Notes"
+                        value={edit.notes}
+                        onChange={(e) => {
+                          setWeekMappingEdits(prev => ({ ...prev, [weekNum]: { ...edit, notes: e.target.value } }));
+                        }}
+                        onBlur={() => saveWeekMapping(weekNum, edit)}
+                        className="w-24 h-5 text-[8px] bg-white/5 border border-white/15 rounded px-1.5 text-white placeholder:text-white/20 focus:border-white/30 outline-none"
+                        data-testid={`input-week-notes-${weekNum}`}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
 
           <div className="p-3">
             <div className="flex items-center justify-between mb-2">
