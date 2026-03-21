@@ -799,15 +799,18 @@ export default function SpotifyPlayerPage() {
     const announceMessage = isJp
       ? `${artistData.name}を${ROOM_JP[roomName] || roomName}で再生します`
       : `Now playing ${artistData.name} on the ${roomName}`;
+    console.log(`[PlayOnRoom] ${roomName}: entity=${entityId}, device=${deviceType}, artist=${artistData.name}, uri=${artistData.uri}`);
     try {
-      await fetch(`/api/spotify/play-on-speaker${authQuery}`, {
+      const resp = await fetch(`/api/spotify/play-on-speaker${authQuery}`, {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ entityId, spotifyUri: artistData.uri, artistName: artistData.name, deviceType, announceMessage }),
       });
+      const data = await resp.json();
+      console.log(`[PlayOnRoom] Response: ${resp.status}`, data);
       setActiveRooms(prev => new Set(prev).add(roomName));
       showNotif(`Playing ${artistData.name} in ${roomName}`);
       setTimeout(fetchNowPlaying, 1500);
-    } catch { showNotif("Failed to play"); }
+    } catch (err) { console.error("[PlayOnRoom] Error:", err); showNotif("Failed to play"); }
   };
 
   const playStation = async (station: StationShortcut) => {
