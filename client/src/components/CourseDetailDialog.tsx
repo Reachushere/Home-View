@@ -1697,6 +1697,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     </label>
                   </div>
                 </div>
+              </div>
             ) : (
               <>
                 <div className="grid grid-cols-[1fr_1fr] gap-x-4 gap-y-1.5 text-[10px]">
