@@ -1059,7 +1059,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             <span className="capitalize">{task.type}</span>
           </div>
         </div>
-        <div className="flex items-center flex-shrink-0" style={{ gap: '10px', marginLeft: '-8px' }} onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center flex-shrink-0" style={{ gap: '10px' }} onClick={(e) => e.stopPropagation()}>
           <DebouncedGradeInput
             value={task.gradeValue}
             onSave={(val) => updateGradeValueMutation.mutate({ id: task.id, gradeValue: val, _task: task })}
@@ -2599,13 +2599,13 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     <span className="text-[8px] font-bold text-white">Assign</span>
                   </div>
                   <div className="flex-shrink-0" style={{ width: '16px', marginRight: '10px' }} />
-                  <div className="flex-shrink-0" style={{ width: '19px', marginRight: '10px', overflow: 'visible', position: 'relative' }}>
-                    <span className="text-[8px] font-bold text-white" style={{ whiteSpace: 'nowrap', position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>Comments</span>
+                  <div className="flex-shrink-0 flex justify-center" style={{ width: '19px', marginRight: '10px', overflow: 'visible' }}>
+                    <span className="text-[8px] font-bold text-white" style={{ whiteSpace: 'nowrap' }}>Comments</span>
                   </div>
                   <div className={`flex-1 min-w-0 ${hdrCls('title')}`} style={{ marginLeft: '22px' }} onClick={() => toggleSort('title')} data-testid="sort-title">
                     Assignment<SortIcon field="title" />
                   </div>
-                  <div className="flex items-end flex-shrink-0 text-white" style={{ gap: '10px', marginLeft: '-8px' }}>
+                  <div className="flex items-end flex-shrink-0 text-white" style={{ gap: '10px' }}>
                     <span className={`w-[33px] text-center leading-tight ${hdrCls('score')}`} onClick={() => toggleSort('score')} style={{ display: 'inline-flex', justifyContent: 'center' }} data-testid="sort-score">
                       Score<SortIcon field="score" />
                     </span>
@@ -2692,7 +2692,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 <div className="flex-shrink-0 w-4" style={{ marginRight: '10px' }} />
                 <div className="flex-shrink-0" style={{ width: '19px', marginRight: '10px' }} />
                 <div className="flex-1 min-w-0 text-[11px] font-bold text-white" style={{ marginLeft: '22px' }}>Totals</div>
-                <div className="flex items-center flex-shrink-0" style={{ gap: '10px', marginLeft: '-8px' }}>
+                <div className="flex items-center flex-shrink-0" style={{ gap: '10px' }}>
                   <span className="text-[11px] font-bold w-[33px] text-center text-amber-400" data-testid="text-sum-value">
                     {(() => { const v = courseTasks.filter(t => !t.excludeFromGpa).reduce((s, t) => s + (t.gradeValue || 0), 0); return v ? v.toFixed(2) : '—'; })()}
                   </span>
