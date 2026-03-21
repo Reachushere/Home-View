@@ -14004,9 +14004,35 @@ Return ONLY the JSON object, no markdown formatting.`;
 
   app.post("/api/spotify/play-on-speaker", async (req, res) => {
     try {
-      const { entityId, spotifyUri, artistName, searchQuery, deviceType, announceMessage } = req.body;
+      const { entityId, spotifyUri, artistName, searchQuery, deviceType, announceMessage, command } = req.body;
       if (!entityId) return res.status(400).json({ error: "entityId required" });
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+
+      if (command === "pause" || command === "stop") {
+        const SPOTIFYPLUS_ENTITY = "media_player.spotifyplus_byhomeyyz";
+        console.log(`[Spotify] ${command} command for entity: ${entityId}`);
+        try {
+          await fetch(`${haUrl}/api/services/media_player/media_${command === "stop" ? "stop" : "pause"}`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ entity_id: SPOTIFYPLUS_ENTITY }),
+          });
+          console.log(`[Spotify] SpotifyPlus ${command} sent`);
+        } catch (e: any) {
+          console.log(`[Spotify] SpotifyPlus ${command} failed: ${e.message}`);
+        }
+        try {
+          await fetch(`${haUrl}/api/services/media_player/media_${command === "stop" ? "stop" : "pause"}`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ entity_id: entityId }),
+          });
+          console.log(`[Spotify] ${command} sent to ${entityId}`);
+        } catch (e: any) {
+          console.log(`[Spotify] ${command} on ${entityId} failed: ${e.message}`);
+        }
+        return res.json({ ok: true, action: command });
+      }
 
       const isEcho = entityId.includes("echo") || entityId.includes("_am") || deviceType === "echo" || deviceType === "echo_show";
 

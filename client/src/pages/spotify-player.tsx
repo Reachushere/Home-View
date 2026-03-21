@@ -1893,7 +1893,7 @@ export default function SpotifyPlayerPage() {
               style={{ color: tc.navIdle }} data-testid="btn-prev">
               <SkipBack className="h-5 w-5" />
             </button>
-            <button onClick={() => doAction(isPlaying ? "pause" : "play")}
+            <button onClick={() => doAction(isPlaying ? "pause" : "play", "PUT")}
               className="w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-105 active:scale-95"
               style={{
                 background: `linear-gradient(135deg, ${profile.accent}cc, ${profile.accent})`,
