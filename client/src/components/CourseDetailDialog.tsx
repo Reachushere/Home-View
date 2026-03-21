@@ -2612,7 +2612,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                   className="flex items-center gap-1 text-[8px] text-white/50 hover:text-white/80 transition-colors"
                   data-testid="button-create-group"
                 >
-                  <span>New Group</span>
+                  <span>Comments</span>
                 </button>
                 {showGroupInput && (
                   <div className="flex items-center gap-1 ml-1">
