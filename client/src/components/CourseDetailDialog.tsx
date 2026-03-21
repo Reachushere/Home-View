@@ -2570,12 +2570,12 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 `cursor-pointer select-none hover:text-white/80 transition-colors ${sortField === field ? 'text-white/90' : ''}`;
               return (
                 <div className="flex items-center gap-1.5 px-1.5 py-1 text-[7px] font-bold text-white tracking-wider" style={{ margin: '0 4px', letterSpacing: '0' }}>
-                  <div className="flex-shrink-0" style={{ width: '14px', marginRight: '3px' }} />
+                  <div className="flex-shrink-0" style={{ width: '14px' }} />
                   <div className="flex-shrink-0 text-center" style={{ width: '19px', lineHeight: '1.1' }}>
                     <span className="text-[7px] font-bold text-white">Assign</span>
                   </div>
-                  <div className="flex-shrink-0 w-4" style={{ marginRight: '3px' }} />
-                  <div className="flex-shrink-0" style={{ width: '19px', marginRight: '10px', lineHeight: '1.1', textAlign: 'center' }}>
+                  <div className="flex-shrink-0 w-4" />
+                  <div className="flex-shrink-0" style={{ width: '19px', lineHeight: '1.1', textAlign: 'center' }}>
                     <span className="text-[7px] font-bold text-white">New<br/>Group</span>
                   </div>
                   <div className={`flex-1 min-w-0 ${hdrCls('title')}`} onClick={() => toggleSort('title')} style={{ paddingLeft: '6px' }} data-testid="sort-title">
