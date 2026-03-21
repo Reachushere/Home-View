@@ -14065,57 +14065,107 @@ Return ONLY the JSON object, no markdown formatting.`;
           }
         }
 
-        const isArtistUri = spotifyUri && spotifyUri.startsWith("spotify:artist:");
-        const isTrackUri = spotifyUri && spotifyUri.startsWith("spotify:track:");
-        const groupEntityId = entityId !== targetEntity ? entityId : null;
+        const SPOTIFYPLUS_ENTITY = "media_player.spotifyplus_byhomeyyz";
         
-        console.log(`[Spotify] Waking up Echo: ${targetEntity}`);
-        try {
-          await fetch(`${haUrl}/api/services/media_player/turn_on`, {
+        const spotifyPlusSourceMap: Record<string, string> = {
+          "media_player.byhome": "BYhome",
+          "media_player.king_bedroom_media_group": "King Bedroom",
+          "media_player.queen_bedroom_media_group": "Queen Bedroom",
+          "media_player.living_room_media_group": "Home Theater",
+          "media_player.closet_media_group": "Echo - Closet AM",
+          "media_player.pug_media_group": "Echo Show - Pug AM",
+          "media_player.echo_closet_am": "Echo - Closet AM",
+          "media_player.echo_show_pug_am": "Echo Show - Pug AM",
+          "media_player.echo_lr_couch_l_am": "Echo - LR Couch (L) AM",  
+          "media_player.echo_lr_studio_white_am": "Echo - LR Studio White AM",
+          "media_player.echo_king_l_am": "Echo - King (L) AM",
+          "media_player.echo_king_r_am": "Echo - King (R) AM",
+          "media_player.echo_king_tv_am": "Echo - King TV AM",
+          "media_player.echo_queen_bed_l_am": "Echo - Queen Bed (L) AM",
+          "media_player.echo_queen_bed_r_am": "Echo - Queen Bed (R) AM",
+          "media_player.echo_queen_balcony_am": "Echo - Queen Balcony AM",
+          "media_player.echo_kitchen_island_corner_am": "Echo - Kitchen Island Corner AM",
+          "media_player.echo_kitchen_studio_black_am": "Echo - Kitchen Studio Black AM",
+          "media_player.echo_kitchen_cupboards_left_am": "Echo - Kitchen Cupboards (Left) AM",
+          "media_player.echo_kitchen_cupboards_r_am": "Echo - Kitchen Cupboards (R) AM",
+          "media_player.echo_kitchen_hutch_am": "Echo - Kitchen Hutch AM",
+          "media_player.echo_kitchen_fridge_am": "Echo - Kitchen Fridge AM",
+          "media_player.echo_hallway_entrance_am": "Echo - Hallway Corner",
+          "media_player.echo_lr_hub_am": "Echo - LR Hub AM",
+          "media_player.echo_lr_tv_shelf_am": "Echo - LR TV Shelf AM",
+        };
+
+        const groupEntityId = entityId !== targetEntity ? entityId : null;
+        const spSource = spotifyPlusSourceMap[entityId] || spotifyPlusSourceMap[targetEntity];
+        
+        if (spSource && spotifyUri) {
+          console.log(`[Spotify] Using SpotifyPlus: selecting source "${spSource}" then playing ${spotifyUri}`);
+          
+          try {
+            await fetch(`${haUrl}/api/services/media_player/turn_on`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ entity_id: SPOTIFYPLUS_ENTITY }),
+            });
+            await new Promise(resolve => setTimeout(resolve, 500));
+          } catch (e: any) {
+            console.log(`[Spotify] SpotifyPlus turn_on failed (continuing): ${e.message}`);
+          }
+
+          const selectResp = await fetch(`${haUrl}/api/services/media_player/select_source`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ entity_id: targetEntity }),
+            body: JSON.stringify({
+              entity_id: SPOTIFYPLUS_ENTITY,
+              source: spSource,
+            }),
           });
+          console.log(`[Spotify] SpotifyPlus select_source "${spSource}": ${selectResp.status}`);
           await new Promise(resolve => setTimeout(resolve, 1500));
-        } catch (wakeErr: any) {
-          console.log(`[Spotify] Wake-up failed (continuing): ${wakeErr.message}`);
-        }
 
-        const playTarget = groupEntityId || targetEntity;
-        const searchTerm = searchQuery || artistName || "music";
-        const voiceCommand = `play ${searchTerm} on Spotify`;
-        
-        console.log(`[Spotify] Sending voice command to ${targetEntity}: "${voiceCommand}"`);
-        const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            entity_id: targetEntity,
-            media_content_id: voiceCommand,
-            media_content_type: "custom",
-          }),
-        });
-        const playText = await playResp.text();
-        console.log(`[Spotify] Voice command response: ${playResp.status} body=${playText.substring(0, 300)}`);
-
-        if (groupEntityId && groupEntityId !== targetEntity) {
-          console.log(`[Spotify] Waiting 3s then sending same command to group: ${groupEntityId}`);
-          await new Promise(resolve => setTimeout(resolve, 3000));
+          const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              entity_id: SPOTIFYPLUS_ENTITY,
+              media_content_id: spotifyUri,
+              media_content_type: "spotify",
+            }),
+          });
+          const playText = await playResp.text();
+          console.log(`[Spotify] SpotifyPlus play response: ${playResp.status} body=${playText.substring(0, 300)}`);
+        } else {
+          console.log(`[Spotify] No SpotifyPlus source for ${entityId}, using voice command fallback`);
+          const searchTerm = searchQuery || artistName || "music";
+          const voiceCommand = `play ${searchTerm} on Spotify`;
+          
+          console.log(`[Spotify] Waking up Echo: ${targetEntity}`);
+          try {
+            await fetch(`${haUrl}/api/services/media_player/turn_on`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ entity_id: targetEntity }),
+            });
+            await new Promise(resolve => setTimeout(resolve, 1500));
+          } catch (wakeErr: any) {
+            console.log(`[Spotify] Wake-up failed (continuing): ${wakeErr.message}`);
+          }
+          
+          console.log(`[Spotify] Sending voice command to ${targetEntity}: "${voiceCommand}"`);
           await fetch(`${haUrl}/api/services/media_player/play_media`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              entity_id: groupEntityId,
+              entity_id: targetEntity,
               media_content_id: voiceCommand,
               media_content_type: "custom",
             }),
           });
-          console.log(`[Spotify] Group voice command sent to ${groupEntityId}`);
         }
       } else {
-        const fallbackSearch = searchQuery || artistName || "music";
-        const voiceCmd = `play ${fallbackSearch} on Spotify`;
-        console.log(`[Spotify] Sending voice command to ${entityId}: "${voiceCmd}"`);
+        const searchTerm = searchQuery || artistName || "music";
+        const voiceCmd = `play ${searchTerm} on Spotify`;
+        console.log(`[Spotify] Non-echo device, sending voice command to ${entityId}: "${voiceCmd}"`);
         await fetch(`${haUrl}/api/services/media_player/play_media`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
