@@ -1294,7 +1294,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
         <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(255,255,255,0.2) transparent" }}>
           <div className="p-3 border-b border-white/10 space-y-2">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-[9px] text-white uppercase tracking-wider font-semibold">Course Info</span>
+              <span className="text-[11px] text-white uppercase font-medium">Course Info</span>
               {!isEditingInfo ? (
                 <button
                   onClick={() => setIsEditingInfo(true)}
@@ -2708,7 +2708,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             <div className="mx-3 mb-3 p-3 rounded-lg border border-white/20" style={{ background: 'rgba(255,255,255,0.08)' }} data-testid="grade-calculator-box">
               <div className="flex items-center gap-2 mb-2">
                 <GraduationCap className="h-4 w-4 text-white" />
-                <span className="text-[13px] font-bold text-white">Grade Calculator</span>
+                <span className="text-[11px] font-medium text-white uppercase">Grade Calculator</span>
                 <span className="text-[11px] text-white/80 ml-auto">{gradeCalc.gradedCount} graded · {gradeCalc.gradedWeight.toFixed(2)}% of {(totalWeight || gradeCalc.gradedWeight).toFixed(2)}% weight</span>
               </div>
               <div className="text-center p-3 rounded-md" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }}>
