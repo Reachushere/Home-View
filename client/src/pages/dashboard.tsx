@@ -22247,7 +22247,7 @@ export default function Dashboard() {
                                 const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                                 const isLastTask = taskIdx === group.tasks.length - 1;
                                 return (
-                                  <div key={task.id} style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: taskIdx % 2 === 0 ? '#051729' : 'transparent', marginLeft: '-25px', marginRight: '-7px', paddingLeft: '25px', paddingRight: '7px' }}
+                                  <div key={task.id} style={{ position: 'relative', overflow: 'hidden', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: taskIdx % 2 === 0 ? '#051729' : 'transparent', marginLeft: '-40px', marginRight: '-7px', paddingLeft: '40px', paddingRight: '7px' }}
                                     onMouseEnter={() => setHoveredCountdownTaskIdDebounced(task.id)}
                                     onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                                     ref={(rowEl) => {
@@ -22315,7 +22315,7 @@ export default function Dashboard() {
                                             </div>
                                           )}
                                         </div>
-                                        <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px', marginLeft: '-3px' }}>
+                                        <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', gap: '1px', marginLeft: '-3px', position: 'relative', left: '-9px' }}>
                                           <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
 
                                         </div>
