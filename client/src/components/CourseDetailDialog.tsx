@@ -2599,8 +2599,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     <span className="text-[8px] font-bold text-white">Assign</span>
                   </div>
                   <div className="flex-shrink-0" style={{ width: '16px', marginRight: '10px' }} />
-                  <div className="flex-shrink-0 text-center" style={{ width: '19px', marginRight: '10px', overflow: 'visible' }}>
-                    <span className="text-[8px] font-bold text-white" style={{ whiteSpace: 'nowrap' }}>Comments</span>
+                  <div className="flex-shrink-0" style={{ width: '19px', marginRight: '10px', overflow: 'visible', position: 'relative' }}>
+                    <span className="text-[8px] font-bold text-white" style={{ whiteSpace: 'nowrap', position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>Comments</span>
                   </div>
                   <div className={`flex-1 min-w-0 ${hdrCls('title')}`} style={{ marginLeft: '16px' }} onClick={() => toggleSort('title')} data-testid="sort-title">
                     Assignment<SortIcon field="title" />
