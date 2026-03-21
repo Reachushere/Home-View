@@ -121,17 +121,17 @@ const ROOM_JP: Record<string, string> = {
   "Everywhere": "全室",
 };
 
-const ROOM_HOTSPOTS: { room: string; x: number; y: number; w: number; h: number; entityId: string; groupEntityId: string; deviceType: string; icon: string; nightImg?: string; labelOffsetX?: number; labelOffsetY?: number; hideLabel?: boolean }[] = [
+const ROOM_HOTSPOTS: { room: string; x: number; y: number; w: number; h: number; entityId: string; groupEntityId: string; deviceType: string; icon: string; nightImg?: string; labelOffsetX?: number; labelOffsetY?: number; volumeOffsetX?: number; volumeOffsetY?: number; hideLabel?: boolean }[] = [
   { room: "Balcony", x: 2, y: 72, w: 18, h: 25, entityId: "media_player.balcony_speaker", groupEntityId: "media_player.balcony_media_group", deviceType: "echo", icon: "balcony", hideLabel: true },
-  { room: "Queen Bedroom", x: 2, y: 38, w: 18, h: 33, entityId: "media_player.queen_bedroom", groupEntityId: "media_player.queen_bedroom_media_group", deviceType: "echo", icon: "bed", nightImg: queenNight, labelOffsetX: 95, labelOffsetY: -75 },
-  { room: "Pug Washroom", x: 2, y: 5, w: 16, h: 32, entityId: "media_player.echo_show_pug_am", groupEntityId: "media_player.pug_media_group", deviceType: "echo_show", icon: "bath", nightImg: pugNight, labelOffsetX: 0, labelOffsetY: 90 },
-  { room: "Hallway", x: 19, y: 5, w: 16, h: 32, entityId: "media_player.hallway_2", groupEntityId: "media_player.hallway_media_group", deviceType: "echo", icon: "hallway", nightImg: hallwayNight, labelOffsetX: 0, labelOffsetY: 0 },
-  { room: "Kitchen", x: 36, y: 5, w: 28, h: 45, entityId: "media_player.kitchen_lr", groupEntityId: "media_player.kitchen_media_group", deviceType: "echo", icon: "kitchen", nightImg: kitchenNight, labelOffsetX: -20, labelOffsetY: 110 },
-  { room: "Living Room", x: 36, y: 52, w: 28, h: 45, entityId: "media_player.kitchen_lr", groupEntityId: "media_player.living_room_media_group", deviceType: "echo", icon: "sofa", nightImg: livingRoomNight, labelOffsetX: -5, labelOffsetY: -55 },
-  { room: "King Bedroom", x: 65, y: 30, w: 33, h: 50, entityId: "media_player.king_bedroom", groupEntityId: "media_player.king_bedroom_media_group", deviceType: "echo", icon: "crown", nightImg: kingNight, labelOffsetX: -80, labelOffsetY: -59 },
-  { room: "Cat Washroom", x: 84, y: 3, w: 14, h: 26, entityId: "media_player.cat_speakers", groupEntityId: "media_player.cat_washroom_media_group", deviceType: "echo", icon: "bath", nightImg: catNight, labelOffsetX: -250, labelOffsetY: 30 },
-  { room: "Closet", x: 65, y: 3, w: 18, h: 26, entityId: "media_player.echo_closet_am", groupEntityId: "media_player.closet_media_group", deviceType: "echo", icon: "closet", nightImg: closetNight },
-  { room: "Everywhere", x: 84, y: 78, w: 14, h: 18, entityId: "media_player.byhome", groupEntityId: "media_player.byhome", deviceType: "echo", icon: "everywhere", labelOffsetX: 20, labelOffsetY: 0 },
+  { room: "Queen Bedroom", x: 2, y: 38, w: 18, h: 33, entityId: "media_player.queen_bedroom", groupEntityId: "media_player.queen_bedroom_media_group", deviceType: "echo", icon: "bed", nightImg: queenNight, labelOffsetX: 95, labelOffsetY: -75, volumeOffsetX: 95, volumeOffsetY: -20 },
+  { room: "Pug Washroom", x: 2, y: 5, w: 16, h: 32, entityId: "media_player.echo_show_pug_am", groupEntityId: "media_player.pug_media_group", deviceType: "echo_show", icon: "bath", nightImg: pugNight, labelOffsetX: 0, labelOffsetY: 90, volumeOffsetX: 0, volumeOffsetY: 130 },
+  { room: "Hallway", x: 19, y: 5, w: 16, h: 32, entityId: "media_player.hallway_2", groupEntityId: "media_player.hallway_media_group", deviceType: "echo", icon: "hallway", nightImg: hallwayNight, labelOffsetX: 0, labelOffsetY: 0, volumeOffsetX: 40, volumeOffsetY: 40 },
+  { room: "Kitchen", x: 36, y: 5, w: 28, h: 45, entityId: "media_player.kitchen_lr", groupEntityId: "media_player.kitchen_media_group", deviceType: "echo", icon: "kitchen", nightImg: kitchenNight, labelOffsetX: -20, labelOffsetY: 110, volumeOffsetX: 50, volumeOffsetY: 110 },
+  { room: "Living Room", x: 36, y: 52, w: 28, h: 45, entityId: "media_player.kitchen_lr", groupEntityId: "media_player.living_room_media_group", deviceType: "echo", icon: "sofa", nightImg: livingRoomNight, labelOffsetX: -5, labelOffsetY: -55, volumeOffsetX: 55, volumeOffsetY: -55 },
+  { room: "King Bedroom", x: 65, y: 30, w: 33, h: 50, entityId: "media_player.king_bedroom", groupEntityId: "media_player.king_bedroom_media_group", deviceType: "echo", icon: "crown", nightImg: kingNight, labelOffsetX: -80, labelOffsetY: -59, volumeOffsetX: -20, volumeOffsetY: -59 },
+  { room: "Cat Washroom", x: 84, y: 3, w: 14, h: 26, entityId: "media_player.cat_speakers", groupEntityId: "media_player.cat_washroom_media_group", deviceType: "echo", icon: "bath", nightImg: catNight, labelOffsetX: -250, labelOffsetY: 30, volumeOffsetX: -190, volumeOffsetY: 30 },
+  { room: "Closet", x: 65, y: 3, w: 18, h: 26, entityId: "media_player.echo_closet_am", groupEntityId: "media_player.closet_media_group", deviceType: "echo", icon: "closet", nightImg: closetNight, volumeOffsetX: 0, volumeOffsetY: 40 },
+  { room: "Everywhere", x: 84, y: 78, w: 14, h: 18, entityId: "media_player.byhome", groupEntityId: "media_player.byhome", deviceType: "echo", icon: "everywhere", labelOffsetX: 20, labelOffsetY: 0, volumeOffsetX: -40, volumeOffsetY: 0 },
 ];
 
 type ViewMode = "floor" | "stations" | "rooms";
@@ -1825,64 +1825,23 @@ export default function SpotifyPlayerPage() {
                               data-testid={`floorplan-ungroup-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
                               {isSakura ? "✕ 解除" : "✕ Ungroup"}
                             </button>
-                            {spot.room !== "Everywhere" && spot.room !== "Pug Washroom" && spot.room !== "Hallway" && spot.room !== "Living Room" && spot.room !== "Kitchen" && (
-                              <div className="mt-1" onClick={(e) => e.stopPropagation()} data-testid={`volume-knob-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
-                                <VolumeKnob value={roomVolumes[spot.room] ?? 30} onChange={(v) => setRoomVolume(spot.room, v)} size={50} accent={profile.accent} glow={profile.glow} />
-                              </div>
-                            )}
-                            {spot.room === "Living Room" && (
-                              <div className="absolute" style={{ left: 'calc(100% + 8px)', top: '50%', transform: 'translateY(-50%)', zIndex: 10 }} onClick={(e) => e.stopPropagation()} data-testid="volume-knob-living-room">
-                                <VolumeKnob value={roomVolumes[spot.room] ?? 30} onChange={(v) => setRoomVolume(spot.room, v)} size={50} accent={profile.accent} glow={profile.glow} />
-                              </div>
-                            )}
-                            {spot.room === "Kitchen" && (
-                              <div className="absolute" style={{ left: 'calc(100% + 8px)', top: '50%', transform: 'translateY(-50%)', zIndex: 10 }} onClick={(e) => e.stopPropagation()} data-testid="volume-knob-kitchen">
-                                <VolumeKnob value={roomVolumes[spot.room] ?? 30} onChange={(v) => setRoomVolume(spot.room, v)} size={50} accent={profile.accent} glow={profile.glow} />
-                              </div>
-                            )}
-                            {spot.room === "Pug Washroom" && (
-                              <div className="mt-1" onClick={(e) => e.stopPropagation()} data-testid="volume-knob-pug-washroom">
-                                <VolumeKnob value={roomVolumes[spot.room] ?? 30} onChange={(v) => setRoomVolume(spot.room, v)} size={50} accent={profile.accent} glow={profile.glow} />
-                              </div>
-                            )}
-                            {spot.room === "Hallway" && (
-                              <div className="absolute" style={{ right: '-78px', top: '20px', zIndex: 10 }} onClick={(e) => e.stopPropagation()} data-testid="volume-knob-hallway">
-                                <VolumeKnob value={roomVolumes[spot.room] ?? 30} onChange={(v) => setRoomVolume(spot.room, v)} size={50} accent={profile.accent} glow={profile.glow} />
-                              </div>
-                            )}
                           </>
                         )}
-                        {spot.room === "Everywhere" && activeRooms.has("Everywhere") && (
-                          <div className="absolute" style={{ right: 'calc(100% + 8px)', top: '50%', transform: 'translateY(-50%)', zIndex: 10 }} onClick={(e) => e.stopPropagation()} data-testid="volume-knob-everywhere-global">
-                            <VolumeKnob value={roomVolumes["Everywhere"] ?? 30} onChange={(v) => setRoomVolume("Everywhere", v)} size={56} accent={profile.accent} glow={profile.glow} />
-                          </div>
-                        )}
                       </div>}
+                      {(isActive || activeRooms.has("Everywhere")) && spot.room !== "Balcony" && (
+                        <div className="absolute inset-0 flex items-center justify-center"
+                          style={{ zIndex: 4, transform: `translate(${spot.volumeOffsetX || 0}px, ${spot.volumeOffsetY || 0}px)`, pointerEvents: 'none' }}
+                          data-testid={`volume-knob-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
+                          <div style={{ pointerEvents: 'auto' }} onClick={(e) => e.stopPropagation()}>
+                            <VolumeKnob value={roomVolumes[spot.room] ?? 30} onChange={(v) => setRoomVolume(spot.room, v)} size={isActive ? 50 : 44} accent={isActive ? profile.accent : `${profile.accent}aa`} glow={profile.glow} />
+                          </div>
+                        </div>
+                      )}
                       {isDrop && (
                         <div className="absolute inset-0 pointer-events-none" style={{
                           border: `2px dashed ${profile.accent}70`,
                           animation: 'holoPulse 1s ease-in-out infinite',
                         }} />
-                      )}
-                      {!isActive && activeRooms.has("Everywhere") && spot.room !== "Everywhere" && !spot.hideLabel && (
-                        <div className="absolute inset-0 flex items-center justify-center" style={{ zIndex: 3, transform: `translate(${spot.labelOffsetX || 0}px, ${spot.labelOffsetY || 0}px)` }}
-                          onClick={(e) => e.stopPropagation()}>
-                          {(spot.room === "Living Room" || spot.room === "Kitchen") ? (
-                            <div className="absolute" style={{ left: 'calc(100% + 8px)', top: '50%', transform: 'translateY(-50%)' }}>
-                              <VolumeKnob value={roomVolumes[spot.room] ?? 30} onChange={(v) => setRoomVolume(spot.room, v)} size={44} accent={`${profile.accent}aa`} glow={profile.glow} />
-                            </div>
-                          ) : spot.room === "Pug Washroom" ? (
-                            <div style={{ marginTop: '4px' }}>
-                              <VolumeKnob value={roomVolumes[spot.room] ?? 30} onChange={(v) => setRoomVolume(spot.room, v)} size={44} accent={`${profile.accent}aa`} glow={profile.glow} />
-                            </div>
-                          ) : spot.room === "Hallway" ? (
-                            <div className="absolute" style={{ right: '-78px', top: '20px' }}>
-                              <VolumeKnob value={roomVolumes[spot.room] ?? 30} onChange={(v) => setRoomVolume(spot.room, v)} size={44} accent={`${profile.accent}aa`} glow={profile.glow} />
-                            </div>
-                          ) : (
-                            <VolumeKnob value={roomVolumes[spot.room] ?? 30} onChange={(v) => setRoomVolume(spot.room, v)} size={44} accent={`${profile.accent}aa`} glow={profile.glow} />
-                          )}
-                        </div>
                       )}
                     </div>
                   );
