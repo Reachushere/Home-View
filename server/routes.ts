@@ -686,6 +686,30 @@ export async function registerRoutes(
 
   await initTTSFallbackStatus();
 
+  (async () => {
+    try {
+      const allTasks = await storage.getTasks({});
+      const autoCreatedIds = allTasks
+        .filter(t => t.type === 'module' || t.type === 'reading')
+        .filter(t => !t.isCompleted)
+        .filter(t => {
+          const title = t.title || '';
+          return /^(CPPA|CFNF|CASL\d*)\s+(Module|Reading|Module & Reading)$/.test(title)
+            || /^Module( & Reading)?$/.test(title)
+            || /^Reading$/.test(title);
+        })
+        .map(t => t.id);
+      if (autoCreatedIds.length > 0) {
+        for (const id of autoCreatedIds) {
+          await storage.deleteTask(id);
+        }
+        console.log(`[Cleanup] Removed ${autoCreatedIds.length} auto-created module/reading tasks`);
+      }
+    } catch (e) {
+      console.error('[Cleanup] Error removing auto-created tasks:', e);
+    }
+  })();
+
   try {
     const fixResult = await db.execute(sql`UPDATE files SET folder = REPLACE(folder, 'casl101-other', 'casl101-module') WHERE folder LIKE '%casl101-other%'`);
     const count = (fixResult as any)?.rowCount || (fixResult as any)?.changes || 0;

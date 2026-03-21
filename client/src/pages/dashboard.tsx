@@ -5377,33 +5377,6 @@ export default function Dashboard() {
     return Array.from(filesMap.values());
   }, [tasks, weeklyFiles]);
 
-  // Auto-create tasks for module/reading files that don't have corresponding tasks
-  const autoCreateFileTasksRef = useRef<Set<number>>(new Set());
-  useEffect(() => {
-    if (!weeklyFiles.length || !allTasks) return;
-    const weeksToCheck = new Set<number>();
-    weeksToCheck.add(selectedWeek);
-    for (let w = Math.max(1, selectedWeek - 2); w <= selectedWeek + 4; w++) {
-      weeksToCheck.add(w);
-    }
-    let anyCreated = false;
-    const promises = Array.from(weeksToCheck).filter(w => !autoCreateFileTasksRef.current.has(w)).map(w => {
-      autoCreateFileTasksRef.current.add(w);
-      return fetch('/api/tasks/auto-create-file-tasks', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ weekNumber: w }),
-      }).then(r => r.json()).then(data => {
-        if (data.count > 0) anyCreated = true;
-      }).catch(() => {});
-    });
-    if (promises.length > 0) {
-      Promise.all(promises).then(() => {
-        if (anyCreated) queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
-      });
-    }
-  }, [selectedWeek, weeklyFiles, allTasks]);
-
   // Google Calendar events query
   interface CalendarEvent {
     id: string;
