@@ -8505,8 +8505,7 @@ document.body.removeChild(a);
 
       let currentWeekNumber = 1;
       const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
-      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
-      currentWeekNumber = getWeekNumber(today, semStart, rwStart);
+      currentWeekNumber = getWeekNumber(today, semStart, null);
 
       const allFilesBefore = await storage.getFiles();
       let nextFile = findNextFileByPriority(allFilesBefore, currentWeekNumber);
