@@ -14096,20 +14096,16 @@ Return ONLY the JSON object, no markdown formatting.`;
         });
         const playText = await playResp.text();
         console.log(`[Spotify] SPOTIFY search play response: ${playResp.status} body=${playText.substring(0, 300)}`);
-      } else if (spotifyUri) {
+      } else {
+        const fallbackSearch = searchQuery || artistName || "music";
+        console.log(`[Spotify] Playing "${fallbackSearch}" via SPOTIFY search on ${entityId}`);
         await fetch(`${haUrl}/api/services/media_player/play_media`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ entity_id: entityId, media_content_id: spotifyUri, media_content_type: "spotify" }),
-        });
-      } else if (artistName) {
-        await fetch(`${haUrl}/api/services/media_player/play_media`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ entity_id: entityId, media_content_id: artistName, media_content_type: "SPOTIFY" }),
+          body: JSON.stringify({ entity_id: entityId, media_content_id: fallbackSearch, media_content_type: "SPOTIFY" }),
         });
       }
-      console.log(`[Spotify] Playing on ${entityId} (echo=${isEcho}): ${spotifyUri || artistName}`);
+      console.log(`[Spotify] Playing on ${entityId} (echo=${isEcho}): search="${searchQuery || artistName}"`);
 
       const volumeTarget = entityId;
       try {
