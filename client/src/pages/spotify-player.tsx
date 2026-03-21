@@ -1841,7 +1841,7 @@ export default function SpotifyPlayerPage() {
                               </div>
                             )}
                             {spot.room === "Pug Washroom" && (
-                              <div className="absolute" style={{ left: '-60px', top: '50%', transform: 'translateY(-50%)', zIndex: 10 }} onClick={(e) => e.stopPropagation()} data-testid="volume-knob-pug-washroom">
+                              <div className="absolute" style={{ left: '-60px', top: '50%', transform: 'translateY(calc(-50% + 35px))', zIndex: 10 }} onClick={(e) => e.stopPropagation()} data-testid="volume-knob-pug-washroom">
                                 <VolumeKnob value={roomVolumes[spot.room] ?? 30} onChange={(v) => setRoomVolume(spot.room, v)} size={50} accent={profile.accent} glow={profile.glow} />
                               </div>
                             )}
