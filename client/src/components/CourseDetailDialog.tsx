@@ -2187,26 +2187,26 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 <div className="w-4 flex-shrink-0" />
                 <div className="w-3 flex-shrink-0" />
                 <div className="flex-1 min-w-0 text-[11px] font-bold text-white">Totals</div>
-                <div className="flex items-center flex-shrink-0" style={{ gap: '6px' }}>
-                  <span className="text-[12px] font-bold w-[30px] text-center text-amber-400" data-testid="text-sum-value">
+                <div className="flex items-center flex-shrink-0" style={{ gap: '5px' }}>
+                  <span className="text-[12px] font-bold w-[33px] text-center text-amber-400" data-testid="text-sum-value">
                     {(() => { const v = courseTasks.filter(t => !t.excludeFromGpa).reduce((s, t) => s + (t.gradeValue || 0), 0); return v ? v.toFixed(1) : '—'; })()}
                   </span>
-                  <span className="text-[12px] font-bold w-[30px] text-center text-amber-400" data-testid="text-sum-total">
+                  <span className="text-[12px] font-bold w-[33px] text-center text-amber-400" data-testid="text-sum-total">
                     {(() => { const v = courseTasks.filter(t => !t.excludeFromGpa).reduce((s, t) => s + (t.gradeTotal || 0), 0); return v ? v.toFixed(1) : '—'; })()}
                   </span>
-                  <span className={`text-[12px] font-bold w-[30px] text-center ${
+                  <span className={`text-[12px] font-bold w-[33px] text-center ${
                     totalWeight === 100 ? 'text-green-400' : totalWeight > 100 ? 'text-red-400' : 'text-amber-400'
                   }`} data-testid="text-sum-weight">
                     {totalWeight ? totalWeight.toFixed(1) : '—'}
                   </span>
-                  <span className={`text-[12px] font-bold w-[30px] text-center ${
+                  <span className={`text-[12px] font-bold w-[33px] text-center ${
                     (() => {
                       const gTasks = courseTasks.filter(t => !t.excludeFromGpa);
                       const sumTotal = gTasks.reduce((s, t) => s + (t.gradeTotal || 0), 0);
                       const sumValue = gTasks.reduce((s, t) => s + (t.gradeValue || 0), 0);
                       return sumTotal > 0 && sumValue > 0 ? 'text-emerald-400' : 'text-amber-400/50';
                     })()
-                  }`} data-testid="text-total-percent">
+                  }`} style={{ marginLeft: '5px' }} data-testid="text-total-percent">
                     {(() => {
                       const gTasks = courseTasks.filter(t => !t.excludeFromGpa);
                       const sumTotal = gTasks.reduce((s, t) => s + (t.gradeTotal || 0), 0);
@@ -2215,13 +2215,12 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     })()}
                   </span>
                 </div>
-                <div className="flex items-center gap-1 flex-shrink-0">
-                  <div className="p-0.5"><div className="w-3" /></div>
-                  <div style={{ width: '24px' }} />
-                </div>
-                <div className="flex items-center gap-0.5 flex-shrink-0">
-                  <div className="p-0.5"><div className="w-3" /></div>
-                  <div className="p-0.5"><div className="w-3" /></div>
+                <div className="flex items-center flex-shrink-0" style={{ gap: '5px', visibility: 'hidden' }}>
+                  <div style={{ marginLeft: '5px', padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
+                  <div className="flex items-center gap-1"><div style={{ width: '24px', height: '14px' }} /><span className="text-[7px]">Complete</span></div>
+                  <div style={{ padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
+                  <div style={{ padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
+                  <div style={{ marginLeft: '5px', padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
                 </div>
               </div>
             )}
