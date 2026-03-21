@@ -18656,6 +18656,7 @@ export default function Dashboard() {
                       if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
                       if (task.isCompleted) return false;
                       if (!task.startDate) return false;
+                      if (!task.prepDays || task.prepDays <= 0) return false;
                       const taskDueDate = startOfDayET(new Date(task.dueDate));
                       const taskStartDate = startOfDayET(new Date(task.startDate));
                       return cellDate >= taskStartDate && cellDate < taskDueDate;
