@@ -2096,7 +2096,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                   </div>
                   <div className="flex items-center flex-shrink-0" style={{ gap: '5px' }}>
                     <div style={{ marginLeft: '5px', width: '19px', textAlign: 'center' }}><span className="text-[8px] font-bold text-white/60 normal-case" style={{ letterSpacing: '0' }}></span></div>
-                    <div style={{ width: '24px', textAlign: 'center' }}><span className="text-[8px] font-bold text-white/60 normal-case" style={{ letterSpacing: '0' }}>Complete</span></div>
+                    <div style={{ width: '24px', textAlign: 'center', lineHeight: '1.1' }}><span className="text-[7px] font-bold text-white/60 normal-case" style={{ letterSpacing: '0' }}>Grade<br/>Received</span></div>
                     <div style={{ width: '19px', textAlign: 'center' }}><span className="text-[8px] font-bold text-white/60 normal-case" style={{ letterSpacing: '0' }}>Copy</span></div>
                     <div style={{ marginLeft: '5px', width: '19px' }} />
                   </div>
