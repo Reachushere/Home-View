@@ -2627,9 +2627,10 @@ html,body{height:100%;overflow:hidden;background:transparent}
           ? new Date(courseEndDate) 
           : (activeSemester.semesterEndDate ? new Date(activeSemester.semesterEndDate) : new Date(semesterStart.getTime() + 13 * 7 * 24 * 60 * 60 * 1000));
 
-        const courseName = `${config.code} - ${config.name}`;
+        const courseName = config.name.startsWith(config.code) ? config.name : `${config.code} - ${config.name}`;
+        const displayName = config.name.startsWith(config.code) ? config.name.replace(`${config.code} - `, '') : config.name;
         const dmLabel = deliveryMode === 'virtual' ? 'Online' : deliveryMode === 'online' ? 'Online' : deliveryMode === 'in-person' ? 'In-Person' : '';
-        const classTitle = dmLabel ? `${dmLabel} ${config.name} Class` : `${config.name} Class`;
+        const classTitle = dmLabel ? `${dmLabel} ${displayName} Class` : `${displayName} Class`;
         const [startHour, startMinute] = classTime.split(':').map(Number);
         const [endHour, endMinute] = classEndTime.split(':').map(Number);
 

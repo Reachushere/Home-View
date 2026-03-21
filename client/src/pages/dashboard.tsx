@@ -9252,7 +9252,9 @@ export default function Dashboard() {
         const [startHour] = t.eventStartTime.split(':').map(Number);
         return startHour === hour;
       }
-      return getETHours(new Date(t.dueDate)) === hour;
+      const dueDate = new Date(t.dueDate);
+      if (dueDate.getUTCHours() === 0 && dueDate.getUTCMinutes() === 0) return false;
+      return getETHours(dueDate) === hour;
     });
   };
   
@@ -9380,8 +9382,10 @@ export default function Dashboard() {
       if (isCASL101Finished(t)) return false;
       if (t.eventStartTime) return false;
       const dueDate = new Date(t.dueDate);
-      const isMidnight = getETHours(dueDate) === 0 && getETMinutes(dueDate) === 0;
-      return isSameDayET(dueDate, day) && isMidnight;
+      const isMidnightET = getETHours(dueDate) === 0 && getETMinutes(dueDate) === 0;
+      const isMidnightUTC = dueDate.getUTCHours() === 0 && dueDate.getUTCMinutes() === 0;
+      if (!isMidnightET && !isMidnightUTC) return false;
+      return isSameDayET(dueDate, day);
     });
   };
   
