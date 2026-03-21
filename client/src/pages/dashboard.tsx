@@ -18155,7 +18155,7 @@ export default function Dashboard() {
                   >
                     {!isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && (
                       <div
-                        className="absolute left-0 right-0 bottom-0 cursor-pointer z-10"
+                        className={`absolute left-0 right-0 ${shiftForDay === 'day' ? 'top-0' : 'bottom-0'} cursor-pointer z-10`}
                         style={{ height: '5px', backgroundColor: shiftForDay === 'day' ? '#ffd000' : '#7c3aed', opacity: sleepDisabledDays.has(shiftDateStr) ? 0.3 : 1 }}
                         onClick={(e) => { e.stopPropagation(); updateSleepDisabledDays(shiftDateStr); }}
                         data-testid={`toggle-sleep-${shiftDateStr}`}
@@ -18185,14 +18185,14 @@ export default function Dashboard() {
                       })(dayForecast.weatherCode);
                       return (
                         <>
-                          <div className="absolute z-20" style={{ left: day.getDay() === 6 ? '7px' : '4px', top: '-6px' }} data-testid={`weather-temp-high-${shiftDateStr}`}>
+                          <div className="absolute z-20" style={{ left: day.getDay() === 6 ? '7px' : '4px', top: shiftForDay === 'day' ? '0px' : '-6px' }} data-testid={`weather-temp-high-${shiftDateStr}`}>
                             <span className="text-[10px] font-bold leading-none" style={{ color: tempColor }}>{dayForecast.high}°</span>
                           </div>
                           <div className="absolute z-20" style={{ left: day.getDay() === 6 ? '7px' : '4px', bottom: '2px' }} data-testid={`weather-temp-low-${shiftDateStr}`}>
                             <span className="text-[10px] font-medium leading-none" style={{ color: tempColor }}>{dayForecast.low}°</span>
                           </div>
                           {wIcon && (
-                            <div className="absolute z-20" style={{ right: '3px', top: '1px', fontSize: '12px', lineHeight: '1', opacity: isPastDay ? 0.5 : 0.85 }} data-testid={`weather-icon-${shiftDateStr}`}>
+                            <div className="absolute z-20" style={{ right: '3px', top: shiftForDay === 'day' ? '7px' : '1px', fontSize: '12px', lineHeight: '1', opacity: isPastDay ? 0.5 : 0.85 }} data-testid={`weather-icon-${shiftDateStr}`}>
                               {wIcon}
                             </div>
                           )}
