@@ -9376,9 +9376,9 @@ export default function Dashboard() {
   // Get all-day tasks (tasks without specific time - only midnight)
   const getAllDayTasks = (day: Date) => {
     return allTasks.filter(t => {
-      if (t.isCompleted) return false; // Completed tasks don't show on calendar
-      if (isCASL101Finished(t)) return false; // Auto-hide finished CASL101 tasks
-      if (t.eventStartTime) return false; // Tasks with explicit start time show at that hour
+      if (t.isCompleted) return false;
+      if (isCASL101Finished(t)) return false;
+      if (t.eventStartTime) return false;
       const dueDate = new Date(t.dueDate);
       const isMidnight = getETHours(dueDate) === 0 && getETMinutes(dueDate) === 0;
       return isSameDayET(dueDate, day) && isMidnight;
