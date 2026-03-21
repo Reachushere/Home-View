@@ -1159,7 +1159,7 @@ export default function SpotifyPlayerPage() {
         }
         if (activeProfile === "guest") {
           return (
-            <div className="absolute top-5 right-3 z-50 pointer-events-none text-right" data-testid="guest-greeting">
+            <div className="absolute top-5 right-12 z-50 pointer-events-none text-right" data-testid="guest-greeting">
               <p className="text-3xl font-bold tracking-wide" style={{
                 color: 'rgba(200,230,255,0.85)',
                 textShadow: `0 0 20px ${profile.glow}, 0 0 40px rgba(160,100,255,0.3)`,
