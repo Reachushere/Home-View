@@ -19502,9 +19502,10 @@ export default function Dashboard() {
                                     const courseCode = nextSchoolTask?.courseName?.split(' - ')[0]?.trim() || '';
                                     const gradColors = getCourseGradientColors(courseCode);
                                     return (
-                                      <div style={{ width: '100%', height: '100%', position: 'relative', borderRadius: '5px', overflow: 'hidden', background: `linear-gradient(135deg, ${gradColors.start} 0%, ${gradColors.end} 100%)`, opacity: 0.7 }}>
+                                      <div style={{ width: '100%', height: '100%', position: 'relative', borderRadius: '5px', overflow: 'hidden', background: `linear-gradient(135deg, ${gradColors.start} 0%, ${gradColors.end} 100%)`, opacity: 0.7, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 8px' }}>
                                         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.1) 100%)' }} />
-                                        <span style={{ position: 'absolute', top: '50%', left: '73%', transform: 'translate(-50%, -50%)', zIndex: 1, fontSize: '20px', color: 'white', fontWeight: 900, lineHeight: 1, textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>{displayTime}</span>
+                                        <span style={{ zIndex: 1, fontSize: '9px', color: 'white', fontWeight: 700, lineHeight: 1.2, textShadow: '0 1px 3px rgba(0,0,0,0.5)', maxWidth: '65%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{nextSchoolTask?.title || 'Next Task'}</span>
+                                        <span style={{ zIndex: 1, fontSize: '20px', color: 'white', fontWeight: 900, lineHeight: 1, textShadow: '0 1px 3px rgba(0,0,0,0.5)', flexShrink: 0 }}>{displayTime}</span>
                                       </div>
                                     );
                                   })()}
