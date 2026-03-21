@@ -11001,13 +11001,13 @@ export default function Dashboard() {
             }}
             data-testid="next-task-countdown"
           >
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, lineHeight: 1.1 }} data-testid="things-to-do-label">
+              <span style={{ fontSize: '8px', fontWeight: 400, color: 'rgba(255,255,255,0.85)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Things</span>
+              <span style={{ fontSize: '8px', fontWeight: 400, color: 'rgba(255,255,255,0.85)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>to do</span>
+              <span style={{ fontSize: '8px', fontWeight: 400, color: 'rgba(255,255,255,0.85)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>today:</span>
+            </div>
             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderRadius: '12px', padding: '3px 26px 3px 68px', minWidth: '395px', border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)', boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)', gap: '8px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}> 
               <img src={profilePhotoUrl || profilePhoto} alt="Profile" style={{ width: '43px', height: '43px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, marginLeft: '-46px', marginRight: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} />
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, lineHeight: 1.1, background: 'rgba(40,70,110,0.85)', borderRadius: '6px', padding: '3px 6px', marginRight: '4px' }} data-testid="things-to-do-label">
-                <span style={{ fontSize: '8px', fontWeight: 800, color: 'rgba(255,255,255,0.95)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Things</span>
-                <span style={{ fontSize: '8px', fontWeight: 800, color: 'rgba(255,255,255,0.95)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>to do</span>
-                <span style={{ fontSize: '8px', fontWeight: 800, color: 'rgba(255,255,255,0.95)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>today:</span>
-              </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginLeft: '2px' }}>
                 {(() => {
                   const prepDaysNum = prepDaysText === 'today' ? 0 : prepDaysText === 'now' ? -1 : Number(prepDaysText);
