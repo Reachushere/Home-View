@@ -334,10 +334,16 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
   });
 
   const courseTasks = useMemo(() => {
+    const codeUpper = courseInfo.courseCode.toUpperCase().replace(/\s/g, '');
     return allTasks
-      .filter((t) => t.courseName === courseInfo.fullName && t.type !== 'class' && t.type !== 'module')
+      .filter((t) => {
+        if (t.type === 'class' || t.type === 'module') return false;
+        if (!t.courseName) return false;
+        const tCode = t.courseName.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '');
+        return tCode === codeUpper;
+      })
       .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0) || new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
-  }, [allTasks, courseInfo.fullName]);
+  }, [allTasks, courseInfo.courseCode]);
 
   const { data: weekMappingsData } = useQuery<CourseWeekMapping[]>({
     queryKey: ['/api/course-week-mappings', courseInfo.courseCode],

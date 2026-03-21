@@ -18362,7 +18362,7 @@ export default function Dashboard() {
                     <div key={course.name} className="w-full flex-shrink-0 flex" style={{ borderBottom: `1.5px dotted ${courseData.color}dd` }}>
                       <div className="px-1 py-0.5 text-[10px] font-bold tracking-wide flex items-center justify-center text-white cursor-pointer hover:brightness-110 flex-shrink-0" onClick={() => { const cd = courseData; const code = cd.name.split(' - ')[0]?.trim(); const cName = cd.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code })); }} style={{ background: course.label, overflow: 'hidden', minWidth: 0, width: `${gridSizes.timeColumnWidth}px`, position: 'relative' }} data-testid={`course-row-label-${course.name}`}>
                         {course.name}
-                        <div style={{ position: 'absolute', top: '1px', right: '1px', zIndex: 2 }} onClick={(e) => { e.stopPropagation(); const cd = courseData; const code = cd.name.split(' - ')[0]?.trim(); const cName = cd.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code, openInEdit: true })); }} data-testid={`pencil-edit-course-${course.name}`}><Pencil className="w-[8px] h-[8px] text-white/50 hover:text-white" /></div>
+                        <div style={{ position: 'absolute', top: '1px', right: '1px', zIndex: 2 }} onClick={(e) => { e.stopPropagation(); const cd = courseData; const code = cd.name.split(' - ')[0]?.trim(); const cName = cd.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code, openInEdit: true })); }} data-testid={`pencil-edit-course-${course.name}`}><Pencil className="w-[9px] h-[9px] text-white" strokeWidth={3} /></div>
                       </div>
                       <div className="flex-1 min-w-0">
                       {fullWeekTasks.map((task, taskIdx) => {
@@ -18600,7 +18600,7 @@ export default function Dashboard() {
                         </>
                       );
                     })()}
-                    <div style={{ position: 'absolute', top: '1px', right: '1px', zIndex: 2 }} onClick={(e) => { e.stopPropagation(); const code = courseData.name.split(' - ')[0]?.trim(); const cName = courseData.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code, openInEdit: true })); }} data-testid={`pencil-edit-course-${course.name}`}><Pencil className="w-[8px] h-[8px] text-white/50 hover:text-white" /></div>
+                    <div style={{ position: 'absolute', top: '1px', right: '1px', zIndex: 2 }} onClick={(e) => { e.stopPropagation(); const code = courseData.name.split(' - ')[0]?.trim(); const cName = courseData.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code, openInEdit: true })); }} data-testid={`pencil-edit-course-${course.name}`}><Pencil className="w-[9px] h-[9px] text-white" strokeWidth={3} /></div>
                   </div>
                   {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: course.bg, borderBottom: `1.5px dotted ${courseData.color}dd` }} />}
                   {(() => {
