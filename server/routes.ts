@@ -14071,7 +14071,9 @@ Return ONLY the JSON object, no markdown formatting.`;
           "media_player.byhome": "BYhome",
           "media_player.king_bedroom_media_group": "King Bedroom",
           "media_player.queen_bedroom_media_group": "Queen Bedroom",
-          "media_player.living_room_media_group": "Home Theater",
+          "media_player.living_room_media_group": "Echo - LR Studio White AM",
+          "media_player.kitchen_media_group": "Echo - Kitchen Studio Black AM",
+          "media_player.hallway_media_group": "Echo - Hallway Corner",
           "media_player.closet_media_group": "Echo - Closet AM",
           "media_player.pug_media_group": "Echo Show - Pug AM",
           "media_player.echo_closet_am": "Echo - Closet AM",
@@ -14099,7 +14101,7 @@ Return ONLY the JSON object, no markdown formatting.`;
         const spSource = spotifyPlusSourceMap[entityId] || spotifyPlusSourceMap[targetEntity];
         
         if (spSource && spotifyUri) {
-          console.log(`[Spotify] Using SpotifyPlus: selecting source "${spSource}" then playing ${spotifyUri}`);
+          console.log(`[Spotify] Using SpotifyPlus: source="${spSource}", uri=${spotifyUri}`);
           
           try {
             await fetch(`${haUrl}/api/services/media_player/turn_on`, {
@@ -14121,7 +14123,7 @@ Return ONLY the JSON object, no markdown formatting.`;
             }),
           });
           console.log(`[Spotify] SpotifyPlus select_source "${spSource}": ${selectResp.status}`);
-          await new Promise(resolve => setTimeout(resolve, 1500));
+          await new Promise(resolve => setTimeout(resolve, 2000));
 
           const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
             method: 'POST',
