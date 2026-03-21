@@ -19488,8 +19488,9 @@ export default function Dashboard() {
                               <>
                                 {missedCount > 0 && (
                                   <div className="absolute top-0 bottom-0 z-[3] pointer-events-none animate-due-box-blink" style={{ left: '0px', width: `${gridSizes.timeSlotHeight + 3}px`, padding: '0px' }} data-testid="missed-tasks-indicator">
-                                    <div style={{ width: '100%', height: '100%', position: 'relative', backgroundColor: '#dc2626', borderRadius: '5px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                      <span style={{ fontSize: '18px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{missedCount}</span>
+                                    <div style={{ width: '100%', height: '100%', position: 'relative', backgroundColor: '#dc2626', borderRadius: '5px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0px' }}>
+                                      <span style={{ fontSize: '20px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{missedCount}</span>
+                                      <span style={{ fontSize: '9px', color: 'white', fontWeight: 600, lineHeight: 1, marginTop: '2px' }}>due</span>
                                     </div>
                                   </div>
                                 )}
