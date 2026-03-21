@@ -19457,15 +19457,14 @@ export default function Dashboard() {
                               }
                               return new Date(t.dueDate).getTime();
                             };
-                            const todaySchoolTasks = allTasks.filter(t => {
+                            const missedSchoolTasks = allTasks.filter(t => {
                               if (!t.courseName) return false;
-                              const d = new Date(t.dueDate);
-                              return isSameDay(d, now);
-                            });
-                            const missedSchoolTasks = todaySchoolTasks.filter(t => {
                               if (t.isCompleted) return false;
                               const taskTime = getTaskTime(t);
-                              return taskTime <= now.getTime();
+                              if (taskTime > now.getTime()) return false;
+                              const taskDueDate = startOfDay(new Date(t.dueDate));
+                              if (taskDueDate > startOfDay(now)) return false;
+                              return true;
                             });
                             const missedCount = missedSchoolTasks.length;
                             const nextSchoolTask = allTasks
