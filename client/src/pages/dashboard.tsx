@@ -19504,7 +19504,7 @@ export default function Dashboard() {
                                     const courseCode = nextSchoolTask?.courseName?.split(' - ')[0]?.trim() || '';
                                     const gradColors = getCourseGradientColors(courseCode);
                                     return (
-                                      <div style={{ flex: 1, position: 'relative', borderRadius: '5px', overflow: 'hidden', background: `linear-gradient(180deg, ${gradColors.start} 0%, ${gradColors.end} 100%)`, opacity: 0.7, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 8px' }}>
+                                      <div style={{ flex: 1, position: 'relative', borderRadius: '5px', overflow: 'hidden', background: `linear-gradient(180deg, ${gradColors.start} 0%, ${gradColors.end} 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 8px' }}>
                                         <span style={{ zIndex: 1, fontSize: '10px', color: 'rgba(255,255,255,0.9)', fontWeight: 400, textShadow: '0 1px 3px rgba(0,0,0,0.5)', lineHeight: 1.1, textAlign: 'center' }}>Next Task<br/>Due In</span>
                                         <span style={{ zIndex: 1, fontSize: '20px', color: 'white', fontWeight: 900, lineHeight: 1, textShadow: '0 1px 3px rgba(0,0,0,0.5)', flexShrink: 0 }}>{displayTime}<span style={{ fontSize: '10px', fontWeight: 600, marginLeft: '2px' }}>{hoursUntil !== null && hoursUntil < 1 ? 'min' : 'hrs'}</span></span>
                                       </div>
