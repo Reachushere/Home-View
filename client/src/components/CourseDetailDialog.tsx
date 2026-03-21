@@ -1056,7 +1056,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             <span className="capitalize">{task.type}</span>
           </div>
         </div>
-        <div className="flex items-center flex-shrink-0" style={{ gap: '5px' }} onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center flex-shrink-0" style={{ gap: '6px' }} onClick={(e) => e.stopPropagation()}>
           <DebouncedGradeInput
             value={task.gradeValue}
             onSave={(val) => updateGradeValueMutation.mutate({ id: task.id, gradeValue: val, _task: task })}
@@ -1075,7 +1075,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             placeholder="Wt"
             testId={`input-grade-weight-${task.id}`}
           />
-          <span className="text-[9px] text-white w-[33px] text-center" style={{ marginLeft: '5px' }} data-testid={`text-grade-percent-${task.id}`}>
+          <span className="text-[9px] text-white w-[33px] text-center" style={{ marginLeft: '6px' }} data-testid={`text-grade-percent-${task.id}`}>
             {task.gradeValue !== null && task.gradeValue !== undefined && task.gradeTotal ? `${((task.gradeValue / task.gradeTotal) * 100).toFixed(2)}%` : '—'}
           </span>
         </div>
@@ -2593,7 +2593,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                   <div className={`flex-1 min-w-0 ${hdrCls('title')}`} onClick={() => toggleSort('title')} data-testid="sort-title">
                     Assignment<SortIcon field="title" />
                   </div>
-                  <div className="flex items-end flex-shrink-0 text-white" style={{ gap: '5px' }}>
+                  <div className="flex items-end flex-shrink-0 text-white" style={{ gap: '6px' }}>
                     <span className={`w-[33px] text-center leading-tight ${hdrCls('score')}`} onClick={() => toggleSort('score')} style={{ display: 'inline-flex', justifyContent: 'center' }} data-testid="sort-score">
                       Score<SortIcon field="score" />
                     </span>
@@ -2603,7 +2603,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     <span className={`w-[33px] text-center leading-tight ${hdrCls('weight')}`} onClick={() => toggleSort('weight')} style={{ display: 'inline-flex', justifyContent: 'center' }} data-testid="sort-weight">
                       Weight<SortIcon field="weight" />
                     </span>
-                    <span className={`w-[33px] text-center leading-tight ${hdrCls('percent')}`} onClick={() => toggleSort('percent')} style={{ display: 'inline-flex', justifyContent: 'center', marginLeft: '5px' }} data-testid="sort-percent">
+                    <span className={`w-[33px] text-center leading-tight ${hdrCls('percent')}`} onClick={() => toggleSort('percent')} style={{ display: 'inline-flex', justifyContent: 'center', marginLeft: '6px' }} data-testid="sort-percent">
                       Percent<SortIcon field="percent" />
                     </span>
                   </div>
@@ -2691,7 +2691,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 <div className="flex-shrink-0 w-4" style={{ marginRight: '3px' }} />
                 <div className="flex-shrink-0" style={{ width: '19px', marginRight: '10px' }} />
                 <div className="flex-1 min-w-0 text-[11px] font-bold text-white">Totals</div>
-                <div className="flex items-center flex-shrink-0" style={{ gap: '5px' }}>
+                <div className="flex items-center flex-shrink-0" style={{ gap: '6px' }}>
                   <span className="text-[12px] font-bold w-[33px] text-center text-amber-400" data-testid="text-sum-value">
                     {(() => { const v = courseTasks.filter(t => !t.excludeFromGpa).reduce((s, t) => s + (t.gradeValue || 0), 0); return v ? v.toFixed(2) : '—'; })()}
                   </span>
@@ -2703,13 +2703,13 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                   }`} data-testid="text-sum-weight">
                     {totalWeight ? totalWeight.toFixed(2) : '—'}
                   </span>
-                  <span className="w-[33px]" style={{ marginLeft: '5px' }} />
+                  <span className="w-[33px]" style={{ marginLeft: '6px' }} />
                 </div>
-                <div className="flex items-center flex-shrink-0" style={{ gap: '5px', visibility: 'hidden' }}>
-                  <div style={{ marginLeft: '5px', padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
+                <div className="flex items-center flex-shrink-0" style={{ gap: '6px', visibility: 'hidden' }}>
+                  <div style={{ marginLeft: '6px', padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
                   <div><div style={{ width: '24px', height: '14px' }} /></div>
                   <div style={{ padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
-                  <div style={{ marginLeft: '5px', padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
+                  <div style={{ marginLeft: '6px', padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
                 </div>
               </div>
             )}
