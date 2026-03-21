@@ -6362,7 +6362,7 @@ html,body{height:100%;overflow:hidden;background:transparent}
       let currentWeekNumber = 1;
       const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
       const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
-      currentWeekNumber = getWeekNumber(torontoDate(), semStart, rwStart);
+      currentWeekNumber = getWeekNumber(torontoDate(), semStart, null);
       const nextFile = await findNextCatWashFile(storage, currentWeekNumber);
       if (!nextFile) {
         return res.json({ found: false, weekNumber: currentWeekNumber });
@@ -6822,7 +6822,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         const semesterSettings = await storage.getActiveSemesterSettings();
         const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date();
         const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : null;
-        const currentWeek = getWeekNumber(torontoDate(), semStart, rwStart);
+        const currentWeek = getWeekNumber(torontoDate(), semStart, null);
 
         const getFileWeek = (f: any) => {
           const m = f.folder?.match(/week-(\d+)/i);
@@ -7318,7 +7318,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           const semesterSettings = await storage.getActiveSemesterSettings();
           const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
           const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
-          const currentWeekNumber = getWeekNumber(torontoDate(), semStart, rwStart);
+          const currentWeekNumber = getWeekNumber(torontoDate(), semStart, null);
 
           const unlistenedFiles = allFiles.filter((f: any) => {
             if (f.listened || f.id === fileId) return false;
@@ -7514,7 +7514,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         const semesterSettings = await storage.getActiveSemesterSettings();
         const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
         const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
-        const currentWeekNumber = getWeekNumber(torontoDate(), semStart, rwStart);
+        const currentWeekNumber = getWeekNumber(torontoDate(), semStart, null);
         const completedFileDesc = describeFileForTTS({ folder: catWashPlaybackState?.fileName || fileName, originalName: fileName }, currentWeekNumber);
 
         const allFilesNow = await storage.getFiles();
@@ -7774,7 +7774,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       let currentWeekNumber = 1;
       const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
       const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
-      currentWeekNumber = getWeekNumber(torontoDate(), semStart, rwStart);
+      currentWeekNumber = getWeekNumber(torontoDate(), semStart, null);
       
       // Filter for unlistened files from current week
       const unlistenedFiles = allFiles.filter(f => {
@@ -8323,7 +8323,7 @@ document.body.removeChild(a);
       let currentWeekNumber = 1;
       const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
       const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
-      currentWeekNumber = getWeekNumber(today, semStart, rwStart);
+      currentWeekNumber = getWeekNumber(today, semStart, null);
 
       const allFilesBefore = await storage.getFiles();
       let nextFile = findNextFileByPriority(allFilesBefore, currentWeekNumber);
@@ -8896,7 +8896,7 @@ document.body.removeChild(a);
       let currentWeekNumber = 1;
       const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
       const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
-      currentWeekNumber = getWeekNumber(torontoDate(), semStart, rwStart);
+      currentWeekNumber = getWeekNumber(torontoDate(), semStart, null);
 
       const nextFile = await findNextCatWashFile(storage, currentWeekNumber, fileId);
       if (nextFile) {
@@ -9398,7 +9398,7 @@ document.body.removeChild(a);
         const semesterSettings = await storage.getActiveSemesterSettings();
         const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
         const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
-        const currentWeekNumber = getWeekNumber(torontoDate(), semStart, rwStart);
+        const currentWeekNumber = getWeekNumber(torontoDate(), semStart, null);
 
         const allFiles = await storage.getFiles();
         const nextFile = findNextFileByPriority(allFiles, currentWeekNumber, currentFileId);
@@ -9686,7 +9686,7 @@ document.body.removeChild(a);
       const today = torontoDate();
       const semStart = semesterSettings.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date();
       const rwStart = semesterSettings.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : semStart;
-      const currentWeek = weekNumber || getWeekNumber(today, semStart, rwStart);
+      const currentWeek = weekNumber || getWeekNumber(today, semStart, null);
 
       await syncOneDriveFilesForWeek(semesterSettings, currentWeek, '[Trigger Playback]');
 
