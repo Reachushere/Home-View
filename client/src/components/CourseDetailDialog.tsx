@@ -31,6 +31,7 @@ import {
   FolderPlus,
   Copy,
   ChevronDown,
+  ChevronLeft,
   ChevronRight,
   ArrowUp,
   ArrowDown,
@@ -269,6 +270,16 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
   const [showWeekMappings, setShowWeekMappings] = useState(false);
   const [weekMappingEdits, setWeekMappingEdits] = useState<Record<number, { confirmed: boolean; courseWeekLabel: string; notes: string }>>({});
   const [weekStyleChoice, setWeekStyleChoice] = useState<string | null>(null);
+  const [showWeekCalendar, setShowWeekCalendar] = useState(false);
+  const [weekCalendarMonth, setWeekCalendarMonth] = useState(() => {
+    const s = semesterStart ? new Date(semesterStart) : new Date();
+    return new Date(s.getFullYear(), s.getMonth(), 1);
+  });
+  const [courseWeek1Start, setCourseWeek1Start] = useState<Date | null>(null);
+  const [courseWeekLength, setCourseWeekLength] = useState(7);
+  const [readingWeekVariable, setReadingWeekVariable] = useState(false);
+  const [readingWeekExclusions, setReadingWeekExclusions] = useState<Set<number>>(new Set());
+  const [showReadingWeekCalendar, setShowReadingWeekCalendar] = useState(false);
   const { uploadFile, isUploading } = useUpload();
   const [editInfo, setEditInfo] = useState({
     professor: courseInfo.professor || '',
@@ -1277,6 +1288,11 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             ) : courseInfo.deliveryMode === "online" ? (
               <span className="flex items-center gap-0.5"><img src={wifiLogoPath} alt="Online" style={{ width: '14px', height: 'auto' }} /> Online</span>
             ) : null}
+            {courseInfo.courseType && (
+              <span className="text-[9px] text-white">
+                {courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Elective" : "Liberal Studies"}
+              </span>
+            )}
             {onDeleteCourse && (
               <button
                 onClick={() => setShowDeleteConfirm(true)}
@@ -2060,6 +2076,195 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                   </Button>
                 </div>
 
+                <div className="mb-3 border border-white/15 rounded-lg p-2" style={{ background: 'rgba(255,255,255,0.03)' }}>
+                  <button
+                    className="flex items-center gap-1.5 text-[9px] font-medium text-white hover:text-white/80 transition-colors w-full"
+                    onClick={() => setShowWeekCalendar(!showWeekCalendar)}
+                    data-testid="button-toggle-week-calendar"
+                  >
+                    <Calendar className="h-3 w-3" />
+                    <span>Set Week 1 Start Date</span>
+                    {courseWeek1Start && <span className="text-[8px] text-green-300 ml-1">({courseWeek1Start.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })})</span>}
+                    {showWeekCalendar ? <ChevronDown className="h-2.5 w-2.5 ml-auto" /> : <ChevronRight className="h-2.5 w-2.5 ml-auto" />}
+                  </button>
+
+                  {showWeekCalendar && (() => {
+                    const month = weekCalendarMonth;
+                    const year = month.getFullYear();
+                    const mo = month.getMonth();
+                    const firstDay = new Date(year, mo, 1).getDay();
+                    const daysInMonth = new Date(year, mo + 1, 0).getDate();
+                    const monthName = month.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                    const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+                    const handleDayClick = (day: number) => {
+                      const selected = new Date(year, mo, day);
+                      const dayOfWeek = selected.getDay();
+                      const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+                      const weekStart = new Date(year, mo, day + mondayOffset);
+                      setCourseWeek1Start(weekStart);
+
+                      const newEdits = { ...weekMappingEdits };
+                      let currentStart = new Date(weekStart);
+                      let courseWeekNum = 1;
+                      for (let w = FIRST_WEEK; w <= LAST_WEEK; w++) {
+                        const isExcluded = readingWeekVariable && readingWeekExclusions.has(w);
+                        const weekEnd = new Date(currentStart);
+                        weekEnd.setDate(weekEnd.getDate() + 6);
+                        if (!isExcluded) {
+                          newEdits[w] = {
+                            ...(newEdits[w] || { confirmed: false, notes: '' }),
+                            confirmed: true,
+                            courseWeekLabel: `Week ${courseWeekNum}`,
+                          };
+                          courseWeekNum++;
+                        } else {
+                          newEdits[w] = {
+                            ...(newEdits[w] || { confirmed: false, notes: '' }),
+                            confirmed: true,
+                            courseWeekLabel: 'Reading Week',
+                          };
+                        }
+                        currentStart = new Date(weekEnd);
+                        currentStart.setDate(currentStart.getDate() + 1);
+                      }
+                      setWeekMappingEdits(newEdits);
+                      for (let w = FIRST_WEEK; w <= LAST_WEEK; w++) {
+                        saveWeekMapping(w, newEdits[w]);
+                      }
+                    };
+
+                    const getWeekOfDay = (day: number) => {
+                      if (!courseWeek1Start) return null;
+                      const d = new Date(year, mo, day);
+                      const diff = Math.floor((d.getTime() - courseWeek1Start.getTime()) / (7 * 24 * 60 * 60 * 1000));
+                      if (diff < 0) return null;
+                      return diff + FIRST_WEEK;
+                    };
+
+                    return (
+                      <div className="mt-2" data-testid="week-calendar-picker">
+                        <div className="flex items-center justify-between mb-2">
+                          <button onClick={() => setWeekCalendarMonth(new Date(year, mo - 1, 1))} className="text-white/60 hover:text-white p-0.5" data-testid="week-cal-prev">
+                            <ChevronLeft className="h-3.5 w-3.5" />
+                          </button>
+                          <span className="text-[10px] font-medium text-white">{monthName}</span>
+                          <button onClick={() => setWeekCalendarMonth(new Date(year, mo + 1, 1))} className="text-white/60 hover:text-white p-0.5" data-testid="week-cal-next">
+                            <ChevronRight className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-7 gap-0.5 mb-1">
+                          {dayLabels.map(d => <div key={d} className="text-[7px] text-white/50 text-center font-medium">{d}</div>)}
+                        </div>
+                        <div className="grid grid-cols-7 gap-0.5">
+                          {Array.from({ length: firstDay }, (_, i) => <div key={`e${i}`} />)}
+                          {Array.from({ length: daysInMonth }, (_, i) => {
+                            const day = i + 1;
+                            const d = new Date(year, mo, day);
+                            const isWeek1Start = courseWeek1Start && d.getTime() === courseWeek1Start.getTime();
+                            const isInWeek1 = courseWeek1Start && d >= courseWeek1Start && d < new Date(courseWeek1Start.getTime() + 7 * 24 * 60 * 60 * 1000);
+                            const weekIdx = getWeekOfDay(day);
+                            const isExcludedWeek = weekIdx !== null && readingWeekExclusions.has(weekIdx);
+                            return (
+                              <button
+                                key={day}
+                                onClick={() => handleDayClick(day)}
+                                className={`h-5 text-[8px] rounded transition-colors ${
+                                  isWeek1Start ? 'bg-green-500 text-white font-bold' :
+                                  isInWeek1 ? 'bg-green-500/30 text-green-200' :
+                                  isExcludedWeek ? 'bg-amber-500/20 text-amber-300' :
+                                  'text-white hover:bg-white/15'
+                                }`}
+                                data-testid={`week-cal-day-${day}`}
+                              >
+                                {day}
+                              </button>
+                            );
+                          })}
+                        </div>
+                        <div className="mt-2 text-[8px] text-white/50">
+                          Click any day to set the Monday of that week as Week 1 start. All subsequent weeks will be numbered automatically.
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  <div className="mt-2 flex items-center gap-2">
+                    <label className="flex items-center gap-1.5 cursor-pointer" data-testid="checkbox-reading-week-variable">
+                      <div
+                        className="flex items-center justify-center border border-white/40 rounded-sm cursor-pointer"
+                        style={{ width: '13px', height: '13px', background: readingWeekVariable ? 'white' : 'transparent' }}
+                        onClick={() => {
+                          const next = !readingWeekVariable;
+                          setReadingWeekVariable(next);
+                          if (!next) {
+                            setReadingWeekExclusions(new Set());
+                            setShowReadingWeekCalendar(false);
+                          }
+                        }}
+                      >
+                        {readingWeekVariable && <span style={{ color: 'black', fontSize: '9px', fontWeight: 'bold', lineHeight: 1 }}>✓</span>}
+                      </div>
+                      <span className="text-[8px] text-white">Reading week variable</span>
+                    </label>
+                  </div>
+
+                  {readingWeekVariable && (
+                    <div className="mt-2">
+                      <button
+                        className="flex items-center gap-1 text-[8px] text-white/70 hover:text-white transition-colors"
+                        onClick={() => setShowReadingWeekCalendar(!showReadingWeekCalendar)}
+                        data-testid="button-toggle-reading-week-cal"
+                      >
+                        <Calendar className="h-2.5 w-2.5" />
+                        <span>Select reading weeks to exclude from course numbering</span>
+                      </button>
+
+                      {showReadingWeekCalendar && (
+                        <div className="mt-1.5 space-y-0.5" data-testid="reading-week-selector">
+                          {Array.from({ length: LAST_WEEK - FIRST_WEEK + 1 }, (_, i) => i + FIRST_WEEK).map((weekNum) => {
+                            const weekDates = getWeekDates(weekNum, semesterStart, readingWeekStart);
+                            const ws = new Date(weekDates.start);
+                            const we = new Date(weekDates.end);
+                            const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                            const isExcluded = readingWeekExclusions.has(weekNum);
+                            return (
+                              <div key={weekNum} className="flex items-center gap-2 px-2 py-1 rounded hover:bg-white/5 cursor-pointer" onClick={() => {
+                                const next = new Set(readingWeekExclusions);
+                                if (isExcluded) next.delete(weekNum); else next.add(weekNum);
+                                setReadingWeekExclusions(next);
+                                if (courseWeek1Start) {
+                                  const newEdits = { ...weekMappingEdits };
+                                  let courseWeekNum = 1;
+                                  for (let w = FIRST_WEEK; w <= LAST_WEEK; w++) {
+                                    const excl = next.has(w);
+                                    if (!excl) {
+                                      newEdits[w] = { ...(newEdits[w] || { confirmed: false, notes: '' }), confirmed: true, courseWeekLabel: `Week ${courseWeekNum}` };
+                                      courseWeekNum++;
+                                    } else {
+                                      newEdits[w] = { ...(newEdits[w] || { confirmed: false, notes: '' }), confirmed: true, courseWeekLabel: 'Reading Week' };
+                                    }
+                                  }
+                                  setWeekMappingEdits(newEdits);
+                                  for (let w = FIRST_WEEK; w <= LAST_WEEK; w++) saveWeekMapping(w, newEdits[w]);
+                                }
+                              }} data-testid={`reading-week-toggle-${weekNum}`}>
+                                <div className="flex items-center justify-center border border-white/40 rounded-sm" style={{ width: '12px', height: '12px', background: isExcluded ? '#f59e0b' : 'transparent' }}>
+                                  {isExcluded && <span style={{ color: 'black', fontSize: '8px', fontWeight: 'bold', lineHeight: 1 }}>✓</span>}
+                                </div>
+                                <span className={`text-[8px] ${isExcluded ? 'text-amber-300' : 'text-white'}`}>
+                                  Week {weekNum} — {fmt(ws)} - {fmt(we)}
+                                </span>
+                                {isExcluded && <span className="text-[7px] text-amber-400 ml-1">(Reading Week — excluded)</span>}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
                 {Array.from({ length: LAST_WEEK - FIRST_WEEK + 1 }, (_, i) => i + FIRST_WEEK).map((weekNum) => {
                   const weekDates = getWeekDates(weekNum, semesterStart, readingWeekStart);
                   const weekStart = new Date(weekDates.start);
@@ -2099,7 +2304,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                           <span className={`text-[10px] font-medium ${isCurrent ? 'text-blue-300' : 'text-white'}`}>
                             Week {weekNum}
                           </span>
-                          <span className="text-[8px] text-white/40">{dateRange}</span>
+                          <span className="text-[8px] text-white">{dateRange}</span>
                           {isCurrent && <span className="text-[7px] px-1 py-0.5 bg-blue-500/20 text-blue-300 rounded">Current</span>}
                           {hasCustomLabel && (
                             <span className="text-[8px] px-1 py-0.5 bg-amber-500/15 text-amber-300 rounded">
@@ -2117,7 +2322,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                           setWeekMappingEdits(prev => ({ ...prev, [weekNum]: { ...edit, courseWeekLabel: e.target.value } }));
                         }}
                         onBlur={() => saveWeekMapping(weekNum, edit)}
-                        className="w-20 h-5 text-[8px] bg-white/5 border border-white/15 rounded px-1.5 text-white placeholder:text-white/20 focus:border-white/30 outline-none"
+                        className="w-20 h-5 text-[8px] bg-white/10 border border-white/25 rounded px-1.5 text-white placeholder:text-white/40 focus:border-white/50 outline-none"
                         data-testid={`input-course-week-label-${weekNum}`}
                       />
 
@@ -2129,7 +2334,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                           setWeekMappingEdits(prev => ({ ...prev, [weekNum]: { ...edit, notes: e.target.value } }));
                         }}
                         onBlur={() => saveWeekMapping(weekNum, edit)}
-                        className="w-24 h-5 text-[8px] bg-white/5 border border-white/15 rounded px-1.5 text-white placeholder:text-white/20 focus:border-white/30 outline-none"
+                        className="w-24 h-5 text-[8px] bg-white/10 border border-white/25 rounded px-1.5 text-white placeholder:text-white/40 focus:border-white/50 outline-none"
                         data-testid={`input-week-notes-${weekNum}`}
                       />
                     </div>
@@ -2378,17 +2583,19 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
               const hdrCls = (field: SortField) =>
                 `cursor-pointer select-none hover:text-white/80 transition-colors ${sortField === field ? 'text-white/90' : ''}`;
               return (
-                <div className="flex items-center gap-1.5 px-1.5 py-1 text-[9px] font-bold text-white/70 uppercase tracking-wider" style={{ margin: '0 4px' }}>
+                <div className="flex items-center gap-1.5 px-1.5 py-1 text-[7px] font-bold text-white tracking-wider" style={{ margin: '0 4px', letterSpacing: '0' }}>
                   <div className="flex-shrink-0" style={{ width: '14px', marginRight: '3px' }} />
-                  <div className="flex-shrink-0 text-center" style={{ width: '19px' }}>
-                    <span className="text-[8px] font-bold text-white/60">Assign</span>
+                  <div className="flex-shrink-0 text-center" style={{ width: '19px', lineHeight: '1.1' }}>
+                    <span className="text-[7px] font-bold text-white">Assign</span>
                   </div>
                   <div className="flex-shrink-0 w-4" style={{ marginRight: '3px' }} />
-                  <div className="flex-shrink-0" style={{ width: '19px', marginRight: '10px' }} />
+                  <div className="flex-shrink-0" style={{ width: '19px', marginRight: '10px', lineHeight: '1.1', textAlign: 'center' }}>
+                    <span className="text-[7px] font-bold text-white">New<br/>Group</span>
+                  </div>
                   <div className={`flex-1 min-w-0 ${hdrCls('title')}`} onClick={() => toggleSort('title')} style={{ paddingLeft: '6px' }} data-testid="sort-title">
                     Assignment<SortIcon field="title" />
                   </div>
-                  <div className="flex items-end flex-shrink-0 text-amber-400/70" style={{ gap: '5px' }}>
+                  <div className="flex items-end flex-shrink-0 text-white" style={{ gap: '5px' }}>
                     <span className={`w-[33px] text-center leading-tight ${hdrCls('score')}`} onClick={() => toggleSort('score')} style={{ display: 'inline-flex', justifyContent: 'center', paddingRight: '3px' }} data-testid="sort-score">
                       Score<SortIcon field="score" />
                     </span>
@@ -2399,13 +2606,13 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                       Weight<SortIcon field="weight" />
                     </span>
                     <span className={`w-[33px] text-center leading-tight ${hdrCls('percent')}`} onClick={() => toggleSort('percent')} style={{ display: 'inline-flex', justifyContent: 'center', marginLeft: '5px' }} data-testid="sort-percent">
-                      Percentage<SortIcon field="percent" />
+                      Percent<SortIcon field="percent" />
                     </span>
                   </div>
                   <div className="flex items-center flex-shrink-0" style={{ gap: '5px' }}>
-                    <div style={{ marginLeft: '5px', width: '19px', textAlign: 'center' }}><span className="text-[8px] font-bold text-white/60 normal-case" style={{ letterSpacing: '0' }}></span></div>
-                    <div style={{ width: '24px', textAlign: 'center', lineHeight: '1.1' }}><span className="text-[7px] font-bold text-white/60 normal-case" style={{ letterSpacing: '0' }}>Grade<br/>Received</span></div>
-                    <div style={{ width: '19px', textAlign: 'center' }}><span className="text-[8px] font-bold text-white/60 normal-case" style={{ letterSpacing: '0' }}>Copy</span></div>
+                    <div style={{ marginLeft: '5px', width: '19px', textAlign: 'center' }}><span className="text-[7px] font-bold text-white" style={{ letterSpacing: '0' }}></span></div>
+                    <div style={{ width: '24px', textAlign: 'center', lineHeight: '1.1' }}><span className="text-[7px] font-bold text-white" style={{ letterSpacing: '0' }}>Grade<br/>Received</span></div>
+                    <div style={{ width: '19px', textAlign: 'center' }}><span className="text-[7px] font-bold text-white" style={{ letterSpacing: '0' }}>Copy</span></div>
                     <div style={{ marginLeft: '5px', width: '19px' }} />
                   </div>
                 </div>
@@ -2419,7 +2626,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                   className="flex items-center gap-1 text-[8px] text-white/50 hover:text-white/80 transition-colors"
                   data-testid="button-create-group"
                 >
-                  <FolderPlus className="h-3 w-3" />
                   <span>New Group</span>
                 </button>
                 {showGroupInput && (
