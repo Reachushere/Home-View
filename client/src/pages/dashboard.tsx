@@ -19497,7 +19497,14 @@ export default function Dashboard() {
                                     </div>
                                   </div>
                                 )}
-                                <div className="absolute top-0 bottom-0 z-[3] pointer-events-none" style={{ left: `${gridSizes.timeSlotHeight + 5}px`, right: '1px' }} data-testid="hours-until-next-task">
+                                <div className="absolute top-0 bottom-0 z-[3] pointer-events-none flex items-center" style={{ left: `${gridSizes.timeSlotHeight + 5}px`, width: '38px' }} data-testid="things-to-do-label">
+                                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', lineHeight: 1.1 }}>
+                                    <span style={{ fontSize: '8px', fontWeight: 800, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Things</span>
+                                    <span style={{ fontSize: '8px', fontWeight: 800, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>to do</span>
+                                    <span style={{ fontSize: '8px', fontWeight: 800, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>today:</span>
+                                  </div>
+                                </div>
+                                <div className="absolute top-0 bottom-0 z-[3] pointer-events-none" style={{ left: `${gridSizes.timeSlotHeight + 43}px`, right: '1px' }} data-testid="hours-until-next-task">
                                   {(() => {
                                     const courseCode = nextSchoolTask?.courseName?.split(' - ')[0]?.trim() || '';
                                     const gradColors = getCourseGradientColors(courseCode);
