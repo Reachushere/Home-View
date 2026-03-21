@@ -19,7 +19,7 @@ import globalLogoPath from "@assets/Global_White_1773536754594.png";
 import cbcLogoPath from "@assets/cbc-news-logo-black-and-white_1773536865600.png";
 import msnbcLogoPath from "@assets/MSNBC_1773536950584.png";
 import exampleRedImg from "@assets/Example2_1774037220785.png";
-import greenRectImg from "@assets/Green_Rectangle_1774037460341.png";
+
 import dueBoxImg from "@assets/Due2_1774037504044.png";
 import tmuBoxesLogo from "@assets/TMU_Boxes_1773894223753.png";
 import d2lTickerLabel from "@assets/D2L_1773894837014.png";
@@ -317,17 +317,35 @@ function getPointerXY(e: React.MouseEvent | React.TouchEvent | MouseEvent | Touc
   return { clientX: (e as MouseEvent).clientX, clientY: (e as MouseEvent).clientY };
 }
 
+const _etDateKeyCache = new Map<number, string>();
+function _etDateKey(date: Date): string {
+  const ms = date.getTime();
+  const cached = _etDateKeyCache.get(ms);
+  if (cached) return cached;
+  const key = date.toLocaleDateString('en-CA', { timeZone: 'America/Toronto' });
+  if (_etDateKeyCache.size > 2000) _etDateKeyCache.clear();
+  _etDateKeyCache.set(ms, key);
+  return key;
+}
+
+const _toETCache = new Map<number, Date>();
 function toET(date: Date): Date {
+  const ms = date.getTime();
+  const cached = _toETCache.get(ms);
+  if (cached) return new Date(cached.getTime());
   const s = date.toLocaleString('en-US', { timeZone: 'America/Toronto' });
-  return new Date(s);
+  const result = new Date(s);
+  if (_toETCache.size > 2000) _toETCache.clear();
+  _toETCache.set(ms, result);
+  return new Date(result.getTime());
 }
 
 function getETHours(date: Date): number {
-  return parseInt(date.toLocaleString('en-US', { hour: 'numeric', hour12: false, timeZone: 'America/Toronto' }), 10) % 24;
+  return toET(date).getHours();
 }
 
 function getETMinutes(date: Date): number {
-  return parseInt(date.toLocaleString('en-US', { minute: 'numeric', timeZone: 'America/Toronto' }), 10);
+  return toET(date).getMinutes();
 }
 
 function startOfDayET(date: Date): Date {
@@ -337,13 +355,11 @@ function startOfDayET(date: Date): Date {
 }
 
 function isSameDayET(a: Date, b: Date): boolean {
-  const ea = toET(a);
-  const eb = toET(b);
-  return ea.getFullYear() === eb.getFullYear() && ea.getMonth() === eb.getMonth() && ea.getDate() === eb.getDate();
+  return _etDateKey(a) === _etDateKey(b);
 }
 
 function getETDateString(date: Date): string {
-  return date.toLocaleDateString('en-CA', { timeZone: 'America/Toronto' });
+  return _etDateKey(date);
 }
 
 const TICKER_LOGO_MAP: Record<string, { src: string; height: number }> = {
@@ -8771,15 +8787,15 @@ export default function Dashboard() {
     return now > dueDate;
   };
 
-  const missedTasks = sortByAttachments(allTasks.filter(t => t.isMissed && !t.isCompleted));
-  const today = new Date();
-  // Do Today shows ALL tasks due today OR prep tasks starting today (from all tasks, not just selected week)
-  const todayTasks = sortByAttachments(allTasks.filter(t => {
+  const today = useMemo(() => new Date(), [Math.floor(Date.now() / 60000)]);
+  const todayETKey = useMemo(() => _etDateKey(today), [today]);
+  const missedTasks = useMemo(() => sortByAttachments(allTasks.filter(t => t.isMissed && !t.isCompleted)), [allTasks]);
+  const todayTasks = useMemo(() => sortByAttachments(allTasks.filter(t => {
     if (t.isMissed || t.isCompleted) return false;
-    const isDueToday = t.dueDate && isSameDayET(new Date(t.dueDate), today);
-    const isPrepToday = t.startDate && isSameDayET(new Date(t.startDate), today);
+    const isDueToday = t.dueDate && _etDateKey(new Date(t.dueDate)) === todayETKey;
+    const isPrepToday = t.startDate && _etDateKey(new Date(t.startDate)) === todayETKey;
     return isDueToday || isPrepToday;
-  }));
+  })), [allTasks, todayETKey]);
   
   // Update ref for jiggle effect
   todayTaskCountRef.current = todayTasks.length;
@@ -8800,31 +8816,26 @@ export default function Dashboard() {
   
   // Due Today: all tasks due today (not prep tasks, actual due dates)
   // Also include full-week MODULE tasks that span today (startDate <= today <= dueDate)
-  const dueTodayTasks = allTasks.filter(t => {
+  const dueTodayTasks = useMemo(() => allTasks.filter(t => {
     if (t.isMissed || t.isCompleted) return false;
     if (isCASL101Finished(t)) return false;
     if (!t.dueDate) return false;
     if (/module/i.test(t.title || '')) return false;
     
-    // Check if task is due today
     if (isSameDayET(new Date(t.dueDate), today)) return true;
     
-    // Check if this is a full-week MODULE/READING task that spans today
-    // Full-week tasks have startDate and dueDate on different days (Sunday to Friday)
-    // Only apply for module/reading type tasks, not discussions or other types
     if (t.startDate && (t.type === 'module' || t.type === 'reading' || t.type === 'Module' || t.type === 'Reading')) {
       const taskStartDate = startOfDayET(new Date(t.startDate));
       const taskDueDate = startOfDayET(new Date(t.dueDate));
       const todayStart = startOfDayET(today);
       
-      // If today falls within the task's planning period, include it
       if (taskStartDate <= todayStart && todayStart <= taskDueDate) {
         return true;
       }
     }
     
     return false;
-  }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+  }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()), [allTasks, todayETKey]);
   
   // This Week: tasks due from tomorrow through end of Friday (school week ends Friday 11:59pm)
   const todayDow = today.getDay();
@@ -8832,58 +8843,48 @@ export default function Dashboard() {
   const thisWeekFriday = startOfDayET(addDays(today, daysUntilFriday));
   const thisWeekFridayEnd = new Date(thisWeekFriday);
   thisWeekFridayEnd.setHours(23, 59, 59, 999);
-  const dueTomorrowTasks = allTasks.filter(t => {
-    if (t.isMissed || t.isCompleted) return false;
-    if (isCASL101Finished(t)) return false;
-    if (!t.dueDate) return false;
-    if (/module/i.test(t.title || '')) return false;
-    const dueDate = new Date(t.dueDate);
-    const dueDateLocal = startOfDayET(dueDate);
-    if (dueDateLocal <= startOfDayET(today)) return false;
-    if (dueDate > thisWeekFridayEnd) return false;
-    if (isSameDayET(dueDate, today)) return false;
-    return true;
-  }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
-  
   const daysUntilSaturday = todayDow <= 6 ? (6 - todayDow) : 0;
   const nextSaturday = startOfDayET(addDays(today, daysUntilSaturday === 0 ? 7 : daysUntilSaturday));
-  const nextWeekEnd = startOfDayET(addDays(nextSaturday, 6));
-  nextWeekEnd.setHours(23, 59, 59, 999);
+  const nextWeekEnd = (() => { const d = startOfDayET(addDays(nextSaturday, 6)); d.setHours(23, 59, 59, 999); return d; })();
   const twoWeeksStart = startOfDayET(addDays(nextSaturday, 7));
-  const threeWeeksEnd = startOfDayET(addDays(nextSaturday, 13));
-  threeWeeksEnd.setHours(23, 59, 59, 999);
+  const threeWeeksEnd = (() => { const d = startOfDayET(addDays(nextSaturday, 13)); d.setHours(23, 59, 59, 999); return d; })();
   const thisWeekStart = nextSaturday;
   const thisWeekEnd = threeWeeksEnd;
-  const dueNextWeekTasks = (() => {
-    return allTasks.filter(t => {
+  const threeWeeksPlusStart = startOfDayET(addDays(nextSaturday, 14));
+  const beyondStart = startOfDayET(addDays(nextSaturday, 7));
+
+  const { dueTomorrowTasks, dueNextWeekTasks, dueTwoWeeksTasks, dueBeyondTasks } = useMemo(() => {
+    const activeNotModule = allTasks.filter(t => {
       if (t.isMissed || t.isCompleted) return false;
       if (isCASL101Finished(t)) return false;
       if (!t.dueDate) return false;
+      return true;
+    });
+    const todayStart = startOfDayET(today);
+    const dueTomorrow = activeNotModule.filter(t => {
+      if (/module/i.test(t.title || '')) return false;
+      const dueDate = new Date(t.dueDate);
+      const dueDateLocal = startOfDayET(dueDate);
+      if (dueDateLocal <= todayStart) return false;
+      if (dueDate > thisWeekFridayEnd) return false;
+      if (isSameDayET(dueDate, today)) return false;
+      return true;
+    }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+    const nextWeek = activeNotModule.filter(t => {
       const dueDate = new Date(t.dueDate);
       return dueDate >= nextSaturday && dueDate <= nextWeekEnd;
     }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
-  })();
-  const dueTwoWeeksTasks = (() => {
-    return allTasks.filter(t => {
-      if (t.isMissed || t.isCompleted) return false;
-      if (isCASL101Finished(t)) return false;
-      if (!t.dueDate) return false;
+    const twoWeeks = activeNotModule.filter(t => {
       const dueDate = new Date(t.dueDate);
       return dueDate >= twoWeeksStart && dueDate <= threeWeeksEnd;
     }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
-  })();
-  const threeWeeksPlusStart = startOfDayET(addDays(nextSaturday, 14));
-  const beyondStart = startOfDayET(addDays(nextSaturday, 7));
-  const dueBeyondTasks = (() => {
-    return allTasks.filter(t => {
-      if (t.isMissed || t.isCompleted) return false;
-      if (isCASL101Finished(t)) return false;
-      if (!t.dueDate) return false;
+    const beyond = activeNotModule.filter(t => {
       const dueDate = new Date(t.dueDate);
       return dueDate > threeWeeksEnd;
     }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
-  })();
-  const dueThisWeekTasks = [...dueNextWeekTasks, ...dueTwoWeeksTasks];
+    return { dueTomorrowTasks: dueTomorrow, dueNextWeekTasks: nextWeek, dueTwoWeeksTasks: twoWeeks, dueBeyondTasks: beyond };
+  }, [allTasks, todayETKey]);
+  const dueThisWeekTasks = useMemo(() => [...dueNextWeekTasks, ...dueTwoWeeksTasks], [dueNextWeekTasks, dueTwoWeeksTasks]);
 
   const hwWeeklyTimeline = useMemo(() => {
     const NUM_WEEKS = 13;
@@ -9232,64 +9233,61 @@ export default function Dashboard() {
     return isWithinInterval(dayStart, { start: weekStart, end: weekEnd });
   };
   
-  // Get tasks for a specific hour on a day
+  const tasksByDateKey = useMemo(() => {
+    const map = new Map<string, Task[]>();
+    for (const t of allTasks) {
+      if (t.isCompleted) continue;
+      if (isCASL101Finished(t)) continue;
+      if (!t.dueDate) continue;
+      const key = _etDateKey(new Date(t.dueDate));
+      const arr = map.get(key);
+      if (arr) arr.push(t); else map.set(key, [t]);
+    }
+    return map;
+  }, [allTasks]);
+
   const getTasksForHour = (day: Date, hour: number) => {
-    return allTasks.filter(t => {
-      if (t.isCompleted) return false; // Completed tasks don't show on calendar
-      if (isCASL101Finished(t)) return false; // Auto-hide finished CASL101 tasks
-      const dueDate = new Date(t.dueDate);
-      if (!isSameDayET(dueDate, day)) return false;
-      
+    const dayKey = _etDateKey(day);
+    const dayTasks = tasksByDateKey.get(dayKey);
+    if (!dayTasks) return [];
+    return dayTasks.filter(t => {
       if (t.eventStartTime) {
         const [startHour] = t.eventStartTime.split(':').map(Number);
         return startHour === hour;
       }
-      return getETHours(dueDate) === hour;
+      return getETHours(new Date(t.dueDate)) === hour;
     });
   };
   
-  // Get tasks that started in a previous hour but are still ongoing at this hour
   const getContinuingTasksForHour = (day: Date, hour: number) => {
-    return allTasks.filter(t => {
-      if (t.isCompleted) return false;
-      if (isCASL101Finished(t)) return false; // Auto-hide finished CASL101 tasks
-      const dueDate = new Date(t.dueDate);
-      if (!isSameDayET(dueDate, day)) return false;
-      
-      // Only consider tasks with explicit start and end times
+    const dayKey = _etDateKey(day);
+    const dayTasks = tasksByDateKey.get(dayKey);
+    if (!dayTasks) return [];
+    return dayTasks.filter(t => {
       if (!t.eventStartTime || !t.eventEndTime) return false;
-      
-      const [startHour, startMin] = t.eventStartTime.split(':').map(Number);
+      const [startHour] = t.eventStartTime.split(':').map(Number);
       const [endHour, endMin] = t.eventEndTime.split(':').map(Number);
-      
-      // Task started before this hour and ends at or after this hour
       const startsBeforeThisHour = startHour < hour;
       const endsAtOrAfterThisHour = endHour > hour || (endHour === hour && endMin > 0);
-      
       return startsBeforeThisHour && endsAtOrAfterThisHour;
     });
   };
   
-  // Get all multi-hour tasks for the week to render as absolute positioned elements
   const getMultiHourTasksForWeek = () => {
-    return allTasks.filter(t => {
-      if (t.isCompleted) return false;
-      if (isCASL101Finished(t)) return false; // Auto-hide finished CASL101 tasks
+    const weekDateKeys = new Set(weekDays.map(d => _etDateKey(d)));
+    const weekTasks: Task[] = [];
+    for (const [key, tasks] of tasksByDateKey) {
+      if (weekDateKeys.has(key)) weekTasks.push(...tasks);
+    }
+    return weekTasks.filter(t => {
       if (!t.eventStartTime || !t.eventEndTime) return false;
-      
-      const dueDate = new Date(t.dueDate);
-      // Check if task is in current week view
-      const isInWeek = weekDays.some(day => isSameDayET(day, dueDate));
-      if (!isInWeek) return false;
-      
       const [startHour] = t.eventStartTime.split(':').map(Number);
       const [endHour] = t.eventEndTime.split(':').map(Number);
-      
-      // Only return tasks that span multiple hours
       return endHour > startHour;
     }).map(t => {
       const dueDate = new Date(t.dueDate);
-      const dayIdx = weekDays.findIndex(day => isSameDayET(day, dueDate));
+      const dueDateKey = _etDateKey(dueDate);
+      const dayIdx = weekDays.findIndex(day => _etDateKey(day) === dueDateKey);
       const [startHour, startMin] = t.eventStartTime!.split(':').map(Number);
       const [endHour, endMin] = t.eventEndTime!.split(':').map(Number);
       
@@ -18779,7 +18777,7 @@ export default function Dashboard() {
                                 <div
                                   className="flex items-center text-[9px] rounded border cursor-pointer relative w-full"
                                   style={{ 
-                                    backgroundColor: (() => { const rgb = hexToRgb(course.color); return `rgba(${rgb.r},${rgb.g},${rgb.b},0.10)`; })(),
+                                    backgroundColor: (() => { const rgb = hexToRgb(course.color); return `rgba(${rgb.r},${rgb.g},${rgb.b},0.06)`; })(),
                                     borderColor: course.darkColor,
                                     zIndex: hoveredCountdownTaskId === task.id ? 55 : 1,
                                     transform: hoveredCountdownTaskId === task.id ? 'scale(1.12)' : undefined,
@@ -18791,7 +18789,7 @@ export default function Dashboard() {
                                   onClick={() => setEditingTask(task)}
                                   title={`Prep Day - ${task.title}`}
                                 >
-                                  {(() => { const totalPrepDays = differenceInCalendarDays(prepDueDate, prepStartDate); const showCount = totalPrepDays > 3; const daysLeft = showCount ? differenceInCalendarDays(prepDueDate, cellDate) : 0; const prepUrgent = showCount && daysLeft <= 2; return <span className="flex flex-col items-center justify-center whitespace-nowrap font-bold shrink-0" style={{ backgroundColor: course.darkColor, color: '#ffffff', letterSpacing: showCount ? '0.5px' : '1px', padding: showCount ? '0px 3px 0 2px' : '1px 3px 0 2px', fontSize: showCount ? '7px' : '8px', WebkitTextStroke: '0', alignSelf: 'stretch', lineHeight: showCount ? '1.1' : undefined, marginTop: showCount ? '-1px' : undefined, minWidth: '30px' }}><span style={{ marginTop: showCount ? '1px' : undefined, fontFamily: "system-ui, sans-serif", fontWeight: 500 }}>PREP</span>{showCount && <span style={{ color: prepUrgent ? '#ffd700' : '#ffffff', fontSize: '8px', fontWeight: 550, WebkitTextStroke: '0', letterSpacing: '0.3px', lineHeight: '1', marginTop: '0px', fontFamily: "system-ui, sans-serif" }}>{daysLeft}d</span>}</span>; })()}
+                                  {(() => { const totalPrepDays = differenceInCalendarDays(prepDueDate, prepStartDate); const showCount = totalPrepDays > 3; const daysLeft = showCount ? differenceInCalendarDays(prepDueDate, cellDate) : 0; const prepUrgent = showCount && daysLeft <= 2; const rgb = hexToRgb(course.color); return <span className="flex flex-col items-center justify-center whitespace-nowrap font-bold shrink-0" style={{ backgroundColor: `rgba(${rgb.r},${rgb.g},${rgb.b},0.35)`, color: '#ffffff', letterSpacing: showCount ? '0.5px' : '1px', padding: showCount ? '0px 3px 0 2px' : '1px 3px 0 2px', fontSize: showCount ? '7px' : '8px', WebkitTextStroke: '0', alignSelf: 'stretch', lineHeight: showCount ? '1.1' : undefined, marginTop: showCount ? '-1px' : undefined, minWidth: '30px' }}><span style={{ marginTop: showCount ? '1px' : undefined, fontFamily: "system-ui, sans-serif", fontWeight: 500 }}>PREP</span>{showCount && <span style={{ color: prepUrgent ? '#ffd700' : '#e0e0e0', fontSize: '8px', fontWeight: 550, WebkitTextStroke: '0', letterSpacing: '0.3px', lineHeight: '1', marginTop: '0px', fontFamily: "system-ui, sans-serif" }}>{daysLeft}d</span>}</span>; })()}
                                   <span className="truncate pl-[3px] py-0.5 flex-1 min-w-0" style={{ fontSize: '9px', transform: 'translateY(1px)', color: '#000000' }}>{task.title}</span>
                                 </div>
                               </div>
@@ -18825,7 +18823,7 @@ export default function Dashboard() {
                             <div 
                               className={`flex flex-col gap-0 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer w-full min-w-0 ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                               style={{ 
-                                backgroundColor: (() => { const rgb = hexToRgb(course.color); const isSummaryType = task.type === 'module' || task.type === 'reading' || task.type === 'Module' || task.type === 'Reading'; return `rgba(${rgb.r},${rgb.g},${rgb.b},${isSummaryType ? 0.10 : 0.22})`; })(),
+                                backgroundColor: (() => { const rgb = hexToRgb(course.color); const isSummaryType = task.type === 'module' || task.type === 'reading' || task.type === 'Module' || task.type === 'Reading'; return `rgba(${rgb.r},${rgb.g},${rgb.b},${isSummaryType ? 0.06 : 0.14})`; })(),
                                 borderColor: course.darkColor,
                                 transform: hoveredCountdownTaskId === task.id ? 'scale(1.12)' : undefined,
                                 boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
@@ -19500,10 +19498,16 @@ export default function Dashboard() {
                                   </div>
                                 )}
                                 <div className="absolute top-0 bottom-0 z-[3] pointer-events-none" style={{ left: `${gridSizes.timeSlotHeight + 5}px`, right: '1px' }} data-testid="hours-until-next-task">
-                                  <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-                                    <img src={greenRectImg} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'fill', borderRadius: '5px', opacity: 0.5 }} />
-                                    <span style={{ position: 'absolute', top: '50%', left: '73%', transform: 'translate(-50%, -50%)', zIndex: 1, fontSize: '20px', color: 'black', fontWeight: 900, lineHeight: 1 }}>{displayTime}</span>
-                                  </div>
+                                  {(() => {
+                                    const courseCode = nextSchoolTask?.courseName?.split(' - ')[0]?.trim() || '';
+                                    const gradColors = getCourseGradientColors(courseCode);
+                                    return (
+                                      <div style={{ width: '100%', height: '100%', position: 'relative', borderRadius: '5px', overflow: 'hidden', background: `linear-gradient(135deg, ${gradColors.start} 0%, ${gradColors.end} 100%)`, opacity: 0.7 }}>
+                                        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.1) 100%)' }} />
+                                        <span style={{ position: 'absolute', top: '50%', left: '73%', transform: 'translate(-50%, -50%)', zIndex: 1, fontSize: '20px', color: 'white', fontWeight: 900, lineHeight: 1, textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>{displayTime}</span>
+                                      </div>
+                                    );
+                                  })()}
                                 </div>
                               </>
                             );

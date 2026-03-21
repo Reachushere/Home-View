@@ -141,6 +141,82 @@ function formatMs(ms: number) {
   return `${m}:${(s % 60).toString().padStart(2, "0")}`;
 }
 
+function VolumeKnob({ value, onChange, size = 54, accent = "#3b82f6", glow = "rgba(59,130,246,0.3)" }: { value: number; onChange: (v: number) => void; size?: number; accent?: string; glow?: string }) {
+  const knobRef = useRef<SVGSVGElement>(null);
+  const dragging = useRef(false);
+
+  const startAngle = 135;
+  const endAngle = 405;
+  const range = endAngle - startAngle;
+  const currentAngle = startAngle + (value / 100) * range;
+
+  const r = (size - 10) / 2;
+  const cx = size / 2;
+  const cy = size / 2;
+
+  const toRad = (deg: number) => (deg * Math.PI) / 180;
+  const arcX = (deg: number) => cx + r * Math.cos(toRad(deg - 90));
+  const arcY = (deg: number) => cy + r * Math.sin(toRad(deg - 90));
+
+  const handleX = cx + (r - 2) * Math.cos(toRad(currentAngle - 90));
+  const handleY = cy + (r - 2) * Math.sin(toRad(currentAngle - 90));
+
+  const arcPath = (from: number, to: number) => {
+    const s = { x: arcX(from), y: arcY(from) };
+    const e = { x: arcX(to), y: arcY(to) };
+    const large = to - from > 180 ? 1 : 0;
+    return `M ${s.x} ${s.y} A ${r} ${r} 0 ${large} 1 ${e.x} ${e.y}`;
+  };
+
+  const angleFromEvent = (e: { clientX: number; clientY: number }) => {
+    if (!knobRef.current) return value;
+    const rect = knobRef.current.getBoundingClientRect();
+    const dx = e.clientX - (rect.left + rect.width / 2);
+    const dy = e.clientY - (rect.top + rect.height / 2);
+    let deg = (Math.atan2(dy, dx) * 180) / Math.PI + 90;
+    if (deg < 0) deg += 360;
+    if (deg < startAngle - 20) deg += 360;
+    const clamped = Math.max(startAngle, Math.min(endAngle, deg));
+    return Math.round(((clamped - startAngle) / range) * 100);
+  };
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    e.stopPropagation(); e.preventDefault();
+    dragging.current = true;
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    onChange(angleFromEvent(e));
+  };
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!dragging.current) return;
+    e.stopPropagation();
+    onChange(angleFromEvent(e));
+  };
+  const onPointerUp = (e: React.PointerEvent) => {
+    dragging.current = false;
+    (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+  };
+
+  return (
+    <div className="flex flex-col items-center" style={{ touchAction: 'none' }}>
+      <svg ref={knobRef} width={size} height={size} className="cursor-pointer"
+        onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp}
+        data-testid="volume-knob">
+        <circle cx={cx} cy={cy} r={r + 2} fill="rgba(0,0,0,0.5)" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+        <path d={arcPath(startAngle, endAngle)} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="4" strokeLinecap="round" />
+        <path d={arcPath(startAngle, currentAngle)} fill="none" stroke={accent} strokeWidth="4" strokeLinecap="round"
+          style={{ filter: `drop-shadow(0 0 4px ${glow})` }} />
+        <circle cx={cx} cy={cy} r={r - 8} fill="rgba(10,20,40,0.7)" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
+        <line x1={cx} y1={cy} x2={handleX} y2={handleY} stroke={accent} strokeWidth="2" strokeLinecap="round"
+          style={{ filter: `drop-shadow(0 0 3px ${glow})` }} />
+        <circle cx={handleX} cy={handleY} r={4} fill={accent} stroke="white" strokeWidth="1"
+          style={{ filter: `drop-shadow(0 0 6px ${glow})` }} />
+        <circle cx={cx} cy={cy} r={2} fill="rgba(255,255,255,0.4)" />
+      </svg>
+      <span className="text-[10px] font-bold mt-0.5" style={{ color: accent, textShadow: `0 0 6px ${glow}` }}>{value}%</span>
+    </div>
+  );
+}
+
 function CherryBlossoms() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animRef = useRef<number>();
@@ -624,6 +700,8 @@ export default function SpotifyPlayerPage() {
   const [notification, setNotification] = useState<string | null>(null);
   const [profileSpinning, setProfileSpinning] = useState(false);
   const [activeRooms, setActiveRooms] = useState<Set<string>>(new Set());
+  const [roomVolumes, setRoomVolumes] = useState<Record<string, number>>({});
+  const volumeTimerRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const [viewMode, setViewMode] = useState<ViewMode>("floor");
   const [viewSpinning, setViewSpinning] = useState(false);
   const [expandedRoom, setExpandedRoom] = useState<string | null>(null);
@@ -822,6 +900,20 @@ export default function SpotifyPlayerPage() {
       return () => clearInterval(tick);
     }
   }, [nowPlaying?.playing, nowPlaying?.duration]);
+
+  const setRoomVolume = useCallback((room: string, vol: number) => {
+    setRoomVolumes(prev => ({ ...prev, [room]: vol }));
+    const spot = ROOM_HOTSPOTS.find(h => h.room === room);
+    if (!spot) return;
+    if (volumeTimerRef.current[room]) clearTimeout(volumeTimerRef.current[room]);
+    volumeTimerRef.current[room] = setTimeout(() => {
+      fetch(`/api/media/volume`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entityId: spot.groupEntityId, level: vol }),
+      });
+    }, 200);
+  }, []);
 
   const doAction = async (action: string, method = "POST", body?: any) => {
     setActionPending(true);
@@ -1716,7 +1808,17 @@ export default function SpotifyPlayerPage() {
                               data-testid={`floorplan-ungroup-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
                               {isSakura ? "✕ 解除" : "✕ Ungroup"}
                             </button>
+                            {spot.room !== "Everywhere" && (
+                              <div className="mt-1" onClick={(e) => e.stopPropagation()} data-testid={`volume-knob-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
+                                <VolumeKnob value={roomVolumes[spot.room] ?? 30} onChange={(v) => setRoomVolume(spot.room, v)} size={50} accent={profile.accent} glow={profile.glow} />
+                              </div>
+                            )}
                           </>
+                        )}
+                        {spot.room === "Everywhere" && activeRooms.has("Everywhere") && (
+                          <div className="mt-1" onClick={(e) => e.stopPropagation()} data-testid="volume-knob-everywhere-global">
+                            <VolumeKnob value={roomVolumes["Everywhere"] ?? 30} onChange={(v) => setRoomVolume("Everywhere", v)} size={56} accent={profile.accent} glow={profile.glow} />
+                          </div>
                         )}
                       </div>}
                       {isDrop && (
@@ -1724,6 +1826,12 @@ export default function SpotifyPlayerPage() {
                           border: `2px dashed ${profile.accent}70`,
                           animation: 'holoPulse 1s ease-in-out infinite',
                         }} />
+                      )}
+                      {!isActive && activeRooms.has("Everywhere") && spot.room !== "Everywhere" && !spot.hideLabel && (
+                        <div className="absolute inset-0 flex items-center justify-center" style={{ zIndex: 3 }}
+                          onClick={(e) => e.stopPropagation()}>
+                          <VolumeKnob value={roomVolumes[spot.room] ?? 30} onChange={(v) => setRoomVolume(spot.room, v)} size={44} accent={`${profile.accent}aa`} glow={profile.glow} />
+                        </div>
                       )}
                     </div>
                   );
