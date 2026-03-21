@@ -3378,7 +3378,7 @@ export default function Dashboard() {
       colors[courseCode] = {
         hex,
         hexEnd,
-        bg: `rgba(${endRgb.r}, ${endRgb.g}, ${endRgb.b}, 0.45)`,
+        bg: `rgb(${Math.round(endRgb.r + (255 - endRgb.r) * 0.55)}, ${Math.round(endRgb.g + (255 - endRgb.g) * 0.55)}, ${Math.round(endRgb.b + (255 - endRgb.b) * 0.55)})`,
         border: displayHex,
         text: displayHex,
         dot: displayHex,
