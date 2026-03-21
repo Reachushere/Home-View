@@ -969,7 +969,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
         onDragOver={(e) => handleDragOver(e, task.id)}
         onDrop={(e) => handleDrop(e, task.id, currentGroup)}
         onDragEnd={handleDragEnd}
-        className={`flex items-center gap-1.5 px-1.5 py-1.5 rounded-md border transition-all ${
+        className={`flex items-center px-1.5 py-1.5 rounded-md border transition-all ${
           isDragging ? "opacity-40 border-blue-400/50" :
           isDragOver ? "border-blue-400 bg-blue-400/10" :
           task.isCompleted ? "bg-white/5 border-white/5" :
@@ -978,12 +978,13 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
         }`}
         data-testid={`assignment-row-${task.id}`}
       >
-        <div className="flex-shrink-0 cursor-grab active:cursor-grabbing text-white/30 hover:text-white/60" data-testid={`drag-handle-${task.id}`}>
+        <div className="flex-shrink-0 cursor-grab active:cursor-grabbing text-white/30 hover:text-white/60" style={{ marginRight: '6px' }} data-testid={`drag-handle-${task.id}`}>
           <GripVertical className="h-3.5 w-3.5" />
         </div>
         {assignToGroup === task.id ? (
           <select
             className="h-5 text-[8px] bg-white/10 border border-white/20 rounded text-white px-0.5 flex-shrink-0"
+            style={{ marginRight: '6px' }}
             value={task.assignmentGroup || ''}
             onChange={(e) => assignTaskToGroup(task.id, e.target.value || null)}
             autoFocus
@@ -998,6 +999,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
           <button
             onClick={(e) => { e.stopPropagation(); setAssignToGroup(task.id); }}
             className="flex-shrink-0 text-white hover:text-white/60 transition-colors p-0.5"
+            style={{ marginRight: '6px' }}
             title="Assign to group"
             data-testid={`button-assign-group-${task.id}`}
           >
@@ -1009,11 +1011,12 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
           className={`flex-shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${
             task.isCompleted ? "bg-green-500 border-green-500" : "border-white/30 hover:border-white/50"
           }`}
+          style={{ marginRight: '6px' }}
           data-testid={`button-toggle-task-${task.id}`}
         >
           {task.isCompleted && <CheckCircle2 className="h-3 w-3 text-white" />}
         </button>
-        <MessageSquare className={`h-[19px] w-[19px] flex-shrink-0 cursor-pointer hover:opacity-70 transition-opacity ${task.isCompleted ? "text-white/50" : "text-white"}`} style={{ marginRight: '10px' }} onClick={(e) => { e.stopPropagation(); if (expandedTaskId === task.id) { setExpandedTaskId(null); setEditTaskFields(null); } else { setExpandedTaskId(task.id); const d = task.dueDate ? new Date(task.dueDate) : null; setEditTaskFields({ title: task.title || '', type: task.type || 'other', dueDate: d ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` : '', dueTime: d ? `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` : '', description: task.description || '', gradeWeight: task.gradeWeight?.toString() || '', gradeTotal: task.gradeTotal?.toString() || '', gradeValue: task.gradeValue?.toString() || '', reminder1: task.reminder1 ?? 30, reminder2: task.reminder2 ?? 120, reminder3: task.reminder3 ?? null, reminder4: task.reminder4 ?? null }); } }} data-testid={`button-comments-${task.id}`} />
+        <MessageSquare className={`h-[19px] w-[19px] flex-shrink-0 cursor-pointer hover:opacity-70 transition-opacity ${task.isCompleted ? "text-white/50" : "text-white"}`} style={{ marginRight: '6px' }} onClick={(e) => { e.stopPropagation(); if (expandedTaskId === task.id) { setExpandedTaskId(null); setEditTaskFields(null); } else { setExpandedTaskId(task.id); const d = task.dueDate ? new Date(task.dueDate) : null; setEditTaskFields({ title: task.title || '', type: task.type || 'other', dueDate: d ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` : '', dueTime: d ? `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` : '', description: task.description || '', gradeWeight: task.gradeWeight?.toString() || '', gradeTotal: task.gradeTotal?.toString() || '', gradeValue: task.gradeValue?.toString() || '', reminder1: task.reminder1 ?? 30, reminder2: task.reminder2 ?? 120, reminder3: task.reminder3 ?? null, reminder4: task.reminder4 ?? null }); } }} data-testid={`button-comments-${task.id}`} />
         <div className="flex-1 min-w-0">
           <div
             className={`text-[10px] font-medium truncate flex items-center gap-1 cursor-pointer hover:underline ${task.isCompleted ? "line-through text-white/50" : "text-white"}`}
@@ -1056,7 +1059,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             <span className="capitalize">{task.type}</span>
           </div>
         </div>
-        <div className="flex items-center flex-shrink-0" style={{ gap: '6px' }} onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center flex-shrink-0" style={{ gap: '6px', marginLeft: '6px' }} onClick={(e) => e.stopPropagation()}>
           <DebouncedGradeInput
             value={task.gradeValue}
             onSave={(val) => updateGradeValueMutation.mutate({ id: task.id, gradeValue: val, _task: task })}
@@ -1079,7 +1082,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             {task.gradeValue !== null && task.gradeValue !== undefined && task.gradeTotal ? `${((task.gradeValue / task.gradeTotal) * 100).toFixed(2)}%` : '—'}
           </span>
         </div>
-        <div className="flex items-center flex-shrink-0" style={{ gap: '6px' }} onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center flex-shrink-0" style={{ gap: '6px', marginLeft: '6px' }} onClick={(e) => e.stopPropagation()}>
           <label className="flex items-center cursor-pointer" title={task.excludeFromGpa ? "Excluded from grade" : "Included in grade"} data-testid={`toggle-gpa-${task.id}`}>
             <div className="relative" onClick={() => updateTaskMutation.mutate({ id: task.id, data: { excludeFromGpa: !task.excludeFromGpa }, _task: task })}>
               <div className={`w-6 h-3.5 rounded-full transition-colors ${task.excludeFromGpa ? 'bg-red-500/60' : 'bg-green-500/60'}`} />
@@ -2587,19 +2590,19 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
               const hdrCls = (field: SortField) =>
                 `cursor-pointer select-none hover:text-white/80 transition-colors ${sortField === field ? 'text-white/90' : ''}`;
               return (
-                <div className="flex items-end gap-1.5 px-1.5 py-1 text-[7px] font-bold text-white" style={{ margin: '0 4px', letterSpacing: '0' }}>
-                  <div className="flex-shrink-0" style={{ width: '14px' }} />
-                  <div className="flex-shrink-0 text-center" style={{ width: '19px' }}>
-                    <span className="text-[7px] font-bold text-white">Assign</span>
+                <div className="flex items-end px-1.5 py-1 text-[9px] font-bold text-white" style={{ margin: '0 4px', letterSpacing: '0' }}>
+                  <div className="flex-shrink-0" style={{ width: '14px', marginRight: '6px' }} />
+                  <div className="flex-shrink-0 text-center" style={{ width: '19px', marginRight: '6px' }}>
+                    <span className="text-[9px] font-bold text-white">Assign</span>
                   </div>
-                  <div className="flex-shrink-0" style={{ width: '16px' }} />
-                  <div className="flex-shrink-0 text-center" style={{ width: '19px', marginRight: '10px' }}>
-                    <span className="text-[7px] font-bold text-white">Comments</span>
+                  <div className="flex-shrink-0" style={{ width: '16px', marginRight: '6px' }} />
+                  <div className="flex-shrink-0 text-center" style={{ width: '19px', marginRight: '6px' }}>
+                    <span className="text-[9px] font-bold text-white">Comments</span>
                   </div>
                   <div className={`flex-1 min-w-0 ${hdrCls('title')}`} onClick={() => toggleSort('title')} data-testid="sort-title">
                     Assignment<SortIcon field="title" />
                   </div>
-                  <div className="flex items-end flex-shrink-0 text-white" style={{ gap: '6px' }}>
+                  <div className="flex items-end flex-shrink-0 text-white" style={{ gap: '6px', marginLeft: '6px' }}>
                     <span className={`w-[33px] text-center leading-tight ${hdrCls('score')}`} onClick={() => toggleSort('score')} style={{ display: 'inline-flex', justifyContent: 'center' }} data-testid="sort-score">
                       Score<SortIcon field="score" />
                     </span>
@@ -2613,9 +2616,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                       Percent<SortIcon field="percent" />
                     </span>
                   </div>
-                  <div className="flex items-end flex-shrink-0" style={{ gap: '6px' }}>
-                    <div style={{ width: '24px', textAlign: 'center', lineHeight: '1.1' }}><span className="text-[7px] font-bold text-white">Grade<br/>Received</span></div>
-                    <div style={{ width: '19px', textAlign: 'center' }}><span className="text-[7px] font-bold text-white">Copy</span></div>
+                  <div className="flex items-end flex-shrink-0" style={{ gap: '6px', marginLeft: '6px' }}>
+                    <div style={{ width: '24px', textAlign: 'center', lineHeight: '1.1' }}><span className="text-[9px] font-bold text-white">Grade<br/>Received</span></div>
+                    <div style={{ width: '19px', textAlign: 'center' }}><span className="text-[9px] font-bold text-white">Copy</span></div>
                     <div style={{ width: '19px' }} />
                   </div>
                 </div>
@@ -2623,10 +2626,11 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             })()}
 
             {courseTasks.length > 0 && (
-              <div className="flex items-center gap-1 px-2 mb-1">
+              <div className="flex items-center px-2 mb-1">
                 <button
                   onClick={() => setShowGroupInput(!showGroupInput)}
-                  className="flex items-center gap-1 text-[8px] text-white hover:text-white/80 transition-colors font-bold"
+                  className="flex items-center gap-1 text-[9px] text-white hover:text-white/80 transition-colors font-bold"
+                  style={{ marginRight: '6px' }}
                   data-testid="button-create-group"
                 >
                   <span style={{ lineHeight: '1.1' }}>New<br/>Group</span>
@@ -2691,13 +2695,13 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
               ))}
             </div>
             {courseTasks.length > 0 && (
-              <div className="flex items-center gap-1.5 px-1.5 py-1.5 mt-1 rounded-md border border-amber-400/30 bg-amber-400/5" style={{ margin: '4px 4px 0 4px' }} data-testid="grade-totals-row">
-                <div className="flex-shrink-0" style={{ width: '14px', marginRight: '3px' }} />
-                <div className="flex-shrink-0" style={{ width: '19px' }} />
-                <div className="flex-shrink-0 w-4" style={{ marginRight: '3px' }} />
-                <div className="flex-shrink-0" style={{ width: '19px', marginRight: '10px' }} />
+              <div className="flex items-center px-1.5 py-1.5 mt-1 rounded-md border border-amber-400/30 bg-amber-400/5" style={{ margin: '4px 4px 0 4px' }} data-testid="grade-totals-row">
+                <div className="flex-shrink-0" style={{ width: '14px', marginRight: '6px' }} />
+                <div className="flex-shrink-0" style={{ width: '19px', marginRight: '6px' }} />
+                <div className="flex-shrink-0 w-4" style={{ marginRight: '6px' }} />
+                <div className="flex-shrink-0" style={{ width: '19px', marginRight: '6px' }} />
                 <div className="flex-1 min-w-0 text-[11px] font-bold text-white">Totals</div>
-                <div className="flex items-center flex-shrink-0" style={{ gap: '6px' }}>
+                <div className="flex items-center flex-shrink-0" style={{ gap: '6px', marginLeft: '6px' }}>
                   <span className="text-[12px] font-bold w-[33px] text-center text-amber-400" data-testid="text-sum-value">
                     {(() => { const v = courseTasks.filter(t => !t.excludeFromGpa).reduce((s, t) => s + (t.gradeValue || 0), 0); return v ? v.toFixed(2) : '—'; })()}
                   </span>
@@ -2711,11 +2715,11 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                   </span>
                   <span className="w-[33px]" style={{ marginLeft: '6px' }} />
                 </div>
-                <div className="flex items-center flex-shrink-0" style={{ gap: '6px', visibility: 'hidden' }}>
-                  <div style={{ marginLeft: '6px', padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
+                <div className="flex items-center flex-shrink-0" style={{ gap: '6px', marginLeft: '6px', visibility: 'hidden' }}>
+                  <div style={{ padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
                   <div><div style={{ width: '24px', height: '14px' }} /></div>
                   <div style={{ padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
-                  <div style={{ marginLeft: '6px', padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
+                  <div style={{ padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
                 </div>
               </div>
             )}
