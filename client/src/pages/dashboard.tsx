@@ -16330,7 +16330,7 @@ export default function Dashboard() {
                                 }
                               }}
                             >
-                              <div className="px-2 py-1.5 border-b flex items-center justify-between flex-shrink-0" style={{ background: 'transparent', borderColor: isCurrentSem ? '#ffffff' : 'rgba(255,255,255,0.3)' }}>
+                              <div className="px-2 py-1.5 border-b flex items-center justify-between flex-shrink-0" style={{ background: isCurrentSem ? 'rgba(10,15,30,0.85)' : 'transparent', borderColor: isCurrentSem ? '#ffffff' : 'rgba(255,255,255,0.3)', ...(isCurrentSem ? { boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)' } : {}) }}>
                                 <div className="flex items-center gap-1.5 flex-wrap">
                                   <Settings
                                     className="text-white/50 hover:text-white cursor-pointer transition-colors flex-shrink-0"
