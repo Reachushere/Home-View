@@ -16182,7 +16182,7 @@ export default function Dashboard() {
                         />
                         <div
                           className={`flex flex-col items-center cursor-pointer hover:opacity-80 transition-opacity flex-shrink-0 ${!(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) && hasSemStarted(semKey) ? 'aas-unchecked-pulse' : ''}`}
-                          style={{ width: '24px', marginLeft: '-4px', marginTop: '2px' }}
+                          style={{ width: '24px', marginTop: '2px' }}
                           data-testid={`aas-status-${semCourse.code}`}
                           onClick={(e) => { e.stopPropagation(); toggleAasSent(semCourse.code); }}
                         >
@@ -16199,7 +16199,7 @@ export default function Dashboard() {
                         >
                           <MessageSquare className="w-3 h-3" strokeWidth={2.5} />
                         </button>
-                        <div className="flex-shrink-0" style={{ width: '33px', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', paddingLeft: '0px', marginLeft: '1px' }}>
+                        <div className="flex-shrink-0" style={{ width: '33px', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', paddingLeft: '0px' }}>
                         {(() => {
                           const cc = semCourse.code.replace(/\s/g, '');
                           let dm = courseDeliveryModes[cc] || '';
