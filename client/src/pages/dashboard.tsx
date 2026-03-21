@@ -19514,7 +19514,7 @@ export default function Dashboard() {
                                     </div>
                                   </div>
                                 )}
-                                <div className="absolute top-0 bottom-0 z-[3] pointer-events-none" style={{ left: `${missedCount > 0 ? gridSizes.timeSlotHeight + 5 : 2}px`, right: '1px', display: 'flex', gap: '4px' }} data-testid="hours-until-next-task">
+                                <div className="absolute top-0 bottom-0 z-[3] pointer-events-none" style={{ left: `${gridSizes.timeSlotHeight + 5}px`, right: '1px', display: 'flex', gap: '4px' }} data-testid="hours-until-next-task">
                                   {(() => {
                                     const courseCode = nextSchoolTask?.courseName?.split(' - ')[0]?.trim() || '';
                                     const gradColors = getCourseGradientColors(courseCode);
