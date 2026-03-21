@@ -1269,7 +1269,7 @@ export default function SpotifyPlayerPage() {
         if (isSakura) {
           const greeting = h < 12 ? "おはようございます" : h < 18 ? "こんにちは" : "こんばんは";
           return (
-            <div className="absolute top-5 right-12 z-50 pointer-events-none text-right" data-testid="yasu-greeting">
+            <div className="absolute top-5 z-50 pointer-events-none text-right" style={{ right: '2%' }} data-testid="yasu-greeting">
               <p className="text-3xl font-bold tracking-wide" style={{
                 color: 'rgba(200,230,255,0.85)',
                 textShadow: '0 0 20px rgba(56,189,248,0.6), 0 0 40px rgba(255,183,197,0.3)',
@@ -1283,7 +1283,7 @@ export default function SpotifyPlayerPage() {
         const greeting = h < 12 ? "Good Morning" : h < 18 ? "Good Afternoon" : "Good Evening";
         if (activeProfile === "bryn") {
           return (
-            <div className="absolute top-5 right-14 z-50 pointer-events-none text-right" data-testid="bryn-greeting">
+            <div className="absolute top-5 z-50 pointer-events-none text-right" style={{ right: '2%' }} data-testid="bryn-greeting">
               <p className="text-3xl font-bold tracking-wide" style={{
                 color: 'rgba(200,230,255,0.85)',
                 textShadow: `0 0 20px ${profile.glow}, 0 0 40px rgba(80,160,255,0.3)`,
@@ -1297,7 +1297,7 @@ export default function SpotifyPlayerPage() {
         }
         if (activeProfile === "guest") {
           return (
-            <div className="absolute top-5 right-12 z-50 pointer-events-none text-right" data-testid="guest-greeting">
+            <div className="absolute top-5 z-50 pointer-events-none text-right" style={{ right: '2%' }} data-testid="guest-greeting">
               <p className="text-3xl font-bold tracking-wide" style={{
                 color: 'rgba(200,230,255,0.85)',
                 textShadow: `0 0 20px ${profile.glow}, 0 0 40px rgba(160,100,255,0.3)`,
