@@ -124,7 +124,7 @@ const ROOM_JP: Record<string, string> = {
 const ROOM_HOTSPOTS: { room: string; x: number; y: number; w: number; h: number; entityId: string; groupEntityId: string; deviceType: string; icon: string; nightImg?: string; labelOffsetX?: number; labelOffsetY?: number; hideLabel?: boolean }[] = [
   { room: "Balcony", x: 2, y: 72, w: 18, h: 25, entityId: "media_player.balcony_speaker", groupEntityId: "media_player.balcony_media_group", deviceType: "echo", icon: "balcony", hideLabel: true },
   { room: "Queen Bedroom", x: 2, y: 38, w: 18, h: 33, entityId: "media_player.queen_bedroom", groupEntityId: "media_player.queen_bedroom_media_group", deviceType: "echo", icon: "bed", nightImg: queenNight, labelOffsetX: 198, labelOffsetY: 20 },
-  { room: "Pug Washroom", x: 2, y: 5, w: 16, h: 32, entityId: "media_player.echo_show_pug_am", groupEntityId: "media_player.pug_media_group", deviceType: "echo_show", icon: "bath", nightImg: pugNight, labelOffsetX: 95, labelOffsetY: 103 },
+  { room: "Pug Washroom", x: 2, y: 5, w: 16, h: 32, entityId: "media_player.echo_show_pug_am", groupEntityId: "media_player.pug_media_group", deviceType: "echo_show", icon: "bath", nightImg: pugNight, labelOffsetX: 95, labelOffsetY: 123 },
   { room: "Hallway", x: 19, y: 5, w: 16, h: 32, entityId: "media_player.hallway_2", groupEntityId: "media_player.hallway_media_group", deviceType: "echo", icon: "hallway", nightImg: hallwayNight, labelOffsetX: -15, labelOffsetY: -20 },
   { room: "Kitchen", x: 36, y: 5, w: 28, h: 45, entityId: "media_player.kitchen_lr", groupEntityId: "media_player.kitchen_media_group", deviceType: "echo", icon: "kitchen", nightImg: kitchenNight, labelOffsetX: -40, labelOffsetY: 71 },
   { room: "Living Room", x: 36, y: 52, w: 28, h: 45, entityId: "media_player.kitchen_lr", groupEntityId: "media_player.living_room_media_group", deviceType: "echo", icon: "sofa", nightImg: livingRoomNight, labelOffsetX: 10, labelOffsetY: -64 },
@@ -1125,6 +1125,22 @@ export default function SpotifyPlayerPage() {
           {notification}
         </div>
       )}
+
+      {isSakura && (() => {
+        const h = new Date().getHours();
+        const greeting = h < 12 ? "おはようございます" : h < 18 ? "こんにちは" : "こんばんは";
+        return (
+          <div className="absolute top-3 right-5 z-50 pointer-events-none text-right" data-testid="yasu-greeting">
+            <p className="text-2xl font-bold tracking-wide" style={{
+              color: 'rgba(200,230,255,0.85)',
+              textShadow: '0 0 20px rgba(56,189,248,0.6), 0 0 40px rgba(255,183,197,0.3)',
+              fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
+            }}>
+              {greeting}、やす
+            </p>
+          </div>
+        );
+      })()}
 
       <div className="relative z-10 flex-1 flex overflow-hidden" style={{
         transform: profileSpinning ? "perspective(1200px) rotateY(-90deg)" : "perspective(1200px) rotateY(0deg)",
