@@ -132,7 +132,7 @@ const ROOM_HOTSPOTS: { room: string; x: number; y: number; w: number; h: number;
   { room: "King Bedroom", x: 65, y: 30, w: 33, h: 50, entityId: "media_player.king_bedroom", groupEntityId: "media_player.king_bedroom_media_group", deviceType: "echo", icon: "crown", nightImg: kingNight, labelOffsetX: 40, labelOffsetY: -314, volumeOffsetX: 50, volumeOffsetY: -264 },
   { room: "Cat Washroom", x: 84, y: 3, w: 14, h: 26, entityId: "media_player.cat_speakers", groupEntityId: "media_player.cat_washroom_media_group", deviceType: "echo", icon: "bath", nightImg: catNight, labelOffsetX: -465, labelOffsetY: -110, volumeOffsetX: -445, volumeOffsetY: -60 },
   { room: "Closet", x: 65, y: 3, w: 18, h: 26, entityId: "media_player.echo_closet_am", groupEntityId: "media_player.closet_media_group", deviceType: "echo", icon: "closet", nightImg: closetNight, labelOffsetX: 30, labelOffsetY: -79, volumeOffsetX: 30, volumeOffsetY: -29 },
-  { room: "Everywhere", x: 84, y: 78, w: 14, h: 18, entityId: "media_player.byhome", groupEntityId: "media_player.byhome", deviceType: "echo", icon: "everywhere", labelOffsetX: -40, labelOffsetY: 0, volumeOffsetX: -10, volumeOffsetY: 35 },
+  { room: "Everywhere", x: 84, y: 78, w: 14, h: 18, entityId: "media_player.byhome", groupEntityId: "media_player.byhome", deviceType: "echo", icon: "everywhere", labelOffsetX: -40, labelOffsetY: 0, volumeOffsetX: -20, volumeOffsetY: 35 },
 ];
 
 type ViewMode = "floor" | "stations" | "rooms";
@@ -1855,13 +1855,26 @@ export default function SpotifyPlayerPage() {
                       data-testid={`room-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
                       {!spot.hideLabel && <div className="absolute inset-0 flex flex-col items-center justify-end gap-0.5" style={{ zIndex: 2, transform: `translate(${spot.labelOffsetX || 0}px, ${spot.labelOffsetY || 0}px)` }}>
                         <RoomIcon icon={spot.icon} size={16} color={isActive ? profile.accent : 'rgba(255,255,255,0.9)'} />
-                        <span className="text-[7px] font-bold uppercase tracking-wider text-center leading-tight px-1"
-                          style={{
-                            color: isActive ? profile.accent : 'rgba(255,255,255,0.95)',
-                            textShadow: isActive ? `0 0 10px ${profile.glow}` : '0 1px 4px rgba(0,0,0,0.7)',
-                          }}>
-                          {isSakura ? (ROOM_JP[spot.room] || spot.room) : spot.room}
-                        </span>
+                        <div className="flex items-center gap-1">
+                          <span className="text-[7px] font-bold uppercase tracking-wider text-center leading-tight px-1"
+                            style={{
+                              color: isActive ? profile.accent : 'rgba(255,255,255,0.95)',
+                              textShadow: isActive ? `0 0 10px ${profile.glow}` : '0 1px 4px rgba(0,0,0,0.7)',
+                            }}>
+                            {isSakura ? (ROOM_JP[spot.room] || spot.room) : spot.room}
+                          </span>
+                          {isActive && (
+                            <button onClick={(e) => { e.stopPropagation(); e.preventDefault(); ungroupRoom(spot.room); }}
+                              className="px-1 py-0.5 rounded text-[8px] font-bold transition-all hover:scale-125"
+                              style={{
+                                color: 'rgba(255,100,100,0.8)',
+                                textShadow: '0 0 4px rgba(255,60,60,0.3)',
+                              }}
+                              data-testid={`floorplan-ungroup-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
+                              ✕
+                            </button>
+                          )}
+                        </div>
                         {speakerCount > 0 && (
                           <div className="relative">
                             <button className="flex items-center gap-1 mt-0.5 px-1 py-0.5 rounded-lg cursor-pointer transition-all hover:scale-110"
@@ -1964,17 +1977,6 @@ export default function SpotifyPlayerPage() {
                                 }} />
                               ))}
                             </div>
-                            <button onClick={(e) => { e.stopPropagation(); e.preventDefault(); ungroupRoom(spot.room); }}
-                              className="mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium transition-all hover:scale-110"
-                              style={{
-                                background: 'rgba(255,60,60,0.25)',
-                                border: '1px solid rgba(255,60,60,0.35)',
-                                color: 'rgba(255,120,120,0.9)',
-                                textShadow: '0 0 4px rgba(255,60,60,0.3)',
-                              }}
-                              data-testid={`floorplan-ungroup-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
-                              {isSakura ? "✕ 解除" : "✕ Ungroup"}
-                            </button>
                           </>
                         )}
                       </div>}
