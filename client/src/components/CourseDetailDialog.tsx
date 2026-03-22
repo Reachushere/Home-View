@@ -1422,6 +1422,64 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           <div className="p-3 border-b border-white/10 space-y-2">
             {isEditingInfo ? (
               <div className="space-y-2 text-[10px]">
+                <div className="flex items-center gap-1.5 justify-end">
+                    {syllabusObjectPath && (
+                      <Paperclip
+                        className="h-3.5 w-3.5 text-white cursor-pointer hover:opacity-70 transition-opacity"
+                        onClick={() => {
+                          window.open(`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`, '_blank');
+                        }}
+                        data-testid="button-view-syllabus-edit"
+                      />
+                    )}
+                    {syllabusObjectPath && (
+                      <Trash2
+                        className="h-3.5 w-3.5 text-white cursor-pointer hover:opacity-70 transition-opacity"
+                        onClick={async () => {
+                          setSyllabusObjectPath('');
+                          try {
+                            await fetch('/api/syllabus/paths', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ courseCode: courseInfo.courseCode, objectPath: '' }),
+                            });
+                            const saved = localStorage.getItem('courseSyllabusPaths');
+                            const local = saved ? JSON.parse(saved) : {};
+                            delete local[courseInfo.courseCode];
+                            localStorage.setItem('courseSyllabusPaths', JSON.stringify(local));
+                          } catch {}
+                          toast({ title: "Syllabus removed" });
+                        }}
+                        data-testid="button-delete-syllabus"
+                      />
+                    )}
+                    <label className={`cursor-pointer ${syllabusObjectPath ? 'opacity-40 pointer-events-none' : ''}`} data-testid="button-upload-syllabus">
+                      <input
+                        type="file"
+                        accept=".pdf"
+                        className="hidden"
+                        onChange={handleUploadSyllabus}
+                        disabled={isParsingSyllabus || isUploading || !!syllabusObjectPath}
+                      />
+                      <div className={`h-6 px-2 text-[9px] ${syllabusObjectPath ? 'bg-gray-500/40 text-white/50 border-gray-400/30' : 'bg-emerald-600/30 hover:bg-emerald-600/50 text-white border-emerald-400/30'} border rounded-md flex items-center gap-1 transition-colors whitespace-nowrap ${isParsingSyllabus || isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                        {isParsingSyllabus ? <Loader2 className="h-3 w-3 animate-spin" /> : <FileText className="h-3 w-3" />}
+                        {isParsingSyllabus ? 'Parsing...' : 'Add Syllabus'}
+                      </div>
+                    </label>
+                    <label className="cursor-pointer" data-testid="button-upload-assignment">
+                      <input
+                        type="file"
+                        accept=".pdf"
+                        className="hidden"
+                        onChange={handleUploadAssignment}
+                        disabled={isParsingPdf || isUploading}
+                      />
+                      <div className={`h-6 px-2 text-[9px] bg-blue-600/30 hover:bg-blue-600/50 text-white border border-blue-400/30 rounded-md flex items-center gap-1 transition-colors ${isParsingPdf || isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                        {isParsingPdf || isUploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
+                        {isParsingPdf ? 'Parsing...' : isUploading ? 'Uploading...' : 'Upload PDF'}
+                      </div>
+                    </label>
+                </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <label className="text-white text-[9px] mb-0.5 block">Professor</label>
@@ -1764,64 +1822,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     </div>
                     );
                   })()}
-                  <div className="flex items-center gap-1.5">
-                    {syllabusObjectPath && (
-                      <Paperclip
-                        className="h-3.5 w-3.5 text-white cursor-pointer hover:opacity-70 transition-opacity"
-                        onClick={() => {
-                          window.open(`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`, '_blank');
-                        }}
-                        data-testid="button-view-syllabus-edit"
-                      />
-                    )}
-                    {syllabusObjectPath && (
-                      <Trash2
-                        className="h-3.5 w-3.5 text-white cursor-pointer hover:opacity-70 transition-opacity"
-                        onClick={async () => {
-                          setSyllabusObjectPath('');
-                          try {
-                            await fetch('/api/syllabus/paths', {
-                              method: 'POST',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({ courseCode: courseInfo.courseCode, objectPath: '' }),
-                            });
-                            const saved = localStorage.getItem('courseSyllabusPaths');
-                            const local = saved ? JSON.parse(saved) : {};
-                            delete local[courseInfo.courseCode];
-                            localStorage.setItem('courseSyllabusPaths', JSON.stringify(local));
-                          } catch {}
-                          toast({ title: "Syllabus removed" });
-                        }}
-                        data-testid="button-delete-syllabus"
-                      />
-                    )}
-                    <label className={`cursor-pointer ${syllabusObjectPath ? 'opacity-40 pointer-events-none' : ''}`} data-testid="button-upload-syllabus">
-                      <input
-                        type="file"
-                        accept=".pdf"
-                        className="hidden"
-                        onChange={handleUploadSyllabus}
-                        disabled={isParsingSyllabus || isUploading || !!syllabusObjectPath}
-                      />
-                      <div className={`h-6 px-2 text-[9px] ${syllabusObjectPath ? 'bg-gray-500/40 text-white/50 border-gray-400/30' : 'bg-emerald-600/30 hover:bg-emerald-600/50 text-white border-emerald-400/30'} border rounded-md flex items-center gap-1 transition-colors whitespace-nowrap ${isParsingSyllabus || isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
-                        {isParsingSyllabus ? <Loader2 className="h-3 w-3 animate-spin" /> : <FileText className="h-3 w-3" />}
-                        {isParsingSyllabus ? 'Parsing...' : 'Add Syllabus'}
-                      </div>
-                    </label>
-                    <label className="cursor-pointer" data-testid="button-upload-assignment">
-                      <input
-                        type="file"
-                        accept=".pdf"
-                        className="hidden"
-                        onChange={handleUploadAssignment}
-                        disabled={isParsingPdf || isUploading}
-                      />
-                      <div className={`h-6 px-2 text-[9px] bg-blue-600/30 hover:bg-blue-600/50 text-white border border-blue-400/30 rounded-md flex items-center gap-1 transition-colors ${isParsingPdf || isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
-                        {isParsingPdf || isUploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
-                        {isParsingPdf ? 'Parsing...' : isUploading ? 'Uploading...' : 'Upload PDF'}
-                      </div>
-                    </label>
-                  </div>
                 </div>
               </div>
             ) : (
@@ -2481,7 +2481,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
 
           <div className="border-t border-white/10" />
 
-          <div className="p-3">
+          <div style={{ padding: '12px 30px' }}>
+            <div style={{ border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '12px' }}>
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <h3 className="text-[11px] font-medium text-white uppercase">Assignments</h3>
@@ -2855,6 +2856,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               </div>
             </div>
           )}
+        </div>
         </div>
 
         <div className="px-4 py-3 border-t border-white/20 flex items-center justify-between flex-shrink-0" style={{ background: 'rgba(255,255,255,0.08)', position: 'relative', zIndex: 10, opacity: expandedTaskId !== null ? 0.35 : 1, pointerEvents: expandedTaskId !== null ? 'none' : 'auto' }}>
