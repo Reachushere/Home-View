@@ -7137,7 +7137,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         await new Promise(r => setTimeout(r, 1500));
         await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
           method: 'POST', headers: haHeaders,
-          body: JSON.stringify({ entity_id: 'media_player.tablet_cat', command: `am start --activity-clear-top -a android.intent.action.VIEW -d "${readerUrl}" com.amazon.cloud9` }),
+          body: JSON.stringify({ entity_id: 'media_player.tablet_cat', command: `am start --activity-clear-task -a android.intent.action.VIEW -d "${readerUrl}" com.amazon.cloud9` }),
         });
         await new Promise(r => setTimeout(r, 1000));
         await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
