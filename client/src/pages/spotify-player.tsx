@@ -134,7 +134,7 @@ const ROOM_HOTSPOTS: { room: string; x: number; y: number; w: number; h: number;
   { room: "King Bedroom", x: 65, y: 30, w: 33, h: 50, entityId: "media_player.king_bedroom", groupEntityId: "media_player.king_bedroom_media_group", deviceType: "echo", icon: "crown", nightImg: kingNight, labelOffsetX: 45, labelOffsetY: -374, volumeOffsetX: 45, volumeOffsetY: -324 },
   { room: "Cat Washroom", x: 84, y: 3, w: 14, h: 26, entityId: "media_player.cat_speakers", groupEntityId: "media_player.cat_washroom_media_group", deviceType: "echo", icon: "bath", nightImg: catNight, labelOffsetX: -505, labelOffsetY: -155, volumeOffsetX: -505, volumeOffsetY: -115 },
   { room: "Closet", x: 65, y: 3, w: 18, h: 26, entityId: "media_player.echo_closet_am", groupEntityId: "media_player.closet_media_group", deviceType: "echo", icon: "closet", nightImg: closetNight, labelOffsetX: 50, labelOffsetY: -109, volumeOffsetX: 50, volumeOffsetY: -69 },
-  { room: "Everywhere", x: 84, y: 78, w: 14, h: 18, entityId: "media_player.byhome", groupEntityId: "media_player.byhome", deviceType: "echo", icon: "everywhere", labelOffsetX: 0, labelOffsetY: -80, volumeOffsetX: 0, volumeOffsetY: -35 },
+  { room: "Everywhere", x: 84, y: 78, w: 14, h: 18, entityId: "media_player.byhome", groupEntityId: "media_player.byhome", deviceType: "echo", icon: "everywhere", labelOffsetX: 0, labelOffsetY: -90, volumeOffsetX: 0, volumeOffsetY: -35 },
 ];
 
 type ViewMode = "floor" | "stations" | "rooms";
