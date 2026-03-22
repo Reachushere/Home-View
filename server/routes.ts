@@ -401,6 +401,22 @@ function cleanTextForTTS(text: string): string {
   
   console.log("After French filter:", cleanedText.length);
   
+  // Remove entire References/Bibliography/Works Cited sections (heading + all content after)
+  cleanedText = cleanedText
+    .replace(/(?:^|\n)\s*(?:References|Bibliography|Works?\s*Cited|Literature\s*Cited|Sources?\s*Cited|Endnotes|Footnotes|Notes)\s*\n[\s\S]*$/gim, '')
+    .replace(/(?:^|\n)\s*(?:References|Bibliography|Works?\s*Cited)\s*(?:\n|$)[\s\S]*$/gim, '');
+
+  // Remove inline APA/MLA-style citations like (Smith, 2020) or (Smith & Jones, 2019, p. 45)
+  cleanedText = cleanedText
+    .replace(/\([A-Z][a-z]+(?:\s+(?:and|&)\s+[A-Z][a-z]+)*(?:,?\s*(?:et\s+al\.?))?,?\s*\d{4}[a-z]?(?:,\s*p{1,2}\.\s*\d+(?:-\d+)?)?\)/g, '')
+    .replace(/\([A-Z][a-z]+(?:\s+(?:and|&)\s+[A-Z][a-z]+)*,?\s*n\.d\.(?:,\s*p{1,2}\.\s*\d+(?:-\d+)?)?\)/g, '');
+
+  // Remove standalone citation-style lines (Author, Year. Title. Journal...)
+  cleanedText = cleanedText
+    .replace(/^[A-Z][a-z]+,\s+[A-Z]\.(?:\s*[A-Z]\.)*\s+\(\d{4}\)\..*$/gm, '')
+    .replace(/^[A-Z][a-z]+,\s+[A-Z]\.(?:\s*[A-Z]\.)*\s+(?:and|&)\s+[A-Z][a-z]+,\s+[A-Z]\..*\(\d{4}\)\..*$/gm, '')
+    .replace(/^[A-Z][a-z]+,\s+[A-Z]\.\s+\(\d{4},\s+\w+\s+\d+\)\..*$/gm, '');
+
   // Remove section headings (standalone or at start of lines followed by content)
   cleanedText = cleanedText
     .replace(/^(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents|Readings?|Key Takeaways|Coming Up Next|Discussions? and Assignments?|Reminder|Tab Panels?.*|Tab:.*)\s*$/gim, '')
@@ -6884,6 +6900,17 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           }
         }
         (globalThis as any).__voiceMigrationDone = true;
+      }
+      const citationCleanupDone = (globalThis as any).__citationCleanupDone;
+      if (!citationCleanupDone) {
+        const filesWithText = allFiles.filter((f: any) => f.extractedText);
+        if (filesWithText.length > 0) {
+          console.log(`[AudioPrep] One-time: clearing ${filesWithText.length} cached extracted texts (citation cleanup improvement)`);
+          for (const f of filesWithText) {
+            try { await storage.updateFile(f.id, { extractedText: null, preparedAudioPaths: null }); } catch {}
+          }
+        }
+        (globalThis as any).__citationCleanupDone = true;
       }
       const unprepared = allFiles.filter((f: any) => !f.preparedAudioPaths && !f.listened);
       if (unprepared.length > 0) {
