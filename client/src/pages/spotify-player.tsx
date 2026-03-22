@@ -1151,6 +1151,9 @@ export default function SpotifyPlayerPage() {
   const switchView = (v: ViewMode) => {
     if (v === viewMode) return;
     setViewSpinning(true);
+    setShowSearch(false);
+    setSearchQuery("");
+    setSearchResults([]);
     setTimeout(() => { setViewMode(v); setTimeout(() => setViewSpinning(false), 50); }, 300);
   };
 
