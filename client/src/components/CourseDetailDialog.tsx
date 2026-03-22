@@ -1626,10 +1626,12 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                       return { x: s, y: 1 - v };
                     };
                     const svToHex = (hue: number, sx: number, sy: number) => {
-                      const s2 = sx * 100; const l = (1 - sy) * (100 - s2/2);
-                      const a2 = s2 * Math.min(l, 100-l) / 100;
-                      const f = (n: number) => { const k = (n + hue/30) % 12; const c2 = l/100 - a2/100 * Math.max(Math.min(k-3, 9-k, 1), -1); return Math.round(255 * Math.max(0, Math.min(1, c2))); };
-                      return `#${f(0).toString(16).padStart(2,'0')}${f(8).toString(16).padStart(2,'0')}${f(4).toString(16).padStart(2,'0')}`;
+                      const s = sx, v = 1 - sy;
+                      const c = v * s, x2 = c * (1 - Math.abs((hue / 60) % 2 - 1)), m = v - c;
+                      let r1 = 0, g1 = 0, b1 = 0;
+                      if (hue < 60) { r1 = c; g1 = x2; } else if (hue < 120) { r1 = x2; g1 = c; } else if (hue < 180) { g1 = c; b1 = x2; } else if (hue < 240) { g1 = x2; b1 = c; } else if (hue < 300) { r1 = x2; b1 = c; } else { r1 = c; b1 = x2; }
+                      const f = (ch: number) => Math.round(255 * Math.max(0, Math.min(1, ch + m))).toString(16).padStart(2, '0');
+                      return `#${f(r1)}${f(g1)}${f(b1)}`;
                     };
                     const gradBarRef = useRef<HTMLDivElement>(null);
                     return (
