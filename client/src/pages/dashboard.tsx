@@ -11041,7 +11041,7 @@ export default function Dashboard() {
             style={{
               position: 'fixed',
               top: `${25 + d2lTickerHeight}px`,
-              zIndex: 101,
+              zIndex: 40,
               opacity: isTopPillOpen ? 0 : 1,
               transition: 'opacity 0.4s ease-in-out',
               pointerEvents: 'none',
