@@ -22079,9 +22079,9 @@ export default function Dashboard() {
                     e.currentTarget.scrollTop += e.deltaY;
                     e.preventDefault();
                   }}>
-                    <span className="text-[8px] font-[785] uppercase tracking-wide text-white/80" style={{ flexShrink: 0, marginRight: '8px' }}>Other</span>
+                    <span className="text-[8px] font-[785] uppercase tracking-wide" style={{ flexShrink: 0, marginRight: '8px', color: '#333' }}>Other</span>
                     {otherProgressTasks.length === 0 && (
-                      <span className="text-[10px] text-white/40 italic">No upcoming items</span>
+                      <span className="text-[10px] italic" style={{ color: '#555' }}>No upcoming items</span>
                     )}
                     <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                     {otherProgressTasks.map(t => {
