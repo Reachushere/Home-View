@@ -2608,8 +2608,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 <div className="flex items-end px-1.5 py-1 text-[8px] font-bold text-white" style={{ margin: '0 4px', letterSpacing: '0' }}>
                   <div className="flex-shrink-0" style={{ width: '14px', marginRight: '10px' }} />
                   <div className="flex-shrink-0" style={{ width: '16px', marginRight: '10px' }} />
-                  <div className="flex-shrink-0 text-center" style={{ width: '19px', marginRight: '10px' }}>
-                    <span className="text-[8px] font-bold text-white">Assign</span>
+                  <div className="flex-shrink-0 flex justify-center" style={{ width: '19px', marginRight: '10px', overflow: 'visible' }}>
+                    <span className="text-[8px] font-bold text-white" style={{ whiteSpace: 'nowrap' }}>Assign</span>
                   </div>
                   <div className="flex-shrink-0 flex justify-center" style={{ width: '19px', marginLeft: '14px', marginRight: '10px', overflow: 'visible' }}>
                     <span className="text-[8px] font-bold text-white" style={{ whiteSpace: 'nowrap' }}>Comments</span>
