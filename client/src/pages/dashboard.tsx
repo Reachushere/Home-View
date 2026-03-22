@@ -6088,6 +6088,14 @@ export default function Dashboard() {
           const nextChunk = ttsChunksRef.current[curIdx + 1];
           if (nextChunk) {
             console.log(`[TTS onended] Starting chunk ${curIdx + 2}/${chunksLen}`);
+            const blinkHighlight = () => {
+              if (!isPlayingRef.current || openaiAudioRef.current) return;
+              setCurrentWordIndex(prev => prev >= 0 ? prev : wordOffset + chunkWordCount - 1);
+              setTimeout(() => {
+                if (isPlayingRef.current && !openaiAudioRef.current) blinkHighlight();
+              }, 500);
+            };
+            blinkHighlight();
             playWithOpenAiTts(nextChunk, voice, curIdx + 1);
           } else {
             console.warn(`[TTS onended] Next chunk ${curIdx + 2} is empty/undefined`);
