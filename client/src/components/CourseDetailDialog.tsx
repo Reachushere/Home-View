@@ -1836,7 +1836,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     <span className="text-white whitespace-nowrap">Professor:</span>
                     <span className="text-white truncate">{courseInfo.professor || "Not set"}</span>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end', marginLeft: '50px' }}>
                     <Mail className="h-3 w-3 text-white flex-shrink-0" style={{ justifySelf: 'end' }} />
                     <span className="text-white whitespace-nowrap" style={{ justifySelf: 'end' }}>Email:</span>
                     {courseInfo.professorEmail ? (
@@ -1853,7 +1853,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     <span className="text-white">{deliveryLabel}</span>
                   </div>
                   {courseInfo.courseType && (
-                    <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end', marginLeft: '50px' }}>
                       <BookOpen className="h-3 w-3 text-white" style={{ justifySelf: 'end' }} />
                       <span className="text-white whitespace-nowrap" style={{ justifySelf: 'end' }}>Type:</span>
                       <span className="text-white" style={{ justifySelf: 'end' }}>{courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Open Elective" : "Liberal Studies"}</span>
@@ -1904,7 +1904,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     );
                   })()}
                   {courseInfo.deliveryMode === "online" && (
-                    <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end', marginLeft: '50px' }}>
                       <Clock className="h-3 w-3 text-white flex-shrink-0" style={{ justifySelf: 'end' }} />
                       <span className="text-white" style={{ justifySelf: 'end', marginRight: '10px' }}>Modules:</span>
                       <span className="text-white" style={{ justifySelf: 'end' }}>Weekly (change every Saturday)</span>
