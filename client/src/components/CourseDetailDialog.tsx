@@ -1542,17 +1542,20 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                             onClick={() => setActiveGradientStop(activeGradientStop === idx ? null : idx)}
                             onPointerDown={(e) => {
                               e.preventDefault();
+                              e.stopPropagation();
+                              const el = e.currentTarget as HTMLElement;
+                              el.setPointerCapture(e.pointerId);
                               const bar = gradBarRef.current;
                               if (!bar) return;
                               const barRect = bar.getBoundingClientRect();
-                              const barW = barRect.width - 6;
+                              const barW = barRect.width;
                               const onMove = (ev: PointerEvent) => {
-                                const pct = Math.round(Math.max(1, Math.min(99, ((ev.clientX - barRect.left - 3) / barW) * 100)));
+                                const pct = Math.round(Math.max(1, Math.min(99, ((ev.clientX - barRect.left) / barW) * 100)));
                                 const updated = [...midStops];
                                 updated[idx] = { ...updated[idx], position: pct };
                                 setEditInfo(prev => ({...prev, colorStops: JSON.stringify(updated.sort((a, b) => a.position - b.position))}));
                               };
-                              const onUp = () => { window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); };
+                              const onUp = () => { el.releasePointerCapture(e.pointerId); window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); };
                               window.addEventListener('pointermove', onMove);
                               window.addEventListener('pointerup', onUp);
                             }}
