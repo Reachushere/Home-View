@@ -17,7 +17,7 @@ import pugNight from "@assets/Pug_Night_1774008796949.png";
 import queenNight from "@assets/Queen_Night_1774008796950.png";
 import catNight from "@assets/Cat_Night_1774008796951.png";
 import closetNight from "@assets/Closet_Night_1774008796953.png";
-import echoSpeakerImg from "@assets/image_1774213520266.png";
+import echoSpeakerImg from "@assets/Echo_1774213902054.png";
 
 interface NowPlaying {
   playing: boolean; name?: string; artist?: string; album?: string;
