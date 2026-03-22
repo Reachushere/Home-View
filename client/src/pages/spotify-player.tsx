@@ -191,7 +191,7 @@ function VolumeKnob({ value, onChange, size = 54, accent = "#3b82f6", glow = "rg
   return (
     <div className="flex flex-col items-center gap-1" style={{ touchAction: 'none' }}>
       <div className="flex items-center gap-1.5">
-        <button onClick={(e) => { e.stopPropagation(); onChange(Math.max(0, value - 5)); }}
+        <button onClick={(e) => { e.stopPropagation(); onChange(Math.max(0, value - 3)); }}
           className="text-white font-bold text-[11px] w-4 h-4 flex items-center justify-center rounded-full transition-all hover:scale-125"
           style={{ textShadow: '0 0 4px rgba(255,255,255,0.5)' }}
           data-testid="volume-minus">−</button>
@@ -232,7 +232,7 @@ function VolumeKnob({ value, onChange, size = 54, accent = "#3b82f6", glow = "rg
             }} />
           </div>
         </div>
-        <button onClick={(e) => { e.stopPropagation(); onChange(Math.min(100, value + 5)); }}
+        <button onClick={(e) => { e.stopPropagation(); onChange(Math.min(100, value + 3)); }}
           className="text-white font-bold text-[11px] w-4 h-4 flex items-center justify-center rounded-full transition-all hover:scale-125"
           style={{ textShadow: '0 0 4px rgba(255,255,255,0.5)' }}
           data-testid="volume-plus">+</button>
