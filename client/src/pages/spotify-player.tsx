@@ -159,8 +159,8 @@ function VolumeKnob({ value, onChange, size = 54, accent = "#3b82f6", glow = "rg
   const trackRef = useRef<HTMLDivElement>(null);
   const dragging = useRef(false);
   const sliderColor = roomName ? (ROOM_SLIDER_COLORS[roomName] || accent) : accent;
-  const trackWidth = 110;
-  const thumbSize = 20;
+  const trackWidth = 90;
+  const thumbSize = 16;
 
   const valueFromEvent = (e: { clientX: number }) => {
     if (!trackRef.current) return value;
