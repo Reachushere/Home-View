@@ -67,7 +67,7 @@ const PROFILES: Record<ProfileKey, {
       { name: "Pink", uri: "spotify:artist:1KCSPY1glIKqW2TotWuXOR", searchQuery: "Pink singer" },
       { name: "Phoenix", uri: "spotify:artist:1lJhME1ZpPN1FO6I8oi4so", searchQuery: "Phoenix band" },
       { name: "M83", uri: "spotify:artist:63MQldklfxkjYDoUE4Tppz", searchQuery: "M83" },
-      { name: "Cold War Kids", uri: "spotify:artist:0YrtvGIINMpnCsFuiyfvMZ", searchQuery: "Cold War Kids" },
+      { name: "CHUM FM", uri: "", searchQuery: "104.5 Chum FM" },
       { name: "Disney", uri: "spotify:playlist:37i9dQZF1DX8C585qnMYHP", searchQuery: "Disney hits" },
       { name: "Chill Electro", uri: "spotify:playlist:37i9dQZF1DX4E3UdUs7fUx", searchQuery: "Chill electronic" },
       { name: "Dinner Jazz", uri: "spotify:playlist:37i9dQZF1DX4wta20PHgwo", searchQuery: "Dinner jazz" },
