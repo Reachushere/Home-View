@@ -18575,6 +18575,7 @@ export default function Dashboard() {
                 const courseTaskCount = tasks?.filter(task => {
                   if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
                   if (task.isCompleted) return false;
+                  if (task.type === 'other') return false;
                   const taskDueDate = startOfDayET(new Date(task.dueDate));
                   const weekStart = startOfDayET(weekDays[0]);
                   const weekEnd = startOfDayET(addDays(weekDays[6], 1));
@@ -18653,6 +18654,7 @@ export default function Dashboard() {
                     const courseWeekTasks = (allTasks?.filter(task => {
                       if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
                       if (task.isCompleted) return false;
+                      if (task.type === 'other') return false;
                       const taskDueDate = startOfDayET(new Date(task.dueDate));
                       if (taskDueDate >= cwWeekStart && taskDueDate < cwWeekEnd) return true;
                       if (task.startDate) {
@@ -18744,6 +18746,7 @@ export default function Dashboard() {
                     const dueTasks = allTasks?.filter(task => {
                       if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
                       if (task.isCompleted) return false;
+                      if (task.type === 'other') return false;
                       const taskDueDate = startOfDayET(new Date(task.dueDate));
                       return isSameDayET(taskDueDate, cellDate);
                     }) || [];
@@ -18751,6 +18754,7 @@ export default function Dashboard() {
                     const prepTasks = allTasks?.filter(task => {
                       if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
                       if (task.isCompleted) return false;
+                      if (task.type === 'other') return false;
                       if (!task.startDate) return false;
                       if (!task.prepDays || task.prepDays <= 0) return false;
                       const taskDueDate = startOfDayET(new Date(task.dueDate));
@@ -21743,7 +21747,7 @@ export default function Dashboard() {
                   left: `${effectiveDividerPct}%`,
                   right: 0,
                   height: `${rowHeight}px`,
-                  background: pd.taskBgColor || 'linear-gradient(180deg, #2a5a7a 0%, #1a3a5a 100%)',
+                  background: pd.taskBgColor || `linear-gradient(180deg, color-mix(in srgb, ${pd.progressStartColor} 45%, white) 0%, color-mix(in srgb, ${pd.progressEndColor} 45%, white) 100%)`,
                   zIndex: 41,
                   borderBottom: '0.5px solid rgba(255,255,255,0.2)',
                   overflowX: 'hidden',
