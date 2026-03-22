@@ -1440,7 +1440,8 @@ export default function SpotifyPlayerPage() {
             </div>
 
             <div className="mt-auto flex flex-col gap-0.5 px-1 pb-1">
-              <form action="http://172.24.0.2:8123/lovelace/test-home" method="GET" target="_top" className="w-full">
+              <form action="/api/ha-redirect" method="GET" target="_top" style={{ width: '100%' }}>
+                <input type="hidden" name="path" value="/lovelace/test-home" />
                 <button type="submit"
                   className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg transition-all hover:scale-105 mb-1"
                   style={{

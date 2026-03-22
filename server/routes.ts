@@ -779,6 +779,11 @@ export async function registerRoutes(
     }
   });
 
+  app.get('/api/ha-redirect', (req, res) => {
+    const path = req.query.path ? decodeURIComponent(String(req.query.path)) : '/lovelace/test-home';
+    res.redirect(302, `http://172.24.0.2:8123${path}`);
+  });
+
   app.get('/api/version', (_req, res) => {
     res.json({ version: BUILD_VERSION });
   });
