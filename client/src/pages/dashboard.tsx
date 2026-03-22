@@ -22144,7 +22144,7 @@ export default function Dashboard() {
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0', marginTop: '-30px' }}>No tasks due today</div>
                 ) : (
                   <div style={{ display: 'flex', alignItems: 'flex-start', marginTop: '4px' }}>
-                    <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', alignSelf: 'center', marginLeft: '10px', marginRight: '4px', overflow: 'visible' }}>
+                    <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginLeft: '10px', marginRight: '4px', overflow: 'hidden' }}>
                       <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                         {format(new Date(), 'MMMM d')}
                       </span>
@@ -22221,7 +22221,7 @@ export default function Dashboard() {
                           </div>
                           <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'stretch' }}>
-                            <div style={{ position: 'absolute', left: `${-(18 + hwGroupBarWidth / 2) + 41}px`, top: '50%', transform: 'translateY(-50%)', width: '20px', height: '20px', borderRadius: '50%', backgroundColor: '#ffd700', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 3 }}>
+                            <div style={{ position: 'absolute', left: `${-(18 + hwGroupBarWidth / 2) + 41}px`, top: '50%', transform: 'translateY(-50%)', width: '19px', height: '19px', borderRadius: '50%', backgroundColor: '#ffd700', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 3 }}>
                               <span style={{ fontSize: '7px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.3px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
                               <span style={{ fontSize: '9px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textAlign: 'center', display: 'block', marginTop: '1px' }}>{format(new Date(task.dueDate), 'd')}</span>
                             </div>
@@ -22303,7 +22303,7 @@ export default function Dashboard() {
                         const dueDates = group.tasks.map(t => ({ date: startOfDayET(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
                           <div key={group.key} style={{ display: 'flex', alignItems: 'stretch' }}>
-                            <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginLeft: '10px', marginRight: '4px', overflow: 'visible' }}>
+                            <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '10px', marginRight: '4px', overflow: 'hidden' }}>
                               {groupIdx === 0 && (
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginBottom: '4px', alignItems: 'flex-start', alignSelf: 'flex-start', marginLeft: '-10px' }}>
                                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -22395,7 +22395,7 @@ export default function Dashboard() {
                                     </div>
                                     <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'stretch' }}>
-                                        <div style={{ position: 'absolute', left: `${-(18 + hwGroupBarWidth / 2) + 41}px`, top: '50%', transform: 'translateY(-50%)', width: '20px', height: '20px', borderRadius: '50%', backgroundColor: '#ffd700', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 3 }}>
+                                        <div style={{ position: 'absolute', left: `${-(18 + hwGroupBarWidth / 2) + 41}px`, top: '50%', transform: 'translateY(-50%)', width: '19px', height: '19px', borderRadius: '50%', backgroundColor: '#ffd700', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 3 }}>
                                           <span style={{ fontSize: '7px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.3px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
                                           <span style={{ fontSize: '9px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textAlign: 'center', display: 'block', marginTop: '1px' }}>{format(new Date(task.dueDate), 'd')}</span>
                                         </div>
@@ -22588,7 +22588,7 @@ export default function Dashboard() {
                                     </div>
                                     <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'stretch' }}>
-                                        <div style={{ position: 'absolute', left: `${-(18 + hwGroupBarWidth / 2) + 41}px`, top: '50%', transform: 'translateY(-50%)', width: '20px', height: '20px', borderRadius: '50%', backgroundColor: '#ffd700', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 3 }}>
+                                        <div style={{ position: 'absolute', left: `${-(18 + hwGroupBarWidth / 2) + 41}px`, top: '50%', transform: 'translateY(-50%)', width: '19px', height: '19px', borderRadius: '50%', backgroundColor: '#ffd700', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 3 }}>
                                           <span style={{ fontSize: '7px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.3px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
                                           <span style={{ fontSize: '9px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textAlign: 'center', display: 'block', marginTop: '1px' }}>{format(new Date(task.dueDate), 'd')}</span>
                                         </div>
@@ -22782,7 +22782,7 @@ export default function Dashboard() {
                                     </div>
                                     <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'stretch' }}>
-                                        <div style={{ position: 'absolute', left: `${-(18 + hwGroupBarWidth / 2) + 41}px`, top: '50%', transform: 'translateY(-50%)', width: '20px', height: '20px', borderRadius: '50%', backgroundColor: '#ffd700', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 3 }}>
+                                        <div style={{ position: 'absolute', left: `${-(18 + hwGroupBarWidth / 2) + 41}px`, top: '50%', transform: 'translateY(-50%)', width: '19px', height: '19px', borderRadius: '50%', backgroundColor: '#ffd700', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 3 }}>
                                           <span style={{ fontSize: '7px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.3px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
                                           <span style={{ fontSize: '9px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textAlign: 'center', display: 'block', marginTop: '1px' }}>{format(new Date(task.dueDate), 'd')}</span>
                                         </div>
@@ -22979,7 +22979,7 @@ export default function Dashboard() {
                                     </div>
                                     <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'stretch' }}>
-                                        <div style={{ position: 'absolute', left: `${-(18 + hwGroupBarWidth / 2) + 41}px`, top: '50%', transform: 'translateY(-50%)', width: '20px', height: '20px', borderRadius: '50%', backgroundColor: '#ffd700', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 3 }}>
+                                        <div style={{ position: 'absolute', left: `${-(18 + hwGroupBarWidth / 2) + 41}px`, top: '50%', transform: 'translateY(-50%)', width: '19px', height: '19px', borderRadius: '50%', backgroundColor: '#ffd700', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 3 }}>
                                           <span style={{ fontSize: '7px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.3px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
                                           <span style={{ fontSize: '9px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textAlign: 'center', display: 'block', marginTop: '1px' }}>{format(new Date(task.dueDate), 'd')}</span>
                                         </div>
