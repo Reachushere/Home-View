@@ -457,13 +457,13 @@ export function getWeekNumber(date: Date, customSemesterStart?: Date, readingWee
   const normalizedDate = new Date(date);
   normalizedDate.setHours(12, 0, 0, 0);
   const diffTime = normalizedDate.getTime() - startOfSemester.getTime();
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
   let weekNum = Math.floor(diffDays / 7) + 1;
   if (readingWeekStart) {
     const rwStart = new Date(readingWeekStart);
     rwStart.setHours(12, 0, 0, 0);
     const rwDiff = rwStart.getTime() - startOfSemester.getTime();
-    const rwWeek = Math.floor(Math.floor(rwDiff / (1000 * 60 * 60 * 24)) / 7) + 1;
+    const rwWeek = Math.floor(Math.round(rwDiff / (1000 * 60 * 60 * 24)) / 7) + 1;
     if (weekNum >= rwWeek) {
       const rwEnd = new Date(rwStart);
       rwEnd.setDate(rwEnd.getDate() + 7);
@@ -486,7 +486,7 @@ export function getWeekDates(weekNum: number, customSemesterStart?: Date, readin
     const rwStart = new Date(readingWeekStart);
     rwStart.setHours(12, 0, 0, 0);
     const rwDiff = rwStart.getTime() - startOfSemester.getTime();
-    const rwWeek = Math.floor(Math.floor(rwDiff / (1000 * 60 * 60 * 24)) / 7) + 1;
+    const rwWeek = Math.floor(Math.round(rwDiff / (1000 * 60 * 60 * 24)) / 7) + 1;
     if (weekNum >= rwWeek) {
       calendarWeek = weekNum + 1;
     }
