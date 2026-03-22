@@ -3204,7 +3204,7 @@ export default function Dashboard() {
     toast({ title: "School settings saved", description: "Your school settings have been updated." });
   };
   
-  const saveCourses = (data: { courses: Array<{ name: string; color: string; colorEnd?: string; colorStops?: string; professor: string; professorEmail?: string }> }) => {
+  const saveCourses = (data: { courses: Array<{ name: string; color: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; professor: string; professorEmail?: string }> }) => {
     const prevCourses = coursesData?.courses || [];
     setCoursesData(data);
     localStorage.setItem('coursesData', JSON.stringify(data));
@@ -3213,12 +3213,15 @@ export default function Dashboard() {
     toast({ title: "Courses saved", description: "Your courses have been updated." });
     const semPayload: Record<string, string | null> = {};
     for (let i = 0; i < 3; i++) {
-      const course = data.courses[i];
+      const course = data.courses[i] as any;
       const prefix = `course${i + 1}`;
       if (course) {
         semPayload[`${prefix}Color`] = course.color || null;
         semPayload[`${prefix}ColorEnd`] = course.colorEnd || null;
         semPayload[`${prefix}ColorStops`] = course.colorStops || null;
+        semPayload[`${prefix}BorderColor`] = course.borderColor || null;
+        semPayload[`${prefix}CourseRowColor`] = course.courseRowColor || null;
+        semPayload[`${prefix}TaskBgColor`] = course.taskBgColor || null;
         const parts = course.name.split(' - ');
         const code = (parts[0] || '').trim();
         const name = parts.slice(1).join(' - ').trim();
@@ -5513,6 +5516,39 @@ export default function Dashboard() {
   });
   const allSemesterSettingsRef = useRef(allSemesterSettings);
   allSemesterSettingsRef.current = allSemesterSettings;
+
+  useEffect(() => {
+    if (!semesterSettings) return;
+    const sem = semesterSettings as any;
+    setCoursesData(prev => {
+      const updated = [...prev.courses];
+      let changed = false;
+      for (let i = 0; i < 3; i++) {
+        const prefix = `course${i + 1}`;
+        const semColor = sem[`${prefix}Color`];
+        const semColorEnd = sem[`${prefix}ColorEnd`];
+        const semColorStops = sem[`${prefix}ColorStops`];
+        const semBorderColor = sem[`${prefix}BorderColor`];
+        const semCourseRowColor = sem[`${prefix}CourseRowColor`];
+        const semTaskBgColor = sem[`${prefix}TaskBgColor`];
+        if (updated[i]) {
+          const c = updated[i] as any;
+          if (semColor && semColor !== c.color) { c.color = semColor; changed = true; }
+          if (semColorEnd && semColorEnd !== c.colorEnd) { c.colorEnd = semColorEnd; changed = true; }
+          if (semColorStops !== undefined && semColorStops !== null && semColorStops !== c.colorStops) { c.colorStops = semColorStops; changed = true; }
+          if (semBorderColor !== undefined && semBorderColor !== null && semBorderColor !== c.borderColor) { c.borderColor = semBorderColor; changed = true; }
+          if (semCourseRowColor !== undefined && semCourseRowColor !== null && semCourseRowColor !== c.courseRowColor) { c.courseRowColor = semCourseRowColor; changed = true; }
+          if (semTaskBgColor !== undefined && semTaskBgColor !== null && semTaskBgColor !== c.taskBgColor) { c.taskBgColor = semTaskBgColor; changed = true; }
+        }
+      }
+      if (changed) {
+        const newData = { courses: updated };
+        localStorage.setItem('coursesData', JSON.stringify(newData));
+        return newData;
+      }
+      return prev;
+    });
+  }, [semesterSettings]);
 
   const [deliveryModeVersion, setDeliveryModeVersion] = useState(0);
   const courseDeliveryModes = useMemo(() => {
@@ -13222,6 +13258,9 @@ export default function Dashboard() {
                       if (updates.color !== undefined) payload[`${prefix}Color`] = updates.color;
                       if (updates.colorEnd !== undefined) payload[`${prefix}ColorEnd`] = updates.colorEnd;
                       if ((updates as any).colorStops !== undefined) payload[`${prefix}ColorStops`] = (updates as any).colorStops;
+                      if ((updates as any).borderColor !== undefined) payload[`${prefix}BorderColor`] = (updates as any).borderColor;
+                      if (updates.courseRowColor !== undefined) payload[`${prefix}CourseRowColor`] = updates.courseRowColor;
+                      if (updates.taskBgColor !== undefined) payload[`${prefix}TaskBgColor`] = updates.taskBgColor;
                       if ((updates as any).startDate) payload[`${prefix}StartDate`] = new Date((updates as any).startDate).toISOString();
                       if ((updates as any).endDate) payload[`${prefix}EndDate`] = new Date((updates as any).endDate).toISOString();
                       if (updates.semesterTerm && updates.year && !(updates as any).startDate) {

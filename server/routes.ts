@@ -13425,6 +13425,33 @@ Return ONLY the JSON object, no markdown formatting.`;
     }
   })();
 
+  (async () => {
+    try {
+      const sem = await storage.getActiveSemesterSettings();
+      if (sem && !sem.course1BorderColor && !sem.course1CourseRowColor && !sem.course1TaskBgColor) {
+        const rows = await db.select().from(degreeTrackingData).where(eq(degreeTrackingData.key, 'coursesData'));
+        if (rows.length > 0 && rows[0].value) {
+          const parsed = typeof rows[0].value === 'string' ? JSON.parse(rows[0].value) : rows[0].value;
+          const courses = parsed?.courses || [];
+          const colorPayload: Record<string, any> = {};
+          for (let i = 0; i < Math.min(courses.length, 3); i++) {
+            const prefix = `course${i + 1}`;
+            const c = courses[i];
+            if (c.borderColor) colorPayload[`${prefix}BorderColor`] = c.borderColor;
+            if (c.courseRowColor) colorPayload[`${prefix}CourseRowColor`] = c.courseRowColor;
+            if (c.taskBgColor) colorPayload[`${prefix}TaskBgColor`] = c.taskBgColor;
+          }
+          if (Object.keys(colorPayload).length > 0) {
+            await storage.updateSemesterSettings(sem.id, colorPayload);
+            console.log(`[Startup] Seeded semester color columns from degree_tracking_data`);
+          }
+        }
+      }
+    } catch (err) {
+      console.error('[Startup] Color migration failed:', err);
+    }
+  })();
+
   app.post("/api/tasks/compare-course-list", async (req, res) => {
     try {
       const { courseListText, courseName } = req.body;
