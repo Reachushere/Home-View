@@ -1281,8 +1281,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
               <span className="flex items-center gap-0.5"><img src={wifiLogoPath} alt="Online" style={{ width: '14px', height: 'auto' }} /> Online</span>
             ) : null}
             {courseInfo.courseType && (
-              <span className="flex items-center gap-0.5 text-[9px] text-white">
-                <GraduationCap className="w-3.5 h-3.5" />
+              <span className="text-[9px] text-white px-1.5 py-0.5 rounded border border-white/30 bg-white/10">
                 {courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Elective" : "Liberal Studies"}
               </span>
             )}
