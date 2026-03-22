@@ -21696,7 +21696,7 @@ export default function Dashboard() {
                   left: `${effectiveDividerPct}%`,
                   right: 0,
                   height: `${rowHeight}px`,
-                  background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
+                  background: `linear-gradient(180deg, color-mix(in srgb, ${colorSettings.mainBackground} 85%, white) 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 85%, white) 100%)`,
                   zIndex: 41,
                   borderBottom: '0.5px solid rgba(255,255,255,0.2)',
                   overflowX: 'hidden',
