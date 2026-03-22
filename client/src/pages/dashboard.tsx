@@ -831,6 +831,14 @@ export default function Dashboard() {
     const saved = localStorage.getItem('hwGroupBarWidth');
     return saved ? parseFloat(saved) : 111;
   });
+  useEffect(() => {
+    fetch('/api/ui-settings/hwGroupBarWidth').then(r => r.json()).then(d => {
+      if (d.value != null) {
+        const v = parseFloat(d.value);
+        if (!isNaN(v) && v > 0) { setHwGroupBarWidth(v); localStorage.setItem('hwGroupBarWidth', String(v)); }
+      }
+    }).catch(() => {});
+  }, []);
   const hwGroupBarDragRef = useRef<{ startX: number; startWidth: number } | null>(null);
   const hwTimelineDividerRef = useRef<HTMLDivElement>(null);
   const [hwTimelinePos, setHwTimelinePos] = useState<{ top: number; left: number } | null>(null);
@@ -2771,7 +2779,7 @@ export default function Dashboard() {
       document.removeEventListener('mouseup', onUp);
       document.removeEventListener('touchmove', onMove);
       document.removeEventListener('touchend', onUp);
-      setHwGroupBarWidth(w => { localStorage.setItem('hwGroupBarWidth', String(w)); return w; });
+      setHwGroupBarWidth(w => { localStorage.setItem('hwGroupBarWidth', String(w)); fetch('/api/ui-settings/hwGroupBarWidth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: w }) }).catch(() => {}); return w; });
       hwGroupBarDragRef.current = null;
     };
     document.addEventListener('mousemove', onMove);

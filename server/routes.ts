@@ -12986,6 +12986,31 @@ document.body.removeChild(a);
     }
   });
 
+  app.get("/api/ui-settings/:key", async (req, res) => {
+    try {
+      const row = await db.select().from(appState).where(eq(appState.key, `ui_${req.params.key}`)).limit(1);
+      res.json({ value: row.length > 0 ? row[0].value : null });
+    } catch (err: any) {
+      res.json({ value: null });
+    }
+  });
+
+  app.post("/api/ui-settings/:key", async (req, res) => {
+    try {
+      const key = `ui_${req.params.key}`;
+      const { value } = req.body;
+      const row = await db.select().from(appState).where(eq(appState.key, key)).limit(1);
+      if (row.length > 0) {
+        await db.update(appState).set({ value: String(value), updatedAt: new Date() }).where(eq(appState.key, key));
+      } else {
+        await db.insert(appState).values({ key, value: String(value) });
+      }
+      res.json({ success: true });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   app.get("/api/syllabus/paths", async (_req, res) => {
     try {
       const row = await db.select().from(appState).where(eq(appState.key, 'courseSyllabusPaths')).limit(1);
