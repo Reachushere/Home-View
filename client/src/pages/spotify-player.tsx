@@ -199,6 +199,7 @@ function VolumeKnob({ value, onChange, size = 54, accent = "#3b82f6", glow = "rg
   return (
     <div className="flex flex-col items-center" style={{ touchAction: 'none' }}>
       <svg ref={knobRef} width={size} height={size} className="cursor-pointer"
+        style={{ transform: 'rotate(90deg)' }}
         onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp}
         data-testid="volume-knob">
         <circle cx={cx} cy={cy} r={r + 2} fill="rgba(0,0,0,0.5)" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
