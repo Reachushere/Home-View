@@ -2741,9 +2741,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
               variant="outline"
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClose(); }}
               onPointerDown={(e) => { e.stopPropagation(); }}
-              disabled={expandedTaskId !== null || !isEditingInfo}
-              className={`border transition-all duration-200 h-6 w-[110px] disabled:cursor-not-allowed ${isEditingInfo && expandedTaskId === null ? '!border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent cursor-pointer' : '!border-white/10 text-white/20'}`}
-              style={{ fontSize: '12px', pointerEvents: expandedTaskId !== null || !isEditingInfo ? 'none' : 'auto', position: 'relative', zIndex: 99999 }}
+              disabled={expandedTaskId !== null || isEditingInfo}
+              className={`border transition-all duration-200 h-6 w-[110px] disabled:cursor-not-allowed ${!isEditingInfo && expandedTaskId === null ? '!border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent cursor-pointer' : '!border-white/10 text-white/20'}`}
+              style={{ fontSize: '12px', pointerEvents: expandedTaskId !== null || isEditingInfo ? 'none' : 'auto', position: 'relative', zIndex: 99999 }}
               data-testid="button-cancel-course-detail"
             >
               Cancel
@@ -2763,10 +2763,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 }
                 onClose();
               }}
-              disabled={expandedTaskId !== null || !isEditingInfo}
-              className={`border transition-all duration-200 h-6 w-[110px] disabled:cursor-not-allowed ${isEditingInfo && expandedTaskId === null ? '!border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent' : '!border-white/10 text-white/20'}`}
+              disabled={expandedTaskId !== null || isEditingInfo}
+              className={`border transition-all duration-200 h-6 w-[110px] disabled:cursor-not-allowed ${!isEditingInfo && expandedTaskId === null ? '!border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent' : '!border-white/10 text-white/20'}`}
               style={{
-                boxShadow: isEditingInfo && expandedTaskId === null ? '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)' : 'none',
+                boxShadow: !isEditingInfo && expandedTaskId === null ? '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)' : 'none',
                 fontSize: '12px'
               }}
               data-testid="button-save-course-detail"
