@@ -21716,7 +21716,7 @@ export default function Dashboard() {
                 }}>
                   {(() => {
                     const cCode = pd.courseCode.toUpperCase();
-                    const courseTasks = (allTasks || []).filter(t => {
+                    const allCourseTasks = (allTasks || []).filter(t => {
                       const tc = t.courseName?.split(' ')[0]?.toUpperCase() || '';
                       if (tc !== cCode || t.isCompleted) return false;
                       const knownCourseCodes = ['CPPA122', 'CFNF400', 'CASL101', 'CECN210', 'CPHL110', 'CHIS105', 'CPPA235'];
@@ -21725,6 +21725,21 @@ export default function Dashboard() {
                       if (taskDue < startOfDayET(new Date())) return false;
                       return true;
                     }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+                    const moduleTask = allCourseTasks.find(t => {
+                      const tType = (t.type || '').toLowerCase();
+                      if (tType !== 'module') return false;
+                      const taskWeek = (t.weekNumber !== undefined && t.weekNumber !== null) ? t.weekNumber : (semesterSettings?.semesterStartDate ? getWeekNumber(new Date(t.dueDate), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null);
+                      return taskWeek === selectedWeek;
+                    });
+                    const courseTasks = [
+                      ...(moduleTask ? [moduleTask] : []),
+                      ...allCourseTasks.filter(t => {
+                        const tType = (t.type || '').toLowerCase();
+                        if (t === moduleTask) return false;
+                        if (tType === 'module' || tType === 'reading') return false;
+                        return true;
+                      })
+                    ];
                     if (courseTasks.length === 0) return <span className="text-[10px] text-white/40 italic">No tasks</span>;
                     const textColor = '#ffffff';
                     const dateColor = '#ffffff';
