@@ -1870,9 +1870,20 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                       <span className="text-white" style={{ justifySelf: 'end' }}>Modules:</span>
                       <span className="text-white" style={{ justifySelf: 'end' }}>Weekly</span>
                     </div>
-                  ) : (
-                    <div />
-                  )}
+                  ) : (() => {
+                    const fmt = (t: string) => { const [h,m] = t.split(':').map(Number); const p = h >= 12 ? 'PM' : 'AM'; const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h; return `${h12}:${m.toString().padStart(2,'0')} ${p}`; };
+                    return (
+                      <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end', marginLeft: '100px' }}>
+                        <Calendar className="h-3 w-3 text-white flex-shrink-0" style={{ justifySelf: 'end' }} />
+                        <span className="text-white" style={{ justifySelf: 'end' }}>Schedule:</span>
+                        <span className="text-white capitalize" style={{ justifySelf: 'end' }}>
+                          {courseInfo.classDay
+                            ? `${courseInfo.classDay}${courseInfo.classTime ? ` ${fmt(courseInfo.classTime)}` : ""}${courseInfo.classEndTime ? `–${fmt(courseInfo.classEndTime)}` : ""}`
+                            : "Not set"}
+                        </span>
+                      </div>
+                    );
+                  })()}
                   {(courseInfo.startDate || courseInfo.endDate) && (
                     <div style={{ display: 'grid', gridTemplateColumns: '12px 58px 1fr', gap: '6px', alignItems: 'center' }}>
                       <Calendar className="h-3 w-3 text-white flex-shrink-0" />
@@ -1885,30 +1896,21 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     </div>
                   )}
                   {courseInfo.deliveryMode !== "online" && (() => {
-                    const fmt = (t: string) => { const [h,m] = t.split(':').map(Number); const p = h >= 12 ? 'PM' : 'AM'; const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h; return `${h12}:${m.toString().padStart(2,'0')} ${p}`; };
                     const isSpSu = courseInfo.semesterTerm?.startsWith('spring_summer');
+                    if (!isSpSu) return null;
+                    const fmt = (t: string) => { const [h,m] = t.split(':').map(Number); const p = h >= 12 ? 'PM' : 'AM'; const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h; return `${h12}:${m.toString().padStart(2,'0')} ${p}`; };
                     return (
                       <>
+                        <div />
                         <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end', marginLeft: '100px' }}>
                           <Calendar className="h-3 w-3 text-white flex-shrink-0" style={{ justifySelf: 'end' }} />
-                          <span className="text-white" style={{ justifySelf: 'end' }}>{isSpSu ? 'Day 1:' : 'Schedule:'}</span>
+                          <span className="text-white" style={{ justifySelf: 'end' }}>Day 2:</span>
                           <span className="text-white capitalize" style={{ justifySelf: 'end' }}>
-                            {courseInfo.classDay
-                              ? `${courseInfo.classDay}${courseInfo.classTime ? ` ${fmt(courseInfo.classTime)}` : ""}${courseInfo.classEndTime ? `–${fmt(courseInfo.classEndTime)}` : ""}`
+                            {courseInfo.classDay2
+                              ? `${courseInfo.classDay2}${courseInfo.classTime2 ? ` ${fmt(courseInfo.classTime2)}` : (courseInfo.classTime ? ` ${fmt(courseInfo.classTime)}` : "")}${courseInfo.classEndTime2 ? `–${fmt(courseInfo.classEndTime2)}` : (courseInfo.classEndTime ? `–${fmt(courseInfo.classEndTime)}` : "")}`
                               : "Not set"}
                           </span>
                         </div>
-                        {isSpSu && (
-                          <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end', marginLeft: '100px' }}>
-                            <Calendar className="h-3 w-3 text-white flex-shrink-0" style={{ justifySelf: 'end' }} />
-                            <span className="text-white" style={{ justifySelf: 'end' }}>Day 2:</span>
-                            <span className="text-white capitalize" style={{ justifySelf: 'end' }}>
-                              {courseInfo.classDay2
-                                ? `${courseInfo.classDay2}${courseInfo.classTime2 ? ` ${fmt(courseInfo.classTime2)}` : (courseInfo.classTime ? ` ${fmt(courseInfo.classTime)}` : "")}${courseInfo.classEndTime2 ? `–${fmt(courseInfo.classEndTime2)}` : (courseInfo.classEndTime ? `–${fmt(courseInfo.classEndTime)}` : "")}`
-                                : "Not set"}
-                            </span>
-                          </div>
-                        )}
                       </>
                     );
                   })()}
