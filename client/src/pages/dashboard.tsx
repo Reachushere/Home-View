@@ -21678,6 +21678,7 @@ export default function Dashboard() {
                   height: `${halfHeight}px`,
                   background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
                   zIndex: 1,
+                  boxShadow: 'inset 0 0 0 0.5px rgba(255,255,255,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
                 }} />,
                 <div key={`${pd.courseCode}-progress-bg-reading`} style={{
                   position: 'absolute',
@@ -21687,6 +21688,7 @@ export default function Dashboard() {
                   height: `${halfHeight}px`,
                   background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
                   zIndex: 1,
+                  boxShadow: 'inset 0 0 0 0.5px rgba(255,255,255,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
                 }} />,
                 <div key={`${pd.courseCode}-right-fill-ext`} style={{
                   position: 'absolute',
@@ -23022,6 +23024,7 @@ export default function Dashboard() {
                       style={{
                         background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
                         borderBottom: '0.5px solid rgba(255,255,255,0.2)',
+                        boxShadow: 'inset 0 0 0 0.5px rgba(255,255,255,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
                         display: 'flex',
                         flexDirection: 'column',
                         minHeight: '60px',
