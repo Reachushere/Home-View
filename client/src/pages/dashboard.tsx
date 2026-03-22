@@ -874,6 +874,8 @@ export default function Dashboard() {
   const courseProgressDataRef = useRef<Array<{
     courseCode: string;
     progressBg: string;
+    progressStartColor: string;
+    progressEndColor: string;
     moduleP: {percent: number; hasFiles: boolean};
     readingP: {percent: number; hasFiles: boolean};
     moduleUnread: number;
@@ -19032,6 +19034,8 @@ export default function Dashboard() {
                     courseProgressDataRef.current[courseIdx] = {
                       courseCode,
                       progressBg,
+                      progressStartColor: courseHexColor,
+                      progressEndColor: courseHexColorEnd || courseHexColor,
                       moduleP,
                       readingP,
                       moduleUnread,
@@ -21696,7 +21700,7 @@ export default function Dashboard() {
                   left: `${effectiveDividerPct}%`,
                   right: 0,
                   height: `${rowHeight}px`,
-                  background: `linear-gradient(180deg, color-mix(in srgb, ${colorSettings.mainBackground} 60%, white) 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 60%, white) 100%)`,
+                  background: `linear-gradient(180deg, color-mix(in srgb, ${pd.progressStartColor} 40%, white) 0%, color-mix(in srgb, ${pd.progressEndColor} 40%, white) 100%)`,
                   zIndex: 41,
                   borderBottom: '0.5px solid rgba(255,255,255,0.2)',
                   overflowX: 'hidden',
