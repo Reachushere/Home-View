@@ -9417,7 +9417,9 @@ export default function Dashboard() {
       const ce = getCalendarEventsForHour(day, h);
       return ht.length > 0 || ct.length > 0 || ce.length > 0;
     });
-    return hasTasks ? base : 12;
+    if (hasTasks) return base;
+    const eightAmHeight = gridSizes.timeSlotHeights[8] || gridSizes.timeSlotHeight;
+    return Math.round(eightAmHeight * 0.75);
   };
 
   // Get all-day Google Calendar events for a day (only conflicting events)
