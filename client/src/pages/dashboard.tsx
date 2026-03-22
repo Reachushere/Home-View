@@ -18807,8 +18807,9 @@ export default function Dashboard() {
                           }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())[0];
                           if (!nextTask) return null;
                           const daysUntil = differenceInCalendarDays(new Date(nextTask.dueDate), new Date());
+                          const badgeBg = getCourseGradientColors(cCode2).end;
                           return (
-                            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '14px', backgroundColor: '#000000', zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '14px', backgroundColor: badgeBg, zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
                               <span style={{ fontSize: '9px', color: '#ffffff', whiteSpace: 'nowrap', fontWeight: 500 }}>Next Task Due In: <span style={{ color: '#ffd700' }}>{daysUntil}d</span></span>
                             </div>
                           );
