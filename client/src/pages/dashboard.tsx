@@ -22079,7 +22079,7 @@ export default function Dashboard() {
                   }}
                   onWheel={(e) => {
                     e.stopPropagation();
-                    e.currentTarget.scrollTop += e.deltaY * 0.3;
+                    e.currentTarget.scrollTop += e.deltaY;
                     e.preventDefault();
                   }}>
                     {otherProgressTasks.length === 0 && (
