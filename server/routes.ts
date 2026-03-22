@@ -6952,19 +6952,32 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     "media_player.echo_cat_washroom_middle",
   ];
 
+  function isSpotifyPlayingOnEverywhere(): boolean {
+    return spotifyActivePlaybacks.has("media_player.byhome");
+  }
+
   async function stopAllCatWashroomSpeakers(haUrl: string): Promise<void> {
     const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
-    await Promise.allSettled([
-      fetch(`${haUrl}/api/services/media_player/media_stop`, {
+    const everywhereActive = isSpotifyPlayingOnEverywhere();
+    if (everywhereActive) {
+      console.log(`[Speakers] Everywhere group is playing Spotify — only stopping Nest speaker, preserving cat washroom Echos`);
+      await fetch(`${haUrl}/api/services/media_player/media_stop`, {
         method: 'POST', headers: haHeaders,
         body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY }),
-      }),
-      fetch(`${haUrl}/api/services/media_player/media_stop`, {
-        method: 'POST', headers: haHeaders,
-        body: JSON.stringify({ entity_id: CAT_ECHO_ENTITIES }),
-      }),
-    ]);
-    console.log(`[Speakers] Stopped Nest + cat washroom Echos`);
+      });
+    } else {
+      await Promise.allSettled([
+        fetch(`${haUrl}/api/services/media_player/media_stop`, {
+          method: 'POST', headers: haHeaders,
+          body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY }),
+        }),
+        fetch(`${haUrl}/api/services/media_player/media_stop`, {
+          method: 'POST', headers: haHeaders,
+          body: JSON.stringify({ entity_id: CAT_ECHO_ENTITIES }),
+        }),
+      ]);
+      console.log(`[Speakers] Stopped Nest + cat washroom Echos`);
+    }
   }
 
   async function playChumFmRadio(haUrl: string): Promise<void> {
@@ -8452,21 +8465,25 @@ document.body.removeChild(a);
       catLightsConfirmResolve(true);
       catLightsConfirmResolve = null;
 
-      try {
-        const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-        const catEchoEntities = [
-          "media_player.echo_cat_left_am",
-          "media_player.echo_cat_right_am",
-          "media_player.echo_cat_washroom_middle",
-        ];
-        await fetch(`${haUrl}/api/services/media_player/media_stop`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ entity_id: catEchoEntities }),
-        });
-        console.log(`[Cat Lights Confirm] Stopped media on cat washroom Echos`);
-      } catch (e: any) {
-        console.warn(`[Cat Lights Confirm] Failed to stop Echos (non-fatal): ${e.message}`);
+      if (!isSpotifyPlayingOnEverywhere()) {
+        try {
+          const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+          const catEchoEntities = [
+            "media_player.echo_cat_left_am",
+            "media_player.echo_cat_right_am",
+            "media_player.echo_cat_washroom_middle",
+          ];
+          await fetch(`${haUrl}/api/services/media_player/media_stop`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ entity_id: catEchoEntities }),
+          });
+          console.log(`[Cat Lights Confirm] Stopped media on cat washroom Echos`);
+        } catch (e: any) {
+          console.warn(`[Cat Lights Confirm] Failed to stop Echos (non-fatal): ${e.message}`);
+        }
+      } else {
+        console.log(`[Cat Lights Confirm] Everywhere group playing — preserving cat washroom Echos`);
       }
 
       res.json({ action: "confirmed", message: "Module reading confirmed — starting playback" });
