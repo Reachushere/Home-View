@@ -22306,29 +22306,30 @@ export default function Dashboard() {
                           groups.push({ key, tasks: [task], weeks });
                         }
                       });
-                      return [
-                        <div key="week-header" style={{ display: 'flex', flexDirection: 'column', gap: '3px', padding: '0px 0 0 0', marginTop: '0px' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[0]?.label || 'This week'}</span>
-                            <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px' }}>({dueTomorrowTasks.length})</span>
-                          </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0 }}>
-                            <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 165, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                              <div style={{ background: 'rgb(255, 165, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(addDays(new Date(), 1), 'MMM').toUpperCase()}</div>
-                              <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(addDays(new Date(), 1), 'd')}</div>
-                            </div>
-                            <span style={{ fontSize: '6px', color: 'white', lineHeight: 1 }}>&#9654;</span>
-                            <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 165, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                              <div style={{ background: 'rgb(255, 165, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(thisWeekFriday, 'MMM').toUpperCase()}</div>
-                              <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(thisWeekFriday, 'd')}</div>
-                            </div>
-                          </div>
-                        </div>,
-                        ...groups.map((group, groupIdx) => {
+                      return groups.map((group, groupIdx) => {
                         const dueDates = group.tasks.map(t => ({ date: startOfDayET(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
                           <div key={group.key} style={{ display: 'flex', alignItems: 'flex-start' }}>
-                            <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', alignSelf: 'center', marginLeft: '10px', marginRight: '4px', overflow: 'visible' }}>
+                            <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginLeft: '10px', marginRight: '4px', overflow: 'visible' }}>
+                              {groupIdx === 0 && (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginBottom: '4px', alignItems: 'flex-start', alignSelf: 'flex-start' }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                    <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[0]?.label || 'This week'}</span>
+                                    <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px' }}>({dueTomorrowTasks.length})</span>
+                                  </div>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0 }}>
+                                    <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 165, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                                      <div style={{ background: 'rgb(255, 165, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(addDays(new Date(), 1), 'MMM').toUpperCase()}</div>
+                                      <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(addDays(new Date(), 1), 'd')}</div>
+                                    </div>
+                                    <span style={{ fontSize: '6px', color: 'white', lineHeight: 1 }}>&#9654;</span>
+                                    <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 165, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                                      <div style={{ background: 'rgb(255, 165, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(thisWeekFriday, 'MMM').toUpperCase()}</div>
+                                      <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(thisWeekFriday, 'd')}</div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
                                 <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
                                   {['Su','Mo','Tu','We','Th','Fr','Sa'].map((dl, dli) => (
@@ -22457,8 +22458,7 @@ export default function Dashboard() {
                             </div></div>
                           </div>
                         );
-                      })
-                    ];
+                      });
                     })()}
                   </div>
                 )}
