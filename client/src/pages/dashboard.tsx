@@ -7969,6 +7969,10 @@ export default function Dashboard() {
     const saved = localStorage.getItem('showAllDayRow');
     return saved !== null ? JSON.parse(saved) : false;
   });
+  const [tabBounceEnabled, setTabBounceEnabled] = useState<boolean>(() => {
+    const saved = localStorage.getItem('tabBounceEnabled');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
   const [selectedSecondaryCalendar, setSelectedSecondaryCalendar] = useState<string>("");
   const [shiftScheduleOpen, setShiftScheduleOpen] = useState(false);
   const [shiftScheduleYear, setShiftScheduleYear] = useState(new Date().getFullYear());
@@ -13677,7 +13681,7 @@ export default function Dashboard() {
       {/* Bottom binder tab - Files */}
       <a
         href="/files"
-        className="fixed bottom-tab-bounce"
+        className={`fixed${tabBounceEnabled ? ' bottom-tab-bounce' : ''}`}
         style={{
           bottom: '29px',
           left: '50%',
@@ -13698,7 +13702,7 @@ export default function Dashboard() {
       </a>
       {/* Left binder tab - Add */}
       <div
-        className="fixed z-[10002] cursor-pointer left-tab-bounce"
+        className={`fixed z-[10002] cursor-pointer${tabBounceEnabled ? ' left-tab-bounce' : ''}`}
         style={{
           left: '-10px',
           top: '50vh',
@@ -13720,7 +13724,7 @@ export default function Dashboard() {
 
       {/* Right binder tab - Projects */}
       <div
-        className="fixed z-[10002] cursor-pointer right-tab-bounce"
+        className={`fixed z-[10002] cursor-pointer${tabBounceEnabled ? ' right-tab-bounce' : ''}`}
         style={{
           right: '-10px',
           top: '50vh',
@@ -17965,6 +17969,24 @@ export default function Dashboard() {
                   </div>
                 </div>
 
+                <div className="border rounded-lg p-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-[10px] font-medium">Tab Bounce Animation</Label>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={tabBounceEnabled}
+                      onChange={(e) => {
+                        setTabBounceEnabled(e.target.checked);
+                        localStorage.setItem('tabBounceEnabled', JSON.stringify(e.target.checked));
+                      }}
+                      className="h-4 w-4 accent-blue-500"
+                      data-testid="toggle-tab-bounce"
+                    />
+                  </div>
+                </div>
+
                 {/* Partner Shift Schedule */}
                 <div className="border rounded-lg p-3 space-y-2" data-shift-schedule-section-2="true">
                   <div className="flex items-center justify-between cursor-pointer" onClick={() => { const opening = !shiftScheduleOpen; setShiftScheduleOpen(opening); if (opening) { const tryScroll = (attempt: number) => { setTimeout(() => { const section = document.querySelector('[data-shift-schedule-section-2="true"]'); if (section) { section.scrollIntoView({ behavior: 'smooth', block: 'start' }); } else if (attempt < 3) { tryScroll(attempt + 1); } }, attempt === 0 ? 200 : 400); }; tryScroll(0); } }} data-testid="toggle-shift-schedule">
@@ -21582,7 +21604,7 @@ export default function Dashboard() {
                   return (
                     <div
                       key={tab.semLabel}
-                      className={`cursor-pointer${isActive ? ' semester-tab-bounce' : ''}`}
+                      className={`cursor-pointer${isActive && tabBounceEnabled ? ' semester-tab-bounce' : ''}`}
                       style={{ position: 'absolute', bottom: `${reversedIdx * 53 + reversedIdx * 3 + 2 + (tabIdx === 0 ? 1 : 0)}px`, width: '18px', height: '88px', zIndex: isActive ? 100 : semTabs.length - tabIdx, clipPath: isActive ? 'none' : 'inset(0 0 0 2px)', transition: 'width 0.25s ease, transform 0.25s ease', transform: isActive ? 'translateX(2px)' : 'none' }}
                       onClick={() => {
                         let idx = -1;
