@@ -21748,7 +21748,7 @@ export default function Dashboard() {
                   overflowY: 'auto',
                   scrollbarWidth: 'none',
                   scrollBehavior: 'smooth',
-                  padding: '2px 6px',
+                  padding: '10px 6px 2px 6px',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'flex-start',
@@ -21759,6 +21759,31 @@ export default function Dashboard() {
                   el.scrollTop += e.deltaY * 0.3;
                   e.preventDefault();
                 }}>
+                  {(() => {
+                    const now = new Date();
+                    const todayDayIdx = weekDays.findIndex(d => isSameDayET(d, now));
+                    if (todayDayIdx >= 0) {
+                      const totalFr = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0);
+                      const frBefore = gridSizes.dayColumnWidths.slice(0, todayDayIdx).reduce((a: number, b: number) => a + b, 0);
+                      const frDay = gridSizes.dayColumnWidths[todayDayIdx];
+                      const leftPct = (frBefore / totalFr) * 100;
+                      const widthPct = (frDay / totalFr) * 100;
+                      const cCode2 = pd.courseCode.toUpperCase();
+                      const nextTask = (allTasks || []).filter(t => {
+                        const tc = t.courseName?.split(' ')[0]?.toUpperCase() || '';
+                        return tc === cCode2 && !t.isCompleted && new Date(t.dueDate) >= startOfDayET(now);
+                      }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())[0];
+                      if (nextTask) {
+                        const daysUntil = differenceInCalendarDays(new Date(nextTask.dueDate), now);
+                        return (
+                          <div style={{ position: 'absolute', top: 0, left: `calc(${leftPct}% - 6px)`, width: `calc(${widthPct}%)`, height: '8px', backgroundColor: '#000000', zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                            <span style={{ fontSize: '6px', color: '#ffffff', whiteSpace: 'nowrap', fontWeight: 500 }}>Next due: {daysUntil}d</span>
+                          </div>
+                        );
+                      }
+                    }
+                    return null;
+                  })()}
                   {(() => {
                     const cCode = pd.courseCode.toUpperCase();
                     const allCourseTasks = (allTasks || []).filter(t => {
