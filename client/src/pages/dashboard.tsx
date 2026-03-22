@@ -18218,7 +18218,7 @@ export default function Dashboard() {
               return (
                 <div key={idx} style={{ position: 'relative' }}>
                   {isToday && (
-                    <div className={`absolute left-px right-0 flex items-center justify-center overflow-hidden`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '0px', padding: '0 2px' }}>
+                    <div className={`absolute right-0 flex items-center justify-center overflow-hidden`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '0px', padding: '0 2px', left: '2px' }}>
                       <span className="font-medium text-black" style={{ fontSize: '9.5px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', letterSpacing: '0.3px' }}>{format(day, 'EEEE, MMMM d, yyyy')}</span>
                     </div>
                   )}

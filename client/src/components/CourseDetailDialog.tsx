@@ -1016,7 +1016,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
         {assignToGroup === task.id ? (
           <select
             className="h-5 text-[8px] bg-white/10 border border-white/20 rounded text-white px-0.5 flex-shrink-0"
-            style={{ marginRight: '10px' }}
+            style={{ marginLeft: '3px', marginRight: '10px' }}
             value={task.assignmentGroup || ''}
             onChange={(e) => assignTaskToGroup(task.id, e.target.value || null)}
             autoFocus
@@ -1031,7 +1031,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           <button
             onClick={(e) => { e.stopPropagation(); setAssignToGroup(task.id); }}
             className="flex-shrink-0 text-white hover:text-white/60 transition-colors p-0.5"
-            style={{ marginRight: '10px' }}
+            style={{ marginLeft: '3px', marginRight: '10px' }}
             title="Assign to group"
             data-testid={`button-assign-group-${task.id}`}
           >
@@ -2788,7 +2788,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 <div className="flex items-end px-1.5 py-1 text-[8px] font-bold text-white" style={{ margin: '0 4px', letterSpacing: '0' }}>
                   <div className="flex-shrink-0" style={{ width: '14px', marginRight: '10px' }} />
                   <div className="flex-shrink-0" style={{ width: '16px', marginRight: '10px' }} />
-                  <div className="flex-shrink-0 flex justify-center" style={{ width: '19px', marginRight: '10px', overflow: 'visible' }}>
+                  <div className="flex-shrink-0 flex justify-center" style={{ width: '19px', marginLeft: '3px', marginRight: '10px', overflow: 'visible' }}>
                     <span className="text-[8px] font-bold text-white" style={{ whiteSpace: 'nowrap' }}>Assign</span>
                   </div>
                   <div className="flex-shrink-0 flex justify-center" style={{ width: '19px', marginLeft: '17px', marginRight: '10px', overflow: 'visible' }}>
@@ -2880,7 +2880,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               <div className="flex items-center px-1.5 py-1.5 mt-1 rounded-md border border-amber-400/30 bg-amber-400/5" style={{ margin: '4px 4px 0 4px' }} data-testid="grade-totals-row">
                 <div className="flex-shrink-0" style={{ width: '14px', marginRight: '10px' }} />
                 <div className="flex-shrink-0" style={{ width: '16px', marginRight: '10px' }} />
-                <div className="flex-shrink-0" style={{ width: '15px', marginRight: '10px' }} />
+                <div className="flex-shrink-0" style={{ width: '15px', marginLeft: '3px', marginRight: '10px' }} />
                 <div className="flex-shrink-0" style={{ width: '19px', marginLeft: '17px', marginRight: '10px' }} />
                 <div className="flex-1 min-w-0 text-[11px] font-bold text-white" style={{ marginLeft: '21px' }}>Totals</div>
                 <div className="flex items-center flex-shrink-0" style={{ gap: '10px', position: 'relative', left: '-8px' }}>
