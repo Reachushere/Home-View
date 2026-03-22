@@ -21634,7 +21634,7 @@ export default function Dashboard() {
           <div style={{ padding: '0 8px', height: '46px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 46, overflow: 'visible', marginBottom: '-12px', boxShadow: '0 3px 6px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3)' }}>
             <div style={{ position: 'absolute', top: '15px', left: '22px', right: 0, height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)' }} />
             <span className="text-[9px] font-medium text-white" style={{ position: 'absolute', left: '6px', top: '31px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Homework Progress</span>
-            <span className="text-[9px] font-medium text-white" style={{ position: 'absolute', left: '161px', top: '31px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Assignments</span>
+            <span className="text-[9px] font-medium text-white" style={{ position: 'absolute', left: `${effectiveDividerPct}%`, top: '31px', letterSpacing: '0.3px', whiteSpace: 'nowrap', paddingLeft: '6px' }}>Assignments</span>
             {weatherData && (
               <div style={{ position: 'absolute', left: '28px', top: '1px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span className="text-[10.5px] font-medium" style={{ color: 'rgba(255,255,255,1)' }} data-testid="homework-weather-temp">{Math.round(weatherData.temp)}°C</span>
@@ -21772,8 +21772,8 @@ export default function Dashboard() {
                             lineHeight: '1.5',
                             marginBottom: '0px',
                             opacity: 1,
-                            padding: '4px 0',
-                            marginTop: '5px',
+                            padding: '1px 0',
+                            marginTop: '1px',
                           }}
                           onMouseEnter={() => {
                             setHoveredCountdownTaskIdDebounced(t.id);
@@ -21781,8 +21781,8 @@ export default function Dashboard() {
                           onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                           onClick={() => setEditingTask(t)}
                         >
-                          <span style={{ fontSize: '12px', color: textColor, flexShrink: 0 }}>•</span>
-                          <span className="truncate" style={{ fontSize: '12px', color: textColor, textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400, flex: 1, minWidth: 0 }}>{t.title}</span>
+                          <span style={{ fontSize: '10px', color: textColor, flexShrink: 0 }}>•</span>
+                          <span className="truncate" style={{ fontSize: '10px', color: textColor, textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400, flex: 1, minWidth: 0 }}>{t.title}</span>
                           {(() => {
                             const tDueDate = new Date(t.dueDate);
                             const tDue = startOfDayET(tDueDate);
