@@ -141,55 +141,44 @@ function formatMs(ms: number) {
   return `${m}:${(s % 60).toString().padStart(2, "0")}`;
 }
 
-function VolumeKnob({ value, onChange, size = 54, accent = "#3b82f6", glow = "rgba(59,130,246,0.3)" }: { value: number; onChange: (v: number) => void; size?: number; accent?: string; glow?: string }) {
-  const knobRef = useRef<SVGSVGElement>(null);
+const ROOM_SLIDER_COLORS: Record<string, string> = {
+  "Queen Bedroom": "#e84393",
+  "Pug Washroom": "#6c5ce7",
+  "Hallway": "#00b894",
+  "Kitchen": "#fdcb6e",
+  "Living Room": "#0984e3",
+  "King Bedroom": "#e17055",
+  "Cat Washroom": "#00cec9",
+  "Closet": "#a29bfe",
+  "Everywhere": "#ff6b6b",
+  "Balcony": "#55efc4",
+};
+
+function VolumeKnob({ value, onChange, size = 54, accent = "#3b82f6", glow = "rgba(59,130,246,0.3)", roomName }: { value: number; onChange: (v: number) => void; size?: number; accent?: string; glow?: string; roomName?: string }) {
+  const trackRef = useRef<HTMLDivElement>(null);
   const dragging = useRef(false);
+  const sliderColor = roomName ? (ROOM_SLIDER_COLORS[roomName] || accent) : accent;
+  const trackWidth = 110;
+  const thumbSize = 20;
 
-  const startAngle = 225;
-  const endAngle = 495;
-  const range = endAngle - startAngle;
-  const currentAngle = startAngle + (value / 100) * range;
-
-  const r = (size - 10) / 2;
-  const cx = size / 2;
-  const cy = size / 2;
-
-  const toRad = (deg: number) => (deg * Math.PI) / 180;
-  const arcX = (deg: number) => cx + r * Math.cos(toRad(deg - 90));
-  const arcY = (deg: number) => cy + r * Math.sin(toRad(deg - 90));
-
-  const handleX = cx + (r - 2) * Math.cos(toRad(currentAngle - 90));
-  const handleY = cy + (r - 2) * Math.sin(toRad(currentAngle - 90));
-
-  const arcPath = (from: number, to: number) => {
-    const s = { x: arcX(from), y: arcY(from) };
-    const e = { x: arcX(to), y: arcY(to) };
-    const large = to - from > 180 ? 1 : 0;
-    return `M ${s.x} ${s.y} A ${r} ${r} 0 ${large} 1 ${e.x} ${e.y}`;
-  };
-
-  const angleFromEvent = (e: { clientX: number; clientY: number }) => {
-    if (!knobRef.current) return value;
-    const rect = knobRef.current.getBoundingClientRect();
-    const dx = e.clientX - (rect.left + rect.width / 2);
-    const dy = e.clientY - (rect.top + rect.height / 2);
-    let deg = (Math.atan2(dy, dx) * 180) / Math.PI + 90;
-    if (deg < 0) deg += 360;
-    if (deg < startAngle - 20) deg += 360;
-    const clamped = Math.max(startAngle, Math.min(endAngle, deg));
-    return Math.round(((clamped - startAngle) / range) * 100);
+  const valueFromEvent = (e: { clientX: number }) => {
+    if (!trackRef.current) return value;
+    const rect = trackRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const pct = Math.round(Math.max(0, Math.min(100, (x / rect.width) * 100)));
+    return pct;
   };
 
   const onPointerDown = (e: React.PointerEvent) => {
     e.stopPropagation(); e.preventDefault();
     dragging.current = true;
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
-    onChange(angleFromEvent(e));
+    onChange(valueFromEvent(e));
   };
   const onPointerMove = (e: React.PointerEvent) => {
     if (!dragging.current) return;
     e.stopPropagation();
-    onChange(angleFromEvent(e));
+    onChange(valueFromEvent(e));
   };
   const onPointerUp = (e: React.PointerEvent) => {
     dragging.current = false;
@@ -197,23 +186,55 @@ function VolumeKnob({ value, onChange, size = 54, accent = "#3b82f6", glow = "rg
   };
 
   return (
-    <div className="flex flex-col items-center" style={{ touchAction: 'none' }}>
-      <svg ref={knobRef} width={size} height={size} className="cursor-pointer"
-        style={{ transform: 'rotate(90deg)' }}
-        onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp}
-        data-testid="volume-knob">
-        <circle cx={cx} cy={cy} r={r + 2} fill="rgba(0,0,0,0.5)" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
-        <path d={arcPath(startAngle, endAngle)} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="4" strokeLinecap="round" />
-        <path d={arcPath(startAngle, currentAngle)} fill="none" stroke={accent} strokeWidth="4" strokeLinecap="round"
-          style={{ filter: `drop-shadow(0 0 4px ${glow})` }} />
-        <circle cx={cx} cy={cy} r={r - 8} fill="rgba(10,20,40,0.7)" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
-        <line x1={cx} y1={cy} x2={handleX} y2={handleY} stroke={accent} strokeWidth="2" strokeLinecap="round"
-          style={{ filter: `drop-shadow(0 0 3px ${glow})` }} />
-        <circle cx={handleX} cy={handleY} r={4} fill={accent} stroke="white" strokeWidth="1"
-          style={{ filter: `drop-shadow(0 0 6px ${glow})` }} />
-        <circle cx={cx} cy={cy} r={2} fill="rgba(255,255,255,0.4)" />
-      </svg>
-      <span className="text-[10px] font-bold mt-0.5" style={{ color: accent, textShadow: `0 0 6px ${glow}` }}>{value}%</span>
+    <div className="flex flex-col items-center gap-1" style={{ touchAction: 'none' }}>
+      <div className="flex items-center gap-1.5">
+        <button onClick={(e) => { e.stopPropagation(); onChange(Math.max(0, value - 5)); }}
+          className="text-white font-bold text-[11px] w-4 h-4 flex items-center justify-center rounded-full transition-all hover:scale-125"
+          style={{ textShadow: '0 0 4px rgba(255,255,255,0.5)' }}
+          data-testid="volume-minus">−</button>
+        <div ref={trackRef} className="relative cursor-pointer"
+          style={{ width: trackWidth, height: 8 }}
+          onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp}>
+          <div className="absolute inset-0 rounded-full"
+            style={{
+              background: 'rgba(0,0,0,0.6)',
+              boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.8), inset 0 -1px 2px rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.06)',
+            }} />
+          <div className="absolute top-0 left-0 h-full rounded-full"
+            style={{
+              width: `${value}%`,
+              background: `linear-gradient(90deg, ${sliderColor}cc, ${sliderColor})`,
+              boxShadow: `0 0 8px ${sliderColor}60, 0 0 2px ${sliderColor}40`,
+              transition: dragging.current ? 'none' : 'width 0.1s ease',
+            }} />
+          <div className="absolute top-1/2"
+            style={{
+              left: `calc(${value}% - ${thumbSize / 2}px)`,
+              transform: 'translateY(-50%)',
+              width: thumbSize,
+              height: thumbSize,
+              borderRadius: '50%',
+              background: `radial-gradient(circle at 40% 35%, rgba(60,60,70,1), rgba(25,25,35,1))`,
+              boxShadow: `0 2px 8px rgba(0,0,0,0.7), 0 0 12px ${sliderColor}40, inset 0 1px 1px rgba(255,255,255,0.15)`,
+              border: '1px solid rgba(255,255,255,0.1)',
+              transition: dragging.current ? 'none' : 'left 0.1s ease',
+            }}>
+            <div style={{
+              position: 'absolute', top: '50%', left: '50%',
+              transform: 'translate(-50%,-50%)',
+              width: 5, height: 5, borderRadius: '50%',
+              background: sliderColor,
+              boxShadow: `0 0 6px ${sliderColor}`,
+            }} />
+          </div>
+        </div>
+        <button onClick={(e) => { e.stopPropagation(); onChange(Math.min(100, value + 5)); }}
+          className="text-white font-bold text-[11px] w-4 h-4 flex items-center justify-center rounded-full transition-all hover:scale-125"
+          style={{ textShadow: '0 0 4px rgba(255,255,255,0.5)' }}
+          data-testid="volume-plus">+</button>
+      </div>
+      <span className="text-[9px] font-bold" style={{ color: 'rgba(255,255,255,0.85)', textShadow: '0 0 4px rgba(0,0,0,0.8)' }}>{value}%</span>
     </div>
   );
 }
@@ -1888,7 +1909,7 @@ export default function SpotifyPlayerPage() {
                           style={{ zIndex: 4, transform: `translate(${spot.volumeOffsetX || 0}px, ${spot.volumeOffsetY || 0}px)`, pointerEvents: 'none' }}
                           data-testid={`volume-knob-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
                           <div style={{ pointerEvents: 'auto' }} onClick={(e) => e.stopPropagation()}>
-                            <VolumeKnob value={roomVolumes[spot.room] ?? 30} onChange={(v) => setRoomVolume(spot.room, v)} size={isActive ? 50 : 44} accent={isActive ? profile.accent : `${profile.accent}aa`} glow={profile.glow} />
+                            <VolumeKnob value={roomVolumes[spot.room] ?? 30} onChange={(v) => setRoomVolume(spot.room, v)} size={isActive ? 50 : 44} accent={isActive ? profile.accent : `${profile.accent}aa`} glow={profile.glow} roomName={spot.room} />
                           </div>
                         </div>
                       )}
