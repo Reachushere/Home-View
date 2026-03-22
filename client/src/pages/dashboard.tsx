@@ -13160,6 +13160,26 @@ export default function Dashboard() {
                 startTransition(() => setIsSettingsPanelOpen(true));
               }
             }}
+            onLiveColorChange={(colorUpdates) => {
+              const courseCode = selectedCertCourse!.courseCode;
+              const updatedCourses = [...coursesData.courses];
+              const matchIdx = updatedCourses.findIndex(c => {
+                const cCode = c.name.split(' - ')[0]?.trim().replace(/\s/g, '');
+                return cCode === courseCode.replace(/\s/g, '');
+              });
+              if (matchIdx >= 0) {
+                updatedCourses[matchIdx] = {
+                  ...updatedCourses[matchIdx],
+                  ...(colorUpdates.color ? { color: colorUpdates.color } : {}),
+                  ...(colorUpdates.colorEnd ? { colorEnd: colorUpdates.colorEnd } : {}),
+                  ...(colorUpdates.colorStops !== undefined ? { colorStops: colorUpdates.colorStops } : {}),
+                  ...(colorUpdates.borderColor !== undefined ? { borderColor: colorUpdates.borderColor } : {}),
+                  ...(colorUpdates.courseRowColor !== undefined ? { courseRowColor: colorUpdates.courseRowColor } : {}),
+                  ...(colorUpdates.taskBgColor !== undefined ? { taskBgColor: colorUpdates.taskBgColor } : {}),
+                };
+                setCoursesData({ courses: updatedCourses });
+              }
+            }}
             onSaveCourseInfo={(updates) => {
               const courseCode = selectedCertCourse!.courseCode;
               const certKey = selectedCertCourse!.certKey;
@@ -18742,6 +18762,7 @@ export default function Dashboard() {
 
                     return weekDays.map((day, dayIdx) => {
                     const isDayToday = isSameDayET(day, new Date());
+                    const isDayAfterToday = day > new Date() && !isDayToday;
                     const cellBgColor = isDayToday ? '#e4ecf5' : course.bg;
                     const cellDate = startOfDayET(day);
                     
@@ -18803,12 +18824,12 @@ export default function Dashboard() {
                           if (!nextTask) return null;
                           const daysUntil = differenceInCalendarDays(new Date(nextTask.dueDate), new Date());
                           return (
-                            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '8px', backgroundColor: '#000000', zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '14px', backgroundColor: '#000000', zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
                               <span style={{ fontSize: '6px', color: '#ffffff', whiteSpace: 'nowrap', fontWeight: 500 }}>due: {daysUntil}d</span>
                             </div>
                           );
                         })()}
-                        <div className={`flex flex-col gap-0.5${cellHasScroll ? ' course-cell-scroll' : ''}`} style={{ overflowY: cellHasScroll ? 'auto' : 'hidden', overflowX: 'hidden', maxHeight: '100%' }}>
+                        <div className={`flex flex-col gap-0.5${cellHasScroll ? ' course-cell-scroll' : ''}`} style={{ overflowY: cellHasScroll ? 'auto' : 'hidden', overflowX: 'hidden', maxHeight: '100%', ...(isDayAfterToday ? { paddingTop: '12px' } : {}) }}>
                         {/* Course-associated projects */}
                         {allProjects.filter(proj => {
                           if (!proj.courseName) return false;
@@ -21779,7 +21800,7 @@ export default function Dashboard() {
                   overflowY: 'auto',
                   scrollbarWidth: 'none',
                   scrollBehavior: 'smooth',
-                  padding: '10px 6px 2px 6px',
+                  padding: '2px 6px 2px 6px',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'flex-start',

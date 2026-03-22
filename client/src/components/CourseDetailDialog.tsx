@@ -99,6 +99,7 @@ interface CourseDetailDialogProps {
   courseInfo: CourseInfo;
   onClose: () => void;
   onSaveCourseInfo?: (updates: { professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; classTime2?: string; classEndTime2?: string; zoomLink?: string; semesterTerm?: string; year?: string; startDate?: string; endDate?: string; color?: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string }) => void;
+  onLiveColorChange?: (updates: { color?: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string }) => void;
   onGradeCalculated?: (grade: string, percent: string) => void;
   onDeleteCourse?: () => void;
   onOpenEditTask?: (task: Task) => void;
@@ -199,7 +200,7 @@ function percentToLetterGrade(pct: number): string {
   return 'F';
 }
 
-export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGradeCalculated, onDeleteCourse, onOpenEditTask, semesterStart, readingWeekStart, certificateName, onPushUndo, initialEditMode }: CourseDetailDialogProps) {
+export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLiveColorChange, onGradeCalculated, onDeleteCourse, onOpenEditTask, semesterStart, readingWeekStart, certificateName, onPushUndo, initialEditMode }: CourseDetailDialogProps) {
   const { toast } = useToast();
   const [showAddForm, setShowAddForm] = useState(false);
   const [newTask, setNewTask] = useState<NewTaskForm>(createEmptyTaskForm());
@@ -306,6 +307,19 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
     courseRowColor: courseInfo.courseRowColor || '',
     taskBgColor: courseInfo.taskBgColor || '',
   });
+
+  useEffect(() => {
+    if (onLiveColorChange && isEditingInfo) {
+      onLiveColorChange({
+        color: editInfo.color,
+        colorEnd: editInfo.colorEnd,
+        colorStops: editInfo.colorStops,
+        borderColor: editInfo.borderColor,
+        courseRowColor: editInfo.courseRowColor,
+        taskBgColor: editInfo.taskBgColor,
+      });
+    }
+  }, [editInfo.color, editInfo.colorEnd, editInfo.colorStops, editInfo.borderColor, editInfo.courseRowColor, editInfo.taskBgColor]);
 
   const CERTIFICATE_TYPE_OPTIONS = [
     { group: 'Certificate 1', options: [
@@ -1241,13 +1255,13 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
   return createPortal(
     <div
       className="fixed inset-0 z-[10003] flex items-center justify-center"
-      style={{ background: "rgba(0,0,0,0.5)" }}
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      style={{ background: "rgba(0,0,0,0.5)", pointerEvents: 'none' }}
       data-testid="course-detail-overlay"
     >
       <div
         className="flex flex-col text-white rounded-lg overflow-hidden"
         style={{
+          pointerEvents: 'auto',
           width: "960px",
           maxWidth: "95vw",
           height: "88vh",
