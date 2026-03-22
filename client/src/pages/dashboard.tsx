@@ -11066,9 +11066,9 @@ export default function Dashboard() {
             data-testid="next-task-countdown"
           >
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, lineHeight: 1.3, gap: '1px' }} data-testid="things-to-do-label">
-              <span style={{ fontSize: '8px', fontWeight: 500, color: 'rgba(255,255,255,0.85)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Things</span>
-              <span style={{ fontSize: '8px', fontWeight: 500, color: 'rgba(255,255,255,0.85)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>to do</span>
-              <span style={{ fontSize: '8px', fontWeight: 700, color: '#FFFF00', textTransform: 'uppercase', letterSpacing: '0.5px' }}>today:</span>
+              <span style={{ fontSize: '8px', fontWeight: 700, color: '#FFFF00', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Next</span>
+              <span style={{ fontSize: '8px', fontWeight: 500, color: 'rgba(255,255,255,0.85)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>to work</span>
+              <span style={{ fontSize: '8px', fontWeight: 500, color: 'rgba(255,255,255,0.85)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>on:</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderRadius: '12px', padding: '3px 26px 3px 68px', minWidth: '395px', border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)', boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)', gap: '8px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}> 
               <img src={profilePhotoUrl || profilePhoto} alt="Profile" style={{ width: '43px', height: '43px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, marginLeft: '-46px', marginRight: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} />
