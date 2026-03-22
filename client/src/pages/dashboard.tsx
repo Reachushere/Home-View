@@ -21866,9 +21866,8 @@ export default function Dashboard() {
                             lineHeight: '1.5',
                             marginBottom: '0px',
                             opacity: 1,
-                            padding: '1px 3px',
+                            padding: '1px 0',
                             marginTop: '1px',
-                            ...(pd.taskBgColor ? { backgroundColor: pd.taskBgColor, borderRadius: '3px' } : {}),
                           }}
                           onMouseEnter={() => {
                             setHoveredCountdownTaskIdDebounced(t.id);
