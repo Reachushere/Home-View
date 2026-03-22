@@ -126,7 +126,7 @@ const ROOM_HOTSPOTS: { room: string; x: number; y: number; w: number; h: number;
   { room: "Queen Bedroom", x: 2, y: 38, w: 18, h: 33, entityId: "media_player.queen_bedroom", groupEntityId: "media_player.queen_bedroom_media_group", deviceType: "echo", icon: "bed", nightImg: queenNight, labelOffsetX: -60, labelOffsetY: 35, volumeOffsetX: 10, volumeOffsetY: 35 },
   { room: "Pug Washroom", x: 2, y: 5, w: 16, h: 32, entityId: "media_player.echo_show_pug_am", groupEntityId: "media_player.pug_media_group", deviceType: "echo_show", icon: "bath", nightImg: pugNight, labelOffsetX: -65, labelOffsetY: 125, volumeOffsetX: 5, volumeOffsetY: 125 },
   { room: "Hallway", x: 19, y: 5, w: 16, h: 32, entityId: "media_player.hallway_2", groupEntityId: "media_player.hallway_media_group", deviceType: "echo", icon: "hallway", nightImg: hallwayNight, labelOffsetX: 50, labelOffsetY: -105, volumeOffsetX: 110, volumeOffsetY: -105 },
-  { room: "Kitchen", x: 36, y: 5, w: 28, h: 45, entityId: "media_player.kitchen_lr", groupEntityId: "media_player.kitchen_media_group", deviceType: "echo", icon: "kitchen", nightImg: kitchenNight, labelOffsetX: -75, labelOffsetY: -75, volumeOffsetX: -15, volumeOffsetY: -75 },
+  { room: "Kitchen", x: 36, y: 5, w: 28, h: 45, entityId: "media_player.kitchen_lr", groupEntityId: "media_player.kitchen_media_group", deviceType: "echo", icon: "kitchen", nightImg: kitchenNight, labelOffsetX: -95, labelOffsetY: -75, volumeOffsetX: -35, volumeOffsetY: -75 },
   { room: "Living Room", x: 36, y: 52, w: 28, h: 45, entityId: "media_player.kitchen_lr", groupEntityId: "media_player.living_room_media_group", deviceType: "echo", icon: "sofa", nightImg: livingRoomNight, labelOffsetX: 60, labelOffsetY: 65, volumeOffsetX: 125, volumeOffsetY: 65 },
   { room: "King Bedroom", x: 65, y: 30, w: 33, h: 50, entityId: "media_player.king_bedroom", groupEntityId: "media_player.king_bedroom_media_group", deviceType: "echo", icon: "crown", nightImg: kingNight, labelOffsetX: 70, labelOffsetY: -144, volumeOffsetX: 145, volumeOffsetY: -144 },
   { room: "Cat Washroom", x: 84, y: 3, w: 14, h: 26, entityId: "media_player.cat_speakers", groupEntityId: "media_player.cat_washroom_media_group", deviceType: "echo", icon: "bath", nightImg: catNight, labelOffsetX: -410, labelOffsetY: -40, volumeOffsetX: -340, volumeOffsetY: -40 },
@@ -1778,7 +1778,7 @@ export default function SpotifyPlayerPage() {
                       data-testid={`room-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
                       {!spot.hideLabel && <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5" style={{ zIndex: 2, transform: `translate(${spot.labelOffsetX || 0}px, ${spot.labelOffsetY || 0}px)` }}>
                         <RoomIcon icon={spot.icon} size={16} color={isActive ? profile.accent : 'rgba(255,255,255,0.9)'} />
-                        <span className="text-[9px] font-bold uppercase tracking-wider text-center leading-tight px-1"
+                        <span className="text-[7px] font-bold uppercase tracking-wider text-center leading-tight px-1"
                           style={{
                             color: isActive ? profile.accent : 'rgba(255,255,255,0.95)',
                             textShadow: isActive ? `0 0 10px ${profile.glow}` : '0 1px 4px rgba(0,0,0,0.7)',
