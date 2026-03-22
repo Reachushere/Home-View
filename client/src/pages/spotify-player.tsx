@@ -18,6 +18,7 @@ import queenNight from "@assets/Queen_Night_1774008796950.png";
 import catNight from "@assets/Cat_Night_1774008796951.png";
 import closetNight from "@assets/Closet_Night_1774008796953.png";
 import echoSpeakerImg from "@assets/Echo_1774213902054.png";
+import chumfmLogo from "@assets/chumfm_logo.svg";
 
 interface NowPlaying {
   playing: boolean; name?: string; artist?: string; album?: string;
@@ -68,7 +69,7 @@ const PROFILES: Record<ProfileKey, {
       { name: "Lady Gaga", uri: "spotify:artist:1HY2Jd0NmPuamShAr6KMms", searchQuery: "Lady Gaga" },
       { name: "Cher", uri: "spotify:artist:72OaDtakiy6yFqkt4TsiFt", searchQuery: "Cher" },
       { name: "This Is Me", uri: "spotify:track:2MYDnXBdJkFRuWgyOjpdth", searchQuery: "This Is Me Greatest Showman" },
-      { name: "CHUM FM", uri: "", searchQuery: "104.5 Chum FM" },
+      { name: "CHUM FM", uri: "", searchQuery: "104.5 Chum FM", image: chumfmLogo },
       { name: "Disney", uri: "spotify:playlist:37i9dQZF1DX8C585qnMYHP", searchQuery: "Disney hits" },
       { name: "Chill Electro", uri: "spotify:playlist:37i9dQZF1DX4E3UdUs7fUx", searchQuery: "Chill electronic" },
       { name: "Dinner Jazz", uri: "spotify:playlist:37i9dQZF1DX4wta20PHgwo", searchQuery: "Dinner jazz" },
@@ -1669,11 +1670,11 @@ export default function SpotifyPlayerPage() {
                         style={{
                           border: `2px solid ${isSelected ? profile.accent : `${profile.accent}50`}`,
                           boxShadow: isSelected ? `0 0 25px ${profile.accent}` : `0 0 18px ${profile.glow}`,
-                          background: artistImages[artist.name]
-                            ? `url(${artistImages[artist.name]}) center/cover`
+                          background: (artistImages[artist.name] || artist.image)
+                            ? `url(${artistImages[artist.name] || artist.image}) center/cover`
                             : `linear-gradient(135deg, ${profile.accent}40, rgba(30,60,115,0.7))`,
                         }}>
-                        {!artistImages[artist.name] && <div className="w-full h-full flex items-center justify-center"><Music2 className="h-4 w-4" style={{ color: `${profile.accent}60` }} /></div>}
+                        {!artistImages[artist.name] && !artist.image && <div className="w-full h-full flex items-center justify-center"><Music2 className="h-4 w-4" style={{ color: `${profile.accent}60` }} /></div>}
                       </div>
                       <span className="text-[11px] truncate w-full text-center font-medium transition-colors"
                         style={{ color: isSelected ? profile.accent : tc.textBright }}>{artist.name}</span>
