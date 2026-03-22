@@ -1424,7 +1424,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           <div className="p-3 border-b border-white/10 space-y-2">
             {isEditingInfo ? (
               <div className="space-y-2 text-[10px]">
-                <div className="flex items-center gap-1.5 justify-end">
+                <div className="flex items-center gap-1.5 justify-start">
                     <label className="cursor-pointer" data-testid="button-upload-assignment">
                       <input
                         type="file"
