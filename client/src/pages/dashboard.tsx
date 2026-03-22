@@ -12228,7 +12228,6 @@ export default function Dashboard() {
         }}
       />
       <div
-        data-tpo data-tpo-opacity="0.9"
         style={{
           position: 'fixed',
           left: '50%',
@@ -12238,8 +12237,7 @@ export default function Dashboard() {
           height: '25px',
           cursor: 'pointer',
           pointerEvents: 'auto',
-          opacity: isTopPillOpen ? 0 : 0.9,
-          transition: 'opacity 0.3s ease-in-out',
+          opacity: 0.9,
           zIndex: 10003,
           touchAction: 'manipulation',
         }}
