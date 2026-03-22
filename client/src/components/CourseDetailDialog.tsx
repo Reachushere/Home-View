@@ -1285,15 +1285,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                 {courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Elective" : "Liberal Studies"}
               </span>
             )}
-            {onDeleteCourse && (
-              <button
-                onClick={() => setShowDeleteConfirm(true)}
-                className="p-1 rounded hover:bg-white/15 transition-colors"
-                data-testid="button-delete-course"
-              >
-                <Trash2 className="w-3 h-3 text-white/60 hover:text-white" />
-              </button>
-            )}
           </div>
         </div>
 
@@ -2736,7 +2727,18 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
           )}
         </div>
 
-        <div className="px-4 py-3 border-t border-white/20 flex items-center justify-end flex-shrink-0" style={{ background: 'rgba(255,255,255,0.08)', position: 'relative', zIndex: 10, opacity: expandedTaskId !== null ? 0.35 : 1, pointerEvents: expandedTaskId !== null ? 'none' : 'auto' }}>
+        <div className="px-4 py-3 border-t border-white/20 flex items-center justify-between flex-shrink-0" style={{ background: 'rgba(255,255,255,0.08)', position: 'relative', zIndex: 10, opacity: expandedTaskId !== null ? 0.35 : 1, pointerEvents: expandedTaskId !== null ? 'none' : 'auto' }}>
+          <div>
+            {onDeleteCourse && (
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                className="p-1.5 rounded hover:bg-white/15 transition-colors"
+                data-testid="button-delete-course"
+              >
+                <Trash2 className="w-3.5 h-3.5 text-white/40 hover:text-red-400" />
+              </button>
+            )}
+          </div>
           <div className="flex gap-2">
             <Button
               type="button"
