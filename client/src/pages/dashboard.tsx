@@ -9414,18 +9414,7 @@ export default function Dashboard() {
   };
   
   const getEffectiveRowHeight = (h: number) => {
-    const base = gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
-    const isNight = h >= 21 || h <= 6;
-    if (!isNight) return base;
-    const hasTasks = weekDays.some(day => {
-      const ht = getTasksForHour(day, h);
-      const ct = getContinuingTasksForHour(day, h);
-      const ce = getCalendarEventsForHour(day, h);
-      return ht.length > 0 || ct.length > 0 || ce.length > 0;
-    });
-    if (hasTasks) return base;
-    const eightAmHeight = gridSizes.timeSlotHeights[8] || gridSizes.timeSlotHeight;
-    return Math.round(eightAmHeight * 0.75);
+    return gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
   };
 
   // Get all-day Google Calendar events for a day (only conflicting events)
@@ -18825,7 +18814,7 @@ export default function Dashboard() {
                           const daysUntil = differenceInCalendarDays(new Date(nextTask.dueDate), new Date());
                           return (
                             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '18px', backgroundColor: '#000000', zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                              <span style={{ fontSize: '6px', color: '#ffffff', whiteSpace: 'nowrap', fontWeight: 500 }}>Next Task Due In: {daysUntil}d</span>
+                              <span style={{ fontSize: '11px', color: '#ffffff', whiteSpace: 'nowrap', fontWeight: 500 }}>Next Task Due In: {daysUntil}d</span>
                             </div>
                           );
                         })()}
@@ -19478,9 +19467,8 @@ export default function Dashboard() {
                   const compressedHours = [0,1,2,3,4,5,6,21,22,23];
                   const isCompressedHour = compressedHours.includes(hour);
                   const eightAmH = gridSizes.timeSlotHeights[8] || gridSizes.timeSlotHeight;
-                  const nightCompressedH = Math.round(eightAmH * 0.75);
-                  const baseRowHeight = isCompressedHour ? Math.min(gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight, nightCompressedH) : (gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight);
-                  const rowHeight = (isNightHour && !nightHourHasTasks) ? Math.min(baseRowHeight, nightCompressedH) : baseRowHeight;
+                  const baseRowHeight = gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight;
+                  const rowHeight = baseRowHeight;
                   return (
                   <div 
                     key={hour} 
