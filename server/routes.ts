@@ -718,6 +718,18 @@ export async function registerRoutes(
 
   await initTTSFallbackStatus();
 
+  setTimeout(async () => {
+    try {
+      const nestPlaying = await isNestSpeakerPlaying();
+      if (nestPlaying) {
+        console.log(`[Startup] Nest speaker is playing — starting toothbrush polling for orphaned session recovery`);
+        startToothbrushPolling();
+      }
+    } catch (e: any) {
+      console.log(`[Startup] Error checking Nest state: ${e.message}`);
+    }
+  }, 10000);
+
   (async () => {
     try {
       const allTasks = await storage.getTasks({});
@@ -7227,14 +7239,29 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     return withPriority.map(w => w.file);
   }
 
+  async function isNestSpeakerPlaying(): Promise<boolean> {
+    try {
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      const resp = await fetch(`${haUrl}/api/states/${NEST_SPEAKER_ENTITY}`, {
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` },
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        return (data.state || '').toLowerCase() === 'playing';
+      }
+    } catch {}
+    return false;
+  }
+
   const startToothbrushPolling = () => {
     if (toothbrushPollInterval) clearInterval(toothbrushPollInterval);
     console.log(`[Toothbrush] Starting polling for sensor.toothbrush_bryn_toothbrush_state`);
     let tbPollCount = 0;
     toothbrushPollInterval = setInterval(async () => {
       tbPollCount++;
-      if (!catWashPlaybackActive) {
-        console.log(`[Toothbrush] Playback no longer active, stopping poll (after ${tbPollCount} polls)`);
+      const nestPlaying = await isNestSpeakerPlaying();
+      if (!catWashPlaybackActive && !nestPlaying) {
+        console.log(`[Toothbrush] Playback no longer active and Nest not playing, stopping poll (after ${tbPollCount} polls)`);
         if (toothbrushPollInterval) { clearInterval(toothbrushPollInterval); toothbrushPollInterval = null; }
         return;
       }
@@ -7247,17 +7274,31 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           const data = await resp.json();
           const state = (data.state || '').toLowerCase();
           if (tbPollCount <= 3 || tbPollCount % 10 === 0) {
-            console.log(`[Toothbrush] Poll #${tbPollCount}: state="${data.state}" (playbackActive=${catWashPlaybackActive})`);
+            console.log(`[Toothbrush] Poll #${tbPollCount}: state="${data.state}" (playbackActive=${catWashPlaybackActive}, nestPlaying=${nestPlaying})`);
           }
           if (state === 'running' || state === 'brushing') {
             console.log(`[Toothbrush] State changed to "${data.state}" — stopping cat wash playback (poll #${tbPollCount})`);
             if (toothbrushPollInterval) { clearInterval(toothbrushPollInterval); toothbrushPollInterval = null; }
             
-            try {
-              const stopUrl = `http://localhost:${process.env.PORT || 5000}/api/webhook/cat-wash-stop`;
-              await fetch(stopUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ trigger: 'toothbrush_poll' }) });
-            } catch (e: any) {
-              console.log(`[Toothbrush] Error calling stop endpoint: ${e.message}`);
+            if (catWashPlaybackActive) {
+              try {
+                const stopUrl = `http://localhost:${process.env.PORT || 5000}/api/webhook/cat-wash-stop`;
+                await fetch(stopUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ trigger: 'toothbrush_poll' }) });
+              } catch (e: any) {
+                console.log(`[Toothbrush] Error calling stop endpoint: ${e.message}`);
+              }
+            } else if (nestPlaying) {
+              console.log(`[Toothbrush] Nest still playing (orphaned session after deploy) — stopping Nest directly`);
+              try {
+                await stopNestSpeaker();
+                const goodbyeText = "Stopping. Your reading position has been saved. See you next time Bryn.";
+                const appUrl = "https://home-view--bkh416.replit.app";
+                const goodbyePath = await generateAndSaveTTSAudio(goodbyeText, `nest-goodbye-tb-${Date.now()}`, "echo");
+                await new Promise(r => setTimeout(r, 500));
+                await playOnNestSpeaker(`${appUrl}${goodbyePath}`);
+              } catch (e: any) {
+                console.log(`[Toothbrush] Error stopping orphaned Nest playback: ${e.message}`);
+              }
             }
           }
         } else {
