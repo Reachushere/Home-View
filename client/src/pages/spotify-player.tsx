@@ -1776,7 +1776,7 @@ export default function SpotifyPlayerPage() {
                         animation: selectedArtist && !isActive ? 'holoPulse 2s ease-in-out infinite' : 'none',
                       }}
                       data-testid={`room-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
-                      {!spot.hideLabel && <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5" style={{ zIndex: 2, transform: `translate(${spot.labelOffsetX || 0}px, ${spot.labelOffsetY || 0}px)` }}>
+                      {!spot.hideLabel && <div className="absolute inset-0 flex flex-col items-center justify-end gap-0.5" style={{ zIndex: 2, transform: `translate(${spot.labelOffsetX || 0}px, ${spot.labelOffsetY || 0}px)` }}>
                         <RoomIcon icon={spot.icon} size={16} color={isActive ? profile.accent : 'rgba(255,255,255,0.9)'} />
                         <span className="text-[7px] font-bold uppercase tracking-wider text-center leading-tight px-1"
                           style={{
@@ -1830,7 +1830,7 @@ export default function SpotifyPlayerPage() {
                         )}
                       </div>}
                       {(isActive || activeRooms.has("Everywhere")) && spot.room !== "Balcony" && (
-                        <div className="absolute inset-0 flex items-center justify-center"
+                        <div className="absolute inset-0 flex items-end justify-center"
                           style={{ zIndex: 4, transform: `translate(${spot.volumeOffsetX || 0}px, ${spot.volumeOffsetY || 0}px)`, pointerEvents: 'none' }}
                           data-testid={`volume-knob-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
                           <div style={{ pointerEvents: 'auto' }} onClick={(e) => e.stopPropagation()}>
