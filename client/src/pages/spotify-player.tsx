@@ -144,8 +144,8 @@ function formatMs(ms: number) {
 
 const ROOM_SLIDER_COLORS: Record<string, string> = {
   "Queen Bedroom": "#e84393",
-  "Pug Washroom": "#6c5ce7",
-  "Hallway": "#00b894",
+  "Pug Washroom": "#00b4d8",
+  "Hallway": "#6c5ce7",
   "Kitchen": "#fdcb6e",
   "Living Room": "#0984e3",
   "King Bedroom": "#e17055",
