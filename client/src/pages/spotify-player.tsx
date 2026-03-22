@@ -1440,17 +1440,19 @@ export default function SpotifyPlayerPage() {
             </div>
 
             <div className="mt-auto flex flex-col gap-0.5 px-1 pb-1">
-              <button onClick={() => { window.open("http://172.24.0.2:8123/lovelace/test-home", "_top"); }}
-                className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg transition-all hover:scale-105 mb-1"
-                style={{
-                  color: tc.homeBtnText,
-                  background: tc.homeBtnBg,
-                  border: `1px solid ${tc.homeBtnBorder}`,
-                }}
-                data-testid="back-to-dashboard">
-                <Home className="h-4 w-4 flex-shrink-0" />
-                {menuOpen && <span className="text-[12px] whitespace-nowrap font-medium">{isSakura ? "ホーム" : "Home"}</span>}
-              </button>
+              <form action="http://172.24.0.2:8123/lovelace/test-home" method="GET" target="_top" className="w-full">
+                <button type="submit"
+                  className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg transition-all hover:scale-105 mb-1"
+                  style={{
+                    color: tc.homeBtnText,
+                    background: tc.homeBtnBg,
+                    border: `1px solid ${tc.homeBtnBorder}`,
+                  }}
+                  data-testid="back-to-dashboard">
+                  <Home className="h-4 w-4 flex-shrink-0" />
+                  {menuOpen && <span className="text-[12px] whitespace-nowrap font-medium">{isSakura ? "ホーム" : "Home"}</span>}
+                </button>
+              </form>
               <div className="mx-2 mb-1 h-[1px]" style={{ background: tc.divider }} />
               {(Object.keys(PROFILES) as ProfileKey[]).map(k => (
                 <button key={k} onClick={() => switchProfile(k)}
