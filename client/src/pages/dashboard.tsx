@@ -18824,12 +18824,12 @@ export default function Dashboard() {
                           if (!nextTask) return null;
                           const daysUntil = differenceInCalendarDays(new Date(nextTask.dueDate), new Date());
                           return (
-                            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '14px', backgroundColor: '#000000', zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                              <span style={{ fontSize: '6px', color: '#ffffff', whiteSpace: 'nowrap', fontWeight: 500 }}>due: {daysUntil}d</span>
+                            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '18px', backgroundColor: '#000000', zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                              <span style={{ fontSize: '6px', color: '#ffffff', whiteSpace: 'nowrap', fontWeight: 500 }}>Next Task Due In: {daysUntil}d</span>
                             </div>
                           );
                         })()}
-                        <div className={`flex flex-col gap-0.5${cellHasScroll ? ' course-cell-scroll' : ''}`} style={{ overflowY: cellHasScroll ? 'auto' : 'hidden', overflowX: 'hidden', maxHeight: '100%', ...(isDayAfterToday ? { paddingTop: '12px' } : {}) }}>
+                        <div className={`flex flex-col gap-0.5${cellHasScroll ? ' course-cell-scroll' : ''}`} style={{ overflowY: cellHasScroll ? 'auto' : 'hidden', overflowX: 'hidden', maxHeight: '100%', ...(isDayAfterToday ? { paddingTop: '16px' } : {}) }}>
                         {/* Course-associated projects */}
                         {allProjects.filter(proj => {
                           if (!proj.courseName) return false;
