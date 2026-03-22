@@ -18350,6 +18350,7 @@ export default function Dashboard() {
                 const course = { 
                   name: courseName, 
                   bg: (() => {
+                    if ((courseData as any).courseRowColor) return (courseData as any).courseRowColor;
                     const end = courseData.colorEnd ? hexToRgb(courseData.colorEnd) : rgb;
                     return `rgb(${end.r}, ${end.g}, ${end.b})`;
                   })(), 
