@@ -21779,7 +21779,7 @@ export default function Dashboard() {
                   left: `${effectiveDividerPct}%`,
                   right: 0,
                   height: `${rowHeight}px`,
-                  background: pd.taskBgColor || 'linear-gradient(180deg, #337CAB 0%, #337CAB 40%, #133B5A 100%)',
+                  background: 'linear-gradient(180deg, #337CAB 0%, #337CAB 40%, #133B5A 100%)',
                   zIndex: 41,
                   borderBottom: '0.5px solid rgba(255,255,255,0.2)',
                   overflowX: 'hidden',
@@ -21866,8 +21866,9 @@ export default function Dashboard() {
                             lineHeight: '1.5',
                             marginBottom: '0px',
                             opacity: 1,
-                            padding: '1px 0',
+                            padding: '1px 3px',
                             marginTop: '1px',
+                            ...(pd.taskBgColor ? { backgroundColor: pd.taskBgColor, borderRadius: '3px' } : {}),
                           }}
                           onMouseEnter={() => {
                             setHoveredCountdownTaskIdDebounced(t.id);
