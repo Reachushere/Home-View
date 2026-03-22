@@ -1537,7 +1537,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                           <svg width="12" height="12" viewBox="0 0 12 12"><polygon points="6,0 12,10 0,10" fill={editInfo.color} stroke={activeGradientStop === 'start' ? '#ffffff' : 'rgba(255,255,255,0.4)'} strokeWidth={activeGradientStop === 'start' ? '2' : '1'}/></svg>
                         </div>
                         {midStops.map((stop, idx) => (
-                          <div key={idx} style={{ position: 'absolute', left: `calc(${stop.position}% - 6px)`, top: 0, cursor: 'pointer', touchAction: 'none', zIndex: 5 }}
+                          <div key={idx} style={{ position: 'absolute', left: `calc(${stop.position}% - 6px)`, top: 0, cursor: 'pointer', touchAction: 'none', zIndex: activeGradientStop === idx ? 20 : 5 }}
                             onClick={() => setActiveGradientStop(activeGradientStop === idx ? null : idx)}
                             onPointerDown={(e) => {
                               e.preventDefault();
