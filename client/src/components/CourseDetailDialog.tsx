@@ -2548,7 +2548,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           <div className="border-t border-white/10" />
 
           <div style={{ padding: '12px 30px' }}>
-            <div style={{ border: '1.5px solid rgba(255,255,255,0.15)', borderRadius: '8px', padding: '12px' }}>
+            <div style={{ border: '2px solid rgba(255,255,255,0.2)', borderRadius: '8px', padding: '12px' }}>
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <h3 className="text-[11px] font-medium text-white uppercase">Assignments</h3>
