@@ -14267,20 +14267,40 @@ Return ONLY the JSON object, no markdown formatting.`;
         }
 
         if (announceMessage) {
-          console.log(`[Spotify] TTS announce on ${targetEntity}: "${announceMessage}"`);
-          try {
-            await fetch(`${haUrl}/api/services/notify/alexa_media`, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                message: announceMessage,
-                data: { type: "tts" },
-                target: [targetEntity],
-              }),
-            });
-            await new Promise(resolve => setTimeout(resolve, 2500));
-          } catch (ttsErr: any) {
-            console.log(`[Spotify] TTS announce failed (continuing): ${ttsErr.message}`);
+          const isEverywhereGroup = entityId === "media_player.byhome";
+          if (isEverywhereGroup) {
+            const allEchoTargets = FLICK_DEVICES.flatMap(g => g.devices).filter(d => (d.type === "echo" || d.type === "echo_show") && d.entityId.includes("_am")).map(d => d.entityId);
+            console.log(`[Spotify] TTS announce on ALL ${allEchoTargets.length} Echo speakers: "${announceMessage}"`);
+            try {
+              await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  message: announceMessage,
+                  data: { type: "tts" },
+                  target: allEchoTargets,
+                }),
+              });
+              await new Promise(resolve => setTimeout(resolve, 2500));
+            } catch (ttsErr: any) {
+              console.log(`[Spotify] TTS announce on all speakers failed (continuing): ${ttsErr.message}`);
+            }
+          } else {
+            console.log(`[Spotify] TTS announce on ${targetEntity}: "${announceMessage}"`);
+            try {
+              await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  message: announceMessage,
+                  data: { type: "tts" },
+                  target: [targetEntity],
+                }),
+              });
+              await new Promise(resolve => setTimeout(resolve, 2500));
+            } catch (ttsErr: any) {
+              console.log(`[Spotify] TTS announce failed (continuing): ${ttsErr.message}`);
+            }
           }
         }
 

@@ -983,8 +983,8 @@ export default function SpotifyPlayerPage() {
     if (!entityId) { showNotif(`No speakers in ${roomName}`); return; }
     const isJp = activeProfile === "yasu";
     const announceMessage = isJp
-      ? `${artistData.name}を${ROOM_JP[roomName] || roomName}で再生します`
-      : `Now playing ${artistData.name} on the ${roomName}`;
+      ? `${artistData.name}を${ROOM_JP[roomName] || roomName}${roomName === "Everywhere" ? "グループ" : ""}で再生します`
+      : `Now playing ${artistData.name} on the ${roomName}${roomName === "Everywhere" ? " group" : ""}`;
     console.log(`[PlayOnRoom] ${roomName}: entity=${entityId}, device=${deviceType}, artist=${artistData.name}, uri=${artistData.uri}, searchQuery=${artistData.searchQuery}`);
     try {
       const resp = await fetch(`/api/spotify/play-on-speaker${authQuery}`, {
