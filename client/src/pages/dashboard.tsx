@@ -21843,7 +21843,7 @@ export default function Dashboard() {
                                   <div style={{ position: 'absolute', top: 0, right: 0, width: '56px', height: '5px', backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: '3px' }} />
                                   <div className="rounded-full" style={{ position: 'absolute', top: 0, right: 0, width: `${barWidth}px`, height: '5px', backgroundColor: barColor, opacity: 0.9 }} />
                                 </div>
-                                <span style={{ fontSize: '7px', color: 'rgba(255,255,255,0.6)', fontWeight: 400, minWidth: '16px', textAlign: 'left' }}>{daysUntil}d</span>
+                                <span style={{ fontSize: '8px', color: '#ffffff', fontWeight: 400, minWidth: '16px', textAlign: 'left' }}>{daysUntil}d</span>
                                 <span style={{ fontSize: '9px', color: dateColor, fontWeight: 400, minWidth: '42px', textAlign: 'right' }}>{dueStr}</span>
                               </div>
                             );
