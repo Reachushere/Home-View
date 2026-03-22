@@ -21722,7 +21722,7 @@ export default function Dashboard() {
                   zIndex: 1,
                   boxShadow: 'inset 0 0 0 0.5px rgba(255,255,255,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
                 }} />,
-                <div key={`${pd.courseCode}-right-fill-ext`} style={{
+                <div key={`${pd.courseCode}-right-fill-ext`} className="hide-scrollbar" style={{
                   position: 'absolute',
                   top: `${rowTop}px`,
                   left: `${effectiveDividerPct}%`,
