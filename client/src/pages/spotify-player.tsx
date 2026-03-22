@@ -707,6 +707,7 @@ export default function SpotifyPlayerPage() {
   const [viewSpinning, setViewSpinning] = useState(false);
   const [expandedRoom, setExpandedRoom] = useState<string | null>(null);
   const [expandedSpeaker, setExpandedSpeaker] = useState<string | null>(null);
+  const [floorSpeakerPopup, setFloorSpeakerPopup] = useState<string | null>(null);
   const [recommendations, setRecommendations] = useState<{ name: string; image: string; uri: string; id: string }[]>([]);
   const [recoIndex, setRecoIndex] = useState(0);
   const [voiceConfirm, setVoiceConfirm] = useState(() => { const v = localStorage.getItem("holomusic-voice"); return v === null ? true : v === "true"; });
@@ -1734,7 +1735,7 @@ export default function SpotifyPlayerPage() {
               <>
                 <img src={floorplanImg} alt="Apartment floor plan" className="absolute inset-0 w-full h-full object-contain"
                   style={{ filter: "brightness(0.9) contrast(1.1) saturate(0.7) hue-rotate(190deg)", opacity: 0.9 }} />
-                <div className="absolute inset-0" style={{
+                <div className="absolute inset-0" onClick={() => setFloorSpeakerPopup(null)} style={{
                   background: `radial-gradient(ellipse at center, transparent 30%, rgba(3,8,20,0.6) 100%)`,
                 }} />
                 {ROOM_HOTSPOTS.map(spot => {
@@ -1789,20 +1790,70 @@ export default function SpotifyPlayerPage() {
                           {isSakura ? (ROOM_JP[spot.room] || spot.room) : spot.room}
                         </span>
                         {speakerCount > 0 && (
-                          <div className="flex items-center gap-0.5 mt-0.5 px-1.5 py-0.5 rounded-full"
-                            style={{
-                              background: isActive ? `${profile.accent}20` : (isSakura ? 'rgba(30,65,100,0.5)' : 'rgba(25,50,90,0.6)'),
-                              border: `1px solid ${isActive ? `${profile.accent}40` : tc.roomBorder}`,
-                            }}>
-                            {[...Array(Math.min(speakerCount, 4))].map((_, si) => (
-                              <div key={si} className="w-2 h-2.5 rounded-sm" style={{
-                                background: isActive ? profile.accent : tc.dotIdle,
-                                boxShadow: isActive ? `0 0 4px ${profile.accent}` : 'none',
-                                opacity: isActive ? 1 : 0.6,
-                              }} />
-                            ))}
-                            {speakerCount > 4 && (
-                              <span className="text-[8px] font-bold" style={{ color: isActive ? profile.accent : tc.dotIdle }}>+{speakerCount - 4}</span>
+                          <div className="relative">
+                            <button className="flex items-center gap-0.5 mt-0.5 px-1.5 py-0.5 rounded-full cursor-pointer transition-all hover:scale-110"
+                              onClick={(e) => { e.stopPropagation(); e.preventDefault(); setFloorSpeakerPopup(floorSpeakerPopup === spot.room ? null : spot.room); }}
+                              style={{
+                                background: isActive ? `${profile.accent}20` : (isSakura ? 'rgba(30,65,100,0.5)' : 'rgba(25,50,90,0.6)'),
+                                border: `1px solid ${isActive ? `${profile.accent}40` : 'rgba(255,255,255,0.3)'}`,
+                              }}
+                              data-testid={`floor-speakers-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
+                              {[...Array(Math.min(speakerCount, 4))].map((_, si) => (
+                                <div key={si} className="w-2 h-2.5 rounded-sm" style={{
+                                  background: isActive ? profile.accent : 'rgba(255,255,255,0.85)',
+                                  boxShadow: isActive ? `0 0 4px ${profile.accent}` : 'none',
+                                }} />
+                              ))}
+                              {speakerCount > 4 && (
+                                <span className="text-[8px] font-bold" style={{ color: isActive ? profile.accent : 'rgba(255,255,255,0.85)' }}>+{speakerCount - 4}</span>
+                              )}
+                            </button>
+                            {floorSpeakerPopup === spot.room && (
+                              <div className="absolute z-50 w-48 rounded-lg shadow-2xl overflow-hidden"
+                                onClick={(e) => e.stopPropagation()}
+                                style={{
+                                  bottom: '100%', left: '50%', transform: 'translateX(-50%)',
+                                  marginBottom: 4,
+                                  background: isSakura ? 'rgba(20,50,80,0.95)' : 'rgba(10,25,50,0.95)',
+                                  border: `1px solid ${profile.accent}30`,
+                                  backdropFilter: 'blur(20px)',
+                                }}>
+                                <div className="px-2.5 py-1.5 flex items-center justify-between" style={{ borderBottom: `1px solid ${profile.accent}20` }}>
+                                  <span className="text-[11px] font-semibold" style={{ color: profile.accent }}>
+                                    {isSakura ? (ROOM_JP[spot.room] || spot.room) : spot.room}
+                                  </span>
+                                  <button onClick={() => setFloorSpeakerPopup(null)} style={{ color: 'rgba(255,255,255,0.5)' }}>
+                                    <X className="h-3 w-3" />
+                                  </button>
+                                </div>
+                                <div className="px-2 py-1.5 flex flex-col gap-1">
+                                  {(rooms.find(r => r.room === spot.room)?.speakers || []).map(spk => {
+                                    const isEcho = spk.type === "echo" || spk.type === "echo_show";
+                                    return (
+                                      <button key={spk.entityId}
+                                        onClick={() => {
+                                          if (isPlaying && nowPlaying) {
+                                            fetch(`/api/spotify/play-on-speaker`, {
+                                              method: 'POST',
+                                              headers: { 'Content-Type': 'application/json' },
+                                              body: JSON.stringify({ entityId: spk.entityId, artistName: nowPlaying.artist, deviceType: spk.type }),
+                                            }).then(() => { showNotif(`${isSakura ? "再生中" : "Playing on"} ${spk.name}`); setFloorSpeakerPopup(null); });
+                                          } else { showNotif(isSakura ? "まず再生してください" : "Play something first"); }
+                                        }}
+                                        className="flex items-center gap-2 w-full text-left px-2 py-1.5 rounded-md transition-all hover:scale-[1.02]"
+                                        style={{ background: `${profile.accent}10`, border: `1px solid ${profile.accent}15` }}
+                                        data-testid={`floor-play-${spk.name.toLowerCase().replace(/\s/g, "-")}`}>
+                                        <Speaker className="h-3.5 w-3.5 flex-shrink-0" style={{ color: isEcho ? profile.accent : 'rgba(255,255,255,0.5)' }} />
+                                        <div className="flex-1 min-w-0">
+                                          <span className="text-[11px] font-medium block truncate" style={{ color: 'rgba(200,225,255,0.9)' }}>{spk.name}</span>
+                                          <span className="text-[9px]" style={{ color: 'rgba(120,170,255,0.5)' }}>{isEcho ? "Echo" : spk.type}</span>
+                                        </div>
+                                        <span className="text-[9px]" style={{ color: profile.accent }}>▶</span>
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              </div>
                             )}
                           </div>
                         )}
