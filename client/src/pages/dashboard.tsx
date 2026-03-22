@@ -11035,7 +11035,7 @@ export default function Dashboard() {
           const prepCourse = prepCourseCode ? coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === prepCourseCode.toUpperCase()) : null;
           prepCourseColor = prepCourse?.colorEnd || prepCourse?.color || '';
           const prepCourseName = prepCourse?.name?.split(' - ')[1] || prepCourseCode;
-          prepTaskName = prepCourseName ? `${prepCourseName} ${nextPrep.title}` : nextPrep.title;
+          prepTaskName = nextPrep.title;
           if (nextPrep.prepDaysLeft > 0) {
             prepDaysText = `${nextPrep.prepDaysLeft}`;
           } else if (nextPrep.prepDaysLeft === 0) {
