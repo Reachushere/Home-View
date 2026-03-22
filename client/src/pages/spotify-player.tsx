@@ -1827,11 +1827,13 @@ export default function SpotifyPlayerPage() {
                                 }} />
                             </button>
                             {floorSpeakerPopup === spot.room && (
-                              <div className="absolute z-50 w-48 rounded-lg shadow-2xl overflow-hidden"
+                              <div className="absolute w-48 rounded-lg shadow-2xl overflow-hidden"
                                 onClick={(e) => e.stopPropagation()}
                                 style={{
-                                  bottom: '100%', left: '50%', transform: 'translateX(-50%)',
-                                  marginBottom: 4,
+                                  zIndex: 9999,
+                                  ...(spot.x < 30
+                                    ? { bottom: '100%', left: '0', marginBottom: 4 }
+                                    : { bottom: '100%', left: '50%', transform: 'translateX(-50%)', marginBottom: 4 }),
                                   background: isSakura ? 'rgba(20,50,80,0.95)' : 'rgba(10,25,50,0.95)',
                                   border: `1px solid ${profile.accent}30`,
                                   backdropFilter: 'blur(20px)',
