@@ -1017,7 +1017,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
           </button>
         )}
         <MessageSquare className={`h-[19px] w-[19px] flex-shrink-0 cursor-pointer hover:opacity-70 transition-opacity ${task.isCompleted ? "text-white/50" : "text-white"}`} style={{ marginLeft: '14px', marginRight: '10px' }} onClick={(e) => { e.stopPropagation(); if (expandedTaskId === task.id) { setExpandedTaskId(null); setEditTaskFields(null); } else { setExpandedTaskId(task.id); const d = task.dueDate ? new Date(task.dueDate) : null; setEditTaskFields({ title: task.title || '', type: task.type || 'other', dueDate: d ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` : '', dueTime: d ? `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` : '', description: task.description || '', gradeWeight: task.gradeWeight?.toString() || '', gradeTotal: task.gradeTotal?.toString() || '', gradeValue: task.gradeValue?.toString() || '', reminder1: task.reminder1 ?? 30, reminder2: task.reminder2 ?? 120, reminder3: task.reminder3 ?? null, reminder4: task.reminder4 ?? null }); } }} data-testid={`button-comments-${task.id}`} />
-        <div className="flex-1 min-w-0" style={{ marginLeft: '25px' }}>
+        <div className="flex-1 min-w-0" style={{ marginLeft: '21px' }}>
           <div
             className={`text-[10px] font-medium truncate flex items-center gap-1 cursor-pointer hover:underline ${task.isCompleted ? "line-through text-white/50" : "text-white"}`}
             onClick={(e) => {
@@ -2614,8 +2614,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                   <div className="flex-shrink-0 flex justify-center" style={{ width: '19px', marginLeft: '14px', marginRight: '10px', overflow: 'visible' }}>
                     <span className="text-[8px] font-bold text-white" style={{ whiteSpace: 'nowrap' }}>Comments</span>
                   </div>
-                  <div className={`flex-1 min-w-0 ${hdrCls('title')}`} style={{ marginLeft: '25px' }} onClick={() => toggleSort('title')} data-testid="sort-title">
-                    Assignment<SortIcon field="title" />
+                  <div className={`flex-1 min-w-0 ${hdrCls('title')}`} style={{ marginLeft: '21px' }} onClick={() => toggleSort('title')} data-testid="sort-title">Assignments<SortIcon field="title" />
                   </div>
                   <div className="flex items-end flex-shrink-0 text-white" style={{ gap: '10px', position: 'relative', left: '-8px' }}>
                     <span className={`w-[33px] text-center leading-tight ${hdrCls('score')}`} onClick={() => toggleSort('score')} style={{ display: 'inline-flex', justifyContent: 'center' }} data-testid="sort-score">
