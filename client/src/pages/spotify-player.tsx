@@ -1440,7 +1440,7 @@ export default function SpotifyPlayerPage() {
             </div>
 
             <div className="mt-auto flex flex-col gap-0.5 px-1 pb-1">
-              <a href="http://172.24.0.2:8123/test-home" target="_top"
+              <a href="http://172.24.0.2:8123/lovelace/test-home" target="_top"
                 className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg transition-all hover:scale-105 mb-1 no-underline"
                 style={{
                   color: tc.homeBtnText,
