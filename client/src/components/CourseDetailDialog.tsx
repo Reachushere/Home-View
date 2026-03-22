@@ -1314,7 +1314,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
         >
           <div className="flex items-center gap-2 min-w-0">
             <GraduationCap className="text-white flex-shrink-0" style={{ width: '15px', height: '15px' }} />
-            <div className="min-w-0">
+            <div className="min-w-0 flex items-center gap-2">
               <h2
                 className="font-normal text-white truncate"
                 style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}
@@ -1322,6 +1322,11 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               >
                 {courseInfo.courseCode} — {courseInfo.courseName}
               </h2>
+              {courseInfo.courseType && (
+                <span className="text-[9px] text-white px-1.5 py-0.5 rounded border border-white/30 bg-white/10 flex-shrink-0">
+                  {courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Elective" : "Liberal Studies"}
+                </span>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-2 text-[9px] text-white flex-shrink-0">
@@ -1330,11 +1335,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             ) : courseInfo.deliveryMode === "online" ? (
               <span className="flex items-center gap-0.5"><img src={wifiLogoPath} alt="Online" style={{ width: '14px', height: 'auto' }} /> Online</span>
             ) : null}
-            {courseInfo.courseType && (
-              <span className="text-[9px] text-white px-1.5 py-0.5 rounded border border-white/30 bg-white/10">
-                {courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Elective" : "Liberal Studies"}
-              </span>
-            )}
           </div>
         </div>
 
