@@ -22069,48 +22069,32 @@ export default function Dashboard() {
                 const calOtherRowHeight = gridSizes.courseRowHeight || 48;
                 const otherRowHeight = calOtherRowHeight;
                 rows.push(
-                  <div key="other-progress-bg" style={{
+                  <div key="other-progress-row" style={{
                     position: 'absolute',
                     top: `${otherTop}px`,
                     left: 0,
-                    width: `${effectiveDividerPct}%`,
-                    height: `${otherRowHeight}px`,
-                    background: 'linear-gradient(180deg, #374151 0%, #9ca3af 100%)',
-                    zIndex: 41,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'flex-start',
-                    paddingLeft: '4px',
-                    borderBottom: '1px dotted #999',
-                  }}>
-                    <span className="text-[8px] font-[785] uppercase tracking-wide text-white/80">Other</span>
-                  </div>,
-                  <div key="other-progress-tasks" style={{
-                    position: 'absolute',
-                    top: `${otherTop}px`,
-                    left: `${effectiveDividerPct}%`,
                     right: 0,
                     height: `${otherRowHeight}px`,
                     background: 'rgba(107, 114, 128, 0.30)',
                     zIndex: 41,
                     borderBottom: '1px dotted #999',
+                    display: 'flex',
+                    alignItems: 'center',
                     overflowX: 'hidden',
                     overflowY: 'auto',
                     scrollbarWidth: 'none',
-                    padding: otherProgressTasks.length === 0 ? '0px' : '3px 6px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: otherProgressTasks.length === 0 ? 'center' : 'flex-start',
-                    alignItems: otherProgressTasks.length === 0 ? 'center' : 'stretch',
+                    padding: '0 6px 0 4px',
                   }}
                   onWheel={(e) => {
                     e.stopPropagation();
                     e.currentTarget.scrollTop += e.deltaY;
                     e.preventDefault();
                   }}>
+                    <span className="text-[8px] font-[785] uppercase tracking-wide text-white/80" style={{ flexShrink: 0, marginRight: '8px' }}>Other</span>
                     {otherProgressTasks.length === 0 && (
                       <span className="text-[10px] text-white/40 italic">No upcoming items</span>
                     )}
+                    <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                     {otherProgressTasks.map(t => {
                       const dueStr = format(new Date(t.dueDate), 'MMM d');
                       return (
@@ -22128,6 +22112,7 @@ export default function Dashboard() {
                         </div>
                       );
                     })}
+                    </div>
                   </div>
                 );
               }
@@ -22181,8 +22166,8 @@ export default function Dashboard() {
                       </span>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
                         <div style={{ display: 'flex', gap: '2px', padding: '0 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
-                          {['S','M','T','W','T','F','S'].map((dl, dli) => (
-                            <div key={dli} style={{ width: '13px', fontSize: '6px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
+                          {['Su','Mo','Tu','We','Th','Fr','Sa'].map((dl, dli) => (
+                            <div key={dli} style={{ width: '13px', fontSize: '5px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
                           ))}
                         </div>
                         {(() => {
@@ -22357,8 +22342,8 @@ export default function Dashboard() {
                             <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginLeft: '10px', marginRight: '4px', overflow: 'visible' }}>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
                                 <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
-                                  {['S','M','T','W','T','F','S'].map((dl, dli) => (
-                                    <div key={dli} style={{ width: '13px', fontSize: '6px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
+                                  {['Su','Mo','Tu','We','Th','Fr','Sa'].map((dl, dli) => (
+                                    <div key={dli} style={{ width: '13px', fontSize: '5px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
                                   ))}
                                 </div>
                                 {group.weeks.map((weekStart: Date, wi: number) => {
@@ -22546,15 +22531,15 @@ export default function Dashboard() {
                       return groups.map((group) => {
                         const dueDates = group.tasks.map(t => ({ date: startOfDayET(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
-                          <div key={group.key} style={{ display: 'flex', alignItems: 'center', gap: '0px', marginBottom: '2px' }}>
+                          <div key={group.key} style={{ display: 'flex', alignItems: 'stretch', gap: '0px', marginBottom: '2px' }}>
                             <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginLeft: '10px', marginRight: '4px', overflow: 'visible' }} data-testid={`mini-cal-group-${group.key}`}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 {hwWeeklyTimeline[1]?.sublabel || 'Next week'}
                               </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
                                 <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
-                                  {['S','M','T','W','T','F','S'].map((dl, dli) => (
-                                    <div key={dli} style={{ width: '13px', fontSize: '6px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
+                                  {['Su','Mo','Tu','We','Th','Fr','Sa'].map((dl, dli) => (
+                                    <div key={dli} style={{ width: '13px', fontSize: '5px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
                                   ))}
                                 </div>
                                 {group.weeks.map((weekStart: Date, wi: number) => {
@@ -22743,15 +22728,15 @@ export default function Dashboard() {
                           return { date: startOfDayET(new Date(t.dueDate)), courseCode };
                         });
                         return (
-                          <div key={group.key} style={{ display: 'flex', alignItems: 'center', gap: '0px', marginBottom: '2px' }}>
+                          <div key={group.key} style={{ display: 'flex', alignItems: 'stretch', gap: '0px', marginBottom: '2px' }}>
                             <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginLeft: '10px', marginRight: '4px', overflow: 'visible' }} data-testid={`mini-cal-2w-group-${group.key}`}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 {hwWeeklyTimeline[2]?.sublabel || 'Two weeks'}
                               </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
                                 <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
-                                  {['S','M','T','W','T','F','S'].map((dl, dli) => (
-                                    <div key={dli} style={{ width: '13px', fontSize: '6px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
+                                  {['Su','Mo','Tu','We','Th','Fr','Sa'].map((dl, dli) => (
+                                    <div key={dli} style={{ width: '13px', fontSize: '5px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
                                   ))}
                                 </div>
                                 {group.weeks.map((weekStart: Date, wi: number) => {
@@ -22940,7 +22925,7 @@ export default function Dashboard() {
                               )}
                             </div>
                           )}
-                          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '2px' }}>
+                          <div style={{ display: 'flex', alignItems: 'stretch', marginBottom: '2px' }}>
                             <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginLeft: '10px', marginRight: '4px', overflow: 'visible' }} data-testid={`mini-cal-beyond-group-${group.key}`}>
                               {groupSublabel && (
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
@@ -22949,8 +22934,8 @@ export default function Dashboard() {
                               )}
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
                                 <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
-                                  {['S','M','T','W','T','F','S'].map((dl, dli) => (
-                                    <div key={dli} style={{ width: '13px', fontSize: '6px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
+                                  {['Su','Mo','Tu','We','Th','Fr','Sa'].map((dl, dli) => (
+                                    <div key={dli} style={{ width: '13px', fontSize: '5px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
                                   ))}
                                 </div>
                                 {group.weeks.map((weekStart: Date, wi: number) => {
