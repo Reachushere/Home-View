@@ -2744,7 +2744,7 @@ export default function Dashboard() {
       if (!hwGroupBarDragRef.current) return;
       const clientX = 'touches' in ev ? ev.touches[0].clientX : (ev as MouseEvent).clientX;
       const dx = clientX - hwGroupBarDragRef.current.startX;
-      const newW = Math.max(60, Math.min(141, hwGroupBarDragRef.current.startWidth + dx));
+      const newW = Math.max(90, Math.min(141, hwGroupBarDragRef.current.startWidth + dx));
       setHwGroupBarWidth(newW);
     };
     const onUp = () => {
@@ -22122,7 +22122,7 @@ export default function Dashboard() {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', minHeight: 0, position: 'relative' }}>
                 <div
-                  style={{ position: 'absolute', top: 0, bottom: 0, left: `${hwGroupBarWidth + 4}px`, width: '8px', marginLeft: '-4px', cursor: 'col-resize', zIndex: 10 }}
+                  style={{ position: 'absolute', top: 0, bottom: 0, left: `${10 + hwGroupBarWidth}px`, width: '8px', marginLeft: '-4px', cursor: 'col-resize', zIndex: 10 }}
                   onMouseDown={handleHwGroupBarDragStart}
                   onTouchStart={handleHwGroupBarDragStart}
                   data-testid="hw-group-bar-handle"
