@@ -12287,27 +12287,40 @@ document.body.removeChild(a);
       
       console.log(`Setting volume to ${newVolume} on ${targetDevice}`);
       
-      // Set volume on the target device
-      const volumeResponse = await fetch(`${haUrl}/api/services/media_player/volume_set`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          entity_id: targetDevice,
-          volume_level: newVolume
-        }),
-      });
-      
-      if (!volumeResponse.ok) {
-        const errorText = await volumeResponse.text();
-        console.error(`Home Assistant volume_set failed: ${volumeResponse.status} - ${errorText}`);
-        return res.status(500).json({ error: `Failed to set volume: ${volumeResponse.status}` });
+      if (targetDevice === "media_player.byhome") {
+        const allEchoDevices = FLICK_DEVICES.flatMap(g => g.devices).filter(d => (d.type === "echo" || d.type === "echo_show") && d.entityId.includes("_am"));
+        console.log(`[Volume] BYhome group → setting volume on ${allEchoDevices.length} individual Echo devices`);
+        await Promise.allSettled(allEchoDevices.map(d =>
+          fetch(`${haUrl}/api/services/media_player/volume_set`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ entity_id: d.entityId, volume_level: newVolume }),
+          })
+        ));
+        console.log(`[Volume] Set volume to ${newVolume} on all Echo devices`);
+        res.json({ success: true, direction, newVolume: Math.round(newVolume * 100) });
+      } else {
+        const volumeResponse = await fetch(`${haUrl}/api/services/media_player/volume_set`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            entity_id: targetDevice,
+            volume_level: newVolume
+          }),
+        });
+        
+        if (!volumeResponse.ok) {
+          const errorText = await volumeResponse.text();
+          console.error(`Home Assistant volume_set failed: ${volumeResponse.status} - ${errorText}`);
+          return res.status(500).json({ error: `Failed to set volume: ${volumeResponse.status}` });
+        }
+        
+        console.log(`Volume set successfully on ${targetDevice}`);
+        res.json({ success: true, direction, newVolume: Math.round(newVolume * 100) });
       }
-      
-      console.log(`Volume set successfully on ${targetDevice}`);
-      res.json({ success: true, direction, newVolume: Math.round(newVolume * 100) });
     } catch (error) {
       console.error("Volume control error:", error);
       res.status(500).json({ error: "Failed to adjust volume" });
