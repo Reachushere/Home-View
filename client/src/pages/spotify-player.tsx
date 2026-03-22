@@ -1503,7 +1503,7 @@ export default function SpotifyPlayerPage() {
             </div>
 
             <div className="mt-auto flex flex-col gap-0.5 px-1 pb-1">
-              <button onClick={() => { window.location.href = "http://172.24.0.2:8123/lovelace/test-home"; }}
+              <button onClick={() => { window.location.href = "/"; }}
                 className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg transition-all hover:scale-105 mb-1"
                 style={{
                   color: tc.homeBtnText,
