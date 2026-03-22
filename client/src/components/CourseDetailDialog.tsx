@@ -1832,9 +1832,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     <span className="text-white whitespace-nowrap">Professor:</span>
                     <span className="text-white truncate">{courseInfo.professor || "Not set"}</span>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '12px 58px 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end' }}>
-                    <Mail className="h-3 w-3 text-white flex-shrink-0" style={{ justifySelf: 'start' }} />
-                    <span className="text-white whitespace-nowrap" style={{ justifySelf: 'start' }}>Email:</span>
+                  <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end' }}>
+                    <Mail className="h-3 w-3 text-white flex-shrink-0" style={{ justifySelf: 'end' }} />
+                    <span className="text-white whitespace-nowrap" style={{ justifySelf: 'end' }}>Email:</span>
                     {courseInfo.professorEmail ? (
                       <a href={`mailto:${courseInfo.professorEmail}`} className="text-white hover:text-white/80 underline truncate" style={{ justifySelf: 'end' }} data-testid="link-professor-email">
                         {courseInfo.professorEmail}
@@ -1849,9 +1849,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     <span className="text-white">{deliveryLabel}</span>
                   </div>
                   {courseInfo.courseType && (
-                    <div style={{ display: 'grid', gridTemplateColumns: '12px 58px 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end' }}>
-                      <BookOpen className="h-3 w-3 text-white" style={{ justifySelf: 'start' }} />
-                      <span className="text-white whitespace-nowrap" style={{ justifySelf: 'start' }}>Type:</span>
+                    <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end' }}>
+                      <BookOpen className="h-3 w-3 text-white" style={{ justifySelf: 'end' }} />
+                      <span className="text-white whitespace-nowrap" style={{ justifySelf: 'end' }}>Type:</span>
                       <span className="text-white" style={{ justifySelf: 'end' }}>{courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Open Elective" : "Liberal Studies"}</span>
                     </div>
                   )}
@@ -1900,10 +1900,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     );
                   })()}
                   {courseInfo.deliveryMode === "online" && (
-                    <div style={{ display: 'grid', gridTemplateColumns: '12px 58px 1fr', gap: '6px', alignItems: 'center' }}>
-                      <Clock className="h-3 w-3 text-white flex-shrink-0" />
-                      <span className="text-white">Modules:</span>
-                      <span className="text-white">Weekly (change every Saturday)</span>
+                    <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end' }}>
+                      <Clock className="h-3 w-3 text-white flex-shrink-0" style={{ justifySelf: 'end' }} />
+                      <span className="text-white" style={{ justifySelf: 'end', marginRight: '10px' }}>Modules:</span>
+                      <span className="text-white" style={{ justifySelf: 'end' }}>Weekly (change every Saturday)</span>
                     </div>
                   )}
                 </div>
@@ -2482,7 +2482,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           <div className="border-t border-white/10" />
 
           <div style={{ padding: '12px 30px' }}>
-            <div style={{ border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '12px' }}>
+            <div style={{ border: '1.5px solid rgba(255,255,255,0.15)', borderRadius: '8px', padding: '12px' }}>
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <h3 className="text-[11px] font-medium text-white uppercase">Assignments</h3>
@@ -2840,10 +2840,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 </div>
               </div>
             )}
-          </div>
 
           {gradeCalc && (
-            <div className="mx-3 mb-3 p-3 rounded-lg border border-white/20" style={{ background: 'rgba(255,255,255,0.08)' }} data-testid="grade-calculator-box">
+            <div className="mt-3 pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }} data-testid="grade-calculator-box">
               <div className="flex items-center gap-2 mb-2">
                 <GraduationCap className="h-4 w-4 text-white" />
                 <span className="text-[11px] font-medium text-white uppercase">Grade Calculator</span>
@@ -2856,6 +2855,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               </div>
             </div>
           )}
+          </div>
         </div>
         </div>
 

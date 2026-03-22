@@ -832,6 +832,25 @@ export default function Dashboard() {
     return saved ? parseFloat(saved) : 111;
   });
   const hwGroupBarDragRef = useRef<{ startX: number; startWidth: number } | null>(null);
+  const hwTimelineDividerRef = useRef<HTMLDivElement>(null);
+  const [hwTimelinePos, setHwTimelinePos] = useState<{ top: number; left: number } | null>(null);
+  useEffect(() => {
+    const update = () => {
+      if (hwTimelineDividerRef.current) {
+        const rect = hwTimelineDividerRef.current.getBoundingClientRect();
+        setHwTimelinePos(prev => {
+          const newTop = Math.round(rect.top - 8);
+          const newLeft = Math.round(rect.left + hwGroupBarWidth / 2 - 25);
+          if (prev && prev.top === newTop && prev.left === newLeft) return prev;
+          return { top: newTop, left: newLeft };
+        });
+      }
+    };
+    update();
+    const interval = setInterval(update, 2000);
+    window.addEventListener('resize', update);
+    return () => { clearInterval(interval); window.removeEventListener('resize', update); };
+  }, [hwGroupBarWidth]);
   const [calendarBorderTop, setCalendarBorderTop] = useState(0);
   const clockContainerRef = useRef<HTMLDivElement>(null);
   const [clockWidth, setClockWidth] = useState(0);
@@ -9608,8 +9627,8 @@ export default function Dashboard() {
         backgroundColor: colorSettings.mainBackgroundOverlay ? safeHex(colorSettings.mainBackground, '#3a8bbf') : '#000000'
       }}
     >
-      {!selectedCertCourse && !isSchoolCoursesDialogOpen && !semSettingsDialogKey && !dashboardCommentTarget && createPortal(
-        <div style={{ position: 'fixed', top: '439px', left: '1330px', width: '50px', height: '15px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2147483647, pointerEvents: 'none', opacity: hwIsScrolling ? 0.5 : 1, transition: 'opacity 0.2s ease' }}>
+      {!selectedCertCourse && !isSchoolCoursesDialogOpen && !semSettingsDialogKey && !dashboardCommentTarget && hwTimelinePos && createPortal(
+        <div style={{ position: 'fixed', top: `${hwTimelinePos.top}px`, left: `${hwTimelinePos.left}px`, width: '50px', height: '15px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2147483647, pointerEvents: 'none', opacity: hwIsScrolling ? 0.5 : 1, transition: 'opacity 0.2s ease' }}>
           <span style={{ fontSize: '8px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.7px', lineHeight: 1 }}>Timeline</span>
         </div>,
         document.body
@@ -22176,7 +22195,7 @@ export default function Dashboard() {
             {isLoading ? (
               <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', minHeight: 0, position: 'relative' }}>
+              <div ref={hwTimelineDividerRef} style={{ display: 'flex', flexDirection: 'column', minHeight: 0, position: 'relative' }}>
                 <div
                   style={{ position: 'absolute', top: 0, bottom: 0, left: `${1 + hwGroupBarWidth}px`, width: '8px', marginLeft: '-4px', cursor: 'col-resize', zIndex: 10 }}
                   onMouseDown={handleHwGroupBarDragStart}
