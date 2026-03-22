@@ -22135,7 +22135,7 @@ export default function Dashboard() {
                         {(() => {
                           const todayDate = startOfDayET(new Date());
                           const weekStart = startOfWeek(todayDate, { weekStartsOn: 0 });
-                          const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 5) });
+                          const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
                           const dueDates = dueTodayTasks.map(t => ({ date: startOfDayET(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                           return (
                             <div style={{ display: 'flex', gap: '2px', padding: '1px 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.15)', border: '0.5px solid rgba(255,255,255,0.55)' }}>
