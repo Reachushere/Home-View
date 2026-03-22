@@ -18867,7 +18867,7 @@ export default function Dashboard() {
                           const daysUntil = differenceInCalendarDays(new Date(nextTask.dueDate), new Date());
                           const badgeBg = getCourseGradientColors(cCode2).start;
                           return (
-                            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '14px', backgroundColor: badgeBg, zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                            <div style={{ position: 'absolute', top: '1px', left: 0, right: 0, height: '14px', backgroundColor: badgeBg, zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
                               <span style={{ fontSize: '9px', color: '#ffffff', whiteSpace: 'nowrap', fontWeight: 500 }}>Next Task Due In: <span style={{ color: '#ffffff', fontWeight: 700, fontSize: '9px' }}>{daysUntil}d</span></span>
                             </div>
                           );
