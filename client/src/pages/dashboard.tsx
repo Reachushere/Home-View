@@ -22152,7 +22152,7 @@ export default function Dashboard() {
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', width: '100%' }}>
                         <div style={{ display: 'flex', gap: '2px', padding: '0 2px', width: '100%', justifyContent: 'flex-end' }}>
                           {['Su','Mo','Tu','We','Th','Fr','Sa'].map((dl, dli) => (
-                            <div key={dli} style={{ flex: 1, minWidth: 0, fontSize: '6px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
+                            <div key={dli} style={{ flex: 1, minWidth: 0, fontSize: '8px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
                           ))}
                         </div>
                         {(() => {
@@ -22326,7 +22326,7 @@ export default function Dashboard() {
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', width: '100%' }}>
                                 <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: '100%', justifyContent: 'flex-end' }}>
                                   {['Su','Mo','Tu','We','Th','Fr','Sa'].map((dl, dli) => (
-                                    <div key={dli} style={{ flex: 1, minWidth: 0, fontSize: '6px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
+                                    <div key={dli} style={{ flex: 1, minWidth: 0, fontSize: '8px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
                                   ))}
                                 </div>
                                 {group.weeks.map((weekStart: Date, wi: number) => {
@@ -22519,7 +22519,7 @@ export default function Dashboard() {
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', width: '100%' }}>
                                 <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: '100%', justifyContent: 'flex-end' }}>
                                   {['Su','Mo','Tu','We','Th','Fr','Sa'].map((dl, dli) => (
-                                    <div key={dli} style={{ flex: 1, minWidth: 0, fontSize: '6px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
+                                    <div key={dli} style={{ flex: 1, minWidth: 0, fontSize: '8px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
                                   ))}
                                 </div>
                                 {group.weeks.map((weekStart: Date, wi: number) => {
@@ -22714,7 +22714,7 @@ export default function Dashboard() {
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', width: '100%' }}>
                                 <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: '100%', justifyContent: 'flex-end' }}>
                                   {['Su','Mo','Tu','We','Th','Fr','Sa'].map((dl, dli) => (
-                                    <div key={dli} style={{ flex: 1, minWidth: 0, fontSize: '6px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
+                                    <div key={dli} style={{ flex: 1, minWidth: 0, fontSize: '8px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
                                   ))}
                                 </div>
                                 {group.weeks.map((weekStart: Date, wi: number) => {
@@ -22911,7 +22911,7 @@ export default function Dashboard() {
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', width: '100%' }}>
                                 <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: '100%', justifyContent: 'flex-end' }}>
                                   {['Su','Mo','Tu','We','Th','Fr','Sa'].map((dl, dli) => (
-                                    <div key={dli} style={{ flex: 1, minWidth: 0, fontSize: '6px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
+                                    <div key={dli} style={{ flex: 1, minWidth: 0, fontSize: '8px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
                                   ))}
                                 </div>
                                 {group.weeks.map((weekStart: Date, wi: number) => {
