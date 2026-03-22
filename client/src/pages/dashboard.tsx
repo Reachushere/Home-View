@@ -22063,7 +22063,7 @@ export default function Dashboard() {
                     left: 0,
                     right: 0,
                     height: `${otherRowHeight}px`,
-                    background: '#CDCCCF',
+                    background: 'rgba(205, 204, 207, 0.75)',
                     zIndex: 41,
                     borderTop: '1.5px dotted black',
                     borderBottom: '1.5px dotted black',
