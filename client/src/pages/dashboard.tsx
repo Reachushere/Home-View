@@ -22283,8 +22283,8 @@ export default function Dashboard() {
                       return groups.map((group) => {
                         const dueDates = group.tasks.map(t => ({ date: startOfDayET(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
-                          <div key={group.key} style={{ display: 'flex', alignItems: 'center' }}>
-                            <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', marginLeft: '10px', marginRight: '4px', overflow: 'visible' }}>
+                          <div key={group.key} style={{ display: 'flex', alignItems: 'flex-start' }}>
+                            <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'flex-start', marginLeft: '10px', marginRight: '4px', overflow: 'visible' }}>
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 {hwWeeklyTimeline[0]?.sublabel || ''}
                               </span>
