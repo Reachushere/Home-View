@@ -22312,7 +22312,7 @@ export default function Dashboard() {
                           <div key={group.key} style={{ display: 'flex', alignItems: 'stretch' }}>
                             <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginLeft: '10px', marginRight: '4px', overflow: 'visible' }}>
                               {groupIdx === 0 && (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginBottom: '4px', alignItems: 'flex-start', alignSelf: 'flex-start' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginBottom: '4px', alignItems: 'flex-start', alignSelf: 'flex-start', marginLeft: '-10px' }}>
                                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[0]?.label || 'This week'}</span>
                                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px' }}>({dueTomorrowTasks.length})</span>
