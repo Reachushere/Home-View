@@ -67,6 +67,7 @@ const PROFILES: Record<ProfileKey, {
       { name: "Pink", uri: "spotify:artist:1KCSPY1glIKqW2TotWuXOR", searchQuery: "Pink singer" },
       { name: "Lady Gaga", uri: "spotify:artist:1HY2Jd0NmPuamShAr6KMms", searchQuery: "Lady Gaga" },
       { name: "Cher", uri: "spotify:artist:72OaDtakiy6yFqkt4TsiFt", searchQuery: "Cher" },
+      { name: "This Is Me", uri: "spotify:track:2MYDnXBdJkFRuWgyOjpdth", searchQuery: "This Is Me Greatest Showman" },
       { name: "CHUM FM", uri: "", searchQuery: "104.5 Chum FM" },
       { name: "Disney", uri: "spotify:playlist:37i9dQZF1DX8C585qnMYHP", searchQuery: "Disney hits" },
       { name: "Chill Electro", uri: "spotify:playlist:37i9dQZF1DX4E3UdUs7fUx", searchQuery: "Chill electronic" },
