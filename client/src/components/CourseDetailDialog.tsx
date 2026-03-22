@@ -1334,7 +1334,23 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         zoomLink: courseInfo.zoomLink || '',
                         startDate: courseInfo.startDate || '',
                         endDate: courseInfo.endDate || '',
+                        color: courseInfo.color || '#3b82f6',
+                        colorEnd: courseInfo.colorEnd || courseInfo.color || '#3b82f6',
+                        colorStops: courseInfo.colorStops || '',
+                        borderColor: courseInfo.borderColor || '',
+                        courseRowColor: courseInfo.courseRowColor || '',
+                        taskBgColor: courseInfo.taskBgColor || '',
                       });
+                      if (onLiveColorChange) {
+                        onLiveColorChange({
+                          color: courseInfo.color || '#3b82f6',
+                          colorEnd: courseInfo.colorEnd || courseInfo.color || '#3b82f6',
+                          colorStops: courseInfo.colorStops || '',
+                          borderColor: courseInfo.borderColor || '',
+                          courseRowColor: courseInfo.courseRowColor || '',
+                          taskBgColor: courseInfo.taskBgColor || '',
+                        });
+                      }
                       setIsEditingInfo(false);
                     }}
                     className="text-[11px] text-white hover:text-white transition-colors px-3 py-1 rounded border border-white/30 hover:bg-white/10"
@@ -2831,7 +2847,20 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             <Button
               type="button"
               variant="outline"
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClose(); }}
+              onClick={(e) => {
+                e.preventDefault(); e.stopPropagation();
+                if (onLiveColorChange) {
+                  onLiveColorChange({
+                    color: courseInfo.color || '#3b82f6',
+                    colorEnd: courseInfo.colorEnd || courseInfo.color || '#3b82f6',
+                    colorStops: courseInfo.colorStops || '',
+                    borderColor: courseInfo.borderColor || '',
+                    courseRowColor: courseInfo.courseRowColor || '',
+                    taskBgColor: courseInfo.taskBgColor || '',
+                  });
+                }
+                onClose();
+              }}
               onPointerDown={(e) => { e.stopPropagation(); }}
               disabled={expandedTaskId !== null || isEditingInfo}
               className={`border transition-all duration-200 h-6 w-[110px] disabled:cursor-not-allowed ${!isEditingInfo && expandedTaskId === null ? '!border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent cursor-pointer' : '!border-white/10 text-white/20'}`}
