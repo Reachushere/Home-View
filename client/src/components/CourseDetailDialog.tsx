@@ -210,6 +210,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   const [commentText, setCommentText] = useState('');
   const [commentLoading, setCommentLoading] = useState(false);
   const [commentSaving, setCommentSaving] = useState(false);
+  const [dialogPos, setDialogPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const dialogDragRef = useRef<{ dragging: boolean; startX: number; startY: number; origX: number; origY: number }>({ dragging: false, startX: 0, startY: 0, origX: 0, origY: 0 });
 
   useEffect(() => {
     if (!commentTarget) return;
@@ -1252,6 +1254,32 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     );
   };
 
+  const handleDialogDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    dialogDragRef.current = { dragging: true, startX: clientX, startY: clientY, origX: dialogPos.x, origY: dialogPos.y };
+
+    const handleMove = (ev: MouseEvent | TouchEvent) => {
+      if (!dialogDragRef.current.dragging) return;
+      const cx = 'touches' in ev ? ev.touches[0].clientX : ev.clientX;
+      const cy = 'touches' in ev ? ev.touches[0].clientY : ev.clientY;
+      const dx = cx - dialogDragRef.current.startX;
+      const dy = cy - dialogDragRef.current.startY;
+      setDialogPos({ x: dialogDragRef.current.origX + dx, y: dialogDragRef.current.origY + dy });
+    };
+    const handleUp = () => {
+      dialogDragRef.current.dragging = false;
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('mouseup', handleUp);
+      window.removeEventListener('touchmove', handleMove);
+      window.removeEventListener('touchend', handleUp);
+    };
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('mouseup', handleUp);
+    window.addEventListener('touchmove', handleMove, { passive: false });
+    window.addEventListener('touchend', handleUp);
+  };
+
   return createPortal(
     <div
       className="fixed inset-0 z-[10003] flex items-center justify-center"
@@ -1268,12 +1296,16 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           background: 'linear-gradient(180deg, #3a8bbf 0%, color-mix(in srgb, #164a72 70%, black) 100%)',
           border: '1.5px solid rgba(255,255,255,0.35)',
           boxShadow: '0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 0 rgba(0,0,0,0.05)',
+          transform: `translate(${dialogPos.x}px, ${dialogPos.y}px)`,
         }}
         data-testid="course-detail-dialog"
       >
         <div
           className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg"
+          onMouseDown={handleDialogDragStart}
+          onTouchStart={handleDialogDragStart}
           style={{
+            cursor: 'grab',
             backdropFilter: 'blur(30px)',
             WebkitBackdropFilter: 'blur(30px)',
             background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${editInfo.color || courseInfo.color}cc 40%, ${editInfo.colorEnd || courseInfo.colorEnd || courseInfo.color}bb 100%)`,
