@@ -1509,8 +1509,8 @@ export default function SpotifyPlayerPage() {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ action: "navigate", url: "http://172.24.0.2:8123/lovelace/test-home", timestamp: Date.now() }),
                   }).catch(() => {});
-                  const isReplit = window.location.hostname.includes('.replit.');
-                  if (isReplit) {
+                  const isDev = window.location.hostname.includes('.replit.dev');
+                  if (isDev) {
                     window.location.href = "/";
                   } else {
                     window.location.href = "/lovelace/test-home";
