@@ -22013,7 +22013,7 @@ export default function Dashboard() {
                     e.preventDefault();
                   }}>
                     {otherProgressTasks.length === 0 && (
-                      <span className="text-[10px] text-white/40 italic" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>No upcoming items</span>
+                      <span className="text-[10px] text-white/40 italic" style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', flex: 1 }}>No upcoming items</span>
                     )}
                     {otherProgressTasks.map(t => {
                       const dueStr = format(new Date(t.dueDate), 'MMM d');
