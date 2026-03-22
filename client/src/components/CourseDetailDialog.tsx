@@ -1859,6 +1859,13 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                       <span className="text-white" style={{ justifySelf: 'end' }}>{courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Open Elective" : "Liberal Studies"}</span>
                     </div>
                   )}
+                  {courseInfo.deliveryMode === "online" && (
+                    <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end', marginLeft: '50px' }}>
+                      <Clock className="h-3 w-3 text-white flex-shrink-0" style={{ justifySelf: 'end' }} />
+                      <span className="text-white" style={{ justifySelf: 'end', marginRight: '10px' }}>Modules:</span>
+                      <span className="text-white" style={{ justifySelf: 'end' }}>Weekly (change every Saturday)</span>
+                    </div>
+                  )}
                   <div className="col-span-2" style={{ display: 'grid', gridTemplateColumns: '12px 58px 1fr', gap: '6px', alignItems: 'center' }}>
                     <GraduationCap className="h-3 w-3 text-white flex-shrink-0" />
                     <span className="text-white">Certificate:</span>
@@ -1903,13 +1910,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                       </>
                     );
                   })()}
-                  {courseInfo.deliveryMode === "online" && (
-                    <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end', marginLeft: '50px' }}>
-                      <Clock className="h-3 w-3 text-white flex-shrink-0" style={{ justifySelf: 'end' }} />
-                      <span className="text-white" style={{ justifySelf: 'end', marginRight: '10px' }}>Modules:</span>
-                      <span className="text-white" style={{ justifySelf: 'end' }}>Weekly (change every Saturday)</span>
-                    </div>
-                  )}
                 </div>
                 {syllabusObjectPath && (
                   <div className="flex justify-end">
