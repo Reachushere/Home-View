@@ -19427,8 +19427,10 @@ export default function Dashboard() {
                   });
                   const compressedHours = [0,1,2,3,4,5,6,21,22,23];
                   const isCompressedHour = compressedHours.includes(hour);
-                  const baseRowHeight = isCompressedHour ? Math.min(gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight, 12) : (gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight);
-                  const rowHeight = (isNightHour && !nightHourHasTasks) ? Math.min(baseRowHeight, 12) : baseRowHeight;
+                  const eightAmH = gridSizes.timeSlotHeights[8] || gridSizes.timeSlotHeight;
+                  const nightCompressedH = Math.round(eightAmH * 0.75);
+                  const baseRowHeight = isCompressedHour ? Math.min(gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight, nightCompressedH) : (gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight);
+                  const rowHeight = (isNightHour && !nightHourHasTasks) ? Math.min(baseRowHeight, nightCompressedH) : baseRowHeight;
                   return (
                   <div 
                     key={hour} 
