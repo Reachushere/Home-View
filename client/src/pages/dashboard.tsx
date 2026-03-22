@@ -22520,7 +22520,7 @@ export default function Dashboard() {
                                           )}
                                         </div>
                                         <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', gap: '1px', marginLeft: '-3px', position: 'relative', left: '-9px' }}>
-                                          <span className="text-[8px]" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1, letterSpacing: '0.3px' }}>Due In</span>
+                                          <span className="text-[8px]" style={{ color: '#ffffff', lineHeight: 1, letterSpacing: '0.3px' }}>Due In</span>
                                           <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
 
                                         </div>
@@ -22713,7 +22713,7 @@ export default function Dashboard() {
                                           )}
                                         </div>
                                         <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px', marginLeft: '-3px', position: 'relative', left: '-9px' }}>
-                                          <span className="text-[8px]" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1, letterSpacing: '0.3px' }}>Due In</span>
+                                          <span className="text-[8px]" style={{ color: '#ffffff', lineHeight: 1, letterSpacing: '0.3px' }}>Due In</span>
                                           <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
 
                                         </div>
@@ -22885,7 +22885,7 @@ export default function Dashboard() {
                                           </div>
                                         </div>
                                         <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px', marginLeft: '-3px', position: 'relative', left: '-9px' }}>
-                                          <span className="text-[8px]" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1, letterSpacing: '0.3px' }}>Due In</span>
+                                          <span className="text-[8px]" style={{ color: '#ffffff', lineHeight: 1, letterSpacing: '0.3px' }}>Due In</span>
                                           <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
 
                                         </div>
@@ -23082,7 +23082,7 @@ export default function Dashboard() {
                                           </div>
                                         </div>
                                         <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px', marginLeft: '-3px', position: 'relative', left: '-9px' }}>
-                                          <span className="text-[8px]" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1, letterSpacing: '0.3px' }}>Due In</span>
+                                          <span className="text-[8px]" style={{ color: '#ffffff', lineHeight: 1, letterSpacing: '0.3px' }}>Due In</span>
                                           <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
                                         </div>
                                       </div>
