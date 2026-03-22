@@ -12288,8 +12288,9 @@ document.body.removeChild(a);
       console.log(`Setting volume to ${newVolume} on ${targetDevice}`);
       
       if (targetDevice === "media_player.byhome") {
-        const allEchoDevices = FLICK_DEVICES.flatMap(g => g.devices).filter(d => (d.type === "echo" || d.type === "echo_show") && d.entityId.includes("_am"));
-        console.log(`[Volume] BYhome group → setting volume on ${allEchoDevices.length} individual Echo devices`);
+        const excludeSet = new Set<string>(Array.isArray(req.body.excludeEntityIds) ? req.body.excludeEntityIds : []);
+        const allEchoDevices = FLICK_DEVICES.flatMap(g => g.devices).filter(d => (d.type === "echo" || d.type === "echo_show") && d.entityId.includes("_am") && !excludeSet.has(d.entityId));
+        console.log(`[Volume] BYhome group → setting volume on ${allEchoDevices.length} individual Echo devices (excluded: ${excludeSet.size})`);
         await Promise.allSettled(allEchoDevices.map(d =>
           fetch(`${haUrl}/api/services/media_player/volume_set`, {
             method: 'POST',

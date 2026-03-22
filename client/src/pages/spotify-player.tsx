@@ -732,6 +732,9 @@ export default function SpotifyPlayerPage() {
   const [expandedRoom, setExpandedRoom] = useState<string | null>(null);
   const [expandedSpeaker, setExpandedSpeaker] = useState<string | null>(null);
   const [floorSpeakerPopup, setFloorSpeakerPopup] = useState<string | null>(null);
+  const [everywhereExcluded, setEverywhereExcluded] = useState<Set<string>>(() => {
+    try { const s = localStorage.getItem("holomusic-everywhere-excluded"); return s ? new Set(JSON.parse(s)) : new Set(); } catch { return new Set(); }
+  });
   const [recommendations, setRecommendations] = useState<{ name: string; image: string; uri: string; id: string }[]>([]);
   const [recoIndex, setRecoIndex] = useState(0);
   const [voiceConfirm, setVoiceConfirm] = useState(() => { const v = localStorage.getItem("holomusic-voice"); return v === null ? true : v === "true"; });
@@ -950,10 +953,14 @@ export default function SpotifyPlayerPage() {
     if (!spot) return;
     if (volumeTimerRef.current[room]) clearTimeout(volumeTimerRef.current[room]);
     volumeTimerRef.current[room] = setTimeout(() => {
+      const payload: any = { entityId: spot.groupEntityId, level: vol };
+      if (room === "Everywhere") {
+        try { const s = localStorage.getItem("holomusic-everywhere-excluded"); if (s) payload.excludeEntityIds = JSON.parse(s); } catch {}
+      }
       fetch(`/api/media/volume`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ entityId: spot.groupEntityId, level: vol }),
+        body: JSON.stringify(payload),
       });
     }, 200);
   }, []);
@@ -1875,10 +1882,12 @@ export default function SpotifyPlayerPage() {
                                   }} />
                               </button>
                               {floorSpeakerPopup === spot.room && (
-                                <div className="absolute w-48 rounded-lg shadow-2xl overflow-hidden"
+                                <div className="absolute rounded-lg shadow-2xl overflow-hidden"
                                   onClick={(e) => e.stopPropagation()}
                                   style={{
                                     zIndex: 9999,
+                                    width: spot.room === "Everywhere" ? 220 : 192,
+                                    maxHeight: spot.room === "Everywhere" ? 340 : undefined,
                                     ...(spot.x < 30
                                       ? { bottom: '100%', left: '0', marginBottom: 4 }
                                       : { bottom: '100%', left: '50%', transform: 'translateX(-50%)', marginBottom: 4 }),
@@ -1894,6 +1903,59 @@ export default function SpotifyPlayerPage() {
                                       <X className="h-3 w-3" />
                                     </button>
                                   </div>
+                                  {spot.room === "Everywhere" ? (
+                                    <div className="px-2 py-1.5 flex flex-col gap-0.5 overflow-y-auto" style={{ maxHeight: 290 }}>
+                                      {rooms.filter(r => r.room !== "Everywhere" && r.room !== "Balcony").map(roomGroup => {
+                                        const roomSpeakers = roomGroup.speakers.filter(spk => spk.type !== "group");
+                                        if (roomSpeakers.length === 0) return null;
+                                        return (
+                                          <div key={roomGroup.room}>
+                                            <div className="text-[9px] font-bold uppercase tracking-wider px-1 pt-1 pb-0.5"
+                                              style={{ color: `${profile.accent}90` }}>
+                                              {isSakura ? (ROOM_JP[roomGroup.room] || roomGroup.room) : roomGroup.room}
+                                            </div>
+                                            {roomSpeakers.map(spk => {
+                                              const excluded = everywhereExcluded.has(spk.entityId);
+                                              return (
+                                                <button key={spk.entityId}
+                                                  onClick={() => {
+                                                    setEverywhereExcluded(prev => {
+                                                      const next = new Set(prev);
+                                                      if (next.has(spk.entityId)) next.delete(spk.entityId);
+                                                      else next.add(spk.entityId);
+                                                      localStorage.setItem("holomusic-everywhere-excluded", JSON.stringify([...next]));
+                                                      return next;
+                                                    });
+                                                  }}
+                                                  className="flex items-center gap-2 w-full text-left px-2 py-1 rounded-md transition-all hover:scale-[1.02]"
+                                                  style={{
+                                                    background: excluded ? 'rgba(100,100,100,0.1)' : `${profile.accent}20`,
+                                                    border: `1px solid ${excluded ? 'rgba(100,100,100,0.15)' : `${profile.accent}40`}`,
+                                                    opacity: excluded ? 0.5 : 1,
+                                                  }}
+                                                  data-testid={`everywhere-toggle-${spk.name.toLowerCase().replace(/\s/g, "-")}`}>
+                                                  <div className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0"
+                                                    style={{
+                                                      background: excluded ? 'rgba(100,100,100,0.3)' : `${profile.accent}40`,
+                                                      border: `1px solid ${excluded ? 'rgba(100,100,100,0.3)' : profile.accent}`,
+                                                    }}>
+                                                    {!excluded && <span className="text-[10px]" style={{ color: profile.accent }}>✓</span>}
+                                                  </div>
+                                                  <img src={echoSpeakerImg} alt="Echo" className="rounded-md object-cover flex-shrink-0"
+                                                    style={{
+                                                      width: 18, height: 18,
+                                                      filter: excluded ? 'brightness(0.4) saturate(0)' : `drop-shadow(0 0 3px ${profile.accent}) brightness(1.1)`,
+                                                    }} />
+                                                  <span className="text-[10px] font-medium truncate flex-1"
+                                                    style={{ color: excluded ? 'rgba(140,170,200,0.4)' : 'rgba(200,225,255,0.95)' }}>{spk.name}</span>
+                                                </button>
+                                              );
+                                            })}
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  ) : (
                                   <div className="px-2 py-1.5 flex flex-col gap-1">
                                     {(rooms.find(r => r.room === spot.room)?.speakers || []).filter(spk => spk.type !== "group").map(spk => {
                                       const isEcho = spk.type === "echo" || spk.type === "echo_show";
@@ -1945,6 +2007,7 @@ export default function SpotifyPlayerPage() {
                                       );
                                     })}
                                   </div>
+                                  )}
                                 </div>
                               )}
                             </div>
