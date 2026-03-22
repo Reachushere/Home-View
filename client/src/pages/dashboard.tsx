@@ -9292,7 +9292,10 @@ export default function Dashboard() {
       const dueDate = new Date(t.dueDate);
       const isMidnightUTC = dueDate.getUTCHours() === 0 && dueDate.getUTCMinutes() === 0 && !t.eventStartTime;
       const key = isMidnightUTC
-        ? `${dueDate.getUTCFullYear()}-${String(dueDate.getUTCMonth() + 1).padStart(2, '0')}-${String(dueDate.getUTCDate()).padStart(2, '0')}`
+        ? (() => {
+            const prev = new Date(dueDate.getTime() - 1);
+            return _etDateKey(prev);
+          })()
         : _etDateKey(dueDate);
       const arr = map.get(key);
       if (arr) arr.push(t); else map.set(key, [t]);
@@ -9445,8 +9448,8 @@ export default function Dashboard() {
       const isMidnightUTC = dueDate.getUTCHours() === 0 && dueDate.getUTCMinutes() === 0;
       if (!isMidnightET && !isMidnightUTC) return false;
       if (isMidnightUTC) {
-        const utcKey = `${dueDate.getUTCFullYear()}-${String(dueDate.getUTCMonth() + 1).padStart(2, '0')}-${String(dueDate.getUTCDate()).padStart(2, '0')}`;
-        return utcKey === dayKey;
+        const prev = new Date(dueDate.getTime() - 1);
+        return _etDateKey(prev) === dayKey;
       }
       return isSameDayET(dueDate, day);
     });
