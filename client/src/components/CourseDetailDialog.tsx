@@ -78,6 +78,8 @@ interface CourseInfo {
   colorEnd?: string;
   colorStops?: string;
   borderColor?: string;
+  courseRowColor?: string;
+  taskBgColor?: string;
   deliveryMode: string;
   classDay: string;
   classDay2?: string;
@@ -96,7 +98,7 @@ interface CourseInfo {
 interface CourseDetailDialogProps {
   courseInfo: CourseInfo;
   onClose: () => void;
-  onSaveCourseInfo?: (updates: { professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; classTime2?: string; classEndTime2?: string; zoomLink?: string; semesterTerm?: string; year?: string; startDate?: string; endDate?: string; color?: string; colorEnd?: string; colorStops?: string; borderColor?: string }) => void;
+  onSaveCourseInfo?: (updates: { professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; classTime2?: string; classEndTime2?: string; zoomLink?: string; semesterTerm?: string; year?: string; startDate?: string; endDate?: string; color?: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string }) => void;
   onGradeCalculated?: (grade: string, percent: string) => void;
   onDeleteCourse?: () => void;
   onOpenEditTask?: (task: Task) => void;
@@ -301,6 +303,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
     colorEnd: courseInfo.colorEnd || courseInfo.color || '#3b82f6',
     colorStops: courseInfo.colorStops || '',
     borderColor: courseInfo.borderColor || '',
+    courseRowColor: courseInfo.courseRowColor || '',
+    taskBgColor: courseInfo.taskBgColor || '',
   });
 
   const CERTIFICATE_TYPE_OPTIONS = [
@@ -1645,6 +1649,36 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                         )}
                       </div>
                       <span className="text-[9px] text-white mt-0.5 block">{editInfo.borderColor ? editInfo.borderColor.toUpperCase() : 'Auto'}</span>
+                    </div>
+                    <div style={{ marginLeft: '12px' }}>
+                      <label className="text-white text-[9px] mb-1 block">Row BG</label>
+                      <div className="flex items-center gap-1">
+                        <div className="relative shrink-0" style={{ width: '20px', height: '20px' }}>
+                          <div className="absolute inset-0 rounded-sm border border-white/30" style={{ backgroundColor: editInfo.courseRowColor || editInfo.color }} />
+                          <input type="color" value={editInfo.courseRowColor || editInfo.color} onChange={(e) => setEditInfo({...editInfo, courseRowColor: e.target.value})} className="absolute inset-0 opacity-0 cursor-pointer" style={{ width: '20px', height: '20px' }} data-testid="input-course-row-color" />
+                        </div>
+                        {editInfo.courseRowColor && (
+                          <button className="text-white/40 hover:text-white/70" onClick={() => setEditInfo({...editInfo, courseRowColor: ''})} title="Reset to auto">
+                            <X className="h-2.5 w-2.5" />
+                          </button>
+                        )}
+                      </div>
+                      <span className="text-[9px] text-white mt-0.5 block">{editInfo.courseRowColor ? editInfo.courseRowColor.toUpperCase() : 'Auto'}</span>
+                    </div>
+                    <div style={{ marginLeft: '12px' }}>
+                      <label className="text-white text-[9px] mb-1 block">Task BG</label>
+                      <div className="flex items-center gap-1">
+                        <div className="relative shrink-0" style={{ width: '20px', height: '20px' }}>
+                          <div className="absolute inset-0 rounded-sm border border-white/30" style={{ backgroundColor: editInfo.taskBgColor || `color-mix(in srgb, ${editInfo.color} 45%, white)` }} />
+                          <input type="color" value={editInfo.taskBgColor || editInfo.color} onChange={(e) => setEditInfo({...editInfo, taskBgColor: e.target.value})} className="absolute inset-0 opacity-0 cursor-pointer" style={{ width: '20px', height: '20px' }} data-testid="input-task-bg-color" />
+                        </div>
+                        {editInfo.taskBgColor && (
+                          <button className="text-white/40 hover:text-white/70" onClick={() => setEditInfo({...editInfo, taskBgColor: ''})} title="Reset to auto">
+                            <X className="h-2.5 w-2.5" />
+                          </button>
+                        )}
+                      </div>
+                      <span className="text-[9px] text-white mt-0.5 block">{editInfo.taskBgColor ? editInfo.taskBgColor.toUpperCase() : 'Auto'}</span>
                     </div>
                     </div>
                     );

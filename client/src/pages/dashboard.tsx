@@ -876,6 +876,8 @@ export default function Dashboard() {
     progressBg: string;
     progressStartColor: string;
     progressEndColor: string;
+    courseRowColor?: string;
+    taskBgColor?: string;
     moduleP: {percent: number; hasFiles: boolean};
     readingP: {percent: number; hasFiles: boolean};
     moduleUnread: number;
@@ -3048,7 +3050,7 @@ export default function Dashboard() {
     return `${gridSizes.timeColumnWidth}px ${allDays}`;
   };
 
-  const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string; colorEnd?: string; colorStops?: string; borderColor?: string; professor: string; professorEmail?: string }> }>(() => {
+  const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; professor: string; professorEmail?: string }> }>(() => {
     const defaultCourses = [
       { name: 'CPPA122 - Local Politics and Government', color: '#0F5004', colorEnd: '#47B045', professor: 'Caryl Arundel', professorEmail: 'carundel@torontomu.ca' },
       { name: 'CFNF400 - Human Sexuality', color: '#DE1864', colorEnd: '#FA67B3', professor: 'Alex McKay', professorEmail: 'a4mckay@torontomu.ca' },
@@ -4476,6 +4478,8 @@ export default function Dashboard() {
     let colorEnd = (matchedCourse as any)?.colorEnd || '';
     let colorStops = (matchedCourse as any)?.colorStops || '';
     let borderColor = (matchedCourse as any)?.borderColor || '';
+    let courseRowColor = (matchedCourse as any)?.courseRowColor || '';
+    let taskBgColor = (matchedCourse as any)?.taskBgColor || '';
     let courseType = '';
     let semesterTerm = '';
     let year = '';
@@ -4557,6 +4561,8 @@ export default function Dashboard() {
       colorEnd,
       colorStops,
       borderColor,
+      courseRowColor,
+      taskBgColor,
       deliveryMode,
       classDay,
       classDay2,
@@ -13171,6 +13177,8 @@ export default function Dashboard() {
                   ...(updates.colorEnd ? { colorEnd: updates.colorEnd } : {}),
                   ...((updates as any).colorStops !== undefined ? { colorStops: (updates as any).colorStops } : {}),
                   ...((updates as any).borderColor !== undefined ? { borderColor: (updates as any).borderColor } : {}),
+                  ...(updates.courseRowColor !== undefined ? { courseRowColor: updates.courseRowColor } : {}),
+                  ...(updates.taskBgColor !== undefined ? { taskBgColor: updates.taskBgColor } : {}),
                 };
                 saveCourses({ courses: updatedCourses });
               }
@@ -19069,6 +19077,8 @@ export default function Dashboard() {
                       progressBg,
                       progressStartColor: courseHexColor,
                       progressEndColor: courseHexColorEnd || courseHexColor,
+                      courseRowColor: courseMatch?.courseRowColor,
+                      taskBgColor: courseMatch?.taskBgColor,
                       moduleP,
                       readingP,
                       moduleUnread,
@@ -21713,7 +21723,7 @@ export default function Dashboard() {
                   left: 0,
                   width: `${effectiveDividerPct}%`,
                   height: `${halfHeight}px`,
-                  background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
+                  background: pd.courseRowColor || pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
                   zIndex: 1,
                   boxShadow: 'inset 0 0 0 0.5px rgba(255,255,255,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
                 }} />,
@@ -21723,7 +21733,7 @@ export default function Dashboard() {
                   left: 0,
                   width: `${effectiveDividerPct}%`,
                   height: `${halfHeight}px`,
-                  background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
+                  background: pd.courseRowColor || pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
                   zIndex: 1,
                   boxShadow: 'inset 0 0 0 0.5px rgba(255,255,255,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
                 }} />,
@@ -21733,7 +21743,7 @@ export default function Dashboard() {
                   left: `${effectiveDividerPct}%`,
                   right: 0,
                   height: `${rowHeight}px`,
-                  background: `linear-gradient(180deg, color-mix(in srgb, ${pd.progressStartColor} 45%, white) 0%, color-mix(in srgb, ${pd.progressEndColor} 45%, white) 100%)`,
+                  background: pd.taskBgColor || `linear-gradient(180deg, color-mix(in srgb, ${pd.progressStartColor} 45%, white) 0%, color-mix(in srgb, ${pd.progressEndColor} 45%, white) 100%)`,
                   zIndex: 41,
                   borderBottom: '0.5px solid rgba(255,255,255,0.2)',
                   overflowX: 'hidden',
