@@ -781,7 +781,10 @@ export async function registerRoutes(
 
   app.get('/api/ha-redirect', (req, res) => {
     const path = req.query.path ? decodeURIComponent(String(req.query.path)) : '/lovelace/test-home';
-    res.redirect(302, `http://172.24.0.2:8123${path}`);
+    const haUrl = `http://172.24.0.2:8123${path}`;
+    res.setHeader('Content-Type', 'text/html');
+    res.setHeader('Cache-Control', 'no-store');
+    res.send(`<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0;url=${haUrl}"><script>window.location.replace("${haUrl}");</script></head><body></body></html>`);
   });
 
   app.get('/api/version', (_req, res) => {
