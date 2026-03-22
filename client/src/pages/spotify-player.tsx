@@ -1824,8 +1824,7 @@ export default function SpotifyPlayerPage() {
                                 <img key={si} src={echoSpeakerImg} alt="Speaker" className="rounded-md object-cover"
                                   style={{
                                     width: 18, height: 18,
-                                    filter: isActive ? `drop-shadow(0 0 3px ${profile.accent})` : 'brightness(0.8)',
-                                    opacity: isActive ? 1 : 0.7,
+                                    filter: isActive ? `drop-shadow(0 0 4px ${profile.accent}) brightness(1.1)` : 'none',
                                   }} />
                               ))}
                               {speakerCount > 4 && (
