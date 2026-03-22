@@ -234,7 +234,7 @@ const courseColors: Record<string, { bg: string; border: string; text: string; d
 const defaultCourseDisplayNames: Record<string, string> = {
   "CPPA122": "CPPA122-LP",
   "CFNF400": "CFNF400-HS",
-  "CASL101": "CASL101 American Sign Language",
+  "CASL101": "CASL101 ASL",
 };
 
 // Helper function to get display name for course row labels (uses dynamic state)
@@ -2001,7 +2001,7 @@ export default function Dashboard() {
     'w2026': [
       { code: 'CPPA122', name: 'CPPA 122', fullName: 'Local Politics and Government', period: '' },
       { code: 'CFNF400', name: 'CFNF 400', fullName: 'Human Sexuality', period: '' },
-      { code: 'CASL101', name: 'CASL 101', fullName: 'American Sign Language', period: '' },
+      { code: 'CASL101', name: 'CASL 101', fullName: 'ASL', period: '' },
     ],
     'ss2026': [
       { code: 'CECN210', name: 'CECN 210', fullName: 'Understanding Economics', period: 'May 4 – Jul 31' },
@@ -3052,7 +3052,7 @@ export default function Dashboard() {
     const defaultCourses = [
       { name: 'CPPA122 - Local Politics and Government', color: '#0F5004', colorEnd: '#47B045', professor: 'Caryl Arundel', professorEmail: 'carundel@torontomu.ca' },
       { name: 'CFNF400 - Human Sexuality', color: '#DE1864', colorEnd: '#FA67B3', professor: 'Alex McKay', professorEmail: 'a4mckay@torontomu.ca' },
-      { name: 'CASL101 - American Sign Language', color: '#974B8A', colorEnd: '#B045A2', professor: 'Christina Moreau', professorEmail: 'christina.moreau@torontomu.ca' },
+      { name: 'CASL101 - ASL', color: '#974B8A', colorEnd: '#B045A2', professor: 'Christina Moreau', professorEmail: 'christina.moreau@torontomu.ca' },
       { name: 'CECN210 - Understanding Economics', color: '#059669', colorEnd: '#34D399', professor: '', professorEmail: '' },
       { name: 'CPHL110 - Philosophy of Religion', color: '#2563EB', colorEnd: '#60A5FA', professor: '', professorEmail: '' },
       { name: 'CHIS105 - Inventing Popular Culture', color: '#DC2626', colorEnd: '#F87171', professor: '', professorEmail: '' },
@@ -18314,7 +18314,7 @@ export default function Dashboard() {
                 const defaultWinterCourses = [
                   { name: 'CPPA122 - Local Politics and Government', color: '#0F5004', colorEnd: '#47B045', professor: 'Caryl Arundel', professorEmail: 'carundel@torontomu.ca' },
                   { name: 'CFNF400 - Human Sexuality', color: '#DE1864', colorEnd: '#FA67B3', professor: 'Alex McKay', professorEmail: 'a4mckay@torontomu.ca' },
-                  { name: 'CASL101 - American Sign Language', color: '#974B8A', colorEnd: '#B045A2', professor: 'Christina Moreau', professorEmail: 'christina.moreau@torontomu.ca' },
+                  { name: 'CASL101 - ASL', color: '#974B8A', colorEnd: '#B045A2', professor: 'Christina Moreau', professorEmail: 'christina.moreau@torontomu.ca' },
                 ];
                 for (const dwc of defaultWinterCourses) {
                   const dwcCode = dwc.name.split(' - ')[0]?.trim().toUpperCase();
