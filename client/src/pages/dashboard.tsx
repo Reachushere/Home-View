@@ -19054,6 +19054,15 @@ export default function Dashboard() {
                     const progressBg = (() => {
                       const startColor = courseHexColor;
                       const endColor = courseHexColorEnd || courseHexColor;
+                      if (courseMatch?.colorStops) {
+                        try {
+                          const stops: Array<{position: number; color: string}> = JSON.parse(courseMatch.colorStops);
+                          if (stops.length > 0) {
+                            const allParts = [`${startColor} 0%`, ...stops.map(s => `${s.color} ${s.position}%`), `${endColor} 100%`];
+                            return `linear-gradient(180deg, ${allParts.join(', ')})`;
+                          }
+                        } catch {}
+                      }
                       return `linear-gradient(180deg, ${startColor} 0%, ${endColor} 100%)`;
                     })();
                     const handlePlayFiles = (fileType: 'module' | 'reading') => {
