@@ -1660,9 +1660,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                         </div>
                       )}
                     </div>
-                    <div style={{ marginLeft: '12px' }}>
+                    <div style={{ marginLeft: '12px', textAlign: 'center' }}>
                       <label className="text-white text-[9px] mb-1 block">Border</label>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center justify-center gap-1">
                         <div className="relative shrink-0" style={{ width: '20px', height: '20px' }}>
                           <div className="absolute inset-0 rounded-sm border border-white/30" style={{ backgroundColor: editInfo.borderColor || editInfo.color }} />
                           <input type="color" value={editInfo.borderColor || editInfo.color} onChange={(e) => setEditInfo({...editInfo, borderColor: e.target.value})} className="absolute inset-0 opacity-0 cursor-pointer" style={{ width: '20px', height: '20px' }} data-testid="input-border-color" />
@@ -1675,9 +1675,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                       </div>
                       <span className="text-[9px] text-white mt-0.5 block">{editInfo.borderColor ? editInfo.borderColor.toUpperCase() : 'Auto'}</span>
                     </div>
-                    <div style={{ marginLeft: '12px' }}>
+                    <div style={{ marginLeft: '12px', textAlign: 'center' }}>
                       <label className="text-white text-[9px] mb-1 block">Row BG</label>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center justify-center gap-1">
                         <div className="relative shrink-0" style={{ width: '20px', height: '20px' }}>
                           <div className="absolute inset-0 rounded-sm border border-white/30" style={{ backgroundColor: editInfo.courseRowColor || editInfo.color }} />
                           <input type="color" value={editInfo.courseRowColor || editInfo.color} onChange={(e) => setEditInfo({...editInfo, courseRowColor: e.target.value})} className="absolute inset-0 opacity-0 cursor-pointer" style={{ width: '20px', height: '20px' }} data-testid="input-course-row-color" />
@@ -1690,9 +1690,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                       </div>
                       <span className="text-[9px] text-white mt-0.5 block">{editInfo.courseRowColor ? editInfo.courseRowColor.toUpperCase() : 'Auto'}</span>
                     </div>
-                    <div style={{ marginLeft: '12px' }}>
+                    <div style={{ marginLeft: '12px', textAlign: 'center' }}>
                       <label className="text-white text-[9px] mb-1 block">Task BG</label>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center justify-center gap-1">
                         <div className="relative shrink-0" style={{ width: '20px', height: '20px' }}>
                           <div className="absolute inset-0 rounded-sm border border-white/30" style={{ backgroundColor: editInfo.taskBgColor || `color-mix(in srgb, ${editInfo.color} 45%, white)` }} />
                           <input type="color" value={editInfo.taskBgColor || editInfo.color} onChange={(e) => setEditInfo({...editInfo, taskBgColor: e.target.value})} className="absolute inset-0 opacity-0 cursor-pointer" style={{ width: '20px', height: '20px' }} data-testid="input-task-bg-color" />
