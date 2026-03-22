@@ -195,7 +195,7 @@ function VolumeKnob({ value, onChange, size = 54, accent = "#3b82f6", glow = "rg
           style={{ textShadow: '0 0 4px rgba(255,255,255,0.5)' }}
           data-testid="volume-minus">−</button>
         <div ref={trackRef} className="relative cursor-pointer"
-          style={{ width: trackWidth, height: 6 }}
+          style={{ width: trackWidth, height: 3 }}
           onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp}>
           <div className="absolute inset-0 rounded-full"
             style={{
