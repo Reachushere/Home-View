@@ -286,6 +286,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   const [readingWeekVariable, setReadingWeekVariable] = useState(false);
   const [readingWeekExclusions, setReadingWeekExclusions] = useState<Set<number>>(new Set());
   const [showReadingWeekCalendar, setShowReadingWeekCalendar] = useState(false);
+  const [readingWeekCalMonth, setReadingWeekCalMonth] = useState(new Date());
+  const [selectedReadingWeekStart, setSelectedReadingWeekStart] = useState<Date | null>(null);
   const { uploadFile, isUploading } = useUpload();
   const [editInfo, setEditInfo] = useState({
     professor: courseInfo.professor || '',
@@ -2235,8 +2237,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     const handleDayClick = (day: number) => {
                       const selected = new Date(year, mo, day);
                       const dayOfWeek = selected.getDay();
-                      const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-                      const weekStart = new Date(year, mo, day + mondayOffset);
+                      const saturdayOffset = dayOfWeek === 6 ? 0 : -(dayOfWeek + 1);
+                      const weekStart = new Date(year, mo, day + saturdayOffset);
                       setCourseWeek1Start(weekStart);
 
                       const newEdits = { ...weekMappingEdits };
@@ -2296,8 +2298,12 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                           {Array.from({ length: daysInMonth }, (_, i) => {
                             const day = i + 1;
                             const d = new Date(year, mo, day);
-                            const isWeek1Start = courseWeek1Start && d.getTime() === courseWeek1Start.getTime();
-                            const isInWeek1 = courseWeek1Start && d >= courseWeek1Start && d < new Date(courseWeek1Start.getTime() + 7 * 24 * 60 * 60 * 1000);
+                            const dayNorm = new Date(year, mo, day);
+                            dayNorm.setHours(0,0,0,0);
+                            const w1 = courseWeek1Start ? new Date(courseWeek1Start) : null;
+                            if (w1) w1.setHours(0,0,0,0);
+                            const isWeek1Start = w1 && dayNorm.getTime() === w1.getTime();
+                            const isInWeek1 = w1 && dayNorm >= w1 && dayNorm < new Date(w1.getTime() + 7 * 24 * 60 * 60 * 1000);
                             const weekIdx = getWeekOfDay(day);
                             const isExcludedWeek = weekIdx !== null && readingWeekExclusions.has(weekIdx);
                             return (
@@ -2318,7 +2324,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                           })}
                         </div>
                         <div className="mt-2 text-[8px] text-white">
-                          Click any day to set the Monday of that week as Week 1 start. All subsequent weeks will be numbered automatically.
+                          Click any day to set the Saturday of that week as Week 1 start. All subsequent weeks will be numbered automatically.
                         </div>
                       </div>
                     );
@@ -2352,50 +2358,107 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         data-testid="button-toggle-reading-week-cal"
                       >
                         <Calendar className="h-2.5 w-2.5" />
-                        <span>Select reading weeks to exclude from course numbering</span>
+                        <span>Select reading week</span>
+                        {selectedReadingWeekStart && (
+                          <span className="text-[8px] text-amber-300 ml-1">
+                            ({selectedReadingWeekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(selectedReadingWeekStart.getTime() + 6 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })})
+                          </span>
+                        )}
+                        {showReadingWeekCalendar ? <ChevronDown className="h-2.5 w-2.5 ml-auto" /> : <ChevronRight className="h-2.5 w-2.5 ml-auto" />}
                       </button>
 
-                      {showReadingWeekCalendar && (
-                        <div className="mt-1.5 space-y-0.5" data-testid="reading-week-selector">
-                          {Array.from({ length: LAST_WEEK - FIRST_WEEK + 1 }, (_, i) => i + FIRST_WEEK).map((weekNum) => {
-                            const weekDates = getWeekDates(weekNum, semesterStart, readingWeekStart);
-                            const ws = new Date(weekDates.start);
-                            const we = new Date(weekDates.end);
-                            const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                            const isExcluded = readingWeekExclusions.has(weekNum);
-                            return (
-                              <div key={weekNum} className="flex items-center gap-2 px-2 py-1 rounded hover:bg-white/5 cursor-pointer" onClick={() => {
-                                const next = new Set(readingWeekExclusions);
-                                if (isExcluded) next.delete(weekNum); else next.add(weekNum);
-                                setReadingWeekExclusions(next);
-                                if (courseWeek1Start) {
-                                  const newEdits = { ...weekMappingEdits };
-                                  let courseWeekNum = 1;
-                                  for (let w = FIRST_WEEK; w <= LAST_WEEK; w++) {
-                                    const excl = next.has(w);
-                                    if (!excl) {
-                                      newEdits[w] = { ...(newEdits[w] || { confirmed: false, notes: '' }), confirmed: true, courseWeekLabel: `Week ${courseWeekNum}` };
-                                      courseWeekNum++;
-                                    } else {
-                                      newEdits[w] = { ...(newEdits[w] || { confirmed: false, notes: '' }), confirmed: true, courseWeekLabel: 'Reading Week' };
-                                    }
-                                  }
-                                  setWeekMappingEdits(newEdits);
-                                  for (let w = FIRST_WEEK; w <= LAST_WEEK; w++) saveWeekMapping(w, newEdits[w]);
-                                }
-                              }} data-testid={`reading-week-toggle-${weekNum}`}>
-                                <div className="flex items-center justify-center border border-white/40 rounded-sm" style={{ width: '12px', height: '12px', background: isExcluded ? '#f59e0b' : 'transparent' }}>
-                                  {isExcluded && <span style={{ color: 'black', fontSize: '8px', fontWeight: 'bold', lineHeight: 1 }}>✓</span>}
-                                </div>
-                                <span className={`text-[8px] ${isExcluded ? 'text-amber-300' : 'text-white'}`}>
-                                  Week {weekNum} — {fmt(ws)} - {fmt(we)}
-                                </span>
-                                {isExcluded && <span className="text-[7px] text-amber-400 ml-1">(Reading Week — excluded)</span>}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
+                      {showReadingWeekCalendar && (() => {
+                        const rwMonth = readingWeekCalMonth;
+                        const rwYear = rwMonth.getFullYear();
+                        const rwMo = rwMonth.getMonth();
+                        const rwFirstDay = new Date(rwYear, rwMo, 1).getDay();
+                        const rwDaysInMonth = new Date(rwYear, rwMo + 1, 0).getDate();
+                        const rwMonthName = rwMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                        const rwDayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+                        const handleReadingWeekDayClick = (day: number) => {
+                          const selected = new Date(rwYear, rwMo, day);
+                          const dayOfWeek = selected.getDay();
+                          const satOffset = dayOfWeek === 6 ? 0 : -(dayOfWeek + 1);
+                          const rwStart = new Date(rwYear, rwMo, day + satOffset);
+                          setSelectedReadingWeekStart(rwStart);
+
+                          if (courseWeek1Start) {
+                            const w1 = new Date(courseWeek1Start);
+                            w1.setHours(12, 0, 0, 0);
+                            rwStart.setHours(12, 0, 0, 0);
+                            const diffMs = rwStart.getTime() - w1.getTime();
+                            const diffWeeks = Math.round(diffMs / (7 * 24 * 60 * 60 * 1000));
+                            const rwWeekNum = diffWeeks + FIRST_WEEK;
+
+                            const next = new Set<number>();
+                            if (rwWeekNum >= FIRST_WEEK && rwWeekNum <= LAST_WEEK) {
+                              next.add(rwWeekNum);
+                            }
+                            setReadingWeekExclusions(next);
+
+                            const newEdits = { ...weekMappingEdits };
+                            let courseWeekNum = 1;
+                            for (let w = FIRST_WEEK; w <= LAST_WEEK; w++) {
+                              const excl = next.has(w);
+                              if (!excl) {
+                                newEdits[w] = { ...(newEdits[w] || { confirmed: false, notes: '' }), confirmed: true, courseWeekLabel: `Week ${courseWeekNum}` };
+                                courseWeekNum++;
+                              } else {
+                                newEdits[w] = { ...(newEdits[w] || { confirmed: false, notes: '' }), confirmed: true, courseWeekLabel: 'Reading Week' };
+                              }
+                            }
+                            setWeekMappingEdits(newEdits);
+                            for (let w = FIRST_WEEK; w <= LAST_WEEK; w++) saveWeekMapping(w, newEdits[w]);
+                          }
+                        };
+
+                        return (
+                          <div className="mt-2" data-testid="reading-week-calendar-picker">
+                            <div className="flex items-center justify-between mb-2">
+                              <button onClick={() => setReadingWeekCalMonth(new Date(rwYear, rwMo - 1, 1))} className="text-white/60 hover:text-white p-0.5" data-testid="rw-cal-prev">
+                                <ChevronLeft className="h-3.5 w-3.5" />
+                              </button>
+                              <span className="text-[13px] font-medium text-white">{rwMonthName}</span>
+                              <button onClick={() => setReadingWeekCalMonth(new Date(rwYear, rwMo + 1, 1))} className="text-white/60 hover:text-white p-0.5" data-testid="rw-cal-next">
+                                <ChevronRight className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                            <div className="grid grid-cols-7 gap-0.5 mb-1">
+                              {rwDayLabels.map(d => <div key={d} className="text-[8px] text-white text-center font-medium">{d}</div>)}
+                            </div>
+                            <div className="grid grid-cols-7 gap-0.5">
+                              {Array.from({ length: rwFirstDay }, (_, i) => <div key={`re${i}`} />)}
+                              {Array.from({ length: rwDaysInMonth }, (_, i) => {
+                                const day = i + 1;
+                                const dayDate = new Date(rwYear, rwMo, day);
+                                dayDate.setHours(0, 0, 0, 0);
+                                const rwSel = selectedReadingWeekStart ? new Date(selectedReadingWeekStart) : null;
+                                if (rwSel) rwSel.setHours(0, 0, 0, 0);
+                                const isRWStart = rwSel && dayDate.getTime() === rwSel.getTime();
+                                const isInRW = rwSel && dayDate >= rwSel && dayDate < new Date(rwSel.getTime() + 7 * 24 * 60 * 60 * 1000);
+                                return (
+                                  <button
+                                    key={day}
+                                    onClick={() => handleReadingWeekDayClick(day)}
+                                    className={`h-6 text-[11px] rounded transition-colors ${
+                                      isRWStart ? 'bg-amber-500 text-white font-bold' :
+                                      isInRW ? 'bg-amber-500/30 text-white' :
+                                      'text-white hover:bg-white/15'
+                                    }`}
+                                    data-testid={`rw-cal-day-${day}`}
+                                  >
+                                    {day}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                            <div className="mt-2 text-[8px] text-white">
+                              Click any day to select the reading week. Weeks after the reading week will shift up by one in the course numbering.
+                            </div>
+                          </div>
+                        );
+                      })()}
                     </div>
                   )}
                 </div>
@@ -2409,7 +2472,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   const edit = weekMappingEdits[weekNum] || { confirmed: false, courseWeekLabel: '', notes: '' };
                   const isConfirmed = edit.confirmed;
                   const hasCustomLabel = edit.courseWeekLabel && edit.courseWeekLabel !== '';
-                  const currentWeek = getWeekNumber(new Date(), semesterStart, null);
+                  const effectiveRWStart = selectedReadingWeekStart || readingWeekStart;
+                  const currentWeek = getWeekNumber(new Date(), semesterStart, effectiveRWStart);
                   const isCurrent = weekNum === currentWeek;
 
                   return (
@@ -2815,10 +2879,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             {courseTasks.length > 0 && (
               <div className="flex items-center px-1.5 py-1.5 mt-1 rounded-md border border-amber-400/30 bg-amber-400/5" style={{ margin: '4px 4px 0 4px' }} data-testid="grade-totals-row">
                 <div className="flex-shrink-0" style={{ width: '14px', marginRight: '10px' }} />
-                <div className="flex-shrink-0" style={{ width: '19px', marginRight: '10px' }} />
-                <div className="flex-shrink-0 w-4" style={{ marginRight: '10px' }} />
-                <div className="flex-shrink-0" style={{ width: '19px', marginRight: '10px' }} />
-                <div className="flex-1 min-w-0 text-[11px] font-bold text-white" style={{ marginLeft: '22px' }}>Totals</div>
+                <div className="flex-shrink-0" style={{ width: '16px', marginRight: '10px' }} />
+                <div className="flex-shrink-0" style={{ width: '15px', marginRight: '10px' }} />
+                <div className="flex-shrink-0" style={{ width: '19px', marginLeft: '14px', marginRight: '10px' }} />
+                <div className="flex-1 min-w-0 text-[11px] font-bold text-white" style={{ marginLeft: '21px' }}>Totals</div>
                 <div className="flex items-center flex-shrink-0" style={{ gap: '10px', position: 'relative', left: '-8px' }}>
                   <span className="text-[11px] font-bold w-[33px] text-center text-amber-400" data-testid="text-sum-value">
                     {(() => { const v = courseTasks.filter(t => !t.excludeFromGpa).reduce((s, t) => s + (t.gradeValue || 0), 0); return v ? v.toFixed(2) : '—'; })()}
