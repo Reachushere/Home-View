@@ -1423,6 +1423,32 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             {isEditingInfo ? (
               <div className="space-y-2 text-[10px]">
                 <div className="flex items-center gap-1.5 justify-end">
+                    <label className="cursor-pointer" data-testid="button-upload-assignment">
+                      <input
+                        type="file"
+                        accept=".pdf"
+                        className="hidden"
+                        onChange={handleUploadAssignment}
+                        disabled={isParsingPdf || isUploading}
+                      />
+                      <div className={`h-6 px-2 text-[9px] bg-blue-600/30 hover:bg-blue-600/50 text-white border border-blue-400/30 rounded-md flex items-center gap-1 transition-colors ${isParsingPdf || isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                        {isParsingPdf || isUploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
+                        {isParsingPdf ? 'Parsing...' : isUploading ? 'Uploading...' : 'Upload PDF'}
+                      </div>
+                    </label>
+                    <label className={`cursor-pointer ${syllabusObjectPath ? 'opacity-40 pointer-events-none' : ''}`} data-testid="button-upload-syllabus">
+                      <input
+                        type="file"
+                        accept=".pdf"
+                        className="hidden"
+                        onChange={handleUploadSyllabus}
+                        disabled={isParsingSyllabus || isUploading || !!syllabusObjectPath}
+                      />
+                      <div className={`h-6 px-2 text-[9px] ${syllabusObjectPath ? 'bg-gray-500/40 text-white/50 border-gray-400/30' : 'bg-emerald-600/30 hover:bg-emerald-600/50 text-white border-emerald-400/30'} border rounded-md flex items-center gap-1 transition-colors whitespace-nowrap ${isParsingSyllabus || isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                        {isParsingSyllabus ? <Loader2 className="h-3 w-3 animate-spin" /> : <FileText className="h-3 w-3" />}
+                        {isParsingSyllabus ? 'Parsing...' : 'Add Syllabus'}
+                      </div>
+                    </label>
                     {syllabusObjectPath && (
                       <Paperclip
                         className="h-3.5 w-3.5 text-white cursor-pointer hover:opacity-70 transition-opacity"
@@ -1453,32 +1479,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         data-testid="button-delete-syllabus"
                       />
                     )}
-                    <label className={`cursor-pointer ${syllabusObjectPath ? 'opacity-40 pointer-events-none' : ''}`} data-testid="button-upload-syllabus">
-                      <input
-                        type="file"
-                        accept=".pdf"
-                        className="hidden"
-                        onChange={handleUploadSyllabus}
-                        disabled={isParsingSyllabus || isUploading || !!syllabusObjectPath}
-                      />
-                      <div className={`h-6 px-2 text-[9px] ${syllabusObjectPath ? 'bg-gray-500/40 text-white/50 border-gray-400/30' : 'bg-emerald-600/30 hover:bg-emerald-600/50 text-white border-emerald-400/30'} border rounded-md flex items-center gap-1 transition-colors whitespace-nowrap ${isParsingSyllabus || isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
-                        {isParsingSyllabus ? <Loader2 className="h-3 w-3 animate-spin" /> : <FileText className="h-3 w-3" />}
-                        {isParsingSyllabus ? 'Parsing...' : 'Add Syllabus'}
-                      </div>
-                    </label>
-                    <label className="cursor-pointer" data-testid="button-upload-assignment">
-                      <input
-                        type="file"
-                        accept=".pdf"
-                        className="hidden"
-                        onChange={handleUploadAssignment}
-                        disabled={isParsingPdf || isUploading}
-                      />
-                      <div className={`h-6 px-2 text-[9px] bg-blue-600/30 hover:bg-blue-600/50 text-white border border-blue-400/30 rounded-md flex items-center gap-1 transition-colors ${isParsingPdf || isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
-                        {isParsingPdf || isUploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
-                        {isParsingPdf ? 'Parsing...' : isUploading ? 'Uploading...' : 'Upload PDF'}
-                      </div>
-                    </label>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
