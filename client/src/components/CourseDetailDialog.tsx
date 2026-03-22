@@ -1330,7 +1330,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                       });
                       setIsEditingInfo(false);
                     }}
-                    className="text-[9px] text-white hover:text-white transition-colors px-1.5 py-0.5 rounded border border-white/20"
+                    className="text-[11px] text-white hover:text-white transition-colors px-3 py-1 rounded border border-white/30 hover:bg-white/10"
                     data-testid="button-cancel-edit-info"
                   >
                     Cancel
@@ -1354,10 +1354,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                       setIsEditingInfo(false);
                       toast({ title: "Course info updated" });
                     }}
-                    className="flex items-center gap-0.5 text-[9px] text-emerald-400 hover:text-emerald-300 transition-colors px-1.5 py-0.5 rounded border border-emerald-500/30"
+                    className="flex items-center gap-1 text-[11px] text-gray-800 font-medium transition-colors px-3 py-1 rounded bg-white hover:bg-white/90"
                     data-testid="button-save-edit-info"
                   >
-                    <Check className="w-2.5 h-2.5" />
+                    <Check className="w-3 h-3" />
                     Save
                   </button>
                 </div>
