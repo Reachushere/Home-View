@@ -22005,7 +22005,8 @@ export default function Dashboard() {
                     padding: '3px 6px',
                     display: 'flex',
                     flexDirection: 'column',
-                    justifyContent: 'flex-start',
+                    justifyContent: otherProgressTasks.length === 0 ? 'center' : 'flex-start',
+                    alignItems: otherProgressTasks.length === 0 ? 'center' : 'stretch',
                   }}
                   onWheel={(e) => {
                     e.stopPropagation();
@@ -22013,7 +22014,7 @@ export default function Dashboard() {
                     e.preventDefault();
                   }}>
                     {otherProgressTasks.length === 0 && (
-                      <span className="text-[10px] text-white/40 italic" style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', flex: 1 }}>No upcoming items</span>
+                      <span className="text-[10px] text-white/40 italic">No upcoming items</span>
                     )}
                     {otherProgressTasks.map(t => {
                       const dueStr = format(new Date(t.dueDate), 'MMM d');
