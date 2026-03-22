@@ -2201,7 +2201,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             {showWeekMappings && (
               <div className="mt-2 bg-white/5 border border-white/15 rounded-lg p-3 space-y-1" data-testid="week-mappings-panel">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[9px] text-white/60">Confirm each week follows the standard TMU academic calendar for this course</span>
+                  <span className="text-[9px] text-white">Confirm each week follows the standard TMU academic calendar for this course</span>
                   <Button
                     size="sm"
                     onClick={confirmAllWeeks}
