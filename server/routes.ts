@@ -1780,51 +1780,69 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
 
   const weatherAlertCache: { data: any | null; timestamp: number } = { data: null, timestamp: 0 };
 
+  const WEATHER_ALERT_ZONES = ['on61', 'on20', 'on21', 'on29'];
+
+  async function fetchWeatherAlertsFromECCC(): Promise<{ title: string; summary: string; type: string; updated: string }[]> {
+    const seen = new Set<string>();
+    const alerts: { title: string; summary: string; type: string; updated: string }[] = [];
+
+    const fetches = WEATHER_ALERT_ZONES.map(async (zone) => {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 8000);
+        const response = await fetch(`https://weather.gc.ca/warnings/report_e.html?${zone}=`, {
+          signal: controller.signal,
+          headers: { 'User-Agent': 'Mozilla/5.0 (compatible; UniCal/1.0)' },
+          redirect: 'follow',
+        });
+        clearTimeout(timeout);
+        const html = await response.text();
+
+        const stateMatch = html.match(/window\.__INITIAL_STATE__\s*=\s*({[\s\S]*?});\s*\(/);
+        if (!stateMatch) return;
+        const stateJson = stateMatch[1].replace(/\\u002F/g, '/');
+        const state = JSON.parse(stateJson);
+        const alertObj = state?.alert?.alert || {};
+        for (const zoneKey of Object.keys(alertObj)) {
+          const zoneData = alertObj[zoneKey];
+          if (!zoneData || typeof zoneData !== 'object') continue;
+          const zoneAlerts = zoneData.alerts || [];
+          const zoneName = zoneData.displayName || zoneKey;
+          for (const a of zoneAlerts) {
+            if (!a || a.status !== 'active') continue;
+            const rawTitle = a.alertBannerText || a.type || '';
+            const dedup = `${zoneKey}-${rawTitle}`;
+            if (seen.has(dedup)) continue;
+            seen.add(dedup);
+            const title = `${rawTitle}${zoneName ? ` - ${zoneName}` : ''}`.replace(/&amp;/g, '&');
+            const isWarning = /warning/i.test(rawTitle);
+            const isWatch = /watch/i.test(rawTitle);
+            const isAdvisory = /advisory|statement|special/i.test(rawTitle);
+            alerts.push({
+              title,
+              summary: (a.issueTimeText || '').slice(0, 300),
+              type: isWarning ? 'warning' : isWatch ? 'watch' : isAdvisory ? 'advisory' : 'info',
+              updated: a.issueTime || new Date().toISOString(),
+            });
+          }
+        }
+      } catch (e) {
+        console.error(`[Weather Alerts] Failed to fetch zone ${zone}:`, e);
+      }
+    });
+
+    await Promise.all(fetches);
+    return alerts;
+  }
+
   app.get("/api/weather-alerts", async (_req, res) => {
     try {
       const now = Date.now();
       if (weatherAlertCache.data && now - weatherAlertCache.timestamp < 5 * 60 * 1000) {
         return res.json(weatherAlertCache.data);
       }
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 8000);
-      const response = await fetch('https://weather.gc.ca/warnings/report_e.html?on27=', {
-        signal: controller.signal,
-        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; UniCal/1.0)' },
-        redirect: 'follow',
-      });
-      clearTimeout(timeout);
-      const html = await response.text();
 
-      const alerts: { title: string; summary: string; type: string; updated: string }[] = [];
-      const stateMatch = html.match(/window\.__INITIAL_STATE__\s*=\s*({[\s\S]*?});\s*\(/);
-      if (stateMatch) {
-        try {
-          const stateJson = stateMatch[1].replace(/\\u002F/g, '/');
-          const state = JSON.parse(stateJson);
-          const alertObj = state?.alert?.alert || {};
-          for (const key of Object.keys(alertObj)) {
-            const a = alertObj[key];
-            if (a && typeof a === 'object') {
-              const title = a.title || a.name || key;
-              if (title && !title.toLowerCase().includes('no watches or warnings') && !title.toLowerCase().includes('no alerts')) {
-                const isWarning = /warning/i.test(title);
-                const isWatch = /watch/i.test(title);
-                const isAdvisory = /advisory|statement|special/i.test(title);
-                alerts.push({
-                  title: title.replace(/&amp;/g, '&'),
-                  summary: (a.summary || a.description || '').slice(0, 300),
-                  type: isWarning ? 'warning' : isWatch ? 'watch' : isAdvisory ? 'advisory' : 'info',
-                  updated: a.updated || a.issued || new Date().toISOString(),
-                });
-              }
-            }
-          }
-        } catch (parseErr) {
-          console.error('[Weather Alerts] Failed to parse __INITIAL_STATE__:', parseErr);
-        }
-      }
-
+      const alerts = await fetchWeatherAlertsFromECCC();
       const result = { alerts, count: alerts.length, hasAlerts: alerts.length > 0, timestamp: new Date().toISOString() };
       weatherAlertCache.data = result;
       weatherAlertCache.timestamp = now;
@@ -1839,43 +1857,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
     try {
       const now = Date.now();
       if (!weatherAlertCache.data || now - weatherAlertCache.timestamp > 5 * 60 * 1000) {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 8000);
-        const response = await fetch('https://weather.gc.ca/warnings/report_e.html?on27=', {
-          signal: controller.signal,
-          headers: { 'User-Agent': 'Mozilla/5.0 (compatible; UniCal/1.0)' },
-          redirect: 'follow',
-        });
-        clearTimeout(timeout);
-        const html = await response.text();
-        const alerts: { title: string; summary: string; type: string; updated: string }[] = [];
-        const stateMatch = html.match(/window\.__INITIAL_STATE__\s*=\s*({[\s\S]*?});\s*\(/);
-        if (stateMatch) {
-          try {
-            const stateJson = stateMatch[1].replace(/\\u002F/g, '/');
-            const state = JSON.parse(stateJson);
-            const alertObj = state?.alert?.alert || {};
-            for (const key of Object.keys(alertObj)) {
-              const a = alertObj[key];
-              if (a && typeof a === 'object') {
-                const title = a.title || a.name || key;
-                if (title && !title.toLowerCase().includes('no watches or warnings') && !title.toLowerCase().includes('no alerts')) {
-                  const isWarning = /warning/i.test(title);
-                  const isWatch = /watch/i.test(title);
-                  const isAdvisory = /advisory|statement|special/i.test(title);
-                  alerts.push({
-                    title: title.replace(/&amp;/g, '&'),
-                    summary: (a.summary || a.description || '').slice(0, 300),
-                    type: isWarning ? 'warning' : isWatch ? 'watch' : isAdvisory ? 'advisory' : 'info',
-                    updated: a.updated || a.issued || new Date().toISOString(),
-                  });
-                }
-              }
-            }
-          } catch (parseErr) {
-            console.error('[Weather Alerts HA] Failed to parse __INITIAL_STATE__:', parseErr);
-          }
-        }
+        const alerts = await fetchWeatherAlertsFromECCC();
         weatherAlertCache.data = { alerts, count: alerts.length, hasAlerts: alerts.length > 0, timestamp: new Date().toISOString() };
         weatherAlertCache.timestamp = now;
       }
