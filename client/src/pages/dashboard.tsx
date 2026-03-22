@@ -22270,6 +22270,23 @@ export default function Dashboard() {
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks this week</div>
                 ) : (
                   <div className="flex flex-col gap-0.5">
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginBottom: '4px', alignItems: 'flex-start' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[0]?.label || 'This week'}</span>
+                        <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px' }}>({dueTomorrowTasks.length})</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0 }}>
+                        <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 165, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                          <div style={{ background: 'rgb(255, 165, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(addDays(new Date(), 1), 'MMM').toUpperCase()}</div>
+                          <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(addDays(new Date(), 1), 'd')}</div>
+                        </div>
+                        <span style={{ fontSize: '6px', color: 'white', lineHeight: 1 }}>&#9654;</span>
+                        <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 165, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                          <div style={{ background: 'rgb(255, 165, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(thisWeekFriday, 'MMM').toUpperCase()}</div>
+                          <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(thisWeekFriday, 'd')}</div>
+                        </div>
+                      </div>
+                    </div>
                     {(() => {
                       const today = startOfDayET(new Date());
                       const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
@@ -22304,25 +22321,6 @@ export default function Dashboard() {
                         return (
                           <div key={group.key} style={{ display: 'flex', alignItems: 'stretch' }}>
                             <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '10px', marginRight: '4px', overflow: 'hidden' }}>
-                              {groupIdx === 0 && (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginBottom: '4px', alignItems: 'flex-start', alignSelf: 'flex-start', marginLeft: '-10px' }}>
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                    <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[0]?.label || 'This week'}</span>
-                                    <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px' }}>({dueTomorrowTasks.length})</span>
-                                  </div>
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0 }}>
-                                    <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 165, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                                      <div style={{ background: 'rgb(255, 165, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(addDays(new Date(), 1), 'MMM').toUpperCase()}</div>
-                                      <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(addDays(new Date(), 1), 'd')}</div>
-                                    </div>
-                                    <span style={{ fontSize: '6px', color: 'white', lineHeight: 1 }}>&#9654;</span>
-                                    <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 165, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                                      <div style={{ background: 'rgb(255, 165, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(thisWeekFriday, 'MMM').toUpperCase()}</div>
-                                      <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(thisWeekFriday, 'd')}</div>
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
                               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-end' }}>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
                                 <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
