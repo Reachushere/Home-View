@@ -1635,9 +1635,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         <div style={{ position: 'absolute', right: '0px', top: 0, cursor: 'pointer', zIndex: 10 }} onClick={() => setActiveGradientStop(activeGradientStop === 'end' ? null : 'end')} data-testid="gradient-stop-end">
                           <svg width="12" height="12" viewBox="0 0 12 12"><polygon points="6,0 12,10 0,10" fill={editInfo.colorEnd} stroke={activeGradientStop === 'end' ? '#ffffff' : 'rgba(255,255,255,0.4)'} strokeWidth={activeGradientStop === 'end' ? '2' : '1'}/></svg>
                         </div>
-                        {midStops.length > 0 && <span className="text-white text-[9px] absolute" style={{ bottom: '-23px', left: '0px' }}>double-click bar to add · drag to move</span>}
+                        {midStops.length > 0 && <span className="text-white text-[9px] absolute" style={{ bottom: '-23px', left: '0px' }}>Double-click bar to add · drag to move</span>}
                       </div>
-                      {midStops.length === 0 && <div className="text-white text-[11px] text-left" style={{ marginTop: '7px', marginBottom: '10px' }}>double-click gradient bar to add a colour stop</div>}
+                      {midStops.length === 0 && <div className="text-white text-[11px] text-left" style={{ marginTop: '7px', marginBottom: '10px' }}>Double-click gradient bar to add a colour stop</div>}
                       {midStops.length > 0 && <div style={{ height: '24px' }} />}
                       {activeGradientStop != null && (
                         <div className="mt-1 rounded" style={{ border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(0,0,0,0.4)', padding: '6px' }}>
