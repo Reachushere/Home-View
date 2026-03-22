@@ -21773,7 +21773,7 @@ export default function Dashboard() {
                   zIndex: 1,
                   boxShadow: 'inset 0 0 0 0.5px rgba(255,255,255,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
                 }} />,
-                <div key={`${pd.courseCode}-right-fill-ext`} className="hide-scrollbar" style={{
+                <div key={`${pd.courseCode}-right-fill-ext`} style={{
                   position: 'absolute',
                   top: `${rowTop}px`,
                   left: `${effectiveDividerPct}%`,
@@ -21784,7 +21784,7 @@ export default function Dashboard() {
                   borderBottom: '0.5px solid rgba(255,255,255,0.2)',
                   overflowX: 'hidden',
                   overflowY: 'auto',
-                  scrollbarWidth: 'none',
+                  scrollbarWidth: 'thin',
                   scrollBehavior: 'smooth',
                   padding: '2px 6px 2px 6px',
                   display: 'flex',
@@ -21796,6 +21796,20 @@ export default function Dashboard() {
                   const el = e.currentTarget;
                   el.scrollTop += e.deltaY * 0.3;
                   e.preventDefault();
+                }}
+                onTouchStart={(e) => {
+                  const el = e.currentTarget;
+                  (el as any)._touchStartY = e.touches[0].clientY;
+                  (el as any)._touchStartScroll = el.scrollTop;
+                }}
+                onTouchMove={(e) => {
+                  const el = e.currentTarget;
+                  const startY = (el as any)._touchStartY;
+                  if (startY !== undefined) {
+                    const delta = startY - e.touches[0].clientY;
+                    el.scrollTop = (el as any)._touchStartScroll + delta;
+                    e.stopPropagation();
+                  }
                 }}>
                   
                   {(() => {
