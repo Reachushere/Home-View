@@ -22322,9 +22322,11 @@ export default function Dashboard() {
                           <div key={group.key} style={{ display: 'flex', alignItems: 'stretch' }}>
                             <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '-3px', marginRight: '2px', overflow: 'hidden' }}>
                               {groupIdx === 0 && (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', alignItems: 'center', width: '100%', marginBottom: '4px' }}>
-                                  <span className="text-[12px] font-semibold" style={{ color: '#ffffff', whiteSpace: 'nowrap' }}>{hwWeeklyTimeline[0]?.label || 'This week'}</span>
-                                  <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)' }}>({dueTomorrowTasks.length})</span>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', alignItems: 'flex-start', width: '100%', marginBottom: '4px' }}>
+                                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+                                    <span className="text-[12px] font-semibold" style={{ color: '#ffffff', whiteSpace: 'nowrap' }}>{hwWeeklyTimeline[0]?.label || 'This week'}</span>
+                                    <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)' }}>({dueTomorrowTasks.length})</span>
+                                  </div>
                                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0 }}>
                                     <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(255, 165, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                                       <div style={{ background: 'rgb(255, 165, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(addDays(new Date(), 1), 'MMM').toUpperCase()}</div>
