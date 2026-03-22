@@ -21743,7 +21743,7 @@ export default function Dashboard() {
                   left: `${effectiveDividerPct}%`,
                   right: 0,
                   height: `${rowHeight}px`,
-                  background: pd.taskBgColor || `linear-gradient(180deg, color-mix(in srgb, ${pd.progressStartColor} 45%, white) 0%, color-mix(in srgb, ${pd.progressEndColor} 45%, white) 100%)`,
+                  background: pd.taskBgColor || 'linear-gradient(180deg, #2a5a7a 0%, #1a3a5a 100%)',
                   zIndex: 41,
                   borderBottom: '0.5px solid rgba(255,255,255,0.2)',
                   overflowX: 'hidden',
