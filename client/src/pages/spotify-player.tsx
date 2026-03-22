@@ -1960,7 +1960,7 @@ export default function SpotifyPlayerPage() {
                                   <div className="px-2 py-1.5 flex flex-col gap-1">
                                     {(rooms.find(r => r.room === spot.room)?.speakers || []).filter(spk => spk.type !== "group").map(spk => {
                                       const isEcho = spk.type === "echo" || spk.type === "echo_show";
-                                      const isSpeakerActive = isActive;
+                                      const isSpeakerActive = isActive || activeRooms.has("Everywhere");
                                       return (
                                         <button key={spk.entityId}
                                           draggable
