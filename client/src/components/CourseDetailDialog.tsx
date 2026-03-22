@@ -981,6 +981,16 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
         <div className="flex-shrink-0 cursor-grab active:cursor-grabbing text-white/30 hover:text-white/60" style={{ marginRight: '10px' }} data-testid={`drag-handle-${task.id}`}>
           <GripVertical className="h-3.5 w-3.5" />
         </div>
+        <button
+          onClick={(e) => { e.stopPropagation(); toggleTaskMutation.mutate({ id: task.id, isCompleted: !task.isCompleted, _task: task }); }}
+          className={`flex-shrink-0 w-4 h-4 rounded-sm border-2 flex items-center justify-center transition-colors ${
+            task.isCompleted ? "bg-green-500 border-green-500" : "border-white/30 hover:border-white/50"
+          }`}
+          style={{ marginRight: '10px' }}
+          data-testid={`button-toggle-task-${task.id}`}
+        >
+          {task.isCompleted && <Check className="h-3 w-3 text-white" />}
+        </button>
         {assignToGroup === task.id ? (
           <select
             className="h-5 text-[8px] bg-white/10 border border-white/20 rounded text-white px-0.5 flex-shrink-0"
@@ -1006,16 +1016,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
             <FolderPlus className="h-[15px] w-[15px]" />
           </button>
         )}
-        <button
-          onClick={(e) => { e.stopPropagation(); toggleTaskMutation.mutate({ id: task.id, isCompleted: !task.isCompleted, _task: task }); }}
-          className={`flex-shrink-0 w-4 h-4 rounded-sm border-2 flex items-center justify-center transition-colors ${
-            task.isCompleted ? "bg-green-500 border-green-500" : "border-white/30 hover:border-white/50"
-          }`}
-          style={{ marginRight: '10px' }}
-          data-testid={`button-toggle-task-${task.id}`}
-        >
-          {task.isCompleted && <Check className="h-3 w-3 text-white" />}
-        </button>
         <MessageSquare className={`h-[19px] w-[19px] flex-shrink-0 cursor-pointer hover:opacity-70 transition-opacity ${task.isCompleted ? "text-white/50" : "text-white"}`} style={{ marginLeft: '3px', marginRight: '10px' }} onClick={(e) => { e.stopPropagation(); if (expandedTaskId === task.id) { setExpandedTaskId(null); setEditTaskFields(null); } else { setExpandedTaskId(task.id); const d = task.dueDate ? new Date(task.dueDate) : null; setEditTaskFields({ title: task.title || '', type: task.type || 'other', dueDate: d ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` : '', dueTime: d ? `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` : '', description: task.description || '', gradeWeight: task.gradeWeight?.toString() || '', gradeTotal: task.gradeTotal?.toString() || '', gradeValue: task.gradeValue?.toString() || '', reminder1: task.reminder1 ?? 30, reminder2: task.reminder2 ?? 120, reminder3: task.reminder3 ?? null, reminder4: task.reminder4 ?? null }); } }} data-testid={`button-comments-${task.id}`} />
         <div className="flex-1 min-w-0" style={{ marginLeft: '22px' }}>
           <div
@@ -2597,10 +2597,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
               return (
                 <div className="flex items-end px-1.5 py-1 text-[8px] font-bold text-white" style={{ margin: '0 4px', letterSpacing: '0' }}>
                   <div className="flex-shrink-0" style={{ width: '14px', marginRight: '10px' }} />
+                  <div className="flex-shrink-0" style={{ width: '16px', marginRight: '10px' }} />
                   <div className="flex-shrink-0 text-center" style={{ width: '19px', marginRight: '10px' }}>
                     <span className="text-[8px] font-bold text-white">Assign</span>
                   </div>
-                  <div className="flex-shrink-0" style={{ width: '16px', marginRight: '10px' }} />
                   <div className="flex-shrink-0 flex justify-center" style={{ width: '19px', marginLeft: '3px', marginRight: '10px', overflow: 'visible' }}>
                     <span className="text-[8px] font-bold text-white" style={{ whiteSpace: 'nowrap' }}>Comments</span>
                   </div>
