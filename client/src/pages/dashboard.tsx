@@ -1049,7 +1049,7 @@ export default function Dashboard() {
           setReturnReadingFiles(mapped);
           setSelectedReturnFile(mapped[0].id);
         }
-        if (orderedFiles.length > 0) {
+        if (orderedFiles.length > 0 && !window.location.hostname.endsWith('.replit.app')) {
           setShowReturnReadingPrompt(true);
         }
       })
