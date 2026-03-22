@@ -22309,7 +22309,7 @@ export default function Dashboard() {
                       return groups.map((group, groupIdx) => {
                         const dueDates = group.tasks.map(t => ({ date: startOfDayET(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
-                          <div key={group.key} style={{ display: 'flex', alignItems: 'flex-start' }}>
+                          <div key={group.key} style={{ display: 'flex', alignItems: 'stretch' }}>
                             <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginLeft: '10px', marginRight: '4px', overflow: 'visible' }}>
                               {groupIdx === 0 && (
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginBottom: '4px', alignItems: 'flex-start', alignSelf: 'flex-start' }}>
@@ -22330,6 +22330,7 @@ export default function Dashboard() {
                                   </div>
                                 </div>
                               )}
+                              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-end' }}>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
                                 <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
                                   {['Su','Mo','Tu','We','Th','Fr','Sa'].map((dl, dli) => (
@@ -22361,6 +22362,7 @@ export default function Dashboard() {
                                     </div>
                                   );
                                 })}
+                              </div>
                               </div>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', alignSelf: 'stretch' }}>
