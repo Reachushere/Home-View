@@ -17,6 +17,7 @@ import pugNight from "@assets/Pug_Night_1774008796949.png";
 import queenNight from "@assets/Queen_Night_1774008796950.png";
 import catNight from "@assets/Cat_Night_1774008796951.png";
 import closetNight from "@assets/Closet_Night_1774008796953.png";
+import echoSpeakerImg from "@assets/image_1774213520266.png";
 
 interface NowPlaying {
   playing: boolean; name?: string; artist?: string; album?: string;
@@ -1812,18 +1813,20 @@ export default function SpotifyPlayerPage() {
                         </span>
                         {speakerCount > 0 && (
                           <div className="relative">
-                            <button className="flex items-center gap-0.5 mt-0.5 px-1.5 py-0.5 rounded-full cursor-pointer transition-all hover:scale-110"
+                            <button className="flex items-center gap-1 mt-0.5 px-1 py-0.5 rounded-lg cursor-pointer transition-all hover:scale-110"
                               onClick={(e) => { e.stopPropagation(); e.preventDefault(); setFloorSpeakerPopup(floorSpeakerPopup === spot.room ? null : spot.room); }}
                               style={{
                                 background: isActive ? `${profile.accent}20` : (isSakura ? 'rgba(30,65,100,0.5)' : 'rgba(25,50,90,0.6)'),
-                                border: `1px solid ${isActive ? `${profile.accent}40` : 'rgba(255,255,255,0.3)'}`,
+                                border: `1px solid ${isActive ? `${profile.accent}40` : 'rgba(255,255,255,0.15)'}`,
                               }}
                               data-testid={`floor-speakers-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
                               {[...Array(Math.min(speakerCount, 4))].map((_, si) => (
-                                <div key={si} className="w-2 h-2.5 rounded-sm" style={{
-                                  background: isActive ? profile.accent : 'rgba(255,255,255,0.85)',
-                                  boxShadow: isActive ? `0 0 4px ${profile.accent}` : 'none',
-                                }} />
+                                <img key={si} src={echoSpeakerImg} alt="Speaker" className="rounded-md object-cover"
+                                  style={{
+                                    width: 18, height: 18,
+                                    filter: isActive ? `drop-shadow(0 0 3px ${profile.accent})` : 'brightness(0.8)',
+                                    opacity: isActive ? 1 : 0.7,
+                                  }} />
                               ))}
                               {speakerCount > 4 && (
                                 <span className="text-[8px] font-bold" style={{ color: isActive ? profile.accent : 'rgba(255,255,255,0.85)' }}>+{speakerCount - 4}</span>
