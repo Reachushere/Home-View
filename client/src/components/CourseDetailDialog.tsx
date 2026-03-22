@@ -1600,13 +1600,29 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                             <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(to right, white, hsl(${hexToHue(getActiveColor())}, 100%, 50%))` }} />
                             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent, black)' }} />
                           </div>
-                          <div className="relative mt-1.5 rounded overflow-hidden cursor-pointer" style={{ height: '10px' }} data-testid={`hue-slider-${activeGradientStop}`}
+                          <div className="relative mt-1.5 rounded cursor-pointer" style={{ height: '14px', touchAction: 'none' }} data-testid={`hue-slider-${activeGradientStop}`}
                             onClick={(e) => {
                               const rect = e.currentTarget.getBoundingClientRect();
                               const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
                               setActiveColor(hueToHex(Math.round(x * 360)));
+                            }}
+                            onPointerDown={(e) => {
+                              e.preventDefault();
+                              const el = e.currentTarget;
+                              el.setPointerCapture(e.pointerId);
+                              const rect = el.getBoundingClientRect();
+                              const update = (ev: PointerEvent) => {
+                                const x = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
+                                setActiveColor(hueToHex(Math.round(x * 360)));
+                              };
+                              update(e.nativeEvent);
+                              const onMove = (ev: PointerEvent) => update(ev);
+                              const onUp = () => { el.releasePointerCapture(e.pointerId); window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); };
+                              window.addEventListener('pointermove', onMove);
+                              window.addEventListener('pointerup', onUp);
                             }}>
                             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)', borderRadius: '3px' }} />
+                            <div style={{ position: 'absolute', top: '-1px', left: `${(hexToHue(getActiveColor()) / 360) * 100}%`, transform: 'translateX(-50%)', width: '4px', height: '16px', background: 'white', borderRadius: '2px', boxShadow: '0 0 3px rgba(0,0,0,0.5)', border: '1px solid rgba(0,0,0,0.3)', pointerEvents: 'none' }} />
                           </div>
                           <div className="flex items-center gap-2 mt-1.5">
                             <input type="color" value={getActiveColor()} onChange={(e) => setActiveColor(e.target.value)} className="w-5 h-5 rounded border border-white/30 cursor-pointer shrink-0" style={{ padding: 0, background: 'transparent', WebkitAppearance: 'none', appearance: 'none' }} data-testid={`input-edit-color-${activeGradientStop}`} />
