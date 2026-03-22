@@ -18241,7 +18241,7 @@ export default function Dashboard() {
             </div>
           <div ref={calendarBorderRef} className="shadow-lg border border-white flex flex-col relative" style={{ background: '#faf8f5', borderRadius: '8px', overflow: 'hidden', height: 'calc(100% - 2px)', width: 'calc(100%)', marginLeft: '1px', marginTop: '1px' }}>
             {/* Progress/Saturday divider line - red separator on left border of Saturday column */}
-            <div className="absolute top-0 bottom-0 w-[3px] z-50 pointer-events-none overflow-hidden red-separator-shimmer" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`, backgroundColor: '#ef4444' }}>
+            <div className="absolute top-0 bottom-0 w-[3px] z-50 pointer-events-none overflow-hidden red-separator-shimmer" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 1px)`, backgroundColor: '#ef4444' }}>
               <div className="absolute inset-0 red-separator-shimmer-sweep" />
             </div>
             
