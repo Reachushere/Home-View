@@ -1509,7 +1509,12 @@ export default function SpotifyPlayerPage() {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ action: "navigate", url: "http://172.24.0.2:8123/lovelace/test-home", timestamp: Date.now() }),
                   }).catch(() => {});
-                  window.location.href = "/";
+                  const isReplit = window.location.hostname.includes('.replit.');
+                  if (isReplit) {
+                    window.location.href = "/";
+                  } else {
+                    window.location.href = "/lovelace/test-home";
+                  }
                 }}
                 className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg transition-all hover:scale-105 mb-1"
                 style={{
