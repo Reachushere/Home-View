@@ -840,7 +840,7 @@ export default function Dashboard() {
         const rect = hwTimelineDividerRef.current.getBoundingClientRect();
         setHwTimelinePos(prev => {
           const newTop = Math.round(rect.top - 8);
-          const newLeft = Math.round(rect.left + hwGroupBarWidth / 2 - 25);
+          const newLeft = Math.round(rect.left + rect.width / 2 - 25);
           if (prev && prev.top === newTop && prev.left === newLeft) return prev;
           return { top: newTop, left: newLeft };
         });
