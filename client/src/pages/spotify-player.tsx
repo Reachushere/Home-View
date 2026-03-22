@@ -672,9 +672,9 @@ function RoomIcon({ icon, size = 18, color }: { icon: string; size?: number; col
   }
 }
 
-function HoloPanel({ children, className = "", accent, glow = false, style = {}, sakura = false }: {
+function HoloPanel({ children, className = "", accent, glow = false, style = {}, sakura = false, ...rest }: {
   children: React.ReactNode; className?: string; accent: string; glow?: boolean; style?: React.CSSProperties; sakura?: boolean;
-}) {
+} & Omit<React.HTMLAttributes<HTMLDivElement>, 'style'>) {
   const bg = sakura ? 'rgba(22,50,82,0.7)' : 'rgba(25,50,95,0.75)';
   const borderIdle = sakura ? 'rgba(56,189,248,0.35)' : 'rgba(80,160,255,0.3)';
   const innerGlowIdle = sakura ? 'rgba(40,100,160,0.25)' : 'rgba(30,70,140,0.2)';
@@ -682,7 +682,7 @@ function HoloPanel({ children, className = "", accent, glow = false, style = {},
   const gradTop = sakura ? 'rgba(50,170,245,0.12)' : 'rgba(60,140,255,0.08)';
   const gradBot = sakura ? 'rgba(45,160,235,0.08)' : 'rgba(50,120,240,0.06)';
   return (
-    <div className={`relative rounded-xl overflow-hidden ${className}`} style={{
+    <div {...rest} className={`relative rounded-xl overflow-hidden ${className}`} style={{
       background: bg,
       backdropFilter: 'blur(30px)',
       border: `1px solid ${glow ? accent + '60' : borderIdle}`,
@@ -717,8 +717,9 @@ export default function SpotifyPlayerPage() {
     return "bryn";
   });
   const [artistImages, setArtistImages] = useState<Record<string, string>>({});
-  const [dragItem, setDragItem] = useState<{ type: "artist" | "room"; data: any } | null>(null);
+  const [dragItem, setDragItem] = useState<{ type: "artist" | "room" | "speaker"; data: any } | null>(null);
   const [dropTarget, setDropTarget] = useState<string | null>(null);
+  const [activeSpeakers, setActiveSpeakers] = useState<{ name: string; entityId: string; room: string; type: string }[]>([]);
   const [selectedArtist, setSelectedArtist] = useState<ProfileArtist | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
   const [profileSpinning, setProfileSpinning] = useState(false);
@@ -1037,7 +1038,7 @@ export default function SpotifyPlayerPage() {
     } catch { showNotif("Failed to ungroup"); }
   };
 
-  const handleDragStart = (type: "artist" | "room", data: any) => (e: React.DragEvent) => {
+  const handleDragStart = (type: "artist" | "room" | "speaker", data: any) => (e: React.DragEvent) => {
     console.log(`[DnD] Drag started: ${type} = ${data?.name || data?.room}`);
     setDragItem({ type, data });
     e.dataTransfer.effectAllowed = "move";
@@ -1064,6 +1065,36 @@ export default function SpotifyPlayerPage() {
 
   const handleDragOver = (roomName: string) => (e: React.DragEvent) => {
     e.preventDefault(); e.dataTransfer.dropEffect = "move"; setDropTarget(roomName);
+  };
+
+  const [playerDropHighlight, setPlayerDropHighlight] = useState(false);
+  const handlePlayerDrop = (e: React.DragEvent) => {
+    e.preventDefault(); setPlayerDropHighlight(false);
+    try {
+      const raw = e.dataTransfer.getData("text/plain");
+      const parsed = JSON.parse(raw);
+      if (parsed.type === "speaker") {
+        const spk = parsed.data;
+        setActiveSpeakers(prev => {
+          if (prev.some(s => s.entityId === spk.entityId)) return prev;
+          return [...prev, { name: spk.name, entityId: spk.entityId, room: spk.room, type: spk.type }];
+        });
+        if (selectedArtist) {
+          playOnRoom(spk.room, selectedArtist);
+        } else if (isPlaying && nowPlaying) {
+          playOnRoom(spk.room, { name: nowPlaying.artist || "", uri: "", searchQuery: nowPlaying.artist || "" });
+        }
+        setActiveRooms(prev => new Set(prev).add(spk.room));
+        showNotif(`${isSakura ? "スピーカー追加" : "Added"} ${spk.name}`);
+        setFloorSpeakerPopup(null);
+      }
+    } catch (err) { console.error("[DnD] Player drop error:", err); }
+    setDragItem(null);
+  };
+  const handlePlayerDragOver = (e: React.DragEvent) => {
+    if (dragItem?.type === "speaker") {
+      e.preventDefault(); e.dataTransfer.dropEffect = "move"; setPlayerDropHighlight(true);
+    }
   };
 
   const touchDragRef = useRef<{
@@ -1507,7 +1538,11 @@ export default function SpotifyPlayerPage() {
         <div className="flex-1 flex gap-3 p-3 overflow-hidden">
 
           <div className="flex flex-col gap-3 flex-shrink-0" style={{ width: 260 }}>
-            <HoloPanel accent={profile.accent} glow={isPlaying} sakura={isSakura} className="p-3 flex flex-col items-center">
+            <HoloPanel accent={profile.accent} glow={isPlaying} sakura={isSakura} className="p-3 flex flex-col items-center"
+              onDrop={handlePlayerDrop}
+              onDragOver={handlePlayerDragOver}
+              onDragLeave={() => setPlayerDropHighlight(false)}
+              style={playerDropHighlight ? { outline: `2px dashed ${profile.accent}`, outlineOffset: -2 } : undefined}>
               {isPlaying && nowPlaying?.albumArt ? (
                 <div className="relative w-full flex flex-col items-center">
                   <div className="relative" style={{ width: 200, height: 200 }}>
@@ -1567,6 +1602,22 @@ export default function SpotifyPlayerPage() {
                 {nowPlaying?.album && (
                   <p className="text-[11px] truncate mt-0.5" data-testid="track-album"
                     style={{ color: 'rgba(120,190,255,0.6)' }}>{ja(nowPlaying.album)}</p>
+                )}
+                {activeSpeakers.length > 0 && (
+                  <div className="mt-2 w-full flex flex-wrap items-center justify-center gap-1" data-testid="active-speakers-list">
+                    {activeSpeakers.map(spk => (
+                      <div key={spk.entityId} className="flex items-center gap-1 px-1.5 py-0.5 rounded-full"
+                        style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <img src={echoSpeakerImg} alt="" className="rounded-sm" style={{ width: 12, height: 12 }} />
+                        <span className="text-[9px] text-white font-medium">{spk.name}</span>
+                        <button onClick={() => setActiveSpeakers(prev => prev.filter(s => s.entityId !== spk.entityId))}
+                          className="ml-0.5 hover:scale-125 transition-transform" style={{ color: 'rgba(255,255,255,0.4)' }}
+                          data-testid={`remove-speaker-${spk.name.toLowerCase().replace(/\s/g, "-")}`}>
+                          <X className="h-2.5 w-2.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
             </HoloPanel>
@@ -1852,6 +1903,9 @@ export default function SpotifyPlayerPage() {
                                     const isSpeakerActive = isActive;
                                     return (
                                       <button key={spk.entityId}
+                                        draggable
+                                        onDragStart={handleDragStart("speaker", { ...spk, room: spot.room })}
+                                        onDragEnd={() => setDragItem(null)}
                                         onClick={() => {
                                           if (selectedArtist) {
                                             playOnRoom(spot.room, selectedArtist);
@@ -1868,7 +1922,7 @@ export default function SpotifyPlayerPage() {
                                             showNotif(isSakura ? "まず再生してください" : "Play something first");
                                           }
                                         }}
-                                        className="flex items-center gap-2 w-full text-left px-2 py-1.5 rounded-md transition-all hover:scale-[1.02]"
+                                        className="flex items-center gap-2 w-full text-left px-2 py-1.5 rounded-md transition-all hover:scale-[1.02] cursor-grab active:cursor-grabbing"
                                         style={{
                                           background: isSpeakerActive ? `${profile.accent}25` : 'rgba(100,140,180,0.12)',
                                           border: `1px solid ${isSpeakerActive ? `${profile.accent}50` : 'rgba(100,140,180,0.15)'}`,
