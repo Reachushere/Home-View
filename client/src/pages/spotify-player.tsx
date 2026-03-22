@@ -1845,7 +1845,7 @@ export default function SpotifyPlayerPage() {
                                   </button>
                                 </div>
                                 <div className="px-2 py-1.5 flex flex-col gap-1">
-                                  {(rooms.find(r => r.room === spot.room)?.speakers || []).map(spk => {
+                                  {(rooms.find(r => r.room === spot.room)?.speakers || []).filter(spk => spk.type !== "group").map(spk => {
                                     const isEcho = spk.type === "echo" || spk.type === "echo_show";
                                     return (
                                       <button key={spk.entityId}
