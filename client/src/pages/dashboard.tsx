@@ -21936,13 +21936,13 @@ export default function Dashboard() {
                         )}
                         {pd.moduleP.hasFiles && (
                           <>
-                            {pd.moduleUnread > 0 && pd.moduleP.percent < 100 && (
-                              <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, position: 'absolute', left: '-6px', top: '3px' }}>
-                                {pd.moduleUnread}
-                              </div>
-                            )}
                             <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px', ...(pd.courseCode.toUpperCase().startsWith('CPPA') ? { position: 'relative' as const, top: '2px' } : {}) }}>
                               <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block' }}>Module Week {selectedWeek}</span>
+                              {pd.moduleUnread > 0 && pd.moduleP.percent < 100 && (
+                                <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, marginLeft: '2px' }}>
+                                  {pd.moduleUnread}
+                                </div>
+                              )}
                             </div>
                             <div className="flex items-center gap-[5px]">
                               <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', flex: 1, marginRight: '51px', marginLeft: '1px', marginTop: '4px' }}>
@@ -21969,13 +21969,13 @@ export default function Dashboard() {
                         )}
                         {pd.readingP.hasFiles && (
                           <>
-                            {pd.readingUnread > 0 && pd.readingP.percent < 100 && (
-                              <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, position: 'absolute', left: '-6px', top: '3px' }}>
-                                {pd.readingUnread}
-                              </div>
-                            )}
                             <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px', ...(pd.courseCode.toUpperCase().startsWith('CPPA') ? { position: 'relative' as const, top: '2px' } : {}) }}>
                               <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block' }}>Reading Week {selectedWeek}</span>
+                              {pd.readingUnread > 0 && pd.readingP.percent < 100 && (
+                                <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, marginLeft: '2px' }}>
+                                  {pd.readingUnread}
+                                </div>
+                              )}
                             </div>
                             <div className="flex items-center gap-[5px]">
                               <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', flex: 1, marginRight: '51px', marginLeft: '1px', marginTop: '4px' }}>
@@ -23139,13 +23139,13 @@ export default function Dashboard() {
                               </>
                             ) : (
                               <>
-                                {pd.moduleUnread > 0 && pd.moduleP.percent < 100 && (
-                                  <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, position: 'absolute', left: '-6px', top: '3px' }}>
-                                    {pd.moduleUnread}
-                                  </div>
-                                )}
                                 <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px' }}>
                                   <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block' }}>Module Week {selectedWeek}</span>
+                                  {pd.moduleUnread > 0 && pd.moduleP.percent < 100 && (
+                                    <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, marginLeft: '2px' }}>
+                                      {pd.moduleUnread}
+                                    </div>
+                                  )}
                                 </div>
                                 <div className="flex items-center gap-[5px]">
                                   <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', flex: 1, marginRight: '68px', marginLeft: '1px', marginTop: '4px' }}>
@@ -23179,13 +23179,13 @@ export default function Dashboard() {
                               </>
                             ) : (
                               <>
-                                {pd.readingUnread > 0 && pd.readingP.percent < 100 && (
-                                  <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, position: 'absolute', left: '-6px', top: '3px' }}>
-                                    {pd.readingUnread}
-                                  </div>
-                                )}
                                 <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px' }}>
                                   <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block' }}>Reading Week {selectedWeek}</span>
+                                  {pd.readingUnread > 0 && pd.readingP.percent < 100 && (
+                                    <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, marginLeft: '2px' }}>
+                                      {pd.readingUnread}
+                                    </div>
+                                  )}
                                 </div>
                                 <div className="flex items-center gap-[5px]">
                                   <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', flex: 1, marginRight: '68px', marginLeft: '1px', marginTop: '4px' }}>
