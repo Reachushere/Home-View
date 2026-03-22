@@ -1722,50 +1722,44 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         </div>
                       )}
                     </div>
-                    <div style={{ marginLeft: '12px', textAlign: 'center' }}>
-                      <label className="text-white text-[9px] mb-1 block">Border</label>
-                      <div className="flex items-center justify-center gap-1">
-                        <div className="relative shrink-0" style={{ width: '20px', height: '20px' }}>
-                          <div className="absolute inset-0 rounded-sm border border-white/30" style={{ backgroundColor: editInfo.borderColor || editInfo.color }} />
-                          <input type="color" value={editInfo.borderColor || editInfo.color} onChange={(e) => setEditInfo({...editInfo, borderColor: e.target.value})} className="absolute inset-0 opacity-0 cursor-pointer" style={{ width: '20px', height: '20px' }} data-testid="input-border-color" />
-                        </div>
+                    <div style={{ marginLeft: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <label className="text-white text-[9px] mb-1">Border</label>
+                      <div className="relative" style={{ width: '20px', height: '20px' }}>
+                        <div className="absolute inset-0 rounded-sm border border-white/30" style={{ backgroundColor: editInfo.borderColor || editInfo.color }} />
+                        <input type="color" value={editInfo.borderColor || editInfo.color} onChange={(e) => setEditInfo({...editInfo, borderColor: e.target.value})} className="absolute inset-0 opacity-0 cursor-pointer" style={{ width: '20px', height: '20px' }} data-testid="input-border-color" />
                         {editInfo.borderColor && (
-                          <button className="text-white/40 hover:text-white/70" onClick={() => setEditInfo({...editInfo, borderColor: ''})} title="Reset to auto">
+                          <button className="text-white/40 hover:text-white/70 absolute" style={{ top: '-4px', right: '-10px' }} onClick={() => setEditInfo({...editInfo, borderColor: ''})} title="Reset to auto">
                             <X className="h-2.5 w-2.5" />
                           </button>
                         )}
                       </div>
-                      <span className="text-[9px] text-white mt-0.5 block">{editInfo.borderColor ? editInfo.borderColor.toUpperCase() : 'Auto'}</span>
+                      <span className="text-[9px] text-white mt-0.5">{editInfo.borderColor ? editInfo.borderColor.toUpperCase() : 'Auto'}</span>
                     </div>
-                    <div style={{ marginLeft: '12px', textAlign: 'center' }}>
-                      <label className="text-white text-[9px] mb-1 block">Row BG</label>
-                      <div className="flex items-center justify-center gap-1">
-                        <div className="relative shrink-0" style={{ width: '20px', height: '20px' }}>
-                          <div className="absolute inset-0 rounded-sm border border-white/30" style={{ backgroundColor: editInfo.courseRowColor || editInfo.color }} />
-                          <input type="color" value={editInfo.courseRowColor || editInfo.color} onChange={(e) => setEditInfo({...editInfo, courseRowColor: e.target.value})} className="absolute inset-0 opacity-0 cursor-pointer" style={{ width: '20px', height: '20px' }} data-testid="input-course-row-color" />
-                        </div>
+                    <div style={{ marginLeft: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <label className="text-white text-[9px] mb-1">Row BG</label>
+                      <div className="relative" style={{ width: '20px', height: '20px' }}>
+                        <div className="absolute inset-0 rounded-sm border border-white/30" style={{ backgroundColor: editInfo.courseRowColor || editInfo.color }} />
+                        <input type="color" value={editInfo.courseRowColor || editInfo.color} onChange={(e) => setEditInfo({...editInfo, courseRowColor: e.target.value})} className="absolute inset-0 opacity-0 cursor-pointer" style={{ width: '20px', height: '20px' }} data-testid="input-course-row-color" />
                         {editInfo.courseRowColor && (
-                          <button className="text-white/40 hover:text-white/70" onClick={() => setEditInfo({...editInfo, courseRowColor: ''})} title="Reset to auto">
+                          <button className="text-white/40 hover:text-white/70 absolute" style={{ top: '-4px', right: '-10px' }} onClick={() => setEditInfo({...editInfo, courseRowColor: ''})} title="Reset to auto">
                             <X className="h-2.5 w-2.5" />
                           </button>
                         )}
                       </div>
-                      <span className="text-[9px] text-white mt-0.5 block">{editInfo.courseRowColor ? editInfo.courseRowColor.toUpperCase() : 'Auto'}</span>
+                      <span className="text-[9px] text-white mt-0.5">{editInfo.courseRowColor ? editInfo.courseRowColor.toUpperCase() : 'Auto'}</span>
                     </div>
-                    <div style={{ marginLeft: '12px', textAlign: 'center' }}>
-                      <label className="text-white text-[9px] mb-1 block">Task BG</label>
-                      <div className="flex items-center justify-center gap-1">
-                        <div className="relative shrink-0" style={{ width: '20px', height: '20px' }}>
-                          <div className="absolute inset-0 rounded-sm border border-white/30" style={{ backgroundColor: editInfo.taskBgColor || `color-mix(in srgb, ${editInfo.color} 45%, white)` }} />
-                          <input type="color" value={editInfo.taskBgColor || editInfo.color} onChange={(e) => setEditInfo({...editInfo, taskBgColor: e.target.value})} className="absolute inset-0 opacity-0 cursor-pointer" style={{ width: '20px', height: '20px' }} data-testid="input-task-bg-color" />
-                        </div>
+                    <div style={{ marginLeft: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <label className="text-white text-[9px] mb-1">Task BG</label>
+                      <div className="relative" style={{ width: '20px', height: '20px' }}>
+                        <div className="absolute inset-0 rounded-sm border border-white/30" style={{ backgroundColor: editInfo.taskBgColor || `color-mix(in srgb, ${editInfo.color} 45%, white)` }} />
+                        <input type="color" value={editInfo.taskBgColor || editInfo.color} onChange={(e) => setEditInfo({...editInfo, taskBgColor: e.target.value})} className="absolute inset-0 opacity-0 cursor-pointer" style={{ width: '20px', height: '20px' }} data-testid="input-task-bg-color" />
                         {editInfo.taskBgColor && (
-                          <button className="text-white/40 hover:text-white/70" onClick={() => setEditInfo({...editInfo, taskBgColor: ''})} title="Reset to auto">
+                          <button className="text-white/40 hover:text-white/70 absolute" style={{ top: '-4px', right: '-10px' }} onClick={() => setEditInfo({...editInfo, taskBgColor: ''})} title="Reset to auto">
                             <X className="h-2.5 w-2.5" />
                           </button>
                         )}
                       </div>
-                      <span className="text-[9px] text-white mt-0.5 block">{editInfo.taskBgColor ? editInfo.taskBgColor.toUpperCase() : 'Auto'}</span>
+                      <span className="text-[9px] text-white mt-0.5">{editInfo.taskBgColor ? editInfo.taskBgColor.toUpperCase() : 'Auto'}</span>
                     </div>
                     </div>
                     );
