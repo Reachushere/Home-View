@@ -11103,7 +11103,8 @@ export default function Dashboard() {
                     </div>
                   );
 
-                  return showPrepFirst ? null : dueLine;
+                  const isSameTask = nextPrep && next.id === nextPrep.id;
+                  return (showPrepFirst || isSameTask) ? null : dueLine;
                 })()}
                 {prepDaysText && nextPrep && (
                   <div
@@ -11118,7 +11119,8 @@ export default function Dashboard() {
                 {(() => {
                   const prepDaysNum2 = prepDaysText === 'today' ? 0 : prepDaysText === 'now' ? -1 : Number(prepDaysText);
                   const showPrepFirst2 = prepDaysText && nextPrep && prepDaysNum2 < diffDays && diffDays > 0;
-                  if (!showPrepFirst2) return null;
+                  const isSameTask2 = nextPrep && next.id === nextPrep.id;
+                  if (!showPrepFirst2 || isSameTask2) return null;
                   const isDueZero2 = diffDays === 0;
                   return (
                     <div
@@ -21756,7 +21758,7 @@ export default function Dashboard() {
                   left: `${effectiveDividerPct}%`,
                   right: 0,
                   height: `${rowHeight}px`,
-                  background: pd.taskBgColor || `linear-gradient(180deg, color-mix(in srgb, ${pd.progressStartColor} 45%, white) 0%, color-mix(in srgb, ${pd.progressEndColor} 45%, white) 100%)`,
+                  background: pd.taskBgColor || 'linear-gradient(180deg, #3d7a9c 0%, #2a5a78 100%)',
                   zIndex: 41,
                   borderBottom: '0.5px solid rgba(255,255,255,0.2)',
                   overflowX: 'hidden',
