@@ -21758,7 +21758,7 @@ export default function Dashboard() {
                   left: `${effectiveDividerPct}%`,
                   right: 0,
                   height: `${rowHeight}px`,
-                  background: pd.taskBgColor || 'linear-gradient(180deg, #337CAB 0%, #133B5A 100%)',
+                  background: pd.taskBgColor || 'linear-gradient(180deg, #337CAB 0%, #337CAB 40%, #133B5A 100%)',
                   zIndex: 41,
                   borderBottom: '0.5px solid rgba(255,255,255,0.2)',
                   overflowX: 'hidden',
