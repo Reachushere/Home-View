@@ -22010,7 +22010,7 @@ export default function Dashboard() {
                     </div>
                   ) : (
                     <>
-                      <div className="flex-1 flex flex-col justify-center cursor-pointer" style={{ paddingLeft: '7px', paddingRight: '4px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'visible', position: 'relative' }} onClick={pd.handlePlayModule} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayModule(); }}>
+                      <div className="flex-1 flex flex-col justify-center cursor-pointer" style={{ paddingLeft: '7px', paddingRight: '4px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'visible', position: 'relative', top: '-2px' }} onClick={pd.handlePlayModule} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayModule(); }}>
                         {!pd.moduleP.hasFiles && (
                           <>
                             <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px' }}>
@@ -22043,7 +22043,7 @@ export default function Dashboard() {
                           </>
                         )}
                       </div>
-                      <div className="flex-1 flex flex-col justify-center cursor-pointer" style={{ paddingLeft: '7px', paddingRight: '4px', overflow: 'visible', position: 'relative' }} onClick={pd.handlePlayReading} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayReading(); }}>
+                      <div className="flex-1 flex flex-col justify-center cursor-pointer" style={{ paddingLeft: '7px', paddingRight: '4px', overflow: 'visible', position: 'relative', top: '-2px' }} onClick={pd.handlePlayReading} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayReading(); }}>
                         {!pd.readingP.hasFiles && (
                           <>
                             <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px' }}>
