@@ -18810,7 +18810,7 @@ export default function Dashboard() {
                           const badgeBg = getCourseGradientColors(cCode2).start;
                           return (
                             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '14px', backgroundColor: badgeBg, zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                              <span style={{ fontSize: '9px', color: '#ffffff', whiteSpace: 'nowrap', fontWeight: 500 }}>Next Task Due In: <span style={{ color: '#ffd700' }}>{daysUntil}d</span></span>
+                              <span style={{ fontSize: '9px', color: '#ffffff', whiteSpace: 'nowrap', fontWeight: 500 }}>Next Task Due In: <span style={{ color: '#FFFF00', fontWeight: 700, fontSize: '10px' }}>{daysUntil}d</span></span>
                             </div>
                           );
                         })()}
