@@ -14343,17 +14343,45 @@ Return ONLY the JSON object, no markdown formatting.`;
           console.log(`[Spotify] SpotifyPlus select_source "${spSource}": ${selectResp.status}`);
           await new Promise(resolve => setTimeout(resolve, 2000));
 
-          const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              entity_id: SPOTIFYPLUS_ENTITY,
-              media_content_id: spotifyUri,
-              media_content_type: "spotify",
-            }),
-          });
-          const playText = await playResp.text();
-          console.log(`[Spotify] SpotifyPlus play response: ${playResp.status} body=${playText.substring(0, 300)}`);
+          const isArtistUri = spotifyUri.startsWith("spotify:artist:");
+          if (isArtistUri) {
+            console.log(`[Spotify] Artist URI detected, using player_media_play_context for shuffle play`);
+            const playResp = await fetch(`${haUrl}/api/services/spotifyplus/player_media_play_context`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                entity_id: SPOTIFYPLUS_ENTITY,
+                context_uri: spotifyUri,
+                position_ms: 0,
+                delay: 0.50,
+              }),
+            });
+            const playText = await playResp.text();
+            console.log(`[Spotify] SpotifyPlus player_media_play_context response: ${playResp.status} body=${playText.substring(0, 300)}`);
+            if (!playResp.ok) {
+              console.log(`[Spotify] player_media_play_context failed, falling back to voice command`);
+              const searchTerm = searchQuery || artistName || "music";
+              const voiceCommand = `play ${searchTerm} on Spotify`;
+              console.log(`[Spotify] Sending voice command to ${targetEntity}: "${voiceCommand}"`);
+              await fetch(`${haUrl}/api/services/media_player/play_media`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ entity_id: targetEntity, media_content_id: voiceCommand, media_content_type: "custom" }),
+              });
+            }
+          } else {
+            const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                entity_id: SPOTIFYPLUS_ENTITY,
+                media_content_id: spotifyUri,
+                media_content_type: "spotify",
+              }),
+            });
+            const playText = await playResp.text();
+            console.log(`[Spotify] SpotifyPlus play response: ${playResp.status} body=${playText.substring(0, 300)}`);
+          }
           trackSpotifyPlayback(entityId, artistName);
           clearSpotifyStaleTimer();
         } else {
