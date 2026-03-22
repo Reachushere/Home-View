@@ -66,7 +66,7 @@ const PROFILES: Record<ProfileKey, {
       { name: "Katy Perry", uri: "spotify:artist:6jJ0s89eD6GaHleKKya26X", searchQuery: "Katy Perry" },
       { name: "Pink", uri: "spotify:artist:1KCSPY1glIKqW2TotWuXOR", searchQuery: "Pink singer" },
       { name: "Phoenix", uri: "spotify:artist:1lJhME1ZpPN1FO6I8oi4so", searchQuery: "Phoenix band" },
-      { name: "M83", uri: "spotify:artist:63MQldklfxkjYDoUE4Tppz", searchQuery: "M83" },
+      { name: "Cher", uri: "spotify:artist:72OaDtakiy6yFqkt4TsiFt", searchQuery: "Cher" },
       { name: "CHUM FM", uri: "", searchQuery: "104.5 Chum FM" },
       { name: "Disney", uri: "spotify:playlist:37i9dQZF1DX8C585qnMYHP", searchQuery: "Disney hits" },
       { name: "Chill Electro", uri: "spotify:playlist:37i9dQZF1DX4E3UdUs7fUx", searchQuery: "Chill electronic" },
