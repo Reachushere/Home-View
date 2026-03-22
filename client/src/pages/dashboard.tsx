@@ -22385,7 +22385,7 @@ export default function Dashboard() {
                         const dueDates = group.tasks.map(t => ({ date: startOfDayET(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
                           <div key={group.key} style={{ display: 'flex', alignItems: 'stretch' }}>
-                            <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '-3px', marginRight: '2px', overflow: 'hidden' }}>
+                            <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', marginLeft: '-3px', marginRight: '2px', overflow: 'hidden' }}>
                               {groupIdx === 0 && (
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', alignItems: 'flex-start', width: '100%', marginBottom: '4px' }}>
                                   <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
