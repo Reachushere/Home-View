@@ -1849,26 +1849,47 @@ export default function SpotifyPlayerPage() {
                                 <div className="px-2 py-1.5 flex flex-col gap-1">
                                   {(rooms.find(r => r.room === spot.room)?.speakers || []).filter(spk => spk.type !== "group").map(spk => {
                                     const isEcho = spk.type === "echo" || spk.type === "echo_show";
+                                    const isSpeakerActive = isActive;
                                     return (
                                       <button key={spk.entityId}
                                         onClick={() => {
-                                          if (isPlaying && nowPlaying) {
-                                            fetch(`/api/spotify/play-on-speaker`, {
-                                              method: 'POST',
-                                              headers: { 'Content-Type': 'application/json' },
-                                              body: JSON.stringify({ entityId: spk.entityId, artistName: nowPlaying.artist, deviceType: spk.type }),
-                                            }).then(() => { showNotif(`${isSakura ? "再生中" : "Playing on"} ${spk.name}`); setFloorSpeakerPopup(null); });
-                                          } else { showNotif(isSakura ? "まず再生してください" : "Play something first"); }
+                                          if (selectedArtist) {
+                                            playOnRoom(spot.room, selectedArtist);
+                                            setFloorSpeakerPopup(null);
+                                          } else if (isPlaying && nowPlaying) {
+                                            const artistData: ProfileArtist = {
+                                              name: nowPlaying.artist || "",
+                                              uri: "",
+                                              searchQuery: nowPlaying.artist || "",
+                                            };
+                                            playOnRoom(spot.room, artistData);
+                                            setFloorSpeakerPopup(null);
+                                          } else {
+                                            showNotif(isSakura ? "まず再生してください" : "Play something first");
+                                          }
                                         }}
                                         className="flex items-center gap-2 w-full text-left px-2 py-1.5 rounded-md transition-all hover:scale-[1.02]"
-                                        style={{ background: `${profile.accent}10`, border: `1px solid ${profile.accent}15` }}
+                                        style={{
+                                          background: isSpeakerActive ? `${profile.accent}25` : 'rgba(100,140,180,0.12)',
+                                          border: `1px solid ${isSpeakerActive ? `${profile.accent}50` : 'rgba(100,140,180,0.15)'}`,
+                                        }}
                                         data-testid={`floor-play-${spk.name.toLowerCase().replace(/\s/g, "-")}`}>
-                                        <Speaker className="h-3.5 w-3.5 flex-shrink-0" style={{ color: isEcho ? profile.accent : 'rgba(255,255,255,0.5)' }} />
+                                        <img src={echoSpeakerImg} alt="Echo" className="rounded-md object-cover flex-shrink-0"
+                                          style={{
+                                            width: 22, height: 22,
+                                            filter: isSpeakerActive ? `drop-shadow(0 0 3px ${profile.accent}) brightness(1.1)` : 'brightness(0.6) saturate(0.3)',
+                                            opacity: isSpeakerActive ? 1 : 0.5,
+                                          }} />
                                         <div className="flex-1 min-w-0">
-                                          <span className="text-[11px] font-medium block truncate" style={{ color: 'rgba(200,225,255,0.9)' }}>{spk.name}</span>
-                                          <span className="text-[9px]" style={{ color: 'rgba(120,170,255,0.5)' }}>{isEcho ? "Echo" : spk.type}</span>
+                                          <span className="text-[11px] font-medium block truncate"
+                                            style={{ color: isSpeakerActive ? 'rgba(200,225,255,0.95)' : 'rgba(140,170,200,0.5)' }}>{spk.name}</span>
+                                          <span className="text-[9px]"
+                                            style={{ color: isSpeakerActive ? `${profile.accent}90` : 'rgba(100,140,180,0.35)' }}>{isEcho ? "Echo" : spk.type}</span>
                                         </div>
-                                        <span className="text-[9px]" style={{ color: profile.accent }}>▶</span>
+                                        {isSpeakerActive
+                                          ? <span className="text-[9px]" style={{ color: profile.accent }}>♫</span>
+                                          : <span className="text-[9px]" style={{ color: 'rgba(140,170,200,0.4)' }}>▶</span>
+                                        }
                                       </button>
                                     );
                                   })}
