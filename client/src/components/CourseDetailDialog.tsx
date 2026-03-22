@@ -1290,7 +1290,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
 
         <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(255,255,255,0.2) transparent" }}>
           <div className="p-3 border-b border-white/10 space-y-2">
-            <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center justify-between mb-1" style={{ position: 'sticky', top: '-12px', zIndex: 10, paddingTop: '12px', paddingBottom: '4px', background: 'inherit', backdropFilter: 'blur(10px)' }}>
               <span className="text-[11px] text-white uppercase font-medium">Course Info</span>
               {!isEditingInfo ? (
                 <button
