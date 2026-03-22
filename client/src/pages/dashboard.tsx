@@ -2226,7 +2226,12 @@ export default function Dashboard() {
   useEffect(() => {
     const timer = setTimeout(() => {
       localStorage.setItem('blinkSettings', JSON.stringify(blinkSettingsRef.current));
-    }, 300);
+      fetch('/api/degree-tracking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: 'blinkSettings', value: blinkSettingsRef.current }),
+      }).catch(() => {});
+    }, 1000);
     return () => clearTimeout(timer);
   }, [blinkSettings]);
   
@@ -2520,6 +2525,22 @@ export default function Dashboard() {
     document.documentElement.style.setProperty('--dialog-bg', bg);
   }, [colorSettings.mainBackground, colorSettings.mainBackgroundGradientEnd]);
 
+  const saveDegreeKeyDebounced = useCallback((key: string, value: any) => {
+    fetch('/api/degree-tracking', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key, value }),
+    }).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      localStorage.setItem('colorSettings', JSON.stringify(colorSettings));
+      saveDegreeKeyDebounced('colorSettings', colorSettings);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [colorSettings]);
+
   // Store original settings when dialog opens (for cancel functionality)
   const [originalColorSettings, setOriginalColorSettings] = useState(colorSettings);
   const [originalBlinkSettings, setOriginalBlinkSettings] = useState(blinkSettings);
@@ -2604,14 +2625,21 @@ export default function Dashboard() {
     return defaultSizes;
   });
   
-  // Save grid sizes to localStorage
   useEffect(() => {
     localStorage.setItem('gridSizes', JSON.stringify(gridSizes));
+    const timer = setTimeout(() => {
+      saveDegreeKeyDebounced('gridSizes', gridSizes);
+    }, 1500);
+    return () => clearTimeout(timer);
   }, [gridSizes]);
   
   // Save calendar height to localStorage
   useEffect(() => {
     localStorage.setItem('calendarHeight', calendarHeight.toString());
+    const timer = setTimeout(() => {
+      saveDegreeKeyDebounced('calendarHeight', calendarHeight);
+    }, 1500);
+    return () => clearTimeout(timer);
   }, [calendarHeight]);
   
   // Column resize state
