@@ -22078,7 +22078,7 @@ export default function Dashboard() {
                     left: `${effectiveDividerPct}%`,
                     right: 0,
                     height: `${otherRowHeight}px`,
-                    background: 'linear-gradient(180deg, #374151 0%, #9ca3af 100%)',
+                    background: 'rgba(107, 114, 128, 0.30)',
                     zIndex: 41,
                     borderBottom: '1px dotted #999',
                     overflowX: 'hidden',
