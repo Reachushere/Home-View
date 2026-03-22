@@ -21936,15 +21936,15 @@ export default function Dashboard() {
                         {!pd.moduleP.hasFiles && (
                           <>
                             <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px' }}>
-                              <span className="text-[8px] font-normal leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block' }}>Module Week {selectedWeek}</span>
+                              <span className="text-[8px] font-normal leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>Module Week {selectedWeek}</span>
                             </div>
-                            <span className="text-[8px] text-white/50 leading-none italic">N/A</span>
+                            <span className="text-[8px] leading-none italic" style={{ color: '#ffffff', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>N/A</span>
                           </>
                         )}
                         {pd.moduleP.hasFiles && (
                           <>
                             <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px', ...(pd.courseCode.toUpperCase().startsWith('CPPA') ? { position: 'relative' as const, top: '2px' } : {}) }}>
-                              <span className="text-[8px] font-normal leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block' }}>Module Week {selectedWeek}</span>
+                              <span className="text-[8px] font-normal leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>Module Week {selectedWeek}</span>
                               {pd.moduleUnread > 0 && pd.moduleP.percent < 100 && (
                                 <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, marginLeft: '2px' }}>
                                   {pd.moduleUnread}
@@ -21969,15 +21969,15 @@ export default function Dashboard() {
                         {!pd.readingP.hasFiles && (
                           <>
                             <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px' }}>
-                              <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block' }}>Reading Week {selectedWeek}</span>
+                              <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>Reading Week {selectedWeek}</span>
                             </div>
-                            <span className="text-[8px] text-white/50 leading-none italic">N/A</span>
+                            <span className="text-[8px] leading-none italic" style={{ color: '#ffffff', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>N/A</span>
                           </>
                         )}
                         {pd.readingP.hasFiles && (
                           <>
                             <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px', ...(pd.courseCode.toUpperCase().startsWith('CPPA') ? { position: 'relative' as const, top: '2px' } : {}) }}>
-                              <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block' }}>Reading Week {selectedWeek}</span>
+                              <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>Reading Week {selectedWeek}</span>
                               {pd.readingUnread > 0 && pd.readingP.percent < 100 && (
                                 <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, marginLeft: '2px' }}>
                                   {pd.readingUnread}
@@ -23148,14 +23148,14 @@ export default function Dashboard() {
                             {!pd.moduleP.hasFiles ? (
                               <>
                                 <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px' }}>
-                                  <span className="text-[8px] font-normal leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block' }}>Module Week {selectedWeek}</span>
+                                  <span className="text-[8px] font-normal leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>Module Week {selectedWeek}</span>
                                 </div>
-                                <span className="text-[8px] text-white/50 leading-none italic">N/A</span>
+                                <span className="text-[8px] leading-none italic" style={{ color: '#ffffff', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>N/A</span>
                               </>
                             ) : (
                               <>
                                 <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px' }}>
-                                  <span className="text-[8px] font-normal leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block' }}>Module Week {selectedWeek}</span>
+                                  <span className="text-[8px] font-normal leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>Module Week {selectedWeek}</span>
                                   {pd.moduleUnread > 0 && pd.moduleP.percent < 100 && (
                                     <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, marginLeft: '2px' }}>
                                       {pd.moduleUnread}
@@ -23188,14 +23188,14 @@ export default function Dashboard() {
                             {!pd.readingP.hasFiles ? (
                               <>
                                 <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px' }}>
-                                  <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block' }}>Reading Week {selectedWeek}</span>
+                                  <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>Reading Week {selectedWeek}</span>
                                 </div>
-                                <span className="text-[8px] text-white/50 leading-none italic">N/A</span>
+                                <span className="text-[8px] leading-none italic" style={{ color: '#ffffff', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>N/A</span>
                               </>
                             ) : (
                               <>
                                 <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px' }}>
-                                  <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block' }}>Reading Week {selectedWeek}</span>
+                                  <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>Reading Week {selectedWeek}</span>
                                   {pd.readingUnread > 0 && pd.readingP.percent < 100 && (
                                     <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, marginLeft: '2px' }}>
                                       {pd.readingUnread}
