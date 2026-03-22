@@ -22132,7 +22132,7 @@ export default function Dashboard() {
                                 const dueColor = dueMatch ? getCourseGradientColors(dueMatch.courseCode).end : '';
                                 return (
                                   <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDayET(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
-                                    width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
+                                    width: '13px', height: '13px', borderRadius: '2px', fontSize: '9px', fontWeight: (isToday || isDue) ? 700 : 400,
                                     display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                                     color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
                                     backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.15)',
@@ -22289,7 +22289,7 @@ export default function Dashboard() {
                                 {hwWeeklyTimeline[0]?.sublabel || ''}
                               </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
-                                <div style={{ display: 'flex', gap: '2px', padding: '0 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
+                                <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
                                   {['S','M','T','W','T','F','S'].map((dl, dli) => (
                                     <div key={dli} style={{ width: '13px', fontSize: '6px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
                                   ))}
@@ -22306,7 +22306,7 @@ export default function Dashboard() {
                                         const dueColor = dueMatch ? (dynamicCourseColors[dueMatch.courseCode]?.hex || getCourseGradientColors(dueMatch.courseCode).start) : '';
                                         return (
                                           <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDayET(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
-                                            width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
+                                            width: '13px', height: '13px', borderRadius: '2px', fontSize: '9px', fontWeight: (isToday || isDue) ? 700 : 400,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
                                             backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.15)',
@@ -22480,7 +22480,7 @@ export default function Dashboard() {
                                 {hwWeeklyTimeline[1]?.sublabel || 'Next week'}
                               </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
-                                <div style={{ display: 'flex', gap: '2px', padding: '0 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
+                                <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
                                   {['S','M','T','W','T','F','S'].map((dl, dli) => (
                                     <div key={dli} style={{ width: '13px', fontSize: '6px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
                                   ))}
@@ -22497,7 +22497,7 @@ export default function Dashboard() {
                                         const dueColor = dueMatch ? (dynamicCourseColors[dueMatch.courseCode]?.hex || getCourseGradientColors(dueMatch.courseCode).start) : '';
                                         return (
                                           <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDayET(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
-                                            width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
+                                            width: '13px', height: '13px', borderRadius: '2px', fontSize: '9px', fontWeight: (isToday || isDue) ? 700 : 400,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
                                             backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.15)',
@@ -22674,7 +22674,7 @@ export default function Dashboard() {
                                 {hwWeeklyTimeline[2]?.sublabel || 'Two weeks'}
                               </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
-                                <div style={{ display: 'flex', gap: '2px', padding: '0 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
+                                <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
                                   {['S','M','T','W','T','F','S'].map((dl, dli) => (
                                     <div key={dli} style={{ width: '13px', fontSize: '6px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
                                   ))}
@@ -22691,7 +22691,7 @@ export default function Dashboard() {
                                         const dueColor = dueMatch ? (dynamicCourseColors[dueMatch.courseCode]?.hex || getCourseGradientColors(dueMatch.courseCode).start) : '';
                                         return (
                                           <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDayET(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
-                                            width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
+                                            width: '13px', height: '13px', borderRadius: '2px', fontSize: '9px', fontWeight: (isToday || isDue) ? 700 : 400,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
                                             backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.15)',
@@ -22870,7 +22870,7 @@ export default function Dashboard() {
                               </span>
                               )}
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
-                                <div style={{ display: 'flex', gap: '2px', padding: '0 2px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
+                                <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: `${7 * 13 + 6 * 2 + 4}px`, justifyContent: 'flex-end' }}>
                                   {['S','M','T','W','T','F','S'].map((dl, dli) => (
                                     <div key={dli} style={{ width: '13px', fontSize: '6px', fontWeight: 600, textAlign: 'center', color: 'rgba(255,255,255,0.45)' }}>{dl}</div>
                                   ))}
@@ -22887,7 +22887,7 @@ export default function Dashboard() {
                                         const dueColor = dueMatch ? (dynamicCourseColors[dueMatch.courseCode]?.hex || getCourseGradientColors(dueMatch.courseCode).start) : '';
                                         return (
                                           <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDayET(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
-                                            width: '13px', height: '13px', borderRadius: '2px', fontSize: '7px', fontWeight: (isToday || isDue) ? 700 : 400,
+                                            width: '13px', height: '13px', borderRadius: '2px', fontSize: '9px', fontWeight: (isToday || isDue) ? 700 : 400,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
                                             backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.15)',
