@@ -18813,7 +18813,8 @@ export default function Dashboard() {
                             </div>
                           );
                         })()}
-                        <div className={`flex flex-col gap-0.5${cellHasScroll ? ' course-cell-scroll' : ''}`} style={{ overflowY: cellHasScroll ? 'auto' : 'hidden', overflowX: 'hidden', maxHeight: '100%', ...(isDayToday ? { paddingTop: '14px' } : {}) }}>
+                        {isDayAfterToday && <div style={{ height: '14px', flexShrink: 0 }} />}
+                        <div className={`flex flex-col gap-0.5${cellHasScroll ? ' course-cell-scroll' : ''}`} style={{ overflowY: cellHasScroll ? 'auto' : 'hidden', overflowX: 'hidden', flex: 1, minHeight: 0, ...(isDayToday ? { paddingTop: '14px' } : {}) }}>
                         {/* Course-associated projects */}
                         {allProjects.filter(proj => {
                           if (!proj.courseName) return false;
