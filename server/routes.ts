@@ -331,9 +331,23 @@ function cleanTextForTTS(text: string): string {
     .replace(/\([^)]*n\.d\.[^)]*\)/g, '') // Remove bracketed citations containing "n.d." like "(Author, n.d.)"
     .replace(/\[[^\]]*n\.d\.[^\]]*\]/g, '') // Remove square-bracketed references containing "n.d."
     .replace(/\d+:\d+:\d+/g, '') // Remove timestamps like 1:23:45
-    .replace(/\d+:\d+/g, ''); // Remove timestamps like 1:23
+    .replace(/\d+:\d+/g, '') // Remove timestamps like 1:23
+    .replace(/\((?:[A-Z][a-z]+(?:\s+(?:&|and)\s+[A-Z][a-z]+)*(?:,?\s*(?:et\s+al\.?)?)?(?:,?\s*\d{4}[a-z]?)?\s*(?:,\s*(?:p+\.\s*\d[\d\s,-]*|ch(?:apter)?\.?\s*\d+))?)\)/gi, '') // Remove parenthetical citations like (Smith, 2019), (Jones & Lee, 2020, pp. 45-67), (Brown et al., 2018)
+    .replace(/\((?:\d{4}[a-z]?)\)/g, '') // Remove standalone year citations like (2019)
+    .replace(/\([^)]{0,5}\d{4}[a-z]?[^)]{0,5}\)/g, '') // Remove short bracketed items with years like (2019a), (p. 2019)
+    .replace(/\[[^\]]*\d{4}[^\]]*\]/g, '') // Remove square-bracketed references with years like [Smith, 2019]
+    .replace(/\[\d+(?:[,;\s]+\d+)*\]/g, '') // Remove numeric citations like [1], [2,3], [1; 2; 3]
+    .replace(/\b(?:et\s+al\.?)\b/gi, '') // Remove standalone "et al."
+    .replace(/\b(?:pp?\.)\s*\d[\d\s,-]*/g, '') // Remove page references like p. 45, pp. 123-456
+    .replace(/\b(?:vol\.?|issue|no\.)\s*\d+/gi, '') // Remove volume/issue references
+    .replace(/\b(?:doi|DOI)\s*[:.]?\s*\S+/g, '') // Remove DOI references
+    .replace(/\b(?:ISBN|ISSN)\s*[:.]?\s*[\d-]+/g, '') // Remove ISBN/ISSN
+    .replace(/\b(?:Retrieved|Accessed)\s+(?:from|on)\b[^.]*\./gi, '') // Remove "Retrieved from..." lines
+    .replace(/^\s*(?:References?|Works?\s+Cited|Bibliography)\s*$/gim, '') // Remove reference section headers
+    .replace(/^[A-Z][a-z]+(?:,\s*[A-Z]\.?\s*(?:[A-Z]\.?\s*)?)?(?:,?\s*(?:&|and)\s+[A-Z][a-z]+(?:,\s*[A-Z]\.?\s*(?:[A-Z]\.?\s*)?)?)*\s*\(\d{4}[a-z]?\)\.\s*.+$/gm, '') // Remove full reference entries like "Smith, J. A. (2019). Title of article..."
+    .replace(/^[A-Z][a-z]+(?:,\s*[A-Z]\.?\s*)+(?:,?\s*(?:&|and)\s+[A-Z][a-z]+(?:,\s*[A-Z]\.?\s*)+)*\.\s*\(\d{4}[a-z]?\)\./gm, ''); // Remove APA author-date entries
   
-  console.log("After URL/timestamp cleanup:", cleanedText.length);
+  console.log("After URL/timestamp/citation cleanup:", cleanedText.length);
   
   // Remove JSTOR-specific lines (not entire paragraphs - just specific lines)
   cleanedText = cleanedText
