@@ -2561,7 +2561,7 @@ export default function Dashboard() {
     timeSlotHeight: number;
     timeSlotHeights: number[]; // Individual heights for each hour (0-23)
   }>(() => {
-    const defaultHeights = Array(24).fill(36).map((h, i) => (i <= 6 || i >= 21) ? 14 : h);
+    const defaultHeights = Array(24).fill(36);
     const defaultSizes = {
       timeColumnWidth: 59,
       moduleColumnWidth: 0,
@@ -2590,17 +2590,12 @@ export default function Dashboard() {
     const deviceId = `device_${screenWidth}x${screenHeight}@${pixelRatio}`;
     const deviceSaved = localStorage.getItem(`gridSizes_${deviceId}`);
     
-    const applyCompressedHours = (heights: number[]) => {
-      [0,1,2,3,4,5,6,21,22,23].forEach(i => { heights[i] = 12; });
-      return heights;
-    };
-
     if (deviceSaved) {
       const parsed = JSON.parse(deviceSaved);
       if (!parsed.timeSlotHeights || parsed.timeSlotHeights.length !== 24) {
         parsed.timeSlotHeights = defaultHeights;
       }
-      applyCompressedHours(parsed.timeSlotHeights);
+      [0,1,2,3,4,5,6,21,22,23].forEach(i => { if (parsed.timeSlotHeights[i] < 36) parsed.timeSlotHeights[i] = 36; });
       if (!parsed.timeSlotHeight) parsed.timeSlotHeight = 36;
       if (!parsed.courseRowHeight) parsed.courseRowHeight = 48;
       if (parsed.moduleColumnWidth === undefined) parsed.moduleColumnWidth = 0;
@@ -2616,7 +2611,7 @@ export default function Dashboard() {
       if (!parsed.timeSlotHeights || parsed.timeSlotHeights.length !== 24) {
         parsed.timeSlotHeights = defaultHeights;
       }
-      applyCompressedHours(parsed.timeSlotHeights);
+      [0,1,2,3,4,5,6,21,22,23].forEach(i => { if (parsed.timeSlotHeights[i] < 36) parsed.timeSlotHeights[i] = 36; });
       if (!parsed.timeSlotHeight) parsed.timeSlotHeight = 36;
       if (!parsed.courseRowHeight) parsed.courseRowHeight = 48;
       if (parsed.moduleColumnWidth === undefined) parsed.moduleColumnWidth = 0;
@@ -22081,7 +22076,7 @@ export default function Dashboard() {
                   }}>
                     <span className="text-[8px] font-[785] uppercase tracking-wide" style={{ flexShrink: 0, marginRight: '8px', color: '#333' }}>Other</span>
                     {otherProgressTasks.length === 0 && (
-                      <span className="text-[10px] italic" style={{ color: '#333', position: 'absolute', left: 0, right: 0, textAlign: 'center', pointerEvents: 'none' }}>No upcoming items</span>
+                      <span className="text-[10px] italic" style={{ color: '#a8a7aa', position: 'absolute', left: 0, right: 0, textAlign: 'center', pointerEvents: 'none' }}>No upcoming items</span>
                     )}
                     <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                     {otherProgressTasks.map(t => {
