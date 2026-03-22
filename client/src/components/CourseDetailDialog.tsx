@@ -1568,7 +1568,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                         {midStops.length > 0 && <span className="text-white text-[9px] absolute" style={{ bottom: '-23px', left: '0px' }}>double-click bar to add · drag to move</span>}
                       </div>
                       {midStops.length === 0 && <div className="text-white text-[11px] text-left" style={{ marginTop: '7px', marginBottom: '10px' }}>double-click gradient bar to add a colour stop</div>}
-                      {midStops.length > 0 && <div style={{ height: '10px' }} />}
+                      {midStops.length > 0 && <div style={{ height: '24px' }} />}
                       {activeGradientStop != null && (
                         <div className="mt-1 rounded" style={{ border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(0,0,0,0.4)', padding: '6px' }}>
                           <div className="flex items-center gap-2 mb-1.5">
