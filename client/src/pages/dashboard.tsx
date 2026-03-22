@@ -22002,7 +22002,7 @@ export default function Dashboard() {
                     overflowX: 'hidden',
                     overflowY: 'auto',
                     scrollbarWidth: 'none',
-                    padding: '3px 6px',
+                    padding: otherProgressTasks.length === 0 ? '0px' : '3px 6px',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: otherProgressTasks.length === 0 ? 'center' : 'flex-start',
@@ -22048,7 +22048,7 @@ export default function Dashboard() {
               if (lastRect) {
                 const lastBottom = lastRect.top + lastRect.height - upcomingTop - firstOffset;
                 const otherRowH = gridSizes.courseRowHeight || 48;
-                return `${lastBottom + otherRowH + 2 - 13}px`;
+                return `${lastBottom + otherRowH + 2 - 20}px`;
               }
             }
             return '12px';
