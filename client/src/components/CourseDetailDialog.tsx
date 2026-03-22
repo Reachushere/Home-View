@@ -1354,7 +1354,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                       setIsEditingInfo(false);
                       toast({ title: "Course info updated" });
                     }}
-                    className="flex items-center gap-1 text-[11px] text-gray-800 font-medium transition-colors px-3 py-1 rounded bg-white hover:bg-white/90"
+                    className="flex items-center gap-1 text-[11px] text-emerald-600 font-medium transition-colors px-3 py-1 rounded bg-white hover:bg-white/90"
                     data-testid="button-save-edit-info"
                   >
                     <Check className="w-3 h-3" />
