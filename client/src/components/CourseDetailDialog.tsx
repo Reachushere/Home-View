@@ -1496,6 +1496,19 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                     };
                     const hexToHue = (c: string) => { const r = parseInt(c.slice(1,3),16)/255, g = parseInt(c.slice(3,5),16)/255, b = parseInt(c.slice(5,7),16)/255; const max = Math.max(r,g,b), min = Math.min(r,g,b); if (max===min) return 0; let h = 0; if (max===r) h = ((g-b)/(max-min))%6; else if (max===g) h = (b-r)/(max-min)+2; else h = (r-g)/(max-min)+4; h = Math.round(h*60); return h<0?h+360:h; };
                     const hueToHex = (hue: number) => `#${[0,8,4].map(n => { const k = (n + hue/30) % 12; const c2 = 0.5 - 0.5 * Math.max(Math.min(k-3, 9-k, 1), -1); return Math.round(255 * Math.max(0, Math.min(1, c2))).toString(16).padStart(2,'0'); }).join('')}`;
+                    const hexToSvPos = (hex: string) => {
+                      const r = parseInt(hex.slice(1,3),16)/255, g = parseInt(hex.slice(3,5),16)/255, b = parseInt(hex.slice(5,7),16)/255;
+                      const max = Math.max(r,g,b), min = Math.min(r,g,b);
+                      const v = max;
+                      const s = max === 0 ? 0 : (max - min) / max;
+                      return { x: s, y: 1 - v };
+                    };
+                    const svToHex = (hue: number, sx: number, sy: number) => {
+                      const s2 = sx * 100; const l = (1 - sy) * (100 - s2/2);
+                      const a2 = s2 * Math.min(l, 100-l) / 100;
+                      const f = (n: number) => { const k = (n + hue/30) % 12; const c2 = l/100 - a2/100 * Math.max(Math.min(k-3, 9-k, 1), -1); return Math.round(255 * Math.max(0, Math.min(1, c2))); };
+                      return `#${f(0).toString(16).padStart(2,'0')}${f(8).toString(16).padStart(2,'0')}${f(4).toString(16).padStart(2,'0')}`;
+                    };
                     const gradBarRef = useRef<HTMLDivElement>(null);
                     return (
                     <div className="flex items-start gap-3">
@@ -1589,20 +1602,32 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onGr
                               <span className="text-white/50 text-[8px] w-6 text-right">{midStops[activeGradientStop]?.position}%</span>
                             </div>
                           )}
-                          <div className="relative rounded overflow-hidden cursor-crosshair" style={{ height: '80px' }} data-testid={`color-area-${activeGradientStop}`}
-                            onClick={(e) => {
-                              const rect = e.currentTarget.getBoundingClientRect();
-                              const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-                              const y = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
+                          <div className="relative rounded overflow-hidden cursor-crosshair" style={{ height: '80px', touchAction: 'none' }} data-testid={`color-area-${activeGradientStop}`}
+                            onPointerDown={(e) => {
+                              e.preventDefault();
+                              const el = e.currentTarget;
+                              el.setPointerCapture(e.pointerId);
+                              const rect = el.getBoundingClientRect();
                               const hue = hexToHue(getActiveColor());
-                              const s = x * 100; const l = (1 - y) * (100 - s/2);
-                              const a2 = s * Math.min(l, 100-l) / 100;
-                              const f = (n: number) => { const k = (n + hue/30) % 12; const c2 = l/100 - a2/100 * Math.max(Math.min(k-3, 9-k, 1), -1); return Math.round(255 * Math.max(0, Math.min(1, c2))); };
-                              const hex = `#${f(0).toString(16).padStart(2,'0')}${f(8).toString(16).padStart(2,'0')}${f(4).toString(16).padStart(2,'0')}`;
-                              setActiveColor(hex);
+                              const update = (ev: PointerEvent) => {
+                                const x = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
+                                const y = Math.max(0, Math.min(1, (ev.clientY - rect.top) / rect.height));
+                                setActiveColor(svToHex(hue, x, y));
+                              };
+                              update(e.nativeEvent);
+                              const onMove = (ev: PointerEvent) => update(ev);
+                              const onUp = () => { el.releasePointerCapture(e.pointerId); window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); };
+                              window.addEventListener('pointermove', onMove);
+                              window.addEventListener('pointerup', onUp);
                             }}>
                             <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(to right, white, hsl(${hexToHue(getActiveColor())}, 100%, 50%))` }} />
                             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent, black)' }} />
+                            {(() => {
+                              const pos = hexToSvPos(getActiveColor());
+                              return (
+                                <div style={{ position: 'absolute', left: `${pos.x * 100}%`, top: `${pos.y * 100}%`, transform: 'translate(-50%, -50%)', width: '12px', height: '12px', borderRadius: '50%', border: '2px solid white', boxShadow: '0 0 3px rgba(0,0,0,0.5), inset 0 0 1px rgba(0,0,0,0.3)', pointerEvents: 'none', backgroundColor: getActiveColor() }} />
+                              );
+                            })()}
                           </div>
                           <div className="relative mt-1.5 rounded cursor-pointer" style={{ height: '14px', touchAction: 'none' }} data-testid={`hue-slider-${activeGradientStop}`}
                             onClick={(e) => {
