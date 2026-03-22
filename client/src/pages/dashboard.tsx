@@ -21810,7 +21810,7 @@ export default function Dashboard() {
                           onClick={() => setEditingTask(t)}
                         >
                           <span style={{ fontSize: '10px', color: textColor, flexShrink: 0 }}>•</span>
-                          <span className="truncate" style={{ fontSize: '10px', color: textColor, textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400, flex: 1, minWidth: 0 }}>{t.title}</span>
+                          <span className="truncate" style={{ fontSize: '9px', color: textColor, textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400, flex: 1, minWidth: 0 }}>{t.title}</span>
                           {(() => {
                             const tDueDate = new Date(t.dueDate);
                             const tDue = startOfDayET(tDueDate);
@@ -21825,12 +21825,13 @@ export default function Dashboard() {
                             const is2Weeks = tDue >= twoWeeksStart && tDue <= threeWeeksEnd;
                             const barColor = isToday ? '#ef4444' : isThroughFriday ? '#eab308' : isNextWeek ? (daysUntil < 3 ? '#eab308' : '#22c55e') : is2Weeks ? (daysUntil < 3 ? '#eab308' : '#22c55e') : 'rgb(100, 100, 100)';
                             return (
-                              <div className="flex-shrink-0 flex items-center justify-end gap-2" style={{ marginLeft: 'auto', width: '120px' }}>
-                                <div style={{ width: '56px', position: 'relative', height: '5px', flexShrink: 0, left: '10px' }}>
+                              <div className="flex-shrink-0 flex items-center justify-end gap-1" style={{ marginLeft: 'auto', width: '130px' }}>
+                                <div style={{ width: '56px', position: 'relative', height: '5px', flexShrink: 0 }}>
                                   <div style={{ position: 'absolute', top: 0, right: 0, width: '56px', height: '5px', backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: '3px' }} />
                                   <div className="rounded-full" style={{ position: 'absolute', top: 0, right: 0, width: `${barWidth}px`, height: '5px', backgroundColor: barColor, opacity: 0.9 }} />
                                 </div>
-                                <span style={{ fontSize: '10px', color: dateColor, fontWeight: 400, minWidth: '52px', textAlign: 'right' }}>{dueStr}</span>
+                                <span style={{ fontSize: '7px', color: 'rgba(255,255,255,0.6)', fontWeight: 400, minWidth: '16px', textAlign: 'left' }}>{daysUntil}d</span>
+                                <span style={{ fontSize: '9px', color: dateColor, fontWeight: 400, minWidth: '42px', textAlign: 'right' }}>{dueStr}</span>
                               </div>
                             );
                           })()}
