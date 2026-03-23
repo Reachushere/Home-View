@@ -18343,10 +18343,11 @@ export default function Dashboard() {
                       />
                     )}
                     {(() => {
+                      const hasShiftBg = !isToday && !isSameDayET(day, subDays(new Date(), 1)) && (shiftForDay === 'day' || shiftForDay === 'night');
                       const dayForecast = weatherData?.daily?.find(d => d.date === format(day, 'yyyy-MM-dd'));
                       if (!dayForecast) return null;
                       const isPastDay = day < startOfDayET(new Date());
-                      const tempColor = isPastDay ? 'rgba(255,255,255,0.6)' : '#ffffff';
+                      const tempColor = hasShiftBg ? (isPastDay ? 'rgba(0,0,0,0.45)' : '#000') : (isPastDay ? 'rgba(255,255,255,0.6)' : '#ffffff');
                       const wIcon = ((wc: number | undefined) => {
                         if (wc === undefined) return null;
                         if (wc === 0) return '☀️';
@@ -18380,13 +18381,20 @@ export default function Dashboard() {
                         </>
                       );
                     })()}
-                    {day.getDay() === 6 && (
-                      <div className="absolute top-0 left-0 right-0 text-center" style={{ fontSize: '7.5px', fontWeight: 700, letterSpacing: '0.5px', color: '#FFFF00', lineHeight: '1', paddingTop: '8px' }}>NEW SCHOOL WEEK</div>
-                    )}
-                    <div className="flex items-center gap-1.5" style={{ marginTop: day.getDay() === 6 ? '13px' : undefined }}>
-                      <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? '#fff' : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
-                      <div style={{ fontSize: isToday ? '25px' : '24px', fontWeight: isToday ? 600 : 700, color: isToday ? '#FFFF00' : '#fff' }}>{dayNum}</div>
-                    </div>
+                    {(() => {
+                      const shiftBg = !isToday && !isSameDayET(day, subDays(new Date(), 1)) && (shiftForDay === 'day' || shiftForDay === 'night');
+                      return (
+                        <>
+                          {day.getDay() === 6 && (
+                            <div className="absolute top-0 left-0 right-0 text-center" style={{ fontSize: '7.5px', fontWeight: 700, letterSpacing: '0.5px', color: shiftBg ? '#000' : '#FFFF00', lineHeight: '1', paddingTop: '8px' }}>NEW SCHOOL WEEK</div>
+                          )}
+                          <div className="flex items-center gap-1.5" style={{ marginTop: day.getDay() === 6 ? '13px' : undefined }}>
+                            <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? '#fff' : shiftBg ? 'rgba(0,0,0,0.55)' : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
+                            <div style={{ fontSize: isToday ? '25px' : '24px', fontWeight: isToday ? 600 : 700, color: isToday ? '#FFFF00' : shiftBg ? '#000' : '#fff' }}>{dayNum}</div>
+                          </div>
+                        </>
+                      );
+                    })()}
                     {idx < 6 && (
                       <div
                         className="absolute right-0 top-0 bottom-0 w-[2px] cursor-col-resize bg-white/20 hover:bg-white/50"
