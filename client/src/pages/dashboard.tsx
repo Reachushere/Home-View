@@ -18331,7 +18331,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isToday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}${weatherAlerts.length > 0 ? " weather-alert-border-pulse" : ""}`}
-                    style={{ backgroundColor: isToday ? undefined : (() => { const notYesterday = !isSameDayET(day, subDays(new Date(), 1)); const dimmed = sleepDisabledDays.has(shiftDateStr); if (notYesterday && shiftForDay === 'day') return dimmed ? 'rgba(255, 178, 50, 0.08)' : 'rgba(255, 178, 50, 0.18)'; if (notYesterday && shiftForDay === 'night') return dimmed ? 'rgba(124, 58, 237, 0.08)' : 'rgba(124, 58, 237, 0.18)'; return colorSettings.headerBar; })(), animationDelay: isToday ? `-${Date.now() % 7000}ms` : undefined }}
+                    style={{ backgroundColor: isToday ? undefined : (() => { const notYesterday = !isSameDayET(day, subDays(new Date(), 1)); const dimmed = sleepDisabledDays.has(shiftDateStr); if (notYesterday && shiftForDay === 'day') return dimmed ? 'rgba(255, 178, 50, 0.12)' : 'rgba(255, 178, 50, 0.28)'; if (notYesterday && shiftForDay === 'night') return dimmed ? 'rgba(124, 58, 237, 0.08)' : 'rgba(124, 58, 237, 0.18)'; return colorSettings.headerBar; })(), animationDelay: isToday ? `-${Date.now() % 7000}ms` : undefined }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {!isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && (
