@@ -18331,13 +18331,13 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isToday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}${weatherAlerts.length > 0 ? " weather-alert-border-pulse" : ""}`}
-                    style={{ backgroundColor: isToday ? undefined : colorSettings.headerBar, animationDelay: isToday ? `-${Date.now() % 7000}ms` : undefined }}
+                    style={{ backgroundColor: isToday ? undefined : (() => { const notYesterday = !isSameDayET(day, subDays(new Date(), 1)); const dimmed = sleepDisabledDays.has(shiftDateStr); if (notYesterday && shiftForDay === 'day') return dimmed ? 'rgba(255, 178, 50, 0.08)' : 'rgba(255, 178, 50, 0.18)'; if (notYesterday && shiftForDay === 'night') return dimmed ? 'rgba(124, 58, 237, 0.08)' : 'rgba(124, 58, 237, 0.18)'; return colorSettings.headerBar; })(), animationDelay: isToday ? `-${Date.now() % 7000}ms` : undefined }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {!isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && (
                       <div
-                        className={`absolute left-0 right-0 ${shiftForDay === 'day' ? 'top-0' : 'bottom-0'} cursor-pointer z-10`}
-                        style={{ height: '5px', backgroundColor: shiftForDay === 'day' ? '#ffd000' : '#7c3aed', opacity: sleepDisabledDays.has(shiftDateStr) ? 0.3 : 1 }}
+                        className="absolute inset-0 cursor-pointer z-10"
+                        style={{ opacity: sleepDisabledDays.has(shiftDateStr) ? 0.3 : 0 }}
                         onClick={(e) => { e.stopPropagation(); updateSleepDisabledDays(shiftDateStr); }}
                         data-testid={`toggle-sleep-${shiftDateStr}`}
                       />
