@@ -18374,7 +18374,7 @@ export default function Dashboard() {
                             <span className="text-[10px] font-medium leading-none" style={{ color: tempColor }}>{dayForecast.low}°</span>
                           </div>
                           {wIcon && (
-                            <div className="absolute z-20" style={{ right: '3px', top: shiftForDay === 'day' ? '7px' : '1px', fontSize: '12px', lineHeight: '1', opacity: isPastDay ? 0.5 : 0.85 }} data-testid={`weather-icon-${shiftDateStr}`}>
+                            <div className="absolute z-20" style={{ right: '3px', top: hasShiftBg ? '1px' : (shiftForDay === 'day' ? '7px' : '1px'), fontSize: '12px', lineHeight: '1', opacity: hasShiftBg ? 1 : (isPastDay ? 0.5 : 0.85) }} data-testid={`weather-icon-${shiftDateStr}`}>
                               {wIcon}
                             </div>
                           )}
