@@ -21626,7 +21626,7 @@ export default function Dashboard() {
             return (
               <div
                 className="absolute"
-                style={{ right: '-16px', bottom: '-5px', pointerEvents: 'auto', zIndex: 0, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || hwFloating.detached) ? 'none' : 'block', width: '18px', height: `${semTabs.length * 53 + 23}px`, maxHeight: 'calc(100% - 8px)' }}
+                style={{ right: '-16px', bottom: '-5px', pointerEvents: 'auto', zIndex: 0, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || hwFloating.detached) ? 'none' : 'block', width: '18px', height: `${semTabs.length * 52 + 23}px`, maxHeight: 'calc(100% - 8px)' }}
               >
                 {semTabs.map((tab, tabIdx) => {
                   const isActive = scrollActiveSem === tab.semLabel;
@@ -21635,7 +21635,7 @@ export default function Dashboard() {
                     <div
                       key={tab.semLabel}
                       className={`cursor-pointer${isActive && tabBounceEnabled ? ' semester-tab-bounce' : ''}`}
-                      style={{ position: 'absolute', bottom: `${reversedIdx * 53 + reversedIdx * 3 + 2 + (tabIdx === 0 ? 1 : 0)}px`, width: '18px', height: '88px', zIndex: isActive ? 100 : semTabs.length - tabIdx, clipPath: isActive ? 'none' : 'inset(0 0 0 2px)', transition: 'width 0.25s ease, transform 0.25s ease', transform: isActive ? 'translateX(2px)' : 'none' }}
+                      style={{ position: 'absolute', bottom: `${reversedIdx * 52 + reversedIdx * 2 + 2 + (tabIdx === 0 ? 1 : 0)}px`, width: '18px', height: '87px', zIndex: isActive ? 100 : semTabs.length - tabIdx, clipPath: isActive ? 'none' : 'inset(0 0 0 2px)', transition: 'width 0.25s ease, transform 0.25s ease', transform: isActive ? 'translateX(2px)' : 'none' }}
                       onClick={() => {
                         let idx = -1;
                         if (tab.letter === 'W' && tab.year === '26') {
