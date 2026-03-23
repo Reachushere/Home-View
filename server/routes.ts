@@ -19,6 +19,7 @@ import { getThirdAccountAuthUrl, exchangeCodeForTokensThird, isThirdAccountConne
 import { textToSpeech, initTTSFallbackStatus } from "./replit_integrations/audio/client";
 import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, sendTestHaPush, sendHaTaskReminder, sendEchoVoiceAnnouncement, type TaskReminder } from "./email";
 import { parseTickerCommand, extractInlineExpiry } from "./gmailTicker";
+import { fetchD2LAnnouncements } from "./gmail";
 import { getSchedulerStatus } from "./reminderScheduler";
 import { fetchTMUCalendarEvents } from "./tmuCalendar";
 import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder } from "./onedrive";
@@ -4165,6 +4166,35 @@ html,body{height:100%;overflow:hidden;background:transparent}
       res.status(500).json({ error: err.message });
     }
   });
+
+  async function syncD2LAnnouncementsFromGmail() {
+    try {
+      const d2lEmails = await fetchD2LAnnouncements(20);
+      let added = 0;
+      for (const email of d2lEmails) {
+        const existing = await storage.getAnnouncementByEmailId(email.id);
+        if (existing) continue;
+        await storage.createAnnouncement({
+          emailId: email.id,
+          subject: email.subject,
+          body: email.body,
+          snippet: email.snippet,
+          courseName: email.courseName,
+          receivedAt: new Date(email.date),
+        });
+        added++;
+      }
+      if (added > 0) {
+        console.log(`[D2L Sync] Added ${added} new D2L announcements from Gmail`);
+      }
+    } catch (err: any) {
+      console.error('[D2L Sync] Error syncing D2L announcements:', err.message);
+    }
+  }
+
+  syncD2LAnnouncementsFromGmail();
+  setInterval(syncD2LAnnouncementsFromGmail, 10 * 60 * 1000);
+  console.log('[D2L Sync] D2L announcement sync started (every 10 minutes)');
 
   function extractCourseFromSubject(subject: string): string {
     const match = subject.match(/\[([^\]]+)\]/);
