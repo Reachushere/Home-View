@@ -1291,7 +1291,7 @@ export default function SpotifyPlayerPage() {
   };
 
   return (
-    <div className="fixed inset-0 flex flex-col overflow-hidden select-none" style={{ fontFamily: "'Inter', system-ui, sans-serif", background: isSakura ? '#163252' : '#152e54' }} data-testid="spotify-player-page">
+    <div className={`${window.self !== window.top ? 'absolute' : 'fixed'} inset-0 flex flex-col overflow-hidden select-none`} style={{ fontFamily: "'Inter', system-ui, sans-serif", background: isSakura ? '#163252' : '#152e54', width: '100%', height: '100%' }} data-testid="spotify-player-page">
       <img
         src={isPlaying ? massBg : musicBg}
         alt=""
