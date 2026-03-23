@@ -21626,7 +21626,7 @@ export default function Dashboard() {
             return (
               <div
                 className="absolute"
-                style={{ right: '-16px', bottom: '4px', pointerEvents: 'auto', zIndex: 0, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || hwFloating.detached) ? 'none' : 'block', width: '18px', height: `${semTabs.length * 53 + 23}px`, maxHeight: 'calc(100% - 8px)' }}
+                style={{ right: '-16px', bottom: '13px', pointerEvents: 'auto', zIndex: 0, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || hwFloating.detached) ? 'none' : 'block', width: '18px', height: `${semTabs.length * 53 + 23}px`, maxHeight: 'calc(100% - 8px)' }}
               >
                 {semTabs.map((tab, tabIdx) => {
                   const isActive = scrollActiveSem === tab.semLabel;
