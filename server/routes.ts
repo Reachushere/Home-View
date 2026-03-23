@@ -4722,7 +4722,9 @@ html,body{height:100%;overflow:hidden;background:transparent}
         const dateStr = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}-${String(startDate.getDate()).padStart(2, '0')}`;
         
         const hour = startDate.getHours();
-        const isNight = hour >= 18 || hour < 6 || summary.includes('🌙');
+        const minute = startDate.getMinutes();
+        const timeVal = hour + minute / 60;
+        const isNight = timeVal >= 14 || timeVal < 4 || summary.includes('🌙');
         
         shiftEntries.push({
           date: dateStr,
