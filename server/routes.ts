@@ -6418,6 +6418,21 @@ html,body{height:100%;overflow:hidden;background:transparent}
     }
   }
 
+  app.get("/api/ha-entity-state", async (req, res) => {
+    const entity = req.query.entity as string;
+    if (!entity) return res.status(400).json({ error: "entity required" });
+    try {
+      const resp = await fetch(`http://172.24.0.2:8123/api/states/${encodeURIComponent(entity)}`, {
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` },
+      });
+      if (!resp.ok) return res.status(resp.status).json({ error: "HA error" });
+      const data = await resp.json() as any;
+      res.json({ entity_id: data.entity_id, state: data.state });
+    } catch {
+      res.status(500).json({ error: "Failed to reach HA" });
+    }
+  });
+
   app.get("/api/tablet-nav", async (req, res) => {
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     res.set('Pragma', 'no-cache');

@@ -755,6 +755,26 @@ export default function SpotifyPlayerPage() {
   const authParam = searchParams.get("auth");
   const authQuery = authParam ? `?auth=${authParam}` : "";
   const isEmbedded = searchParams.get("embed") === "true";
+  const lightEntity = searchParams.get("lightEntity");
+
+  useEffect(() => {
+    if (!lightEntity) return;
+    let active = true;
+    const check = async () => {
+      try {
+        const res = await fetch(`/api/ha-entity-state?entity=${encodeURIComponent(lightEntity)}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.state === "off" && active) {
+          window.location.href = "http://172.24.0.2:8123/lovelace/test-home";
+        }
+      } catch {}
+    };
+    check();
+    const interval = setInterval(check, 3000);
+    return () => { active = false; clearInterval(interval); };
+  }, [lightEntity]);
+
   const profile = PROFILES[activeProfile];
   const notifTimeout = useRef<any>(null);
   const searchTimeout = useRef<any>(null);
