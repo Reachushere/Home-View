@@ -18528,7 +18528,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isToday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}${weatherAlerts.length > 0 ? " weather-alert-border-pulse" : ""}`}
-                    style={{ backgroundColor: isToday ? undefined : (() => { const notYesterday = !isSameDayET(day, subDays(new Date(), 1)); const dimmed = sleepDisabledDays.has(shiftDateStr); if (notYesterday && shiftForDay === 'day') return dimmed ? 'rgba(255, 178, 50, 0.12)' : 'rgba(255, 178, 50, 0.28)'; if (notYesterday && shiftForDay === 'night') return dimmed ? 'rgba(124, 58, 237, 0.08)' : 'rgba(124, 58, 237, 0.18)'; return colorSettings.headerBar; })(), animationDelay: isToday ? `-${Date.now() % 7000}ms` : undefined }}
+                    style={{ backgroundColor: isToday ? undefined : colorSettings.headerBar, animationDelay: isToday ? `-${Date.now() % 7000}ms` : undefined }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {!isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && (
@@ -18539,12 +18539,15 @@ export default function Dashboard() {
                         data-testid={`toggle-sleep-${shiftDateStr}`}
                       />
                     )}
+                    {!isToday && !isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && (shiftForDay === 'day' || shiftForDay === 'night') && (
+                      <div className="absolute bottom-0 left-0 right-0" style={{ height: '3px', backgroundColor: shiftForDay === 'day' ? (sleepDisabledDays.has(shiftDateStr) ? 'rgba(255, 178, 50, 0.3)' : 'rgba(255, 178, 50, 0.85)') : (sleepDisabledDays.has(shiftDateStr) ? 'rgba(168, 85, 247, 0.3)' : 'rgba(168, 85, 247, 0.85)'), zIndex: 15 }} />
+                    )}
                     {(() => {
-                      const hasShiftBg = !isToday && !isSameDayET(day, subDays(new Date(), 1)) && (shiftForDay === 'day' || shiftForDay === 'night');
+                      const hasShiftBg = false;
                       const dayForecast = weatherData?.daily?.find(d => d.date === format(day, 'yyyy-MM-dd'));
                       if (!dayForecast) return null;
                       const isPastDay = day < startOfDayET(new Date());
-                      const tempColor = hasShiftBg ? (isPastDay ? 'rgba(0,0,0,0.45)' : '#000') : (isPastDay ? 'rgba(255,255,255,0.6)' : '#ffffff');
+                      const tempColor = isPastDay ? 'rgba(255,255,255,0.6)' : '#ffffff';
                       const wIcon = ((wc: number | undefined) => {
                         if (wc === undefined) return null;
                         if (wc === 0) return '☀️';
@@ -18571,7 +18574,7 @@ export default function Dashboard() {
                             <span className="text-[10px] font-medium leading-none" style={{ color: tempColor }}>{dayForecast.low}°</span>
                           </div>
                           {wIcon && (
-                            <div className="absolute z-20" style={{ right: '3px', top: hasShiftBg ? '1px' : (shiftForDay === 'day' ? '7px' : '1px'), fontSize: '12px', lineHeight: '1', opacity: hasShiftBg ? 1 : (isPastDay ? 0.5 : 0.85) }} data-testid={`weather-icon-${shiftDateStr}`}>
+                            <div className="absolute z-20" style={{ right: '3px', top: '1px', fontSize: '12px', lineHeight: '1', opacity: isPastDay ? 0.5 : 0.85 }} data-testid={`weather-icon-${shiftDateStr}`}>
                               {wIcon}
                             </div>
                           )}
@@ -18579,15 +18582,14 @@ export default function Dashboard() {
                       );
                     })()}
                     {(() => {
-                      const shiftBg = !isToday && !isSameDayET(day, subDays(new Date(), 1)) && (shiftForDay === 'day' || shiftForDay === 'night');
                       return (
                         <>
                           {day.getDay() === 6 && (
-                            <div className="absolute top-0 left-0 right-0 text-center" style={{ fontSize: '7.5px', fontWeight: 700, letterSpacing: '0.5px', color: shiftBg ? '#000' : '#FFFF00', lineHeight: '1', paddingTop: '8px' }}>NEW SCHOOL WEEK</div>
+                            <div className="absolute top-0 left-0 right-0 text-center" style={{ fontSize: '7.5px', fontWeight: 700, letterSpacing: '0.5px', color: '#FFFF00', lineHeight: '1', paddingTop: '8px' }}>NEW SCHOOL WEEK</div>
                           )}
                           <div className="flex items-center gap-1.5" style={{ marginTop: day.getDay() === 6 ? '13px' : undefined }}>
-                            <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? '#fff' : shiftBg ? 'rgba(0,0,0,0.55)' : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
-                            <div style={{ fontSize: isToday ? '25px' : '24px', fontWeight: isToday ? 600 : 700, color: isToday ? '#FFFF00' : shiftBg ? '#000' : '#fff' }}>{dayNum}</div>
+                            <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? '#fff' : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
+                            <div style={{ fontSize: isToday ? '25px' : '24px', fontWeight: isToday ? 600 : 700, color: isToday ? '#FFFF00' : '#fff' }}>{dayNum}</div>
                           </div>
                         </>
                       );
