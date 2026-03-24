@@ -23,8 +23,11 @@ function useAutoFullscreen() {
 
   useEffect(() => {
     if (!isSilk) return;
-    document.documentElement.style.cssText += ';position:fixed;top:0;left:0;width:100vw;height:100vh;overflow:auto;margin:0;padding:0;';
-    document.body.style.cssText += ';margin:0;padding:0;min-height:100vh;width:100vw;height:100vh;overflow:auto;';
+    const isInIframe = window.self !== window.top;
+    const heightVal = isInIframe ? '100%' : '100vh';
+    const widthVal = isInIframe ? '100%' : '100vw';
+    document.documentElement.style.cssText += `;position:fixed;top:0;left:0;width:${widthVal};height:${heightVal};overflow:auto;margin:0;padding:0;`;
+    document.body.style.cssText += `;margin:0;padding:0;min-height:${heightVal};width:${widthVal};height:${heightVal};overflow:auto;`;
     const meta = document.querySelector('meta[name="viewport"]');
     if (meta) {
       meta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');

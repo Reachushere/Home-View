@@ -6576,6 +6576,64 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     res.json({ ok: true });
   });
 
+  app.post("/api/fix-tablets", async (req, res) => {
+    const authParam = (req.query.auth as string) || '';
+    if (authParam !== (process.env.SITE_PASSWORD || '')) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+    const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+    const dashboardUrl = "https://home-view--bkh416.replit.app/tablet";
+    const results: string[] = [];
+
+    const tabletAdbEntities = [
+      { entity: "media_player.tablet_hallway_entrance", name: "Hallway Entrance" },
+      { entity: "media_player.tablet_hallway", name: "Hallway Main" },
+      { entity: "media_player.tablet_11", name: "Living Room" },
+      { entity: "media_player.bd24bb29_04a116d8_king", name: "King Bedroom" },
+      { entity: "media_player.tablet_queen", name: "Queen Bedroom" },
+      { entity: "media_player.tablet_kitchen_island", name: "Kitchen Island" },
+      { entity: "media_player.tablet_cat", name: "Cat Washroom" },
+    ];
+
+    for (const tablet of tabletAdbEntities) {
+      try {
+        await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
+          method: 'POST', headers: haHeaders,
+          body: JSON.stringify({ entity_id: tablet.entity, command: 'input keyevent KEYCODE_WAKEUP' }),
+        });
+        await new Promise(r => setTimeout(r, 500));
+
+        await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
+          method: 'POST', headers: haHeaders,
+          body: JSON.stringify({ entity_id: tablet.entity, command: `am start --activity-clear-task -a android.intent.action.VIEW -d "${dashboardUrl}" com.amazon.cloud9` }),
+        });
+        await new Promise(r => setTimeout(r, 500));
+
+        await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
+          method: 'POST', headers: haHeaders,
+          body: JSON.stringify({ entity_id: tablet.entity, command: 'settings put global policy_control immersive.full=com.amazon.cloud9' }),
+        });
+        await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
+          method: 'POST', headers: haHeaders,
+          body: JSON.stringify({ entity_id: tablet.entity, command: 'input keyevent KEYCODE_F11' }),
+        });
+        results.push(`${tablet.name}: OK`);
+        console.log(`[Fix Tablets] ${tablet.name} (${tablet.entity}): navigated to dashboard + fullscreen`);
+      } catch (e: any) {
+        results.push(`${tablet.name}: ERROR ${e.message}`);
+        console.error(`[Fix Tablets] ${tablet.name} error: ${e.message}`);
+      }
+    }
+
+    pendingTabletCommands['master'] = { action: 'go_home', timestamp: Date.now() };
+    pendingTabletCommands['tv'] = { action: 'go_home', timestamp: Date.now() };
+    await dbSetTabletCommand('master', { action: 'go_home', timestamp: Date.now() });
+    await dbSetTabletCommand('tv', { action: 'go_home', timestamp: Date.now() });
+
+    res.json({ ok: true, results });
+  });
+
   let currentTvFollowUrl: string | null = null;
   let currentTabletReaderUrl: string | null = null;
 
@@ -7091,6 +7149,10 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   }
 
   async function playChumFmRadio(haUrl: string): Promise<void> {
+    if (catWashPlaybackActive) {
+      console.log(`[Radio] BLOCKED: CPPA playback is active — refusing to play CHUM FM`);
+      return;
+    }
     const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
     await fetch(`${haUrl}/api/services/media_player/play_media`, {
       method: 'POST', headers: haHeaders,
@@ -8925,8 +8987,12 @@ document.body.removeChild(a);
         } catch {}
 
         if (!confirmed) {
-          console.log(`[Cat Lights] No confirmation received — playing CHUM FM on Echo speakers`);
           catLightsPromptPending = false;
+          if (catWashPlaybackActive) {
+            console.log(`[Cat Lights] No confirmation received but CPPA playback already active — skipping CHUM FM`);
+            return;
+          }
+          console.log(`[Cat Lights] No confirmation received — playing CHUM FM on Echo speakers`);
           await playChumFmRadio(haUrl);
           return;
         }

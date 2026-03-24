@@ -9758,9 +9758,11 @@ export default function Dashboard() {
 
   return (
     <div 
-      className="flex h-screen flex-col overflow-hidden relative"
+      className="flex flex-col overflow-hidden relative"
       style={{ 
         minWidth: '1024px',
+        height: '100%',
+        minHeight: '100%',
         backgroundColor: colorSettings.mainBackgroundOverlay ? safeHex(colorSettings.mainBackground, '#3a8bbf') : '#000000',
       }}
     >

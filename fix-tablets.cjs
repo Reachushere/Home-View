@@ -1,17 +1,19 @@
 const APP_URL = "https://home-view--bkh416.replit.app";
 
 async function checkEntity(entityId) {
-  const resp = await fetch(`${APP_URL}/api/ha-entity-state?entity=${encodeURIComponent(entityId)}`);
+  const resp = await fetch(`${APP_URL}/api/ha-entity-state?entity=${encodeURIComponent(entityId)}&auth=5747`);
   if (resp.ok) {
     const data = await resp.json();
-    console.log(`${entityId}: ${data.state}`);
+    console.log(`${entityId}: ${JSON.stringify(data)}`);
     return data;
   }
-  console.log(`${entityId}: ERROR ${resp.status}`);
+  const text = await resp.text().catch(() => '');
+  console.log(`${entityId}: ERROR ${resp.status} ${text.substring(0, 100)}`);
   return null;
 }
 
 async function main() {
+  console.log("=== Tablet Media Player States ===");
   const tabletEntities = [
     "media_player.tablet_hallway_entrance",
     "media_player.tablet_hallway",
@@ -21,27 +23,7 @@ async function main() {
     "media_player.tablet_kitchen_island",
     "media_player.tablet_cat",
   ];
-
-  console.log("=== Tablet States ===");
   for (const entity of tabletEntities) {
-    await checkEntity(entity);
-  }
-
-  // Also check Fully Kiosk browser entities
-  const fullyEntities = [
-    "sensor.tablet_hallway_entrance_browser",
-    "sensor.tablet_hallway_browser",
-    "sensor.fire_tablet_11_browser",
-    "sensor.tablet_king_browser",
-    "sensor.tablet_queen_browser",
-    "sensor.tablet_kitchen_island_browser",
-    "sensor.tablet_cat_browser",
-    "switch.tablet_hallway_entrance_screensaver",
-    "switch.tablet_hallway_screensaver",
-  ];
-  
-  console.log("\n=== Fully Kiosk Entities ===");
-  for (const entity of fullyEntities) {
     await checkEntity(entity);
   }
 }
