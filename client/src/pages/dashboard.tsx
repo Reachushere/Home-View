@@ -386,6 +386,13 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
     if (!containerRef.current) {
       const el = document.createElement('div');
       el.id = 'news-ticker-root';
+      el.style.position = 'fixed';
+      el.style.bottom = '0';
+      el.style.left = '0';
+      el.style.right = '0';
+      el.style.zIndex = '9998';
+      el.style.height = '0';
+      el.style.overflow = 'visible';
       document.body.appendChild(el);
       containerRef.current = el;
     }
