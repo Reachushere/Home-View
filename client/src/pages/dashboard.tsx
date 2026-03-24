@@ -19383,8 +19383,13 @@ export default function Dashboard() {
                         }
                         return { percent: 0, hasFiles: false };
                       }
+                      const preparedFiles = files.filter(f => f.listened || (f.totalChunks && f.totalChunks > 0));
+                      if (preparedFiles.length === 0 && fcPct <= 0) {
+                        return { percent: 0, hasFiles: false };
+                      }
                       let totalProgress = 0;
-                      for (const f of files) {
+                      const countableFiles = preparedFiles.length > 0 ? preparedFiles : files;
+                      for (const f of countableFiles) {
                         if (f.listened) {
                           totalProgress += 100;
                         } else {
@@ -19413,8 +19418,8 @@ export default function Dashboard() {
                           }
                         }
                       }
-                      const filesPct = Math.min(100, Math.round(totalProgress / files.length));
-                      return { percent: Math.max(filesPct, fcPct >= 0 ? fcPct : 0), hasFiles: true };
+                      const filesPct = Math.min(100, Math.round(totalProgress / countableFiles.length));
+                      return { percent: Math.max(filesPct, fcPct >= 0 ? fcPct : 0), hasFiles: preparedFiles.length > 0 };
                     };
                     const getProgressColor = (percent: number) => {
                       if (percent === 100) return '#22c55e';
@@ -21437,9 +21442,14 @@ export default function Dashboard() {
                 if (fcHasFiles) return { percent: Math.max(0, fcPct), hasFiles: true };
                 return { percent: 0, hasFiles: false };
               }
+              var prepared = files.filter(function(f) { return f.listened || (f.totalChunks && f.totalChunks > 0); });
+              if (prepared.length === 0 && fcPct <= 0) {
+                return { percent: 0, hasFiles: false };
+              }
+              var countable = prepared.length > 0 ? prepared : files;
               var totalProgress = 0;
-              for (var fi = 0; fi < files.length; fi++) {
-                var f = files[fi];
+              for (var fi = 0; fi < countable.length; fi++) {
+                var f = countable[fi];
                 if (f.listened) { totalProgress += 100; }
                 else if (f.checkedChunks && f.checkedChunks !== 'null' && f.checkedChunks !== '[]' && f.totalChunks && f.totalChunks > 0) {
                   try { var checked = JSON.parse(f.checkedChunks); if (Array.isArray(checked) && checked.length > 0) { totalProgress += Math.round((checked.length / f.totalChunks) * 100); } else if (f.lastChunkIndex != null && f.lastChunkIndex > 0) { totalProgress += Math.round((f.lastChunkIndex / f.totalChunks) * 100); } } catch { if (f.lastChunkIndex != null && f.lastChunkIndex > 0) totalProgress += Math.round((f.lastChunkIndex / f.totalChunks) * 100); }
@@ -21447,8 +21457,8 @@ export default function Dashboard() {
                   totalProgress += Math.round((f.lastChunkIndex / f.totalChunks) * 100);
                 }
               }
-              var filesPct = Math.min(100, Math.round(totalProgress / files.length));
-              return { percent: Math.max(filesPct, fcPct >= 0 ? fcPct : 0), hasFiles: true };
+              var filesPct = Math.min(100, Math.round(totalProgress / countable.length));
+              return { percent: Math.max(filesPct, fcPct >= 0 ? fcPct : 0), hasFiles: prepared.length > 0 };
             };
             const getFileProgressColor = (percent: number) => percent === 100 ? '#22c55e' : percent > 0 ? '#f97316' : '#ef4444';
             const moduleP = calc(mFiles, moduleFolderKey);

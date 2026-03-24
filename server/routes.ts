@@ -3028,6 +3028,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
           counts[folderKey] = { total: 0, listened: 0, unlistened: 0, partialProgress: 0 };
         }
         
+        const isPrepared = file.listened || (file.totalChunks && file.totalChunks > 0);
+        if (!isPrepared) continue;
+        
         counts[folderKey].total++;
         if (file.listened) {
           counts[folderKey].listened++;
