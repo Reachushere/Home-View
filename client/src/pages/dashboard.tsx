@@ -442,52 +442,67 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
     const applyTickerAnimation = () => {
       const scrollEl = containerRef.current?.querySelector('.news-ticker-scroll') as HTMLElement | null;
       if (!scrollEl) return;
-      const items = Array.from(scrollEl.querySelectorAll(':scope > a, :scope > span')) as HTMLElement[];
       const parentWidth = scrollEl.parentElement?.clientWidth || window.innerWidth;
-      if (items.length === 0) {
+      const items = Array.from(scrollEl.querySelectorAll(':scope > a, :scope > span')) as HTMLElement[];
+      const startContinuousScroll = () => {
+        scrollEl.style.transform = '';
         const contentWidth = scrollEl.scrollWidth;
         const totalTravel = parentWidth + contentWidth;
         const speed = 65;
-        const duration = totalTravel / speed;
+        const dur = totalTravel / speed;
         scrollEl.style.setProperty('--ticker-start', `${parentWidth}px`);
         scrollEl.style.setProperty('--ticker-end', `-${contentWidth}px`);
-        scrollEl.style.animation = `tickerScroll ${duration}s linear infinite`;
-        return;
-      }
-      items.forEach(item => { item.style.opacity = '0'; item.style.transform = `translateX(${parentWidth}px)`; item.style.transition = 'none'; });
-      const centerX = parentWidth / 2;
-      let entranceIndex = 0;
-      const slideInItem = (index: number) => {
-        if (index >= items.length) {
-          items.forEach(item => { item.style.opacity = '1'; item.style.transform = ''; item.style.transition = ''; });
-          const contentWidth = scrollEl.scrollWidth;
-          const totalTravel = parentWidth + contentWidth;
-          const speed = 65;
-          const duration = totalTravel / speed;
-          scrollEl.style.setProperty('--ticker-start', `${parentWidth}px`);
-          scrollEl.style.setProperty('--ticker-end', `-${contentWidth}px`);
-          scrollEl.style.animation = `tickerScroll ${duration}s linear infinite`;
+        scrollEl.style.animation = `tickerScroll ${dur}s linear infinite`;
+      };
+      if (items.length === 0) { startContinuousScroll(); return; }
+      const screenCenter = parentWidth / 2;
+      const itemCenters = items.map(item => item.offsetLeft + item.offsetWidth / 2);
+      const stopXs = itemCenters.map(c => screenCenter - c);
+      const startX = parentWidth;
+      let currentX = startX;
+      let bounceV = 0;
+      let stopIdx = 0;
+      let phase: 'slide' | 'bounce' | 'done' = 'slide';
+      let lastTime = 0;
+      const slideSpeed = 1800;
+      const maxStops = Math.min(items.length, 8);
+      const animate = (ts: number) => {
+        if (!lastTime) lastTime = ts;
+        const dt = Math.min((ts - lastTime) / 1000, 0.05);
+        lastTime = ts;
+        if (phase === 'slide') {
+          const target = stopIdx < maxStops ? stopXs[stopIdx] : 0;
+          const dist = currentX - target;
+          const speed = Math.max(slideSpeed, dist * 3);
+          currentX -= speed * dt;
+          if (currentX <= target) {
+            currentX = target;
+            if (stopIdx < maxStops) {
+              phase = 'bounce';
+              bounceV = 250;
+            } else {
+              phase = 'done';
+            }
+          }
+        } else if (phase === 'bounce') {
+          currentX += bounceV * dt;
+          bounceV -= 2500 * dt;
+          if (bounceV <= 0 && currentX <= stopXs[stopIdx]) {
+            currentX = stopXs[stopIdx];
+            stopIdx++;
+            phase = 'slide';
+          }
+        }
+        scrollEl.style.transform = `translateX(${currentX}px)`;
+        if (phase === 'done') {
+          scrollEl.style.transform = '';
+          startContinuousScroll();
           return;
         }
-        const item = items[index];
-        const itemRect = item.getBoundingClientRect();
-        const scrollRect = scrollEl.getBoundingClientRect();
-        const itemLeft = itemRect.left - scrollRect.left;
-        const overshoot = centerX - itemLeft - itemRect.width / 2;
-        item.style.opacity = '1';
-        item.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-        item.style.transform = `translateX(${overshoot}px)`;
-        setTimeout(() => {
-          item.style.transition = 'transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1)';
-          item.style.transform = `translateX(${overshoot + 12}px)`;
-          setTimeout(() => {
-            item.style.transition = 'transform 0.2s ease-out';
-            item.style.transform = 'translateX(0px)';
-          }, 150);
-        }, 400);
-        setTimeout(() => slideInItem(index + 1), 350);
+        requestAnimationFrame(animate);
       };
-      requestAnimationFrame(() => slideInItem(0));
+      scrollEl.style.transform = `translateX(${startX}px)`;
+      requestAnimationFrame(animate);
     };
     const imgs = containerRef.current.querySelectorAll('img');
     if (imgs.length > 0) {
@@ -12469,49 +12484,52 @@ export default function Dashboard() {
                 if (!el) return;
                 const items = Array.from(el.querySelectorAll(':scope > a, :scope > span')) as HTMLElement[];
                 const parentWidth = el.parentElement?.clientWidth || window.innerWidth;
-                if (items.length === 0) {
+                const startScroll = () => {
+                  el.style.transform = '';
                   const contentWidth = el.scrollWidth;
                   const totalTravel = parentWidth + contentWidth;
                   const speed = 65;
-                  const duration = totalTravel / speed;
+                  const dur = totalTravel / speed;
                   el.style.setProperty('--ticker-start', `${parentWidth}px`);
                   el.style.setProperty('--ticker-end', `-${contentWidth}px`);
-                  el.style.animation = `tickerScroll ${duration}s linear infinite`;
-                  return;
-                }
-                items.forEach(item => { item.style.opacity = '0'; item.style.transform = `translateX(${parentWidth}px)`; item.style.transition = 'none'; });
-                const centerX = parentWidth / 2;
-                const slideInItem = (index: number) => {
-                  if (index >= items.length) {
-                    items.forEach(item => { item.style.opacity = '1'; item.style.transform = ''; item.style.transition = ''; });
-                    const contentWidth = el.scrollWidth;
-                    const totalTravel = parentWidth + contentWidth;
-                    const speed = 65;
-                    const duration = totalTravel / speed;
-                    el.style.setProperty('--ticker-start', `${parentWidth}px`);
-                    el.style.setProperty('--ticker-end', `-${contentWidth}px`);
-                    el.style.animation = `tickerScroll ${duration}s linear infinite`;
-                    return;
-                  }
-                  const item = items[index];
-                  const itemRect = item.getBoundingClientRect();
-                  const elRect = el.getBoundingClientRect();
-                  const itemLeft = itemRect.left - elRect.left;
-                  const overshoot = centerX - itemLeft - itemRect.width / 2;
-                  item.style.opacity = '1';
-                  item.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                  item.style.transform = `translateX(${overshoot}px)`;
-                  setTimeout(() => {
-                    item.style.transition = 'transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1)';
-                    item.style.transform = `translateX(${overshoot + 12}px)`;
-                    setTimeout(() => {
-                      item.style.transition = 'transform 0.2s ease-out';
-                      item.style.transform = 'translateX(0px)';
-                    }, 150);
-                  }, 400);
-                  setTimeout(() => slideInItem(index + 1), 350);
+                  el.style.animation = `tickerScroll ${dur}s linear infinite`;
                 };
-                requestAnimationFrame(() => slideInItem(0));
+                if (items.length === 0) { startScroll(); return; }
+                const screenCenter = parentWidth / 2;
+                const itemCenters = items.map(item => item.offsetLeft + item.offsetWidth / 2);
+                const stopXs = itemCenters.map(c => screenCenter - c);
+                const startX = parentWidth;
+                let currentX = startX;
+                let bounceV = 0;
+                let stopIdx = 0;
+                let phase: 'slide' | 'bounce' | 'done' = 'slide';
+                let lastTime = 0;
+                const slideSpeed = 1800;
+                const maxStops = Math.min(items.length, 8);
+                const animate = (ts: number) => {
+                  if (!lastTime) lastTime = ts;
+                  const dt = Math.min((ts - lastTime) / 1000, 0.05);
+                  lastTime = ts;
+                  if (phase === 'slide') {
+                    const target = stopIdx < maxStops ? stopXs[stopIdx] : 0;
+                    const dist = currentX - target;
+                    if (dist <= 0) { currentX = target; if (stopIdx < maxStops) { phase = 'bounce'; bounceV = 250; } else { phase = 'done'; } }
+                    else { const speed = Math.max(slideSpeed, dist * 3); currentX -= speed * dt; if (currentX <= target) { currentX = target; if (stopIdx < maxStops) { phase = 'bounce'; bounceV = 250; } else { phase = 'done'; } } }
+                  } else if (phase === 'bounce') {
+                    currentX += bounceV * dt;
+                    bounceV -= 2500 * dt;
+                    if (bounceV <= 0 && currentX <= stopXs[stopIdx]) {
+                      currentX = stopXs[stopIdx];
+                      stopIdx++;
+                      phase = 'slide';
+                    }
+                  }
+                  el.style.transform = `translateX(${currentX}px)`;
+                  if (phase === 'done') { el.style.transform = ''; startScroll(); return; }
+                  requestAnimationFrame(animate);
+                };
+                el.style.transform = `translateX(${startX}px)`;
+                requestAnimationFrame(animate);
               };
               const imgs = el.querySelectorAll('img');
               if (imgs.length > 0) {
