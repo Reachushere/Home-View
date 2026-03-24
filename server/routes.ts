@@ -2173,7 +2173,7 @@ html,body{height:38px;overflow:hidden;background:#000;margin:0;padding:0}
   85%{transform:translateX(-1px) scale(1)}
   100%{opacity:1;transform:translateX(0) scale(1)}
 }
-.ticker-wrap{position:fixed;left:0;right:0;bottom:0;height:38px;overflow:hidden;background:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(20,20,30,0.9) 50%,rgba(0,0,0,0.85) 100%);border-top:1px solid rgba(255,255,255,0.15)}
+.ticker-wrap{position:absolute;left:0;right:0;top:0;height:38px;overflow:hidden;background:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(20,20,30,0.9) 50%,rgba(0,0,0,0.85) 100%);border-top:1px solid rgba(255,255,255,0.15)}
 .ticker-track{display:flex;align-items:center;height:100%;white-space:nowrap;position:relative;will-change:transform;backface-visibility:hidden}
 .t-item{display:inline-flex;align-items:center;gap:6px;margin:0 16px;opacity:0;transform:translateX(30px)}
 .t-item.t-visible{animation:itemBounceIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards}
