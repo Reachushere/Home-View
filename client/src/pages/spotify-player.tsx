@@ -758,6 +758,19 @@ export default function SpotifyPlayerPage() {
   const lightEntity = searchParams.get("lightEntity");
 
   useEffect(() => {
+    const checkAuth = () => {
+      const p = new URLSearchParams(window.location.search).get("auth");
+      if (p && (p === "bryn" || p === "yasu" || p === "guest") && p !== activeProfile) {
+        setActiveProfile(p);
+        setSelectedArtist(null);
+      }
+    };
+    window.addEventListener("focus", checkAuth);
+    document.addEventListener("visibilitychange", checkAuth);
+    return () => { window.removeEventListener("focus", checkAuth); document.removeEventListener("visibilitychange", checkAuth); };
+  }, [activeProfile]);
+
+  useEffect(() => {
     if (!lightEntity) return;
     let active = true;
     const check = async () => {
