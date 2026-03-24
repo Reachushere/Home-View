@@ -17,7 +17,8 @@ import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEven
 import { getSecondAccountAuthUrl, exchangeCodeForTokens, isSecondAccountConnected, disconnectSecondAccount, createEventInSecondAccount, createPrepEventInSecondAccount, deleteEventFromSecondAccount, updateEventInSecondAccount, getEventsFromSecondAccount } from "./secondGoogleAccount";
 import { getThirdAccountAuthUrl, exchangeCodeForTokensThird, isThirdAccountConnected, disconnectThirdAccount, getEventsFromThirdAccount, listThirdAccountCalendars, getEventsFromThirdAccountCalendar } from "./thirdGoogleAccount";
 import { textToSpeech, initTTSFallbackStatus } from "./replit_integrations/audio/client";
-import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, sendTestHaPush, sendHaTaskReminder, sendEchoVoiceAnnouncement, type TaskReminder } from "./email";
+import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, sendTestHaPush, sendHaTaskReminder, sendEchoVoiceAnnouncement, sendCalendarInvite, type TaskReminder } from "./email";
+import { syncOutlookEventsToReview } from "./outlookCalendar";
 import { parseTickerCommand, extractInlineExpiry } from "./gmailTicker";
 // fetchD2LAnnouncements available in ./gmail but Gmail connector lacks read scope; D2L sync handled by external Apps Script
 import { getSchedulerStatus } from "./reminderScheduler";
@@ -10059,40 +10060,32 @@ document.body.removeChild(a);
 
       const description = body?.trim() || null;
 
-      const taskData: any = {
-        title: titleText,
-        type: taskType,
-        courseName: courseName,
-        dueDate: dueDate,
-        eventStartTime: eventStartTime,
-        eventEndTime: eventEndTime,
-        weekNumber: weekNumber,
-        priority: priority,
-        description: description,
-        isCompleted: false,
-        isAcknowledged: taskType === 'reminder' ? false : true,
-      };
-
-      console.log(`[Email Homework] Creating task: ${JSON.stringify(taskData)}`);
-      const task = await storage.createTask(taskData);
-
-      try {
-        const event = await createCalendarEvent({
-          id: task.id,
-          title: task.title,
-          description: task.description,
-          dueDate: task.dueDate,
-          courseName: task.courseName,
-        });
-        if (event?.id) {
-          await storage.updateTask(task.id, { calendarEventId: event.id, calendarProvider: 'google' });
-        }
-      } catch (calErr: any) {
-        console.log(`[Email Homework] Calendar sync failed (non-fatal): ${calErr.message}`);
+      const emailMessageId = req.body.messageId || `gmail-${Date.now()}`;
+      const existing = await storage.getPendingReviewItemByExternalId(emailMessageId, 'gmail_task');
+      if (existing) {
+        console.log(`[Email Homework] Already queued: ${emailMessageId}`);
+        return res.json({ success: true, queued: true, alreadyExists: true, id: existing.id });
       }
 
-      console.log(`[Email Homework] Created task #${task.id}: "${task.title}" (${task.type}, ${task.courseName}, week ${task.weekNumber}, due ${dueDate.toDateString()})`);
-      res.json({ success: true, taskId: task.id, title: task.title, type: task.type, courseName: task.courseName, dueDate: dueDate.toISOString(), weekNumber });
+      const reviewItem = await storage.createPendingReviewItem({
+        source: 'gmail_task',
+        sourceEmail: from || null,
+        externalId: emailMessageId,
+        title: titleText,
+        description: description,
+        startDate: dueDate,
+        endDate: null,
+        eventStartTime: eventStartTime,
+        eventEndTime: eventEndTime,
+        location: null,
+        rawData: JSON.stringify({ subject, body, from, parsedType: taskType, courseName, weekNumber, priority }),
+        status: 'pending',
+        courseName: courseName,
+        taskType: taskType,
+      });
+
+      console.log(`[Email Homework] Queued for review #${reviewItem.id}: "${titleText}" (${taskType}, ${courseName})`);
+      res.json({ success: true, queued: true, reviewItemId: reviewItem.id, title: titleText, type: taskType, courseName });
 
     } catch (error: any) {
       console.error("[Email Homework] Error:", error);
@@ -14814,6 +14807,163 @@ Return ONLY the JSON object, no markdown formatting.`;
     }
   });
 
+  app.get("/api/pending-review", async (_req, res) => {
+    try {
+      const status = (_req.query.status as string) || undefined;
+      const items = await storage.getPendingReviewItems(status);
+      res.json(items);
+    } catch (error: any) {
+      console.error("[Review] Error fetching pending items:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/pending-review/:id/accept", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const item = (await storage.getPendingReviewItems()).find(i => i.id === id);
+      if (!item) return res.status(404).json({ error: "Not found" });
+
+      const rawData = item.rawData ? JSON.parse(item.rawData) : {};
+
+      let weekNumber = 1;
+      if (rawData.weekNumber) {
+        weekNumber = rawData.weekNumber;
+      } else {
+        const semesterSettings = await storage.getActiveSemesterSettings();
+        if (semesterSettings?.semesterStartDate) {
+          const { getWeekNumber } = await import('../shared/schema');
+          weekNumber = getWeekNumber(
+            new Date(),
+            new Date(semesterSettings.semesterStartDate),
+            semesterSettings.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : null
+          );
+        }
+      }
+
+      const taskData: any = {
+        title: item.title,
+        type: item.taskType || 'meeting',
+        courseName: item.courseName || null,
+        dueDate: item.startDate || new Date(),
+        eventStartTime: item.eventStartTime || null,
+        eventEndTime: item.eventEndTime || null,
+        weekNumber,
+        priority: rawData.priority || 'medium',
+        description: item.description || null,
+        isCompleted: false,
+        isAcknowledged: true,
+        ...(req.body.overrides || {}),
+      };
+
+      const task = await storage.createTask(taskData);
+
+      try {
+        const event = await createCalendarEvent({
+          id: task.id,
+          title: task.title,
+          description: task.description,
+          dueDate: task.dueDate,
+          courseName: task.courseName,
+        });
+        if (event?.id) {
+          await storage.updateTask(task.id, { calendarEventId: event.id, calendarProvider: 'google' });
+        }
+      } catch (calErr: any) {
+        console.log(`[Review] Calendar sync failed (non-fatal): ${calErr.message}`);
+      }
+
+      await storage.updatePendingReviewItem(id, { status: 'accepted' });
+
+      console.log(`[Review] Accepted item #${id} -> task #${task.id}: "${task.title}"`);
+      res.json({ success: true, task });
+    } catch (error: any) {
+      console.error("[Review] Error accepting item:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/pending-review/:id/reject", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.updatePendingReviewItem(id, { status: 'rejected' });
+      console.log(`[Review] Rejected item #${id}`);
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("[Review] Error rejecting item:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.delete("/api/pending-review/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deletePendingReviewItem(id);
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("[Review] Error deleting item:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/outlook/sync", async (_req, res) => {
+    try {
+      const result = await syncOutlookEventsToReview();
+      res.json(result);
+    } catch (error: any) {
+      console.error("[Outlook] Sync error:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/tasks/:id/invite", async (req, res) => {
+    try {
+      const taskId = parseInt(req.params.id);
+      const task = await storage.getTask(taskId);
+      if (!task) return res.status(404).json({ error: "Task not found" });
+
+      const { emails } = req.body;
+      if (!emails || !Array.isArray(emails) || emails.length === 0) {
+        return res.status(400).json({ error: "emails array required" });
+      }
+
+      await storage.updateTask(taskId, { inviteEmails: emails } as any);
+
+      const startDate = task.dueDate ? new Date(task.dueDate) : new Date();
+      if (task.eventStartTime) {
+        const [h, m] = task.eventStartTime.split(':').map(Number);
+        startDate.setHours(h, m, 0, 0);
+      }
+
+      let endDate: Date | undefined;
+      if (task.eventEndTime) {
+        endDate = new Date(startDate);
+        const [h, m] = task.eventEndTime.split(':').map(Number);
+        endDate.setHours(h, m, 0, 0);
+      }
+
+      const result = await sendCalendarInvite({
+        to: emails,
+        title: task.title,
+        description: task.description || undefined,
+        startDate,
+        endDate,
+        organizerName: 'Bryn',
+        organizerEmail: 'bryn.kai-hendricks@outlook.com',
+      });
+
+      if (result.success) {
+        console.log(`[Invite] Sent .ics to ${emails.join(', ')} for task #${taskId}`);
+        res.json({ success: true, sentTo: emails });
+      } else {
+        res.status(500).json({ error: result.error });
+      }
+    } catch (error: any) {
+      console.error("[Invite] Error:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   return httpServer;
 }
 
@@ -14821,15 +14971,13 @@ function generateICS(title: string, description: string, dueDate: Date, type: st
   const formatDate = (d: Date) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
   const uid = `task-${Date.now()}@schoolplanner`;
   
-  // Use provided reminders or default to 30min and 2hr
   const activeReminders = reminderMinutes?.filter(m => m > 0) || [DEFAULT_REMINDER_1, DEFAULT_REMINDER_2];
   
-  // Create reminder lines
   const reminders = activeReminders.map(minutes => 
     `VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:Reminder\r\nTRIGGER:-PT${minutes}M\r\nEND:VALARM`
   ).join('\r\nBEGIN:');
 
-  const endDate = new Date(dueDate.getTime() + 60 * 60 * 1000); // 1 hour event
+  const endDate = new Date(dueDate.getTime() + 60 * 60 * 1000);
 
   return `BEGIN:VCALENDAR
 VERSION:2.0

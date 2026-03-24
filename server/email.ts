@@ -238,6 +238,101 @@ export async function sendTestSms(): Promise<{ success: boolean; error?: string 
   }
 }
 
+export async function sendCalendarInvite(params: {
+  to: string[];
+  title: string;
+  description?: string;
+  startDate: Date;
+  endDate?: Date;
+  location?: string;
+  organizerName?: string;
+  organizerEmail?: string;
+}): Promise<{ success: boolean; error?: string }> {
+  try {
+    const { to, title, description, startDate, endDate, location, organizerName, organizerEmail } = params;
+
+    const end = endDate || new Date(startDate.getTime() + 60 * 60 * 1000);
+    const uid = `unical-${Date.now()}-${Math.random().toString(36).slice(2)}@uni-cal.app`;
+
+    const fmt = (d: Date) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+
+    const icsContent = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Uni-Cal//Task Manager//EN',
+      'CALSCALE:GREGORIAN',
+      'METHOD:REQUEST',
+      'BEGIN:VEVENT',
+      `DTSTART:${fmt(startDate)}`,
+      `DTEND:${fmt(end)}`,
+      `SUMMARY:${title}`,
+      description ? `DESCRIPTION:${description.replace(/\n/g, '\\n')}` : '',
+      location ? `LOCATION:${location}` : '',
+      `UID:${uid}`,
+      `ORGANIZER;CN=${organizerName || 'Uni-Cal'}:mailto:${organizerEmail || FROM_EMAIL}`,
+      ...to.map(email => `ATTENDEE;ROLE=REQ-PARTICIPANT;RSVP=TRUE:mailto:${email}`),
+      `DTSTAMP:${fmt(new Date())}`,
+      'STATUS:CONFIRMED',
+      'END:VEVENT',
+      'END:VCALENDAR',
+    ].filter(Boolean).join('\r\n');
+
+    const icsBase64 = Buffer.from(icsContent).toString('base64');
+
+    const formattedDate = startDate.toLocaleDateString('en-GB', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+    const formattedTime = startDate.toLocaleTimeString('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    const { data, error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: `Calendar Invite: ${title}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h2 style="color: #333; border-bottom: 2px solid #4578B0; padding-bottom: 10px;">
+            Calendar Invite
+          </h2>
+          <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="color: #042550; margin-top: 0;">${title}</h3>
+            <p><strong>Date:</strong> ${formattedDate}</p>
+            <p><strong>Time:</strong> ${formattedTime}</p>
+            ${location ? `<p><strong>Location:</strong> ${location}</p>` : ''}
+            ${description ? `<p><strong>Details:</strong> ${description}</p>` : ''}
+          </div>
+          <p style="color: #666; font-size: 14px;">
+            Open the attached .ics file to add this event to your calendar.
+          </p>
+        </div>
+      `,
+      attachments: [
+        {
+          filename: 'invite.ics',
+          content: icsBase64,
+          content_type: 'text/calendar; method=REQUEST',
+        },
+      ],
+    });
+
+    if (error) {
+      console.error('Calendar invite send error:', error);
+      return { success: false, error: error.message };
+    }
+
+    console.log('Calendar invite sent successfully:', data);
+    return { success: true };
+  } catch (err) {
+    console.error('Calendar invite send error:', err);
+    return { success: false, error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
+
 // Home Assistant push notification functions
 const HA_URL = "https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa";
 const tokenFromEnv = process.env.HOME_ASSISTANT_TOKEN || "";

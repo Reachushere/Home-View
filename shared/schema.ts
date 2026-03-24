@@ -367,6 +367,7 @@ export const tasks = pgTable("tasks", {
   sortOrder: integer("sort_order").default(0), // Order within group or list
   isAcknowledged: boolean("is_acknowledged").default(true), // For reminders: false until user acknowledges
   excludeFromGpa: boolean("exclude_from_gpa").default(false),
+  inviteEmails: text("invite_emails").array(),
 });
 
 // Base schema from drizzle, then override date fields to accept ISO strings
@@ -630,6 +631,35 @@ export const announcements = pgTable("announcements", {
 export const insertAnnouncementSchema = createInsertSchema(announcements).omit({ id: true });
 export type Announcement = typeof announcements.$inferSelect;
 export type InsertAnnouncement = z.infer<typeof insertAnnouncementSchema>;
+
+export const PENDING_REVIEW_SOURCES = ["outlook_calendar", "gmail_task"] as const;
+export type PendingReviewSource = typeof PENDING_REVIEW_SOURCES[number];
+
+export const PENDING_REVIEW_STATUSES = ["pending", "accepted", "rejected"] as const;
+export type PendingReviewStatus = typeof PENDING_REVIEW_STATUSES[number];
+
+export const pendingReviewItems = pgTable("pending_review_items", {
+  id: serial("id").primaryKey(),
+  source: text("source").notNull(),
+  sourceEmail: text("source_email"),
+  externalId: text("external_id"),
+  title: text("title").notNull(),
+  description: text("description"),
+  startDate: timestamp("start_date"),
+  endDate: timestamp("end_date"),
+  eventStartTime: text("event_start_time"),
+  eventEndTime: text("event_end_time"),
+  location: text("location"),
+  rawData: text("raw_data"),
+  status: text("status").notNull().default("pending"),
+  courseName: text("course_name"),
+  taskType: text("task_type").default("meeting"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertPendingReviewItemSchema = createInsertSchema(pendingReviewItems).omit({ id: true, createdAt: true });
+export type PendingReviewItem = typeof pendingReviewItems.$inferSelect;
+export type InsertPendingReviewItem = z.infer<typeof insertPendingReviewItemSchema>;
 
 // Export chat models for AI integrations
 export * from "./models/chat";

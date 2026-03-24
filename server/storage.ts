@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { tasks, files, semesterSettings, secondGoogleAccount, thirdGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, accessTokens, shiftSchedule, semesterChecklist, courseWeekMappings, scholarships, keyContacts, announcements, entityComments, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type ThirdGoogleAccount, type InsertThirdGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, type AccessToken, type InsertAccessToken, type ShiftScheduleEntry, type InsertShiftScheduleEntry, type SemesterChecklistItem, type InsertSemesterChecklistItem, type CourseWeekMapping, type InsertCourseWeekMapping, type Scholarship, type InsertScholarship, type KeyContact, type InsertKeyContact, type Announcement, type InsertAnnouncement, type EntityComment, getWeekNumber } from "@shared/schema";
+import { tasks, files, semesterSettings, secondGoogleAccount, thirdGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, accessTokens, shiftSchedule, semesterChecklist, courseWeekMappings, scholarships, keyContacts, announcements, entityComments, pendingReviewItems, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type ThirdGoogleAccount, type InsertThirdGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, type AccessToken, type InsertAccessToken, type ShiftScheduleEntry, type InsertShiftScheduleEntry, type SemesterChecklistItem, type InsertSemesterChecklistItem, type CourseWeekMapping, type InsertCourseWeekMapping, type Scholarship, type InsertScholarship, type KeyContact, type InsertKeyContact, type Announcement, type InsertAnnouncement, type EntityComment, type PendingReviewItem, type InsertPendingReviewItem, getWeekNumber } from "@shared/schema";
 import { eq, and, gte, lte, desc, or, isNull } from "drizzle-orm";
 
 export interface IStorage {
@@ -99,6 +99,11 @@ export interface IStorage {
   getEntityComments(entityType: string, entityId: string): Promise<EntityComment[]>;
   upsertEntityComment(entityType: string, entityId: string, content: string): Promise<EntityComment>;
   deleteEntityComment(id: number): Promise<void>;
+  getPendingReviewItems(status?: string): Promise<PendingReviewItem[]>;
+  getPendingReviewItemByExternalId(externalId: string, source: string): Promise<PendingReviewItem | undefined>;
+  createPendingReviewItem(item: InsertPendingReviewItem): Promise<PendingReviewItem>;
+  updatePendingReviewItem(id: number, updates: Partial<InsertPendingReviewItem>): Promise<PendingReviewItem>;
+  deletePendingReviewItem(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -783,6 +788,32 @@ export class DatabaseStorage implements IStorage {
 
   async deleteEntityComment(id: number): Promise<void> {
     await db.delete(entityComments).where(eq(entityComments.id, id));
+  }
+
+  async getPendingReviewItems(status?: string): Promise<PendingReviewItem[]> {
+    if (status) {
+      return db.select().from(pendingReviewItems).where(eq(pendingReviewItems.status, status)).orderBy(desc(pendingReviewItems.createdAt));
+    }
+    return db.select().from(pendingReviewItems).orderBy(desc(pendingReviewItems.createdAt));
+  }
+
+  async getPendingReviewItemByExternalId(externalId: string, source: string): Promise<PendingReviewItem | undefined> {
+    const [item] = await db.select().from(pendingReviewItems).where(and(eq(pendingReviewItems.externalId, externalId), eq(pendingReviewItems.source, source)));
+    return item;
+  }
+
+  async createPendingReviewItem(item: InsertPendingReviewItem): Promise<PendingReviewItem> {
+    const [created] = await db.insert(pendingReviewItems).values(item).returning();
+    return created;
+  }
+
+  async updatePendingReviewItem(id: number, updates: Partial<InsertPendingReviewItem>): Promise<PendingReviewItem> {
+    const [updated] = await db.update(pendingReviewItems).set(updates).where(eq(pendingReviewItems.id, id)).returning();
+    return updated;
+  }
+
+  async deletePendingReviewItem(id: number): Promise<void> {
+    await db.delete(pendingReviewItems).where(eq(pendingReviewItems.id, id));
   }
 }
 

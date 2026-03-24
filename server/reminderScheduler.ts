@@ -4,6 +4,7 @@ import { getIsTravellingMode } from "./routes";
 import { db } from "./db";
 import { appState } from "@shared/schema";
 import { eq } from "drizzle-orm";
+import { syncOutlookEventsToReview } from "./outlookCalendar";
 
 function getEasternNow(): Date {
   return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
@@ -25,6 +26,7 @@ function getEasternHour(date: Date): number {
 const sentReminders = new Set<string>();
 
 const DAILY_DIGEST_HOUR = 7;
+const OUTLOOK_SYNC_HOUR = 8;
 let schedulerRunning = false;
 let lastCheckTime: Date | null = null;
 let remindersSentCount = 0;
@@ -261,6 +263,31 @@ export async function checkDailyDigest() {
   }
 }
 
+export async function checkOutlookSync() {
+  try {
+    const now = new Date();
+    const todayStr = getEasternDateStr(now);
+    const easternHour = getEasternHour(now);
+
+    if (easternHour < OUTLOOK_SYNC_HOUR) return;
+
+    const lastSyncDate = await getAppState("last_outlook_sync_date");
+    if (lastSyncDate === todayStr) return;
+
+    await setAppState("last_outlook_sync_date", todayStr);
+    console.log("[Reminder] Running Outlook calendar sync...");
+
+    try {
+      const result = await syncOutlookEventsToReview();
+      console.log(`[Reminder] Outlook sync complete: ${result.added} added, ${result.skipped} skipped`);
+    } catch (err: any) {
+      console.error("[Reminder] Outlook sync failed:", err.message || err);
+    }
+  } catch (err) {
+    console.error("[Reminder] Error in Outlook sync check:", err);
+  }
+}
+
 let reminderInterval: ReturnType<typeof setInterval> | null = null;
 
 export function startReminderScheduler() {
@@ -275,10 +302,12 @@ export function startReminderScheduler() {
 
   checkReminders();
   checkDailyDigest();
+  checkOutlookSync();
 
   reminderInterval = setInterval(() => {
     checkReminders();
     checkDailyDigest();
+    checkOutlookSync();
   }, 60 * 1000);
 }
 
