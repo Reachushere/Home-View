@@ -18,7 +18,7 @@ import { getSecondAccountAuthUrl, exchangeCodeForTokens, isSecondAccountConnecte
 import { getThirdAccountAuthUrl, exchangeCodeForTokensThird, isThirdAccountConnected, disconnectThirdAccount, getEventsFromThirdAccount, listThirdAccountCalendars, getEventsFromThirdAccountCalendar } from "./thirdGoogleAccount";
 import { textToSpeech, initTTSFallbackStatus } from "./replit_integrations/audio/client";
 import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, sendTestHaPush, sendHaTaskReminder, sendEchoVoiceAnnouncement, sendCalendarInvite, type TaskReminder } from "./email";
-import { syncOutlookEventsToReview } from "./outlookCalendar";
+import { syncOutlookEventsToReview, fetchOutlookCalendarEvents } from "./outlookCalendar";
 import { parseTickerCommand, extractInlineExpiry } from "./gmailTicker";
 // fetchD2LAnnouncements available in ./gmail but Gmail connector lacks read scope; D2L sync handled by external Apps Script
 import { getSchedulerStatus } from "./reminderScheduler";
@@ -14912,6 +14912,16 @@ Return ONLY the JSON object, no markdown formatting.`;
       res.json(result);
     } catch (error: any) {
       console.error("[Outlook] Sync error:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/outlook/events-debug", async (_req, res) => {
+    try {
+      const events = await fetchOutlookCalendarEvents(30);
+      res.json({ count: events.length, events: events.map(e => ({ id: e.id, subject: e.subject, start: e.start, end: e.end })) });
+    } catch (error: any) {
+      console.error("[Outlook] Events debug error:", error);
       res.status(500).json({ error: error.message });
     }
   });

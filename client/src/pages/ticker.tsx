@@ -189,14 +189,24 @@ export default function TickerPage() {
     if (scrollContainer) {
       scrollContainer.innerHTML = html;
       const applyAnim = () => {
-        const contentWidth = scrollContainer.scrollWidth;
-        const parentWidth = scrollContainer.parentElement?.clientWidth || window.innerWidth;
-        const totalTravel = parentWidth + contentWidth;
-        const speed = 65;
-        const duration = totalTravel / speed;
-        scrollContainer.style.setProperty('--ticker-start', `${parentWidth}px`);
-        scrollContainer.style.setProperty('--ticker-end', `-${contentWidth}px`);
-        scrollContainer.style.animation = `tickerScroll ${duration}s linear infinite`;
+        scrollContainer.classList.add('ticker-entrance');
+        const items = scrollContainer.querySelectorAll(':scope > a, :scope > span');
+        items.forEach((item, i) => {
+          (item as HTMLElement).style.animationDelay = `${i * 0.08}s`;
+        });
+        const entranceDuration = (items.length * 0.08 + 0.5) * 1000;
+        setTimeout(() => {
+          scrollContainer.classList.remove('ticker-entrance');
+          items.forEach(item => { (item as HTMLElement).style.animationDelay = ''; (item as HTMLElement).style.opacity = '1'; });
+          const contentWidth = scrollContainer.scrollWidth;
+          const parentWidth = scrollContainer.parentElement?.clientWidth || window.innerWidth;
+          const totalTravel = parentWidth + contentWidth;
+          const speed = 65;
+          const duration = totalTravel / speed;
+          scrollContainer.style.setProperty('--ticker-start', `${parentWidth}px`);
+          scrollContainer.style.setProperty('--ticker-end', `-${contentWidth}px`);
+          scrollContainer.style.animation = `tickerScroll ${duration}s linear infinite`;
+        }, entranceDuration);
       };
       const imgs = scrollContainer.querySelectorAll('img');
       if (imgs.length > 0) {

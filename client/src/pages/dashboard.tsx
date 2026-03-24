@@ -435,14 +435,24 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
     const applyTickerAnimation = () => {
       const scrollEl = containerRef.current?.querySelector('.news-ticker-scroll') as HTMLElement | null;
       if (scrollEl) {
-        const contentWidth = scrollEl.scrollWidth;
-        const parentWidth = scrollEl.parentElement?.clientWidth || window.innerWidth;
-        const totalTravel = parentWidth + contentWidth;
-        const speed = 65;
-        const duration = totalTravel / speed;
-        scrollEl.style.setProperty('--ticker-start', `${parentWidth}px`);
-        scrollEl.style.setProperty('--ticker-end', `-${contentWidth}px`);
-        scrollEl.style.animation = `tickerScroll ${duration}s linear infinite`;
+        scrollEl.classList.add('ticker-entrance');
+        const items = scrollEl.querySelectorAll(':scope > a, :scope > span');
+        items.forEach((item, i) => {
+          (item as HTMLElement).style.animationDelay = `${i * 0.08}s`;
+        });
+        const entranceDuration = (items.length * 0.08 + 0.5) * 1000;
+        setTimeout(() => {
+          scrollEl.classList.remove('ticker-entrance');
+          items.forEach(item => { (item as HTMLElement).style.animationDelay = ''; (item as HTMLElement).style.opacity = '1'; });
+          const contentWidth = scrollEl.scrollWidth;
+          const parentWidth = scrollEl.parentElement?.clientWidth || window.innerWidth;
+          const totalTravel = parentWidth + contentWidth;
+          const speed = 65;
+          const duration = totalTravel / speed;
+          scrollEl.style.setProperty('--ticker-start', `${parentWidth}px`);
+          scrollEl.style.setProperty('--ticker-end', `-${contentWidth}px`);
+          scrollEl.style.animation = `tickerScroll ${duration}s linear infinite`;
+        }, entranceDuration);
       }
     };
     const imgs = containerRef.current.querySelectorAll('img');
@@ -679,9 +689,8 @@ export default function Dashboard() {
     const checkMorningReview = async () => {
       const now = new Date();
       const eastern = new Date(now.toLocaleString('en-US', { timeZone: 'America/Toronto' }));
-      const hour = eastern.getHours();
       const todayKey = `morning_review_${eastern.getFullYear()}-${String(eastern.getMonth()+1).padStart(2,'0')}-${String(eastern.getDate()).padStart(2,'0')}`;
-      if (hour >= 9 && !sessionStorage.getItem(todayKey)) {
+      if (!sessionStorage.getItem(todayKey)) {
         const items = await fetchPendingReview();
         if (items.length > 0) {
           sessionStorage.setItem(todayKey, '1');
@@ -692,6 +701,16 @@ export default function Dashboard() {
     checkMorningReview();
     const interval = setInterval(checkMorningReview, 5 * 60 * 1000);
     return () => clearInterval(interval);
+  }, [fetchPendingReview]);
+
+  const triggerOutlookSyncAndReview = useCallback(async () => {
+    try {
+      await fetch('/api/outlook/sync', { method: 'POST' });
+      const items = await fetchPendingReview();
+      if (items.length > 0) {
+        setShowMorningReview(true);
+      }
+    } catch (e) { console.error('[Review] Outlook sync + review error:', e); }
   }, [fetchPendingReview]);
 
   const handleAcceptReview = async (id: number, overrides?: Record<string, any>) => {
@@ -12414,14 +12433,24 @@ export default function Dashboard() {
               if (!el) return;
               const applyAnim = () => {
                 if (!el) return;
-                const contentWidth = el.scrollWidth;
-                const parentWidth = el.parentElement?.clientWidth || window.innerWidth;
-                const totalTravel = parentWidth + contentWidth;
-                const speed = 65;
-                const duration = totalTravel / speed;
-                el.style.setProperty('--ticker-start', `${parentWidth}px`);
-                el.style.setProperty('--ticker-end', `-${contentWidth}px`);
-                el.style.animation = `tickerScroll ${duration}s linear infinite`;
+                el.classList.add('ticker-entrance');
+                const items = el.querySelectorAll(':scope > a, :scope > span');
+                items.forEach((item, i) => {
+                  (item as HTMLElement).style.animationDelay = `${i * 0.08}s`;
+                });
+                const entranceDuration = (items.length * 0.08 + 0.5) * 1000;
+                setTimeout(() => {
+                  el.classList.remove('ticker-entrance');
+                  items.forEach(item => { (item as HTMLElement).style.animationDelay = ''; (item as HTMLElement).style.opacity = '1'; });
+                  const contentWidth = el.scrollWidth;
+                  const parentWidth = el.parentElement?.clientWidth || window.innerWidth;
+                  const totalTravel = parentWidth + contentWidth;
+                  const speed = 65;
+                  const duration = totalTravel / speed;
+                  el.style.setProperty('--ticker-start', `${parentWidth}px`);
+                  el.style.setProperty('--ticker-end', `-${contentWidth}px`);
+                  el.style.animation = `tickerScroll ${duration}s linear infinite`;
+                }, entranceDuration);
               };
               const imgs = el.querySelectorAll('img');
               if (imgs.length > 0) {
