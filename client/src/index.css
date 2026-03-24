@@ -4,23 +4,32 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body {
+html {
   overflow: hidden !important;
-  height: 100vh !important;
-  max-height: 100vh !important;
-  min-height: 100vh !important;
+  height: 100% !important;
   margin: 0 !important;
   padding: 0 !important;
-  width: 100% !important;
   overscroll-behavior: none !important;
-  touch-action: none !important;
+}
+
+body {
+  overflow: hidden !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overscroll-behavior: none !important;
 }
 
 #root {
-  height: 100vh !important;
-  max-height: 100vh !important;
+  height: 100% !important;
+  max-height: 100% !important;
   overflow: hidden !important;
-  overscroll-behavior: none !important;
+}
+
+#dashboard-root {
+  height: 100% !important;
+  max-height: 100% !important;
 }
 
 :root {
