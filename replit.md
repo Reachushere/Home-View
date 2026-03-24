@@ -43,7 +43,10 @@ Publishing preference: Always publish with mobile-ready compatibility enabled.
 - **Subtasks & Projects**: Nested subtasks with completion tracking and dependencies (blocks, blocked_by, relates_to). Full project management with status, priority, progress bars, and multiple view modes (Grid, List, Workflow).
 - **UI/UX**: Dashboard layout with "Due Today," "Upcoming," and "Missed" sections, course color coding, blinking animations for urgency, and visual arrow connections between UI elements.
 - **File Management**: Uploads to object storage, URL pasting, and a dedicated files page.
-- **Calendar Integration**: .ics file generation for tasks and integration with Google Calendar events.
+- **Calendar Integration**: .ics file generation for tasks, Google Calendar sync, and .ics invite emails to attendees via Resend.
+- **Outlook Calendar Integration**: Syncs Outlook calendar events (via Microsoft Graph API with dedicated Outlook connector) to a pending review queue. Runs daily at 8am via scheduler.
+- **Morning Review Dialog**: Auto-triggers at 9am daily if pending items exist. Shows Outlook calendar events and Gmail-parsed tasks grouped by source. Accept creates tasks, reject skips. Bulk accept/reject available.
+- **Invite Functionality**: Each task card has an "Invite" button that expands an email input field. Sends .ics calendar invites to specified email addresses via Resend.
 - **Degree Tracking**: Elective course management with dropdowns, GPA calculation, and functionality to upload and parse course list files to update tasks.
 - **Syllabus Upload & Parsing**: Upload PDF syllabus per course via CourseDetailDialog. Uses OpenAI to extract assignments, deadlines, grading breakdown, policies, and week numbering style. Review UI shows parsed items with accept/decline/edit controls. Syllabus paths stored in `app_state` table (key `courseSyllabusPaths`) and localStorage fallback. View Syllabus button available in both edit and view modes.
 - **OneDrive Folder Generation**: Auto-creates semester/course/week folder structure on OneDrive. `generateWeekFolderNames()` handles reading week detection by aligning dates to Monday, producing "Reading Week - STUDY" folder without incrementing week numbers. Supports Winter (13 weeks + reading) and Spring/Summer (first_half, second_half, full) term structures.

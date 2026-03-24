@@ -648,6 +648,82 @@ export default function Dashboard() {
   const [icsImportOpen, setIcsImportOpen] = useState(false);
   const [icsImporting, setIcsImporting] = useState(false);
 
+  const [showMorningReview, setShowMorningReview] = useState(false);
+  const [morningReviewItems, setMorningReviewItems] = useState<any[]>([]);
+  const [morningReviewLoading, setMorningReviewLoading] = useState(false);
+  const [processingReviewIds, setProcessingReviewIds] = useState<Set<number>>(new Set());
+
+  const fetchPendingReview = useCallback(async () => {
+    try {
+      const res = await fetch('/api/pending-review?status=pending');
+      if (res.ok) {
+        const items = await res.json();
+        setMorningReviewItems(items);
+        return items;
+      }
+    } catch (e) { console.error('[Review] fetch error:', e); }
+    return [];
+  }, []);
+
+  useEffect(() => {
+    const checkMorningReview = async () => {
+      const now = new Date();
+      const eastern = new Date(now.toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+      const hour = eastern.getHours();
+      const todayKey = `morning_review_${eastern.getFullYear()}-${String(eastern.getMonth()+1).padStart(2,'0')}-${String(eastern.getDate()).padStart(2,'0')}`;
+      if (hour >= 9 && !sessionStorage.getItem(todayKey)) {
+        const items = await fetchPendingReview();
+        if (items.length > 0) {
+          sessionStorage.setItem(todayKey, '1');
+          setShowMorningReview(true);
+        }
+      }
+    };
+    checkMorningReview();
+    const interval = setInterval(checkMorningReview, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [fetchPendingReview]);
+
+  const handleAcceptReview = async (id: number, overrides?: Record<string, any>) => {
+    setProcessingReviewIds(prev => new Set(prev).add(id));
+    try {
+      await fetch(`/api/pending-review/${id}/accept`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ overrides }),
+      });
+      setMorningReviewItems(prev => prev.filter(i => i.id !== id));
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+    } catch (e) { console.error('[Review] accept error:', e); }
+    setProcessingReviewIds(prev => { const s = new Set(prev); s.delete(id); return s; });
+  };
+
+  const handleRejectReview = async (id: number) => {
+    setProcessingReviewIds(prev => new Set(prev).add(id));
+    try {
+      await fetch(`/api/pending-review/${id}/reject`, { method: 'POST' });
+      setMorningReviewItems(prev => prev.filter(i => i.id !== id));
+    } catch (e) { console.error('[Review] reject error:', e); }
+    setProcessingReviewIds(prev => { const s = new Set(prev); s.delete(id); return s; });
+  };
+
+  const handleAcceptAll = async () => {
+    setMorningReviewLoading(true);
+    for (const item of morningReviewItems) {
+      await handleAcceptReview(item.id);
+    }
+    setMorningReviewLoading(false);
+    setShowMorningReview(false);
+  };
+
+  const handleRejectAll = async () => {
+    setMorningReviewLoading(true);
+    for (const item of morningReviewItems) {
+      await handleRejectReview(item.id);
+    }
+    setMorningReviewLoading(false);
+    setShowMorningReview(false);
+  };
+
   const handleIcsFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -9780,6 +9856,127 @@ export default function Dashboard() {
           </Button>
         </div>
       )}
+
+      {/* Morning Review Dialog */}
+      <Dialog open={showMorningReview} onOpenChange={(open) => { if (!open) setShowMorningReview(false); }}>
+        <DialogContent className="max-w-[600px] max-h-[80vh] overflow-y-auto p-5 text-white [&_*]:text-white" style={{ zIndex: 10005, background: 'linear-gradient(180deg, rgba(15,23,42,0.97) 0%, rgba(10,15,30,0.98) 100%)', border: '1.5px solid rgba(255,255,255,0.25)', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }} data-testid="dialog-morning-review">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-base text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>
+              <Sun className="h-5 w-5 text-yellow-400" />
+              Morning Review
+              <Badge variant="outline" className="ml-2 text-[10px] border-white/30">{morningReviewItems.length} items</Badge>
+            </DialogTitle>
+            <VisuallyHidden.Root><DialogDescription>Review pending items from Outlook and Gmail</DialogDescription></VisuallyHidden.Root>
+          </DialogHeader>
+
+          {morningReviewItems.length === 0 ? (
+            <div className="text-center py-8 text-white/50">
+              <CheckCircle2 className="h-8 w-8 mx-auto mb-2 text-green-400" />
+              <p className="text-sm">All caught up! No items to review.</p>
+            </div>
+          ) : (
+            <>
+              {['outlook_calendar', 'gmail'].map(source => {
+                const items = morningReviewItems.filter(i => i.source === source);
+                if (items.length === 0) return null;
+                const label = source === 'outlook_calendar' ? 'Outlook Calendar' : 'Gmail Tasks';
+                const icon = source === 'outlook_calendar' ? <CalendarDays className="h-4 w-4 text-blue-400" /> : <Mail className="h-4 w-4 text-red-400" />;
+                return (
+                  <div key={source} className="mb-4" data-testid={`review-group-${source}`}>
+                    <div className="flex items-center gap-2 mb-2 pb-1 border-b border-white/15">
+                      {icon}
+                      <span className="text-xs font-semibold uppercase tracking-wider text-white/70">{label}</span>
+                      <Badge variant="outline" className="text-[10px] border-white/20 ml-auto">{items.length}</Badge>
+                    </div>
+                    <div className="space-y-2">
+                      {items.map(item => (
+                        <div
+                          key={item.id}
+                          className="flex items-start gap-3 p-3 rounded-lg border border-white/10 bg-white/5"
+                          data-testid={`review-item-${item.id}`}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate">{item.title}</p>
+                            {item.description && (
+                              <p className="text-xs text-white/50 mt-0.5 line-clamp-2">{item.description}</p>
+                            )}
+                            <div className="flex items-center gap-3 mt-1 text-[11px] text-white/40">
+                              {item.startDate && (
+                                <span className="flex items-center gap-1">
+                                  <Calendar className="h-3 w-3" />
+                                  {new Date(item.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                </span>
+                              )}
+                              {item.eventStartTime && (
+                                <span className="flex items-center gap-1">
+                                  <Clock className="h-3 w-3" />
+                                  {item.eventStartTime}{item.eventEndTime ? ` - ${item.eventEndTime}` : ''}
+                                </span>
+                              )}
+                              {item.location && (
+                                <span className="truncate max-w-[150px]">{item.location}</span>
+                              )}
+                              {item.sourceEmail && (
+                                <span className="truncate max-w-[150px]">{item.sourceEmail}</span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1.5 flex-shrink-0">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-7 px-2.5 text-[11px] border-green-500/40 text-green-400 hover:bg-green-500/20 hover:text-green-300"
+                              disabled={processingReviewIds.has(item.id)}
+                              onClick={() => handleAcceptReview(item.id)}
+                              data-testid={`button-accept-review-${item.id}`}
+                            >
+                              {processingReviewIds.has(item.id) ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3 w-3 mr-1" />}
+                              Accept
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-7 px-2.5 text-[11px] border-red-500/40 text-red-400 hover:bg-red-500/20 hover:text-red-300"
+                              disabled={processingReviewIds.has(item.id)}
+                              onClick={() => handleRejectReview(item.id)}
+                              data-testid={`button-reject-review-${item.id}`}
+                            >
+                              <X className="h-3 w-3 mr-1" />
+                              Skip
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+              <div className="flex items-center justify-between pt-3 border-t border-white/15">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-xs border-white/20 text-white/60 hover:text-white hover:bg-white/10"
+                  onClick={handleRejectAll}
+                  disabled={morningReviewLoading}
+                  data-testid="button-reject-all-review"
+                >
+                  Skip All
+                </Button>
+                <Button
+                  size="sm"
+                  className="text-xs bg-green-600 hover:bg-green-700 text-white"
+                  onClick={handleAcceptAll}
+                  disabled={morningReviewLoading}
+                  data-testid="button-accept-all-review"
+                >
+                  {morningReviewLoading ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <Check className="h-3 w-3 mr-1" />}
+                  Accept All
+                </Button>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Partner Away Popup - Kitchen Reading Prompt */}
       <Dialog open={showPartnerAwayPopup} onOpenChange={(open) => {
@@ -24965,6 +25162,28 @@ function TaskCard({
     }
   };
 
+  const [showInviteInput, setShowInviteInput] = useState(false);
+  const [inviteEmailInput, setInviteEmailInput] = useState('');
+  const [isSendingInvite, setIsSendingInvite] = useState(false);
+
+  const handleSendInvite = async () => {
+    const emails = inviteEmailInput.split(/[,;\s]+/).map(e => e.trim()).filter(e => e.includes('@'));
+    if (emails.length === 0) return;
+    setIsSendingInvite(true);
+    try {
+      const res = await fetch(`/api/tasks/${task.id}/invite`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ emails }),
+      });
+      if (res.ok) {
+        setShowInviteInput(false);
+        setInviteEmailInput('');
+      }
+    } catch (e) { console.error('[Invite] send error:', e); }
+    setIsSendingInvite(false);
+  };
+
   const hasAttachments = task.attachments && task.attachments.length > 0;
 
   const cardElement = (
@@ -25100,6 +25319,15 @@ function TaskCard({
                 <Download className="h-3 w-3 mr-1" />
                 .ics
               </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setShowInviteInput(!showInviteInput)}
+                data-testid={`button-invite-${task.id}`}
+              >
+                <Mail className="h-3 w-3 mr-1" />
+                Invite
+              </Button>
               <Button 
                 size="sm" 
                 variant={task.calendarEventId ? "default" : "outline"}
@@ -25119,6 +25347,28 @@ function TaskCard({
                 Edit
               </Button>
             </div>
+            {showInviteInput && (
+              <div className="flex items-center gap-2 mt-2" data-testid={`invite-input-${task.id}`}>
+                <Input
+                  placeholder="Email addresses (comma separated)"
+                  value={inviteEmailInput}
+                  onChange={(e) => setInviteEmailInput(e.target.value)}
+                  className="flex-1 h-7 text-xs"
+                  onKeyDown={(e) => { if (e.key === 'Enter') handleSendInvite(); }}
+                  data-testid={`input-invite-email-${task.id}`}
+                />
+                <Button
+                  size="sm"
+                  className="h-7 text-xs bg-blue-600 hover:bg-blue-700"
+                  onClick={handleSendInvite}
+                  disabled={isSendingInvite || !inviteEmailInput.trim()}
+                  data-testid={`button-send-invite-${task.id}`}
+                >
+                  {isSendingInvite ? <Loader2 className="h-3 w-3 animate-spin" /> : <Share2 className="h-3 w-3 mr-1" />}
+                  Send
+                </Button>
+              </div>
+            )}
           </>
         )}
       </CardContent>

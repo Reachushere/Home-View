@@ -1,5 +1,51 @@
-import { getOneDriveClient } from './onedrive';
+import { Client } from '@microsoft/microsoft-graph-client';
 import { storage } from './storage';
+
+// Outlook connector - uses dedicated Outlook integration with Calendar permissions
+let outlookConnectionSettings: any;
+
+async function getOutlookAccessToken() {
+  if (outlookConnectionSettings && outlookConnectionSettings.settings.expires_at && new Date(outlookConnectionSettings.settings.expires_at).getTime() > Date.now()) {
+    return outlookConnectionSettings.settings.access_token;
+  }
+
+  const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
+  const xReplitToken = process.env.REPL_IDENTITY
+    ? 'repl ' + process.env.REPL_IDENTITY
+    : process.env.WEB_REPL_RENEWAL
+    ? 'depl ' + process.env.WEB_REPL_RENEWAL
+    : null;
+
+  if (!xReplitToken) {
+    throw new Error('X-Replit-Token not found for repl/depl');
+  }
+
+  outlookConnectionSettings = await fetch(
+    'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=outlook',
+    {
+      headers: {
+        'Accept': 'application/json',
+        'X-Replit-Token': xReplitToken
+      }
+    }
+  ).then(res => res.json()).then(data => data.items?.[0]);
+
+  const accessToken = outlookConnectionSettings?.settings?.access_token || outlookConnectionSettings?.settings?.oauth?.credentials?.access_token;
+
+  if (!outlookConnectionSettings || !accessToken) {
+    throw new Error('Outlook not connected');
+  }
+  return accessToken;
+}
+
+async function getOutlookClient() {
+  const accessToken = await getOutlookAccessToken();
+  return Client.initWithMiddleware({
+    authProvider: {
+      getAccessToken: async () => accessToken
+    }
+  });
+}
 
 export interface OutlookEvent {
   id: string;
@@ -14,7 +60,7 @@ export interface OutlookEvent {
 }
 
 export async function fetchOutlookCalendarEvents(daysAhead: number = 14): Promise<OutlookEvent[]> {
-  const client = await getOneDriveClient();
+  const client = await getOutlookClient();
 
   const now = new Date();
   const startDateTime = now.toISOString();
