@@ -69,18 +69,35 @@ export async function fetchOutlookCalendarEvents(daysAhead: number = 14): Promis
   const endDateTime = end.toISOString();
 
   try {
-    const response = await client
-      .api('/me/calendarview')
-      .query({
-        startDateTime,
-        endDateTime,
-        $orderby: 'start/dateTime',
-        $top: 100,
-        $select: 'id,subject,bodyPreview,start,end,location,organizer,isAllDay,isCancelled',
-      })
-      .get();
+    const calendarsResponse = await client.api('/me/calendars').select('id,name').get();
+    const calendars = calendarsResponse.value || [];
+    console.log(`[Outlook Calendar] Found ${calendars.length} calendars: ${calendars.map((c: any) => c.name).join(', ')}`);
 
-    return (response.value || []).filter((ev: any) => !ev.isCancelled);
+    const allEvents: OutlookEvent[] = [];
+
+    for (const cal of calendars) {
+      try {
+        const response = await client
+          .api(`/me/calendars/${cal.id}/calendarview`)
+          .query({
+            startDateTime,
+            endDateTime,
+            $orderby: 'start/dateTime',
+            $top: 100,
+            $select: 'id,subject,bodyPreview,start,end,location,organizer,isAllDay,isCancelled',
+          })
+          .get();
+
+        const events = (response.value || []).filter((ev: any) => !ev.isCancelled);
+        console.log(`[Outlook Calendar] "${cal.name}": ${events.length} events`);
+        allEvents.push(...events);
+      } catch (calError: any) {
+        console.error(`[Outlook Calendar] Error fetching from "${cal.name}":`, calError.message || calError);
+      }
+    }
+
+    allEvents.sort((a, b) => new Date(a.start.dateTime).getTime() - new Date(b.start.dateTime).getTime());
+    return allEvents;
   } catch (error: any) {
     console.error('[Outlook Calendar] Error fetching events:', error.message || error);
     throw error;
