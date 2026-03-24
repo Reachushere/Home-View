@@ -221,7 +221,7 @@ export default function TickerPage() {
         className="flex overflow-hidden"
         style={{
           height: '38px',
-          background: 'linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(20,20,30,0.9) 50%,rgba(0,0,0,0.85) 100%)',
+          background: 'linear-gradient(90deg,#000000 0%,#14141e 50%,#000000 100%)',
           borderTop: '1px solid rgba(255,255,255,0.15)',
         }}
         data-testid="news-ticker"
