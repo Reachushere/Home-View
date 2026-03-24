@@ -14888,18 +14888,34 @@ Return ONLY the JSON object, no markdown formatting.`;
 
   app.post("/api/spotify/go-home", async (req, res) => {
     try {
-      const ts = Date.now();
-      const cmd = { action: 'go_home', timestamp: ts };
-      pendingTabletCommands['master'] = cmd;
-      await dbSetTabletCommand('master', cmd);
-      console.log(`[Spotify Home] Set go_home command for master tablet-nav (ts=${ts})`);
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      const homeUrl = "http://172.24.0.2:8123/lovelace/test-home";
+      const tabletWrapperUrl = "https://home-view--bkh416.replit.app/tablet";
+      const tabletAdbEntities = [
+        { entity: "media_player.tablet_hallway_entrance", name: "Hallway Entrance" },
+        { entity: "media_player.tablet_hallway", name: "Hallway Main" },
+        { entity: "media_player.tablet_11", name: "Living Room" },
+        { entity: "media_player.bd24bb29_04a116d8_king", name: "King Bedroom" },
+        { entity: "media_player.tablet_queen", name: "Queen Bedroom" },
+        { entity: "media_player.tablet_kitchen_island", name: "Kitchen Island" },
+        { entity: "media_player.tablet_cat", name: "Cat Washroom" },
+      ];
+      console.log(`[Spotify Home] Navigating ${tabletAdbEntities.length} tablets to ${homeUrl} via ADB`);
+      res.json({ ok: true, navigating: tabletAdbEntities.length });
 
-      const tvCmd = { action: 'go_home', timestamp: ts };
-      pendingTabletCommands['tv'] = tvCmd;
-      await dbSetTabletCommand('tv', tvCmd);
-      console.log(`[Spotify Home] Set go_home command for tv tablet-nav (ts=${ts})`);
-
-      res.json({ ok: true });
+      await Promise.allSettled(
+        tabletAdbEntities.map(async (tablet) => {
+          try {
+            await haServiceCall('androidtv/adb_command', {
+              entity_id: tablet.entity,
+              command: `am start --activity-clear-task -a android.intent.action.VIEW -d "${homeUrl}" com.amazon.cloud9`
+            }, `Spotify Home ADB ${tablet.name}`);
+            console.log(`[Spotify Home] ${tablet.name} → ADB navigate sent`);
+          } catch (e: any) {
+            console.log(`[Spotify Home] ${tablet.name} → ADB failed: ${e.message}`);
+          }
+        })
+      );
     } catch (error: any) {
       console.error("[Spotify Home] Error:", error);
       if (!res.headersSent) res.status(500).json({ error: error.message });
