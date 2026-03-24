@@ -9888,91 +9888,81 @@ export default function Dashboard() {
 
       {/* Morning Review Dialog */}
       <Dialog open={showMorningReview} onOpenChange={(open) => { if (!open) setShowMorningReview(false); }}>
-        <DialogContent className="max-w-[600px] max-h-[80vh] overflow-y-auto p-5 text-white [&_*]:text-white" style={{ zIndex: 10005, background: 'linear-gradient(180deg, rgba(15,23,42,0.97) 0%, rgba(10,15,30,0.98) 100%)', border: '1.5px solid rgba(255,255,255,0.25)', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }} data-testid="dialog-morning-review">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-base text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>
-              <Sun className="h-5 w-5 text-yellow-400" />
+        <DialogContent className="max-w-[520px] max-h-[70vh] overflow-y-auto p-3 text-white [&_*]:text-white" style={{ zIndex: 10005, background: 'linear-gradient(180deg, rgba(15,23,42,0.97) 0%, rgba(10,15,30,0.98) 100%)', border: '1.5px solid rgba(255,255,255,0.25)', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }} data-testid="dialog-morning-review">
+          <DialogHeader className="pb-1">
+            <DialogTitle className="flex items-center gap-1.5 text-[11px] text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>
+              <Sun className="h-3.5 w-3.5 text-yellow-400" />
               Morning Review
-              <Badge variant="outline" className="ml-2 text-[10px] border-white/30">{morningReviewItems.length} items</Badge>
+              <Badge variant="outline" className="ml-1.5 text-[8px] border-white/30 py-0 px-1">{morningReviewItems.length}</Badge>
             </DialogTitle>
             <VisuallyHidden.Root><DialogDescription>Review pending items from Outlook and Gmail</DialogDescription></VisuallyHidden.Root>
           </DialogHeader>
 
           {morningReviewItems.length === 0 ? (
-            <div className="text-center py-8 text-white/50">
-              <CheckCircle2 className="h-8 w-8 mx-auto mb-2 text-green-400" />
-              <p className="text-sm">All caught up! No items to review.</p>
+            <div className="text-center py-4 text-white/50">
+              <CheckCircle2 className="h-5 w-5 mx-auto mb-1 text-green-400" />
+              <p className="text-[10px]">All caught up!</p>
             </div>
           ) : (
             <>
               {['outlook_calendar', 'gmail'].map(source => {
                 const items = morningReviewItems.filter(i => i.source === source);
                 if (items.length === 0) return null;
-                const label = source === 'outlook_calendar' ? 'Outlook Calendar' : 'Gmail Tasks';
-                const icon = source === 'outlook_calendar' ? <CalendarDays className="h-4 w-4 text-blue-400" /> : <Mail className="h-4 w-4 text-red-400" />;
+                const label = source === 'outlook_calendar' ? 'Outlook' : 'Gmail';
+                const icon = source === 'outlook_calendar' ? <CalendarDays className="h-3 w-3 text-blue-400" /> : <Mail className="h-3 w-3 text-red-400" />;
                 return (
-                  <div key={source} className="mb-4" data-testid={`review-group-${source}`}>
-                    <div className="flex items-center gap-2 mb-2 pb-1 border-b border-white/15">
+                  <div key={source} className="mb-2" data-testid={`review-group-${source}`}>
+                    <div className="flex items-center gap-1.5 mb-1 pb-0.5 border-b border-white/15">
                       {icon}
-                      <span className="text-xs font-semibold uppercase tracking-wider text-white/70">{label}</span>
-                      <Badge variant="outline" className="text-[10px] border-white/20 ml-auto">{items.length}</Badge>
+                      <span className="text-[9px] font-semibold uppercase tracking-wider text-white/70">{label}</span>
+                      <Badge variant="outline" className="text-[8px] border-white/20 ml-auto py-0 px-1">{items.length}</Badge>
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-1">
                       {items.map(item => (
                         <div
                           key={item.id}
-                          className="flex items-start gap-3 p-3 rounded-lg border border-white/10 bg-white/5"
+                          className="flex items-center gap-2 py-1.5 px-2 rounded border border-white/10 bg-white/5"
                           data-testid={`review-item-${item.id}`}
                         >
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium truncate">{item.title}</p>
-                            {item.description && (
-                              <p className="text-xs text-white/50 mt-0.5 line-clamp-2">{item.description}</p>
-                            )}
-                            <div className="flex items-center gap-3 mt-1 text-[11px] text-white/40">
+                            <p className="text-[10px] font-medium truncate leading-tight">{item.title}</p>
+                            <div className="flex items-center gap-2 mt-0.5 text-[8px] text-white/40">
                               {item.startDate && (
-                                <span className="flex items-center gap-1">
-                                  <Calendar className="h-3 w-3" />
-                                  {new Date(item.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                <span className="flex items-center gap-0.5">
+                                  <Calendar className="h-2.5 w-2.5" />
+                                  {new Date(item.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                                 </span>
                               )}
                               {item.eventStartTime && (
-                                <span className="flex items-center gap-1">
-                                  <Clock className="h-3 w-3" />
-                                  {item.eventStartTime}{item.eventEndTime ? ` - ${item.eventEndTime}` : ''}
+                                <span className="flex items-center gap-0.5">
+                                  <Clock className="h-2.5 w-2.5" />
+                                  {item.eventStartTime}{item.eventEndTime ? `–${item.eventEndTime}` : ''}
                                 </span>
                               )}
-                              {item.location && (
-                                <span className="truncate max-w-[150px]">{item.location}</span>
-                              )}
-                              {item.sourceEmail && (
-                                <span className="truncate max-w-[150px]">{item.sourceEmail}</span>
+                              {item.description && !item.startDate && !item.eventStartTime && (
+                                <span className="truncate max-w-[200px]">{item.description}</span>
                               )}
                             </div>
                           </div>
-                          <div className="flex items-center gap-1.5 flex-shrink-0">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="h-7 px-2.5 text-[11px] border-green-500/40 text-green-400 hover:bg-green-500/20 hover:text-green-300"
+                          <div className="flex items-center gap-1 flex-shrink-0">
+                            <button
+                              className="w-6 h-6 flex items-center justify-center rounded-full border border-green-500/50 text-green-400 hover:bg-green-500/20 disabled:opacity-40"
                               disabled={processingReviewIds.has(item.id)}
                               onClick={() => handleAcceptReview(item.id)}
                               data-testid={`button-accept-review-${item.id}`}
+                              title="Accept"
                             >
-                              {processingReviewIds.has(item.id) ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3 w-3 mr-1" />}
-                              Accept
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="h-7 px-2.5 text-[11px] border-red-500/40 text-red-400 hover:bg-red-500/20 hover:text-red-300"
+                              {processingReviewIds.has(item.id) ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3 w-3" />}
+                            </button>
+                            <button
+                              className="w-6 h-6 flex items-center justify-center rounded-full border border-red-500/50 text-red-400 hover:bg-red-500/20 disabled:opacity-40"
                               disabled={processingReviewIds.has(item.id)}
                               onClick={() => handleRejectReview(item.id)}
                               data-testid={`button-reject-review-${item.id}`}
+                              title="Skip"
                             >
-                              <X className="h-3 w-3 mr-1" />
-                              Skip
-                            </Button>
+                              <X className="h-3 w-3" />
+                            </button>
                           </div>
                         </div>
                       ))}
@@ -9980,11 +9970,11 @@ export default function Dashboard() {
                   </div>
                 );
               })}
-              <div className="flex items-center justify-between pt-3 border-t border-white/15">
+              <div className="flex items-center justify-between pt-2 border-t border-white/15">
                 <Button
                   variant="outline"
                   size="sm"
-                  className="text-xs border-white/20 text-white/60 hover:text-white hover:bg-white/10"
+                  className="h-6 px-2 text-[9px] border-white/20 text-white/60 hover:text-white hover:bg-white/10"
                   onClick={handleRejectAll}
                   disabled={morningReviewLoading}
                   data-testid="button-reject-all-review"
@@ -9993,12 +9983,12 @@ export default function Dashboard() {
                 </Button>
                 <Button
                   size="sm"
-                  className="text-xs bg-green-600 hover:bg-green-700 text-white"
+                  className="h-6 px-2 text-[9px] bg-green-600 hover:bg-green-700 text-white"
                   onClick={handleAcceptAll}
                   disabled={morningReviewLoading}
                   data-testid="button-accept-all-review"
                 >
-                  {morningReviewLoading ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <Check className="h-3 w-3 mr-1" />}
+                  {morningReviewLoading ? <Loader2 className="h-2.5 w-2.5 mr-1 animate-spin" /> : <Check className="h-2.5 w-2.5 mr-1" />}
                   Accept All
                 </Button>
               </div>
