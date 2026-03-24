@@ -2150,7 +2150,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       const authQS = req.query.auth ? `?auth=${req.query.auth}` : '';
 
       if (!tickerItems) {
-        const retryHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="refresh" content="5"><style>*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}html,body{height:38px;overflow:hidden;background:#000;margin:0;padding:0}.ticker-wrap{position:fixed;left:0;right:0;bottom:0;height:38px;overflow:hidden;background:#000;border-top:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center}.loading{color:rgba(255,255,255,0.5);font-size:14px;font-weight:600}</style></head><body><div class="ticker-wrap"><span class="loading">Loading news ticker...</span></div></body></html>`;
+        const retryHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="refresh" content="5"><style>*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}html,body{height:100%;overflow:hidden;background:#000}.ticker-wrap{position:fixed;left:0;right:0;bottom:0;height:38px;overflow:hidden;background:#000;border-top:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center}.loading{color:rgba(255,255,255,0.5);font-size:14px;font-weight:600}</style></head><body><div class="ticker-wrap"><span class="loading">Loading news ticker...</span></div></body></html>`;
         res.setHeader('Content-Type', 'text/html');
         res.setHeader('X-Frame-Options', 'ALLOWALL');
         res.setHeader('Content-Security-Policy', '');
@@ -2163,7 +2163,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
-html,body{height:38px;overflow:hidden;background:#000;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#000}
 @keyframes tickerScroll{0%{transform:translate3d(var(--ticker-start),0,0)}100%{transform:translate3d(var(--ticker-end),0,0)}}
 @keyframes tickerAlertBlink{0%,100%{opacity:1}50%{opacity:0.3}}
 @keyframes itemBounceIn{
@@ -2173,7 +2173,7 @@ html,body{height:38px;overflow:hidden;background:#000;margin:0;padding:0}
   85%{transform:translateX(-1px) scale(1)}
   100%{opacity:1;transform:translateX(0) scale(1)}
 }
-.ticker-wrap{position:absolute;left:0;right:0;top:0;height:38px;overflow:hidden;background:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(20,20,30,0.9) 50%,rgba(0,0,0,0.85) 100%);border-top:1px solid rgba(255,255,255,0.15)}
+.ticker-wrap{position:fixed;left:0;right:0;bottom:0;height:38px;overflow:hidden;background:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(20,20,30,0.9) 50%,rgba(0,0,0,0.85) 100%);border-top:1px solid rgba(255,255,255,0.15)}
 .ticker-track{display:flex;align-items:center;height:100%;white-space:nowrap;position:relative;will-change:transform;backface-visibility:hidden}
 .t-item{display:inline-flex;align-items:center;gap:6px;margin:0 16px;opacity:0;transform:translateX(30px)}
 .t-item.t-visible{animation:itemBounceIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards}
