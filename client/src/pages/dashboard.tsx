@@ -9762,7 +9762,6 @@ export default function Dashboard() {
       style={{ 
         minWidth: '1024px',
         backgroundColor: colorSettings.mainBackgroundOverlay ? safeHex(colorSettings.mainBackground, '#3a8bbf') : '#000000',
-        paddingBottom: '38px',
       }}
     >
       {!selectedCertCourse && !isSchoolCoursesDialogOpen && !semSettingsDialogKey && !dashboardCommentTarget && hwTimelinePos && createPortal(
