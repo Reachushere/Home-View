@@ -22654,7 +22654,11 @@ export default function Dashboard() {
 
                 {/* This Week Section - hidden on Fridays since everything shifts to today */}
                 {new Date().getDay() === 5 ? null : (<>
-                <div data-homework-section="thisweek" data-semester-label={hwWeeklyTimeline[0]?.semLabel || ''} style={{ borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '12px', paddingTop: '0px' }}>
+                <div data-homework-section="thisweek" data-semester-label={hwWeeklyTimeline[0]?.semLabel || ''} style={{ borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '12px', paddingTop: '2px' }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+                    <span className="text-[12px] font-semibold" style={{ color: '#ffffff', whiteSpace: 'nowrap' }}>{hwWeeklyTimeline[0]?.label || 'This week'}</span>
+                    <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)' }}>({dueTomorrowTasks.length})</span>
+                  </div>
                 </div>
                 {dueTomorrowTasks.length === 0 ? (
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks this week</div>
@@ -22691,18 +22695,8 @@ export default function Dashboard() {
                       });
                       return groups.map((group, groupIdx) => {
                         const dueDates = group.tasks.map(t => ({ date: startOfDayET(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
-                        return (<>
-                          {groupIdx === 0 && (
-                            <div key="week-label" style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '2px' }}>
-                              <div style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, marginLeft: '-3px', marginRight: '2px' }} />
-                              <div style={{ width: '10px', flexShrink: 0, marginLeft: '3px', marginRight: '2px' }} />
-                              <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'baseline', gap: '4px', marginLeft: '-8px', paddingLeft: '8px' }}>
-                                <span className="text-[12px] font-semibold" style={{ color: '#ffffff', whiteSpace: 'nowrap' }}>{hwWeeklyTimeline[0]?.label || 'This week'}</span>
-                                <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)' }}>({dueTomorrowTasks.length})</span>
-                              </div>
-                            </div>
-                          )}
-                          <div key={group.key} data-hw-group-row style={{ display: 'flex', alignItems: 'stretch' }}>
+                        return (
+                          <div key={group.key} data-hw-group-row style={{ display: 'flex', alignItems: 'stretch', marginTop: groupIdx === 0 ? '-16px' : '0px' }}>
                             <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', marginLeft: '-3px', marginRight: '2px', overflow: 'visible', position: 'relative', zIndex: 2 }}>
                               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', width: '100%' }}>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', width: '100%' }}>
@@ -22831,7 +22825,7 @@ export default function Dashboard() {
                               })}
                             </div></div>
                           </div>
-                        </>);
+                        );
                       });
                     })()}
                   </div>
