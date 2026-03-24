@@ -40,10 +40,13 @@ export function AccessGate({ children }: AccessGateProps) {
           localStorage.setItem('uni_cal_token', data.token);
         }
         if (authParam) {
-          urlParams.delete('auth');
-          const newSearch = urlParams.toString();
-          const newUrl = window.location.pathname + (newSearch ? `?${newSearch}` : '');
-          window.history.replaceState({}, '', newUrl);
+          const profileNames = ['bryn', 'yasu', 'guest'];
+          if (!profileNames.includes(authParam.toLowerCase())) {
+            urlParams.delete('auth');
+            const newSearch = urlParams.toString();
+            const newUrl = window.location.pathname + (newSearch ? `?${newSearch}` : '');
+            window.history.replaceState({}, '', newUrl);
+          }
         }
         setIsAuthorized(true);
         return;
