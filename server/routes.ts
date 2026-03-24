@@ -20,6 +20,7 @@ import { textToSpeech, initTTSFallbackStatus } from "./replit_integrations/audio
 import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, sendTestHaPush, sendHaTaskReminder, sendEchoVoiceAnnouncement, sendCalendarInvite, type TaskReminder } from "./email";
 import { syncOutlookEventsToReview, fetchOutlookCalendarEvents } from "./outlookCalendar";
 import { parseTickerCommand, extractInlineExpiry } from "./gmailTicker";
+import { startHATickerSync, pushTickerToHA } from "./haTickerWebhook";
 // fetchD2LAnnouncements available in ./gmail but Gmail connector lacks read scope; D2L sync handled by external Apps Script
 import { getSchedulerStatus } from "./reminderScheduler";
 import { fetchTMUCalendarEvents } from "./tmuCalendar";
@@ -719,6 +720,9 @@ export async function registerRoutes(
 ): Promise<Server> {
 
   await initTTSFallbackStatus();
+
+  const serverPort = process.env.PORT || 5000;
+  startHATickerSync(storage, serverPort, 5 * 60 * 1000);
 
   setTimeout(async () => {
     try {
@@ -4399,6 +4403,15 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
   console.log('[Email Router] Unified email intake ready at POST /api/webhook/email');
+
+  app.post('/api/ha-ticker/push', async (_req, res) => {
+    try {
+      await pushTickerToHA(storage, serverPort);
+      res.json({ success: true, message: 'Ticker data pushed to Home Assistant' });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
 
   const tickerExpirations = new Map<number, NodeJS.Timeout>();
   app.post('/api/webhook/ticker', async (req, res) => {
