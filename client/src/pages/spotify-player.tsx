@@ -1914,15 +1914,16 @@ export default function SpotifyPlayerPage() {
                       data-testid={`room-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
                       {!spot.hideLabel && <div className="absolute inset-0 flex flex-col items-center justify-end gap-0.5" style={{ zIndex: 2, transform: `translate(${spot.labelOffsetX || 0}px, ${spot.labelOffsetY || 0}px)` }}>
                         <div className="flex items-center gap-1">
-                          <span className="text-[7px] font-bold uppercase tracking-wider text-center leading-tight px-1"
+                          <span className="text-[9px] font-bold uppercase tracking-wider text-center leading-tight px-1"
                             style={{
                               color: isActive ? profile.accent : 'rgba(255,255,255,0.95)',
                               textShadow: isActive ? `0 0 10px ${profile.glow}` : '0 1px 4px rgba(0,0,0,0.7)',
+                              marginRight: -2,
                             }}>
                             {isSakura ? (ROOM_JP[spot.room] || spot.room) : spot.room}
                           </span>
                           {speakerCount > 0 && (
-                            <div className="relative">
+                            <div className="relative" style={{ marginLeft: 2 }}>
                               <button className="flex items-center rounded-md cursor-pointer transition-all hover:scale-110"
                                 onClick={(e) => { e.stopPropagation(); e.preventDefault(); setFloorSpeakerPopup(floorSpeakerPopup === spot.room ? null : spot.room); }}
                                 data-testid={`floor-speakers-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
