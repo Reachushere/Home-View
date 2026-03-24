@@ -6,21 +6,21 @@
 
 html, body {
   overflow: hidden !important;
-  height: 100% !important;
+  height: 100vh !important;
   max-height: 100vh !important;
+  min-height: 100vh !important;
   margin: 0 !important;
   padding: 0 !important;
-  position: fixed !important;
-  width: 100%;
-  top: 0;
-  left: 0;
+  width: 100% !important;
+  overscroll-behavior: none !important;
+  touch-action: none !important;
 }
 
 #root {
   height: 100vh !important;
   max-height: 100vh !important;
   overflow: hidden !important;
-  position: relative;
+  overscroll-behavior: none !important;
 }
 
 :root {

@@ -443,7 +443,6 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
       const scrollEl = containerRef.current?.querySelector('.news-ticker-scroll') as HTMLElement | null;
       if (!scrollEl) return;
       const parentWidth = scrollEl.parentElement?.clientWidth || window.innerWidth;
-      const items = Array.from(scrollEl.querySelectorAll(':scope > a, :scope > span')) as HTMLElement[];
       const startContinuousScroll = () => {
         scrollEl.style.transform = '';
         const contentWidth = scrollEl.scrollWidth;
@@ -454,45 +453,7 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
         scrollEl.style.setProperty('--ticker-end', `-${contentWidth}px`);
         scrollEl.style.animation = `tickerScroll ${dur}s linear infinite`;
       };
-      if (items.length === 0) { startContinuousScroll(); return; }
-      const rightX = parentWidth;
-      const centerX = parentWidth * 0.1;
-      const travel = rightX - centerX;
-      const phases = [
-        { type: 'slide', from: rightX, to: centerX, dur: 2500, ease: 'out' },
-        { type: 'slide', from: centerX, to: rightX, dur: 500, ease: 'in' },
-        { type: 'arc', amplitude: travel * 0.45, dur: 700 },
-        { type: 'arc', amplitude: travel * 0.15, dur: 450 },
-      ] as const;
-      let phaseIdx = 0;
-      let phaseStart = 0;
-      const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
-      const easeIn = (t: number) => t * t * t;
-      const animate = (ts: number) => {
-        if (!phaseStart) phaseStart = ts;
-        const elapsed = ts - phaseStart;
-        const p = phases[phaseIdx];
-        let x = rightX;
-        if (p.type === 'slide') {
-          const t = Math.min(elapsed / p.dur, 1);
-          const e = p.ease === 'out' ? easeOut(t) : easeIn(t);
-          x = p.from + (p.to - p.from) * e;
-          if (t >= 1) { phaseIdx++; phaseStart = ts; }
-        } else {
-          const t = Math.min(elapsed / p.dur, 1);
-          x = rightX - p.amplitude * Math.sin(Math.PI * t);
-          if (t >= 1) { phaseIdx++; phaseStart = ts; }
-        }
-        if (phaseIdx >= phases.length) {
-          scrollEl.style.transform = '';
-          startContinuousScroll();
-          return;
-        }
-        scrollEl.style.transform = `translateX(${x}px)`;
-        requestAnimationFrame(animate);
-      };
-      scrollEl.style.transform = `translateX(${rightX}px)`;
-      requestAnimationFrame(animate);
+      startContinuousScroll();
     };
     const imgs = containerRef.current.querySelectorAll('img');
     if (imgs.length > 0) {
@@ -12484,41 +12445,7 @@ export default function Dashboard() {
                   el.style.setProperty('--ticker-end', `-${contentWidth}px`);
                   el.style.animation = `tickerScroll ${dur}s linear infinite`;
                 };
-                if (items.length === 0) { startScroll(); return; }
-                const rightX = parentWidth;
-                const centerX = parentWidth * 0.1;
-                const travel = rightX - centerX;
-                const phases = [
-                  { type: 'slide' as const, from: rightX, to: centerX, dur: 2500, ease: 'out' as const },
-                  { type: 'slide' as const, from: centerX, to: rightX, dur: 500, ease: 'in' as const },
-                  { type: 'arc' as const, amplitude: travel * 0.45, dur: 700 },
-                  { type: 'arc' as const, amplitude: travel * 0.15, dur: 450 },
-                ];
-                let phaseIdx = 0;
-                let phaseStart = 0;
-                const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
-                const easeIn = (t: number) => t * t * t;
-                const animate = (ts: number) => {
-                  if (!phaseStart) phaseStart = ts;
-                  const elapsed = ts - phaseStart;
-                  const p = phases[phaseIdx];
-                  let x = rightX;
-                  if (p.type === 'slide') {
-                    const t = Math.min(elapsed / p.dur, 1);
-                    const e = p.ease === 'out' ? easeOut(t) : easeIn(t);
-                    x = p.from + (p.to - p.from) * e;
-                    if (t >= 1) { phaseIdx++; phaseStart = ts; }
-                  } else {
-                    const t = Math.min(elapsed / p.dur, 1);
-                    x = rightX - p.amplitude * Math.sin(Math.PI * t);
-                    if (t >= 1) { phaseIdx++; phaseStart = ts; }
-                  }
-                  if (phaseIdx >= phases.length) { el.style.transform = ''; startScroll(); return; }
-                  el.style.transform = `translateX(${x}px)`;
-                  requestAnimationFrame(animate);
-                };
-                el.style.transform = `translateX(${rightX}px)`;
-                requestAnimationFrame(animate);
+                startScroll();
               };
               const imgs = el.querySelectorAll('img');
               if (imgs.length > 0) {

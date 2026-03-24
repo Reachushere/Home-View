@@ -189,7 +189,6 @@ export default function TickerPage() {
     if (scrollContainer) {
       scrollContainer.innerHTML = html;
       const applyAnim = () => {
-        const items = Array.from(scrollContainer.querySelectorAll(':scope > a, :scope > span')) as HTMLElement[];
         const parentWidth = scrollContainer.parentElement?.clientWidth || window.innerWidth;
         const startScroll = () => {
           scrollContainer.style.transform = '';
@@ -201,41 +200,7 @@ export default function TickerPage() {
           scrollContainer.style.setProperty('--ticker-end', `-${contentWidth}px`);
           scrollContainer.style.animation = `tickerScroll ${dur}s linear infinite`;
         };
-        if (items.length === 0) { startScroll(); return; }
-        const rightX = parentWidth;
-        const centerX = parentWidth * 0.1;
-        const travel = rightX - centerX;
-        const phases = [
-          { type: 'slide' as const, from: rightX, to: centerX, dur: 2500, ease: 'out' as const },
-          { type: 'slide' as const, from: centerX, to: rightX, dur: 500, ease: 'in' as const },
-          { type: 'arc' as const, amplitude: travel * 0.45, dur: 700 },
-          { type: 'arc' as const, amplitude: travel * 0.15, dur: 450 },
-        ];
-        let phaseIdx = 0;
-        let phaseStart = 0;
-        const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
-        const easeIn = (t: number) => t * t * t;
-        const animate = (ts: number) => {
-          if (!phaseStart) phaseStart = ts;
-          const elapsed = ts - phaseStart;
-          const p = phases[phaseIdx];
-          let x = rightX;
-          if (p.type === 'slide') {
-            const t = Math.min(elapsed / p.dur, 1);
-            const e = p.ease === 'out' ? easeOut(t) : easeIn(t);
-            x = p.from + (p.to - p.from) * e;
-            if (t >= 1) { phaseIdx++; phaseStart = ts; }
-          } else {
-            const t = Math.min(elapsed / p.dur, 1);
-            x = rightX - p.amplitude * Math.sin(Math.PI * t);
-            if (t >= 1) { phaseIdx++; phaseStart = ts; }
-          }
-          if (phaseIdx >= phases.length) { scrollContainer.style.transform = ''; startScroll(); return; }
-          scrollContainer.style.transform = `translateX(${x}px)`;
-          requestAnimationFrame(animate);
-        };
-        scrollContainer.style.transform = `translateX(${rightX}px)`;
-        requestAnimationFrame(animate);
+        startScroll();
       };
       const imgs = scrollContainer.querySelectorAll('img');
       if (imgs.length > 0) {
