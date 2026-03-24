@@ -190,11 +190,11 @@ export default function TickerPage() {
       scrollContainer.innerHTML = html;
       const applyAnim = () => {
         const contentWidth = scrollContainer.scrollWidth;
-        const screenWidth = window.innerWidth;
-        const totalTravel = screenWidth + contentWidth;
+        const parentWidth = scrollContainer.parentElement?.clientWidth || window.innerWidth;
+        const totalTravel = parentWidth + contentWidth;
         const speed = 65;
         const duration = totalTravel / speed;
-        scrollContainer.style.setProperty('--ticker-start', `${screenWidth}px`);
+        scrollContainer.style.setProperty('--ticker-start', `${parentWidth}px`);
         scrollContainer.style.setProperty('--ticker-end', `-${contentWidth}px`);
         scrollContainer.style.animation = `tickerScroll ${duration}s linear infinite`;
       };

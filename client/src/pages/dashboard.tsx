@@ -436,11 +436,11 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
       const scrollEl = containerRef.current?.querySelector('.news-ticker-scroll') as HTMLElement | null;
       if (scrollEl) {
         const contentWidth = scrollEl.scrollWidth;
-        const screenWidth = window.innerWidth;
-        const totalTravel = screenWidth + contentWidth;
+        const parentWidth = scrollEl.parentElement?.clientWidth || window.innerWidth;
+        const totalTravel = parentWidth + contentWidth;
         const speed = 65;
         const duration = totalTravel / speed;
-        scrollEl.style.setProperty('--ticker-start', `${screenWidth}px`);
+        scrollEl.style.setProperty('--ticker-start', `${parentWidth}px`);
         scrollEl.style.setProperty('--ticker-end', `-${contentWidth}px`);
         scrollEl.style.animation = `tickerScroll ${duration}s linear infinite`;
       }
@@ -12415,11 +12415,11 @@ export default function Dashboard() {
               const applyAnim = () => {
                 if (!el) return;
                 const contentWidth = el.scrollWidth;
-                const screenWidth = window.innerWidth;
-                const totalTravel = screenWidth + contentWidth;
+                const parentWidth = el.parentElement?.clientWidth || window.innerWidth;
+                const totalTravel = parentWidth + contentWidth;
                 const speed = 65;
                 const duration = totalTravel / speed;
-                el.style.setProperty('--ticker-start', `${screenWidth}px`);
+                el.style.setProperty('--ticker-start', `${parentWidth}px`);
                 el.style.setProperty('--ticker-end', `-${contentWidth}px`);
                 el.style.animation = `tickerScroll ${duration}s linear infinite`;
               };
