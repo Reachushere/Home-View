@@ -1540,21 +1540,18 @@ export default function SpotifyPlayerPage() {
                   const haLocal = "http://172.24.0.2:8123";
                   const haNabu = "https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa";
                   const haPath = "/lovelace/test-home";
-                  const isLocal = window.location.hostname === "172.24.0.2" || window.location.hostname === "localhost" || window.location.hostname.endsWith('.local');
-                  const haBase = isLocal ? haLocal : haNabu;
                   fetch(`/api/tablet-nav/set?auth=${encodeURIComponent(localStorage.getItem("sitePassword") || "5747")}&device=master`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ action: "navigate", url: `${haLocal}${haPath}`, timestamp: Date.now() }),
                   }).catch(() => {});
                   const isDev = window.location.hostname.includes('.replit.dev');
-                  const inIframe = window.self !== window.top;
                   if (isDev) {
                     window.location.href = "/";
-                  } else if (inIframe) {
-                    try { window.top!.location.href = haPath; } catch { window.location.href = `${haBase}${haPath}`; }
                   } else {
-                    window.location.href = `${haBase}${haPath}`;
+                    const inIframe = window.self !== window.top;
+                    const target = inIframe ? window.top! : window;
+                    try { target.location.href = `${haNabu}${haPath}`; } catch { window.location.href = `${haNabu}${haPath}`; }
                   }
                 }}
                 className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg transition-all hover:scale-105 mb-1"
