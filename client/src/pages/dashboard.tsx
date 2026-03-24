@@ -22655,6 +22655,10 @@ export default function Dashboard() {
                 {/* This Week Section - hidden on Fridays since everything shifts to today */}
                 {new Date().getDay() === 5 ? null : (<>
                 <div data-homework-section="thisweek" data-semester-label={hwWeeklyTimeline[0]?.semLabel || ''} style={{ borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '12px', paddingTop: '2px' }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+                    <span className="text-[12px] font-semibold" style={{ color: '#ffffff', whiteSpace: 'nowrap' }}>{hwWeeklyTimeline[0]?.label || 'This week'}</span>
+                    <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)' }}>({dueTomorrowTasks.length})</span>
+                  </div>
                 </div>
                 {dueTomorrowTasks.length === 0 ? (
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks this week</div>
@@ -22733,12 +22737,6 @@ export default function Dashboard() {
                               <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
                             </div>
                             <div style={{ flex: 1, minWidth: 0, marginRight: '-7px' }}><div style={{ overflow: 'visible', scrollbarWidth: 'none' }}>
-                              {groupIdx === 0 && (
-                                <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', padding: '0 0 3px 0', marginLeft: '-8px', paddingLeft: '8px' }}>
-                                  <span className="text-[12px] font-semibold" style={{ color: '#ffffff', whiteSpace: 'nowrap' }}>{hwWeeklyTimeline[0]?.label || 'This week'}</span>
-                                  <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)' }}>({dueTomorrowTasks.length})</span>
-                                </div>
-                              )}
                               {group.tasks.filter((t, i, arr) => t.type !== "class" || arr.findIndex(x => x.type === "class" && x.title === t.title && x.courseName === t.courseName) === i).map((task, taskIdx) => {
                                 const progressColor = getProgressColor(task, 'tomorrow');
                                 const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
