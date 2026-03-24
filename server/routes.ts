@@ -99,6 +99,44 @@ const MODULE_READING_PENDING = "input_boolean.module_reading_pending";
 const MODULE_READING_CONFIRMED = "input_boolean.module_reading_confirmed";
 const PARTNER_PHONE_ENTITY = "device_tracker.y_phone_app";
 
+async function haFetch(url: string, options: RequestInit = {}, maxRetries = 3, label = 'HA'): Promise<Response> {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    try {
+      const controller = new AbortController();
+      timer = setTimeout(() => controller.abort(), 12000);
+      const resp = await fetch(url, { ...options, signal: controller.signal });
+      clearTimeout(timer);
+      timer = null;
+      if (!resp.ok) {
+        const errText = await resp.text().catch(() => '');
+        throw new Error(`HTTP ${resp.status}: ${errText.substring(0, 200)}`);
+      }
+      return resp;
+    } catch (e: any) {
+      if (timer) clearTimeout(timer);
+      const msg = e?.message || String(e);
+      if (attempt < maxRetries - 1) {
+        const delay = 1500 * (attempt + 1);
+        console.warn(`[${label}] fetch attempt ${attempt + 1}/${maxRetries} failed: ${msg} — retrying in ${delay}ms`);
+        await new Promise(r => setTimeout(r, delay));
+      } else {
+        throw new Error(`[${label}] All ${maxRetries} fetch attempts failed: ${msg}`);
+      }
+    }
+  }
+  throw new Error(`[${label}] Unreachable`);
+}
+
+async function haServiceCall(service: string, data: object, label = 'HA'): Promise<Response> {
+  const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+  return haFetch(`${haUrl}/api/services/${service}`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  }, 3, label);
+}
+
 function torontoDate(): Date {
   return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
 }
@@ -7153,12 +7191,14 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       console.log(`[Radio] BLOCKED: CPPA playback is active — refusing to play CHUM FM`);
       return;
     }
-    const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
-    await fetch(`${haUrl}/api/services/media_player/play_media`, {
-      method: 'POST', headers: haHeaders,
-      body: JSON.stringify({ entity_id: "media_player.cat_washroom_media_group", media_content_type: "custom", media_content_id: "play 104.5 chum fm" }),
-    });
-    console.log(`[Radio] Playing CHUM FM 104.5 on Cat Washroom speaker group`);
+    try {
+      await haServiceCall('media_player/play_media', {
+        entity_id: "media_player.cat_washroom_media_group", media_content_type: "custom", media_content_id: "play 104.5 chum fm"
+      }, 'CHUM FM');
+      console.log(`[Radio] Playing CHUM FM 104.5 on Cat Washroom speaker group`);
+    } catch (e: any) {
+      console.error(`[Radio] Failed to play CHUM FM: ${e.message}`);
+    }
   }
 
   async function startConfirmedPlaybackFlow(
@@ -7275,25 +7315,21 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const tabletSetupPromise = (async () => {
       try {
         for (const cmd of ['input keyevent KEYCODE_WAKEUP', 'settings put system screen_brightness 255']) {
-          await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
-            method: 'POST', headers: haHeaders,
-            body: JSON.stringify({ entity_id: 'media_player.tablet_cat', command: cmd }),
-          });
+          await haServiceCall('androidtv/adb_command', { entity_id: 'media_player.tablet_cat', command: cmd }, 'Tablet ADB');
         }
         await new Promise(r => setTimeout(r, 1500));
-        await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
-          method: 'POST', headers: haHeaders,
-          body: JSON.stringify({ entity_id: 'media_player.tablet_cat', command: `am start --activity-clear-task -a android.intent.action.VIEW -d "${readerUrl}" com.amazon.cloud9` }),
-        });
+        await haServiceCall('androidtv/adb_command', {
+          entity_id: 'media_player.tablet_cat',
+          command: `am start --activity-clear-task -a android.intent.action.VIEW -d "${readerUrl}" com.amazon.cloud9`
+        }, 'Tablet ADB Nav');
         await new Promise(r => setTimeout(r, 1000));
-        await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
-          method: 'POST', headers: haHeaders,
-          body: JSON.stringify({ entity_id: 'media_player.tablet_cat', command: 'settings put global policy_control immersive.full=com.amazon.cloud9' }),
-        });
-        await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
-          method: 'POST', headers: haHeaders,
-          body: JSON.stringify({ entity_id: 'media_player.tablet_cat', command: 'input keyevent KEYCODE_F11' }),
-        });
+        await haServiceCall('androidtv/adb_command', {
+          entity_id: 'media_player.tablet_cat',
+          command: 'settings put global policy_control immersive.full=com.amazon.cloud9'
+        }, 'Tablet ADB');
+        await haServiceCall('androidtv/adb_command', {
+          entity_id: 'media_player.tablet_cat', command: 'input keyevent KEYCODE_F11'
+        }, 'Tablet ADB');
         console.log(`${logPrefix} Tablet: wakeup + brightness + Silk same-tab URL + immersive + F11 fullscreen`);
       } catch (e: any) {
         console.log(`${logPrefix} Tablet setup error: ${e.message}`);
@@ -7303,23 +7339,14 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const tvSetupPromise = (async () => {
       try {
         await Promise.allSettled([
-          fetch(`${haUrl}/api/services/media_player/turn_on`, {
-            method: 'POST', headers: haHeaders,
-            body: JSON.stringify({ entity_id: 'media_player.fire_tv_172_24_0_88' }),
-          }),
-          fetch(`${haUrl}/api/services/media_player/turn_on`, {
-            method: 'POST', headers: haHeaders,
-            body: JSON.stringify({ entity_id: 'media_player.tv_cat_wr' }),
-          }),
+          haServiceCall('media_player/turn_on', { entity_id: 'media_player.fire_tv_172_24_0_88' }, 'TV On'),
+          haServiceCall('media_player/turn_on', { entity_id: 'media_player.tv_cat_wr' }, 'TV On'),
         ]);
         console.log(`${logPrefix} Fire Stick + Samsung TV turned on`);
         await new Promise(resolve => setTimeout(resolve, 3000));
 
         try {
-          await fetch(`${haUrl}/api/services/media_player/select_source`, {
-            method: 'POST', headers: haHeaders,
-            body: JSON.stringify({ entity_id: 'media_player.tv_cat_wr', source: 'HDMI1' }),
-          });
+          await haServiceCall('media_player/select_source', { entity_id: 'media_player.tv_cat_wr', source: 'HDMI1' }, 'TV Source');
           console.log(`${logPrefix} Samsung TV switched to Fire Stick HDMI input`);
         } catch (e: any) {
           console.log(`${logPrefix} Samsung TV source switch error: ${e.message}`);
@@ -7506,35 +7533,26 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   }
 
   async function playOnNestSpeaker(audioUrl: string, maxRetries: number = 2): Promise<number> {
-    const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-    const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
     const fullUrl = audioUrl.startsWith('http') ? audioUrl : `https://home-view--bkh416.replit.app${audioUrl}`;
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       if (attempt > 0) {
         console.log(`[Nest] Retry ${attempt}/${maxRetries} — speaker didn't start playing`);
         try {
-          await fetch(`${haUrl}/api/services/media_player/media_stop`, {
-            method: 'POST', headers: haHeaders,
-            body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY }),
-          });
+          await haServiceCall('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Retry Stop');
           await new Promise(r => setTimeout(r, 1000));
-          await fetch(`${haUrl}/api/services/media_player/volume_set`, {
-            method: 'POST', headers: haHeaders,
-            body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }),
-          });
+          await haServiceCall('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Nest Retry Vol');
         } catch {}
       }
 
       console.log(`[Nest] Playing audio${attempt > 0 ? ` (attempt ${attempt + 1})` : ''}: ${fullUrl}`);
-      const resp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
-        method: 'POST', headers: haHeaders,
-        body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, media_content_id: fullUrl, media_content_type: "music" }),
-      });
-      if (!resp.ok) {
-        const errText = await resp.text();
-        console.error(`[Nest] play_media failed: ${resp.status} ${errText}`);
-        if (attempt === maxRetries) throw new Error(`play_media failed: ${resp.status}`);
+      try {
+        await haServiceCall('media_player/play_media', {
+          entity_id: NEST_SPEAKER_ENTITY, media_content_id: fullUrl, media_content_type: "music"
+        }, 'Nest Play');
+      } catch (e: any) {
+        console.error(`[Nest] play_media failed: ${e.message}`);
+        if (attempt === maxRetries) throw e;
         await new Promise(r => setTimeout(r, 2000));
         continue;
       }
@@ -7542,26 +7560,15 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       await new Promise(r => setTimeout(r, 3000));
 
       try {
-        const stateResp = await fetch(`${haUrl}/api/states/${NEST_SPEAKER_ENTITY}`, {
-          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` },
-        });
-        if (stateResp.ok) {
-          const stateData = await stateResp.json();
-          const speakerState = (stateData.state || '').toLowerCase();
-          console.log(`[Nest] Speaker state after play command: ${speakerState}`);
-          if (speakerState === 'playing' || speakerState === 'buffering') {
-            return 0;
-          }
-          if (attempt === maxRetries) {
-            console.warn(`[Nest] Speaker state is "${speakerState}" after ${maxRetries + 1} attempts — proceeding anyway`);
-            return 0;
-          }
-          console.warn(`[Nest] Speaker not playing (state: ${speakerState}) — will retry`);
-          await new Promise(r => setTimeout(r, 2000));
-        } else {
-          console.warn(`[Nest] Could not check speaker state (${stateResp.status}) — assuming ok`);
+        const { state: speakerState } = await getNestMediaState();
+        console.log(`[Nest] Speaker state after play command: ${speakerState}`);
+        if (speakerState === 'playing' || speakerState === 'buffering') return 0;
+        if (attempt === maxRetries) {
+          console.warn(`[Nest] Speaker state is "${speakerState}" after ${maxRetries + 1} attempts — proceeding anyway`);
           return 0;
         }
+        console.warn(`[Nest] Speaker not playing (state: ${speakerState}) — will retry`);
+        await new Promise(r => setTimeout(r, 2000));
       } catch (e: any) {
         console.warn(`[Nest] State check error: ${e.message} — assuming ok`);
         return 0;
@@ -7571,13 +7578,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   }
 
   async function stopNestSpeaker(): Promise<void> {
-    const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
     try {
-      await fetch(`${haUrl}/api/services/media_player/media_stop`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY }),
-      });
+      await haServiceCall('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Stop');
       console.log(`[Nest] Stopped playback`);
     } catch (e: any) {
       console.error(`[Nest] Error stopping: ${e.message}`);
@@ -7587,17 +7589,15 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   async function getNestMediaState(): Promise<{ state: string; position?: number; duration?: number }> {
     const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
     try {
-      const resp = await fetch(`${haUrl}/api/states/${NEST_SPEAKER_ENTITY}`, {
+      const resp = await haFetch(`${haUrl}/api/states/${NEST_SPEAKER_ENTITY}`, {
         headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` },
-      });
-      if (resp.ok) {
-        const data = await resp.json();
-        return {
-          state: data.state,
-          position: data.attributes?.media_position,
-          duration: data.attributes?.media_duration,
-        };
-      }
+      }, 3, 'Nest State');
+      const data = await resp.json();
+      return {
+        state: data.state,
+        position: data.attributes?.media_position,
+        duration: data.attributes?.media_duration,
+      };
     } catch {}
     return { state: 'unknown' };
   }
@@ -8092,20 +8092,12 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       setTabletCommand({ action: 'stop_playback', timestamp: stopTimestamp }, true, 'tv'),
     ]);
 
-    // Turn off the TV via Fire Stick
     try {
-      await fetch(`${haUrl}/api/services/media_player/turn_off`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ entity_id: 'media_player.fire_tv_172_24_0_88' }),
-      });
-      console.log(`[Nest Stop] Fire Stick turned off`);
-      await fetch(`${haUrl}/api/services/media_player/turn_off`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ entity_id: 'media_player.samsung_tv' }),
-      });
-      console.log(`[Nest Stop] Samsung TV turned off`);
+      await Promise.allSettled([
+        haServiceCall('media_player/turn_off', { entity_id: 'media_player.fire_tv_172_24_0_88' }, 'Nest Stop TV'),
+        haServiceCall('media_player/turn_off', { entity_id: 'media_player.samsung_tv' }, 'Nest Stop TV'),
+      ]);
+      console.log(`[Nest Stop] Fire Stick + Samsung TV turned off`);
     } catch (e: any) {
       console.log(`[Nest Stop] TV turn off error: ${e.message}`);
     }
@@ -8421,25 +8413,15 @@ document.body.removeChild(a);
 
   // Helper to open URL on Fire Stick via androidtv integration
   async function openUrlOnFireStick(haUrl: string, entityId: string, url: string): Promise<boolean> {
-    // Step 0: Wake up Fire Stick first (triggers HDMI-CEC to turn on TV)
     try {
-      await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ entity_id: entityId, command: 'input keyevent KEYCODE_WAKEUP' }),
-      });
+      await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: 'input keyevent KEYCODE_WAKEUP' }, 'FireStick Wake');
       console.log(`[Cat Wash] Fire Stick ${entityId} WAKEUP sent`);
       await new Promise(resolve => setTimeout(resolve, 1000));
     } catch (e: any) {
       console.log(`[Cat Wash] Fire Stick WAKEUP failed: ${e.message}`);
     }
-    // Kill existing Silk browser instances first
     try {
-      await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ entity_id: entityId, command: 'am force-stop com.amazon.cloud9' }),
-      });
+      await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: 'am force-stop com.amazon.cloud9' }, 'FireStick Kill Silk');
       console.log(`[Cat Wash] Fire Stick ${entityId} force-stopped Silk`);
       await new Promise(resolve => setTimeout(resolve, 500));
     } catch (e: any) {
@@ -8450,52 +8432,31 @@ document.body.removeChild(a);
     const redirectUrl = `${appUrl}/api/cat-wash/tv-follow`;
     console.log(`[Cat Wash] TV redirect URL stored. Opening simple redirect: ${redirectUrl}`);
     console.log(`[Cat Wash] TV will redirect to: ${url}`);
-    // Method 1: Use androidtv.adb_command with simple redirect URL (no query params to break)
     try {
       const adbCmd = `am start --activity-clear-task -a android.intent.action.VIEW -d "${redirectUrl}" com.amazon.cloud9`;
-      const resp = await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ entity_id: entityId, command: adbCmd }),
-      });
-      console.log(`[Cat Wash] Fire Stick ${entityId} adb_command: ${resp.status}`);
-      if (resp.ok) {
-        // Try immersive mode to trigger fullscreen - multiple attempts
-        const sendFullscreenCmds = async (attempt: number) => {
-          try {
-            await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({ entity_id: entityId, command: 'settings put global policy_control immersive.full=com.amazon.cloud9' }),
-            });
-            console.log(`[Cat Wash] Fire Stick immersive mode set (attempt ${attempt})`);
-            await fetch(`${haUrl}/api/services/androidtv/adb_command`, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({ entity_id: entityId, command: 'input keyevent KEYCODE_DPAD_CENTER' }),
-            });
-            console.log(`[Cat Wash] Fire Stick DPAD_CENTER sent (attempt ${attempt})`);
-          } catch (e: any) {
-            console.log(`[Cat Wash] Fire Stick fullscreen attempt ${attempt} failed: ${e.message}`);
-          }
-        };
-        setTimeout(() => sendFullscreenCmds(1), 5000);
-        setTimeout(() => sendFullscreenCmds(2), 10000);
-        setTimeout(() => sendFullscreenCmds(3), 18000);
-        return true;
-      }
+      await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: adbCmd }, 'FireStick Open URL');
+      console.log(`[Cat Wash] Fire Stick ${entityId} URL opened`);
+      const sendFullscreenCmds = async (attempt: number) => {
+        try {
+          await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: 'settings put global policy_control immersive.full=com.amazon.cloud9' }, 'FireStick Immersive');
+          console.log(`[Cat Wash] Fire Stick immersive mode set (attempt ${attempt})`);
+          await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: 'input keyevent KEYCODE_DPAD_CENTER' }, 'FireStick DPAD');
+          console.log(`[Cat Wash] Fire Stick DPAD_CENTER sent (attempt ${attempt})`);
+        } catch (e: any) {
+          console.log(`[Cat Wash] Fire Stick fullscreen attempt ${attempt} failed: ${e.message}`);
+        }
+      };
+      setTimeout(() => sendFullscreenCmds(1), 5000);
+      setTimeout(() => sendFullscreenCmds(2), 10000);
+      setTimeout(() => sendFullscreenCmds(3), 18000);
+      return true;
     } catch (e: any) {
       console.log(`[Cat Wash] Fire Stick adb_command failed: ${e.message}`);
     }
-    // Method 2: media_player.play_media with redirect url
     try {
-      const resp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ entity_id: entityId, media_content_id: redirectUrl, media_content_type: 'url' }),
-      });
-      console.log(`[Cat Wash] Fire Stick ${entityId} play_media url: ${resp.status}`);
-      if (resp.ok) return true;
+      await haServiceCall('media_player/play_media', { entity_id: entityId, media_content_id: redirectUrl, media_content_type: 'url' }, 'FireStick play_media');
+      console.log(`[Cat Wash] Fire Stick ${entityId} play_media url succeeded`);
+      return true;
     } catch (e: any) {
       console.log(`[Cat Wash] Fire Stick play_media failed: ${e.message}`);
     }
@@ -8886,72 +8847,52 @@ document.body.removeChild(a);
       const ttsMessage = `Would you like to play ${fileDesc}?`;
       console.log(`[Cat Lights] Sending TTS prompt: "${ttsMessage}"`);
       try {
-        const [boolOffResp, boolOnResp] = await Promise.all([
-          fetch(`${haUrl}/api/services/input_boolean/turn_off`, { method: 'POST', headers: haHeaders, body: JSON.stringify({ entity_id: MODULE_READING_CONFIRMED }) }),
-          fetch(`${haUrl}/api/services/input_boolean/turn_on`, { method: 'POST', headers: haHeaders, body: JSON.stringify({ entity_id: MODULE_READING_PENDING }) }),
+        await Promise.allSettled([
+          haServiceCall('input_boolean/turn_off', { entity_id: MODULE_READING_CONFIRMED }, 'Cat Lights Bool'),
+          haServiceCall('input_boolean/turn_on', { entity_id: MODULE_READING_PENDING }, 'Cat Lights Bool'),
         ]);
-        console.log(`[Cat Lights] Booleans sent: confirmed_off=${boolOffResp.status}, pending_on=${boolOnResp.status}`);
+        console.log(`[Cat Lights] Booleans set`);
 
-        await Promise.all([
-          fetch(`${haUrl}/api/services/media_player/volume_set`, {
-            method: 'POST', headers: haHeaders,
-            body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.85 }),
-          }),
-          fetch(`${haUrl}/api/services/media_player/volume_set`, {
-            method: 'POST', headers: haHeaders,
-            body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.85 }),
-          }),
+        await Promise.allSettled([
+          haServiceCall('media_player/volume_set', { entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.85 }, 'Cat Lights Vol'),
+          haServiceCall('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.85 }, 'Cat Lights Vol'),
         ]);
 
         const ttsStart = Date.now();
+        const audioPath = await generateAndSaveTTSAudio(ttsMessage, `cat-lights-prompt-${Date.now()}`);
+        const appUrl = "https://home-view--bkh416.replit.app";
+        let ttsPlayed = false;
         try {
-          const audioPath = await generateAndSaveTTSAudio(ttsMessage, `cat-lights-prompt-${Date.now()}`);
-          const appUrl = "https://home-view--bkh416.replit.app";
-          await fetch(`${haUrl}/api/services/media_player/play_media`, {
-            method: 'POST', headers: haHeaders,
-            body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, media_content_id: `${appUrl}${audioPath}`, media_content_type: "music" }),
-          });
-          console.log(`[Cat Lights] TTS prompt sent via OpenAI in ${Date.now() - ttsStart}ms`);
+          await haServiceCall('media_player/play_media', { entity_id: CAT_WR_HA_VOICE_ENTITY, media_content_id: `${appUrl}${audioPath}`, media_content_type: "music" }, 'Cat Lights TTS');
+          ttsPlayed = true;
+          console.log(`[Cat Lights] TTS prompt played on HA Voice in ${Date.now() - ttsStart}ms`);
         } catch (e: any) {
-          console.log(`[Cat Lights] OpenAI TTS failed: ${e.message} — trying HA Cloud TTS`);
+          console.log(`[Cat Lights] HA Voice play failed: ${e.message} — trying Nest speaker`);
           try {
-            await fetch(`${haUrl}/api/services/tts/speak`, {
-              method: 'POST', headers: haHeaders,
-              body: JSON.stringify({ entity_id: "tts.home_assistant_cloud", media_player_entity_id: CAT_WR_HA_VOICE_ENTITY, message: ttsMessage }),
-            });
+            await haServiceCall('media_player/play_media', { entity_id: NEST_SPEAKER_ENTITY, media_content_id: `${appUrl}${audioPath}`, media_content_type: "music" }, 'Cat Lights TTS Nest');
+            ttsPlayed = true;
+            console.log(`[Cat Lights] TTS prompt played on Nest speaker`);
           } catch (e2: any) {
-            console.log(`[Cat Lights] HA Cloud TTS also failed: ${e2.message}`);
-          }
-        }
-
-      } catch (e: any) {
-        console.error(`[Cat Lights] Failed to send TTS prompt: ${e.message} — retrying in 10s`);
-        await new Promise(r => setTimeout(r, 10000));
-        try {
-          const lightCheck = await fetch(`${haUrl}/api/states/light.cat_lights`, { headers: haHeaders });
-          if (lightCheck.ok) {
-            const ld = await lightCheck.json();
-            if (ld?.state === 'off') {
-              console.log(`[Cat Lights] Light turned off during TTS retry — aborting`);
-              catLightsPromptPending = false;
-              return;
+            console.log(`[Cat Lights] Nest play also failed: ${e2.message} — trying HA Cloud TTS`);
+            try {
+              await haServiceCall('tts/speak', { entity_id: "tts.home_assistant_cloud", media_player_entity_id: CAT_WR_HA_VOICE_ENTITY, message: ttsMessage }, 'Cat Lights Cloud TTS');
+              ttsPlayed = true;
+            } catch (e3: any) {
+              console.error(`[Cat Lights] All TTS methods failed — cannot prompt user`);
             }
           }
-        } catch {}
-        try {
-          console.log(`[Cat Lights] TTS retry attempt 2/2...`);
-          const audioPath = await generateAndSaveTTSAudio(ttsMessage, `cat-lights-prompt-retry-${Date.now()}`);
-          await fetch(`${haUrl}/api/services/media_player/play_media`, {
-            method: 'POST', headers: haHeaders,
-            body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, media_content_id: `${appUrl}${audioPath}`, media_content_type: "music" }),
-          });
-          console.log(`[Cat Lights] TTS prompt sent on retry`);
-        } catch (retryErr: any) {
-          console.error(`[Cat Lights] TTS retry also failed: ${retryErr.message} — falling back to CHUM FM`);
+        }
+        if (!ttsPlayed) {
+          console.error(`[Cat Lights] Could not play TTS prompt after all retries — falling back to CHUM FM`);
           catLightsPromptPending = false;
           await playChumFmRadio(haUrl);
           return;
         }
+      } catch (e: any) {
+        console.error(`[Cat Lights] Critical failure in prompt setup: ${e.message} — falling back to CHUM FM`);
+        catLightsPromptPending = false;
+        await playChumFmRadio(haUrl);
+        return;
       }
 
       await new Promise(r => setTimeout(r, 2000));
@@ -8967,22 +8908,20 @@ document.body.removeChild(a);
           catLightsConfirmResolve = () => finish(true);
           const boolPoll = setInterval(async () => {
             try {
-              const resp = await fetch(`${haUrl}/api/states/${MODULE_READING_CONFIRMED}`, { headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` } });
-              if (resp.ok) {
-                const data = await resp.json();
-                if (data.state === 'on') {
-                  console.log(`[Cat Lights] Confirmation received via input_boolean`);
-                  finish(true);
-                }
+              const resp = await haFetch(`${haUrl}/api/states/${MODULE_READING_CONFIRMED}`, { headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` } }, 2, 'Cat Lights Poll');
+              const data = await resp.json();
+              if (data.state === 'on') {
+                console.log(`[Cat Lights] Confirmation received via input_boolean`);
+                finish(true);
               }
             } catch {}
           }, 1500);
         });
 
         try {
-          await Promise.all([
-            fetch(`${haUrl}/api/services/input_boolean/turn_off`, { method: 'POST', headers: haHeaders, body: JSON.stringify({ entity_id: MODULE_READING_PENDING }) }),
-            fetch(`${haUrl}/api/services/input_boolean/turn_off`, { method: 'POST', headers: haHeaders, body: JSON.stringify({ entity_id: MODULE_READING_CONFIRMED }) }),
+          await Promise.allSettled([
+            haServiceCall('input_boolean/turn_off', { entity_id: MODULE_READING_PENDING }, 'Cat Lights Bool'),
+            haServiceCall('input_boolean/turn_off', { entity_id: MODULE_READING_CONFIRMED }, 'Cat Lights Bool'),
           ]);
         } catch {}
 
