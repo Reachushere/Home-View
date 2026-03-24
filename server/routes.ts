@@ -7443,19 +7443,67 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     }
   }
 
-  async function playOnNestSpeaker(audioUrl: string): Promise<number> {
+  async function playOnNestSpeaker(audioUrl: string, maxRetries: number = 2): Promise<number> {
     const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+    const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
     const fullUrl = audioUrl.startsWith('http') ? audioUrl : `https://home-view--bkh416.replit.app${audioUrl}`;
-    console.log(`[Nest] Playing audio: ${fullUrl}`);
-    const resp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, media_content_id: fullUrl, media_content_type: "music" }),
-    });
-    if (!resp.ok) {
-      const errText = await resp.text();
-      console.error(`[Nest] play_media failed: ${resp.status} ${errText}`);
-      throw new Error(`play_media failed: ${resp.status}`);
+
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      if (attempt > 0) {
+        console.log(`[Nest] Retry ${attempt}/${maxRetries} — speaker didn't start playing`);
+        try {
+          await fetch(`${haUrl}/api/services/media_player/media_stop`, {
+            method: 'POST', headers: haHeaders,
+            body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY }),
+          });
+          await new Promise(r => setTimeout(r, 1000));
+          await fetch(`${haUrl}/api/services/media_player/volume_set`, {
+            method: 'POST', headers: haHeaders,
+            body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }),
+          });
+        } catch {}
+      }
+
+      console.log(`[Nest] Playing audio${attempt > 0 ? ` (attempt ${attempt + 1})` : ''}: ${fullUrl}`);
+      const resp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+        method: 'POST', headers: haHeaders,
+        body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, media_content_id: fullUrl, media_content_type: "music" }),
+      });
+      if (!resp.ok) {
+        const errText = await resp.text();
+        console.error(`[Nest] play_media failed: ${resp.status} ${errText}`);
+        if (attempt === maxRetries) throw new Error(`play_media failed: ${resp.status}`);
+        await new Promise(r => setTimeout(r, 2000));
+        continue;
+      }
+
+      await new Promise(r => setTimeout(r, 3000));
+
+      try {
+        const stateResp = await fetch(`${haUrl}/api/states/${NEST_SPEAKER_ENTITY}`, {
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` },
+        });
+        if (stateResp.ok) {
+          const stateData = await stateResp.json();
+          const speakerState = (stateData.state || '').toLowerCase();
+          console.log(`[Nest] Speaker state after play command: ${speakerState}`);
+          if (speakerState === 'playing' || speakerState === 'buffering') {
+            return 0;
+          }
+          if (attempt === maxRetries) {
+            console.warn(`[Nest] Speaker state is "${speakerState}" after ${maxRetries + 1} attempts — proceeding anyway`);
+            return 0;
+          }
+          console.warn(`[Nest] Speaker not playing (state: ${speakerState}) — will retry`);
+          await new Promise(r => setTimeout(r, 2000));
+        } else {
+          console.warn(`[Nest] Could not check speaker state (${stateResp.status}) — assuming ok`);
+          return 0;
+        }
+      } catch (e: any) {
+        console.warn(`[Nest] State check error: ${e.message} — assuming ok`);
+        return 0;
+      }
     }
     return 0;
   }
