@@ -20,9 +20,6 @@ html, body {
   overflow: hidden !important;
 }
 
-#dashboard-root {
-  height: 100% !important;
-}
 
 :root {
   --background: 15 50% 93%;

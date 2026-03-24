@@ -9764,6 +9764,8 @@ export default function Dashboard() {
       id="dashboard-root"
       style={{ 
         minWidth: '1024px',
+        height: '100vh',
+        maxHeight: '100vh',
         backgroundColor: colorSettings.mainBackgroundOverlay ? safeHex(colorSettings.mainBackground, '#3a8bbf') : '#000000'
       }}
     >
