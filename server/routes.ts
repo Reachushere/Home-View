@@ -2305,6 +2305,27 @@ html,body{height:100%;overflow:hidden;background:transparent}
     }
   });
 
+  app.get("/api/ha/news", async (_req, res) => {
+    try {
+      const now = Date.now();
+      if (newsCache.data && now - newsCache.timestamp < 10 * 60 * 1000) {
+        return res.json({ headlines: newsCache.data });
+      }
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 8000);
+      const response = await fetch(`http://localhost:${port}/api/news`, { signal: controller.signal });
+      clearTimeout(timeout);
+      if (response.ok) {
+        const data = await response.json();
+        return res.json({ headlines: data });
+      }
+      res.json({ headlines: [] });
+    } catch (err) {
+      console.error("Error in /api/ha/news:", err);
+      res.json({ headlines: [] });
+    }
+  });
+
   app.get("/api/scholarships", async (_req, res) => {
     try {
       const data = await storage.getScholarships();
