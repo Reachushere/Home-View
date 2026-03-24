@@ -432,7 +432,7 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
       return `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 mx-4 no-underline hover:underline" data-testid="news-headline-${i}">${logoHtml}<span class="text-white/85 mx-1 text-[13px]" style="line-height:1;vertical-align:middle;font-weight:300">|</span><span class="text-[13px] text-white/90">${safeTitle}</span>${timeAgoHtml}</a>`;
     }).join('')}</div></div></div>`;
     containerRef.current.innerHTML = html;
-    requestAnimationFrame(() => {
+    const applyTickerAnimation = () => {
       const scrollEl = containerRef.current?.querySelector('.news-ticker-scroll') as HTMLElement | null;
       if (scrollEl) {
         const contentWidth = scrollEl.scrollWidth;
@@ -444,7 +444,17 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
         scrollEl.style.setProperty('--ticker-end', `-${contentWidth}px`);
         scrollEl.style.animation = `tickerScroll ${duration}s linear infinite`;
       }
-    });
+    };
+    const imgs = containerRef.current.querySelectorAll('img');
+    if (imgs.length > 0) {
+      let loaded = 0;
+      const onLoad = () => { loaded++; if (loaded >= imgs.length) requestAnimationFrame(applyTickerAnimation); };
+      imgs.forEach(img => { if (img.complete) { loaded++; } else { img.addEventListener('load', onLoad); img.addEventListener('error', onLoad); } });
+      if (loaded >= imgs.length) requestAnimationFrame(applyTickerAnimation);
+      setTimeout(applyTickerAnimation, 500);
+    } else {
+      requestAnimationFrame(applyTickerAnimation);
+    }
   }, [headlines]);
 
   return null;
@@ -12402,7 +12412,8 @@ export default function Dashboard() {
           {thisWeekAnnouncements.length > 0 ? (
             <div ref={(el) => {
               if (!el) return;
-              requestAnimationFrame(() => {
+              const applyAnim = () => {
+                if (!el) return;
                 const contentWidth = el.scrollWidth;
                 const screenWidth = window.innerWidth;
                 const totalTravel = screenWidth + contentWidth;
@@ -12411,7 +12422,17 @@ export default function Dashboard() {
                 el.style.setProperty('--ticker-start', `${screenWidth}px`);
                 el.style.setProperty('--ticker-end', `-${contentWidth}px`);
                 el.style.animation = `tickerScroll ${duration}s linear infinite`;
-              });
+              };
+              const imgs = el.querySelectorAll('img');
+              if (imgs.length > 0) {
+                let loaded = 0;
+                const onLoad = () => { loaded++; if (loaded >= imgs.length) requestAnimationFrame(applyAnim); };
+                imgs.forEach(img => { if (img.complete) { loaded++; } else { img.addEventListener('load', onLoad); img.addEventListener('error', onLoad); } });
+                if (loaded >= imgs.length) requestAnimationFrame(applyAnim);
+                setTimeout(applyAnim, 500);
+              } else {
+                requestAnimationFrame(applyAnim);
+              }
             }} className="flex items-center h-full whitespace-nowrap" style={{ position: 'relative' }}>
               {(() => {
                 return thisWeekAnnouncements.map((a: any, i: number) => {

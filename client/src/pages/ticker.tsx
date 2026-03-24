@@ -188,7 +188,7 @@ export default function TickerPage() {
     const scrollContainer = tickerRef.current.querySelector('.news-ticker-scroll') as HTMLElement;
     if (scrollContainer) {
       scrollContainer.innerHTML = html;
-      requestAnimationFrame(() => {
+      const applyAnim = () => {
         const contentWidth = scrollContainer.scrollWidth;
         const screenWidth = window.innerWidth;
         const totalTravel = screenWidth + contentWidth;
@@ -197,7 +197,17 @@ export default function TickerPage() {
         scrollContainer.style.setProperty('--ticker-start', `${screenWidth}px`);
         scrollContainer.style.setProperty('--ticker-end', `-${contentWidth}px`);
         scrollContainer.style.animation = `tickerScroll ${duration}s linear infinite`;
-      });
+      };
+      const imgs = scrollContainer.querySelectorAll('img');
+      if (imgs.length > 0) {
+        let loaded = 0;
+        const onLoad = () => { loaded++; if (loaded >= imgs.length) requestAnimationFrame(applyAnim); };
+        imgs.forEach(img => { if (img.complete) { loaded++; } else { img.addEventListener('load', onLoad); img.addEventListener('error', onLoad); } });
+        if (loaded >= imgs.length) requestAnimationFrame(applyAnim);
+        setTimeout(applyAnim, 500);
+      } else {
+        requestAnimationFrame(applyAnim);
+      }
     }
   }, [allHeadlines]);
 
