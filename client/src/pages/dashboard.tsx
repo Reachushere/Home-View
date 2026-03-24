@@ -455,59 +455,44 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
         scrollEl.style.animation = `tickerScroll ${dur}s linear infinite`;
       };
       if (items.length === 0) { startContinuousScroll(); return; }
-      const screenCenter = parentWidth / 2;
-      const maxEntrance = Math.min(items.length, 8);
-      const measurements = items.map(item => ({
-        center: item.offsetLeft + item.offsetWidth / 2
-      }));
-      items.forEach(item => { item.style.opacity = '0'; });
+      const rightX = parentWidth;
+      const centerX = parentWidth * 0.1;
+      const travel = rightX - centerX;
+      const phases = [
+        { type: 'slide', from: rightX, to: centerX, dur: 2500, ease: 'out' },
+        { type: 'slide', from: centerX, to: rightX, dur: 500, ease: 'in' },
+        { type: 'arc', amplitude: travel * 0.45, dur: 700 },
+        { type: 'arc', amplitude: travel * 0.15, dur: 450 },
+      ] as const;
+      let phaseIdx = 0;
+      let phaseStart = 0;
       const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
       const easeIn = (t: number) => t * t * t;
-      const animateItem = (idx: number) => {
-        if (idx >= maxEntrance) {
-          for (let i = maxEntrance; i < items.length; i++) {
-            items[i].style.opacity = '1';
-            items[i].style.transform = '';
-          }
+      const animate = (ts: number) => {
+        if (!phaseStart) phaseStart = ts;
+        const elapsed = ts - phaseStart;
+        const p = phases[phaseIdx];
+        let x = rightX;
+        if (p.type === 'slide') {
+          const t = Math.min(elapsed / p.dur, 1);
+          const e = p.ease === 'out' ? easeOut(t) : easeIn(t);
+          x = p.from + (p.to - p.from) * e;
+          if (t >= 1) { phaseIdx++; phaseStart = ts; }
+        } else {
+          const t = Math.min(elapsed / p.dur, 1);
+          x = rightX - p.amplitude * Math.sin(Math.PI * t);
+          if (t >= 1) { phaseIdx++; phaseStart = ts; }
+        }
+        if (phaseIdx >= phases.length) {
+          scrollEl.style.transform = '';
           startContinuousScroll();
           return;
         }
-        const item = items[idx];
-        const centerTx = screenCenter - measurements[idx].center;
-        const slideMs = idx === 0 ? 1500 : Math.max(500, 1200 - idx * 80);
-        const flingMs = 280;
-        let phase: 'slide' | 'fling' | 'bounce' | 'next' = 'slide';
-        let phaseStart = 0;
-        item.style.opacity = '1';
-        item.style.transform = `translateX(${parentWidth}px)`;
-        const tick = (ts: number) => {
-          if (!phaseStart) phaseStart = ts;
-          const elapsed = ts - phaseStart;
-          if (phase === 'slide') {
-            const t = Math.min(elapsed / slideMs, 1);
-            const x = parentWidth + (centerTx - parentWidth) * easeOut(t);
-            item.style.transform = `translateX(${x}px)`;
-            if (t >= 1) { phase = 'fling'; phaseStart = ts; }
-          } else if (phase === 'fling') {
-            const t = Math.min(elapsed / flingMs, 1);
-            const x = centerTx * (1 - easeIn(t));
-            item.style.transform = `translateX(${x}px)`;
-            if (t >= 1) { phase = 'bounce'; phaseStart = ts; }
-          } else if (phase === 'bounce') {
-            const t = elapsed / 1000;
-            const x = 55 * Math.abs(Math.sin(10 * t * Math.exp(-2.5 * t))) * Math.exp(-4 * t);
-            item.style.transform = `translateX(${x}px)`;
-            if (elapsed > 800 || x < 0.5) {
-              item.style.transform = '';
-              phase = 'next';
-            }
-          }
-          if (phase === 'next') { animateItem(idx + 1); return; }
-          requestAnimationFrame(tick);
-        };
-        requestAnimationFrame(tick);
+        scrollEl.style.transform = `translateX(${x}px)`;
+        requestAnimationFrame(animate);
       };
-      animateItem(0);
+      scrollEl.style.transform = `translateX(${rightX}px)`;
+      requestAnimationFrame(animate);
     };
     const imgs = containerRef.current.querySelectorAll('img');
     if (imgs.length > 0) {
@@ -12500,52 +12485,39 @@ export default function Dashboard() {
                   el.style.animation = `tickerScroll ${dur}s linear infinite`;
                 };
                 if (items.length === 0) { startScroll(); return; }
-                const screenCenter = parentWidth / 2;
-                const itemCenters = items.map(item => item.offsetLeft + item.offsetWidth / 2);
-                const stops = itemCenters.map(c => screenCenter - c);
-                const startX = parentWidth;
-                let stopIdx = 0;
-                let phase: 'slide' | 'bounce' | 'wall-snap' | 'wall-bounce' | 'done' = 'slide';
+                const rightX = parentWidth;
+                const centerX = parentWidth * 0.1;
+                const travel = rightX - centerX;
+                const phases = [
+                  { type: 'slide' as const, from: rightX, to: centerX, dur: 2500, ease: 'out' as const },
+                  { type: 'slide' as const, from: centerX, to: rightX, dur: 500, ease: 'in' as const },
+                  { type: 'arc' as const, amplitude: travel * 0.45, dur: 700 },
+                  { type: 'arc' as const, amplitude: travel * 0.15, dur: 450 },
+                ];
+                let phaseIdx = 0;
                 let phaseStart = 0;
-                let fromX = startX;
                 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
                 const easeIn = (t: number) => t * t * t;
                 const animate = (ts: number) => {
                   if (!phaseStart) phaseStart = ts;
                   const elapsed = ts - phaseStart;
-                  let x = 0;
-                  if (phase === 'slide') {
-                    const toX = stops[stopIdx];
-                    const dist = Math.abs(fromX - toX);
-                    const dur = stopIdx === 0 ? 1500 : Math.max(200, dist * 0.4);
-                    const t = Math.min(elapsed / dur, 1);
-                    x = fromX + (toX - fromX) * easeOut(t);
-                    if (t >= 1) { phase = 'bounce'; phaseStart = ts; }
-                  } else if (phase === 'bounce') {
-                    const t = elapsed / 1000;
-                    const amp = stopIdx === 0 ? 35 : 20;
-                    x = stops[stopIdx] + amp * Math.exp(-9 * t) * Math.sin(16 * t);
-                    if (elapsed > 400 || Math.abs(x - stops[stopIdx]) < 0.5) {
-                      fromX = stops[stopIdx];
-                      stopIdx++;
-                      if (stopIdx < stops.length) { phase = 'slide'; phaseStart = ts; }
-                      else { phase = 'wall-snap'; phaseStart = ts; }
-                    }
-                  } else if (phase === 'wall-snap') {
-                    const dur = 300;
-                    const t = Math.min(elapsed / dur, 1);
-                    x = fromX + (0 - fromX) * easeIn(t);
-                    if (t >= 1) { phase = 'wall-bounce'; phaseStart = ts; }
-                  } else if (phase === 'wall-bounce') {
-                    const t = elapsed / 1000;
-                    x = 50 * Math.exp(-7 * t) * Math.sin(14 * t);
-                    if (elapsed > 700 || Math.abs(x) < 0.5) { phase = 'done'; }
+                  const p = phases[phaseIdx];
+                  let x = rightX;
+                  if (p.type === 'slide') {
+                    const t = Math.min(elapsed / p.dur, 1);
+                    const e = p.ease === 'out' ? easeOut(t) : easeIn(t);
+                    x = p.from + (p.to - p.from) * e;
+                    if (t >= 1) { phaseIdx++; phaseStart = ts; }
+                  } else {
+                    const t = Math.min(elapsed / p.dur, 1);
+                    x = rightX - p.amplitude * Math.sin(Math.PI * t);
+                    if (t >= 1) { phaseIdx++; phaseStart = ts; }
                   }
-                  if (phase === 'done') { el.style.transform = ''; startScroll(); return; }
+                  if (phaseIdx >= phases.length) { el.style.transform = ''; startScroll(); return; }
                   el.style.transform = `translateX(${x}px)`;
                   requestAnimationFrame(animate);
                 };
-                el.style.transform = `translateX(${startX}px)`;
+                el.style.transform = `translateX(${rightX}px)`;
                 requestAnimationFrame(animate);
               };
               const imgs = el.querySelectorAll('img');
