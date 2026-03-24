@@ -19,6 +19,7 @@ import catNight from "@assets/Cat_Night_1774008796951.png";
 import closetNight from "@assets/Closet_Night_1774008796953.png";
 import echoSpeakerImg from "@assets/Echo_1774213902054.png";
 import chumfmLogo from "@assets/chumfm_logo.svg";
+import yasuPhoto from "@assets/Yasu_1774341165517.png";
 
 interface NowPlaying {
   playing: boolean; name?: string; artist?: string; album?: string;
@@ -1386,14 +1387,16 @@ export default function SpotifyPlayerPage() {
         if (isSakura) {
           const greeting = h < 12 ? "おはようございます" : h < 18 ? "こんにちは" : "こんばんは";
           return (
-            <div className="absolute top-5 z-50 pointer-events-none text-right" style={{ right: '2%' }} data-testid="yasu-greeting">
+            <div className="absolute top-5 z-50 pointer-events-none text-right flex items-start gap-3" style={{ right: '2%' }} data-testid="yasu-greeting">
               <p className="text-3xl font-bold tracking-wide" style={{
                 color: 'rgba(200,230,255,0.85)',
                 textShadow: '0 0 20px rgba(56,189,248,0.6), 0 0 40px rgba(255,183,197,0.3)',
                 fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
+                marginTop: '6px',
               }}>
                 {greeting}、やす
               </p>
+              <img src={yasuPhoto} alt="Yasu" data-testid="img-yasu-photo" style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(255,183,197,0.5)', boxShadow: '0 0 15px rgba(255,183,197,0.3), 0 2px 8px rgba(0,0,0,0.3)', flexShrink: 0 }} />
             </div>
           );
         }
