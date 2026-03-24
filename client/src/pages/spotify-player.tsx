@@ -20,6 +20,7 @@ import closetNight from "@assets/Closet_Night_1774008796953.png";
 import echoSpeakerImg from "@assets/Echo_1774213902054.png";
 import chumfmLogo from "@assets/chumfm_logo.svg";
 import yasuPhoto from "@assets/Yasu_1774341165517.png";
+import brynPhoto from "@assets/Bryn_1774341392117.png";
 
 interface NowPlaying {
   playing: boolean; name?: string; artist?: string; album?: string;
@@ -1403,15 +1404,17 @@ export default function SpotifyPlayerPage() {
         const greeting = h < 12 ? "Good Morning" : h < 18 ? "Good Afternoon" : "Good Evening";
         if (activeProfile === "bryn") {
           return (
-            <div className="absolute top-5 z-50 pointer-events-none text-right" style={{ right: '2%' }} data-testid="bryn-greeting">
+            <div className="absolute top-5 z-50 pointer-events-none text-right flex items-start gap-3" style={{ right: '2%' }} data-testid="bryn-greeting">
               <p className="text-3xl font-bold tracking-wide" style={{
                 color: 'rgba(200,230,255,0.85)',
                 textShadow: `0 0 20px ${profile.glow}, 0 0 40px rgba(80,160,255,0.3)`,
                 fontFamily: "'Inter', system-ui, sans-serif",
                 letterSpacing: '0.04em',
+                marginTop: '6px',
               }}>
                 {greeting}, Bryn
               </p>
+              <img src={brynPhoto} alt="Bryn" data-testid="img-bryn-photo" style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(80,160,255,0.5)', boxShadow: `0 0 15px ${profile.glow}, 0 2px 8px rgba(0,0,0,0.3)`, flexShrink: 0 }} />
             </div>
           );
         }
