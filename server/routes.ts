@@ -14886,6 +14886,29 @@ Return ONLY the JSON object, no markdown formatting.`;
     }
   });
 
+  app.post("/api/spotify/go-home", async (req, res) => {
+    try {
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      const haPath = "/lovelace/test-home";
+      const allTablets = FLICK_DEVICES.flatMap(g => g.devices).filter(d => d.type === "tablet");
+      console.log(`[Spotify Home] Navigating ${allTablets.length} tablets to ${haPath}`);
+      res.json({ ok: true, navigating: allTablets.length });
+      await Promise.allSettled(
+        allTablets.map(async (tablet) => {
+          try {
+            await haServiceCall('browser_mod/navigate', { browser_id: tablet.entityId, path: haPath }, `Spotify Home ${tablet.name}`);
+            console.log(`[Spotify Home] ${tablet.name} (${tablet.entityId}) → navigated`);
+          } catch (e: any) {
+            console.log(`[Spotify Home] ${tablet.name} (${tablet.entityId}) → failed: ${e.message}`);
+          }
+        })
+      );
+    } catch (error: any) {
+      console.error("[Spotify Home] Error:", error);
+      if (!res.headersSent) res.status(500).json({ error: error.message });
+    }
+  });
+
   app.get("/api/pending-review", async (_req, res) => {
     try {
       const status = (_req.query.status as string) || undefined;

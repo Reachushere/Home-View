@@ -781,7 +781,14 @@ export default function SpotifyPlayerPage() {
         if (!res.ok) return;
         const data = await res.json();
         if (data.state === "off" && active) {
-          window.location.href = "http://172.24.0.2:8123/lovelace/test-home";
+          const haPath = "/lovelace/test-home";
+          fetch("/api/spotify/go-home", { method: "POST", headers: { "Content-Type": "application/json" } }).catch(() => {});
+          const inIframe = window.self !== window.top;
+          if (inIframe) {
+            try { window.parent.postMessage({ type: "navigate", path: haPath }, "*"); } catch {}
+            try { window.parent.postMessage(JSON.stringify({ id: 1, type: "call_service", domain: "browser_mod", service: "navigate", service_data: { path: haPath } }), "http://172.24.0.2:8123"); } catch {}
+          }
+          try { window.history.back(); } catch {}
         }
       } catch {}
     };
@@ -1543,36 +1550,30 @@ export default function SpotifyPlayerPage() {
 
             <div className="mt-auto flex flex-col gap-0.5 px-1 pb-1">
               <button onClick={() => {
-                  const haLocal = "http://172.24.0.2:8123";
                   const haPath = "/lovelace/test-home";
-                  fetch(`/api/tablet-nav/set?auth=${encodeURIComponent(localStorage.getItem("sitePassword") || "5747")}&device=master`, {
+                  fetch("/api/spotify/go-home", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ action: "navigate", url: `${haLocal}${haPath}`, timestamp: Date.now() }),
                   }).catch(() => {});
                   const isDev = window.location.hostname.includes('.replit.dev');
                   if (isDev) {
                     window.location.href = "/";
                     return;
                   }
-                  const ref = document.referrer;
                   const inIframe = window.self !== window.top;
-                  if (ref) {
-                    const refOrigin = new URL(ref).origin;
-                    const homeUrl = `${refOrigin}${haPath}`;
-                    if (inIframe) {
-                      try { window.top!.location.href = homeUrl; } catch { window.location.href = homeUrl; }
-                    } else {
-                      window.location.href = homeUrl;
-                    }
-                  } else {
-                    const fallback = `${haLocal}${haPath}`;
-                    if (inIframe) {
-                      try { window.top!.location.href = fallback; } catch { window.location.href = fallback; }
-                    } else {
-                      window.location.href = fallback;
-                    }
+                  if (inIframe) {
+                    try {
+                      window.parent.postMessage({ type: "navigate", path: haPath }, "*");
+                    } catch {}
+                    try {
+                      const haLocal = "http://172.24.0.2:8123";
+                      window.parent.postMessage(
+                        JSON.stringify({ id: 1, type: "call_service", domain: "browser_mod", service: "navigate", service_data: { path: haPath } }),
+                        haLocal
+                      );
+                    } catch {}
                   }
+                  try { window.history.back(); } catch {}
                 }}
                 className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg transition-all hover:scale-105 mb-1"
                 style={{
