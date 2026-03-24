@@ -455,30 +455,50 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
         scrollEl.style.animation = `tickerScroll ${dur}s linear infinite`;
       };
       if (items.length === 0) { startContinuousScroll(); return; }
+      const screenCenter = parentWidth / 2;
+      const itemCenters = items.map(item => item.offsetLeft + item.offsetWidth / 2);
+      const stops = itemCenters.map(c => screenCenter - c);
       const startX = parentWidth;
-      const midX = parentWidth * 0.45;
-      const wallX = 0;
-      let phase: 'slide-in' | 'snap-back' | 'wall-bounce' | 'done' = 'slide-in';
+      let stopIdx = 0;
+      let phase: 'slide' | 'bounce' | 'wall-snap' | 'wall-bounce' | 'done' = 'slide';
       let phaseStart = 0;
-      const slideInMs = 3000;
-      const snapBackMs = 350;
+      let fromX = startX;
       const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
       const easeIn = (t: number) => t * t * t;
       const animate = (ts: number) => {
         if (!phaseStart) phaseStart = ts;
         const elapsed = ts - phaseStart;
         let x = 0;
-        if (phase === 'slide-in') {
-          const t = Math.min(elapsed / slideInMs, 1);
-          x = startX + (midX - startX) * easeOut(t);
-          if (t >= 1) { phase = 'snap-back'; phaseStart = ts; }
-        } else if (phase === 'snap-back') {
-          const t = Math.min(elapsed / snapBackMs, 1);
-          x = midX + (wallX - midX) * easeIn(t);
+        if (phase === 'slide') {
+          const toX = stops[stopIdx];
+          const dist = Math.abs(fromX - toX);
+          const dur = stopIdx === 0 ? 1500 : Math.max(200, dist * 0.4);
+          const t = Math.min(elapsed / dur, 1);
+          x = fromX + (toX - fromX) * easeOut(t);
+          if (t >= 1) { phase = 'bounce'; phaseStart = ts; }
+        } else if (phase === 'bounce') {
+          const t = elapsed / 1000;
+          const amp = stopIdx === 0 ? 35 : 20;
+          x = stops[stopIdx] + amp * Math.exp(-9 * t) * Math.sin(16 * t);
+          if (elapsed > 400 || Math.abs(x - stops[stopIdx]) < 0.5) {
+            fromX = stops[stopIdx];
+            stopIdx++;
+            if (stopIdx < stops.length) {
+              phase = 'slide';
+              phaseStart = ts;
+            } else {
+              phase = 'wall-snap';
+              phaseStart = ts;
+            }
+          }
+        } else if (phase === 'wall-snap') {
+          const dur = 300;
+          const t = Math.min(elapsed / dur, 1);
+          x = fromX + (0 - fromX) * easeIn(t);
           if (t >= 1) { phase = 'wall-bounce'; phaseStart = ts; }
         } else if (phase === 'wall-bounce') {
           const t = elapsed / 1000;
-          x = 45 * Math.exp(-7 * t) * Math.sin(14 * t);
+          x = 50 * Math.exp(-7 * t) * Math.sin(14 * t);
           if (elapsed > 700 || Math.abs(x) < 0.5) { phase = 'done'; }
         }
         if (phase === 'done') { scrollEl.style.transform = ''; startContinuousScroll(); return; }
@@ -12479,30 +12499,45 @@ export default function Dashboard() {
                   el.style.animation = `tickerScroll ${dur}s linear infinite`;
                 };
                 if (items.length === 0) { startScroll(); return; }
+                const screenCenter = parentWidth / 2;
+                const itemCenters = items.map(item => item.offsetLeft + item.offsetWidth / 2);
+                const stops = itemCenters.map(c => screenCenter - c);
                 const startX = parentWidth;
-                const midX = parentWidth * 0.45;
-                const wallX = 0;
-                let phase: 'slide-in' | 'snap-back' | 'wall-bounce' | 'done' = 'slide-in';
+                let stopIdx = 0;
+                let phase: 'slide' | 'bounce' | 'wall-snap' | 'wall-bounce' | 'done' = 'slide';
                 let phaseStart = 0;
-                const slideInMs = 3000;
-                const snapBackMs = 350;
+                let fromX = startX;
                 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
                 const easeIn = (t: number) => t * t * t;
                 const animate = (ts: number) => {
                   if (!phaseStart) phaseStart = ts;
                   const elapsed = ts - phaseStart;
                   let x = 0;
-                  if (phase === 'slide-in') {
-                    const t = Math.min(elapsed / slideInMs, 1);
-                    x = startX + (midX - startX) * easeOut(t);
-                    if (t >= 1) { phase = 'snap-back'; phaseStart = ts; }
-                  } else if (phase === 'snap-back') {
-                    const t = Math.min(elapsed / snapBackMs, 1);
-                    x = midX + (wallX - midX) * easeIn(t);
+                  if (phase === 'slide') {
+                    const toX = stops[stopIdx];
+                    const dist = Math.abs(fromX - toX);
+                    const dur = stopIdx === 0 ? 1500 : Math.max(200, dist * 0.4);
+                    const t = Math.min(elapsed / dur, 1);
+                    x = fromX + (toX - fromX) * easeOut(t);
+                    if (t >= 1) { phase = 'bounce'; phaseStart = ts; }
+                  } else if (phase === 'bounce') {
+                    const t = elapsed / 1000;
+                    const amp = stopIdx === 0 ? 35 : 20;
+                    x = stops[stopIdx] + amp * Math.exp(-9 * t) * Math.sin(16 * t);
+                    if (elapsed > 400 || Math.abs(x - stops[stopIdx]) < 0.5) {
+                      fromX = stops[stopIdx];
+                      stopIdx++;
+                      if (stopIdx < stops.length) { phase = 'slide'; phaseStart = ts; }
+                      else { phase = 'wall-snap'; phaseStart = ts; }
+                    }
+                  } else if (phase === 'wall-snap') {
+                    const dur = 300;
+                    const t = Math.min(elapsed / dur, 1);
+                    x = fromX + (0 - fromX) * easeIn(t);
                     if (t >= 1) { phase = 'wall-bounce'; phaseStart = ts; }
                   } else if (phase === 'wall-bounce') {
                     const t = elapsed / 1000;
-                    x = 45 * Math.exp(-7 * t) * Math.sin(14 * t);
+                    x = 50 * Math.exp(-7 * t) * Math.sin(14 * t);
                     if (elapsed > 700 || Math.abs(x) < 0.5) { phase = 'done'; }
                   }
                   if (phase === 'done') { el.style.transform = ''; startScroll(); return; }
