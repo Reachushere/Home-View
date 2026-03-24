@@ -2061,7 +2061,7 @@ export default function SpotifyPlayerPage() {
                           )}
                         </div>
                       </div>}
-                      {(isActive || activeRooms.has("Everywhere")) && spot.room !== "Balcony" && (
+                      {spot.room !== "Balcony" && (
                         <div className="absolute inset-0 flex items-end justify-center"
                           style={{ zIndex: 4, transform: `translate(${spot.volumeOffsetX || 0}px, ${spot.volumeOffsetY || 0}px)`, pointerEvents: 'none' }}
                           data-testid={`volume-knob-${spot.room.toLowerCase().replace(/\s/g, "-")}`}>
