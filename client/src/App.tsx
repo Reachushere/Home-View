@@ -14,6 +14,7 @@ import PDFReaderPage from "@/pages/pdf-reader";
 import PDFViewerPage from "@/pages/pdf-viewer";
 import OneDrivePage from "@/pages/onedrive";
 import SpotifyPlayerPage from "@/pages/spotify-player";
+import TickerPage from "@/pages/ticker";
 
 function useAutoFullscreen() {
   const [requested, setRequested] = useState(false);
@@ -81,6 +82,16 @@ function Router() {
 
 function App() {
   useAutoFullscreen();
+  const [location] = useLocation();
+
+  if (location === '/ticker') {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <TickerPage />
+      </QueryClientProvider>
+    );
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
