@@ -9925,68 +9925,71 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto px-4 py-2" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.2) transparent' }}>
+          <div className="flex-1 overflow-hidden px-4 py-2">
             {morningReviewItems.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-white/50">
                 <CheckCircle2 className="h-6 w-6 mb-2 text-green-400" />
                 <p className="text-[11px]">All caught up!</p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-x-4 gap-y-0">
+              <div className="flex gap-4 h-full">
                 {['outlook_calendar', 'gmail'].map(source => {
                   const items = morningReviewItems.filter(i => i.source === source);
-                  if (items.length === 0) return null;
                   const label = source === 'outlook_calendar' ? 'Outlook Calendar' : 'Gmail';
                   const icon = source === 'outlook_calendar' ? <CalendarDays className="h-3 w-3 text-blue-400" /> : <Mail className="h-3 w-3 text-red-400" />;
                   return (
-                    <div key={source} data-testid={`review-group-${source}`}>
-                      <div className="flex items-center gap-1.5 mb-1 pb-0.5 border-b border-white/15 sticky top-0" style={{ background: '#0a0f1e', zIndex: 1 }}>
+                    <div key={source} className="flex-1 flex flex-col min-w-0" data-testid={`review-group-${source}`}>
+                      <div className="flex items-center gap-1.5 pb-1 border-b border-white/15 flex-shrink-0">
                         {icon}
                         <span className="text-[8px] font-semibold uppercase tracking-wider text-white/60">{label}</span>
                         <span className="text-[8px] text-white/30 ml-auto">{items.length}</span>
                       </div>
-                      {items.map((item, idx) => (
-                        <div
-                          key={item.id}
-                          className="flex items-center gap-1.5 py-[3px] px-1.5 border-b border-white/5"
-                          style={{ backgroundColor: idx % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent' }}
-                          data-testid={`review-item-${item.id}`}
-                        >
-                          <div className="flex-1 min-w-0 flex items-center gap-2">
-                            <span className="text-[9px] font-medium truncate flex-1" style={{ lineHeight: '1.3' }}>{item.title}</span>
-                            {item.startDate && (
-                              <span className="text-[7.5px] text-white/35 flex-shrink-0">
-                                {new Date(item.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                              </span>
-                            )}
-                            {item.eventStartTime && (
-                              <span className="text-[7.5px] text-white/35 flex-shrink-0">
-                                {item.eventStartTime}
-                              </span>
-                            )}
+                      <div className="flex-1 overflow-y-auto mt-1" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.2) transparent' }}>
+                        {items.length === 0 ? (
+                          <div className="text-[9px] text-white/30 text-center py-4">No items</div>
+                        ) : items.map((item, idx) => (
+                          <div
+                            key={item.id}
+                            className="flex items-center gap-1.5 px-1.5 border-b border-white/5"
+                            style={{ backgroundColor: idx % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent', paddingTop: '5px', paddingBottom: '5px', marginBottom: '0px' }}
+                            data-testid={`review-item-${item.id}`}
+                          >
+                            <div className="flex-1 min-w-0 flex items-center gap-2">
+                              <span className="text-[9px] font-medium truncate flex-1" style={{ lineHeight: '1.3' }}>{item.title}</span>
+                              {item.startDate && (
+                                <span className="text-[7.5px] text-white/35 flex-shrink-0">
+                                  {new Date(item.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                </span>
+                              )}
+                              {item.eventStartTime && (
+                                <span className="text-[7.5px] text-white/35 flex-shrink-0">
+                                  {item.eventStartTime}
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-1 flex-shrink-0">
+                              <button
+                                className="w-5 h-5 flex items-center justify-center rounded-full border border-green-500/40 text-green-400 hover:bg-green-500/25 disabled:opacity-40"
+                                disabled={processingReviewIds.has(item.id)}
+                                onClick={() => handleAcceptReview(item.id)}
+                                data-testid={`button-accept-review-${item.id}`}
+                                title="Accept"
+                              >
+                                {processingReviewIds.has(item.id) ? <Loader2 className="h-2.5 w-2.5 animate-spin" /> : <Check className="h-2.5 w-2.5" />}
+                              </button>
+                              <button
+                                className="w-5 h-5 flex items-center justify-center rounded-full border border-red-500/40 text-red-400 hover:bg-red-500/25 disabled:opacity-40"
+                                disabled={processingReviewIds.has(item.id)}
+                                onClick={() => handleRejectReview(item.id)}
+                                data-testid={`button-reject-review-${item.id}`}
+                                title="Skip"
+                              >
+                                <X className="h-2.5 w-2.5" />
+                              </button>
+                            </div>
                           </div>
-                          <div className="flex items-center gap-1 flex-shrink-0">
-                            <button
-                              className="w-5 h-5 flex items-center justify-center rounded-full border border-green-500/40 text-green-400 hover:bg-green-500/25 disabled:opacity-40"
-                              disabled={processingReviewIds.has(item.id)}
-                              onClick={() => handleAcceptReview(item.id)}
-                              data-testid={`button-accept-review-${item.id}`}
-                              title="Accept"
-                            >
-                              {processingReviewIds.has(item.id) ? <Loader2 className="h-2.5 w-2.5 animate-spin" /> : <Check className="h-2.5 w-2.5" />}
-                            </button>
-                            <button
-                              className="w-5 h-5 flex items-center justify-center rounded-full border border-red-500/40 text-red-400 hover:bg-red-500/25 disabled:opacity-40"
-                              disabled={processingReviewIds.has(item.id)}
-                              onClick={() => handleRejectReview(item.id)}
-                              data-testid={`button-reject-review-${item.id}`}
-                              title="Skip"
-                            >
-                              <X className="h-2.5 w-2.5" />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   );
                 })}
