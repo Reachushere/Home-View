@@ -2297,24 +2297,10 @@ input[type="date"]::-webkit-datetime-edit-year-field {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.3; }
 }
-@keyframes tickerItemBounce {
-  0% { transform: translateY(100%); opacity: 0; }
-  40% { transform: translateY(-6px); opacity: 1; }
-  60% { transform: translateY(3px); }
-  80% { transform: translateY(-1px); }
-  100% { transform: translateY(0); opacity: 1; }
-}
-
 .news-ticker-scroll {
   will-change: transform;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-}
-
-.news-ticker-scroll.ticker-entrance > a,
-.news-ticker-scroll.ticker-entrance > span {
-  opacity: 0;
-  animation: tickerItemBounce 0.5s ease-out forwards;
 }
 
 .news-ticker-scroll:hover {

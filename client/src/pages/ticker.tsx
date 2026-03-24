@@ -189,24 +189,51 @@ export default function TickerPage() {
     if (scrollContainer) {
       scrollContainer.innerHTML = html;
       const applyAnim = () => {
-        scrollContainer.classList.add('ticker-entrance');
-        const items = scrollContainer.querySelectorAll(':scope > a, :scope > span');
-        items.forEach((item, i) => {
-          (item as HTMLElement).style.animationDelay = `${i * 0.08}s`;
-        });
-        const entranceDuration = (items.length * 0.08 + 0.5) * 1000;
-        setTimeout(() => {
-          scrollContainer.classList.remove('ticker-entrance');
-          items.forEach(item => { (item as HTMLElement).style.animationDelay = ''; (item as HTMLElement).style.opacity = '1'; });
+        const items = Array.from(scrollContainer.querySelectorAll(':scope > a, :scope > span')) as HTMLElement[];
+        const parentWidth = scrollContainer.parentElement?.clientWidth || window.innerWidth;
+        if (items.length === 0) {
           const contentWidth = scrollContainer.scrollWidth;
-          const parentWidth = scrollContainer.parentElement?.clientWidth || window.innerWidth;
           const totalTravel = parentWidth + contentWidth;
           const speed = 65;
           const duration = totalTravel / speed;
           scrollContainer.style.setProperty('--ticker-start', `${parentWidth}px`);
           scrollContainer.style.setProperty('--ticker-end', `-${contentWidth}px`);
           scrollContainer.style.animation = `tickerScroll ${duration}s linear infinite`;
-        }, entranceDuration);
+          return;
+        }
+        items.forEach(item => { item.style.opacity = '0'; item.style.transform = `translateX(${parentWidth}px)`; item.style.transition = 'none'; });
+        const centerX = parentWidth / 2;
+        const slideInItem = (index: number) => {
+          if (index >= items.length) {
+            items.forEach(item => { item.style.opacity = '1'; item.style.transform = ''; item.style.transition = ''; });
+            const contentWidth = scrollContainer.scrollWidth;
+            const totalTravel = parentWidth + contentWidth;
+            const speed = 65;
+            const duration = totalTravel / speed;
+            scrollContainer.style.setProperty('--ticker-start', `${parentWidth}px`);
+            scrollContainer.style.setProperty('--ticker-end', `-${contentWidth}px`);
+            scrollContainer.style.animation = `tickerScroll ${duration}s linear infinite`;
+            return;
+          }
+          const item = items[index];
+          const itemRect = item.getBoundingClientRect();
+          const scrollRect = scrollContainer.getBoundingClientRect();
+          const itemLeft = itemRect.left - scrollRect.left;
+          const overshoot = centerX - itemLeft - itemRect.width / 2;
+          item.style.opacity = '1';
+          item.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+          item.style.transform = `translateX(${overshoot}px)`;
+          setTimeout(() => {
+            item.style.transition = 'transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            item.style.transform = `translateX(${overshoot + 12}px)`;
+            setTimeout(() => {
+              item.style.transition = 'transform 0.2s ease-out';
+              item.style.transform = 'translateX(0px)';
+            }, 150);
+          }, 400);
+          setTimeout(() => slideInItem(index + 1), 350);
+        };
+        requestAnimationFrame(() => slideInItem(0));
       };
       const imgs = scrollContainer.querySelectorAll('img');
       if (imgs.length > 0) {
