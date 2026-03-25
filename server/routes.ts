@@ -151,6 +151,67 @@ async function haServiceCall(service: string, data: object, label = 'HA'): Promi
   }, 3, label);
 }
 
+interface QueuedHACommand {
+  service: string;
+  data: object;
+  label: string;
+  queuedAt: number;
+  attempts: number;
+}
+const haCommandQueue: QueuedHACommand[] = [];
+const HA_QUEUE_MAX_AGE_MS = 5 * 60 * 1000;
+const HA_QUEUE_MAX_SIZE = 50;
+let haQueueProcessing = false;
+
+async function processHACommandQueue(): Promise<void> {
+  if (haQueueProcessing || haCommandQueue.length === 0) return;
+  haQueueProcessing = true;
+  try {
+    let remaining = haCommandQueue.length;
+    for (let processed = 0; processed < remaining; processed++) {
+      const cmd = haCommandQueue.shift();
+      if (!cmd) break;
+      const now = Date.now();
+      if (now - cmd.queuedAt > HA_QUEUE_MAX_AGE_MS) {
+        console.log(`[HA Queue] Expired command dropped: ${cmd.label} ${cmd.service} (queued ${Math.round((now - cmd.queuedAt) / 1000)}s ago)`);
+        continue;
+      }
+      try {
+        await haServiceCall(cmd.service, cmd.data, `${cmd.label} [Replayed]`);
+        console.log(`[HA Queue] Successfully replayed: ${cmd.label} ${cmd.service} (was queued ${Math.round((now - cmd.queuedAt) / 1000)}s ago)`);
+      } catch (e: any) {
+        cmd.attempts++;
+        if (cmd.attempts >= 3) {
+          console.warn(`[HA Queue] Giving up on: ${cmd.label} ${cmd.service} after ${cmd.attempts} attempts`);
+        } else {
+          haCommandQueue.push(cmd);
+          console.warn(`[HA Queue] Replay failed (attempt ${cmd.attempts}): ${cmd.label} ${cmd.service} — moved to back of queue`);
+        }
+      }
+    }
+  } finally {
+    haQueueProcessing = false;
+  }
+}
+
+async function haServiceCallSafe(service: string, data: object, label = 'HA'): Promise<boolean> {
+  try {
+    await haServiceCall(service, data, label);
+    if (haCommandQueue.length > 0 && !haQueueProcessing) {
+      processHACommandQueue().catch(() => {});
+    }
+    return true;
+  } catch (e: any) {
+    console.warn(`[HA Safe] ${label} ${service} failed: ${e.message} — queuing for retry`);
+    if (haCommandQueue.length < HA_QUEUE_MAX_SIZE) {
+      haCommandQueue.push({ service, data, label, queuedAt: Date.now(), attempts: 1 });
+    } else {
+      console.warn(`[HA Queue] Queue full (${HA_QUEUE_MAX_SIZE}) — dropping: ${label} ${service}`);
+    }
+    return false;
+  }
+}
+
 function torontoDate(): Date {
   return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
 }
@@ -6995,6 +7056,13 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
               }),
             });
           } catch {}
+          if (haCommandQueue.length > 0) {
+            console.log(`[HA Health] Draining ${haCommandQueue.length} queued command(s) after reconnection`);
+            processHACommandQueue().catch(e => console.warn(`[HA Queue] Drain error: ${e.message}`));
+          }
+        }
+        if (haCommandQueue.length > 0 && !haQueueProcessing) {
+          processHACommandQueue().catch(() => {});
         }
         return true;
       }
@@ -7043,6 +7111,11 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         totalFailures: haHealth.totalFailures,
         lastError: haHealth.lastError,
         downSince: haHealth.wasDownSince ? new Date(haHealth.wasDownSince).toISOString() : null,
+        commandQueue: {
+          pending: haCommandQueue.length,
+          processing: haQueueProcessing,
+          oldest: haCommandQueue.length > 0 ? new Date(haCommandQueue[0].queuedAt).toISOString() : null,
+        },
       },
       timestamp: new Date().toISOString(),
     });
@@ -7479,6 +7552,30 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     } catch (e: any) {
       console.error(`[AudioPrep] Startup scan error: ${e.message}`);
     }
+
+    const AUDIO_REPAIR_INTERVAL_MS = 30 * 60 * 1000;
+    setInterval(async () => {
+      if (audioPreparationActive || audioPreparationPaused || catWashPlaybackActive) return;
+      try {
+        const allFiles = await storage.getFiles();
+        const filesWithGaps = allFiles.filter((f: any) => {
+          if (!f.preparedAudioPaths || f.listened) return false;
+          try {
+            const paths: string[] = JSON.parse(f.preparedAudioPaths);
+            return paths.some(p => !p || p.length === 0);
+          } catch { return false; }
+        });
+        if (filesWithGaps.length > 0) {
+          console.log(`[AudioPrep Repair] Found ${filesWithGaps.length} file(s) with incomplete audio — re-preparing`);
+          for (const f of filesWithGaps) {
+            await storage.updateFile(f.id, { preparedAudioPaths: null });
+            queueFileForPreparation(f.id);
+          }
+        }
+      } catch (e: any) {
+        console.error(`[AudioPrep Repair] Error: ${e.message}`);
+      }
+    }, AUDIO_REPAIR_INTERVAL_MS);
 
     try {
       const persisted = await getPersistedPlaybackSession();
@@ -7962,11 +8059,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       if (attempt > 0) {
         console.log(`[Nest] Retry ${attempt}/${maxRetries} — speaker didn't start playing`);
-        try {
-          await haServiceCall('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Retry Stop');
-          await new Promise(r => setTimeout(r, 1000));
-          await haServiceCall('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Nest Retry Vol');
-        } catch {}
+        await haServiceCallSafe('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Retry Stop');
+        await new Promise(r => setTimeout(r, 1000));
+        await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Nest Retry Vol');
       }
 
       console.log(`[Nest] Playing audio${attempt > 0 ? ` (attempt ${attempt + 1})` : ''}: ${fullUrl}`);
@@ -8028,34 +8123,49 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
   async function waitForNestPlaybackEnd(estimatedMs: number, sessionId: number): Promise<boolean> {
     const startTime = Date.now();
-    const maxWait = estimatedMs + 15000;
-    const minPlaybackMs = Math.min(estimatedMs * 0.6, 60000);
-    const initialWait = Math.max(minPlaybackMs, 20000);
-    const checkInterval = 2000;
-    for (let waited = 0; waited < initialWait; waited += checkInterval) {
+    const ABORT_CHECK_MS = 2000;
+    const timerWaitMs = estimatedMs + 3000;
+
+    for (let waited = 0; waited < timerWaitMs; waited += ABORT_CHECK_MS) {
       if (!catWashPlaybackActive || catWashSessionId !== sessionId) {
-        console.log(`[Nest] Abort detected during initial wait (${Math.round(waited / 1000)}s in)`);
+        console.log(`[Nest] Abort detected during timer wait (${Math.round(waited / 1000)}s in)`);
         return false;
       }
-      await new Promise(r => setTimeout(r, checkInterval));
+      await new Promise(r => setTimeout(r, ABORT_CHECK_MS));
     }
+
+    if (!haHealth.connected) {
+      console.log(`[Nest] Timer done (${Math.round(estimatedMs / 1000)}s). HA offline — trusting timer, moving to next chunk`);
+      return true;
+    }
+
     let consecutiveIdle = 0;
     const IDLE_THRESHOLD = 2;
-    while (Date.now() - startTime < maxWait) {
+    const HA_CHECK_INTERVAL_MS = 5000;
+    const maxExtraWait = 20000;
+
+    for (let extra = 0; extra < maxExtraWait; extra += HA_CHECK_INTERVAL_MS) {
       if (!catWashPlaybackActive || catWashSessionId !== sessionId) return false;
-      const state = await getNestMediaState();
-      if (state.state === 'idle' || state.state === 'off') {
-        consecutiveIdle++;
-        if (consecutiveIdle >= IDLE_THRESHOLD) {
-          console.log(`[Nest] Chunk done (idle after ${Math.round((Date.now() - startTime) / 1000)}s)`);
-          return true;
+      try {
+        const state = await getNestMediaState();
+        if (state.state === 'idle' || state.state === 'off') {
+          consecutiveIdle++;
+          if (consecutiveIdle >= IDLE_THRESHOLD) {
+            console.log(`[Nest] Chunk confirmed done via HA (${Math.round((Date.now() - startTime) / 1000)}s total)`);
+            return true;
+          }
+        } else if (state.state === 'playing' || state.state === 'buffering') {
+          consecutiveIdle = 0;
+        } else {
+          consecutiveIdle++;
         }
-      } else {
-        consecutiveIdle = 0;
+      } catch {
+        console.log(`[Nest] HA state check failed — trusting timer`);
+        return true;
       }
-      await new Promise(r => setTimeout(r, 3000));
+      await new Promise(r => setTimeout(r, HA_CHECK_INTERVAL_MS));
     }
-    console.log(`[Nest] Timed out waiting for playback after ${Math.round((Date.now() - startTime) / 1000)}s — moving to next chunk`);
+    console.log(`[Nest] Timer + HA check window elapsed (${Math.round((Date.now() - startTime) / 1000)}s) — moving to next chunk`);
     return true;
   }
 
@@ -8255,16 +8365,42 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
             consecutivePlayFailures++;
             console.error(`[Nest Playback] Chunk ${i + 1} play_media FAILED (${consecutivePlayFailures}/${MAX_PLAY_FAILURES} consecutive failures)`);
             if (consecutivePlayFailures >= MAX_PLAY_FAILURES) {
-              console.error(`[Nest Playback] CIRCUIT BREAKER: ${MAX_PLAY_FAILURES} consecutive play failures — stopping playback`);
-              try {
-                await haServiceCall('tts/speak', {
-                  entity_id: HA_CLOUD_TTS_ENTITY,
-                  media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
-                  message: "Sorry Bryn, I can't reach the Nest speaker. Playback stopped."
-                }, 'Error TTS');
-              } catch (e: any) {
-                console.error(`[Nest Playback] Error announcement also failed: ${e.message}`);
+              if (!haHealth.connected) {
+                console.warn(`[Nest Playback] HA offline — pausing playback at chunk ${i}, will resume when connectivity returns`);
+                if (fileId) {
+                  try { await storage.updateFile(fileId, { lastChunkIndex: i }); } catch {}
+                }
+                await savePlaybackSession({
+                  fileId: fileId || 0, fileName, chunkIndex: i, totalChunks: chunks.length,
+                  trigger: catWashPlaybackTrigger || 'manual',
+                  startedAt: catWashPlaybackStartedAt?.toISOString() || new Date().toISOString(),
+                  updatedAt: new Date().toISOString(), status: 'paused',
+                }).catch(() => {});
+                let waitedForReconnect = 0;
+                const RECONNECT_TIMEOUT_MS = 5 * 60 * 1000;
+                const RECONNECT_CHECK_MS = 10000;
+                while (waitedForReconnect < RECONNECT_TIMEOUT_MS && catWashPlaybackActive && catWashSessionId === sessionId) {
+                  if (haHealth.connected) {
+                    console.log(`[Nest Playback] HA reconnected after ${Math.round(waitedForReconnect / 1000)}s — resuming playback at chunk ${i}`);
+                    consecutivePlayFailures = 0;
+                    i--;
+                    break;
+                  }
+                  await new Promise(r => setTimeout(r, RECONNECT_CHECK_MS));
+                  waitedForReconnect += RECONNECT_CHECK_MS;
+                }
+                if (waitedForReconnect >= RECONNECT_TIMEOUT_MS) {
+                  console.error(`[Nest Playback] HA still offline after ${RECONNECT_TIMEOUT_MS / 1000}s — stopping playback`);
+                  break;
+                }
+                continue;
               }
+              console.error(`[Nest Playback] CIRCUIT BREAKER: ${MAX_PLAY_FAILURES} consecutive play failures — stopping playback`);
+              haServiceCallSafe('tts/speak', {
+                entity_id: HA_CLOUD_TTS_ENTITY,
+                media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
+                message: "Sorry Bryn, I can't reach the Nest speaker. Playback stopped."
+              }, 'Error TTS');
               break;
             }
             await new Promise(r => setTimeout(r, 3000));
@@ -8274,16 +8410,16 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
             consecutivePlayFailures++;
             console.warn(`[Nest Playback] Chunk ${i + 1} sent but speaker not confirmed playing (${consecutivePlayFailures}/${MAX_PLAY_FAILURES})`);
             if (consecutivePlayFailures >= MAX_PLAY_FAILURES) {
-              console.error(`[Nest Playback] CIRCUIT BREAKER: speaker not responding after ${MAX_PLAY_FAILURES} chunks — stopping`);
-              try {
-                await haServiceCall('tts/speak', {
-                  entity_id: HA_CLOUD_TTS_ENTITY,
-                  media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
-                  message: "Sorry Bryn, the Nest speaker isn't responding. Please check it and try again."
-                }, 'Error TTS');
-              } catch (e: any) {
-                console.error(`[Nest Playback] Error announcement also failed: ${e.message}`);
+              if (!haHealth.connected) {
+                console.warn(`[Nest Playback] HA offline during unconfirmed playback — saving progress at chunk ${i}`);
+                if (fileId) { try { await storage.updateFile(fileId, { lastChunkIndex: i }); } catch {} }
               }
+              console.error(`[Nest Playback] CIRCUIT BREAKER: speaker not responding after ${MAX_PLAY_FAILURES} chunks — stopping`);
+              haServiceCallSafe('tts/speak', {
+                entity_id: HA_CLOUD_TTS_ENTITY,
+                media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
+                message: "Sorry Bryn, the Nest speaker isn't responding. Please check it and try again."
+              }, 'Error TTS');
               break;
             }
           } else {
@@ -8604,15 +8740,11 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       setTabletCommand({ action: 'stop_playback', timestamp: stopTimestamp }, true, 'tv'),
     ]);
 
-    try {
-      await Promise.allSettled([
-        haServiceCall('media_player/turn_off', { entity_id: 'media_player.fire_tv_172_24_0_88' }, 'Nest Stop TV'),
-        haServiceCall('media_player/turn_off', { entity_id: 'media_player.samsung_tv' }, 'Nest Stop TV'),
-      ]);
-      console.log(`[Nest Stop] Fire Stick + Samsung TV turned off`);
-    } catch (e: any) {
-      console.log(`[Nest Stop] TV turn off error: ${e.message}`);
-    }
+    await Promise.allSettled([
+      haServiceCallSafe('media_player/turn_off', { entity_id: 'media_player.fire_tv_172_24_0_88' }, 'Nest Stop TV'),
+      haServiceCallSafe('media_player/turn_off', { entity_id: 'media_player.samsung_tv' }, 'Nest Stop TV'),
+    ]);
+    console.log(`[Nest Stop] Fire Stick + Samsung TV turn-off sent`);
   }
 
   // GET /api/shower/next-reading - Get next unlistened module/reading file for current week
@@ -9317,9 +9449,9 @@ document.body.removeChild(a);
       const immediatePromptPromise = (async () => {
         try {
           await Promise.allSettled([
-            haServiceCall('media_player/volume_set', { entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.85 }, 'Cat Lights Vol'),
-            haServiceCall('input_boolean/turn_off', { entity_id: MODULE_READING_CONFIRMED }, 'Cat Lights Bool'),
-            haServiceCall('input_boolean/turn_on', { entity_id: MODULE_READING_PENDING }, 'Cat Lights Bool'),
+            haServiceCallSafe('media_player/volume_set', { entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.85 }, 'Cat Lights Vol'),
+            haServiceCallSafe('input_boolean/turn_off', { entity_id: MODULE_READING_CONFIRMED }, 'Cat Lights Bool'),
+            haServiceCallSafe('input_boolean/turn_on', { entity_id: MODULE_READING_PENDING }, 'Cat Lights Bool'),
           ]);
           await haServiceCall('tts/speak', {
             entity_id: HA_CLOUD_TTS_ENTITY,
@@ -9394,7 +9526,7 @@ document.body.removeChild(a);
           console.warn(`[Cat Lights] Pre-prompt media stop error (non-fatal): ${e.message}`);
         }
 
-        await haServiceCall('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.85 }, 'Cat Lights Vol');
+        await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.85 }, 'Cat Lights Vol');
 
         let ttsPlayed = false;
         try {
@@ -9439,12 +9571,10 @@ document.body.removeChild(a);
           if (ld2?.state === 'off') {
             console.log(`[Cat Lights] Light turned off during confirmation wait — aborting`);
             catLightsPromptPending = false;
-            try {
-              await Promise.allSettled([
-                haServiceCall('input_boolean/turn_off', { entity_id: MODULE_READING_PENDING }, 'Cat Lights Bool'),
-                haServiceCall('input_boolean/turn_off', { entity_id: MODULE_READING_CONFIRMED }, 'Cat Lights Bool'),
-              ]);
-            } catch {}
+            await Promise.allSettled([
+              haServiceCallSafe('input_boolean/turn_off', { entity_id: MODULE_READING_PENDING }, 'Cat Lights Bool'),
+              haServiceCallSafe('input_boolean/turn_off', { entity_id: MODULE_READING_CONFIRMED }, 'Cat Lights Bool'),
+            ]);
             return;
           }
         }
@@ -9475,12 +9605,10 @@ document.body.removeChild(a);
           }, 10000);
         });
 
-        try {
-          await Promise.allSettled([
-            haServiceCall('input_boolean/turn_off', { entity_id: MODULE_READING_PENDING }, 'Cat Lights Bool'),
-            haServiceCall('input_boolean/turn_off', { entity_id: MODULE_READING_CONFIRMED }, 'Cat Lights Bool'),
-          ]);
-        } catch {}
+        await Promise.allSettled([
+          haServiceCallSafe('input_boolean/turn_off', { entity_id: MODULE_READING_PENDING }, 'Cat Lights Bool'),
+          haServiceCallSafe('input_boolean/turn_off', { entity_id: MODULE_READING_CONFIRMED }, 'Cat Lights Bool'),
+        ]);
 
         if (!confirmed) {
           catLightsPromptPending = false;

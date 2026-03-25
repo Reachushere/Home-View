@@ -59,6 +59,9 @@ const edgeVoiceMap: Record<string, string> = {
   shimmer: "en-US-AriaNeural",
 };
 
+let edgeTTSConsecutiveFailures = 0;
+const EDGE_TTS_MAX_CONSECUTIVE_FAILURES = 5;
+
 async function edgeTTSGenerate(text: string, voice: string, retries = 2): Promise<Buffer> {
   const edgeVoice = edgeVoiceMap[voice] || edgeVoiceMap.echo;
   for (let attempt = 0; attempt <= retries; attempt++) {
@@ -69,17 +72,51 @@ async function edgeTTSGenerate(text: string, voice: string, retries = 2): Promis
       const buf = await readFile(outPath);
       await unlink(outPath).catch(() => {});
       if (buf.length === 0) throw new Error("Edge TTS returned empty audio");
+      edgeTTSConsecutiveFailures = 0;
       return buf;
     } catch (err: any) {
       console.error(`[Edge TTS] Attempt ${attempt + 1} failed: ${err?.message || err}`);
       if (attempt < retries) {
         await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
       } else {
+        edgeTTSConsecutiveFailures++;
         throw err;
       }
     }
   }
+  edgeTTSConsecutiveFailures++;
   throw new Error("Edge TTS failed after retries");
+}
+
+async function localTTSGenerate(text: string): Promise<Buffer> {
+  const outPath = join(tmpdir(), `local-tts-${randomUUID()}.wav`);
+  const cleanText = text.replace(/["""'']/g, "'").replace(/[^\x20-\x7E\n]/g, ' ').slice(0, 5000);
+  try {
+    await new Promise<void>((resolve, reject) => {
+      const proc = spawn("espeak-ng", [
+        "-v", "en-us",
+        "-s", "145",
+        "-p", "40",
+        "-w", outPath,
+        cleanText,
+      ]);
+      let stderr = "";
+      proc.stderr.on("data", (d) => { stderr += d.toString(); });
+      proc.on("close", (code) => {
+        if (code === 0) resolve();
+        else reject(new Error(`espeak-ng exited with code ${code}: ${stderr}`));
+      });
+      proc.on("error", reject);
+    });
+    const wavBuf = await readFile(outPath);
+    await unlink(outPath).catch(() => {});
+    if (wavBuf.length === 0) throw new Error("espeak-ng returned empty audio");
+    console.log(`[Local TTS] Generated ${wavBuf.length} bytes via espeak-ng`);
+    return wavBuf;
+  } catch (err: any) {
+    await unlink(outPath).catch(() => {});
+    throw new Error(`Local TTS (espeak-ng) failed: ${err.message}`);
+  }
 }
 
 export type AudioFormat = "wav" | "mp3" | "webm" | "mp4" | "ogg" | "unknown";
@@ -262,8 +299,17 @@ export async function textToSpeech(
   slowPace: boolean = false
 ): Promise<Buffer> {
   if (useEdgeTTSFallback) {
-    console.log(`[TTS] Using Edge TTS fallback (voice: ${edgeVoiceMap[voice] || edgeVoiceMap.echo})`);
-    return edgeTTSGenerate(text, voice);
+    if (edgeTTSConsecutiveFailures >= EDGE_TTS_MAX_CONSECUTIVE_FAILURES) {
+      console.log(`[TTS] Edge TTS has ${edgeTTSConsecutiveFailures} consecutive failures — using local TTS (espeak-ng)`);
+      return localTTSGenerate(text);
+    }
+    try {
+      console.log(`[TTS] Using Edge TTS fallback (voice: ${edgeVoiceMap[voice] || edgeVoiceMap.echo})`);
+      return await edgeTTSGenerate(text, voice);
+    } catch (edgeErr: any) {
+      console.warn(`[TTS] Edge TTS failed (${edgeTTSConsecutiveFailures} consecutive): ${edgeErr.message} — falling back to local TTS`);
+      return localTTSGenerate(text);
+    }
   }
 
   try {
@@ -289,9 +335,19 @@ export async function textToSpeech(
       useEdgeTTSFallback = true;
       rateLimitResetTime = resetMs;
       await saveRateLimitReset(resetMs);
-      return edgeTTSGenerate(text, voice);
+      try {
+        return await edgeTTSGenerate(text, voice);
+      } catch (edgeErr: any) {
+        console.warn(`[TTS] Edge TTS also failed: ${edgeErr.message} — falling back to local TTS`);
+        return localTTSGenerate(text);
+      }
     }
-    throw err;
+    try {
+      return await edgeTTSGenerate(text, voice);
+    } catch (edgeErr: any) {
+      console.warn(`[TTS] OpenAI error + Edge TTS failed: ${edgeErr.message} — falling back to local TTS`);
+      return localTTSGenerate(text);
+    }
   }
 }
 
