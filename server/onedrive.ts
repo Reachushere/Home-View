@@ -298,3 +298,206 @@ export async function searchOneDriveFiles(query: string) {
     throw error;
   }
 }
+
+function extractUTF16Strings(data: Uint8Array, minLength = 3) {
+  const results: { text: string; pos: number }[] = [];
+  let current = '';
+  let startPos = -1;
+
+  for (let i = 0; i < data.length - 1; i += 2) {
+    const ch = data[i] | (data[i + 1] << 8);
+    if (ch >= 32 && ch < 127) {
+      if (current === '') startPos = i;
+      current += String.fromCharCode(ch);
+    } else if (ch === 10 || ch === 13) {
+      if (current === '') startPos = i;
+      current += '\n';
+    } else {
+      if (current.trim().length >= minLength) {
+        results.push({ text: current.trim(), pos: startPos });
+      }
+      current = '';
+      startPos = -1;
+    }
+  }
+  if (current.trim().length >= minLength) {
+    results.push({ text: current.trim(), pos: startPos });
+  }
+  return results;
+}
+
+function isMetadata(text: string): boolean {
+  const metaPatterns = [
+    /^Bryn Kai-Hendricks$/,
+    /^PageTitle$/,
+    /^PageDateTime$/,
+    /^Calibri/,
+    /^var\(--/,
+    /^<resolutionId/,
+    /^IBM Plex/,
+    /^4Č4/,
+  ];
+  return metaPatterns.some(p => p.test(text));
+}
+
+export interface OneNotePage {
+  title: string;
+  content: string;
+  position: number;
+}
+
+export async function getOneNotePages(notebookPath: string, sectionFileName: string): Promise<OneNotePage[]> {
+  const client = await getOneDriveClient();
+
+  const itemPath = `${notebookPath}/${sectionFileName}`;
+  const meta = await client.api(`/me/drive/root:${encodeURI(itemPath)}`).get();
+  const downloadUrl = meta['@microsoft.graph.downloadUrl'];
+  if (!downloadUrl) throw new Error('No download URL for .one file');
+
+  const response = await fetch(downloadUrl);
+  const buf = await response.arrayBuffer();
+  const bytes = new Uint8Array(buf);
+
+  const strings = extractUTF16Strings(bytes, 3);
+
+  const SKIP_PATTERNS = [
+    /^Calibri/i, /^PageDateTime$/i, /^PageTitle$/i,
+    /^Bryn Kai-Hendricks$/i, /^Bryn$/i,
+    /^Times New Roman$/i, /^Arial$/i, /^Segoe/i, /^Consolas$/i,
+    /^var\(--font/i, /^<resolutionId/,
+    /^en-US$/, /^en-CA$/,
+    /^\d{1,2}:\d{2}$/,
+    /^Microsoft$/i, /^OneNote$/i,
+    /^Windows Live$/i,
+  ];
+
+  function isSkippable(text: string): boolean {
+    if (isMetadata(text)) return true;
+    for (const p of SKIP_PATTERNS) {
+      if (p.test(text)) return true;
+    }
+    const asciiCount = (text.match(/[\x20-\x7E]/g) || []).length;
+    if (asciiCount <= text.length * 0.7) return true;
+    return false;
+  }
+
+  const pageTitlePositions: number[] = [];
+  for (let i = 0; i < bytes.length - 18; i++) {
+    const target = 'PageTitle';
+    let match = true;
+    for (let j = 0; j < target.length; j++) {
+      if (bytes[i + j * 2] !== target.charCodeAt(j) || bytes[i + j * 2 + 1] !== 0) {
+        match = false;
+        break;
+      }
+    }
+    if (match) pageTitlePositions.push(i);
+  }
+
+  const contentStrings = strings.filter(s => !isSkippable(s.text) && s.text.length >= 3);
+
+  if (pageTitlePositions.length === 0) {
+    return [{
+      title: sectionFileName.replace(/\.one$/i, ''),
+      content: contentStrings.map(s => s.text).join('\n\n'),
+      position: 0
+    }];
+  }
+
+  const pages: OneNotePage[] = [];
+  const seenTitles = new Map<string, number>();
+
+  function isTitleLike(text: string): boolean {
+    if (text.length < 2 || text.length > 80) return false;
+    if (text.startsWith('- ') || text.startsWith('`')) return false;
+    if (text.startsWith('HYPERLINK') || text.startsWith('http')) return false;
+    if (text.includes('\n')) return false;
+    if (/^\d+\.\s/.test(text)) return false;
+    if (text.includes('(Weakness') || text.includes('(Opportunity') || text.includes('(Strength') || text.includes('(Threat')) return false;
+    if (text.startsWith('The ') || text.startsWith('Add ') || text.startsWith('Build ')) return false;
+    const wordCount = text.split(/\s+/).length;
+    return wordCount <= 6;
+  }
+
+  for (let p = 0; p < pageTitlePositions.length; p++) {
+    const markerPos = pageTitlePositions[p];
+    const nextMarkerPos = p + 1 < pageTitlePositions.length
+      ? pageTitlePositions[p + 1]
+      : bytes.length;
+
+    const pageContent = contentStrings.filter(
+      s => s.pos > markerPos && s.pos < nextMarkerPos
+    );
+
+    if (pageContent.length === 0) continue;
+
+    const subPages: { title: string; segments: typeof pageContent; pos: number }[] = [];
+    let currentTitle = pageContent[0].text.split('\n')[0].substring(0, 100);
+    let currentSegments: typeof pageContent = [];
+    let currentPos = pageContent[0].pos;
+
+    for (let i = 1; i < pageContent.length; i++) {
+      const s = pageContent[i];
+      const gap = i > 0 ? s.pos - pageContent[i - 1].pos : 0;
+
+      if (gap > 10000 && isTitleLike(s.text)) {
+        subPages.push({ title: currentTitle, segments: currentSegments, pos: currentPos });
+        currentTitle = s.text.split('\n')[0].substring(0, 100);
+        currentSegments = [];
+        currentPos = s.pos;
+      } else {
+        currentSegments.push(s);
+      }
+    }
+    subPages.push({ title: currentTitle, segments: currentSegments, pos: currentPos });
+
+    for (const sp of subPages) {
+      const content = sp.segments
+        .map(s => {
+          let t = s.text;
+          t = t.replace(/^HYPERLINK\s+"([^"]+)"\s*/, (_, url) => `[${url}] `);
+          return t;
+        })
+        .join('\n\n');
+
+      const existingIdx = seenTitles.get(sp.title);
+      if (existingIdx !== undefined) {
+        if (content.length > pages[existingIdx].content.length) {
+          pages[existingIdx] = { title: sp.title, content, position: sp.pos };
+        }
+      } else {
+        seenTitles.set(sp.title, pages.length);
+        pages.push({ title: sp.title, content, position: sp.pos });
+      }
+    }
+  }
+
+  return pages;
+}
+
+export async function listOneNoteNotebooks(): Promise<{ name: string; path: string; sections: { name: string; id: string }[] }[]> {
+  const client = await getOneDriveClient();
+  const notebooks: { name: string; path: string; sections: { name: string; id: string }[] }[] = [];
+
+  const knownPaths = [
+    { name: "Bryn's Notebook", path: "/Documents/Bryn's Notebook" },
+    { name: "Notebook", path: "/School/1. TMU/Notebook" },
+  ];
+
+  for (const nb of knownPaths) {
+    try {
+      const res = await client.api(`/me/drive/root:${encodeURI(nb.path)}:/children`).get();
+      const sections = (res.value || [])
+        .filter((item: any) => item.name.endsWith('.one'))
+        .map((item: any) => ({ name: item.name.replace(/\.one$/i, ''), id: item.id }));
+
+      if (sections.length > 0) {
+        notebooks.push({ name: nb.name, path: nb.path, sections });
+      }
+    } catch (e) {
+      console.error(`[OneNote] Failed to list sections for ${nb.name}:`, e);
+    }
+  }
+
+  return notebooks;
+}

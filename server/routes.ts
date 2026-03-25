@@ -3981,6 +3981,33 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
+  app.get("/api/onenote/notebooks", async (req, res) => {
+    try {
+      const { listOneNoteNotebooks } = await import("./onedrive");
+      const notebooks = await listOneNoteNotebooks();
+      res.json(notebooks);
+    } catch (err: any) {
+      console.error("Error listing OneNote notebooks:", err);
+      res.status(500).json({ error: err.message || "Failed to list notebooks" });
+    }
+  });
+
+  app.get("/api/onenote/pages", async (req, res) => {
+    try {
+      const notebookPath = req.query.notebook as string;
+      const section = req.query.section as string;
+      if (!notebookPath || !section) {
+        return res.status(400).json({ error: "notebook and section query params required" });
+      }
+      const { getOneNotePages } = await import("./onedrive");
+      const pages = await getOneNotePages(notebookPath, section + '.one');
+      res.json(pages);
+    } catch (err: any) {
+      console.error("Error getting OneNote pages:", err);
+      res.status(500).json({ error: err.message || "Failed to get pages" });
+    }
+  });
+
   app.post("/api/onedrive/ensure-semester-folders", async (req, res) => {
     try {
       const { semesterId } = req.body;
