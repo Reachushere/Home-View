@@ -74,14 +74,18 @@ export default function OneNotePage() {
 
   const saveMutation = useMutation({
     mutationFn: async ({ id, content }: { id: string; content: string }) => {
+      console.log('[QuickNotes] Saving to OneDrive...', content.length, 'chars');
       const res = await apiRequest('PUT', `/api/quicknotes/file/${id}/content`, { content });
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log('[QuickNotes] Save SUCCESS:', data);
       setIsDirty(false);
       queryClient.invalidateQueries({ queryKey: ["/api/quicknotes/files"] });
+      toast({ title: "Saved to OneDrive", description: `Last saved: ${new Date().toLocaleTimeString()}` });
     },
     onError: (err: any) => {
+      console.error('[QuickNotes] Save FAILED:', err);
       toast({ title: "Save failed", description: err.message, variant: "destructive" });
     },
   });
@@ -168,17 +172,11 @@ export default function OneNotePage() {
             )}
           </div>
           <div className="flex items-center gap-1">
-            {view === 'editor' && isDirty && (
-              <Button variant="ghost" size="sm" onClick={saveNow} disabled={saveMutation.isPending} className="text-white/60 hover:text-white hover:bg-white/10 h-8 gap-1 text-xs" data-testid="button-save">
+            {view === 'editor' && (
+              <Button variant="ghost" size="sm" onClick={saveNow} disabled={saveMutation.isPending || !isDirty} className={`h-8 gap-1 text-xs ${isDirty ? 'text-orange-400 hover:text-orange-300 hover:bg-orange-500/10' : 'text-white/40 hover:text-white/60 hover:bg-white/10'}`} data-testid="button-save">
                 {saveMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}
-                Save
+                {saveMutation.isPending ? 'Saving...' : isDirty ? 'Save' : 'Saved'}
               </Button>
-            )}
-            {view === 'editor' && !isDirty && saveMutation.isSuccess && (
-              <span className="text-green-400/60 text-xs flex items-center gap-1 mr-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-green-400" />
-                Saved
-              </span>
             )}
             <Button
               variant="ghost" size="icon"
