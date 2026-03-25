@@ -24,7 +24,7 @@ import { startHATickerSync, pushTickerToHA } from "./haTickerWebhook";
 // fetchD2LAnnouncements available in ./gmail but Gmail connector lacks read scope; D2L sync handled by external Apps Script
 import { getSchedulerStatus } from "./reminderScheduler";
 import { fetchTMUCalendarEvents } from "./tmuCalendar";
-import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder, getOneDriveFileContentAsText, getOneDriveItemByPath, createOneDriveTextFile, updateOneDriveFileContent } from "./onedrive";
+import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder, getOneDriveFileContentAsText, getOneDriveItemByPath, createOneDriveTextFile, updateOneDriveFileContent, deleteOneDriveItem } from "./onedrive";
 import * as spotifyApi from "./spotify";
 
 // Helper function to generate repeated task due dates
@@ -3926,6 +3926,16 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     } catch (err: any) {
       console.error("Error creating QuickNote:", err);
       res.status(500).json({ error: err.message || "Failed to create note" });
+    }
+  });
+
+  app.delete("/api/quicknotes/file/:id", async (req, res) => {
+    try {
+      await deleteOneDriveItem(req.params.id);
+      res.json({ success: true });
+    } catch (err: any) {
+      console.error("Error deleting QuickNote:", err);
+      res.status(500).json({ error: err.message || "Failed to delete note" });
     }
   });
 

@@ -182,8 +182,7 @@ import {
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
-import StickyNoteItem from "@/components/StickyNoteItem";
-import type { Task, SemesterSettings, Subtask, Project, StickyNote as StickyNoteType, TaskLink } from "@shared/schema";
+import type { Task, SemesterSettings, Subtask, Project, TaskLink } from "@shared/schema";
 import { TASK_TYPES, COURSES, getWeekNumber, getWeekDates, REMINDER_OPTIONS, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, REPEAT_TYPES, REPEAT_INTERVAL_UNITS, FIRST_WEEK, LAST_WEEK, LINK_TYPES } from "@shared/schema";
 import type { CourseWeekMapping } from "@shared/schema";
 import { getUpcomingSemesterToConfirm, getNextSemesterByStartDate, FUTURE_SEMESTER_SCHEDULE, type FutureSemesterDates } from "@shared/semesterUtils";
@@ -1908,7 +1907,7 @@ export default function Dashboard() {
   });
 
   type UndoAction = {
-    type: 'complete' | 'uncomplete' | 'delete' | 'edit' | 'move' | 'settings' | 'sticky-delete' | 'sticky-edit' | 'resize';
+    type: 'complete' | 'uncomplete' | 'delete' | 'edit' | 'move' | 'settings' | 'resize';
     description: string;
     data: any;
   };
@@ -5189,281 +5188,11 @@ export default function Dashboard() {
     retryDelay: 1000,
   });
 
-  // Fetch sticky notes
-  const { data: stickyNotes = [] } = useQuery<StickyNoteType[]>({
-    queryKey: ["/api/sticky-notes"],
-    queryFn: () => fetch("/api/sticky-notes", { credentials: 'include' }).then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
-    retry: 2,
-    retryDelay: 1000,
-  });
+  // Sticky notes removed — functionality moved to Quick Notes (/onenote)
 
-  // Sticky note state for dragging
-  const [draggingStickyNote, setDraggingStickyNote] = useState<number | null>(null);
-  const [stickyNoteOffset, setStickyNoteOffset] = useState({ x: 0, y: 0 });
-  const stickyNoteOffsetRef = useRef({ x: 0, y: 0 });
-  const draggingStickyNoteRef = useRef<number | null>(null);
-  const [maxStickyZIndex, setMaxStickyZIndex] = useState(100);
-  const [dragPosition, setDragPosition] = useState<{ x: number; y: number } | null>(null);
-  const dragPositionRef = useRef<{ x: number; y: number } | null>(null);
-  
-  // Sticky note state for resizing
-  const [resizingStickyNote, setResizingStickyNote] = useState<number | null>(null);
-  const [resizeStartPos, setResizeStartPos] = useState({ x: 0, y: 0 });
-  const [resizeStartSize, setResizeStartSize] = useState({ width: 0, height: 0 });
-  
+  // Sticky note handlers removed — moved to Quick Notes
 
-  // Sticky note mutations
-  const createStickyNoteMutation = useMutation({
-    mutationFn: (note: Partial<StickyNoteType>) => apiRequest("POST", "/api/sticky-notes", note),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/sticky-notes"] }),
-  });
-
-  const updateStickyNoteMutation = useMutation({
-    mutationFn: ({ id, updates }: { id: number; updates: Partial<StickyNoteType> }) => 
-      apiRequest("PATCH", `/api/sticky-notes/${id}`, updates),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/sticky-notes"] }),
-  });
-
-  const deleteStickyNoteMutation = useMutation({
-    mutationFn: (id: number) => apiRequest("DELETE", `/api/sticky-notes/${id}`),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/sticky-notes"] }),
-  });
-
-  // Handle adding a new sticky note
-  const clampPosition = (x: number, y: number, noteWidth = 271, noteHeight = 250) => {
-    const maxX = Math.max(0, window.innerWidth - noteWidth);
-    const maxY = Math.max(0, window.innerHeight - 30);
-    return { x: Math.max(0, Math.min(x, maxX)), y: Math.max(0, Math.min(y, maxY)) };
-  };
-
-  const getStickyNoteHomePosition = () => {
-    const centerX = Math.floor(window.innerWidth / 2 - 135);
-    const centerY = Math.floor(window.innerHeight / 2 - 125);
-    return clampPosition(centerX, centerY);
-  };
-
-  const handleAddStickyNote = () => {
-    if (createStickyNoteMutation.isPending) return;
-    const newZIndex = maxStickyZIndex + 1;
-    setMaxStickyZIndex(newZIndex);
-    const homePos = getStickyNoteHomePosition();
-    const existingCount = stickyNotes?.length || 0;
-    const offsetX = (existingCount % 3) * 15;
-    const offsetY = Math.floor(existingCount / 3) * 15;
-    
-    createStickyNoteMutation.mutate({
-      content: "",
-      color: "yellow",
-      positionX: homePos.x + offsetX,
-      positionY: homePos.y + offsetY,
-      width: 271,
-      height: 250,
-      zIndex: newZIndex,
-      isMinimized: false,
-      homePositionX: homePos.x,
-      homePositionY: homePos.y,
-    });
-  };
-
-  // Handle sticky note drag - refs for RAF-based smooth dragging
-  const stickyDragRafRef = useRef<number | null>(null);
-  const stickyDragElRef = useRef<HTMLElement | null>(null);
-  const stickyDragPendingPos = useRef<{ x: number; y: number } | null>(null);
-
-  const handleStickyNotePointerDown = (e: React.MouseEvent | React.TouchEvent, noteId: number, note: StickyNoteType) => {
-    e.preventDefault();
-    const { clientX, clientY } = getPointerXY(e);
-    draggingStickyNoteRef.current = noteId;
-    
-    const el = (e.target as HTMLElement).closest('[data-sticky-note]') as HTMLElement;
-    if (el) {
-      const rect = el.getBoundingClientRect();
-      stickyNoteOffsetRef.current = { x: clientX - rect.left, y: clientY - rect.top };
-      dragPositionRef.current = { x: note.positionX, y: note.positionY };
-      stickyDragElRef.current = el;
-      el.style.zIndex = '10000';
-      el.style.transition = 'none';
-    }
-
-    const onMove = (ev: MouseEvent | TouchEvent) => {
-      if (draggingStickyNoteRef.current === null) return;
-      if ('touches' in ev) ev.preventDefault();
-      const { clientX: cx, clientY: cy } = getPointerXY(ev);
-      const offset = stickyNoteOffsetRef.current;
-      const newX = Math.max(0, cx - offset.x);
-      const newY = Math.max(0, cy - offset.y);
-      dragPositionRef.current = { x: newX, y: newY };
-      const dragEl = stickyDragElRef.current;
-      if (dragEl) {
-        dragEl.style.left = `${newX}px`;
-        dragEl.style.top = `${newY}px`;
-      }
-    };
-
-    const onUp = (ev: MouseEvent | TouchEvent) => {
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('mouseup', onUp);
-      window.removeEventListener('touchmove', onMove);
-      window.removeEventListener('touchend', onUp);
-
-      const currentDragPosition = dragPositionRef.current;
-      const currentNoteId = draggingStickyNoteRef.current;
-      draggingStickyNoteRef.current = null;
-      stickyDragElRef.current = null;
-      dragPositionRef.current = null;
-
-      if (currentNoteId !== null && currentDragPosition !== null) {
-        if (allDayRowRef.current) {
-          const allDayRect = allDayRowRef.current.getBoundingClientRect();
-          const { clientX: mouseX, clientY: mouseY } = getPointerXY(ev);
-          if (mouseY >= allDayRect.top - 20 && mouseY <= allDayRect.bottom + 20 && 
-              mouseX >= allDayRect.left && mouseX <= allDayRect.right) {
-            const today = startOfDayET(new Date());
-            const weekStart = startOfWeek(today, { weekStartsOn: 6 });
-            const todayIdx = Math.floor((today.getTime() - weekStart.getTime()) / (1000 * 60 * 60 * 24));
-            const targetIdx = Math.max(0, todayIdx - 1);
-            const targetDate = new Date(weekStart);
-            targetDate.setDate(targetDate.getDate() + targetIdx);
-            const dateStr = format(targetDate, "yyyy-MM-dd");
-            const targetCell = document.querySelector(`[data-testid="all-day-slot-${dateStr}"]`);
-            if (targetCell) {
-              const cellRect = targetCell.getBoundingClientRect();
-              const snapWidth = Math.round(cellRect.width - 4);
-              const snapHeight = Math.round(cellRect.height - 4);
-              const clamped = clampPosition(cellRect.left + 2, cellRect.top + 2, snapWidth, snapHeight);
-              updateStickyNoteMutation.mutate({ 
-                id: currentNoteId, 
-                updates: { 
-                  positionX: Math.round(clamped.x),
-                  positionY: Math.round(clamped.y),
-                  width: snapWidth,
-                  height: snapHeight,
-                  lastMovedAt: new Date(),
-                  homePositionX: Math.round(clamped.x),
-                  homePositionY: Math.round(clamped.y)
-                } 
-              });
-              return;
-            }
-          }
-        }
-        const currentNote = stickyNotes?.find(n => n.id === currentNoteId);
-        const wasSnapped = currentNote && (currentNote.width < 200 || currentNote.height < 200);
-        const noteW = wasSnapped ? 271 : (currentNote?.width || 271);
-        const noteH = wasSnapped ? 250 : (currentNote?.height || 250);
-        const clampedPos = clampPosition(currentDragPosition.x, currentDragPosition.y, noteW, noteH);
-        const newZIndex = maxStickyZIndex + 1;
-        setMaxStickyZIndex(newZIndex);
-        updateStickyNoteMutation.mutate({ 
-          id: currentNoteId, 
-          updates: { 
-            positionX: Math.round(clampedPos.x),
-            positionY: Math.round(clampedPos.y),
-            zIndex: newZIndex,
-            ...(wasSnapped ? { width: 271, height: 250 } : {}),
-            lastMovedAt: new Date() 
-          } 
-        });
-      }
-    };
-
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseup', onUp);
-    window.addEventListener('touchmove', onMove, { passive: false });
-    window.addEventListener('touchend', onUp);
-  };
-
-  // Auto-return sticky notes to home position after 2 hours
-  useEffect(() => {
-    const checkAndReturnNotes = () => {
-      const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
-      stickyNotes?.forEach((note) => {
-        if (note.lastMovedAt && note.homePositionX !== null && note.homePositionY !== null) {
-          const movedAt = new Date(note.lastMovedAt);
-          if (movedAt < twoHoursAgo) {
-            if (note.positionX !== note.homePositionX || note.positionY !== note.homePositionY) {
-              const clamped = clampPosition(note.homePositionX, note.homePositionY, note.width, note.height);
-              updateStickyNoteMutation.mutate({
-                id: note.id,
-                updates: { 
-                  positionX: Math.round(clamped.x), 
-                  positionY: Math.round(clamped.y),
-                  lastMovedAt: null
-                }
-              });
-            }
-          }
-        }
-
-        // Also fix any notes that are currently off-screen
-        const maxX = window.innerWidth - note.width;
-        if (note.positionX > maxX || note.positionY > window.innerHeight - 30) {
-          const fixed = clampPosition(note.positionX, note.positionY, note.width, note.height);
-          updateStickyNoteMutation.mutate({
-            id: note.id,
-            updates: { 
-              positionX: Math.round(fixed.x), 
-              positionY: Math.round(fixed.y)
-            }
-          });
-        }
-      });
-    };
-
-    // Check every minute
-    const interval = setInterval(checkAndReturnNotes, 60000);
-    // Also check on mount
-    checkAndReturnNotes();
-    
-    return () => clearInterval(interval);
-  }, [stickyNotes]);
-
-  // Handle sticky note resize
-  const handleStickyNoteResizeStart = (e: React.MouseEvent | React.TouchEvent, noteId: number, note: StickyNoteType) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const { clientX, clientY } = getPointerXY(e);
-    setResizingStickyNote(noteId);
-    setResizeStartPos({ x: clientX, y: clientY });
-    setResizeStartSize({ width: note.width, height: note.height });
-    // Bring to front
-    const newZIndex = maxStickyZIndex + 1;
-    setMaxStickyZIndex(newZIndex);
-    updateStickyNoteMutation.mutate({ id: noteId, updates: { zIndex: newZIndex } });
-  };
-
-  const handleStickyNoteResizeMove = useCallback((e: MouseEvent | TouchEvent) => {
-    if (resizingStickyNote !== null) {
-      const { clientX, clientY } = getPointerXY(e);
-      const deltaX = clientX - resizeStartPos.x;
-      const deltaY = clientY - resizeStartPos.y;
-      const newWidth = Math.max(120, Math.floor(resizeStartSize.width + deltaX));
-      const newHeight = Math.max(80, Math.floor(resizeStartSize.height + deltaY));
-      updateStickyNoteMutation.mutate({ 
-        id: resizingStickyNote, 
-        updates: { width: newWidth, height: newHeight } 
-      });
-    }
-  }, [resizingStickyNote, resizeStartPos, resizeStartSize]);
-
-  const handleStickyNoteResizeEnd = useCallback(() => {
-    setResizingStickyNote(null);
-  }, []);
-
-  useEffect(() => {
-    if (resizingStickyNote !== null) {
-      window.addEventListener('mousemove', handleStickyNoteResizeMove);
-      window.addEventListener('mouseup', handleStickyNoteResizeEnd);
-      window.addEventListener('touchmove', handleStickyNoteResizeMove, { passive: false });
-      window.addEventListener('touchend', handleStickyNoteResizeEnd);
-      return () => {
-        window.removeEventListener('mousemove', handleStickyNoteResizeMove);
-        window.removeEventListener('mouseup', handleStickyNoteResizeEnd);
-        window.removeEventListener('touchmove', handleStickyNoteResizeMove);
-        window.removeEventListener('touchend', handleStickyNoteResizeEnd);
-      };
-    }
-  }, [resizingStickyNote, handleStickyNoteResizeMove, handleStickyNoteResizeEnd]);
+  // Sticky note drag/resize handlers removed — moved to Quick Notes
 
 
   // Files for weekly files flyout (moved up for allTaskFiles dependency)
@@ -8367,22 +8096,6 @@ export default function Dashboard() {
         toast({ title: "Settings reverted", description: "Your previous settings have been restored." });
         break;
       }
-      case 'sticky-delete': {
-        const reverseAction: UndoAction = { type: 'sticky-delete', description: `Delete sticky note again`, data: { ...action.data } };
-        setRedoStack(prev => [reverseAction, ...prev]);
-        const { noteId, ...noteData } = action.data;
-        delete noteData.taskTitle;
-        createStickyNoteMutation.mutate(noteData);
-        toast({ title: "Undone", description: "Sticky note restored" });
-        break;
-      }
-      case 'sticky-edit': {
-        const reverseAction: UndoAction = { type: 'sticky-edit', description: `Redo sticky note edit`, data: { noteId: action.data.noteId, oldFields: action.data.newFields, newFields: action.data.oldFields } };
-        setRedoStack(prev => [reverseAction, ...prev]);
-        updateStickyNoteMutation.mutate({ id: action.data.noteId, updates: action.data.oldFields });
-        toast({ title: "Undone", description: "Sticky note change reverted" });
-        break;
-      }
       case 'resize': {
         const reverseAction: UndoAction = { type: 'resize', description: `Redo ${action.data.resizeType} resize`, data: action.data.resizeType === 'both'
           ? { resizeType: 'both', oldHeight: action.data.newHeight, oldReduction: action.data.newReduction, newHeight: action.data.oldHeight, newReduction: action.data.oldReduction }
@@ -8465,24 +8178,6 @@ export default function Dashboard() {
         setOriginalColorSettings({...action.data.oldColor});
         if (action.data.oldBlink) setOriginalBlinkSettings({...action.data.oldBlink});
         toast({ title: "Settings re-applied", description: "Your settings have been restored." });
-        break;
-      }
-      case 'sticky-delete': {
-        const stickyNotes = queryClient.getQueryData<any[]>(["/api/sticky-notes"]) || [];
-        const noteToDelete = stickyNotes.find((n: any) => n.content === action.data.content);
-        if (noteToDelete) {
-          const reverseAction: UndoAction = { type: 'sticky-delete', description: 'Restore sticky note', data: { ...action.data, noteId: noteToDelete.id } };
-          setUndoStack(prev => [reverseAction, ...prev]);
-          deleteStickyNoteMutation.mutate(noteToDelete.id);
-          toast({ title: "Redone", description: "Sticky note deleted again" });
-        }
-        break;
-      }
-      case 'sticky-edit': {
-        const reverseAction: UndoAction = { type: 'sticky-edit', description: 'Undo sticky note edit', data: { noteId: action.data.noteId, oldFields: action.data.newFields, newFields: action.data.oldFields } };
-        setUndoStack(prev => [reverseAction, ...prev]);
-        updateStickyNoteMutation.mutate({ id: action.data.noteId, updates: action.data.oldFields });
-        toast({ title: "Redone", description: "Sticky note change re-applied" });
         break;
       }
       case 'resize': {
@@ -12380,22 +12075,23 @@ export default function Dashboard() {
           </div>
           )}
 
-          {/* Sticky Note Button */}
-          <div 
+          {/* Quick Notes Button */}
+          <a 
+            href="/onenote"
             style={{ 
               marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
-              background: '#FFFF00',
+              background: 'linear-gradient(135deg, #4B2D7F 0%, #7B5EA7 100%)',
               border: '1.5px solid rgba(255,255,255,0.5)',
               boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+              textDecoration: 'none',
             }}
             className="pill-button-hover"
-            onClick={handleAddStickyNote}
-            title="Add Sticky Note"
-            data-testid="honeycomb-sticky-note"
+            title="Quick Notes"
+            data-testid="honeycomb-quick-notes"
           >
-            <StickyNote style={{ color: '#333', strokeWidth: 1.5, height: '18px', width: '18px' }} />
-          </div>
+            <StickyNote style={{ color: 'white', strokeWidth: 1.5, height: '18px', width: '18px' }} />
+          </a>
 
           {/* Projects Button */}
           <Button 
@@ -14093,33 +13789,7 @@ export default function Dashboard() {
       
       
 
-      {/* Render Sticky Notes (admin only) */}
-      {isAdmin && stickyNotes.map((note) => (
-        <StickyNoteItem
-          key={note.id}
-          note={note}
-          isDragging={draggingStickyNote === note.id}
-          dragPosition={dragPosition}
-          maxStickyZIndex={maxStickyZIndex}
-          tasks={tasks}
-          allProjects={allProjects}
-          onPointerDown={handleStickyNotePointerDown}
-          onResizeStart={handleStickyNoteResizeStart}
-          onDelete={(n) => {
-            pushUndo({
-              type: 'sticky-delete',
-              description: `Deleted sticky note`,
-              data: { noteId: n.id, content: n.content, title: n.title, color: n.color, customColor: n.customColor, posX: (n as any).posX, posY: (n as any).posY, width: n.width, height: n.height, isMinimized: n.isMinimized, zIndex: n.zIndex, taskId: n.taskId, projectId: n.projectId }
-            });
-            deleteStickyNoteMutation.mutate(n.id);
-          }}
-          onBringToFront={(noteId) => {
-            const newZIndex = maxStickyZIndex + 1;
-            setMaxStickyZIndex(newZIndex);
-            updateStickyNoteMutation.mutate({ id: noteId, updates: { zIndex: newZIndex } });
-          }}
-        />
-      ))}
+      {/* Sticky Notes removed — functionality moved to Quick Notes (/onenote) */}
 
       {/* Main Content - Full width, positioned below unified header */}
       <main className="flex-1 pt-2 pb-2 flex flex-col overflow-visible relative z-10 min-h-0" style={{ paddingLeft: '26px', paddingRight: '0px', marginTop: '63px' }}>

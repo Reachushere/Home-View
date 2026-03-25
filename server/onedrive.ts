@@ -264,6 +264,16 @@ export async function updateOneDriveFileContent(itemId: string, content: string)
   }
 }
 
+export async function deleteOneDriveItem(itemId: string): Promise<void> {
+  const client = await getOneDriveClient();
+  try {
+    await client.api(`/me/drive/items/${itemId}`).delete();
+  } catch (error: any) {
+    console.error(`Error deleting OneDrive item:`, error.message || error);
+    throw error;
+  }
+}
+
 // Search for files
 export async function searchOneDriveFiles(query: string) {
   const client = await getOneDriveClient();
