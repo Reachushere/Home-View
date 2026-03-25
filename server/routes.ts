@@ -8108,59 +8108,133 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     }
   }
 
-  async function playOnNestSpeaker(audioUrl: string, maxRetries: number = 2): Promise<{ success: boolean; actuallyPlaying: boolean }> {
-    const fullUrl = audioUrl.startsWith('http') ? audioUrl : `${DEPLOYED_APP_URL}${audioUrl}`;
+  async function uploadAudioToHA(audioPath: string): Promise<string | null> {
+    const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+    try {
+      const localPath = audioPath.startsWith('/') ? audioPath : `/${audioPath}`;
+      const fullLocalUrl = `http://localhost:${process.env.PORT || 5000}${localPath}`;
+      const audioResp = await fetch(fullLocalUrl);
+      if (!audioResp.ok) {
+        console.error(`[HA Upload] Failed to fetch local audio: ${audioResp.status}`);
+        return null;
+      }
+      const audioBuffer = Buffer.from(await audioResp.arrayBuffer());
+      const fileName = `tts_${Date.now()}.mp3`;
 
+      const boundary = `----HAUpload${Date.now()}`;
+      const bodyParts = [
+        `--${boundary}\r\nContent-Disposition: form-data; name="media_content_id"\r\n\r\nmedia-source://media_source/local/.\r\n`,
+        `--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="${fileName}"\r\nContent-Type: audio/mpeg\r\n\r\n`,
+      ];
+      const bodyEnd = `\r\n--${boundary}--\r\n`;
+
+      const bodyBuffer = Buffer.concat([
+        Buffer.from(bodyParts[0]),
+        Buffer.from(bodyParts[1]),
+        audioBuffer,
+        Buffer.from(bodyEnd),
+      ]);
+
+      const uploadResp = await fetch(`${haUrl}/api/media_source/local_source/upload`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': `multipart/form-data; boundary=${boundary}`,
+        },
+        body: bodyBuffer,
+      });
+
+      if (!uploadResp.ok) {
+        const errText = await uploadResp.text();
+        console.error(`[HA Upload] Upload failed: ${uploadResp.status} ${errText}`);
+        return null;
+      }
+      const result = await uploadResp.json() as any;
+      const mediaId = result.media_content_id || `media-source://media_source/local/./${fileName}`;
+      console.log(`[HA Upload] Uploaded ${fileName} (${Math.round(audioBuffer.length / 1024)}KB) → ${mediaId}`);
+      return mediaId;
+    } catch (e: any) {
+      console.error(`[HA Upload] Error: ${e.message}`);
+      return null;
+    }
+  }
+
+  async function playOnNestSpeaker(audioUrl: string, maxRetries: number = 2): Promise<{ success: boolean; actuallyPlaying: boolean }> {
+    const localPath = audioUrl.startsWith('http') ? new URL(audioUrl).pathname : audioUrl;
+
+    const haMediaId = await uploadAudioToHA(localPath);
+    if (haMediaId) {
+      console.log(`[Nest] Playing via HA local media: ${haMediaId}`);
+      for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        if (attempt > 0) {
+          await haServiceCallSafe('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Retry Stop');
+          await new Promise(r => setTimeout(r, 1000));
+          await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.45 }, 'Nest Retry Vol');
+        }
+        try {
+          await haServiceCall('media_player/play_media', {
+            entity_id: NEST_SPEAKER_ENTITY,
+            media_content_id: haMediaId,
+            media_content_type: "music"
+          }, 'Nest Play HA Media');
+        } catch (e: any) {
+          console.error(`[Nest] play_media (HA media) failed: ${e.message}`);
+          if (attempt === maxRetries) return { success: false, actuallyPlaying: false };
+          await new Promise(r => setTimeout(r, 2000));
+          continue;
+        }
+
+        await new Promise(r => setTimeout(r, 4000));
+
+        try {
+          const { state: speakerState } = await getNestMediaState();
+          console.log(`[Nest] Speaker state after HA media play: ${speakerState}`);
+          if (speakerState === 'playing' || speakerState === 'buffering') {
+            return { success: true, actuallyPlaying: true };
+          }
+          if (speakerState === 'idle' || speakerState === 'off' || speakerState === 'unknown' || speakerState === 'unavailable') {
+            if (attempt === maxRetries) {
+              console.warn(`[Nest] State "${speakerState}" after all HA media attempts — failure`);
+              return { success: false, actuallyPlaying: false };
+            }
+            await new Promise(r => setTimeout(r, 2000));
+            continue;
+          }
+          console.log(`[Nest] Unexpected state "${speakerState}" after HA media play`);
+          return { success: true, actuallyPlaying: false };
+        } catch (e: any) {
+          console.warn(`[Nest] State check error: ${e.message}`);
+          return { success: true, actuallyPlaying: false };
+        }
+      }
+      return { success: false, actuallyPlaying: false };
+    }
+
+    console.warn(`[Nest] HA media upload failed — falling back to direct URL`);
+    const fullUrl = audioUrl.startsWith('http') ? audioUrl : `${DEPLOYED_APP_URL}${audioUrl}`;
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       if (attempt > 0) {
-        console.log(`[Nest] Retry ${attempt}/${maxRetries} — play_media failed, retrying`);
         await haServiceCallSafe('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Retry Stop');
         await new Promise(r => setTimeout(r, 1000));
         await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.45 }, 'Nest Retry Vol');
       }
-
-      console.log(`[Nest] Playing audio${attempt > 0 ? ` (attempt ${attempt + 1})` : ''}: ${fullUrl}`);
+      console.log(`[Nest] Playing audio (direct URL, attempt ${attempt + 1}): ${fullUrl}`);
       try {
         await haServiceCall('media_player/play_media', {
           entity_id: NEST_SPEAKER_ENTITY, media_content_id: fullUrl, media_content_type: "music"
-        }, 'Nest Play');
+        }, 'Nest Play Direct');
       } catch (e: any) {
         console.error(`[Nest] play_media failed: ${e.message}`);
         if (attempt === maxRetries) return { success: false, actuallyPlaying: false };
-        await new Promise(r => setTimeout(r, 2000));
         continue;
       }
-
       await new Promise(r => setTimeout(r, 4000));
-
       try {
         const { state: speakerState } = await getNestMediaState();
-        console.log(`[Nest] Speaker state after play command: ${speakerState}`);
-        if (speakerState === 'playing' || speakerState === 'buffering') {
-          return { success: true, actuallyPlaying: true };
-        }
-        if (speakerState === 'unknown') {
-          console.warn(`[Nest] State is "unknown" — speaker likely did not start playback`);
-          if (attempt === maxRetries) {
-            console.warn(`[Nest] State "unknown" after all attempts — treating as failure`);
-            return { success: false, actuallyPlaying: false };
-          }
-          await new Promise(r => setTimeout(r, 2000));
-          continue;
-        }
-        if (speakerState === 'idle' || speakerState === 'off' || speakerState === 'unavailable') {
-          console.warn(`[Nest] Speaker definitively not playing (state: ${speakerState}) — will retry`);
-          if (attempt === maxRetries) {
-            console.warn(`[Nest] Speaker state "${speakerState}" after ${maxRetries + 1} attempts — play_media accepted but speaker didn't start`);
-            return { success: true, actuallyPlaying: false };
-          }
-          await new Promise(r => setTimeout(r, 2000));
-          continue;
-        }
-        console.log(`[Nest] Unexpected state "${speakerState}" — assuming play_media succeeded`);
-        return { success: true, actuallyPlaying: false };
-      } catch (e: any) {
-        console.warn(`[Nest] State check error: ${e.message} — assuming play_media succeeded`);
+        if (speakerState === 'playing' || speakerState === 'buffering') return { success: true, actuallyPlaying: true };
+        if (attempt === maxRetries) return { success: false, actuallyPlaying: false };
+        await new Promise(r => setTimeout(r, 2000));
+      } catch {
         return { success: true, actuallyPlaying: false };
       }
     }
