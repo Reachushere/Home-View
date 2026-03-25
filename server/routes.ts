@@ -8165,6 +8165,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const haMediaId = await uploadAudioToHA(localPath);
     if (haMediaId) {
       console.log(`[Nest] Playing via HA local media: ${haMediaId}`);
+      let serviceCallSucceeded = false;
       for (let attempt = 0; attempt <= maxRetries; attempt++) {
         if (attempt > 0) {
           await haServiceCallSafe('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Retry Stop');
@@ -8177,6 +8178,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
             media_content_id: haMediaId,
             media_content_type: "music"
           }, 'Nest Play HA Media');
+          serviceCallSucceeded = true;
         } catch (e: any) {
           console.error(`[Nest] play_media (HA media) failed: ${e.message}`);
           if (attempt === maxRetries) return { success: false, actuallyPlaying: false };
@@ -8194,8 +8196,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           }
           if (speakerState === 'idle' || speakerState === 'off' || speakerState === 'unknown' || speakerState === 'unavailable') {
             if (attempt === maxRetries) {
-              console.warn(`[Nest] State "${speakerState}" after all HA media attempts — failure`);
-              return { success: false, actuallyPlaying: false };
+              console.warn(`[Nest] State "${speakerState}" after all HA media attempts — trusting service call (HA accepted the command)`);
+              return { success: true, actuallyPlaying: false };
             }
             await new Promise(r => setTimeout(r, 2000));
             continue;
@@ -8206,6 +8208,10 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           console.warn(`[Nest] State check error: ${e.message}`);
           return { success: true, actuallyPlaying: false };
         }
+      }
+      if (serviceCallSucceeded) {
+        console.log(`[Nest] HA service call succeeded but state never confirmed — trusting command was accepted`);
+        return { success: true, actuallyPlaying: false };
       }
       return { success: false, actuallyPlaying: false };
     }
@@ -9734,15 +9740,15 @@ document.body.removeChild(a);
       if (catWashPlaybackActive && catWashPlaybackState) {
         const msSinceStart = catWashPlaybackStartedAt ? Date.now() - catWashPlaybackStartedAt.getTime() : 0;
         const chunkStillAtStart = catWashPlaybackState.chunkIndex === 0;
-        const likelyStale = msSinceStart > 3 * 60 * 1000 && chunkStillAtStart;
+        const likelyStale = (msSinceStart > 3 * 60 * 1000 && chunkStillAtStart) || msSinceStart > 10 * 60 * 1000;
 
         if (likelyStale) {
-          console.log(`[Cat Lights] Clearing stale playback state (started ${Math.round(msSinceStart / 1000)}s ago, still at chunk 0)`);
+          console.log(`[Cat Lights] Clearing stale playback state (started ${Math.round(msSinceStart / 1000)}s ago, chunk ${catWashPlaybackState.chunkIndex})`);
           catWashPlaybackActive = false;
           catWashPlaybackStartedAt = null;
           catWashPlaybackState = null;
         } else {
-          console.log(`[Cat Lights] Already playing: "${catWashPlaybackState.fileName}" - skipping`);
+          console.log(`[Cat Lights] Already playing: "${catWashPlaybackState.fileName}" chunk ${catWashPlaybackState.chunkIndex} - skipping`);
           return res.json({ action: "skipped", reason: "Playback already active", currentFile: catWashPlaybackState.fileName });
         }
       }
