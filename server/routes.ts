@@ -18,7 +18,7 @@ import { getSecondAccountAuthUrl, exchangeCodeForTokens, isSecondAccountConnecte
 import { getThirdAccountAuthUrl, exchangeCodeForTokensThird, isThirdAccountConnected, disconnectThirdAccount, getEventsFromThirdAccount, listThirdAccountCalendars, getEventsFromThirdAccountCalendar } from "./thirdGoogleAccount";
 import { textToSpeech, initTTSFallbackStatus } from "./replit_integrations/audio/client";
 import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, sendTestHaPush, sendHaTaskReminder, sendEchoVoiceAnnouncement, sendCalendarInvite, type TaskReminder } from "./email";
-import { syncOutlookEventsToReview, fetchOutlookCalendarEvents, findOrCreateMailFolder, createMailRule, moveExistingEmailsToFolder } from "./outlookCalendar";
+import { syncOutlookEventsToReview, fetchOutlookCalendarEvents, findOrCreateMailFolder, createMailRule, moveExistingEmailsToFolder, moveAllEmailsFromFolder, deleteMailRulesByName, getMailFolderId } from "./outlookCalendar";
 import { parseTickerCommand, extractInlineExpiry } from "./gmailTicker";
 import { startHATickerSync, pushTickerToHA } from "./haTickerWebhook";
 // fetchD2LAnnouncements available in ./gmail but Gmail connector lacks read scope; D2L sync handled by external Apps Script
@@ -15202,6 +15202,30 @@ Return ONLY the JSON object, no markdown formatting.`;
       res.json({ count: events.length, events: events.map(e => ({ id: e.id, subject: e.subject, start: e.start, end: e.end })) });
     } catch (error: any) {
       console.error("[Outlook] Events debug error:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/outlook/migrate-folder", async (req, res) => {
+    try {
+      const { sourceFolder, destFolder, deleteRulesContaining } = req.body;
+
+      if (deleteRulesContaining) {
+        const deleted = await deleteMailRulesByName(deleteRulesContaining);
+        console.log(`[Outlook Mail] Deleted ${deleted} rules containing "${deleteRulesContaining}"`);
+      }
+
+      if (sourceFolder && destFolder) {
+        const srcId = await getMailFolderId(sourceFolder);
+        const dstId = await findOrCreateMailFolder(destFolder);
+        if (!srcId) return res.status(404).json({ error: `Folder "${sourceFolder}" not found` });
+        const moved = await moveAllEmailsFromFolder(srcId, dstId);
+        res.json({ success: true, moved, from: sourceFolder, to: destFolder });
+      } else {
+        res.json({ success: true, message: "Rules cleaned up" });
+      }
+    } catch (error: any) {
+      console.error("[Outlook Mail] Migrate error:", error);
       res.status(500).json({ error: error.message });
     }
   });

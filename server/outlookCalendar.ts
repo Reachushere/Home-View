@@ -153,9 +153,19 @@ export async function findOrCreateMailFolder(folderName: string): Promise<string
     console.log(`[Outlook Mail] Found folder "${folderName}" (${existing.id})`);
     return existing.id;
   }
-  const created = await client.api('/me/mailFolders').post({ displayName: folderName });
-  console.log(`[Outlook Mail] Created folder "${folderName}" (${created.id})`);
-  return created.id;
+  try {
+    const created = await client.api('/me/mailFolders').post({ displayName: folderName });
+    console.log(`[Outlook Mail] Created folder "${folderName}" (${created.id})`);
+    return created.id;
+  } catch (e: any) {
+    if (e.message?.includes('already exists')) {
+      const retryFolders = await client.api('/me/mailFolders').filter(`displayName eq '${folderName}'`).get();
+      if (retryFolders.value?.[0]) {
+        return retryFolders.value[0].id;
+      }
+    }
+    throw e;
+  }
 }
 
 export async function createMailRule(ruleName: string, senderDomain: string, folderId: string): Promise<any> {
@@ -210,4 +220,50 @@ export async function moveExistingEmailsToFolder(senderDomain: string, folderId:
 
   console.log(`[Outlook Mail] Moved ${moved} existing emails from *@${senderDomain} → folder`);
   return moved;
+}
+
+export async function moveAllEmailsFromFolder(sourceFolderId: string, destFolderId: string): Promise<number> {
+  const client = await getOutlookClient();
+  let moved = 0;
+
+  let response = await client.api(`/me/mailFolders/${sourceFolderId}/messages`).top(50).select('id,subject').get();
+
+  while (true) {
+    for (const msg of (response.value || [])) {
+      try {
+        await client.api(`/me/messages/${msg.id}/move`).post({ destinationId: destFolderId });
+        moved++;
+      } catch (e: any) {
+        console.log(`[Outlook Mail] Failed to move "${msg.subject}": ${e.message}`);
+      }
+    }
+
+    const nextLink = response['@odata.nextLink'];
+    if (!nextLink) break;
+    response = await client.api(nextLink).get();
+  }
+
+  return moved;
+}
+
+export async function deleteMailRulesByName(nameContains: string): Promise<number> {
+  const client = await getOutlookClient();
+  const rules = await client.api('/me/mailFolders/inbox/messageRules').get();
+  let deleted = 0;
+
+  for (const rule of (rules.value || [])) {
+    if (rule.displayName && rule.displayName.includes(nameContains)) {
+      await client.api(`/me/mailFolders/inbox/messageRules/${rule.id}`).delete();
+      console.log(`[Outlook Mail] Deleted rule "${rule.displayName}"`);
+      deleted++;
+    }
+  }
+  return deleted;
+}
+
+export async function getMailFolderId(folderName: string): Promise<string | null> {
+  const client = await getOutlookClient();
+  const folders = await client.api('/me/mailFolders').top(100).get();
+  const found = folders.value?.find((f: any) => f.displayName === folderName);
+  return found?.id || null;
 }
