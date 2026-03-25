@@ -1861,9 +1861,10 @@ export default function SpotifyPlayerPage() {
 
             {viewMode === "floor" && (
               <>
-                <img src={floorplanImg} alt="Apartment floor plan" className="absolute inset-0 w-full h-full object-contain"
-                  style={{ filter: "brightness(0.9) contrast(1.1) saturate(0.7) hue-rotate(190deg)", opacity: 0.9 }} />
-                <div className="absolute inset-0" onClick={() => setFloorSpeakerPopup(null)} style={{
+                <img src={floorplanImg} alt="Apartment floor plan" className="absolute object-contain"
+                  style={{ filter: "brightness(0.9) contrast(1.1) saturate(0.7) hue-rotate(190deg)", opacity: 0.9, top: 25, bottom: 25, left: 25, right: 25, width: 'calc(100% - 50px)', height: 'calc(100% - 50px)' }} />
+                <div className="absolute" onClick={() => setFloorSpeakerPopup(null)} style={{
+                  top: 25, bottom: 25, left: 25, right: 25,
                   background: `radial-gradient(ellipse at center, transparent 30%, rgba(3,8,20,0.6) 100%)`,
                 }} />
                 {ROOM_HOTSPOTS.map(spot => {
