@@ -1148,6 +1148,51 @@ For voice prompts (the "Would you like to play?" question), the app uses HA Clou
 
 ---
 
+## Known Issues & Learnings (Nest Speaker)
+
+These are hard-won lessons from debugging the cat washroom reading system. Keep them in mind when modifying the speaker playback code.
+
+### 1. Nest Speaker State Is Unreliable — Always Trust the Service Call
+
+The Google Nest speaker frequently reports its state as `"unknown"` even when it IS actively playing audio. The `media_player` entity in HA does not reliably transition to `"playing"` or `"buffering"` for Cast-based playback.
+
+**Rule:** If the `media_player/play_media` service call returns 200 OK from Home Assistant, treat it as SUCCESS. Do NOT use the speaker's reported state (`idle`, `unknown`, `unavailable`) to determine whether playback actually started. The only failure case is when the HA service call itself throws an error (network failure, HA offline, etc.).
+
+If you add a state check after `play_media`, treat `"unknown"` the same as `"playing"` — return success. Only retry on `"idle"` or `"off"`, and even then, after max retries, still return success since the command was accepted by HA.
+
+### 2. The Nest CAN Play Audio from the Deployed App URL
+
+The Nest speaker successfully plays MP3 files served from `https://home-view--bkh416.replit.app/api/tts-audio/...`. The `/api/tts-audio/` endpoint is explicitly excluded from authentication in `server/index.ts` (line ~190), so no cookies or tokens are needed.
+
+Do NOT add an HA local media upload step — it adds complexity without benefit. The direct URL approach works. If playback appears broken, the issue is almost certainly the state check logic (see point 1), not the URL accessibility.
+
+### 3. Circuit Breaker Must Not Fire on State-Check Failures
+
+The chunk playback loop has a circuit breaker that triggers after 3 consecutive "failures." If `playOnNestSpeaker` incorrectly returns `{success: false}` due to an `"unknown"` state, the circuit breaker fires and prompts the user to switch to Echo speakers — even though the Nest was playing fine.
+
+**Rule:** `playOnNestSpeaker` should only return `{success: false}` when the HA service call itself fails (HTTP error, timeout, HA offline). State check results should never cause a `{success: false}` return.
+
+### 4. Volume Levels
+
+| Context | Volume |
+|---------|--------|
+| Voice prompts ("Would you like to play?") | 0.35 |
+| Reading playback (Nest + HA Voice) | 0.45 |
+
+### 5. Confirm TTS Plays on the Nest, Not HA Voice
+
+The confirmation message ("Okay, I will now play your module...") should play on the Nest speaker using a generated OpenAI/Edge TTS audio file, not via HA Cloud TTS on the HA Voice speaker. The fallback to HA Voice should only happen if the Nest play_media service call actually fails (HTTP error).
+
+### 6. Stale Playback Sessions
+
+The webhook handler checks for stale playback at the start. A session is considered stale if:
+- It has been running for 3+ minutes AND is still at chunk 0 (stuck at start)
+- It has been running for 10+ minutes regardless of chunk position
+
+Stale sessions are cleared so the next light trigger can start fresh.
+
+---
+
 ## Background Processes (No Webhook Needed)
 
 These run automatically inside the app — no HA automation required:
