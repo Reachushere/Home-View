@@ -2283,7 +2283,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
 html,body{width:100%;height:100%;overflow:hidden;background:#000}
 @keyframes tickerScroll{0%{transform:translate3d(var(--ticker-start),0,0)}100%{transform:translate3d(var(--ticker-end),0,0)}}
 @keyframes tickerAlertBlink{0%,100%{opacity:1}50%{opacity:0.3}}
-.ticker-wrap{position:fixed;left:0;right:0;bottom:0;width:100vw;height:38px;overflow:hidden;background:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(20,20,30,0.9) 50%,rgba(0,0,0,0.85) 100%);border-top:1px solid rgba(255,255,255,0.15)}
+.ticker-wrap{position:fixed;left:0;right:0;bottom:0;width:100vw;height:38px;overflow:hidden;background:#000;border-top:1px solid rgba(255,255,255,0.15)}
 .ticker-track{display:flex;align-items:center;height:100%;white-space:nowrap;position:relative;will-change:transform;backface-visibility:hidden}
 .t-item{display:inline-flex;align-items:center;gap:6px;margin:0 16px;opacity:1}
 .t-item a{display:inline-flex;align-items:center;gap:6px;text-decoration:none}
