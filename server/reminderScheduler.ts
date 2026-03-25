@@ -90,6 +90,11 @@ export function getSchedulerStatus() {
   };
 }
 
+let announcementsSentThisCycle = 0;
+const MAX_ANNOUNCEMENTS_PER_CYCLE = 3;
+let lastAnnouncementTime = 0;
+const MIN_ANNOUNCEMENT_GAP_MS = 10000;
+
 export async function checkReminders() {
   try {
     await loadSentReminders();
@@ -97,6 +102,7 @@ export async function checkReminders() {
     const now = getEasternNow();
     lastCheckTime = now;
     let stateChanged = false;
+    announcementsSentThisCycle = 0;
 
     for (const task of allTasks) {
       if (task.isCompleted || !task.dueDate) continue;
@@ -118,6 +124,21 @@ export async function checkReminders() {
         if (sentReminders.has(key)) continue;
 
         if (now >= reminderTime && now < dueDate) {
+          if (announcementsSentThisCycle >= MAX_ANNOUNCEMENTS_PER_CYCLE) {
+            console.log(`[Reminder] Rate limit: already sent ${MAX_ANNOUNCEMENTS_PER_CYCLE} announcements this cycle, marking "${task.title}" as sent without announcing`);
+            sentReminders.add(key);
+            stateChanged = true;
+            continue;
+          }
+
+          const timeSinceLast = Date.now() - lastAnnouncementTime;
+          if (timeSinceLast < MIN_ANNOUNCEMENT_GAP_MS && lastAnnouncementTime > 0) {
+            console.log(`[Reminder] Rate limit: only ${timeSinceLast}ms since last announcement, skipping "${task.title}"`);
+            sentReminders.add(key);
+            stateChanged = true;
+            continue;
+          }
+
           console.log(`[Reminder] Triggering reminder for task "${task.title}" (${reminderMinutes} min before due)`);
 
           const taskReminder: TaskReminder = {
@@ -174,6 +195,8 @@ export async function checkReminders() {
           sentReminders.add(key);
           stateChanged = true;
           remindersSentCount++;
+          announcementsSentThisCycle++;
+          lastAnnouncementTime = Date.now();
         }
 
         if (now > dueDate) {
