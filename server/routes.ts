@@ -8847,6 +8847,13 @@ document.body.removeChild(a);
       const ttsMessage = `Would you like to play ${fileDesc}?`;
       console.log(`[Cat Lights] Sending TTS prompt: "${ttsMessage}"`);
       try {
+        try {
+          await stopAllCatWashroomSpeakers(haUrl);
+          console.log(`[Cat Lights] Stopped any existing media before TTS prompt`);
+        } catch (e: any) {
+          console.warn(`[Cat Lights] Pre-prompt media stop error (non-fatal): ${e.message}`);
+        }
+
         await Promise.allSettled([
           haServiceCall('input_boolean/turn_off', { entity_id: MODULE_READING_CONFIRMED }, 'Cat Lights Bool'),
           haServiceCall('input_boolean/turn_on', { entity_id: MODULE_READING_PENDING }, 'Cat Lights Bool'),
