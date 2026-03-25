@@ -7915,11 +7915,11 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         try {
           const confirmPath = await generateAndSaveTTSAudio(confirmationTTS, `confirm-${Date.now()}`);
           const nestResult = await playOnNestSpeaker(`${appUrl}${confirmPath}`);
-          if (nestResult.success && nestResult.actuallyPlaying) {
+          if (nestResult.success) {
             confirmPlayed = true;
-            console.log(`${logPrefix} Confirm TTS played on Nest speaker via OpenAI/Edge TTS`);
+            console.log(`${logPrefix} Confirm TTS played on Nest speaker via OpenAI/Edge TTS (actuallyPlaying=${nestResult.actuallyPlaying})`);
           } else {
-            console.warn(`${logPrefix} Nest speaker confirm did not start (state unconfirmed) — falling back to HA Voice`);
+            console.warn(`${logPrefix} Nest speaker confirm failed — falling back to HA Voice`);
           }
         } catch (e: any) {
           console.warn(`${logPrefix} Nest speaker confirm failed: ${e.message} — falling back to HA Voice`);
@@ -8160,63 +8160,6 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   }
 
   async function playOnNestSpeaker(audioUrl: string, maxRetries: number = 2): Promise<{ success: boolean; actuallyPlaying: boolean }> {
-    const localPath = audioUrl.startsWith('http') ? new URL(audioUrl).pathname : audioUrl;
-
-    const haMediaId = await uploadAudioToHA(localPath);
-    if (haMediaId) {
-      console.log(`[Nest] Playing via HA local media: ${haMediaId}`);
-      let serviceCallSucceeded = false;
-      for (let attempt = 0; attempt <= maxRetries; attempt++) {
-        if (attempt > 0) {
-          await haServiceCallSafe('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Retry Stop');
-          await new Promise(r => setTimeout(r, 1000));
-          await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.45 }, 'Nest Retry Vol');
-        }
-        try {
-          await haServiceCall('media_player/play_media', {
-            entity_id: NEST_SPEAKER_ENTITY,
-            media_content_id: haMediaId,
-            media_content_type: "music"
-          }, 'Nest Play HA Media');
-          serviceCallSucceeded = true;
-        } catch (e: any) {
-          console.error(`[Nest] play_media (HA media) failed: ${e.message}`);
-          if (attempt === maxRetries) return { success: false, actuallyPlaying: false };
-          await new Promise(r => setTimeout(r, 2000));
-          continue;
-        }
-
-        await new Promise(r => setTimeout(r, 4000));
-
-        try {
-          const { state: speakerState } = await getNestMediaState();
-          console.log(`[Nest] Speaker state after HA media play: ${speakerState}`);
-          if (speakerState === 'playing' || speakerState === 'buffering') {
-            return { success: true, actuallyPlaying: true };
-          }
-          if (speakerState === 'idle' || speakerState === 'off' || speakerState === 'unknown' || speakerState === 'unavailable') {
-            if (attempt === maxRetries) {
-              console.warn(`[Nest] State "${speakerState}" after all HA media attempts — trusting service call (HA accepted the command)`);
-              return { success: true, actuallyPlaying: false };
-            }
-            await new Promise(r => setTimeout(r, 2000));
-            continue;
-          }
-          console.log(`[Nest] Unexpected state "${speakerState}" after HA media play`);
-          return { success: true, actuallyPlaying: false };
-        } catch (e: any) {
-          console.warn(`[Nest] State check error: ${e.message}`);
-          return { success: true, actuallyPlaying: false };
-        }
-      }
-      if (serviceCallSucceeded) {
-        console.log(`[Nest] HA service call succeeded but state never confirmed — trusting command was accepted`);
-        return { success: true, actuallyPlaying: false };
-      }
-      return { success: false, actuallyPlaying: false };
-    }
-
-    console.warn(`[Nest] HA media upload failed — falling back to direct URL`);
     const fullUrl = audioUrl.startsWith('http') ? audioUrl : `${DEPLOYED_APP_URL}${audioUrl}`;
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       if (attempt > 0) {
@@ -8224,7 +8167,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         await new Promise(r => setTimeout(r, 1000));
         await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.45 }, 'Nest Retry Vol');
       }
-      console.log(`[Nest] Playing audio (direct URL, attempt ${attempt + 1}): ${fullUrl}`);
+      console.log(`[Nest] Playing audio (attempt ${attempt + 1}): ${fullUrl}`);
       try {
         await haServiceCall('media_player/play_media', {
           entity_id: NEST_SPEAKER_ENTITY, media_content_id: fullUrl, media_content_type: "music"
@@ -8237,14 +8180,31 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       await new Promise(r => setTimeout(r, 4000));
       try {
         const { state: speakerState } = await getNestMediaState();
-        if (speakerState === 'playing' || speakerState === 'buffering') return { success: true, actuallyPlaying: true };
-        if (attempt === maxRetries) return { success: false, actuallyPlaying: false };
-        await new Promise(r => setTimeout(r, 2000));
-      } catch {
+        console.log(`[Nest] Speaker state after play command: ${speakerState}`);
+        if (speakerState === 'playing' || speakerState === 'buffering') {
+          return { success: true, actuallyPlaying: true };
+        }
+        if (speakerState === 'unknown') {
+          console.log(`[Nest] State is "unknown" — assuming play_media succeeded`);
+          return { success: true, actuallyPlaying: false };
+        }
+        if (speakerState === 'idle' || speakerState === 'off' || speakerState === 'unavailable') {
+          console.warn(`[Nest] Speaker not playing (state: ${speakerState}) — will retry`);
+          if (attempt === maxRetries) {
+            console.warn(`[Nest] State "${speakerState}" after ${maxRetries + 1} attempts — play_media accepted but speaker didn't start`);
+            return { success: true, actuallyPlaying: false };
+          }
+          await new Promise(r => setTimeout(r, 2000));
+          continue;
+        }
+        console.log(`[Nest] Unexpected state "${speakerState}" — assuming play_media succeeded`);
+        return { success: true, actuallyPlaying: false };
+      } catch (e: any) {
+        console.warn(`[Nest] State check error: ${e.message} — assuming play_media succeeded`);
         return { success: true, actuallyPlaying: false };
       }
     }
-    return { success: false, actuallyPlaying: false };
+    return { success: true, actuallyPlaying: false };
   }
 
   async function playChunkViaHACloudTTS(chunkText: string, sessionId: number, speakerEntity: string = CAT_WR_HA_VOICE_ENTITY): Promise<boolean> {
