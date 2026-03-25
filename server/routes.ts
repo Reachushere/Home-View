@@ -8186,22 +8186,64 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     }
   }
 
-  async function promptHAVoiceFallback(sessionId: number): Promise<boolean> {
-    console.log(`[HA Voice Fallback] Prompting user for HA Voice fallback`);
+  async function playChunkViaEchoTTS(chunkText: string, sessionId: number): Promise<boolean> {
+    const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+    const MAX_ALEXA_CHARS = 3000;
+    const textToSpeak = chunkText.length > MAX_ALEXA_CHARS ? chunkText.substring(0, MAX_ALEXA_CHARS) : chunkText;
+    const ssmlContent = `<speak><prosody rate="90%">${textToSpeak.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</prosody></speak>`;
+    try {
+      const resp = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: ssmlContent,
+          target: [
+            "media_player.echo_cat_left_am",
+            "media_player.echo_cat_right_am",
+            "media_player.echo_cat_washroom_middle",
+          ],
+          data: { type: "tts" },
+        }),
+      });
+      if (!resp.ok) {
+        console.error(`[Echo TTS] alexa_media failed: ${resp.status}`);
+        return false;
+      }
+      console.log(`[Echo TTS] Playing chunk (${textToSpeak.length} chars) on Echo washroom speakers`);
+      const wordCount = textToSpeak.split(/\s+/).length;
+      const estimatedMs = Math.max(5000, (wordCount / 155) * 60 * 1000 + 2000);
+      console.log(`[Echo TTS] Waiting ~${Math.round(estimatedMs / 1000)}s for chunk to finish`);
+      const ABORT_CHECK_MS = 2000;
+      for (let waited = 0; waited < estimatedMs; waited += ABORT_CHECK_MS) {
+        if (!catWashPlaybackActive || catWashSessionId !== sessionId) {
+          console.log(`[Echo TTS] Abort detected during wait`);
+          return false;
+        }
+        await new Promise(r => setTimeout(r, ABORT_CHECK_MS));
+      }
+      return true;
+    } catch (e: any) {
+      console.error(`[Echo TTS] Failed: ${e.message}`);
+      return false;
+    }
+  }
+
+  async function promptFallbackSwitch(sessionId: number, fallbackName: string, promptMessage: string): Promise<boolean> {
+    console.log(`[${fallbackName} Fallback] Prompting user`);
     try {
       await haServiceCallSafe('media_player/volume_set', { entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.35 }, 'Fallback Vol');
       await haServiceCallSafe('input_boolean/turn_off', { entity_id: MODULE_READING_CONFIRMED }, 'Fallback Bool Reset');
       await haServiceCall('tts/speak', {
         entity_id: HA_CLOUD_TTS_ENTITY,
         media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
-        message: "Bryn, all other voice software encountered errors. Do you want to play your file here on Home Assistant Voice for now?"
+        message: promptMessage
       }, 'Fallback Prompt TTS');
-      console.log(`[HA Voice Fallback] Prompt sent, waiting for confirmation (up to 30s)`);
+      console.log(`[${fallbackName} Fallback] Prompt sent, waiting for confirmation (up to 30s)`);
       const POLL_MS = 1500;
       const MAX_WAIT_MS = 30000;
       for (let waited = 0; waited < MAX_WAIT_MS; waited += POLL_MS) {
         if (!catWashPlaybackActive || catWashSessionId !== sessionId) {
-          console.log(`[HA Voice Fallback] Session aborted during wait`);
+          console.log(`[${fallbackName} Fallback] Session aborted during wait`);
           return false;
         }
         try {
@@ -8211,16 +8253,16 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           }, 2, 'Fallback Confirm Check');
           const data = await resp.json();
           if (data.state === 'on') {
-            console.log(`[HA Voice Fallback] User confirmed — switching to HA Voice playback`);
+            console.log(`[${fallbackName} Fallback] User confirmed — switching to ${fallbackName} playback`);
             return true;
           }
         } catch {}
         await new Promise(r => setTimeout(r, POLL_MS));
       }
-      console.log(`[HA Voice Fallback] No confirmation received within ${MAX_WAIT_MS / 1000}s`);
+      console.log(`[${fallbackName} Fallback] No confirmation received within ${MAX_WAIT_MS / 1000}s`);
       return false;
     } catch (e: any) {
-      console.error(`[HA Voice Fallback] Error: ${e.message}`);
+      console.error(`[${fallbackName} Fallback] Error: ${e.message}`);
       return false;
     }
   }
@@ -8534,12 +8576,64 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
               }
               continue;
             }
-            console.error(`[Nest Playback] CIRCUIT BREAKER: ${MAX_PLAY_FAILURES} consecutive failures — stopping`);
-            haServiceCallSafe('tts/speak', {
-              entity_id: HA_CLOUD_TTS_ENTITY,
-              media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
-              message: "Sorry Bryn, I'm having trouble with playback. Stopping for now."
-            }, 'Error TTS');
+            console.error(`[Nest Playback] CIRCUIT BREAKER: ${MAX_PLAY_FAILURES} consecutive Nest failures — trying Echo fallback`);
+
+            const echoConfirmed = await promptFallbackSwitch(sessionId, 'Echo',
+              "Bryn, the Nest speaker encountered errors. Do you want to play your file on the Echo speakers for now?");
+            if (echoConfirmed && catWashPlaybackActive && catWashSessionId === sessionId) {
+              console.log(`[Echo Fallback] User confirmed — playing remaining chunks via Echo TTS`);
+              let echoFailures = 0;
+              for (let ei = i; ei < chunks.length; ei++) {
+                if (!catWashPlaybackActive || catWashSessionId !== sessionId) break;
+                if (catWashPlaybackState) {
+                  catWashPlaybackState.chunkIndex = ei;
+                }
+                const ok = await playChunkViaEchoTTS(chunks[ei], sessionId);
+                if (!ok) {
+                  if (!catWashPlaybackActive || catWashSessionId !== sessionId) break;
+                  echoFailures++;
+                  if (echoFailures >= 3) {
+                    console.error(`[Echo Fallback] 3 consecutive Echo failures — trying HA Voice`);
+                    break;
+                  }
+                  continue;
+                }
+                echoFailures = 0;
+                if (fileId) {
+                  try { await storage.updateFile(fileId, { lastChunkIndex: ei }); } catch {}
+                }
+              }
+              if (echoFailures < 3) break;
+            }
+
+            if (!catWashPlaybackActive || catWashSessionId !== sessionId) break;
+
+            const haVoiceConfirmed = await promptFallbackSwitch(sessionId, 'HA Voice',
+              "Bryn, all other voice software encountered errors. Do you want to play your file here on Home Assistant Voice for now?");
+            if (haVoiceConfirmed && catWashPlaybackActive && catWashSessionId === sessionId) {
+              console.log(`[HA Voice Fallback] User confirmed — playing remaining chunks via HA Cloud TTS`);
+              for (let hi = i; hi < chunks.length; hi++) {
+                if (!catWashPlaybackActive || catWashSessionId !== sessionId) break;
+                if (catWashPlaybackState) {
+                  catWashPlaybackState.chunkIndex = hi;
+                }
+                const ok = await playChunkViaHACloudTTS(chunks[hi], sessionId);
+                if (!ok) {
+                  if (!catWashPlaybackActive || catWashSessionId !== sessionId) break;
+                  continue;
+                }
+                if (fileId) {
+                  try { await storage.updateFile(fileId, { lastChunkIndex: hi }); } catch {}
+                }
+              }
+            } else {
+              console.log(`[Fallback] No fallback confirmed — stopping playback`);
+              haServiceCallSafe('tts/speak', {
+                entity_id: HA_CLOUD_TTS_ENTITY,
+                media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
+                message: "Stopping. Your position has been saved."
+              }, 'Error TTS');
+            }
             break;
           }
           if (!chunkPlaying) {
