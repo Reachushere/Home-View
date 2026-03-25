@@ -76,7 +76,16 @@ export default function OneNotePage() {
   const [expandedNotebooks, setExpandedNotebooks] = useState<Set<string>>(new Set());
   const [allPageCards, setAllPageCards] = useState<PageCard[]>([]);
   const [loadingPages, setLoadingPages] = useState(false);
+  const [filterNotebook, setFilterNotebook] = useState<string>('');
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isChecklistCreating, setIsChecklistCreating] = useState(false);
+  const [checklistItems, setChecklistItems] = useState<string[]>(['']);
+  const [checklistName, setChecklistName] = useState('');
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const speechRecRef = useRef<any>(null);
+  const filterMenuRef = useRef<HTMLDivElement>(null);
 
   const notebooksQuery = useQuery<OneNoteNotebook[]>({
     queryKey: ["/api/onenote/notebooks"],
@@ -155,6 +164,26 @@ export default function OneNotePage() {
     }
   }, [notebooksQuery.data]);
 
+  useEffect(() => {
+    return () => {
+      if (speechRecRef.current) {
+        speechRecRef.current.stop();
+        speechRecRef.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!showFilterMenu) return;
+    function handleClickOutside(e: MouseEvent) {
+      if (filterMenuRef.current && !filterMenuRef.current.contains(e.target as Node)) {
+        setShowFilterMenu(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showFilterMenu]);
+
   async function loadAllPages(notebooks: OneNoteNotebook[]) {
     setLoadingPages(true);
     const cards: PageCard[] = [];
@@ -218,6 +247,90 @@ export default function OneNotePage() {
     setView('quicknote-editor');
   }
 
+  function handleCameraCapture() {
+    fileInputRef.current?.click();
+  }
+
+  async function handleFileSelected(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const timestamp = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    const name = `Photo Note ${timestamp}.txt`;
+    const content = `📷 Photo captured: ${file.name}\nDate: ${timestamp}\nSize: ${(file.size / 1024).toFixed(1)} KB\n\n---\nNotes:\n`;
+    createMutation.mutate({ name, content });
+    e.target.value = '';
+  }
+
+  function handleStartRecording() {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast({ title: "Not supported", description: "Speech recognition not available in this browser", variant: "destructive" });
+      return;
+    }
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+    let transcript = '';
+
+    recognition.onresult = (event: any) => {
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        if (event.results[i].isFinal) {
+          transcript += event.results[i][0].transcript + ' ';
+        }
+      }
+    };
+
+    recognition.onend = () => {
+      setIsRecording(false);
+      if (transcript.trim()) {
+        const timestamp = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        const name = `Voice Note ${timestamp}.txt`;
+        createMutation.mutate({ name, content: transcript.trim() });
+        toast({ title: "Voice note saved", description: `${transcript.trim().split(' ').length} words captured` });
+      } else {
+        toast({ title: "No speech detected", description: "Try again and speak clearly" });
+      }
+    };
+
+    recognition.onerror = (event: any) => {
+      setIsRecording(false);
+      if (event.error === 'not-allowed') {
+        toast({ title: "Microphone blocked", description: "Allow microphone access in your browser", variant: "destructive" });
+      } else {
+        toast({ title: "Recording error", description: event.error, variant: "destructive" });
+      }
+    };
+
+    setIsRecording(true);
+    recognition.start();
+    toast({ title: "Listening...", description: "Speak now. Tap mic again to stop." });
+
+    speechRecRef.current = recognition;
+  }
+
+  function handleStopRecording() {
+    if (speechRecRef.current) {
+      speechRecRef.current.stop();
+      speechRecRef.current = null;
+    }
+    setIsRecording(false);
+  }
+
+  function handleCreateChecklist() {
+    const items = checklistItems.filter(item => item.trim());
+    if (items.length === 0) {
+      toast({ title: "Add at least one item" });
+      return;
+    }
+    const name = (checklistName.trim() || 'Checklist') + '.txt';
+    const content = items.map(item => `☐ ${item}`).join('\n');
+    createMutation.mutate({ name, content });
+    setIsChecklistCreating(false);
+    setChecklistItems(['']);
+    setChecklistName('');
+  }
+
   function goBack() {
     if (isDirty && selectedQuickNote) saveNow();
     setSelectedPageCard(null);
@@ -228,13 +341,19 @@ export default function OneNotePage() {
   const notebooks = notebooksQuery.data || [];
   const quickNoteFiles = filesQuery.data || [];
 
+  const filteredByNotebook = filterNotebook
+    ? allPageCards.filter(c => c.notebookName === filterNotebook)
+    : allPageCards;
+
   const filteredCards = searchQuery.trim()
-    ? allPageCards.filter(c =>
+    ? filteredByNotebook.filter(c =>
         c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         c.preview.toLowerCase().includes(searchQuery.toLowerCase()) ||
         c.sectionName.toLowerCase().includes(searchQuery.toLowerCase())
       )
-    : allPageCards;
+    : filteredByNotebook;
+
+  const uniqueNotebookNames = [...new Set(allPageCards.map(c => c.notebookName))];
 
   const truncatePath = (nbName: string, secName: string) => {
     const full = `${nbName} » ${secName}`;
@@ -410,21 +529,83 @@ export default function OneNotePage() {
         )}
       </div>
 
+      {/* Hidden file input for camera */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="hidden"
+        onChange={handleFileSelected}
+      />
+
+      {/* Filter indicator */}
+      {filterNotebook && (
+        <div className="shrink-0 flex items-center justify-center gap-2 py-1.5 px-4" style={{ background: '#1a1a1a' }}>
+          <span className="text-[11px] text-white/40">Filtered:</span>
+          <span className="text-[11px] font-medium" style={{ color: '#c586c0' }}>{filterNotebook}</span>
+          <button onClick={() => setFilterNotebook('')} className="text-white/30 hover:text-white/60">
+            <X className="h-3 w-3" />
+          </button>
+        </div>
+      )}
+
       {/* Floating action bar */}
       <div className="shrink-0 flex items-center justify-center gap-1 py-2 px-4" style={{ background: '#1a1a1a' }}>
-        <div className="flex items-center gap-1 px-2 py-1.5 rounded-full" style={{ background: '#2d2d30', border: '1px solid #3e3e42' }}>
-          <button className="h-9 w-9 rounded-full flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-colors" data-testid="action-camera" title="Camera">
+        <div className="flex items-center gap-1 px-2 py-1.5 rounded-full relative" style={{ background: '#2d2d30', border: '1px solid #3e3e42' }}>
+          <button
+            className="h-9 w-9 rounded-full flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+            onClick={handleCameraCapture}
+            data-testid="action-camera"
+            title="Photo note"
+          >
             <Camera className="h-4.5 w-4.5" />
           </button>
-          <button className="h-9 w-9 rounded-full flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-colors" data-testid="action-checklist" title="Checklist">
+          <button
+            className="h-9 w-9 rounded-full flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+            onClick={() => { setIsChecklistCreating(true); setChecklistItems(['']); setChecklistName(''); }}
+            data-testid="action-checklist"
+            title="New checklist"
+          >
             <CheckSquare className="h-4.5 w-4.5" />
           </button>
-          <button className="h-9 w-9 rounded-full flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-colors" data-testid="action-voice" title="Voice note">
+          <button
+            className={`h-9 w-9 rounded-full flex items-center justify-center transition-colors ${isRecording ? 'text-red-400 bg-red-500/20 animate-pulse' : 'text-white/50 hover:text-white hover:bg-white/10'}`}
+            onClick={isRecording ? handleStopRecording : handleStartRecording}
+            data-testid="action-voice"
+            title={isRecording ? "Stop recording" : "Voice note"}
+          >
             <Mic className="h-4.5 w-4.5" />
           </button>
-          <button className="h-9 w-9 rounded-full flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-colors" data-testid="action-filter" title="Filter">
-            <Filter className="h-4.5 w-4.5" />
-          </button>
+          <div className="relative" ref={filterMenuRef}>
+            <button
+              className={`h-9 w-9 rounded-full flex items-center justify-center transition-colors ${filterNotebook ? 'text-purple-400 bg-purple-500/20' : 'text-white/50 hover:text-white hover:bg-white/10'}`}
+              onClick={() => setShowFilterMenu(!showFilterMenu)}
+              data-testid="action-filter"
+              title="Filter by notebook"
+            >
+              <Filter className="h-4.5 w-4.5" />
+            </button>
+            {showFilterMenu && (
+              <div className="absolute bottom-12 left-1/2 -translate-x-1/2 rounded-lg py-1 min-w-[180px] z-50 shadow-xl" style={{ background: '#2d2d30', border: '1px solid #3e3e42' }}>
+                <button
+                  className={`w-full text-left px-3 py-2 text-xs transition-colors ${!filterNotebook ? 'text-purple-400 font-medium' : 'text-white/60 hover:bg-white/5'}`}
+                  onClick={() => { setFilterNotebook(''); setShowFilterMenu(false); }}
+                >
+                  All notebooks
+                </button>
+                {uniqueNotebookNames.map(name => (
+                  <button
+                    key={name}
+                    className={`w-full text-left px-3 py-2 text-xs transition-colors ${filterNotebook === name ? 'text-purple-400 font-medium' : 'text-white/60 hover:bg-white/5'}`}
+                    onClick={() => { setFilterNotebook(name); setShowFilterMenu(false); }}
+                  >
+                    {name}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
         <button
           className="h-11 w-11 rounded-full flex items-center justify-center text-white ml-2 shadow-lg hover:brightness-110 transition-all"
@@ -496,6 +677,70 @@ export default function OneNotePage() {
                 data-testid="button-confirm-create"
               >
                 {createMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Plus className="h-3 w-3 mr-1" />}
+                Create
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Checklist creation modal */}
+      {isChecklistCreating && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setIsChecklistCreating(false)}>
+          <div className="rounded-xl p-5 w-full max-w-sm" style={{ background: '#2d2d30', border: '1px solid #3e3e42' }} onClick={e => e.stopPropagation()}>
+            <h3 className="text-sm font-semibold mb-3 text-white flex items-center gap-2">
+              <CheckSquare className="h-4 w-4" style={{ color: '#c586c0' }} />
+              New Checklist
+            </h3>
+            <Input
+              value={checklistName}
+              onChange={e => setChecklistName(e.target.value)}
+              placeholder="Checklist title (optional)"
+              className="bg-white/5 border-white/15 text-white placeholder:text-white/30 mb-3 text-sm"
+              autoFocus
+              data-testid="input-checklist-name"
+            />
+            <div className="space-y-1.5 mb-3 max-h-[200px] overflow-y-auto">
+              {checklistItems.map((item, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <span className="text-white/30 text-sm">☐</span>
+                  <Input
+                    value={item}
+                    onChange={e => {
+                      const updated = [...checklistItems];
+                      updated[i] = e.target.value;
+                      setChecklistItems(updated);
+                    }}
+                    placeholder={`Item ${i + 1}`}
+                    className="bg-white/5 border-white/15 text-white placeholder:text-white/30 text-sm flex-1"
+                    data-testid={`input-checklist-item-${i}`}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        setChecklistItems([...checklistItems, '']);
+                      }
+                    }}
+                  />
+                  {checklistItems.length > 1 && (
+                    <button onClick={() => setChecklistItems(checklistItems.filter((_, j) => j !== i))} className="text-white/20 hover:text-white/50">
+                      <X className="h-3 w-3" />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={() => setChecklistItems([...checklistItems, ''])}
+              className="text-xs mb-3 px-2 py-1 rounded hover:bg-white/5 transition-colors"
+              style={{ color: '#c586c0' }}
+              data-testid="button-add-checklist-item"
+            >
+              + Add item
+            </button>
+            <div className="flex gap-2 justify-end">
+              <Button variant="ghost" size="sm" className="text-white/50 hover:text-white" onClick={() => setIsChecklistCreating(false)} data-testid="button-cancel-checklist">Cancel</Button>
+              <Button size="sm" className="text-white" onClick={handleCreateChecklist} disabled={createMutation.isPending} style={{ background: '#7b2d8e' }} data-testid="button-confirm-checklist">
+                {createMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <CheckSquare className="h-3 w-3 mr-1" />}
                 Create
               </Button>
             </div>
