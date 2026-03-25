@@ -1547,7 +1547,7 @@ export default function SpotifyPlayerPage() {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                   }).catch(() => {});
-                  window.location.href = "/";
+                  try { window.top!.location.href = "http://172.24.0.2:8123/lovelace/test-home"; } catch(e) { window.location.href = "http://172.24.0.2:8123/lovelace/test-home"; }
                 }}
                 className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg transition-all hover:scale-105 mb-1"
                 style={{
