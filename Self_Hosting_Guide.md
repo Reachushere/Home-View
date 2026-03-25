@@ -730,7 +730,7 @@ The cat washroom has a study reading system that plays your school readings alou
 | HA Voice ESPHome Device | `media_player.home_assistant_voice_097c38_media_player` | Voice prompts ("Would you like to play...?") |
 | Fire Tablet (Cat WR) | `media_player.tablet_cat` | Displays PDF reader page with synced text |
 | Samsung TV (Cat WR) | `media_player.tv_cat_wr` | Displays PDF reader follow-along page |
-| Fire Stick (Cat WR TV) | `media_player.fire_tv_172_24_0_88` | Drives Samsung TV display via HDMI |
+| Fire Stick (Cat WR TV) | `media_player.fire_stick_cat_wr` | Drives Samsung TV display via HDMI |
 | Echo Cat Left | `media_player.echo_cat_left_am` | CHUM FM playback (Echo speaker group) |
 | Echo Cat Right | `media_player.echo_cat_right_am` | CHUM FM playback (Echo speaker group) |
 | Echo Cat Middle | `media_player.echo_cat_washroom_middle` | CHUM FM playback (Echo speaker group) |
@@ -833,7 +833,7 @@ The cat washroom has a study reading system that plays your school readings alou
 **1. If a reading is actively playing:**
 - Save current chunk progress to database
 - Stop Nest speaker: `media_player/media_stop` on `media_player.nestaudio6787`
-- Turn off Fire Stick: `media_player/turn_off` on `media_player.fire_tv_172_24_0_88`
+- Turn off Fire Stick: `media_player/turn_off` on `media_player.fire_stick_cat_wr`
 - Turn off Samsung TV: `media_player/turn_off` on `media_player.tv_cat_wr`
 - Play goodbye TTS on Nest speaker:
 
@@ -883,7 +883,7 @@ The cat washroom has a study reading system that plays your school readings alou
 - ADB: `input keyevent KEYCODE_F11` — fullscreen
 
 **TV Setup**:
-- `media_player/turn_on` on `media_player.fire_tv_172_24_0_88` — wake Fire Stick
+- `media_player/turn_on` on `media_player.fire_stick_cat_wr` — wake Fire Stick
 - `media_player/turn_on` on `media_player.tv_cat_wr` — turn on Samsung TV
 - Wait 3 seconds (let TV boot)
 - `media_player/select_source` on `media_player.tv_cat_wr`, source: `"HDMI1"` — switch to Fire Stick input

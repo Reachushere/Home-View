@@ -7889,7 +7889,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const tvSetupPromise = (async () => {
       try {
         await Promise.allSettled([
-          haServiceCall('media_player/turn_on', { entity_id: 'media_player.fire_tv_172_24_0_88' }, 'TV On'),
+          haServiceCall('media_player/turn_on', { entity_id: 'media_player.fire_stick_cat_wr' }, 'TV On'),
           haServiceCall('media_player/turn_on', { entity_id: CAT_TV_ENTITY }, 'TV On'),
         ]);
         console.log(`${logPrefix} Fire Stick + Samsung TV turned on`);
@@ -7902,7 +7902,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           console.log(`${logPrefix} Samsung TV source switch error: ${e.message}`);
         }
 
-        await openUrlOnFireStick(haUrl, 'media_player.fire_tv_172_24_0_88', tvFollowUrl);
+        await openUrlOnFireStick(haUrl, 'media_player.fire_stick_cat_wr', tvFollowUrl);
         console.log(`${logPrefix} TV follow URL sent, Silk opens fullscreen (immersive mode)`);
       } catch (e: any) {
         console.log(`${logPrefix} TV setup error: ${e.message}`);
@@ -9012,7 +9012,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     ]);
 
     await Promise.allSettled([
-      haServiceCallSafe('media_player/turn_off', { entity_id: 'media_player.fire_tv_172_24_0_88' }, 'Nest Stop TV'),
+      haServiceCallSafe('media_player/turn_off', { entity_id: 'media_player.fire_stick_cat_wr' }, 'Nest Stop TV'),
       haServiceCallSafe('media_player/turn_off', { entity_id: 'media_player.samsung_tv' }, 'Nest Stop TV'),
     ]);
     console.log(`[Nest Stop] Fire Stick + Samsung TV turn-off sent`);
@@ -10271,7 +10271,7 @@ document.body.removeChild(a);
         await fetch(`${haUrl}/api/services/media_player/turn_off`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ entity_id: 'media_player.fire_tv_172_24_0_88' }),
+          body: JSON.stringify({ entity_id: 'media_player.fire_stick_cat_wr' }),
         });
         await fetch(`${haUrl}/api/services/media_player/turn_off`, {
           method: 'POST',
@@ -10357,7 +10357,7 @@ document.body.removeChild(a);
           try {
             await fetch(`${haUrl}/api/services/media_player/turn_off`, {
               method: 'POST', headers: haHeaders,
-              body: JSON.stringify({ entity_id: 'media_player.fire_tv_172_24_0_88' }),
+              body: JSON.stringify({ entity_id: 'media_player.fire_stick_cat_wr' }),
             });
             await fetch(`${haUrl}/api/services/media_player/turn_off`, {
               method: 'POST', headers: haHeaders,
@@ -10470,7 +10470,7 @@ document.body.removeChild(a);
           try {
             await fetch(`${haUrl}/api/services/media_player/turn_off`, {
               method: 'POST', headers: haHeaders,
-              body: JSON.stringify({ entity_id: 'media_player.fire_tv_172_24_0_88' }),
+              body: JSON.stringify({ entity_id: 'media_player.fire_stick_cat_wr' }),
             });
             await fetch(`${haUrl}/api/services/media_player/turn_off`, {
               method: 'POST', headers: haHeaders,
@@ -10681,7 +10681,7 @@ document.body.removeChild(a);
           try {
             await fetch(`${haUrl}/api/services/media_player/turn_off`, {
               method: 'POST', headers: haHeaders,
-              body: JSON.stringify({ entity_id: 'media_player.fire_tv_172_24_0_88' }),
+              body: JSON.stringify({ entity_id: 'media_player.fire_stick_cat_wr' }),
             });
             await fetch(`${haUrl}/api/services/media_player/turn_off`, {
               method: 'POST', headers: haHeaders,
