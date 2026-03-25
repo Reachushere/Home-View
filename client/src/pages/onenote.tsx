@@ -29,6 +29,7 @@ import {
   BookOpen,
   FolderOpen,
   Pencil,
+  RefreshCw,
   Palette,
   Bell,
   Paperclip,
@@ -704,8 +705,8 @@ function EditorView({ content, onChange, isLoading, file, isDirty, isSaving, bgC
             {linkedTask?.title || linkedProject?.name}
           </span>
         )}
-        {isSaving && <span className="text-yellow-400/60 ml-auto">Saving...</span>}
-        {!isSaving && !isDirty && <span className="text-green-400/50 ml-auto">Synced</span>}
+        {isSaving && <span className="text-yellow-400/60 ml-auto flex items-center gap-1"><Loader2 className="h-3 w-3 animate-spin" />Saving...</span>}
+        {!isSaving && !isDirty && <span className="text-white ml-auto flex items-center gap-1"><RefreshCw className="h-3 w-3 animate-spin" />Synced</span>}
         {isDirty && !isSaving && <span className="text-orange-400/50 ml-auto">Unsaved changes</span>}
       </div>
       <Card className="border" style={{ backgroundColor: bgColor, borderColor: borderColor }}>
