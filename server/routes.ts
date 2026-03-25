@@ -9496,7 +9496,7 @@ document.body.removeChild(a);
       const immediatePromptPromise = (async () => {
         try {
           await Promise.allSettled([
-            haServiceCallSafe('media_player/volume_set', { entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.85 }, 'Cat Lights Vol'),
+            haServiceCallSafe('media_player/volume_set', { entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.64 }, 'Cat Lights Vol'),
             haServiceCallSafe('input_boolean/turn_off', { entity_id: MODULE_READING_CONFIRMED }, 'Cat Lights Bool'),
             haServiceCallSafe('input_boolean/turn_on', { entity_id: MODULE_READING_PENDING }, 'Cat Lights Bool'),
           ]);
@@ -9573,7 +9573,7 @@ document.body.removeChild(a);
           console.warn(`[Cat Lights] Pre-prompt media stop error (non-fatal): ${e.message}`);
         }
 
-        await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.85 }, 'Cat Lights Vol');
+        await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.64 }, 'Cat Lights Vol');
 
         let ttsPlayed = false;
         try {
