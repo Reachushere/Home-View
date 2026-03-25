@@ -127,7 +127,8 @@ export default function OneNotePage() {
   const contentQuery = useQuery<{ content: string }>({
     queryKey: ["/api/quicknotes/file", selectedFile?.id, "content"],
     enabled: !!selectedFile && view === 'editor',
-    staleTime: 5000,
+    staleTime: 30000,
+    refetchOnWindowFocus: false,
   });
 
   const tasksQuery = useQuery<Array<{ id: number; title: string; courseName?: string }>>({
@@ -146,9 +147,10 @@ export default function OneNotePage() {
       const res = await apiRequest('PUT', `/api/quicknotes/file/${id}/content`, { content });
       return res.json();
     },
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
       console.log('[QuickNotes] Save SUCCESS:', data);
       setIsDirty(false);
+      queryClient.setQueryData(["/api/quicknotes/file", variables.id, "content"], { content: variables.content });
       queryClient.invalidateQueries({ queryKey: ["/api/quicknotes/files"] });
       toast({ title: "Saved to OneDrive", description: `Last saved: ${new Date().toLocaleTimeString()}` });
     },
