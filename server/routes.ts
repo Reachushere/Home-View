@@ -7913,22 +7913,27 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       try {
         let confirmPlayed = false;
         try {
-          await haServiceCall('tts/speak', {
-            entity_id: HA_CLOUD_TTS_ENTITY,
-            media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
-            message: confirmationTTS
-          }, 'Confirm HA Cloud TTS');
-          confirmPlayed = true;
-          console.log(`${logPrefix} Confirm TTS played via HA Cloud TTS on HA Voice speaker`);
+          const confirmPath = await generateAndSaveTTSAudio(confirmationTTS, `confirm-${Date.now()}`);
+          const nestResult = await playOnNestSpeaker(`${appUrl}${confirmPath}`);
+          if (nestResult.success && nestResult.actuallyPlaying) {
+            confirmPlayed = true;
+            console.log(`${logPrefix} Confirm TTS played on Nest speaker via OpenAI/Edge TTS`);
+          } else {
+            console.warn(`${logPrefix} Nest speaker confirm did not start (state unconfirmed) — falling back to HA Voice`);
+          }
         } catch (e: any) {
-          console.warn(`${logPrefix} HA Cloud TTS confirm failed: ${e.message} — trying Nest speaker`);
+          console.warn(`${logPrefix} Nest speaker confirm failed: ${e.message} — falling back to HA Voice`);
         }
         if (!confirmPlayed) {
           try {
-            const confirmPath = await generateAndSaveTTSAudio(confirmationTTS, `confirm-${Date.now()}`);
-            await playOnNestSpeaker(`${appUrl}${confirmPath}`);
+            await haServiceCall('tts/speak', {
+              entity_id: HA_CLOUD_TTS_ENTITY,
+              media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
+              message: confirmationTTS
+            }, 'Confirm HA Cloud TTS');
+            console.log(`${logPrefix} Confirm TTS played via HA Cloud TTS on HA Voice speaker (fallback)`);
           } catch (e: any) {
-            console.warn(`${logPrefix} Nest speaker confirm also failed: ${e.message}`);
+            console.warn(`${logPrefix} HA Voice confirm also failed: ${e.message}`);
           }
         }
         const confirmWordCount = confirmationTTS.split(/\s+/).length;
