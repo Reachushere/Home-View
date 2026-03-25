@@ -21,6 +21,7 @@ import echoSpeakerImg from "@assets/Echo_1774213902054.png";
 import chumfmLogo from "@assets/chumfm_logo.svg";
 import yasuPhoto from "@assets/Yasu_1774341165517.png";
 import brynPhoto from "@assets/Bryn_1774341392117.png";
+import jalLogo from "@assets/jal_logo.png";
 
 interface NowPlaying {
   playing: boolean; name?: string; artist?: string; album?: string;
@@ -89,10 +90,12 @@ const PROFILES: Record<ProfileKey, {
       { name: "Aimyon", uri: "spotify:artist:5Lak6GhYbSqhRimRYhE0dP", searchQuery: "Aimyon" },
       { name: "ONE OK ROCK", uri: "spotify:artist:7q4KJIqziJOKnsTaFKpMII", searchQuery: "ONE OK ROCK" },
       { name: "Official HIGE DANdism", uri: "spotify:artist:3YMVszTadghiHjPOYaG3PM", searchQuery: "Official HIGE DANdism" },
-      { name: "Vaundy", uri: "spotify:artist:6k4bHMbRIf97CqMqmU7Xk4", searchQuery: "Vaundy" },
-      { name: "King Gnu", uri: "spotify:artist:6n70eCqbtJhbMgsMet1WVb", searchQuery: "King Gnu" },
-      { name: "Aimer", uri: "spotify:artist:0bAsR2unSRpn6BOpSbGhAu", searchQuery: "Aimer" },
-      { name: "Tokyo Disney", uri: "spotify:track:2PdJJkPFzhJiMqUOT1GKsj", searchQuery: "Tokyo Disney music" },
+      { name: "Hikaru Utada", uri: "spotify:artist:7lbSsjYACZHn1MNXOk2fAz", searchQuery: "Hikaru Utada" },
+      { name: "LiSA", uri: "spotify:artist:0blbVefuxOGltDBa00hcmS", searchQuery: "LiSA" },
+      { name: "Mrs. GREEN APPLE", uri: "spotify:artist:4qujR4RMTEMz5E5hPjHvTk", searchQuery: "Mrs. GREEN APPLE" },
+      { name: "Pink", uri: "spotify:artist:1KCSPY1glIKqW2TotWuXOR", searchQuery: "Pink" },
+      { name: "Katy Perry", uri: "spotify:artist:7n2Ycct7Beij7Dj7meI4X0", searchQuery: "Katy Perry" },
+      { name: "JAL Boarding Music", uri: "spotify:track:5cIgGKfJqhHOBnAoCp3xqj", searchQuery: "JAL boarding music I will be there with you", image: jalLogo },
     ],
   },
   guest: {
