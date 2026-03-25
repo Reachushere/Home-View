@@ -3853,6 +3853,16 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
   const QUICKNOTES_PATH = '/QuickNotes';
   const QUICKNOTES_DEFAULT_FILE = 'notes.txt';
 
+  app.get("/api/quicknotes/debug", async (req, res) => {
+    try {
+      const path = (req.query.path as string) || QUICKNOTES_PATH;
+      const items = await listOneDriveItems(path);
+      res.json(items);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   app.get("/api/quicknotes/files", async (_req, res) => {
     try {
       const items = await listOneDriveItems(QUICKNOTES_PATH);
