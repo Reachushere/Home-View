@@ -7121,6 +7121,53 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     });
   });
 
+  async function checkAndActivateSemester(): Promise<void> {
+    try {
+      const now = new Date();
+      const allSemesters = await storage.getAllSemesterSettings();
+      const currentActive = allSemesters.find(s => s.isActive);
+
+      if (currentActive) {
+        const endDate = currentActive.semesterEndDate ? new Date(currentActive.semesterEndDate) : null;
+        if (endDate && now < endDate) return;
+      }
+
+      const sorted = allSemesters
+        .filter(s => {
+          const start = new Date(s.semesterStartDate);
+          const end = s.semesterEndDate ? new Date(s.semesterEndDate) : null;
+          return start <= now && (!end || now <= end);
+        })
+        .sort((a, b) => new Date(b.semesterStartDate).getTime() - new Date(a.semesterStartDate).getTime());
+
+      const shouldBeActive = sorted[0];
+      if (!shouldBeActive) {
+        const upcoming = allSemesters
+          .filter(s => new Date(s.semesterStartDate) > now)
+          .sort((a, b) => new Date(a.semesterStartDate).getTime() - new Date(b.semesterStartDate).getTime());
+        if (upcoming.length > 0) {
+          const nextStart = new Date(upcoming[0].semesterStartDate);
+          const daysUntil = Math.ceil((nextStart.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+          console.log(`[Semester Auto] Between semesters — next is "${upcoming[0].semesterName}" in ${daysUntil} days`);
+        }
+        return;
+      }
+
+      if (currentActive && currentActive.id === shouldBeActive.id) return;
+
+      if (currentActive) {
+        await storage.updateSemesterSettings(currentActive.id, { isActive: false });
+      }
+      await storage.updateSemesterSettings(shouldBeActive.id, { isActive: true });
+      console.log(`[Semester Auto] Activated "${shouldBeActive.semesterName}" (ID ${shouldBeActive.id})`);
+    } catch (e: any) {
+      console.error(`[Semester Auto] Error: ${e.message}`);
+    }
+  }
+
+  checkAndActivateSemester();
+  setInterval(checkAndActivateSemester, 6 * 60 * 60 * 1000);
+
   // Self-ping to keep Replit from sleeping (every 4 minutes)
   const SELF_PING_INTERVAL_MS = 4 * 60 * 1000;
   const APP_URL = DEPLOYED_APP_URL;
