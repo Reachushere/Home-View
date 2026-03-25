@@ -6921,6 +6921,136 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   const SERVER_START_TIME = Date.now();
   const SERVER_STARTUP_COOLDOWN_MS = 60 * 1000;
 
+  // ===== HA Connectivity Health Monitor =====
+  interface HAHealthState {
+    connected: boolean;
+    lastSuccessAt: number | null;
+    lastFailureAt: number | null;
+    lastCheckAt: number | null;
+    consecutiveFailures: number;
+    consecutiveSuccesses: number;
+    totalChecks: number;
+    totalFailures: number;
+    lastError: string | null;
+    wasDownSince: number | null;
+  }
+  const haHealth: HAHealthState = {
+    connected: true,
+    lastSuccessAt: null,
+    lastFailureAt: null,
+    lastCheckAt: null,
+    consecutiveFailures: 0,
+    consecutiveSuccesses: 0,
+    totalChecks: 0,
+    totalFailures: 0,
+    lastError: null,
+    wasDownSince: null,
+  };
+
+  async function checkHAConnectivity(): Promise<boolean> {
+    haHealth.totalChecks++;
+    haHealth.lastCheckAt = Date.now();
+    try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 8000);
+      const resp = await fetch(`${HOME_ASSISTANT_URL.replace(/\/$/, '')}/api/`, {
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` },
+        signal: controller.signal,
+      });
+      clearTimeout(timer);
+      if (resp.ok) {
+        const wasDown = !haHealth.connected;
+        const downSince = haHealth.wasDownSince;
+        haHealth.connected = true;
+        haHealth.lastSuccessAt = Date.now();
+        haHealth.consecutiveSuccesses++;
+        haHealth.consecutiveFailures = 0;
+        haHealth.lastError = null;
+        haHealth.wasDownSince = null;
+
+        if (wasDown && downSince) {
+          const downDuration = Math.round((Date.now() - downSince) / 1000);
+          console.log(`[HA Health] ✓ Connection RESTORED after ${downDuration}s of downtime`);
+          try {
+            await fetch(`${HOME_ASSISTANT_URL.replace(/\/$/, '')}/api/services/persistent_notification/create`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                title: "Study Dashboard Reconnected",
+                message: `Dashboard connection restored after ${downDuration}s of downtime. Automations are active again.`,
+                notification_id: "study_dashboard_health",
+              }),
+            });
+          } catch {}
+        }
+        return true;
+      }
+      throw new Error(`HTTP ${resp.status}`);
+    } catch (e: any) {
+      haHealth.consecutiveFailures++;
+      haHealth.consecutiveSuccesses = 0;
+      haHealth.totalFailures++;
+      haHealth.lastFailureAt = Date.now();
+      haHealth.lastError = e?.message || String(e);
+
+      if (haHealth.connected) {
+        haHealth.connected = false;
+        haHealth.wasDownSince = Date.now();
+        console.error(`[HA Health] ✗ Connection LOST: ${haHealth.lastError}`);
+      } else {
+        console.warn(`[HA Health] ✗ Still disconnected (${haHealth.consecutiveFailures} consecutive failures): ${haHealth.lastError}`);
+      }
+      return false;
+    }
+  }
+
+  const HA_HEALTH_CHECK_INTERVAL_MS = 60 * 1000;
+  let haHealthInterval: ReturnType<typeof setInterval> | null = null;
+
+  setTimeout(() => {
+    checkHAConnectivity().then(ok => {
+      console.log(`[HA Health] Initial check: ${ok ? 'connected' : 'disconnected'}`);
+    });
+    haHealthInterval = setInterval(() => {
+      checkHAConnectivity();
+    }, HA_HEALTH_CHECK_INTERVAL_MS);
+  }, 10000);
+
+  app.get("/api/health", async (_req, res) => {
+    const uptimeSeconds = Math.round((Date.now() - SERVER_START_TIME) / 1000);
+    res.json({
+      status: "ok",
+      uptime: uptimeSeconds,
+      ha: {
+        connected: haHealth.connected,
+        lastSuccessAt: haHealth.lastSuccessAt ? new Date(haHealth.lastSuccessAt).toISOString() : null,
+        lastFailureAt: haHealth.lastFailureAt ? new Date(haHealth.lastFailureAt).toISOString() : null,
+        consecutiveFailures: haHealth.consecutiveFailures,
+        totalChecks: haHealth.totalChecks,
+        totalFailures: haHealth.totalFailures,
+        lastError: haHealth.lastError,
+        downSince: haHealth.wasDownSince ? new Date(haHealth.wasDownSince).toISOString() : null,
+      },
+      timestamp: new Date().toISOString(),
+    });
+  });
+
+  // Self-ping to keep Replit from sleeping (every 4 minutes)
+  const SELF_PING_INTERVAL_MS = 4 * 60 * 1000;
+  const APP_URL = "https://home-view--bkh416.replit.app";
+  setTimeout(() => {
+    setInterval(async () => {
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 10000);
+        await fetch(`${APP_URL}/api/health`, { signal: controller.signal });
+        clearTimeout(timer);
+      } catch (e: any) {
+        console.warn(`[Self-Ping] Failed: ${e.message}`);
+      }
+    }, SELF_PING_INTERVAL_MS);
+  }, 30000);
+
   // Track active cat-wash playback session with unique session ID to prevent concurrent loops
   let catWashPlaybackActive = false;
   let catWashSessionId = 0;
@@ -9319,7 +9449,7 @@ document.body.removeChild(a);
 
       {
         const maxWaitMs = 23000;
-        console.log(`[Cat Lights] Waiting up to ${maxWaitMs / 1000}s for confirmation...`);
+        console.log(`[Cat Lights] Waiting up to ${maxWaitMs / 1000}s for confirmation (webhook-primary, backup poll every 10s)...`);
 
         const confirmed = await new Promise<boolean>((resolve) => {
           let resolved = false;
@@ -9332,14 +9462,14 @@ document.body.removeChild(a);
               return;
             }
             try {
-              const resp = await haFetch(`${haUrl}/api/states/${MODULE_READING_CONFIRMED}`, { headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` } }, 2, 'Cat Lights Poll');
+              const resp = await haFetch(`${haUrl}/api/states/${MODULE_READING_CONFIRMED}`, { headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` } }, 1, 'Cat Lights Poll');
               const data = await resp.json();
               if (data.state === 'on') {
-                console.log(`[Cat Lights] Confirmation received via input_boolean`);
+                console.log(`[Cat Lights] Confirmation received via backup poll`);
                 finish(true);
               }
             } catch {}
-          }, 1500);
+          }, 10000);
         });
 
         try {
