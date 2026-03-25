@@ -3,13 +3,22 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   ArrowLeft,
   Loader2,
   Home,
-  RefreshCw,
   FileText,
   Clock,
   StickyNote,
@@ -20,8 +29,18 @@ import {
   BookOpen,
   FolderOpen,
   Pencil,
+  Palette,
+  Bell,
+  Paperclip,
+  Link2,
+  Mail,
+  Smartphone,
+  Volume2,
+  List,
+  Trash2,
 } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
+import { format } from "date-fns";
 
 interface QuickNoteFile {
   id: string;
@@ -32,7 +51,33 @@ interface QuickNoteFile {
   path: string;
 }
 
+interface NoteMeta {
+  color?: string;
+  reminderTime?: string | null;
+  reminderAlarm?: boolean;
+  reminderEmail?: boolean;
+  reminderPush?: boolean;
+  linkedTaskId?: number | null;
+  linkedProjectId?: number | null;
+}
+
 type View = 'home' | 'notebooks' | 'editor' | 'search';
+
+const NOTE_COLORS: Record<string, { bg: string; border: string; label: string }> = {
+  default: { bg: 'transparent', border: 'rgba(255,255,255,0.1)', label: 'Default' },
+  yellow: { bg: 'rgba(255,250,205,0.08)', border: 'rgba(230,210,0,0.3)', label: 'Yellow' },
+  pink: { bg: 'rgba(255,182,193,0.08)', border: 'rgba(255,105,180,0.3)', label: 'Pink' },
+  blue: { bg: 'rgba(135,206,235,0.08)', border: 'rgba(77,166,255,0.3)', label: 'Blue' },
+  green: { bg: 'rgba(152,251,152,0.08)', border: 'rgba(50,205,50,0.3)', label: 'Green' },
+  orange: { bg: 'rgba(255,204,153,0.08)', border: 'rgba(255,140,0,0.3)', label: 'Orange' },
+  purple: { bg: 'rgba(221,160,221,0.08)', border: 'rgba(147,112,219,0.3)', label: 'Purple' },
+};
+
+const COURSE_COLORS = [
+  { color: '#4ade80', label: 'CPPA122' },
+  { color: '#f472b6', label: 'CFNF400' },
+  { color: '#818cf8', label: 'CASL101' },
+];
 
 function timeAgo(dateStr: string) {
   const now = new Date();
@@ -50,6 +95,17 @@ function timeAgo(dateStr: string) {
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
+function getNoteMeta(fileId: string): NoteMeta {
+  try {
+    const stored = localStorage.getItem(`quicknote-meta-${fileId}`);
+    return stored ? JSON.parse(stored) : {};
+  } catch { return {}; }
+}
+
+function setNoteMeta(fileId: string, meta: NoteMeta) {
+  localStorage.setItem(`quicknote-meta-${fileId}`, JSON.stringify(meta));
+}
+
 export default function OneNotePage() {
   const { toast } = useToast();
   const [view, setView] = useState<View>('home');
@@ -59,6 +115,7 @@ export default function OneNotePage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const [newNoteName, setNewNoteName] = useState('');
+  const [noteMeta, setNoteMetaState] = useState<NoteMeta>({});
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const filesQuery = useQuery<QuickNoteFile[]>({
@@ -70,6 +127,16 @@ export default function OneNotePage() {
     queryKey: ["/api/quicknotes/file", selectedFile?.id, "content"],
     enabled: !!selectedFile && view === 'editor',
     staleTime: 5000,
+  });
+
+  const tasksQuery = useQuery<Array<{ id: number; title: string; courseName?: string }>>({
+    queryKey: ["/api/tasks"],
+    staleTime: 30000,
+  });
+
+  const projectsQuery = useQuery<Array<{ id: number; name: string }>>({
+    queryKey: ["/api/projects"],
+    staleTime: 30000,
   });
 
   const saveMutation = useMutation({
@@ -106,11 +173,40 @@ export default function OneNotePage() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await apiRequest('DELETE', `/api/quicknotes/file/${id}`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/quicknotes/files"] });
+      setSelectedFile(null);
+      setView('home');
+      toast({ title: "Note deleted" });
+    },
+    onError: (err: any) => {
+      toast({ title: "Delete failed", description: err.message, variant: "destructive" });
+    },
+  });
+
   useEffect(() => {
     if (contentQuery.data && !isDirty) {
       setEditorContent(contentQuery.data.content);
     }
   }, [contentQuery.data, isDirty]);
+
+  useEffect(() => {
+    if (selectedFile) {
+      setNoteMetaState(getNoteMeta(selectedFile.id));
+    }
+  }, [selectedFile?.id]);
+
+  const updateMeta = useCallback((updates: Partial<NoteMeta>) => {
+    if (!selectedFile) return;
+    const newMeta = { ...noteMeta, ...updates };
+    setNoteMetaState(newMeta);
+    setNoteMeta(selectedFile.id, newMeta);
+  }, [selectedFile, noteMeta]);
 
   const handleEditorChange = useCallback((value: string) => {
     setEditorContent(value);
@@ -145,6 +241,26 @@ export default function OneNotePage() {
     setSearchQuery('');
   }
 
+  const toggleBullets = useCallback(() => {
+    const lines = editorContent.split('\n');
+    const hasBullets = lines.some(line => line.trimStart().startsWith('\u25CF ') || line.trimStart().startsWith('\u2022 '));
+    let newContent: string;
+    if (hasBullets) {
+      newContent = lines.map(line => {
+        const trimmed = line.trimStart();
+        if (trimmed.startsWith('\u25CF ')) return line.replace(/\u25CF /, '');
+        if (trimmed.startsWith('\u2022 ')) return line.replace(/\u2022 /, '');
+        return line;
+      }).join('\n');
+    } else {
+      newContent = lines.map(line => {
+        if (line.trim() === '') return line;
+        return '\u25CF ' + line;
+      }).join('\n');
+    }
+    handleEditorChange(newContent);
+  }, [editorContent, handleEditorChange]);
+
   const files = filesQuery.data || [];
   const recentFiles = [...files].sort((a, b) => {
     if (!a.lastModified || !b.lastModified) return 0;
@@ -154,6 +270,19 @@ export default function OneNotePage() {
   const filteredFiles = searchQuery.trim()
     ? files.filter(f => f.name.toLowerCase().includes(searchQuery.toLowerCase()))
     : files;
+
+  const tasks = tasksQuery.data || [];
+  const projects = projectsQuery.data || [];
+
+  const editorBg = noteMeta.color && noteMeta.color !== 'default' && NOTE_COLORS[noteMeta.color]
+    ? NOTE_COLORS[noteMeta.color].bg
+    : 'rgba(255,255,255,0.03)';
+  const editorBorder = noteMeta.color && noteMeta.color !== 'default' && NOTE_COLORS[noteMeta.color]
+    ? NOTE_COLORS[noteMeta.color].border
+    : 'rgba(255,255,255,0.1)';
+
+  const linkedTask = noteMeta.linkedTaskId ? tasks.find(t => t.id === noteMeta.linkedTaskId) : null;
+  const linkedProject = noteMeta.linkedProjectId ? projects.find(p => p.id === noteMeta.linkedProjectId) : null;
 
   return (
     <div className="min-h-screen text-white" style={{ background: 'linear-gradient(135deg, #4B2D7F 0%, #5C3D8F 25%, #6B4D9A 50%, #7B5EA7 75%, #8E72B5 100%)' }}>
@@ -173,10 +302,170 @@ export default function OneNotePage() {
           </div>
           <div className="flex items-center gap-1">
             {view === 'editor' && (
-              <Button variant="ghost" size="sm" onClick={saveNow} disabled={saveMutation.isPending || !isDirty} className={`h-8 gap-1 text-xs ${isDirty ? 'text-orange-400 hover:text-orange-300 hover:bg-orange-500/10' : 'text-white/40 hover:text-white/60 hover:bg-white/10'}`} data-testid="button-save">
-                {saveMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}
-                {saveMutation.isPending ? 'Saving...' : isDirty ? 'Save' : 'Saved'}
-              </Button>
+              <>
+                {/* Color Palette */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-white/60 hover:text-white hover:bg-white/10" title="Note color" data-testid="button-color-palette">
+                      <Palette className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="p-2 bg-slate-900 border-white/15">
+                    <DropdownMenuLabel className="text-[10px] text-white/50 py-1">Note Theme</DropdownMenuLabel>
+                    <div className="flex gap-2 mb-2">
+                      {Object.entries(NOTE_COLORS).map(([key, val]) => (
+                        <button
+                          key={key}
+                          className={`h-5 w-5 rounded-full border hover:scale-110 transition-transform ${noteMeta.color === key ? 'ring-2 ring-white ring-offset-1 ring-offset-slate-900' : ''}`}
+                          style={{ backgroundColor: key === 'default' ? '#666' : val.border, borderColor: 'rgba(255,255,255,0.3)' }}
+                          title={val.label}
+                          onClick={() => updateMeta({ color: key })}
+                        />
+                      ))}
+                    </div>
+                    <DropdownMenuSeparator className="bg-white/10" />
+                    <DropdownMenuLabel className="text-[10px] text-white/50 py-1">Course Colors</DropdownMenuLabel>
+                    <div className="flex gap-2">
+                      {COURSE_COLORS.map(cc => (
+                        <button
+                          key={cc.color}
+                          className="h-5 w-5 rounded-full border border-white/30 hover:scale-110 transition-transform"
+                          style={{ backgroundColor: cc.color }}
+                          title={cc.label}
+                          onClick={() => updateMeta({ color: cc.color })}
+                        />
+                      ))}
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                {/* Reminder Bell */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className={`h-8 w-8 ${noteMeta.reminderTime ? 'text-amber-400' : 'text-white/60'} hover:text-white hover:bg-white/10`} title="Reminder" data-testid="button-reminder">
+                      <Bell className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56 p-2 bg-slate-900 border-white/15">
+                    <DropdownMenuLabel className="text-[10px] text-white/50 py-1">Reminder Settings</DropdownMenuLabel>
+                    <div className="space-y-2 p-1">
+                      <div className="space-y-1">
+                        <Label className="text-[10px] text-white/70">Reminder Time</Label>
+                        <Input
+                          type="datetime-local"
+                          className="h-7 text-[10px] px-2 bg-white/5 border-white/15 text-white"
+                          value={noteMeta.reminderTime ? format(new Date(noteMeta.reminderTime), "yyyy-MM-dd'T'HH:mm") : ''}
+                          onChange={(e) => updateMeta({ reminderTime: e.target.value ? new Date(e.target.value).toISOString() : null })}
+                        />
+                      </div>
+                      <DropdownMenuSeparator className="bg-white/10" />
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <Volume2 className="h-3.5 w-3.5 text-white/60" />
+                          <span className="text-[11px] text-white/70">Alarm</span>
+                        </div>
+                        <Checkbox
+                          checked={noteMeta.reminderAlarm || false}
+                          onCheckedChange={(checked) => updateMeta({ reminderAlarm: !!checked })}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <Mail className="h-3.5 w-3.5 text-white/60" />
+                          <span className="text-[11px] text-white/70">Email</span>
+                        </div>
+                        <Checkbox
+                          checked={noteMeta.reminderEmail || false}
+                          onCheckedChange={(checked) => updateMeta({ reminderEmail: !!checked })}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <Smartphone className="h-3.5 w-3.5 text-white/60" />
+                          <span className="text-[11px] text-white/70">Push</span>
+                        </div>
+                        <Checkbox
+                          checked={noteMeta.reminderPush || false}
+                          onCheckedChange={(checked) => updateMeta({ reminderPush: !!checked })}
+                        />
+                      </div>
+                      {noteMeta.reminderTime && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="w-full h-7 text-[10px] text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                          onClick={() => updateMeta({ reminderTime: null, reminderAlarm: false, reminderEmail: false, reminderPush: false })}
+                        >
+                          Clear Reminder
+                        </Button>
+                      )}
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                {/* Attach to Task/Project */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className={`h-8 w-8 ${(linkedTask || linkedProject) ? 'text-blue-400' : 'text-white/60'} hover:text-white hover:bg-white/10`} title="Attach to task or project" data-testid="button-attach">
+                      <Paperclip className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="max-h-[300px] overflow-y-auto w-52 bg-slate-900 border-white/15">
+                    {(linkedTask || linkedProject) && (
+                      <>
+                        <div className="px-2 py-1.5 text-[10px] text-blue-400 flex items-center gap-1">
+                          <Link2 className="h-3 w-3" />
+                          Linked to: {linkedTask?.title || linkedProject?.name}
+                        </div>
+                        <DropdownMenuSeparator className="bg-white/10" />
+                      </>
+                    )}
+                    <DropdownMenuLabel className="text-[10px] text-white/50 py-1">Attach to Task</DropdownMenuLabel>
+                    <DropdownMenuItem className="text-[10px] py-1 text-white/50" onClick={() => updateMeta({ linkedTaskId: null })}>
+                      None
+                    </DropdownMenuItem>
+                    {tasks.slice(0, 20).map((task) => (
+                      <DropdownMenuItem
+                        key={task.id}
+                        className={`text-[10px] py-1 truncate ${noteMeta.linkedTaskId === task.id ? 'text-blue-400 font-semibold' : 'text-white/80'}`}
+                        onClick={() => updateMeta({ linkedTaskId: task.id, linkedProjectId: null })}
+                      >
+                        {task.title}
+                      </DropdownMenuItem>
+                    ))}
+                    <DropdownMenuSeparator className="bg-white/10" />
+                    <DropdownMenuLabel className="text-[10px] text-white/50 py-1">Attach to Project</DropdownMenuLabel>
+                    <DropdownMenuItem className="text-[10px] py-1 text-white/50" onClick={() => updateMeta({ linkedProjectId: null })}>
+                      None
+                    </DropdownMenuItem>
+                    {projects.map((project) => (
+                      <DropdownMenuItem
+                        key={project.id}
+                        className={`text-[10px] py-1 truncate ${noteMeta.linkedProjectId === project.id ? 'text-blue-400 font-semibold' : 'text-white/80'}`}
+                        onClick={() => updateMeta({ linkedProjectId: project.id, linkedTaskId: null })}
+                      >
+                        {project.name}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                {/* Bullet Toggle */}
+                <Button variant="ghost" size="icon" onClick={toggleBullets} className="h-8 w-8 text-white/60 hover:text-white hover:bg-white/10" title="Toggle bullets" data-testid="button-bullets">
+                  <List className="h-4 w-4" />
+                </Button>
+
+                {/* Save */}
+                <Button variant="ghost" size="sm" onClick={saveNow} disabled={saveMutation.isPending || !isDirty} className={`h-8 gap-1 text-xs ${isDirty ? 'text-orange-400 hover:text-orange-300 hover:bg-orange-500/10' : 'text-white/40 hover:text-white/60 hover:bg-white/10'}`} data-testid="button-save">
+                  {saveMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}
+                  {saveMutation.isPending ? 'Saving...' : isDirty ? 'Save' : 'Saved'}
+                </Button>
+
+                {/* Delete */}
+                <Button variant="ghost" size="icon" onClick={() => { if (selectedFile && confirm('Delete this note from OneDrive?')) deleteMutation.mutate(selectedFile.id); }} className="h-8 w-8 text-white/60 hover:text-red-400 hover:bg-red-500/10" title="Delete note" data-testid="button-delete-note">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </>
             )}
             <Button
               variant="ghost" size="icon"
@@ -198,7 +487,20 @@ export default function OneNotePage() {
       <div className="max-w-6xl mx-auto px-4 py-4">
         {view === 'home' && <HomeView files={files} recentFiles={recentFiles} isLoading={filesQuery.isLoading} onOpenNote={openNote} onGoNotebooks={() => setView('notebooks')} onStartCreate={() => setIsCreating(true)} />}
         {view === 'notebooks' && <NotebooksView files={files} isLoading={filesQuery.isLoading} onOpenNote={openNote} onStartCreate={() => setIsCreating(true)} />}
-        {view === 'editor' && <EditorView content={editorContent} onChange={handleEditorChange} isLoading={contentQuery.isLoading && !contentQuery.data} file={selectedFile} isDirty={isDirty} isSaving={saveMutation.isPending} />}
+        {view === 'editor' && (
+          <EditorView
+            content={editorContent}
+            onChange={handleEditorChange}
+            isLoading={contentQuery.isLoading && !contentQuery.data}
+            file={selectedFile}
+            isDirty={isDirty}
+            isSaving={saveMutation.isPending}
+            bgColor={editorBg}
+            borderColor={editorBorder}
+            linkedTask={linkedTask}
+            linkedProject={linkedProject}
+          />
+        )}
         {view === 'search' && <SearchView files={filteredFiles} searchQuery={searchQuery} onSearchChange={setSearchQuery} onOpenNote={openNote} isLoading={filesQuery.isLoading} />}
       </div>
 
@@ -340,13 +642,17 @@ function NotebooksView({ files, isLoading, onOpenNote, onStartCreate }: {
   );
 }
 
-function EditorView({ content, onChange, isLoading, file, isDirty, isSaving }: {
+function EditorView({ content, onChange, isLoading, file, isDirty, isSaving, bgColor, borderColor, linkedTask, linkedProject }: {
   content: string;
   onChange: (val: string) => void;
   isLoading: boolean;
   file: QuickNoteFile | null;
   isDirty: boolean;
   isSaving: boolean;
+  bgColor: string;
+  borderColor: string;
+  linkedTask?: { id: number; title: string } | null;
+  linkedProject?: { id: number; name: string } | null;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -357,6 +663,34 @@ function EditorView({ content, onChange, isLoading, file, isDirty, isSaving }: {
     }
   }, [content]);
 
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter') {
+      const textarea = e.currentTarget;
+      const { selectionStart } = textarea;
+      const text = textarea.value;
+      const lineStart = text.lastIndexOf('\n', selectionStart - 1) + 1;
+      const currentLine = text.substring(lineStart, selectionStart);
+
+      if (currentLine.trimStart().startsWith('\u25CF ') || currentLine.trimStart().startsWith('\u2022 ')) {
+        const bulletChar = currentLine.trimStart().startsWith('\u25CF ') ? '\u25CF' : '\u2022';
+        if (currentLine.trim() === bulletChar) {
+          e.preventDefault();
+          const before = text.substring(0, lineStart);
+          const after = text.substring(selectionStart);
+          onChange(before + after);
+          setTimeout(() => { textarea.selectionStart = textarea.selectionEnd = lineStart; }, 0);
+        } else {
+          e.preventDefault();
+          const before = text.substring(0, selectionStart);
+          const after = text.substring(selectionStart);
+          const newContent = before + '\n' + bulletChar + ' ' + after;
+          onChange(newContent);
+          setTimeout(() => { textarea.selectionStart = textarea.selectionEnd = selectionStart + 3; }, 0);
+        }
+      }
+    }
+  }, [onChange]);
+
   if (isLoading) return <LoadingState label="Loading note..." />;
 
   return (
@@ -364,16 +698,23 @@ function EditorView({ content, onChange, isLoading, file, isDirty, isSaving }: {
       <div className="mb-2 flex items-center gap-2 text-xs text-white/30">
         <Pencil className="h-3 w-3" />
         <span>Type here to edit — auto-saves to OneDrive after 2 seconds</span>
+        {(linkedTask || linkedProject) && (
+          <span className="text-blue-400/60 flex items-center gap-1 ml-2">
+            <Link2 className="h-3 w-3" />
+            {linkedTask?.title || linkedProject?.name}
+          </span>
+        )}
         {isSaving && <span className="text-yellow-400/60 ml-auto">Saving...</span>}
         {!isSaving && !isDirty && <span className="text-green-400/50 ml-auto">Synced</span>}
         {isDirty && !isSaving && <span className="text-orange-400/50 ml-auto">Unsaved changes</span>}
       </div>
-      <Card className="bg-white/[0.03] border-white/10">
+      <Card className="border" style={{ backgroundColor: bgColor, borderColor: borderColor }}>
         <CardContent className="p-0">
           <textarea
             ref={textareaRef}
             value={content}
             onChange={e => onChange(e.target.value)}
+            onKeyDown={handleKeyDown}
             className="w-full bg-transparent text-white/90 text-[15px] leading-relaxed p-5 resize-none focus:outline-none font-mono min-h-[400px] placeholder:text-white/20"
             placeholder="Start typing your note..."
             spellCheck
@@ -433,6 +774,7 @@ function SearchView({ files, searchQuery, onSearchChange, onOpenNote, isLoading 
 }
 
 function NoteRow({ file, onOpen }: { file: QuickNoteFile; onOpen: (f: QuickNoteFile) => void }) {
+  const meta = getNoteMeta(file.id);
   return (
     <div
       className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 transition-colors cursor-pointer group"
@@ -454,6 +796,8 @@ function NoteRow({ file, onOpen }: { file: QuickNoteFile; onOpen: (f: QuickNoteF
           {file.size != null && (
             <span>{file.size < 1024 ? `${file.size} B` : `${(file.size / 1024).toFixed(1)} KB`}</span>
           )}
+          {meta.reminderTime && <Bell className="h-2.5 w-2.5 text-amber-400/60" />}
+          {(meta.linkedTaskId || meta.linkedProjectId) && <Link2 className="h-2.5 w-2.5 text-blue-400/60" />}
         </div>
       </div>
       <Pencil className="h-3.5 w-3.5 text-white/20 group-hover:text-white/40 transition-colors" />
