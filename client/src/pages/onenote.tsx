@@ -152,7 +152,7 @@ export default function OneNotePage() {
     : files;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950/20 to-slate-950 text-white">
+    <div className="min-h-screen text-white" style={{ background: 'linear-gradient(135deg, #4B2D7F 0%, #5C3D8F 25%, #6B4D9A 50%, #7B5EA7 75%, #8E72B5 100%)' }}>
       <div className="border-b border-white/10 bg-black/30 backdrop-blur-sm sticky top-0 z-20">
         <div className="max-w-6xl mx-auto px-4 h-12 flex items-center justify-between">
           <div className="flex items-center gap-2">
