@@ -30,3 +30,9 @@ id = "CdHC_-8HCcF1K691gsfQh"
 uri = "file://attached_assets/glass_icon_pink_coral.png"
 type = "image"
 title = "Glass Icon - Pink Coral"
+
+[[outputs]]
+id = "XqmpEHMM7I_fAY01vmLKM"
+uri = "file://HA_Integration_Report.md"
+type = "text"
+title = "HA Integration — Complete Technical Report"
