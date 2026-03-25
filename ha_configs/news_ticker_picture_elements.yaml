@@ -1,12 +1,8 @@
-type: picture-elements
-image: /local/images/black_1920x38.png
-elements:
-  - type: iframe
-    url: https://home-view--bkh416.replit.app/api/ticker?auth=5747
-    style:
-      left: 50%
-      top: 50%
-      width: 100%
-      height: 100%
-      border: none
-      z-index: 1
+type: custom:html-card
+content: >
+  <iframe
+    src="https://home-view--bkh416.replit.app/api/ticker?auth=5747"
+    style="width:100%;height:38px;border:none;display:block;"
+    scrolling="no"
+    frameborder="0"
+  ></iframe>
