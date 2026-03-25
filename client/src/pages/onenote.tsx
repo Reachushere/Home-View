@@ -147,7 +147,13 @@ export default function OneNotePage() {
 
   useEffect(() => {
     if (notebooksQuery.data && notebooksQuery.data.length > 0 && expandedNotebooks.size === 0) {
-      setExpandedNotebooks(new Set([notebooksQuery.data[0].name]));
+      const firstNb = notebooksQuery.data[0];
+      setExpandedNotebooks(new Set([firstNb.name]));
+      if (firstNb.sections.length > 0 && !selectedSection) {
+        setSelectedNotebook(firstNb);
+        const quickNotesSection = firstNb.sections.find(s => s.name.toLowerCase().includes('quick notes'));
+        setSelectedSection(quickNotesSection || firstNb.sections[0]);
+      }
     }
   }, [notebooksQuery.data]);
 
