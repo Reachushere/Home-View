@@ -13957,6 +13957,30 @@ export default function Dashboard() {
           </g>
         </svg>
       </a>
+      {/* Bottom binder tab - Quick Notes (right of Files) */}
+      <a
+        href="/onenote"
+        className={`fixed${tabBounceEnabled ? ' bottom-tab-bounce' : ''}`}
+        style={{
+          bottom: '29px',
+          left: 'calc(50% + 60px)',
+          display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'block',
+          textDecoration: 'none',
+          zIndex: 10002,
+        }}
+        data-testid="bottom-tab-quicknotes"
+        title="Quick Notes"
+      >
+        <svg width="68" height="25" viewBox="0 0 68 25" style={{ display: 'block' }}>
+          <path d="M0,25 L68,25 L68,16 Q61,16 61,10 L61,9 Q61,0 51,0 L17,0 Q7,0 7,9 L7,10 Q7,16 0,16 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+          <g transform="translate(26, 2)">
+            <rect x="1" y="3" width="13" height="10" rx="1" fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="1.2" />
+            <line x1="4" y1="6" x2="11" y2="6" stroke="rgba(255,255,255,0.6)" strokeWidth="0.8" />
+            <line x1="4" y1="8.5" x2="11" y2="8.5" stroke="rgba(255,255,255,0.6)" strokeWidth="0.8" />
+            <line x1="4" y1="11" x2="8" y2="11" stroke="rgba(255,255,255,0.6)" strokeWidth="0.8" />
+          </g>
+        </svg>
+      </a>
       {/* Left binder tab - Add */}
       <div
         className={`fixed z-[10002] cursor-pointer${tabBounceEnabled ? ' left-tab-bounce' : ''}`}
