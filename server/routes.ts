@@ -8901,14 +8901,14 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       return getFileWeek(f) === weekNumber;
     });
 
-    const courses = [...new Set(unlistenedFiles.map(getCourseCode))].filter(Boolean);
-    let orderedUnlistened: any[] = [];
-    for (const course of courses) {
-      const courseFiles = unlistenedFiles.filter((f: any) => getCourseCode(f) === course);
-      const modules = courseFiles.filter(isModuleFile);
-      const readings = courseFiles.filter((f: any) => !isModuleFile(f));
-      orderedUnlistened.push(...modules, ...readings);
-    }
+    const orderedUnlistened = [...unlistenedFiles].sort((a, b) => {
+      const aPri = getCoursePriorityForFile(a);
+      const bPri = getCoursePriorityForFile(b);
+      if (aPri !== bPri) return aPri - bPri;
+      const aModule = isModuleFile(a) ? 0 : 1;
+      const bModule = isModuleFile(b) ? 0 : 1;
+      return aModule - bModule;
+    });
 
     const orderedFiles = [...currentWeekPartials, ...orderedUnlistened];
     return orderedFiles.length > 0 ? orderedFiles[0] : null;
