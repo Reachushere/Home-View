@@ -410,7 +410,7 @@ export async function sendEchoVoiceAnnouncement(message: string): Promise<{ succ
       },
       body: JSON.stringify({
         message: message,
-        data: { type: "announce" },
+        data: { type: "tts" },
         target: ECHO_TARGETS,
       }),
     });
