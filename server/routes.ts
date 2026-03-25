@@ -84,12 +84,14 @@ async function getPdfParser() {
   return PDFParse;
 }
 
-// Use Nabu Casa cloud URL for remote access
-const HOME_ASSISTANT_URL = "https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa";
-// Auto-detect which env var contains the JWT token (starts with "eyJ")
+// ===== CENTRALIZED CONFIGURATION =====
+// Change these values in ONE place if URLs or devices change.
+const DEPLOYED_APP_URL = process.env.DEPLOYED_APP_URL || "https://home-view--bkh416.replit.app";
+const HOME_ASSISTANT_URL = process.env.HOME_ASSISTANT_URL_OVERRIDE || "https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa";
 const tokenFromEnv = process.env.HOME_ASSISTANT_TOKEN || "";
 const urlFromEnv = process.env.HOME_ASSISTANT_URL || "";
 const HOME_ASSISTANT_TOKEN = tokenFromEnv.startsWith("eyJ") ? tokenFromEnv : (urlFromEnv.startsWith("eyJ") ? urlFromEnv : tokenFromEnv);
+
 const BATHROOM_ECHO_ENTITY = "media_player.nestaudio6787";
 const KITCHEN_ECHO_ENTITY = "media_player.echo_kitchen_studio_black_am";
 const NEST_SPEAKER_ENTITY = "media_player.nestaudio6787";
@@ -98,6 +100,18 @@ const NON_ALEXA_ENTITIES = [NEST_SPEAKER_ENTITY, CAT_WR_HA_VOICE_ENTITY];
 const MODULE_READING_PENDING = "input_boolean.module_reading_pending";
 const MODULE_READING_CONFIRMED = "input_boolean.module_reading_confirmed";
 const PARTNER_PHONE_ENTITY = "device_tracker.y_phone_app";
+const HA_CLOUD_TTS_ENTITY = "tts.home_assistant_cloud";
+const CAT_LIGHTS_ENTITY = "light.cat_lights";
+const CAT_TV_ENTITY = "media_player.tv_cat_wr";
+const CAT_WR_MEDIA_GROUP = "media_player.cat_washroom_media_group";
+const CAT_ECHO_ENTITIES = [
+  "media_player.echo_cat_left_am",
+  "media_player.echo_cat_right_am",
+  "media_player.echo_cat_washroom_middle",
+];
+
+const SPOTIFYPLUS_ENTITY = "media_player.spotifyplus_byhomeyyz";
+const EVERYWHERE_GROUP_ENTITY = "media_player.byhome";
 
 async function haFetch(url: string, options: RequestInit = {}, maxRetries = 3, label = 'HA'): Promise<Response> {
   for (let attempt = 0; attempt < maxRetries; attempt++) {
@@ -226,8 +240,8 @@ const FLICK_DEVICES: FlickRoomGroup[] = [
       { id: "cat_echo_left", name: "Echo (Left)", entityId: "media_player.echo_cat_left_am", type: "echo", canDisplay: false, room: "Cat Washroom" },
       { id: "cat_echo_right", name: "Echo (Right)", entityId: "media_player.echo_cat_right_am", type: "echo", canDisplay: false, room: "Cat Washroom" },
       { id: "cat_nest", name: "Nest Speaker", entityId: "media_player.nestaudio6787", type: "speaker", canDisplay: false, room: "Cat Washroom" },
-      { id: "cat_tv", name: "TV", entityId: "media_player.tv_cat_wr", type: "tv", canDisplay: true, room: "Cat Washroom" },
-      { id: "cat_group", name: "All Cat Washroom", entityId: "media_player.cat_washroom_media_group", type: "group", canDisplay: false, room: "Cat Washroom" },
+      { id: "cat_tv", name: "TV", entityId: CAT_TV_ENTITY, type: "tv", canDisplay: true, room: "Cat Washroom" },
+      { id: "cat_group", name: "All Cat Washroom", entityId: CAT_WR_MEDIA_GROUP, type: "group", canDisplay: false, room: "Cat Washroom" },
     ]
   },
   {
@@ -247,7 +261,7 @@ const FLICK_DEVICES: FlickRoomGroup[] = [
   {
     room: "Everywhere", icon: "🏠",
     devices: [
-      { id: "everywhere", name: "All Speakers", entityId: "media_player.byhome", type: "group", canDisplay: false, room: "Everywhere" },
+      { id: "everywhere", name: "All Speakers", entityId: EVERYWHERE_GROUP_ENTITY, type: "group", canDisplay: false, room: "Everywhere" },
     ]
   },
 ];
@@ -630,7 +644,7 @@ async function sendNextChunk() {
     
     if (isNonAlexa) {
       const audioPath = await generateAndSaveTTSAudio(nextChunk, `tts-chunk-${Date.now()}`, "echo");
-      const appUrl = "https://home-view--bkh416.replit.app";
+      const appUrl = DEPLOYED_APP_URL;
       const fullAudioUrl = `${appUrl}${audioPath}`;
       console.log(`[TTS] Non-Alexa: Generated audio at ${audioPath}, playing on ${targetEntity}`);
       
@@ -862,7 +876,7 @@ export async function registerRoutes(
   });
 
   app.get('/tablet', (req, res) => {
-    const baseUrl = `https://home-view--bkh416.replit.app`;
+    const baseUrl = DEPLOYED_APP_URL;
     const targetUrl = req.query.target ? decodeURIComponent(String(req.query.target)) : `${baseUrl}/?auth=5747`;
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
     res.setHeader('Content-Type', 'text/html');
@@ -5732,7 +5746,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
       if (isNonAlexa) {
         const audioPath = await generateAndSaveTTSAudio(cleanedText, `speaker-tts-${Date.now()}`);
-        const appUrl = "https://home-view--bkh416.replit.app";
+        const appUrl = DEPLOYED_APP_URL;
         const fullAudioUrl = `${appUrl}${audioPath}`;
         console.log(`[TTS Speaker] Non-Alexa: Generated audio at ${audioPath}, playing on ${entityId} via play_media`);
 
@@ -6652,7 +6666,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     } catch {}
   }
 
-  const DEPLOYED_APP_URL = "https://home-view--bkh416.replit.app";
 
   async function setTabletCommand(cmd: { action: string; url?: string; goodbyeText?: string; timestamp: number }, propagate = true, device = 'master') {
     pendingTabletCommands[device] = cmd;
@@ -6779,7 +6792,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
     const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
     const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
-    const dashboardUrl = "https://home-view--bkh416.replit.app/tablet";
+    const dashboardUrl = `${DEPLOYED_APP_URL}/tablet`;
     const results: string[] = [];
 
     const tabletAdbEntities = [
@@ -6843,7 +6856,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
   app.get("/api/cat-wash/tv-follow", (_req, res) => {
     const tvUrl = (_req.query.url ? decodeURIComponent(String(_req.query.url)) : '') || currentTvFollowUrl || '';
-    const baseUrl = 'https://home-view--bkh416.replit.app';
+    const baseUrl = DEPLOYED_APP_URL;
     console.log(`[Cat Wash TV] Serving fullscreen wrapper, target: ${tvUrl || 'none'}`);
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
     res.setHeader('Content-Type', 'text/html');
@@ -7037,7 +7050,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
   // Self-ping to keep Replit from sleeping (every 4 minutes)
   const SELF_PING_INTERVAL_MS = 4 * 60 * 1000;
-  const APP_URL = "https://home-view--bkh416.replit.app";
+  const APP_URL = DEPLOYED_APP_URL;
   setTimeout(() => {
     setInterval(async () => {
       try {
@@ -7491,7 +7504,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
               : `Bryn, the server restarted during playback of ${cleanName}. Your position at chunk ${persisted.chunkIndex + 1} of ${persisted.totalChunks} has been saved. You can resume next time.`;
             try {
               await haServiceCall('tts/speak', {
-                entity_id: "tts.home_assistant_cloud",
+                entity_id: HA_CLOUD_TTS_ENTITY,
                 media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
                 message
               }, 'Recovery TTS');
@@ -7526,14 +7539,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     return prioritized[0] || null;
   }
 
-  const CAT_ECHO_ENTITIES = [
-    "media_player.echo_cat_left_am",
-    "media_player.echo_cat_right_am",
-    "media_player.echo_cat_washroom_middle",
-  ];
-
   function isSpotifyPlayingOnEverywhere(): boolean {
-    return spotifyActivePlaybacks.has("media_player.byhome");
+    return spotifyActivePlaybacks.has(EVERYWHERE_GROUP_ENTITY);
   }
 
   async function stopAllCatWashroomSpeakers(haUrl: string): Promise<void> {
@@ -7548,7 +7555,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         }),
         fetch(`${haUrl}/api/services/media_player/media_stop`, {
           method: 'POST', headers: haHeaders,
-          body: JSON.stringify({ entity_id: "media_player.cat_washroom_media_group" }),
+          body: JSON.stringify({ entity_id: CAT_WR_MEDIA_GROUP }),
         }),
       ]);
     } else {
@@ -7563,7 +7570,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         }),
         fetch(`${haUrl}/api/services/media_player/media_stop`, {
           method: 'POST', headers: haHeaders,
-          body: JSON.stringify({ entity_id: "media_player.cat_washroom_media_group" }),
+          body: JSON.stringify({ entity_id: CAT_WR_MEDIA_GROUP }),
         }),
       ]);
       console.log(`[Speakers] Stopped Nest + cat washroom Echos + media group`);
@@ -7577,7 +7584,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     }
     try {
       await haServiceCall('media_player/play_media', {
-        entity_id: "media_player.cat_washroom_media_group", media_content_type: "custom", media_content_id: "play 104.5 chum fm"
+        entity_id: CAT_WR_MEDIA_GROUP, media_content_type: "custom", media_content_id: "play 104.5 chum fm"
       }, 'CHUM FM');
       console.log(`[Radio] Playing CHUM FM 104.5 on Cat Washroom speaker group`);
     } catch (e: any) {
@@ -7592,7 +7599,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     confirmationTTS: string | null = null
   ): Promise<void> {
     const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-    const appUrl = "https://home-view--bkh416.replit.app";
+    const appUrl = DEPLOYED_APP_URL;
     const authParam = encodeURIComponent(process.env.SITE_PASSWORD || '');
     const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
 
@@ -7739,13 +7746,13 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       try {
         await Promise.allSettled([
           haServiceCall('media_player/turn_on', { entity_id: 'media_player.fire_tv_172_24_0_88' }, 'TV On'),
-          haServiceCall('media_player/turn_on', { entity_id: 'media_player.tv_cat_wr' }, 'TV On'),
+          haServiceCall('media_player/turn_on', { entity_id: CAT_TV_ENTITY }, 'TV On'),
         ]);
         console.log(`${logPrefix} Fire Stick + Samsung TV turned on`);
         await new Promise(resolve => setTimeout(resolve, 3000));
 
         try {
-          await haServiceCall('media_player/select_source', { entity_id: 'media_player.tv_cat_wr', source: 'HDMI1' }, 'TV Source');
+          await haServiceCall('media_player/select_source', { entity_id: CAT_TV_ENTITY, source: 'HDMI1' }, 'TV Source');
           console.log(`${logPrefix} Samsung TV switched to Fire Stick HDMI input`);
         } catch (e: any) {
           console.log(`${logPrefix} Samsung TV source switch error: ${e.message}`);
@@ -7765,7 +7772,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         if (!playResult.success) {
           console.warn(`${logPrefix} Confirm TTS play failed — using HA Cloud TTS fallback`);
           await haServiceCall('tts/speak', {
-            entity_id: "tts.home_assistant_cloud",
+            entity_id: HA_CLOUD_TTS_ENTITY,
             media_player_entity_id: NEST_SPEAKER_ENTITY,
             message: confirmationTTS
           }, 'Confirm Fallback TTS');
@@ -7779,7 +7786,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         console.error(`${logPrefix} Confirm TTS error: ${e.message} — trying HA Cloud TTS`);
         try {
           await haServiceCall('tts/speak', {
-            entity_id: "tts.home_assistant_cloud",
+            entity_id: HA_CLOUD_TTS_ENTITY,
             media_player_entity_id: NEST_SPEAKER_ENTITY,
             message: confirmationTTS || "Okay, starting playback now."
           }, 'Confirm Fallback TTS');
@@ -7882,7 +7889,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
               try {
                 await stopNestSpeaker();
                 const goodbyeText = "Stopping. Your reading position has been saved. See you next time Bryn.";
-                const appUrl = "https://home-view--bkh416.replit.app";
+                const appUrl = DEPLOYED_APP_URL;
                 const goodbyePath = await generateAndSaveTTSAudio(goodbyeText, `nest-goodbye-tb-${Date.now()}`, "echo");
                 await new Promise(r => setTimeout(r, 500));
                 await playOnNestSpeaker(`${appUrl}${goodbyePath}`);
@@ -7950,7 +7957,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   }
 
   async function playOnNestSpeaker(audioUrl: string, maxRetries: number = 2): Promise<{ success: boolean; actuallyPlaying: boolean }> {
-    const fullUrl = audioUrl.startsWith('http') ? audioUrl : `https://home-view--bkh416.replit.app${audioUrl}`;
+    const fullUrl = audioUrl.startsWith('http') ? audioUrl : `${DEPLOYED_APP_URL}${audioUrl}`;
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       if (attempt > 0) {
@@ -8062,7 +8069,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     preGeneratedFirstChunkPath: string | null = null
   ) {
     const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-    const appUrl = "https://home-view--bkh416.replit.app";
+    const appUrl = DEPLOYED_APP_URL;
     let aborted = false;
     nestPlaybackAbort = () => { aborted = true; };
 
@@ -8251,7 +8258,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
               console.error(`[Nest Playback] CIRCUIT BREAKER: ${MAX_PLAY_FAILURES} consecutive play failures — stopping playback`);
               try {
                 await haServiceCall('tts/speak', {
-                  entity_id: "tts.home_assistant_cloud",
+                  entity_id: HA_CLOUD_TTS_ENTITY,
                   media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
                   message: "Sorry Bryn, I can't reach the Nest speaker. Playback stopped."
                 }, 'Error TTS');
@@ -8270,7 +8277,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
               console.error(`[Nest Playback] CIRCUIT BREAKER: speaker not responding after ${MAX_PLAY_FAILURES} chunks — stopping`);
               try {
                 await haServiceCall('tts/speak', {
-                  entity_id: "tts.home_assistant_cloud",
+                  entity_id: HA_CLOUD_TTS_ENTITY,
                   media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
                   message: "Sorry Bryn, the Nest speaker isn't responding. Please check it and try again."
                 }, 'Error TTS');
@@ -8406,7 +8413,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       console.error(`[Nest Playback] Fatal error: ${err.message}`, err.stack?.split('\n').slice(0, 3).join(' | '));
       try {
         await haServiceCall('tts/speak', {
-          entity_id: "tts.home_assistant_cloud",
+          entity_id: HA_CLOUD_TTS_ENTITY,
           media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
           message: "Sorry, playback encountered an error and stopped."
         }, 'Fatal Error TTS');
@@ -8541,7 +8548,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
   async function stopNestPlaybackWithGoodbye(reason: string): Promise<void> {
     const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-    const appUrl = "https://home-view--bkh416.replit.app";
+    const appUrl = DEPLOYED_APP_URL;
 
     clearVoiceCommandPause_();
 
@@ -8933,7 +8940,7 @@ document.body.removeChild(a);
       console.log(`[Cat Wash] Fire Stick force-stop Silk failed: ${e.message}`);
     }
     currentTvFollowUrl = url;
-    const appUrl = "https://home-view--bkh416.replit.app";
+    const appUrl = DEPLOYED_APP_URL;
     const redirectUrl = `${appUrl}/api/cat-wash/tv-follow`;
     console.log(`[Cat Wash] TV redirect URL stored. Opening simple redirect: ${redirectUrl}`);
     console.log(`[Cat Wash] TV will redirect to: ${url}`);
@@ -8992,7 +8999,7 @@ document.body.removeChild(a);
       if (!haUrl || !HOME_ASSISTANT_TOKEN) {
         return res.status(500).json({ error: "Home Assistant not configured" });
       }
-      const appUrl = "https://home-view--bkh416.replit.app";
+      const appUrl = DEPLOYED_APP_URL;
       const authParam = encodeURIComponent(process.env.SITE_PASSWORD || '');
       const testUrl = `${appUrl}/pdf-reader/139?catWashFollow=true&autoplay=true&auth=${authParam}`;
       const { device: targetDevice, method: testMethod } = req.body;
@@ -9183,11 +9190,7 @@ document.body.removeChild(a);
       if (!isSpotifyPlayingOnEverywhere()) {
         try {
           const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-          const catEchoEntities = [
-            "media_player.echo_cat_left_am",
-            "media_player.echo_cat_right_am",
-            "media_player.echo_cat_washroom_middle",
-          ];
+          const catEchoEntities = CAT_ECHO_ENTITIES;
           await fetch(`${haUrl}/api/services/media_player/media_stop`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
@@ -9227,7 +9230,7 @@ document.body.removeChild(a);
       const haHeaders0 = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
       let lightState = 'unknown';
       try {
-        const lightResp = await fetch(`${haUrl0}/api/states/light.cat_lights`, { headers: haHeaders0 });
+        const lightResp = await fetch(`${haUrl0}/api/states/${CAT_LIGHTS_ENTITY}`, { headers: haHeaders0 });
         if (lightResp.ok) {
           const lightData = await lightResp.json();
           lightState = lightData?.state || 'unknown';
@@ -9243,7 +9246,7 @@ document.body.removeChild(a);
       }
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-      const appUrl = "https://home-view--bkh416.replit.app";
+      const appUrl = DEPLOYED_APP_URL;
       const authParam = encodeURIComponent(process.env.SITE_PASSWORD || '');
 
       // === LIGHT TURNED OFF → Stop all playback + save progress ===
@@ -9319,7 +9322,7 @@ document.body.removeChild(a);
             haServiceCall('input_boolean/turn_on', { entity_id: MODULE_READING_PENDING }, 'Cat Lights Bool'),
           ]);
           await haServiceCall('tts/speak', {
-            entity_id: "tts.home_assistant_cloud",
+            entity_id: HA_CLOUD_TTS_ENTITY,
             media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
             message: "One moment, checking your readings."
           }, 'Cat Lights Quick TTS');
@@ -9359,7 +9362,7 @@ document.body.removeChild(a);
       await immediatePromptPromise;
 
       try {
-        const lightCheckResp = await fetch(`${haUrl0}/api/states/light.cat_lights`, { headers: haHeaders0 });
+        const lightCheckResp = await fetch(`${haUrl0}/api/states/${CAT_LIGHTS_ENTITY}`, { headers: haHeaders0 });
         if (lightCheckResp.ok) {
           const lightCheckData = await lightCheckResp.json();
           if (lightCheckData?.state === 'off') {
@@ -9396,7 +9399,7 @@ document.body.removeChild(a);
         let ttsPlayed = false;
         try {
           await haServiceCall('tts/speak', {
-            entity_id: "tts.home_assistant_cloud",
+            entity_id: HA_CLOUD_TTS_ENTITY,
             media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
             message: ttsMessage
           }, 'Cat Lights Cloud TTS');
@@ -9406,7 +9409,7 @@ document.body.removeChild(a);
           console.warn(`[Cat Lights] HA Cloud TTS failed: ${e.message} — trying Edge TTS fallback`);
           try {
             const audioPath = await generateAndSaveTTSAudio(ttsMessage, `cat-lights-prompt-${Date.now()}`);
-            const appUrl2 = "https://home-view--bkh416.replit.app";
+            const appUrl2 = DEPLOYED_APP_URL;
             await haServiceCall('media_player/play_media', { entity_id: CAT_WR_HA_VOICE_ENTITY, media_content_id: `${appUrl2}${audioPath}`, media_content_type: "music" }, 'Cat Lights TTS');
             ttsPlayed = true;
             console.log(`[Cat Lights] TTS prompt played via Edge TTS on HA Voice`);
@@ -9430,7 +9433,7 @@ document.body.removeChild(a);
       await new Promise(r => setTimeout(r, 2000));
 
       try {
-        const lightCheck2 = await fetch(`${haUrl0}/api/states/light.cat_lights`, { headers: haHeaders0 });
+        const lightCheck2 = await fetch(`${haUrl0}/api/states/${CAT_LIGHTS_ENTITY}`, { headers: haHeaders0 });
         if (lightCheck2.ok) {
           const ld2 = await lightCheck2.json();
           if (ld2?.state === 'off') {
@@ -9491,7 +9494,7 @@ document.body.removeChild(a);
         }
 
         try {
-          const lightCheck3 = await fetch(`${haUrl0}/api/states/light.cat_lights`, { headers: haHeaders0 });
+          const lightCheck3 = await fetch(`${haUrl0}/api/states/${CAT_LIGHTS_ENTITY}`, { headers: haHeaders0 });
           if (lightCheck3.ok) {
             const ld3 = await lightCheck3.json();
             if (ld3?.state === 'off') {
@@ -9596,7 +9599,7 @@ document.body.removeChild(a);
 
       const allCatEntities = [
         NEST_SPEAKER_ENTITY,
-        "media_player.cat_washroom_media_group",
+        CAT_WR_MEDIA_GROUP,
       ];
 
       const activeEntities: string[] = [];
@@ -9759,7 +9762,7 @@ document.body.removeChild(a);
 
       const nextFile = await findNextCatWashFile(storage, currentWeekNumber, fileId);
       if (nextFile) {
-        const appUrl = "https://home-view--bkh416.replit.app";
+        const appUrl = DEPLOYED_APP_URL;
         const authParam = encodeURIComponent(process.env.SITE_PASSWORD || '');
         const nextReaderUrl = `${appUrl}/pdf-reader/${nextFile.id}?catWashFollow=true&autoplay=true&auth=${authParam}`;
         const nextFileName = nextFile.displayName || nextFile.originalName || 'Unknown file';
@@ -9842,7 +9845,7 @@ document.body.removeChild(a);
       console.log(`[Cat Wash Stop] Sent media_stop to Nest speaker`);
       stopped.push("nestSpeaker");
 
-      const appUrl = "https://home-view--bkh416.replit.app";
+      const appUrl = DEPLOYED_APP_URL;
       try {
         const stopConfirmPath = await generateAndSaveTTSAudio("Stop received.", `cat-wash-stop-confirm-${Date.now()}`);
         await playOnNestSpeaker(`${appUrl}${stopConfirmPath}`);
@@ -9897,7 +9900,7 @@ document.body.removeChild(a);
     }
 
     const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-    const appUrl = "https://home-view--bkh416.replit.app";
+    const appUrl = DEPLOYED_APP_URL;
     const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
 
     try {
@@ -10017,11 +10020,7 @@ document.body.removeChild(a);
         }
 
         try {
-          const echoEntities = [
-            "media_player.echo_cat_left_am",
-            "media_player.echo_cat_right_am",
-            "media_player.echo_cat_washroom_middle",
-          ];
+          const echoEntities = CAT_ECHO_ENTITIES;
           await fetch(`${haUrl}/api/services/media_player/media_stop`, {
             method: 'POST', headers: haHeaders,
             body: JSON.stringify({ entity_id: echoEntities }),
@@ -10139,11 +10138,7 @@ document.body.removeChild(a);
         }
 
         try {
-          const echoEntities = [
-            "media_player.echo_cat_left_am",
-            "media_player.echo_cat_right_am",
-            "media_player.echo_cat_washroom_middle",
-          ];
+          const echoEntities = CAT_ECHO_ENTITIES;
           await fetch(`${haUrl}/api/services/media_player/media_stop`, {
             method: 'POST', headers: haHeaders,
             body: JSON.stringify({ entity_id: echoEntities }),
@@ -10206,11 +10201,7 @@ document.body.removeChild(a);
         }
 
         try {
-          const echoEntities = [
-            "media_player.echo_cat_left_am",
-            "media_player.echo_cat_right_am",
-            "media_player.echo_cat_washroom_middle",
-          ];
+          const echoEntities = CAT_ECHO_ENTITIES;
           await fetch(`${haUrl}/api/services/media_player/media_stop`, {
             method: 'POST', headers: haHeaders,
             body: JSON.stringify({ entity_id: echoEntities }),
@@ -10309,11 +10300,7 @@ document.body.removeChild(a);
         console.log(`[Voice Command] Skipping to next: ${fileDesc} (id=${nextFile.id})`);
 
         try {
-          const echoEntities = [
-            "media_player.echo_cat_left_am",
-            "media_player.echo_cat_right_am",
-            "media_player.echo_cat_washroom_middle",
-          ];
+          const echoEntities = CAT_ECHO_ENTITIES;
           await fetch(`${haUrl}/api/services/media_player/media_stop`, {
             method: 'POST', headers: haHeaders,
             body: JSON.stringify({ entity_id: echoEntities }),
@@ -10355,11 +10342,7 @@ document.body.removeChild(a);
         currentTabletReaderUrl = null;
 
         try {
-          const echoEntities = [
-            "media_player.echo_cat_left_am",
-            "media_player.echo_cat_right_am",
-            "media_player.echo_cat_washroom_middle",
-          ];
+          const echoEntities = CAT_ECHO_ENTITIES;
           await fetch(`${haUrl}/api/services/media_player/media_stop`, {
             method: 'POST', headers: haHeaders,
             body: JSON.stringify({ entity_id: echoEntities }),
@@ -10464,7 +10447,7 @@ document.body.removeChild(a);
         }
       }
 
-      const appUrl = `https://${req.get('host') || 'home-view--bkh416.replit.app'}`;
+      const appUrl = `https://${req.get('host') || new URL(DEPLOYED_APP_URL).host}`;
       const readerUrl = `${appUrl}/pdf-reader/${fileId}?autoplay=true&speaker=${encodeURIComponent(device.entityId)}`;
 
       const navigateToReader = async (targetDevice: FlickDevice) => {
@@ -10775,8 +10758,7 @@ document.body.removeChild(a);
       const allowedEntities = [
         BATHROOM_ECHO_ENTITY, KITCHEN_ECHO_ENTITY, NEST_SPEAKER_ENTITY, CAT_WR_HA_VOICE_ENTITY,
         "media_player.cat_wash_2",
-        "media_player.echo_cat_left_am", "media_player.echo_cat_right_am",
-        "media_player.echo_cat_washroom_middle", "media_player.echo_closet_am",
+        ...CAT_ECHO_ENTITIES, "media_player.echo_closet_am",
         "media_player.echo_lr_couch_r_am", "media_player.echo_hallway_entrance_am",
         "media_player.echo_king_l_am", "media_player.echo_king_r_am",
         "media_player.echo_king_tv_am", "media_player.echo_kitchen_cupboards_left_am",
@@ -10822,7 +10804,7 @@ document.body.removeChild(a);
         const completionMsg = `All week ${currentWeekNumber} readings are complete. Great job!`;
         if (isNonAlexaTarget) {
           const audioPath = await generateAndSaveTTSAudio(completionMsg, `tts-done-${Date.now()}`, "echo");
-          const appUrl = "https://home-view--bkh416.replit.app";
+          const appUrl = DEPLOYED_APP_URL;
           await fetch(`${haUrl}/api/services/media_player/play_media`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
@@ -10958,7 +10940,7 @@ document.body.removeChild(a);
       let response: Response;
       if (isNonAlexaTarget) {
         const audioPath = await generateAndSaveTTSAudio(fullFirstMessage, `tts-first-${Date.now()}`, "echo");
-        const appUrl = "https://home-view--bkh416.replit.app";
+        const appUrl = DEPLOYED_APP_URL;
         const fullAudioUrl = `${appUrl}${audioPath}`;
         console.log(`[Webhook] Non-Alexa: Generated audio at ${audioPath}`);
         
@@ -11125,7 +11107,7 @@ document.body.removeChild(a);
           
           // Generate OpenAI TTS audio and save to object storage
           const audioPath = await generateAndSaveTTSAudio(textContent, `module-${file.id}`);
-          const audioUrl = `https://home-view--bkh416.replit.app${audioPath}`;
+          const audioUrl = `${DEPLOYED_APP_URL}${audioPath}`;
           
           // Update file record with audio URL
           await storage.updateFile(file.id, { 
@@ -11269,7 +11251,7 @@ document.body.removeChild(a);
       const isNonAlexa = NON_ALEXA_ENTITIES.includes(targetEntity);
       if (isNonAlexa) {
         const audioPath = await generateAndSaveTTSAudio(chunkMessage, `next-chunk-${fileId}-${nextChunkIndex}`, "echo");
-        const appUrl = "https://home-view--bkh416.replit.app";
+        const appUrl = DEPLOYED_APP_URL;
         await fetch(`${haUrl}/api/services/media_player/play_media`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
@@ -11838,7 +11820,7 @@ document.body.removeChild(a);
       let response: Response;
       if (isNonAlexa) {
         const audioPath = await generateAndSaveTTSAudio(chunk, `start-reading-${Date.now()}`, "echo");
-        const appUrl = "https://home-view--bkh416.replit.app";
+        const appUrl = DEPLOYED_APP_URL;
         response = await fetch(`${haUrl}/api/services/media_player/play_media`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
@@ -12307,7 +12289,7 @@ document.body.removeChild(a);
       
       // Use Nest speaker (non-Alexa) for cat washroom TTS
       const audioPath = await generateAndSaveTTSAudio(message, `echo-tts-${Date.now()}`, "echo");
-      const appUrl = "https://home-view--bkh416.replit.app";
+      const appUrl = DEPLOYED_APP_URL;
       const response = await fetch(`${haUrl}/api/services/media_player/play_media`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
@@ -12504,7 +12486,7 @@ document.body.removeChild(a);
       let response: Response;
       if (isNonAlexa) {
         const audioPath = await generateAndSaveTTSAudio(cleanedContent, `tts-play-${Date.now()}`, "echo");
-        const appUrl = "https://home-view--bkh416.replit.app";
+        const appUrl = DEPLOYED_APP_URL;
         console.log(`[TTS Play] Non-Alexa: Generated audio at ${audioPath}`);
         response = await fetch(`${haUrl}/api/services/media_player/play_media`, {
           method: 'POST',
@@ -12676,7 +12658,7 @@ document.body.removeChild(a);
       let response: Response;
       if (isNonAlexa) {
         const audioPath = await generateAndSaveTTSAudio(remainingText, `tts-resume-${Date.now()}`, "echo");
-        const appUrl = "https://home-view--bkh416.replit.app";
+        const appUrl = DEPLOYED_APP_URL;
         response = await fetch(`${haUrl}/api/services/media_player/play_media`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
@@ -12756,7 +12738,7 @@ document.body.removeChild(a);
   // POST /api/media/skip-chunk - Skip to next or previous chunk in TTS
   app.post("/api/media/attention-prompt", async (req, res) => {
     try {
-      const appUrl = "https://home-view--bkh416.replit.app";
+      const appUrl = DEPLOYED_APP_URL;
       const promptPath = await generateAndSaveTTSAudio("Bryn, are you paying attention?", `attention-prompt-${Date.now()}`, "echo");
       await playOnNestSpeaker(`${appUrl}${promptPath}`);
       console.log(`[Attention Prompt] Played on Nest speaker`);
@@ -12910,10 +12892,8 @@ document.body.removeChild(a);
       
       // All Echo devices (excluding lr studio and lr couch left)
       const devices = [
-        "media_player.nestaudio6787",
-        "media_player.echo_cat_left_am",
-        "media_player.echo_cat_right_am",
-        "media_player.echo_cat_washroom_middle",
+        NEST_SPEAKER_ENTITY,
+        ...CAT_ECHO_ENTITIES,
         "media_player.echo_closet_am",
         "media_player.echo_lr_couch_r_am",
         "media_player.echo_hallway_entrance_am",
@@ -12970,10 +12950,8 @@ document.body.removeChild(a);
       
       // Stop ALL devices that might be playing
       const devices = [
-        "media_player.nestaudio6787",
-        "media_player.echo_cat_left_am",
-        "media_player.echo_cat_right_am",
-        "media_player.echo_cat_washroom_middle",
+        NEST_SPEAKER_ENTITY,
+        ...CAT_ECHO_ENTITIES,
         "media_player.echo_closet_am",
         "media_player.echo_lr_couch_l_am",
         "media_player.echo_lr_couch_r_am",
@@ -12994,7 +12972,7 @@ document.body.removeChild(a);
         "media_player.echo_queen_bed_l_am",
         "media_player.echo_queen_bed_r_am",
         "media_player.echo_show_pug_am",
-        "media_player.byhome",
+        EVERYWHERE_GROUP_ENTITY,
         "media_player.everywhere_2"
       ];
       
@@ -13066,7 +13044,7 @@ document.body.removeChild(a);
       
       console.log(`Setting volume to ${newVolume} on ${targetDevice}`);
       
-      if (targetDevice === "media_player.byhome") {
+      if (targetDevice === EVERYWHERE_GROUP_ENTITY) {
         const excludeSet = new Set<string>(Array.isArray(req.body.excludeEntityIds) ? req.body.excludeEntityIds : []);
         const allEchoDevices = FLICK_DEVICES.flatMap(g => g.devices).filter(d => (d.type === "echo" || d.type === "echo_show") && d.entityId.includes("_am") && !excludeSet.has(d.entityId));
         console.log(`[Volume] BYhome group → setting volume on ${allEchoDevices.length} individual Echo devices (excluded: ${excludeSet.size})`);
@@ -13119,10 +13097,8 @@ document.body.removeChild(a);
       
       // All Echo devices
       const devices = [
-        "media_player.nestaudio6787",
-        "media_player.echo_cat_left_am",
-        "media_player.echo_cat_right_am",
-        "media_player.echo_cat_washroom_middle",
+        NEST_SPEAKER_ENTITY,
+        ...CAT_ECHO_ENTITIES,
         "media_player.echo_closet_am",
         "media_player.echo_lr_couch_r_am",
         "media_player.echo_hallway_entrance_am",
@@ -14975,7 +14951,7 @@ Return ONLY the JSON object, no markdown formatting.`;
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
 
       if (command === "pause" || command === "stop") {
-        const SPOTIFYPLUS_ENTITY = "media_player.spotifyplus_byhomeyyz";
+        
         console.log(`[Spotify] ${command} command for entity: ${entityId}`);
         try {
           await fetch(`${haUrl}/api/services/media_player/media_${command === "stop" ? "stop" : "pause"}`, {
@@ -15010,7 +14986,7 @@ Return ONLY the JSON object, no markdown formatting.`;
 
       if (isEcho) {
         let targetEntity = entityId;
-        if (entityId === "media_player.byhome") {
+        if (entityId === EVERYWHERE_GROUP_ENTITY) {
           const anyEcho = FLICK_DEVICES.flatMap(g => g.devices).find(d => d.type === "echo" && d.entityId.includes("_am"));
           if (anyEcho) {
             console.log(`[Spotify] BYhome group → using Echo for voice command: ${anyEcho.entityId}`);
@@ -15046,7 +15022,7 @@ Return ONLY the JSON object, no markdown formatting.`;
         }
 
         if (announceMessage) {
-          const isEverywhereGroup = entityId === "media_player.byhome";
+          const isEverywhereGroup = entityId === EVERYWHERE_GROUP_ENTITY;
           if (isEverywhereGroup) {
             const allEchoTargets = FLICK_DEVICES.flatMap(g => g.devices).filter(d => (d.type === "echo" || d.type === "echo_show") && d.entityId.includes("_am")).map(d => d.entityId);
             console.log(`[Spotify] TTS announce on ALL ${allEchoTargets.length} Echo speakers: "${announceMessage}"`);
@@ -15083,10 +15059,10 @@ Return ONLY the JSON object, no markdown formatting.`;
           }
         }
 
-        const SPOTIFYPLUS_ENTITY = "media_player.spotifyplus_byhomeyyz";
+        
         
         const spotifyPlusSourceMap: Record<string, string> = {
-          "media_player.byhome": "BYhome",
+          [EVERYWHERE_GROUP_ENTITY]: "BYhome",
           "media_player.king_bedroom_media_group": "King Bedroom",
           "media_player.queen_bedroom_media_group": "Queen Bedroom",
           "media_player.living_room_media_group": "Echo - LR Studio White AM",
@@ -15307,7 +15283,7 @@ Return ONLY the JSON object, no markdown formatting.`;
       if (spotifyActivePlaybacks.size === 0) return;
       console.log(`[Spotify] Stale timeout (${SPOTIFY_STALE_TIMEOUT_MS / 1000}s) reached. Clearing ${spotifyActivePlaybacks.size} stale playback(s).`);
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-      const SPOTIFYPLUS_ENTITY = "media_player.spotifyplus_byhomeyyz";
+      
       try {
         await fetch(`${haUrl}/api/services/media_player/media_stop`, {
           method: 'POST',
@@ -15339,7 +15315,7 @@ Return ONLY the JSON object, no markdown formatting.`;
   app.post("/api/spotify/stop-all", async (_req, res) => {
     try {
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-      const SPOTIFYPLUS_ENTITY = "media_player.spotifyplus_byhomeyyz";
+      
       const results: string[] = [];
       clearSpotifyStaleTimer();
 
@@ -15398,7 +15374,7 @@ Return ONLY the JSON object, no markdown formatting.`;
       if (!device) return res.status(404).json({ error: "Device not found" });
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-      const appUrl = `https://${req.get('host') || 'home-view--bkh416.replit.app'}`;
+      const appUrl = `https://${req.get('host') || new URL(DEPLOYED_APP_URL).host}`;
       const authParam = req.query.auth || "bryn";
       const spotifyUrl = `${appUrl}/spotify?auth=${authParam}`;
       console.log(`[Spotify Flick] Sending to ${device.name} (${deviceRoom}): ${spotifyUrl}`);
@@ -15468,7 +15444,7 @@ Return ONLY the JSON object, no markdown formatting.`;
     try {
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       const homeUrl = "http://172.24.0.2:8123/lovelace/test-home";
-      const tabletWrapperUrl = "https://home-view--bkh416.replit.app/tablet";
+      const tabletWrapperUrl = `${DEPLOYED_APP_URL}/tablet`;
       const tabletAdbEntities = [
         { entity: "media_player.tablet_hallway_entrance", name: "Hallway Entrance" },
         { entity: "media_player.tablet_hallway", name: "Hallway Main" },
