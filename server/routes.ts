@@ -7139,6 +7139,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   }
 
   let audioPreparationActive = false;
+  let audioPreparationPaused = false;
   const audioPreparationQueue: number[] = [];
 
   async function prepareFileAudio(fileId: number): Promise<void> {
@@ -7174,6 +7175,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
       let consecutiveRateLimits = 0;
       for (let i = 0; i < chunks.length; i++) {
+        while (audioPreparationPaused) {
+          await new Promise(r => setTimeout(r, 2000));
+        }
         try {
           console.log(`[AudioPrep] Generating chunk ${i + 1}/${chunks.length} for ${file.originalName} (${chunks[i].length} chars)`);
           const audioPath = await generateAndSaveTTSAudio(chunks[i], `prep-${fileId}-chunk-${i}`, voice, true);
@@ -7215,6 +7219,10 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     audioPreparationActive = true;
     try {
       while (audioPreparationQueue.length > 0) {
+        while (audioPreparationPaused) {
+          console.log(`[AudioPrep] Queue paused — waiting for live playback to finish`);
+          await new Promise(r => setTimeout(r, 5000));
+        }
         const fileId = audioPreparationQueue.shift()!;
         await prepareFileAudio(fileId);
       }
@@ -7370,6 +7378,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const authParam = encodeURIComponent(process.env.SITE_PASSWORD || '');
     const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
 
+    audioPreparationPaused = true;
+    console.log(`${logPrefix} Paused audio preparation for live playback`);
+
     const fileName = fileToPlay.displayName || fileToPlay.originalName || 'Unknown file';
     const savedChunk = fileToPlay.lastChunkIndex || 0;
     const resumeFromChunk = Math.max(0, savedChunk > 0 ? savedChunk - 1 : 0);
@@ -7520,14 +7531,32 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const confirmTTSPromise = confirmationTTS ? (async () => {
       try {
         const confirmPath = await generateAndSaveTTSAudio(confirmationTTS, `confirm-${Date.now()}`);
-        await playOnNestSpeaker(`${appUrl}${confirmPath}`);
+        const playResult = await playOnNestSpeaker(`${appUrl}${confirmPath}`);
+        if (!playResult.success) {
+          console.warn(`${logPrefix} Confirm TTS play failed — using HA Cloud TTS fallback`);
+          await haServiceCall('tts/speak', {
+            entity_id: "tts.home_assistant_cloud",
+            media_player_entity_id: NEST_SPEAKER_ENTITY,
+            message: confirmationTTS
+          }, 'Confirm Fallback TTS');
+        }
         const confirmWordCount = confirmationTTS.split(/\s+/).length;
         const confirmWaitMs = Math.max(4000, (confirmWordCount / 140) * 60 * 1000 + 1500);
         console.log(`${logPrefix} Confirm TTS playing, waiting ${Math.round(confirmWaitMs / 1000)}s`);
         await new Promise(r => setTimeout(r, confirmWaitMs));
         console.log(`${logPrefix} Confirm TTS finished`);
       } catch (e: any) {
-        console.log(`${logPrefix} Confirm TTS error: ${e.message}`);
+        console.error(`${logPrefix} Confirm TTS error: ${e.message} — trying HA Cloud TTS`);
+        try {
+          await haServiceCall('tts/speak', {
+            entity_id: "tts.home_assistant_cloud",
+            media_player_entity_id: NEST_SPEAKER_ENTITY,
+            message: confirmationTTS || "Okay, starting playback now."
+          }, 'Confirm Fallback TTS');
+          await new Promise(r => setTimeout(r, 5000));
+        } catch (e2: any) {
+          console.error(`${logPrefix} HA Cloud TTS fallback also failed: ${e2.message}`);
+        }
       }
     })() : Promise.resolve();
 
@@ -7690,7 +7719,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     }
   }
 
-  async function playOnNestSpeaker(audioUrl: string, maxRetries: number = 2): Promise<number> {
+  async function playOnNestSpeaker(audioUrl: string, maxRetries: number = 2): Promise<{ success: boolean; actuallyPlaying: boolean }> {
     const fullUrl = audioUrl.startsWith('http') ? audioUrl : `https://home-view--bkh416.replit.app${audioUrl}`;
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
@@ -7710,7 +7739,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         }, 'Nest Play');
       } catch (e: any) {
         console.error(`[Nest] play_media failed: ${e.message}`);
-        if (attempt === maxRetries) throw e;
+        if (attempt === maxRetries) return { success: false, actuallyPlaying: false };
         await new Promise(r => setTimeout(r, 2000));
         continue;
       }
@@ -7720,19 +7749,19 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       try {
         const { state: speakerState } = await getNestMediaState();
         console.log(`[Nest] Speaker state after play command: ${speakerState}`);
-        if (speakerState === 'playing' || speakerState === 'buffering') return 0;
+        if (speakerState === 'playing' || speakerState === 'buffering') return { success: true, actuallyPlaying: true };
         if (attempt === maxRetries) {
-          console.warn(`[Nest] Speaker state is "${speakerState}" after ${maxRetries + 1} attempts — proceeding anyway`);
-          return 0;
+          console.warn(`[Nest] Speaker state is "${speakerState}" after ${maxRetries + 1} attempts — proceeding but playback unconfirmed`);
+          return { success: true, actuallyPlaying: false };
         }
         console.warn(`[Nest] Speaker not playing (state: ${speakerState}) — will retry`);
         await new Promise(r => setTimeout(r, 2000));
       } catch (e: any) {
         console.warn(`[Nest] State check error: ${e.message} — assuming ok`);
-        return 0;
+        return { success: true, actuallyPlaying: false };
       }
     }
-    return 0;
+    return { success: false, actuallyPlaying: false };
   }
 
   async function stopNestSpeaker(): Promise<void> {
@@ -7891,6 +7920,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       let lookaheadAudioPath: string | null = null;
       let lookaheadChunkIndex: number = -1;
       let lookaheadPromise: Promise<string | null> | null = null;
+      let consecutivePlayFailures = 0;
+      const MAX_PLAY_FAILURES = 3;
 
       for (let i = startChunk; i < chunks.length; i++) {
         if (aborted || !catWashPlaybackActive || catWashSessionId !== sessionId) {
@@ -7957,7 +7988,45 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
             catWashPlaybackState.estimatedChunkDuration = estimatedMs;
           }
 
-          await playOnNestSpeaker(`${appUrl}${audioPath}`);
+          const playResult = await playOnNestSpeaker(`${appUrl}${audioPath}`);
+          if (!playResult.success) {
+            consecutivePlayFailures++;
+            console.error(`[Nest Playback] Chunk ${i + 1} play_media FAILED (${consecutivePlayFailures}/${MAX_PLAY_FAILURES} consecutive failures)`);
+            if (consecutivePlayFailures >= MAX_PLAY_FAILURES) {
+              console.error(`[Nest Playback] CIRCUIT BREAKER: ${MAX_PLAY_FAILURES} consecutive play failures — stopping playback`);
+              try {
+                await haServiceCall('tts/speak', {
+                  entity_id: "tts.home_assistant_cloud",
+                  media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
+                  message: "Sorry Bryn, I can't reach the Nest speaker. Playback stopped."
+                }, 'Error TTS');
+              } catch (e: any) {
+                console.error(`[Nest Playback] Error announcement also failed: ${e.message}`);
+              }
+              break;
+            }
+            await new Promise(r => setTimeout(r, 3000));
+            continue;
+          }
+          if (!playResult.actuallyPlaying) {
+            consecutivePlayFailures++;
+            console.warn(`[Nest Playback] Chunk ${i + 1} sent but speaker not confirmed playing (${consecutivePlayFailures}/${MAX_PLAY_FAILURES})`);
+            if (consecutivePlayFailures >= MAX_PLAY_FAILURES) {
+              console.error(`[Nest Playback] CIRCUIT BREAKER: speaker not responding after ${MAX_PLAY_FAILURES} chunks — stopping`);
+              try {
+                await haServiceCall('tts/speak', {
+                  entity_id: "tts.home_assistant_cloud",
+                  media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
+                  message: "Sorry Bryn, the Nest speaker isn't responding. Please check it and try again."
+                }, 'Error TTS');
+              } catch (e: any) {
+                console.error(`[Nest Playback] Error announcement also failed: ${e.message}`);
+              }
+              break;
+            }
+          } else {
+            consecutivePlayFailures = 0;
+          }
           if (catWashPlaybackState) {
             catWashPlaybackState.chunkStartedAt = new Date(Date.now() + 500);
             catWashPlaybackState.wordIndex = 0;
@@ -8068,6 +8137,13 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
     } catch (err: any) {
       console.error(`[Nest Playback] Fatal error: ${err.message}`, err.stack?.split('\n').slice(0, 3).join(' | '));
+      try {
+        await haServiceCall('tts/speak', {
+          entity_id: "tts.home_assistant_cloud",
+          media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
+          message: "Sorry, playback encountered an error and stopped."
+        }, 'Fatal Error TTS');
+      } catch {}
     } finally {
       if (catWashSessionId === sessionId) {
         catWashPlaybackActive = false;
@@ -8077,6 +8153,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         stopToothbrushPolling();
         stopWordAdvancement();
       }
+      audioPreparationPaused = false;
+      console.log(`[Nest Playback] Resumed audio preparation`);
     }
   }
 
