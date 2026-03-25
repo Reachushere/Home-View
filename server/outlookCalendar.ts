@@ -144,3 +144,70 @@ export async function syncOutlookEventsToReview(): Promise<{ added: number; skip
   console.log(`[Outlook Calendar] Synced: ${added} added, ${skipped} skipped (already exists)`);
   return { added, skipped };
 }
+
+export async function findOrCreateMailFolder(folderName: string): Promise<string> {
+  const client = await getOutlookClient();
+  const folders = await client.api('/me/mailFolders').top(100).get();
+  const existing = folders.value?.find((f: any) => f.displayName === folderName);
+  if (existing) {
+    console.log(`[Outlook Mail] Found folder "${folderName}" (${existing.id})`);
+    return existing.id;
+  }
+  const created = await client.api('/me/mailFolders').post({ displayName: folderName });
+  console.log(`[Outlook Mail] Created folder "${folderName}" (${created.id})`);
+  return created.id;
+}
+
+export async function createMailRule(ruleName: string, senderDomain: string, folderId: string): Promise<any> {
+  const client = await getOutlookClient();
+
+  const existingRules = await client.api('/me/mailFolders/inbox/messageRules').get();
+  const existing = existingRules.value?.find((r: any) => r.displayName === ruleName);
+  if (existing) {
+    console.log(`[Outlook Mail] Rule "${ruleName}" already exists`);
+    return existing;
+  }
+
+  const rule = await client.api('/me/mailFolders/inbox/messageRules').post({
+    displayName: ruleName,
+    sequence: 1,
+    isEnabled: true,
+    conditions: {
+      senderContains: [senderDomain]
+    },
+    actions: {
+      moveToFolder: folderId,
+      stopProcessingRules: false
+    }
+  });
+
+  console.log(`[Outlook Mail] Created rule "${ruleName}" → folder ${folderId}`);
+  return rule;
+}
+
+export async function moveExistingEmailsToFolder(senderDomain: string, folderId: string): Promise<number> {
+  const client = await getOutlookClient();
+  let moved = 0;
+  let nextLink: string | null = null;
+
+  const searchUrl = `/me/messages?$filter=contains(from/emailAddress/address,'${senderDomain}')&$top=50&$select=id,subject,from`;
+  let response = await client.api(searchUrl).get();
+
+  while (true) {
+    for (const msg of (response.value || [])) {
+      try {
+        await client.api(`/me/messages/${msg.id}/move`).post({ destinationId: folderId });
+        moved++;
+      } catch (e: any) {
+        console.log(`[Outlook Mail] Failed to move "${msg.subject}": ${e.message}`);
+      }
+    }
+
+    nextLink = response['@odata.nextLink'];
+    if (!nextLink) break;
+    response = await client.api(nextLink).get();
+  }
+
+  console.log(`[Outlook Mail] Moved ${moved} existing emails from *@${senderDomain} → folder`);
+  return moved;
+}

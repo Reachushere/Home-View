@@ -18,7 +18,7 @@ import { getSecondAccountAuthUrl, exchangeCodeForTokens, isSecondAccountConnecte
 import { getThirdAccountAuthUrl, exchangeCodeForTokensThird, isThirdAccountConnected, disconnectThirdAccount, getEventsFromThirdAccount, listThirdAccountCalendars, getEventsFromThirdAccountCalendar } from "./thirdGoogleAccount";
 import { textToSpeech, initTTSFallbackStatus } from "./replit_integrations/audio/client";
 import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, sendTestHaPush, sendHaTaskReminder, sendEchoVoiceAnnouncement, sendCalendarInvite, type TaskReminder } from "./email";
-import { syncOutlookEventsToReview, fetchOutlookCalendarEvents } from "./outlookCalendar";
+import { syncOutlookEventsToReview, fetchOutlookCalendarEvents, findOrCreateMailFolder, createMailRule, moveExistingEmailsToFolder } from "./outlookCalendar";
 import { parseTickerCommand, extractInlineExpiry } from "./gmailTicker";
 import { startHATickerSync, pushTickerToHA } from "./haTickerWebhook";
 // fetchD2LAnnouncements available in ./gmail but Gmail connector lacks read scope; D2L sync handled by external Apps Script
@@ -15202,6 +15202,35 @@ Return ONLY the JSON object, no markdown formatting.`;
       res.json({ count: events.length, events: events.map(e => ({ id: e.id, subject: e.subject, start: e.start, end: e.end })) });
     } catch (error: any) {
       console.error("[Outlook] Events debug error:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/outlook/file-emails", async (req, res) => {
+    try {
+      const { folderName, senderDomain, moveExisting } = req.body;
+      if (!folderName || !senderDomain) {
+        return res.status(400).json({ error: "folderName and senderDomain are required" });
+      }
+
+      const folderId = await findOrCreateMailFolder(folderName);
+
+      const ruleName = `Auto-file ${senderDomain} → ${folderName}`;
+      const rule = await createMailRule(ruleName, senderDomain, folderId);
+
+      let movedCount = 0;
+      if (moveExisting !== false) {
+        movedCount = await moveExistingEmailsToFolder(senderDomain, folderId);
+      }
+
+      res.json({
+        success: true,
+        folderId,
+        rule: { id: rule.id, displayName: rule.displayName },
+        movedExisting: movedCount
+      });
+    } catch (error: any) {
+      console.error("[Outlook Mail] File emails error:", error);
       res.status(500).json({ error: error.message });
     }
   });
