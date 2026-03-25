@@ -7911,15 +7911,25 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
     const confirmTTSPromise = confirmationTTS ? (async () => {
       try {
-        const confirmPath = await generateAndSaveTTSAudio(confirmationTTS, `confirm-${Date.now()}`);
-        const playResult = await playOnNestSpeaker(`${appUrl}${confirmPath}`);
-        if (!playResult.success) {
-          console.warn(`${logPrefix} Confirm TTS play failed — using HA Cloud TTS fallback`);
+        let confirmPlayed = false;
+        try {
           await haServiceCall('tts/speak', {
             entity_id: HA_CLOUD_TTS_ENTITY,
-            media_player_entity_id: NEST_SPEAKER_ENTITY,
+            media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
             message: confirmationTTS
-          }, 'Confirm Fallback TTS');
+          }, 'Confirm HA Cloud TTS');
+          confirmPlayed = true;
+          console.log(`${logPrefix} Confirm TTS played via HA Cloud TTS on HA Voice speaker`);
+        } catch (e: any) {
+          console.warn(`${logPrefix} HA Cloud TTS confirm failed: ${e.message} — trying Nest speaker`);
+        }
+        if (!confirmPlayed) {
+          try {
+            const confirmPath = await generateAndSaveTTSAudio(confirmationTTS, `confirm-${Date.now()}`);
+            await playOnNestSpeaker(`${appUrl}${confirmPath}`);
+          } catch (e: any) {
+            console.warn(`${logPrefix} Nest speaker confirm also failed: ${e.message}`);
+          }
         }
         const confirmWordCount = confirmationTTS.split(/\s+/).length;
         const confirmWaitMs = Math.max(4000, (confirmWordCount / 140) * 60 * 1000 + 1500);
@@ -7927,17 +7937,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         await new Promise(r => setTimeout(r, confirmWaitMs));
         console.log(`${logPrefix} Confirm TTS finished`);
       } catch (e: any) {
-        console.error(`${logPrefix} Confirm TTS error: ${e.message} — trying HA Cloud TTS`);
-        try {
-          await haServiceCall('tts/speak', {
-            entity_id: HA_CLOUD_TTS_ENTITY,
-            media_player_entity_id: NEST_SPEAKER_ENTITY,
-            message: confirmationTTS || "Okay, starting playback now."
-          }, 'Confirm Fallback TTS');
-          await new Promise(r => setTimeout(r, 5000));
-        } catch (e2: any) {
-          console.error(`${logPrefix} HA Cloud TTS fallback also failed: ${e2.message}`);
-        }
+        console.error(`${logPrefix} Confirm TTS error: ${e.message}`);
+        await new Promise(r => setTimeout(r, 5000));
       }
     })() : Promise.resolve();
 
@@ -7949,16 +7950,18 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
   function describeFileForTTS(file: any, weekNumber: number): string {
     const folder = (file.folder || '').toLowerCase();
-    const name = (file.originalName || file.displayName || '').toLowerCase();
-    const codeMatch = folder.match(/([a-z]{3,5}\s?\d{3})/i) || name.match(/([a-z]{3,5}\s?\d{3})/i);
+    const origName = (file.originalName || '').toLowerCase();
+    const dispName = (file.displayName || '').toLowerCase();
+    const combinedName = `${origName} ${dispName}`;
+    const codeMatch = folder.match(/([a-z]{3,5}\s?\d{3})/i) || combinedName.match(/([a-z]{3,5}\s?\d{3})/i);
     const courseCode = codeMatch ? codeMatch[1].toUpperCase().replace(/\s/g, '') : '';
     const shortCode = courseCode.length >= 4 ? courseCode.substring(0, 4) : courseCode;
-    const isModule = folder.includes('module') || name.includes('module');
-    const fileType = isModule ? 'Module' : 'Reading File';
+    const isModule = folder.includes('module') || origName.includes('module') || dispName.includes('module');
+    const fileType = isModule ? 'Module' : 'Reading';
     if (shortCode) {
-      return `${shortCode} ${fileType} for week ${weekNumber}`;
+      return `your ${shortCode} ${fileType} for week ${weekNumber}`;
     }
-    return `${fileType} for week ${weekNumber}`;
+    return `your ${fileType} for week ${weekNumber}`;
   }
 
   function orderFilesByCoursePriority(files: any[]): any[] {
@@ -8105,7 +8108,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       if (attempt > 0) {
-        console.log(`[Nest] Retry ${attempt}/${maxRetries} — speaker didn't start playing`);
+        console.log(`[Nest] Retry ${attempt}/${maxRetries} — play_media failed, retrying`);
         await haServiceCallSafe('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Retry Stop');
         await new Promise(r => setTimeout(r, 1000));
         await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Nest Retry Vol');
@@ -8123,24 +8126,52 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         continue;
       }
 
-      await new Promise(r => setTimeout(r, 3000));
+      await new Promise(r => setTimeout(r, 4000));
 
       try {
         const { state: speakerState } = await getNestMediaState();
         console.log(`[Nest] Speaker state after play command: ${speakerState}`);
-        if (speakerState === 'playing' || speakerState === 'buffering') return { success: true, actuallyPlaying: true };
-        if (attempt === maxRetries) {
-          console.warn(`[Nest] Speaker state is "${speakerState}" after ${maxRetries + 1} attempts — proceeding but playback unconfirmed`);
+        if (speakerState === 'playing' || speakerState === 'buffering') {
+          return { success: true, actuallyPlaying: true };
+        }
+        if (speakerState === 'unknown') {
+          console.log(`[Nest] State is "unknown" (HA state check may have timed out) — assuming play_media succeeded`);
           return { success: true, actuallyPlaying: false };
         }
-        console.warn(`[Nest] Speaker not playing (state: ${speakerState}) — will retry`);
-        await new Promise(r => setTimeout(r, 2000));
+        if (speakerState === 'idle' || speakerState === 'off' || speakerState === 'unavailable') {
+          console.warn(`[Nest] Speaker definitively not playing (state: ${speakerState}) — will retry`);
+          if (attempt === maxRetries) {
+            console.warn(`[Nest] Speaker state "${speakerState}" after ${maxRetries + 1} attempts — play_media accepted but speaker didn't start`);
+            return { success: true, actuallyPlaying: false };
+          }
+          await new Promise(r => setTimeout(r, 2000));
+          continue;
+        }
+        console.log(`[Nest] Unexpected state "${speakerState}" — assuming play_media succeeded`);
+        return { success: true, actuallyPlaying: false };
       } catch (e: any) {
-        console.warn(`[Nest] State check error: ${e.message} — assuming ok`);
+        console.warn(`[Nest] State check error: ${e.message} — assuming play_media succeeded`);
         return { success: true, actuallyPlaying: false };
       }
     }
     return { success: false, actuallyPlaying: false };
+  }
+
+  async function playChunkViaHACloudTTS(chunkText: string, speakerEntity: string = CAT_WR_HA_VOICE_ENTITY): Promise<boolean> {
+    const MAX_TTS_CHARS = 3500;
+    const textToSpeak = chunkText.length > MAX_TTS_CHARS ? chunkText.substring(0, MAX_TTS_CHARS) : chunkText;
+    try {
+      await haServiceCall('tts/speak', {
+        entity_id: HA_CLOUD_TTS_ENTITY,
+        media_player_entity_id: speakerEntity,
+        message: textToSpeak
+      }, 'Chunk HA Cloud TTS');
+      console.log(`[HA Cloud TTS] Playing chunk (${textToSpeak.length} chars) on ${speakerEntity}`);
+      return true;
+    } catch (e: any) {
+      console.error(`[HA Cloud TTS] Failed: ${e.message}`);
+      return false;
+    }
   }
 
   async function stopNestSpeaker(): Promise<void> {
@@ -8157,14 +8188,18 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     try {
       const resp = await haFetch(`${haUrl}/api/states/${NEST_SPEAKER_ENTITY}`, {
         headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` },
-      }, 3, 'Nest State');
+      }, 2, 'Nest State');
       const data = await resp.json();
-      return {
+      const result = {
         state: data.state,
         position: data.attributes?.media_position,
         duration: data.attributes?.media_duration,
       };
-    } catch {}
+      console.log(`[Nest State] entity=${NEST_SPEAKER_ENTITY} state=${data.state} media_title=${data.attributes?.media_title || 'none'}`);
+      return result;
+    } catch (e: any) {
+      console.warn(`[Nest State] Failed to query: ${e.message}`);
+    }
     return { state: 'unknown' };
   }
 
@@ -8407,70 +8442,65 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
             catWashPlaybackState.estimatedChunkDuration = estimatedMs;
           }
 
+          let chunkPlaying = false;
           const playResult = await playOnNestSpeaker(`${appUrl}${audioPath}`);
-          if (!playResult.success) {
-            consecutivePlayFailures++;
-            console.error(`[Nest Playback] Chunk ${i + 1} play_media FAILED (${consecutivePlayFailures}/${MAX_PLAY_FAILURES} consecutive failures)`);
-            if (consecutivePlayFailures >= MAX_PLAY_FAILURES) {
-              if (!haHealth.connected) {
-                console.warn(`[Nest Playback] HA offline — pausing playback at chunk ${i}, will resume when connectivity returns`);
-                if (fileId) {
-                  try { await storage.updateFile(fileId, { lastChunkIndex: i }); } catch {}
-                }
-                await savePlaybackSession({
-                  fileId: fileId || 0, fileName, chunkIndex: i, totalChunks: chunks.length,
-                  trigger: catWashPlaybackTrigger || 'manual',
-                  startedAt: catWashPlaybackStartedAt?.toISOString() || new Date().toISOString(),
-                  updatedAt: new Date().toISOString(), status: 'paused',
-                }).catch(() => {});
-                let waitedForReconnect = 0;
-                const RECONNECT_TIMEOUT_MS = 5 * 60 * 1000;
-                const RECONNECT_CHECK_MS = 10000;
-                while (waitedForReconnect < RECONNECT_TIMEOUT_MS && catWashPlaybackActive && catWashSessionId === sessionId) {
-                  if (haHealth.connected) {
-                    console.log(`[Nest Playback] HA reconnected after ${Math.round(waitedForReconnect / 1000)}s — resuming playback at chunk ${i}`);
-                    consecutivePlayFailures = 0;
-                    i--;
-                    break;
-                  }
-                  await new Promise(r => setTimeout(r, RECONNECT_CHECK_MS));
-                  waitedForReconnect += RECONNECT_CHECK_MS;
-                }
-                if (waitedForReconnect >= RECONNECT_TIMEOUT_MS) {
-                  console.error(`[Nest Playback] HA still offline after ${RECONNECT_TIMEOUT_MS / 1000}s — stopping playback`);
-                  break;
-                }
-                continue;
-              }
-              console.error(`[Nest Playback] CIRCUIT BREAKER: ${MAX_PLAY_FAILURES} consecutive play failures — stopping playback`);
-              haServiceCallSafe('tts/speak', {
-                entity_id: HA_CLOUD_TTS_ENTITY,
-                media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
-                message: "Sorry Bryn, I can't reach the Nest speaker. Playback stopped."
-              }, 'Error TTS');
-              break;
-            }
-            await new Promise(r => setTimeout(r, 3000));
-            continue;
-          }
-          if (!playResult.actuallyPlaying) {
-            consecutivePlayFailures++;
-            console.warn(`[Nest Playback] Chunk ${i + 1} sent but speaker not confirmed playing (${consecutivePlayFailures}/${MAX_PLAY_FAILURES})`);
-            if (consecutivePlayFailures >= MAX_PLAY_FAILURES) {
-              if (!haHealth.connected) {
-                console.warn(`[Nest Playback] HA offline during unconfirmed playback — saving progress at chunk ${i}`);
-                if (fileId) { try { await storage.updateFile(fileId, { lastChunkIndex: i }); } catch {} }
-              }
-              console.error(`[Nest Playback] CIRCUIT BREAKER: speaker not responding after ${MAX_PLAY_FAILURES} chunks — stopping`);
-              haServiceCallSafe('tts/speak', {
-                entity_id: HA_CLOUD_TTS_ENTITY,
-                media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
-                message: "Sorry Bryn, the Nest speaker isn't responding. Please check it and try again."
-              }, 'Error TTS');
-              break;
+          if (playResult.success && playResult.actuallyPlaying) {
+            chunkPlaying = true;
+            consecutivePlayFailures = 0;
+          } else if (playResult.success && !playResult.actuallyPlaying) {
+            console.log(`[Nest Playback] Nest speaker unconfirmed for chunk ${i + 1} — trying HA Cloud TTS fallback`);
+            const haCloudOk = await playChunkViaHACloudTTS(chunkText);
+            if (haCloudOk) {
+              chunkPlaying = true;
+              consecutivePlayFailures = 0;
+            } else {
+              consecutivePlayFailures++;
+              console.warn(`[Nest Playback] Both Nest and HA Cloud TTS failed for chunk ${i + 1} (${consecutivePlayFailures}/${MAX_PLAY_FAILURES})`);
             }
           } else {
-            consecutivePlayFailures = 0;
+            consecutivePlayFailures++;
+            console.error(`[Nest Playback] Chunk ${i + 1} play_media FAILED (${consecutivePlayFailures}/${MAX_PLAY_FAILURES})`);
+          }
+          if (consecutivePlayFailures >= MAX_PLAY_FAILURES) {
+            if (!haHealth.connected) {
+              console.warn(`[Nest Playback] HA offline — pausing playback at chunk ${i}`);
+              if (fileId) { try { await storage.updateFile(fileId, { lastChunkIndex: i }); } catch {} }
+              await savePlaybackSession({
+                fileId: fileId || 0, fileName, chunkIndex: i, totalChunks: chunks.length,
+                trigger: catWashPlaybackTrigger || 'manual',
+                startedAt: catWashPlaybackStartedAt?.toISOString() || new Date().toISOString(),
+                updatedAt: new Date().toISOString(), status: 'paused',
+              }).catch(() => {});
+              let waitedForReconnect = 0;
+              const RECONNECT_TIMEOUT_MS = 5 * 60 * 1000;
+              const RECONNECT_CHECK_MS = 10000;
+              while (waitedForReconnect < RECONNECT_TIMEOUT_MS && catWashPlaybackActive && catWashSessionId === sessionId) {
+                if (haHealth.connected) {
+                  console.log(`[Nest Playback] HA reconnected after ${Math.round(waitedForReconnect / 1000)}s — resuming at chunk ${i}`);
+                  consecutivePlayFailures = 0;
+                  i--;
+                  break;
+                }
+                await new Promise(r => setTimeout(r, RECONNECT_CHECK_MS));
+                waitedForReconnect += RECONNECT_CHECK_MS;
+              }
+              if (waitedForReconnect >= RECONNECT_TIMEOUT_MS) {
+                console.error(`[Nest Playback] HA still offline after ${RECONNECT_TIMEOUT_MS / 1000}s — stopping`);
+                break;
+              }
+              continue;
+            }
+            console.error(`[Nest Playback] CIRCUIT BREAKER: ${MAX_PLAY_FAILURES} consecutive failures — stopping`);
+            haServiceCallSafe('tts/speak', {
+              entity_id: HA_CLOUD_TTS_ENTITY,
+              media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
+              message: "Sorry Bryn, I'm having trouble with playback. Stopping for now."
+            }, 'Error TTS');
+            break;
+          }
+          if (!chunkPlaying) {
+            await new Promise(r => setTimeout(r, 3000));
+            continue;
           }
           if (catWashPlaybackState) {
             catWashPlaybackState.chunkStartedAt = new Date(Date.now() + 500);
@@ -9407,6 +9437,9 @@ document.body.removeChild(a);
 
       const haUrl0 = HOME_ASSISTANT_URL?.replace(/\/$/, '') || '';
       const haHeaders0 = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+
+      await new Promise(r => setTimeout(r, 800));
+
       let lightState = 'unknown';
       try {
         const lightResp = await fetch(`${haUrl0}/api/states/${CAT_LIGHTS_ENTITY}`, { headers: haHeaders0 });

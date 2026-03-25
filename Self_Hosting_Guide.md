@@ -1,5 +1,53 @@
 # Self-Hosting Guide: Dashboard App on Raspberry Pi
 
+## Table of Contents
+
+### Part 1: Setup
+1. [Can I Run This on My Home Assistant Laptop?](#can-i-run-this-on-my-home-assistant-laptop)
+2. [Equipment to Buy (Amazon Links)](#equipment-to-buy)
+3. [Step 1: Flash the Operating System](#step-1-flash-the-operating-system)
+4. [Step 2: First Boot](#step-2-first-boot)
+5. [Step 3: Install System Dependencies](#step-3-install-system-dependencies)
+6. [Step 4: Set Up the Database](#step-4-set-up-the-database)
+7. [Step 5: Create the App Directory](#step-5-create-the-app-directory)
+8. [Step 6: Get the Code Out of Replit](#step-6-get-the-code-out-of-replit)
+9. [Step 7: Set Up Environment Variables](#step-7-set-up-environment-variables)
+10. [Step 8: Setting Up OAuth Credentials](#step-8-setting-up-oauth-credentials-the-hard-part)
+11. [Step 9: Initialize the Database](#step-9-initialize-the-database)
+12. [Step 10: Build and Test](#step-10-build-and-test)
+13. [Step 11: Set Up Auto-Start (systemd Service)](#step-11-set-up-auto-start-systemd-service)
+14. [Step 12: Set Up Log Rotation](#step-12-set-up-log-rotation)
+15. [Step 13: Update Home Assistant Webhooks](#step-13-update-home-assistant-webhooks)
+16. [Step 14: Update Google Apps Script](#step-14-update-google-apps-script)
+17. [Step 15: Touchscreen Setup](#step-15-touchscreen-setup)
+
+### Part 2: Ongoing Maintenance
+18. [Viewing Logs](#viewing-logs)
+19. [Restarting / Updating / Backing Up](#restarting-the-app)
+20. [Key Differences from Replit](#key-differences-from-replit)
+21. [Estimated Migration Effort](#estimated-migration-effort)
+
+### Part 3: Home Assistant YAML Reference
+22. [REST Commands (configuration.yaml)](#rest-commands-configurationyaml)
+23. [HA Automations (automations.yaml)](#ha-automations-automationsyaml)
+24. [HA Input Booleans](#ha-input-booleans-configurationyaml)
+
+### Part 4: Cat Washroom Study Reading System — Complete Flow
+25. [Devices Involved](#devices-involved)
+26. [Flow A: Lights Turn ON — Full Prompt Flow](#flow-a-lights-turn-on--full-prompt-flow)
+27. [Flow B: Lights Turn OFF — Stop Everything](#flow-b-lights-turn-off--stop-everything)
+28. [Flow C: Confirmed Playback Flow (Reading the PDF)](#flow-c-confirmed-playback-flow-reading-the-pdf)
+29. [Flow D: Shower Button — Direct Play](#flow-d-shower-button--direct-play-skip-prompt)
+30. [Flow E: Volume Knob](#flow-e-volume-knob--adjust-active-speaker-volume)
+31. [Flow F: Knob Press — Master STOP](#flow-f-knob-press--master-stop)
+32. [Flow G: Toothbrush Auto-Stop](#flow-g-toothbrush-auto-stop)
+33. [Flow H: Voice Commands (pause/resume/stop/skip/restart/reset)](#flow-h-voice-commands)
+34. [Flow I: Play Urgent PDF](#flow-i-play-urgent-pdf-on-demand)
+35. [TTS Fallback Chain](#tts-fallback-chain)
+36. [Background Processes](#background-processes-no-webhook-needed)
+
+---
+
 ## Can I Run This on My Home Assistant Laptop?
 
 No, not directly. Home Assistant OS is a locked-down, purpose-built Linux distribution — it manages its own filesystem, networking, and containers. You can't install Node.js, PostgreSQL, or run arbitrary apps alongside it. It's designed to only run HA and its add-ons. You'd need to replace HAOS with a regular Linux install to do that, which would mean rebuilding your entire HA setup.
