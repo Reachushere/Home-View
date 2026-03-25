@@ -42,3 +42,9 @@ id = "_bRfvaN1_NjHvTrHe3_XK"
 uri = "file://HA_Automations_Reference.md"
 type = "text"
 title = "HA Automations — Complete Standalone Reference"
+
+[[outputs]]
+id = "CwrMlTRDFCEcrETMkNNBH"
+uri = "file://HA_SWOT_Analysis.md"
+type = "text"
+title = "SWOT Analysis — HA Automation System"
