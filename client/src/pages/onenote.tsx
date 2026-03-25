@@ -20,6 +20,10 @@ import {
   RefreshCw,
   Trash2,
   NotebookPen,
+  Camera,
+  CheckSquare,
+  Mic,
+  Filter,
 } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 
@@ -404,6 +408,33 @@ export default function OneNotePage() {
             truncatePath={truncatePath}
           />
         )}
+      </div>
+
+      {/* Floating action bar */}
+      <div className="shrink-0 flex items-center justify-center gap-1 py-2 px-4" style={{ background: '#1a1a1a' }}>
+        <div className="flex items-center gap-1 px-2 py-1.5 rounded-full" style={{ background: '#2d2d30', border: '1px solid #3e3e42' }}>
+          <button className="h-9 w-9 rounded-full flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-colors" data-testid="action-camera" title="Camera">
+            <Camera className="h-4.5 w-4.5" />
+          </button>
+          <button className="h-9 w-9 rounded-full flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-colors" data-testid="action-checklist" title="Checklist">
+            <CheckSquare className="h-4.5 w-4.5" />
+          </button>
+          <button className="h-9 w-9 rounded-full flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-colors" data-testid="action-voice" title="Voice note">
+            <Mic className="h-4.5 w-4.5" />
+          </button>
+          <button className="h-9 w-9 rounded-full flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-colors" data-testid="action-filter" title="Filter">
+            <Filter className="h-4.5 w-4.5" />
+          </button>
+        </div>
+        <button
+          className="h-11 w-11 rounded-full flex items-center justify-center text-white ml-2 shadow-lg hover:brightness-110 transition-all"
+          style={{ background: '#7b2d8e' }}
+          onClick={() => setIsCreating(true)}
+          data-testid="action-create"
+          title="New page"
+        >
+          <Plus className="h-5 w-5" />
+        </button>
       </div>
 
       {/* Bottom navigation bar */}
