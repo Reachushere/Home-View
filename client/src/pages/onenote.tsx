@@ -585,7 +585,7 @@ function HomeView({ files, recentFiles, isLoading, onOpenNote, onGoNotebooks, on
         <div>
           <div className="flex items-center gap-2 mb-3 px-1">
             <Clock className="h-4 w-4 text-white/40" />
-            <h2 className="text-sm font-medium text-white/60">Recent Notes</h2>
+            <h2 className="text-sm font-medium text-white">Recent Notes</h2>
           </div>
           <div className="space-y-1.5">
             {recentFiles.map(f => (
@@ -801,7 +801,7 @@ function NoteRow({ file, onOpen }: { file: QuickNoteFile; onOpen: (f: QuickNoteF
           {(meta.linkedTaskId || meta.linkedProjectId) && <Link2 className="h-2.5 w-2.5 text-blue-400/60" />}
         </div>
       </div>
-      <Pencil className="h-3.5 w-3.5 text-white/20 group-hover:text-white/40 transition-colors" />
+      <Pencil className="h-3.5 w-3.5 text-white group-hover:text-white/80 transition-colors" />
     </div>
   );
 }
