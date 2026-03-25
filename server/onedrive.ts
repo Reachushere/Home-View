@@ -117,7 +117,10 @@ export async function getOneDriveFileContent(itemId: string) {
 export async function createOneDriveFolder(parentPath: string, folderName: string): Promise<any> {
   const client = await getOneDriveClient();
   try {
-    const response = await client.api(`/me/drive/root:${parentPath}:/children`).post({
+    const apiPath = (!parentPath || parentPath === '/')
+      ? '/me/drive/root/children'
+      : `/me/drive/root:${parentPath}:/children`;
+    const response = await client.api(apiPath).post({
       name: folderName,
       folder: {},
       '@microsoft.graph.conflictBehavior': 'fail'
@@ -179,62 +182,10 @@ export async function renameOneDriveItem(itemId: string, newName: string): Promi
   await client.api(`/me/drive/items/${itemId}`).patch({ name: newName });
 }
 
-export async function listOneNoteNotebooks() {
+export async function getOneDriveFileContentAsText(itemId: string): Promise<string> {
   const client = await getOneDriveClient();
   try {
-    const response = await client.api('/me/onenote/notebooks').orderby('lastModifiedDateTime desc').get();
-    return (response.value || []).map((nb: any) => ({
-      id: nb.id,
-      displayName: nb.displayName,
-      createdDateTime: nb.createdDateTime,
-      lastModifiedDateTime: nb.lastModifiedDateTime,
-      isShared: nb.isShared,
-      sectionsUrl: nb.sectionsUrl,
-    }));
-  } catch (error: any) {
-    console.error('Error listing OneNote notebooks:', error.message || error);
-    throw error;
-  }
-}
-
-export async function listOneNoteSections(notebookId: string) {
-  const client = await getOneDriveClient();
-  try {
-    const response = await client.api(`/me/onenote/notebooks/${notebookId}/sections`).get();
-    return (response.value || []).map((s: any) => ({
-      id: s.id,
-      displayName: s.displayName,
-      createdDateTime: s.createdDateTime,
-      lastModifiedDateTime: s.lastModifiedDateTime,
-    }));
-  } catch (error: any) {
-    console.error('Error listing OneNote sections:', error.message || error);
-    throw error;
-  }
-}
-
-export async function listOneNotePages(sectionId: string) {
-  const client = await getOneDriveClient();
-  try {
-    const response = await client.api(`/me/onenote/sections/${sectionId}/pages`).orderby('lastModifiedDateTime desc').top(50).get();
-    return (response.value || []).map((p: any) => ({
-      id: p.id,
-      title: p.title,
-      createdDateTime: p.createdDateTime,
-      lastModifiedDateTime: p.lastModifiedDateTime,
-      contentUrl: p.contentUrl,
-      self: p.self,
-    }));
-  } catch (error: any) {
-    console.error('Error listing OneNote pages:', error.message || error);
-    throw error;
-  }
-}
-
-export async function getOneNotePageContent(pageId: string): Promise<string> {
-  const client = await getOneDriveClient();
-  try {
-    const response = await client.api(`/me/onenote/pages/${pageId}/content`).get();
+    const response = await client.api(`/me/drive/items/${itemId}/content`).get();
     if (typeof response === 'string') return response;
     if (response instanceof ArrayBuffer || response instanceof Buffer) {
       return Buffer.from(response).toString('utf-8');
@@ -251,7 +202,46 @@ export async function getOneNotePageContent(pageId: string): Promise<string> {
     }
     return String(response);
   } catch (error: any) {
-    console.error('Error getting OneNote page content:', error.message || error);
+    console.error('Error getting OneDrive file content as text:', error.message || error);
+    throw error;
+  }
+}
+
+export async function getOneDriveItemByPath(path: string): Promise<any> {
+  const client = await getOneDriveClient();
+  try {
+    const encodedPath = encodeURIComponent(path).replace(/%2F/g, '/');
+    const item = await client.api(`/me/drive/root:${encodedPath}`).get();
+    return {
+      id: item.id,
+      name: item.name,
+      mimeType: item.file?.mimeType,
+      size: item.size,
+      lastModified: item.lastModifiedDateTime,
+      downloadUrl: item['@microsoft.graph.downloadUrl'],
+      webUrl: item.webUrl,
+    };
+  } catch (error: any) {
+    console.error(`Error getting OneDrive item at path "${path}":`, error.message || error);
+    throw error;
+  }
+}
+
+export async function createOneDriveTextFile(parentPath: string, fileName: string, content: string): Promise<any> {
+  const client = await getOneDriveClient();
+  try {
+    const encodedPath = encodeURIComponent(`${parentPath}/${fileName}`).replace(/%2F/g, '/');
+    const response = await client.api(`/me/drive/root:${encodedPath}:/content`)
+      .header('Content-Type', 'text/plain')
+      .put(content);
+    return {
+      id: response.id,
+      name: response.name,
+      lastModified: response.lastModifiedDateTime,
+      webUrl: response.webUrl,
+    };
+  } catch (error: any) {
+    console.error(`Error creating text file "${fileName}":`, error.message || error);
     throw error;
   }
 }

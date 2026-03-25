@@ -24,7 +24,7 @@ import { startHATickerSync, pushTickerToHA } from "./haTickerWebhook";
 // fetchD2LAnnouncements available in ./gmail but Gmail connector lacks read scope; D2L sync handled by external Apps Script
 import { getSchedulerStatus } from "./reminderScheduler";
 import { fetchTMUCalendarEvents } from "./tmuCalendar";
-import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder, listOneNoteNotebooks, listOneNoteSections, listOneNotePages, getOneNotePageContent } from "./onedrive";
+import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder, getOneDriveFileContentAsText, getOneDriveItemByPath, createOneDriveTextFile } from "./onedrive";
 import * as spotifyApi from "./spotify";
 
 // Helper function to generate repeated task due dates
@@ -3850,43 +3850,56 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
-  app.get("/api/onenote/notebooks", async (_req, res) => {
+  const QUICKNOTES_PATH = '/QuickNotes';
+  const QUICKNOTES_DEFAULT_FILE = 'notes.txt';
+
+  app.get("/api/quicknotes/files", async (_req, res) => {
     try {
-      const notebooks = await listOneNoteNotebooks();
-      res.json(notebooks);
+      const items = await listOneDriveItems(QUICKNOTES_PATH);
+      const notes = items.filter((f: any) => {
+        const name = (f.name || '').toLowerCase();
+        return name.endsWith('.txt') || name.endsWith('.md') || name.endsWith('.html');
+      });
+      res.json(notes);
     } catch (err: any) {
-      console.error("Error listing OneNote notebooks:", err);
-      res.status(500).json({ error: err.message || "Failed to list notebooks" });
+      if (err.statusCode === 404 || err.code === 'itemNotFound' || err.message?.includes('itemNotFound') || err.message?.includes('Resource not found')) {
+        try {
+          await createOneDriveFolder('/', 'QuickNotes');
+          await createOneDriveTextFile(QUICKNOTES_PATH, QUICKNOTES_DEFAULT_FILE, 'Type your notes here from your phone using the OneDrive app.\nThis file syncs live to your dashboard.\n');
+          const items = await listOneDriveItems(QUICKNOTES_PATH);
+          const notes = items.filter((f: any) => {
+            const name = (f.name || '').toLowerCase();
+            return name.endsWith('.txt') || name.endsWith('.md') || name.endsWith('.html');
+          });
+          res.json(notes);
+        } catch (createErr: any) {
+          console.error("Error creating QuickNotes folder:", createErr);
+          res.status(500).json({ error: createErr.message || "Failed to create QuickNotes folder" });
+        }
+      } else {
+        console.error("Error listing QuickNotes:", err);
+        res.status(500).json({ error: err.message || "Failed to list notes" });
+      }
     }
   });
 
-  app.get("/api/onenote/notebooks/:notebookId/sections", async (req, res) => {
+  app.get("/api/quicknotes/file/:id/content", async (req, res) => {
     try {
-      const sections = await listOneNoteSections(req.params.notebookId);
-      res.json(sections);
+      const content = await getOneDriveFileContentAsText(req.params.id);
+      res.json({ content });
     } catch (err: any) {
-      console.error("Error listing OneNote sections:", err);
-      res.status(500).json({ error: err.message || "Failed to list sections" });
+      console.error("Error getting QuickNotes content:", err);
+      res.status(500).json({ error: err.message || "Failed to get note content" });
     }
   });
 
-  app.get("/api/onenote/sections/:sectionId/pages", async (req, res) => {
+  app.get("/api/quicknotes/file/:id/meta", async (req, res) => {
     try {
-      const pages = await listOneNotePages(req.params.sectionId);
-      res.json(pages);
+      const meta = await getOneDriveFile(req.params.id);
+      res.json(meta);
     } catch (err: any) {
-      console.error("Error listing OneNote pages:", err);
-      res.status(500).json({ error: err.message || "Failed to list pages" });
-    }
-  });
-
-  app.get("/api/onenote/pages/:pageId/content", async (req, res) => {
-    try {
-      const html = await getOneNotePageContent(req.params.pageId);
-      res.json({ html });
-    } catch (err: any) {
-      console.error("Error getting OneNote page content:", err);
-      res.status(500).json({ error: err.message || "Failed to get page content" });
+      console.error("Error getting QuickNotes meta:", err);
+      res.status(500).json({ error: err.message || "Failed to get note metadata" });
     }
   });
 
