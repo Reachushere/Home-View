@@ -7798,11 +7798,11 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       await Promise.all([
         fetch(`${haUrl}/api/services/media_player/volume_set`, {
           method: 'POST', headers: haHeaders,
-          body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.75 }),
+          body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.45 }),
         }),
         fetch(`${haUrl}/api/services/media_player/volume_set`, {
           method: 'POST', headers: haHeaders,
-          body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }),
+          body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.45 }),
         }),
       ]);
       console.log(`${logPrefix} Set volume to 0.75`);
@@ -8111,7 +8111,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         console.log(`[Nest] Retry ${attempt}/${maxRetries} — play_media failed, retrying`);
         await haServiceCallSafe('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Retry Stop');
         await new Promise(r => setTimeout(r, 1000));
-        await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Nest Retry Vol');
+        await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.45 }, 'Nest Retry Vol');
       }
 
       console.log(`[Nest] Playing audio${attempt > 0 ? ` (attempt ${attempt + 1})` : ''}: ${fullUrl}`);
@@ -9529,7 +9529,7 @@ document.body.removeChild(a);
       const immediatePromptPromise = (async () => {
         try {
           await Promise.allSettled([
-            haServiceCallSafe('media_player/volume_set', { entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.64 }, 'Cat Lights Vol'),
+            haServiceCallSafe('media_player/volume_set', { entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.35 }, 'Cat Lights Vol'),
             haServiceCallSafe('input_boolean/turn_off', { entity_id: MODULE_READING_CONFIRMED }, 'Cat Lights Bool'),
             haServiceCallSafe('input_boolean/turn_on', { entity_id: MODULE_READING_PENDING }, 'Cat Lights Bool'),
           ]);
@@ -9606,7 +9606,7 @@ document.body.removeChild(a);
           console.warn(`[Cat Lights] Pre-prompt media stop error (non-fatal): ${e.message}`);
         }
 
-        await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.64 }, 'Cat Lights Vol');
+        await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.35 }, 'Cat Lights Vol');
 
         let ttsPlayed = false;
         try {
