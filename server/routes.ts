@@ -92,9 +92,9 @@ const tokenFromEnv = process.env.HOME_ASSISTANT_TOKEN || "";
 const urlFromEnv = process.env.HOME_ASSISTANT_URL || "";
 const HOME_ASSISTANT_TOKEN = tokenFromEnv.startsWith("eyJ") ? tokenFromEnv : (urlFromEnv.startsWith("eyJ") ? urlFromEnv : tokenFromEnv);
 
-const BATHROOM_ECHO_ENTITY = "media_player.nestaudio6787";
+const BATHROOM_ECHO_ENTITY = "media_player.bathroom_speaker";
 const KITCHEN_ECHO_ENTITY = "media_player.echo_kitchen_studio_black_am";
-const NEST_SPEAKER_ENTITY = "media_player.nestaudio6787";
+const NEST_SPEAKER_ENTITY = "media_player.bathroom_speaker";
 const CAT_WR_HA_VOICE_ENTITY = "media_player.home_assistant_voice_097c38_media_player";
 const NON_ALEXA_ENTITIES = [NEST_SPEAKER_ENTITY, CAT_WR_HA_VOICE_ENTITY];
 const MODULE_READING_PENDING = "input_boolean.module_reading_pending";
@@ -300,7 +300,7 @@ const FLICK_DEVICES: FlickRoomGroup[] = [
       { id: "cat_echo_middle", name: "Echo (Middle)", entityId: "media_player.echo_cat_washroom_middle", type: "echo", canDisplay: false, room: "Cat Washroom" },
       { id: "cat_echo_left", name: "Echo (Left)", entityId: "media_player.echo_cat_left_am", type: "echo", canDisplay: false, room: "Cat Washroom" },
       { id: "cat_echo_right", name: "Echo (Right)", entityId: "media_player.echo_cat_right_am", type: "echo", canDisplay: false, room: "Cat Washroom" },
-      { id: "cat_nest", name: "Nest Speaker", entityId: "media_player.nestaudio6787", type: "speaker", canDisplay: false, room: "Cat Washroom" },
+      { id: "cat_nest", name: "Nest Speaker", entityId: "media_player.bathroom_speaker", type: "speaker", canDisplay: false, room: "Cat Washroom" },
       { id: "cat_tv", name: "TV", entityId: CAT_TV_ENTITY, type: "tv", canDisplay: true, room: "Cat Washroom" },
       { id: "cat_group", name: "All Cat Washroom", entityId: CAT_WR_MEDIA_GROUP, type: "group", canDisplay: false, room: "Cat Washroom" },
     ]
@@ -11443,7 +11443,7 @@ document.body.removeChild(a);
               headers: {
                 "x-webhook-secret": "YOUR_SITE_PASSWORD_HERE"
               },
-              payload: '{"entity_id": "media_player.nestaudio6787"}'
+              payload: '{"entity_id": "media_player.bathroom_speaker"}'
             }
           },
           step2: "Add this script to your configuration.yaml under script:",

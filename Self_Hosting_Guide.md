@@ -726,7 +726,7 @@ The cat washroom has a study reading system that plays your school readings alou
 | Device | HA Entity | Role |
 |--------|-----------|------|
 | Cat Washroom Lights | `light.cat_lights` | Trigger (on/off) |
-| Google Nest Speaker | `media_player.nestaudio6787` | Main audio playback (TTS reading) |
+| Google Nest Speaker | `media_player.bathroom_speaker` | Main audio playback (TTS reading) |
 | HA Voice ESPHome Device | `media_player.home_assistant_voice_097c38_media_player` | Voice prompts ("Would you like to play...?") |
 | Fire Tablet (Cat WR) | `media_player.tablet_cat` | Displays PDF reader page with synced text |
 | Samsung TV (Cat WR) | `media_player.tv_cat_wr` | Displays PDF reader follow-along page |
