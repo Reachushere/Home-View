@@ -9419,7 +9419,7 @@ document.body.removeChild(a);
       const tablets = [
         {
           name: 'tablet_cat_wall',
-          browserIds: ['6507d68f-6563ca6c'],
+          browserIds: ['browser_mod_0da8b0a7_fd42ec2e'],
           notifyServices: ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat', 'mobile_app_tablet_cat_wall'],
           mediaPlayer: 'media_player.tablet_cat',
         },
