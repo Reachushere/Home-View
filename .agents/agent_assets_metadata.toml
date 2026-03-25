@@ -48,3 +48,9 @@ id = "CwrMlTRDFCEcrETMkNNBH"
 uri = "file://HA_SWOT_Analysis.md"
 type = "text"
 title = "SWOT Analysis — HA Automation System"
+
+[[outputs]]
+id = "z-cEJKC33j9M-_wc08cBr"
+uri = "file://Self_Hosting_Guide.md"
+type = "text"
+title = "Self-Hosting Guide: Dashboard on Raspberry Pi"
