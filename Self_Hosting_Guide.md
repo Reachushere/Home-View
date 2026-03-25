@@ -131,28 +131,66 @@ sudo chown pi:pi /opt/dashboard
 cd /opt/dashboard
 ```
 
-### Step 6: Transfer the Code
+### Step 6: Get the Code Out of Replit
 
-**Option A — From Replit (download zip):**
+Your entire app — every file, every line of code — is yours and can be downloaded at any time. Here are three ways to get it:
 
-1. In Replit, click the three dots menu, then Download as ZIP
-2. From your computer, transfer the file:
-   ```bash
-   scp ~/Downloads/home-view.zip pi@dashboard-server.local:/opt/dashboard/
-   ```
-3. On the Pi:
-   ```bash
-   cd /opt/dashboard
-   unzip home-view.zip
-   npm install
-   ```
+**Option A — Download as ZIP (easiest, no account needed):**
 
-**Option B — From Git (if you've pushed to GitHub):**
+1. In Replit, look at the left sidebar where your files are listed
+2. Click the **three dots (...)** at the top of the file panel
+3. Click **"Download as ZIP"**
+4. A `.zip` file will download to your computer (probably to your Downloads folder)
+5. That ZIP contains everything: all the server code, frontend code, database schema, configuration files, this guide — all of it
+
+To transfer the ZIP to your Pi, open a terminal on your regular computer and run:
+```bash
+scp ~/Downloads/home-view.zip pi@dashboard-server.local:/opt/dashboard/
+```
+(If your computer is Windows, you can use WinSCP or drag-and-drop the file using FileZilla instead.)
+
+Then on the Pi (SSH in first):
+```bash
+cd /opt/dashboard
+sudo apt install -y unzip    # install unzip if not already there
+unzip home-view.zip
+npm install
+```
+
+**Option B — Push to GitHub first (better for ongoing updates):**
+
+1. In Replit, click the **Git** icon in the left sidebar (the branch icon)
+2. Click **"Connect to GitHub"** and follow the prompts to create a repository
+3. Once connected, all your code is on GitHub — you can access it from anywhere, forever
+
+Then on the Pi:
 ```bash
 cd /opt/dashboard
 git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git .
 npm install
 ```
+
+Future updates become easy: edit on Replit, push to GitHub, then `git pull && npm install && npm run build && sudo systemctl restart dashboard` on the Pi.
+
+**Option C — Copy files directly via SCP (no ZIP needed):**
+
+If you just want to copy the project folder from your computer after downloading:
+```bash
+scp -r ~/Downloads/home-view/* pi@dashboard-server.local:/opt/dashboard/
+```
+
+**What you're getting:**
+The download includes absolutely everything that makes the app work:
+- `server/routes.ts` — the entire backend (all webhooks, TTS, Spotify, calendar, cat washroom logic)
+- `server/storage.ts` — database operations
+- `shared/schema.ts` — database table definitions
+- `client/src/` — the entire frontend (dashboard, Spotify player, PDF reader, OneNote, settings)
+- `package.json` — all the dependency definitions (npm install will download them)
+- `Self_Hosting_Guide.md` — this guide
+- `HA_Automations_Reference.md` — the full HA automations reference
+- Everything else: configuration files, assets, styles
+
+The code is fully self-contained. You don't need Replit to run it — it's a standard Node.js + PostgreSQL app that runs anywhere.
 
 ### Step 7: Set Up Environment Variables
 
