@@ -8444,18 +8444,11 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
           let chunkPlaying = false;
           const playResult = await playOnNestSpeaker(`${appUrl}${audioPath}`);
-          if (playResult.success && playResult.actuallyPlaying) {
+          if (playResult.success) {
             chunkPlaying = true;
             consecutivePlayFailures = 0;
-          } else if (playResult.success && !playResult.actuallyPlaying) {
-            console.log(`[Nest Playback] Nest speaker unconfirmed for chunk ${i + 1} — trying HA Cloud TTS fallback`);
-            const haCloudOk = await playChunkViaHACloudTTS(chunkText);
-            if (haCloudOk) {
-              chunkPlaying = true;
-              consecutivePlayFailures = 0;
-            } else {
-              consecutivePlayFailures++;
-              console.warn(`[Nest Playback] Both Nest and HA Cloud TTS failed for chunk ${i + 1} (${consecutivePlayFailures}/${MAX_PLAY_FAILURES})`);
+            if (!playResult.actuallyPlaying) {
+              console.log(`[Nest Playback] Nest state unconfirmed for chunk ${i + 1} — trusting play_media succeeded`);
             }
           } else {
             consecutivePlayFailures++;
@@ -8770,7 +8763,10 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       nestPlaybackAbort = null;
     }
 
-    await stopNestSpeaker();
+    await Promise.allSettled([
+      stopNestSpeaker(),
+      haServiceCallSafe('media_player/media_stop', { entity_id: CAT_WR_HA_VOICE_ENTITY }, 'Stop HA Voice'),
+    ]);
 
     let fileName = catWashPlaybackState?.fileName || '';
     const savedFileId = catWashPlaybackState?.fileId;
@@ -8785,17 +8781,20 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
     const cleanName = fileName ? fileName.replace(/\.pdf$/i, '').replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim() : '';
     const goodbyeText = cleanName
-      ? `Stopping. ${cleanName}. The file position has been saved. See you next time Bryn.`
-      : `Stopping. The file position has been saved. See you next time Bryn.`;
+      ? `Stopping. Your position has been saved. See you next time Bryn.`
+      : `Stopping. Your position has been saved. See you next time Bryn.`;
 
     console.log(`[Nest Stop] Reason: ${reason}. Goodbye: "${goodbyeText}"`);
 
     try {
-      await new Promise(r => setTimeout(r, 1000));
-      const goodbyePath = await generateAndSaveTTSAudio(goodbyeText, `nest-goodbye-${Date.now()}`, "echo");
-      await playOnNestSpeaker(`${appUrl}${goodbyePath}`);
+      await new Promise(r => setTimeout(r, 500));
+      await haServiceCall('tts/speak', {
+        entity_id: HA_CLOUD_TTS_ENTITY,
+        media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
+        message: goodbyeText
+      }, 'Goodbye TTS');
       const wordCount = goodbyeText.split(/\s+/).length;
-      await new Promise(r => setTimeout(r, Math.max(4000, (wordCount / 175) * 60 * 1000 + 1000)));
+      await new Promise(r => setTimeout(r, Math.max(3000, (wordCount / 175) * 60 * 1000)));
     } catch (e: any) {
       console.error(`[Nest Stop] Error playing goodbye: ${e.message}`);
     }
