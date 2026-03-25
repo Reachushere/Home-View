@@ -24,7 +24,7 @@ import { startHATickerSync, pushTickerToHA } from "./haTickerWebhook";
 // fetchD2LAnnouncements available in ./gmail but Gmail connector lacks read scope; D2L sync handled by external Apps Script
 import { getSchedulerStatus } from "./reminderScheduler";
 import { fetchTMUCalendarEvents } from "./tmuCalendar";
-import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder } from "./onedrive";
+import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder, listOneNoteNotebooks, listOneNoteSections, listOneNotePages, getOneNotePageContent } from "./onedrive";
 import * as spotifyApi from "./spotify";
 
 // Helper function to generate repeated task due dates
@@ -3847,6 +3847,46 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     } catch (err: any) {
       console.error("Error searching OneDrive:", err);
       res.status(500).json({ error: err.message || "Failed to search OneDrive" });
+    }
+  });
+
+  app.get("/api/onenote/notebooks", async (_req, res) => {
+    try {
+      const notebooks = await listOneNoteNotebooks();
+      res.json(notebooks);
+    } catch (err: any) {
+      console.error("Error listing OneNote notebooks:", err);
+      res.status(500).json({ error: err.message || "Failed to list notebooks" });
+    }
+  });
+
+  app.get("/api/onenote/notebooks/:notebookId/sections", async (req, res) => {
+    try {
+      const sections = await listOneNoteSections(req.params.notebookId);
+      res.json(sections);
+    } catch (err: any) {
+      console.error("Error listing OneNote sections:", err);
+      res.status(500).json({ error: err.message || "Failed to list sections" });
+    }
+  });
+
+  app.get("/api/onenote/sections/:sectionId/pages", async (req, res) => {
+    try {
+      const pages = await listOneNotePages(req.params.sectionId);
+      res.json(pages);
+    } catch (err: any) {
+      console.error("Error listing OneNote pages:", err);
+      res.status(500).json({ error: err.message || "Failed to list pages" });
+    }
+  });
+
+  app.get("/api/onenote/pages/:pageId/content", async (req, res) => {
+    try {
+      const html = await getOneNotePageContent(req.params.pageId);
+      res.json({ html });
+    } catch (err: any) {
+      console.error("Error getting OneNote page content:", err);
+      res.status(500).json({ error: err.message || "Failed to get page content" });
     }
   });
 

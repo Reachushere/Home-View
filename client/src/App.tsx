@@ -14,6 +14,7 @@ import PDFReaderPage from "@/pages/pdf-reader";
 import PDFViewerPage from "@/pages/pdf-viewer";
 import OneDrivePage from "@/pages/onedrive";
 import SpotifyPlayerPage from "@/pages/spotify-player";
+import OneNotePage from "@/pages/onenote";
 import TickerPage from "@/pages/ticker";
 
 function useAutoFullscreen() {
@@ -78,6 +79,7 @@ function Router() {
       <Route path="/pdf-reader" component={PDFReaderPage} />
       <Route path="/pdf-viewer/*" component={PDFViewerPage} />
       <Route path="/spotify" component={SpotifyPlayerPage} />
+      <Route path="/onenote" component={OneNotePage} />
       <Route component={NotFound} />
     </Switch>
   );

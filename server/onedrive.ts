@@ -179,6 +179,83 @@ export async function renameOneDriveItem(itemId: string, newName: string): Promi
   await client.api(`/me/drive/items/${itemId}`).patch({ name: newName });
 }
 
+export async function listOneNoteNotebooks() {
+  const client = await getOneDriveClient();
+  try {
+    const response = await client.api('/me/onenote/notebooks').orderby('lastModifiedDateTime desc').get();
+    return (response.value || []).map((nb: any) => ({
+      id: nb.id,
+      displayName: nb.displayName,
+      createdDateTime: nb.createdDateTime,
+      lastModifiedDateTime: nb.lastModifiedDateTime,
+      isShared: nb.isShared,
+      sectionsUrl: nb.sectionsUrl,
+    }));
+  } catch (error: any) {
+    console.error('Error listing OneNote notebooks:', error.message || error);
+    throw error;
+  }
+}
+
+export async function listOneNoteSections(notebookId: string) {
+  const client = await getOneDriveClient();
+  try {
+    const response = await client.api(`/me/onenote/notebooks/${notebookId}/sections`).get();
+    return (response.value || []).map((s: any) => ({
+      id: s.id,
+      displayName: s.displayName,
+      createdDateTime: s.createdDateTime,
+      lastModifiedDateTime: s.lastModifiedDateTime,
+    }));
+  } catch (error: any) {
+    console.error('Error listing OneNote sections:', error.message || error);
+    throw error;
+  }
+}
+
+export async function listOneNotePages(sectionId: string) {
+  const client = await getOneDriveClient();
+  try {
+    const response = await client.api(`/me/onenote/sections/${sectionId}/pages`).orderby('lastModifiedDateTime desc').top(50).get();
+    return (response.value || []).map((p: any) => ({
+      id: p.id,
+      title: p.title,
+      createdDateTime: p.createdDateTime,
+      lastModifiedDateTime: p.lastModifiedDateTime,
+      contentUrl: p.contentUrl,
+      self: p.self,
+    }));
+  } catch (error: any) {
+    console.error('Error listing OneNote pages:', error.message || error);
+    throw error;
+  }
+}
+
+export async function getOneNotePageContent(pageId: string): Promise<string> {
+  const client = await getOneDriveClient();
+  try {
+    const response = await client.api(`/me/onenote/pages/${pageId}/content`).get();
+    if (typeof response === 'string') return response;
+    if (response instanceof ArrayBuffer || response instanceof Buffer) {
+      return Buffer.from(response).toString('utf-8');
+    }
+    if (response && typeof response.text === 'function') {
+      return await response.text();
+    }
+    if (response && response.body && typeof response.body.read === 'function') {
+      const chunks: Buffer[] = [];
+      for await (const chunk of response.body) {
+        chunks.push(Buffer.from(chunk));
+      }
+      return Buffer.concat(chunks).toString('utf-8');
+    }
+    return String(response);
+  } catch (error: any) {
+    console.error('Error getting OneNote page content:', error.message || error);
+    throw error;
+  }
+}
+
 // Search for files
 export async function searchOneDriveFiles(query: string) {
   const client = await getOneDriveClient();
