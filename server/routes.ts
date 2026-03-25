@@ -8143,26 +8143,20 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
   async function playOnNestSpeaker(audioUrl: string, maxRetries: number = 2): Promise<{ success: boolean; actuallyPlaying: boolean }> {
     const fullUrl = audioUrl.startsWith('http') ? audioUrl : `${DEPLOYED_APP_URL}${audioUrl}`;
-    for (let attempt = 0; attempt <= maxRetries; attempt++) {
-      if (attempt > 0) {
-        await haServiceCallSafe('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Retry Stop');
-        await new Promise(r => setTimeout(r, 1000));
-        await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.45 }, 'Nest Retry Vol');
-      }
-      console.log(`[Nest] Playing audio (attempt ${attempt + 1}): ${fullUrl}`);
-      try {
-        await haServiceCall('media_player/play_media', {
-          entity_id: NEST_SPEAKER_ENTITY, media_content_id: fullUrl, media_content_type: "music"
-        }, 'Nest Play Direct');
-      } catch (e: any) {
-        console.error(`[Nest] play_media failed: ${e.message}`);
-        if (attempt === maxRetries) return { success: false, actuallyPlaying: false };
-        continue;
-      }
-      await new Promise(r => setTimeout(r, 4000));
+    console.log(`[Nest] Playing audio: ${fullUrl}`);
+    try {
+      await haServiceCall('media_player/play_media', {
+        entity_id: NEST_SPEAKER_ENTITY, media_content_id: fullUrl, media_content_type: "music"
+      }, 'Nest Play Direct');
+    } catch (e: any) {
+      console.error(`[Nest] play_media failed: ${e.message}`);
+      return { success: false, actuallyPlaying: false };
+    }
+    for (let check = 0; check <= maxRetries; check++) {
+      await new Promise(r => setTimeout(r, check === 0 ? 4000 : 3000));
       try {
         const { state: speakerState } = await getNestMediaState();
-        console.log(`[Nest] Speaker state after play command: ${speakerState}`);
+        console.log(`[Nest] Speaker state check ${check + 1}: ${speakerState}`);
         if (speakerState === 'playing' || speakerState === 'buffering') {
           return { success: true, actuallyPlaying: true };
         }
@@ -8170,17 +8164,11 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           console.log(`[Nest] State is "unknown" — assuming play_media succeeded`);
           return { success: true, actuallyPlaying: false };
         }
-        if (speakerState === 'idle' || speakerState === 'off' || speakerState === 'unavailable') {
-          console.warn(`[Nest] Speaker not playing (state: ${speakerState}) — will retry`);
-          if (attempt === maxRetries) {
-            console.warn(`[Nest] State "${speakerState}" after ${maxRetries + 1} attempts — play_media accepted but speaker didn't start`);
-            return { success: true, actuallyPlaying: false };
-          }
-          await new Promise(r => setTimeout(r, 2000));
-          continue;
+        if (check === maxRetries) {
+          console.log(`[Nest] State "${speakerState}" after ${maxRetries + 1} checks — play_media was sent, assuming it played`);
+          return { success: true, actuallyPlaying: false };
         }
-        console.log(`[Nest] Unexpected state "${speakerState}" — assuming play_media succeeded`);
-        return { success: true, actuallyPlaying: false };
+        console.log(`[Nest] State "${speakerState}" — rechecking...`);
       } catch (e: any) {
         console.warn(`[Nest] State check error: ${e.message} — assuming play_media succeeded`);
         return { success: true, actuallyPlaying: false };
