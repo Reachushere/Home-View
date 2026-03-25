@@ -24,7 +24,7 @@ import { startHATickerSync, pushTickerToHA } from "./haTickerWebhook";
 // fetchD2LAnnouncements available in ./gmail but Gmail connector lacks read scope; D2L sync handled by external Apps Script
 import { getSchedulerStatus } from "./reminderScheduler";
 import { fetchTMUCalendarEvents } from "./tmuCalendar";
-import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder, getOneDriveFileContentAsText, getOneDriveItemByPath, createOneDriveTextFile } from "./onedrive";
+import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder, getOneDriveFileContentAsText, getOneDriveItemByPath, createOneDriveTextFile, updateOneDriveFileContent } from "./onedrive";
 import * as spotifyApi from "./spotify";
 
 // Helper function to generate repeated task due dates
@@ -3900,6 +3900,49 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     } catch (err: any) {
       console.error("Error getting QuickNotes meta:", err);
       res.status(500).json({ error: err.message || "Failed to get note metadata" });
+    }
+  });
+
+  app.put("/api/quicknotes/file/:id/content", async (req, res) => {
+    try {
+      const { content } = req.body;
+      if (typeof content !== 'string') {
+        return res.status(400).json({ error: "content field required" });
+      }
+      const result = await updateOneDriveFileContent(req.params.id, content);
+      res.json(result);
+    } catch (err: any) {
+      console.error("Error saving QuickNotes content:", err);
+      res.status(500).json({ error: err.message || "Failed to save note" });
+    }
+  });
+
+  app.post("/api/quicknotes/files", async (req, res) => {
+    try {
+      const { name, content } = req.body;
+      const fileName = name || `Note ${new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}.txt`;
+      const result = await createOneDriveTextFile(QUICKNOTES_PATH, fileName, content || '');
+      res.json(result);
+    } catch (err: any) {
+      console.error("Error creating QuickNote:", err);
+      res.status(500).json({ error: err.message || "Failed to create note" });
+    }
+  });
+
+  app.get("/api/quicknotes/search", async (req, res) => {
+    try {
+      const q = (req.query.q as string) || '';
+      if (!q.trim()) return res.json([]);
+      const allFiles = await listOneDriveItems(QUICKNOTES_PATH);
+      const textFiles = allFiles.filter((f: any) => {
+        const name = (f.name || '').toLowerCase();
+        return name.endsWith('.txt') || name.endsWith('.md') || name.endsWith('.html');
+      });
+      const matching = textFiles.filter((f: any) => f.name.toLowerCase().includes(q.toLowerCase()));
+      res.json(matching);
+    } catch (err: any) {
+      console.error("Error searching QuickNotes:", err);
+      res.status(500).json({ error: err.message || "Failed to search notes" });
     }
   });
 

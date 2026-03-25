@@ -246,6 +246,24 @@ export async function createOneDriveTextFile(parentPath: string, fileName: strin
   }
 }
 
+export async function updateOneDriveFileContent(itemId: string, content: string): Promise<any> {
+  const client = await getOneDriveClient();
+  try {
+    const response = await client.api(`/me/drive/items/${itemId}/content`)
+      .header('Content-Type', 'text/plain')
+      .put(content);
+    return {
+      id: response.id,
+      name: response.name,
+      lastModified: response.lastModifiedDateTime,
+      webUrl: response.webUrl,
+    };
+  } catch (error: any) {
+    console.error(`Error updating file content:`, error.message || error);
+    throw error;
+  }
+}
+
 // Search for files
 export async function searchOneDriveFiles(query: string) {
   const client = await getOneDriveClient();
