@@ -1863,11 +1863,10 @@ export default function SpotifyPlayerPage() {
             )}
 
             {viewMode === "floor" && (
-              <>
-                <img src={floorplanImg} alt="Apartment floor plan" className="absolute object-contain"
-                  style={{ filter: "brightness(0.9) contrast(1.1) saturate(0.7) hue-rotate(190deg)", opacity: 0.9, top: 50, bottom: 50, left: 50, right: 50, width: 'calc(100% - 100px)', height: 'calc(100% - 100px)' }} />
-                <div className="absolute" onClick={() => setFloorSpeakerPopup(null)} style={{
-                  top: 50, bottom: 50, left: 50, right: 50,
+              <div className="absolute" style={{ top: 50, bottom: 50, left: 50, right: 50 }}>
+                <img src={floorplanImg} alt="Apartment floor plan" className="absolute inset-0 w-full h-full object-contain"
+                  style={{ filter: "brightness(0.9) contrast(1.1) saturate(0.7) hue-rotate(190deg)", opacity: 0.9 }} />
+                <div className="absolute inset-0" onClick={() => setFloorSpeakerPopup(null)} style={{
                   background: `radial-gradient(ellipse at center, transparent 30%, rgba(3,8,20,0.6) 100%)`,
                 }} />
                 {ROOM_HOTSPOTS.map(spot => {
@@ -2095,7 +2094,7 @@ export default function SpotifyPlayerPage() {
                     </div>
                   );
                 })}
-              </>
+              </div>
             )}
 
             {viewMode === "stations" && (
