@@ -6936,6 +6936,51 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   let catLightsBypassCooldown = false;
   let toothbrushPollInterval: ReturnType<typeof setInterval> | null = null;
 
+  interface PersistedPlaybackSession {
+    fileId: number;
+    fileName: string;
+    chunkIndex: number;
+    totalChunks: number;
+    trigger: 'lights' | 'manual';
+    startedAt: string;
+    updatedAt: string;
+    status: 'active' | 'paused';
+  }
+
+  async function savePlaybackSession(data: PersistedPlaybackSession): Promise<void> {
+    try {
+      const json = JSON.stringify(data);
+      const existing = await db.select().from(appState).where(eq(appState.key, 'playback_session')).limit(1);
+      if (existing.length > 0) {
+        await db.update(appState).set({ value: json, updatedAt: new Date() }).where(eq(appState.key, 'playback_session'));
+      } else {
+        await db.insert(appState).values({ key: 'playback_session', value: json });
+      }
+    } catch (e: any) {
+      console.error(`[PlaybackPersist] Save failed: ${e.message}`);
+    }
+  }
+
+  async function getPersistedPlaybackSession(): Promise<PersistedPlaybackSession | null> {
+    try {
+      const rows = await db.select().from(appState).where(eq(appState.key, 'playback_session')).limit(1);
+      if (rows.length > 0 && rows[0].value) {
+        return JSON.parse(rows[0].value) as PersistedPlaybackSession;
+      }
+    } catch (e: any) {
+      console.error(`[PlaybackPersist] Load failed: ${e.message}`);
+    }
+    return null;
+  }
+
+  async function clearPlaybackSession(): Promise<void> {
+    try {
+      await db.delete(appState).where(eq(appState.key, 'playback_session'));
+    } catch (e: any) {
+      console.error(`[PlaybackPersist] Clear failed: ${e.message}`);
+    }
+  }
+
   const PROF_REQD_COURSES = new Set(['CPPA101','CPPA102','CPPA120','CPPA121','CPPA122','CPPA124','CPPA125']);
   const LIBERAL_CODES = new Set(LIBERAL_STUDIES_COURSES.map(c => c.code.replace(/\s/g, '')));
   const OPEN_ELECTIVE_CODES = new Set(OPEN_ELECTIVE_COURSES.map(c => c.code.replace(/\s/g, '')));
@@ -7291,6 +7336,49 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     } catch (e: any) {
       console.error(`[AudioPrep] Startup scan error: ${e.message}`);
     }
+
+    try {
+      const persisted = await getPersistedPlaybackSession();
+      if (persisted) {
+        const sessionAge = Date.now() - new Date(persisted.updatedAt).getTime();
+        const maxAge = 30 * 60 * 1000;
+        if (sessionAge > maxAge) {
+          console.log(`[PlaybackRecovery] Found stale session (${Math.round(sessionAge / 60000)}m old, status=${persisted.status}) — clearing`);
+          await clearPlaybackSession();
+        } else {
+          const statusLabel = persisted.status === 'paused' ? 'paused' : 'interrupted';
+          console.log(`[PlaybackRecovery] Found ${statusLabel} session: "${persisted.fileName}" at chunk ${persisted.chunkIndex}/${persisted.totalChunks} (${Math.round(sessionAge / 1000)}s ago)`);
+          const file = await storage.getFile(persisted.fileId);
+          if (file && !file.listened) {
+            try {
+              await storage.updateFile(persisted.fileId, { lastChunkIndex: persisted.chunkIndex });
+              console.log(`[PlaybackRecovery] Saved chunk progress ${persisted.chunkIndex} for file ${persisted.fileId}`);
+            } catch {}
+
+            const cleanName = persisted.fileName.replace(/\.pdf$/i, '').replace(/[_-]+/g, ' ').trim();
+            const message = persisted.status === 'paused'
+              ? `Bryn, the server restarted while playback of ${cleanName} was paused. Your position at chunk ${persisted.chunkIndex + 1} of ${persisted.totalChunks} has been saved.`
+              : `Bryn, the server restarted during playback of ${cleanName}. Your position at chunk ${persisted.chunkIndex + 1} of ${persisted.totalChunks} has been saved. You can resume next time.`;
+            try {
+              await haServiceCall('tts/speak', {
+                entity_id: "tts.home_assistant_cloud",
+                media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
+                message
+              }, 'Recovery TTS');
+              console.log(`[PlaybackRecovery] Notified user via HA Voice`);
+            } catch (e: any) {
+              console.warn(`[PlaybackRecovery] Could not notify user: ${e.message}`);
+            }
+            await clearPlaybackSession();
+          } else {
+            console.log(`[PlaybackRecovery] File ${persisted.fileId} not found or already listened — clearing`);
+            await clearPlaybackSession();
+          }
+        }
+      }
+    } catch (e: any) {
+      console.error(`[PlaybackRecovery] Startup recovery check error: ${e.message}`);
+    }
   }, 15000);
 
   function findNextFileByPriority(allFiles: any[], currentWeekNumber: number, excludeFileId?: number): any | null {
@@ -7480,6 +7568,18 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       estimatedChunkDuration: initialEstimatedMs,
       playbackMode: 'server-tts',
     };
+
+    await savePlaybackSession({
+      fileId: fileToPlay.id,
+      fileName,
+      chunkIndex: resumeFromChunk,
+      totalChunks: totalChunksCalc,
+      trigger: catWashPlaybackTrigger || 'manual',
+      startedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      status: 'active',
+    });
+    console.log(`${logPrefix} Persisted playback session to DB (file=${fileToPlay.id}, chunk=${resumeFromChunk}/${totalChunksCalc})`);
 
     const tabletSetupPromise = (async () => {
       try {
@@ -7841,6 +7941,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     try {
       if (chunks.length === 0) {
         console.log(`[Nest Playback] No chunks for "${fileName}" (id=${fileId}) — text extraction failed, marking listened and skipping`);
+        await clearPlaybackSession();
         try {
           await storage.updateFile(fileId, { listened: true });
           console.log(`[Nest Playback] Marked file ${fileId} as listened (extraction failed)`);
@@ -7885,7 +7986,18 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
                   startedAt: new Date(),
                   chunkStartedAt: new Date(),
                 };
-                startNestChunkPlayback(nextFile.id, nextFile.displayName || nextFile.originalName, nextChunks, 0, sessionId, voice);
+                const nextName = nextFile.displayName || nextFile.originalName;
+                await savePlaybackSession({
+                  fileId: nextFile.id,
+                  fileName: nextName,
+                  chunkIndex: 0,
+                  totalChunks: nextChunks.length,
+                  trigger: catWashPlaybackTrigger || 'manual',
+                  startedAt: catWashPlaybackStartedAt?.toISOString() || new Date().toISOString(),
+                  updatedAt: new Date().toISOString(),
+                  status: 'active',
+                });
+                startNestChunkPlayback(nextFile.id, nextName, nextChunks, 0, sessionId, voice);
                 return;
               }
             }
@@ -7938,6 +8050,19 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           const chunkText = chunks[i] || '';
           catWashPlaybackState.currentWords = chunkText.split(/\s+/).filter((w: string) => w.length > 0);
           catWashPlaybackState.wordIndex = 0;
+        }
+
+        if (i > startChunk) {
+          savePlaybackSession({
+            fileId: fileId || 0,
+            fileName,
+            chunkIndex: i,
+            totalChunks: chunks.length,
+            trigger: catWashPlaybackTrigger || 'manual',
+            startedAt: catWashPlaybackStartedAt?.toISOString() || new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            status: 'active',
+          }).catch(() => {});
         }
 
         if (chunksPlayedSinceLastPrompt >= ATTENTION_INTERVAL) {
@@ -8121,6 +8246,16 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
                 estimatedChunkDuration: 0,
                 playbackMode: 'server-tts',
               };
+              await savePlaybackSession({
+                fileId: nextFile.id,
+                fileName: nextName,
+                chunkIndex: 0,
+                totalChunks: nextChunks.length,
+                trigger: catWashPlaybackTrigger || 'manual',
+                startedAt: catWashPlaybackStartedAt?.toISOString() || new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                status: 'active',
+              });
               startNestChunkPlayback(nextFile.id, nextName, nextChunks, 0, sessionId, voice);
               return;
             } else {
@@ -8133,6 +8268,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
         const completionPath = await generateAndSaveTTSAudio("All readings for this week are complete. Great job Bryn.", `nest-complete-${Date.now()}`, voice);
         await playOnNestSpeaker(`${appUrl}${completionPath}`);
+        await clearPlaybackSession();
+        console.log(`[Nest Playback] All readings complete — cleared persisted session`);
       }
 
     } catch (err: any) {
@@ -8321,6 +8458,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     currentTabletReaderUrl = null;
     stopToothbrushPolling();
     stopWordAdvancement();
+    await clearPlaybackSession();
+    console.log(`[Nest Stop] Cleared persisted playback session`);
 
     const stopTimestamp = Date.now();
     await Promise.all([
@@ -9040,6 +9179,26 @@ document.body.removeChild(a);
 
       res.json({ action: "processing", reason: "Light on — processing in background" });
 
+      const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+
+      const immediatePromptPromise = (async () => {
+        try {
+          await Promise.allSettled([
+            haServiceCall('media_player/volume_set', { entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.85 }, 'Cat Lights Vol'),
+            haServiceCall('input_boolean/turn_off', { entity_id: MODULE_READING_CONFIRMED }, 'Cat Lights Bool'),
+            haServiceCall('input_boolean/turn_on', { entity_id: MODULE_READING_PENDING }, 'Cat Lights Bool'),
+          ]);
+          await haServiceCall('tts/speak', {
+            entity_id: "tts.home_assistant_cloud",
+            media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
+            message: "One moment, checking your readings."
+          }, 'Cat Lights Quick TTS');
+          console.log(`[Cat Lights] Quick acknowledgment played via HA Cloud TTS`);
+        } catch (e: any) {
+          console.warn(`[Cat Lights] Quick acknowledgment failed: ${e.message}`);
+        }
+      })();
+
       const today = torontoDate();
       const semesterSettings = await storage.getActiveSemesterSettings();
 
@@ -9048,8 +9207,6 @@ document.body.removeChild(a);
         catLightsPromptPending = false;
         return;
       }
-
-      const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
 
       let currentWeekNumber = 1;
       const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
@@ -9068,6 +9225,20 @@ document.body.removeChild(a);
         console.log(`[Cat Lights] Using cached file — syncing OneDrive in background`);
         syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Lights]').catch(e => console.log(`[Cat Lights] Background sync error: ${e.message}`));
       }
+
+      await immediatePromptPromise;
+
+      try {
+        const lightCheckResp = await fetch(`${haUrl0}/api/states/light.cat_lights`, { headers: haHeaders0 });
+        if (lightCheckResp.ok) {
+          const lightCheckData = await lightCheckResp.json();
+          if (lightCheckData?.state === 'off') {
+            console.log(`[Cat Lights] Light turned off during file lookup — aborting prompt`);
+            catLightsPromptPending = false;
+            return;
+          }
+        }
+      } catch {}
 
       if (!nextFile) {
         console.log(`[Cat Lights] No unlistened files for week ${currentWeekNumber} — playing CHUM FM on Echo speakers`);
@@ -9090,39 +9261,27 @@ document.body.removeChild(a);
           console.warn(`[Cat Lights] Pre-prompt media stop error (non-fatal): ${e.message}`);
         }
 
-        await Promise.allSettled([
-          haServiceCall('input_boolean/turn_off', { entity_id: MODULE_READING_CONFIRMED }, 'Cat Lights Bool'),
-          haServiceCall('input_boolean/turn_on', { entity_id: MODULE_READING_PENDING }, 'Cat Lights Bool'),
-        ]);
-        console.log(`[Cat Lights] Booleans set`);
+        await haServiceCall('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.85 }, 'Cat Lights Vol');
 
-        await Promise.allSettled([
-          haServiceCall('media_player/volume_set', { entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.85 }, 'Cat Lights Vol'),
-          haServiceCall('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.85 }, 'Cat Lights Vol'),
-        ]);
-
-        const ttsStart = Date.now();
-        const audioPath = await generateAndSaveTTSAudio(ttsMessage, `cat-lights-prompt-${Date.now()}`);
-        const appUrl = "https://home-view--bkh416.replit.app";
         let ttsPlayed = false;
         try {
-          await haServiceCall('media_player/play_media', { entity_id: CAT_WR_HA_VOICE_ENTITY, media_content_id: `${appUrl}${audioPath}`, media_content_type: "music" }, 'Cat Lights TTS');
+          await haServiceCall('tts/speak', {
+            entity_id: "tts.home_assistant_cloud",
+            media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
+            message: ttsMessage
+          }, 'Cat Lights Cloud TTS');
           ttsPlayed = true;
-          console.log(`[Cat Lights] TTS prompt played on HA Voice in ${Date.now() - ttsStart}ms`);
+          console.log(`[Cat Lights] TTS prompt played via HA Cloud TTS`);
         } catch (e: any) {
-          console.log(`[Cat Lights] HA Voice play failed: ${e.message} — trying Nest speaker`);
+          console.warn(`[Cat Lights] HA Cloud TTS failed: ${e.message} — trying Edge TTS fallback`);
           try {
-            await haServiceCall('media_player/play_media', { entity_id: NEST_SPEAKER_ENTITY, media_content_id: `${appUrl}${audioPath}`, media_content_type: "music" }, 'Cat Lights TTS Nest');
+            const audioPath = await generateAndSaveTTSAudio(ttsMessage, `cat-lights-prompt-${Date.now()}`);
+            const appUrl2 = "https://home-view--bkh416.replit.app";
+            await haServiceCall('media_player/play_media', { entity_id: CAT_WR_HA_VOICE_ENTITY, media_content_id: `${appUrl2}${audioPath}`, media_content_type: "music" }, 'Cat Lights TTS');
             ttsPlayed = true;
-            console.log(`[Cat Lights] TTS prompt played on Nest speaker`);
+            console.log(`[Cat Lights] TTS prompt played via Edge TTS on HA Voice`);
           } catch (e2: any) {
-            console.log(`[Cat Lights] Nest play also failed: ${e2.message} — trying HA Cloud TTS`);
-            try {
-              await haServiceCall('tts/speak', { entity_id: "tts.home_assistant_cloud", media_player_entity_id: CAT_WR_HA_VOICE_ENTITY, message: ttsMessage }, 'Cat Lights Cloud TTS');
-              ttsPlayed = true;
-            } catch (e3: any) {
-              console.error(`[Cat Lights] All TTS methods failed — cannot prompt user`);
-            }
+            console.error(`[Cat Lights] All TTS methods failed: ${e2.message}`);
           }
         }
         if (!ttsPlayed) {
@@ -9140,6 +9299,24 @@ document.body.removeChild(a);
 
       await new Promise(r => setTimeout(r, 2000));
 
+      try {
+        const lightCheck2 = await fetch(`${haUrl0}/api/states/light.cat_lights`, { headers: haHeaders0 });
+        if (lightCheck2.ok) {
+          const ld2 = await lightCheck2.json();
+          if (ld2?.state === 'off') {
+            console.log(`[Cat Lights] Light turned off during confirmation wait — aborting`);
+            catLightsPromptPending = false;
+            try {
+              await Promise.allSettled([
+                haServiceCall('input_boolean/turn_off', { entity_id: MODULE_READING_PENDING }, 'Cat Lights Bool'),
+                haServiceCall('input_boolean/turn_off', { entity_id: MODULE_READING_CONFIRMED }, 'Cat Lights Bool'),
+              ]);
+            } catch {}
+            return;
+          }
+        }
+      } catch {}
+
       {
         const maxWaitMs = 23000;
         console.log(`[Cat Lights] Waiting up to ${maxWaitMs / 1000}s for confirmation...`);
@@ -9150,6 +9327,10 @@ document.body.removeChild(a);
           const timeout = setTimeout(() => finish(false), maxWaitMs);
           catLightsConfirmResolve = () => finish(true);
           const boolPoll = setInterval(async () => {
+            if (!catLightsPromptPending) {
+              finish(false);
+              return;
+            }
             try {
               const resp = await haFetch(`${haUrl}/api/states/${MODULE_READING_CONFIRMED}`, { headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` } }, 2, 'Cat Lights Poll');
               const data = await resp.json();
@@ -9178,6 +9359,19 @@ document.body.removeChild(a);
           await playChumFmRadio(haUrl);
           return;
         }
+
+        try {
+          const lightCheck3 = await fetch(`${haUrl0}/api/states/light.cat_lights`, { headers: haHeaders0 });
+          if (lightCheck3.ok) {
+            const ld3 = await lightCheck3.json();
+            if (ld3?.state === 'off') {
+              console.log(`[Cat Lights] Light turned off after confirmation — aborting playback start`);
+              catLightsPromptPending = false;
+              return;
+            }
+          }
+        } catch {}
+
         console.log(`[Cat Lights] Confirmation received — starting playback`);
         catLightsPromptPending = false;
 
@@ -9186,9 +9380,6 @@ document.body.removeChild(a);
         await startConfirmedPlaybackFlow(nextFile, '[Cat Lights]', 'echo', confirmTTS);
         return;
       }
-
-      catWashPlaybackTrigger = 'lights';
-      await startConfirmedPlaybackFlow(nextFile, '[Cat Lights]', 'echo');
 
     } catch (error: any) {
       console.error("[Cat Lights] Error:", error);
@@ -9620,6 +9811,7 @@ document.body.removeChild(a);
         const autoStopTimer = setTimeout(async () => {
           console.log(`[Voice Command] 10-minute pause timeout — auto-stopping`);
           voiceCommandPauseState_ = null;
+          await clearPlaybackSession();
 
           const stopTimestamp = Date.now();
           await Promise.all([
@@ -9651,6 +9843,17 @@ document.body.removeChild(a);
           pausedAt: new Date(),
           autoStopTimer,
         };
+
+        savePlaybackSession({
+          fileId: savedState.fileId,
+          fileName: savedState.fileName,
+          chunkIndex: savedState.chunkIndex,
+          totalChunks: savedState.totalChunks || 0,
+          trigger: catWashPlaybackTrigger || 'manual',
+          startedAt: catWashPlaybackStartedAt?.toISOString() || new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          status: 'paused',
+        }).catch(() => {});
 
         try {
           const pausePath = await generateAndSaveTTSAudio("Paused. Say resume to continue, or I'll stop in 10 minutes.", `vc-pause-${Date.now()}`);
@@ -9709,9 +9912,11 @@ document.body.removeChild(a);
         return;
 
       } else if (command === 'stop') {
+        const wasPaused = !!voiceCommandPauseState_;
         clearVoiceCommandPause_();
+        await clearPlaybackSession();
 
-        if (!catWashPlaybackActive && !voiceCommandPauseState_) {
+        if (!catWashPlaybackActive && !wasPaused) {
           console.log(`[Voice Command] Stop requested but nothing is playing or paused`);
           try {
             const noPlayPath = await generateAndSaveTTSAudio("Nothing is playing.", `vc-nostop-${Date.now()}`);
