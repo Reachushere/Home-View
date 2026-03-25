@@ -261,8 +261,46 @@ export async function deleteMailRulesByName(nameContains: string): Promise<numbe
   return deleted;
 }
 
-export async function getMailFolderId(folderName: string): Promise<string | null> {
+export async function moveEmailsNotFromDomains(sourceFolderId: string, destFolderId: string, keepDomains: string[]): Promise<{ moved: number; kept: number }> {
   const client = await getOutlookClient();
+  let moved = 0;
+  let kept = 0;
+
+  let response = await client.api(`/me/mailFolders/${sourceFolderId}/messages`).top(50).select('id,subject,from').get();
+
+  while (true) {
+    for (const msg of (response.value || [])) {
+      const senderEmail = (msg.from?.emailAddress?.address || '').toLowerCase();
+      const belongsHere = keepDomains.some(d => senderEmail.includes(d.toLowerCase()));
+
+      if (belongsHere) {
+        kept++;
+      } else {
+        try {
+          await client.api(`/me/messages/${msg.id}/move`).post({ destinationId: destFolderId });
+          moved++;
+        } catch (e: any) {
+          console.log(`[Outlook Mail] Failed to move back "${msg.subject}": ${e.message}`);
+        }
+      }
+    }
+
+    const nextLink = response['@odata.nextLink'];
+    if (!nextLink) break;
+    response = await client.api(nextLink).get();
+  }
+
+  console.log(`[Outlook Mail] Sorted folder: kept ${kept} (matching domains), moved ${moved} back`);
+  return { moved, kept };
+}
+
+export async function getMailFolderId(folderName: string): Promise<string | null> {
+  outlookConnectionSettings = null;
+  const client = await getOutlookClient();
+  try {
+    const filtered = await client.api('/me/mailFolders').filter(`displayName eq '${folderName}'`).get();
+    if (filtered.value?.[0]) return filtered.value[0].id;
+  } catch (e) {}
   const folders = await client.api('/me/mailFolders').top(100).get();
   const found = folders.value?.find((f: any) => f.displayName === folderName);
   return found?.id || null;
