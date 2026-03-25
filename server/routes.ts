@@ -3929,6 +3929,21 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
+  app.patch("/api/quicknotes/file/:id/rename", async (req, res) => {
+    try {
+      const { name } = req.body;
+      if (!name || typeof name !== 'string') {
+        return res.status(400).json({ error: "Name is required" });
+      }
+      const { renameOneDriveItem } = await import("./onedrive");
+      await renameOneDriveItem(req.params.id, name);
+      res.json({ success: true, name });
+    } catch (err: any) {
+      console.error("Error renaming QuickNote:", err);
+      res.status(500).json({ error: err.message || "Failed to rename note" });
+    }
+  });
+
   app.delete("/api/quicknotes/file/:id", async (req, res) => {
     try {
       await deleteOneDriveItem(req.params.id);

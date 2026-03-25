@@ -176,6 +176,25 @@ export default function OneNotePage() {
     },
   });
 
+  const renameMutation = useMutation({
+    mutationFn: async ({ id, name }: { id: string; name: string }) => {
+      const res = await apiRequest('PATCH', `/api/quicknotes/file/${id}/rename`, { name });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/quicknotes/files"] });
+    },
+    onError: (err: any) => {
+      toast({ title: "Rename failed", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const handleRename = useCallback((newName: string) => {
+    if (selectedFile) {
+      renameMutation.mutate({ id: selectedFile.id, name: newName });
+    }
+  }, [selectedFile]);
+
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       const res = await apiRequest('DELETE', `/api/quicknotes/file/${id}`);
@@ -502,6 +521,7 @@ export default function OneNotePage() {
             borderColor={editorBorder}
             linkedTask={linkedTask}
             linkedProject={linkedProject}
+            onRename={handleRename}
           />
         )}
         {view === 'search' && <SearchView files={filteredFiles} searchQuery={searchQuery} onSearchChange={setSearchQuery} onOpenNote={openNote} isLoading={filesQuery.isLoading} />}
@@ -645,7 +665,7 @@ function NotebooksView({ files, isLoading, onOpenNote, onStartCreate }: {
   );
 }
 
-function EditorView({ content, onChange, isLoading, file, isDirty, isSaving, bgColor, borderColor, linkedTask, linkedProject }: {
+function EditorView({ content, onChange, isLoading, file, isDirty, isSaving, bgColor, borderColor, linkedTask, linkedProject, onRename }: {
   content: string;
   onChange: (val: string) => void;
   isLoading: boolean;
@@ -656,8 +676,19 @@ function EditorView({ content, onChange, isLoading, file, isDirty, isSaving, bgC
   borderColor: string;
   linkedTask?: { id: number; title: string } | null;
   linkedProject?: { id: number; name: string } | null;
+  onRename: (name: string) => void;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [title, setTitle] = useState('');
+  const titleTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (file) {
+      const name = file.name || '';
+      const dotIdx = name.lastIndexOf('.');
+      setTitle(dotIdx > 0 ? name.substring(0, dotIdx) : name);
+    }
+  }, [file?.id]);
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -665,6 +696,17 @@ function EditorView({ content, onChange, isLoading, file, isDirty, isSaving, bgC
       textareaRef.current.style.height = Math.max(400, textareaRef.current.scrollHeight) + 'px';
     }
   }, [content]);
+
+  const handleTitleChange = useCallback((val: string) => {
+    setTitle(val);
+    if (titleTimeoutRef.current) clearTimeout(titleTimeoutRef.current);
+    titleTimeoutRef.current = setTimeout(() => {
+      if (file && val.trim()) {
+        const ext = file.name.includes('.') ? file.name.substring(file.name.lastIndexOf('.')) : '.txt';
+        onRename(val.trim() + ext);
+      }
+    }, 1500);
+  }, [file, onRename]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter') {
@@ -700,7 +742,7 @@ function EditorView({ content, onChange, isLoading, file, isDirty, isSaving, bgC
     <div>
       <div className="mb-2 flex items-center gap-2 text-xs text-white/30">
         <Pencil className="h-3 w-3" />
-        <span>Type here to edit — auto-saves to OneDrive after 2 seconds</span>
+        <span>Auto-saves to OneDrive</span>
         {(linkedTask || linkedProject) && (
           <span className="text-blue-400/60 flex items-center gap-1 ml-2">
             <Link2 className="h-3 w-3" />
@@ -713,6 +755,15 @@ function EditorView({ content, onChange, isLoading, file, isDirty, isSaving, bgC
       </div>
       <Card className="border" style={{ backgroundColor: bgColor, borderColor: borderColor }}>
         <CardContent className="p-0">
+          <input
+            type="text"
+            value={title}
+            onChange={e => handleTitleChange(e.target.value)}
+            className="w-full bg-transparent text-white text-xl font-semibold px-5 pt-5 pb-2 border-b border-white/10 focus:outline-none placeholder:text-white/20"
+            placeholder="Note title..."
+            spellCheck
+            data-testid="input-note-title"
+          />
           <textarea
             ref={textareaRef}
             value={content}
