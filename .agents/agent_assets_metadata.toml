@@ -36,3 +36,9 @@ id = "XqmpEHMM7I_fAY01vmLKM"
 uri = "file://HA_Integration_Report.md"
 type = "text"
 title = "HA Integration — Complete Technical Report"
+
+[[outputs]]
+id = "_bRfvaN1_NjHvTrHe3_XK"
+uri = "file://HA_Automations_Reference.md"
+type = "text"
+title = "HA Automations — Complete Standalone Reference"
