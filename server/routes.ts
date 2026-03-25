@@ -8135,8 +8135,13 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           return { success: true, actuallyPlaying: true };
         }
         if (speakerState === 'unknown') {
-          console.log(`[Nest] State is "unknown" (HA state check may have timed out) — assuming play_media succeeded`);
-          return { success: true, actuallyPlaying: false };
+          console.warn(`[Nest] State is "unknown" — speaker likely did not start playback`);
+          if (attempt === maxRetries) {
+            console.warn(`[Nest] State "unknown" after all attempts — treating as failure`);
+            return { success: false, actuallyPlaying: false };
+          }
+          await new Promise(r => setTimeout(r, 2000));
+          continue;
         }
         if (speakerState === 'idle' || speakerState === 'off' || speakerState === 'unavailable') {
           console.warn(`[Nest] Speaker definitively not playing (state: ${speakerState}) — will retry`);
