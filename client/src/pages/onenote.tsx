@@ -20,7 +20,6 @@ import {
   RefreshCw,
   Trash2,
   NotebookPen,
-  FolderOpen,
 } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 
@@ -45,39 +44,39 @@ interface OneNotePage {
   position: number;
 }
 
+interface PageCard {
+  notebookName: string;
+  sectionName: string;
+  title: string;
+  preview: string;
+  content: string;
+  position: number;
+}
+
+type TopTab = "recent" | "notebooks";
+type BottomTab = "notebooks" | "stickynotes" | "search";
+type View = "grid" | "page" | "quicknote-editor";
+
 export default function OneNotePage() {
   const { toast } = useToast();
-  const [selectedNotebook, setSelectedNotebook] = useState<OneNoteNotebook | null>(null);
-  const [selectedSection, setSelectedSection] = useState<{ name: string; id: string } | null>(null);
-  const [selectedPage, setSelectedPage] = useState<OneNotePage | null>(null);
+  const [topTab, setTopTab] = useState<TopTab>("recent");
+  const [bottomTab, setBottomTab] = useState<BottomTab>("notebooks");
+  const [view, setView] = useState<View>("grid");
+  const [selectedPageCard, setSelectedPageCard] = useState<PageCard | null>(null);
   const [selectedQuickNote, setSelectedQuickNote] = useState<QuickNoteFile | null>(null);
   const [editorContent, setEditorContent] = useState('');
   const [isDirty, setIsDirty] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [newNoteName, setNewNoteName] = useState('');
-  const [expandedNotebooks, setExpandedNotebooks] = useState<Set<string>>(new Set());
-  const [showQuickNotes, setShowQuickNotes] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [expandedNotebooks, setExpandedNotebooks] = useState<Set<string>>(new Set());
+  const [allPageCards, setAllPageCards] = useState<PageCard[]>([]);
+  const [loadingPages, setLoadingPages] = useState(false);
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const notebooksQuery = useQuery<OneNoteNotebook[]>({
     queryKey: ["/api/onenote/notebooks"],
     staleTime: 60000,
-  });
-
-  const pagesQuery = useQuery<OneNotePage[]>({
-    queryKey: ["/api/onenote/pages", selectedNotebook?.path, selectedSection?.name],
-    enabled: !!selectedNotebook && !!selectedSection,
-    staleTime: 30000,
-    queryFn: async () => {
-      const params = new URLSearchParams({
-        notebook: selectedNotebook!.path,
-        section: selectedSection!.name,
-      });
-      const res = await fetch(`/api/onenote/pages?${params}`);
-      if (!res.ok) throw new Error('Failed to load pages');
-      return res.json();
-    },
   });
 
   const filesQuery = useQuery<QuickNoteFile[]>({
@@ -87,7 +86,7 @@ export default function OneNotePage() {
 
   const contentQuery = useQuery<{ content: string }>({
     queryKey: ["/api/quicknotes/file", selectedQuickNote?.id, "content"],
-    enabled: !!selectedQuickNote,
+    enabled: !!selectedQuickNote && view === 'quicknote-editor',
     staleTime: 30000,
     refetchOnWindowFocus: false,
   });
@@ -132,6 +131,7 @@ export default function OneNotePage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/quicknotes/files"] });
       setSelectedQuickNote(null);
+      setView('grid');
       toast({ title: "Note deleted" });
     },
     onError: (err: any) => {
@@ -146,16 +146,41 @@ export default function OneNotePage() {
   }, [contentQuery.data, isDirty]);
 
   useEffect(() => {
-    if (notebooksQuery.data && notebooksQuery.data.length > 0 && expandedNotebooks.size === 0) {
-      const firstNb = notebooksQuery.data[0];
-      setExpandedNotebooks(new Set([firstNb.name]));
-      if (firstNb.sections.length > 0 && !selectedSection) {
-        setSelectedNotebook(firstNb);
-        const quickNotesSection = firstNb.sections.find(s => s.name.toLowerCase().includes('quick notes'));
-        setSelectedSection(quickNotesSection || firstNb.sections[0]);
-      }
+    if (notebooksQuery.data && notebooksQuery.data.length > 0) {
+      loadAllPages(notebooksQuery.data);
     }
   }, [notebooksQuery.data]);
+
+  async function loadAllPages(notebooks: OneNoteNotebook[]) {
+    setLoadingPages(true);
+    const cards: PageCard[] = [];
+    for (const nb of notebooks) {
+      for (const sec of nb.sections) {
+        try {
+          const params = new URLSearchParams({ notebook: nb.path, section: sec.name });
+          const res = await fetch(`/api/onenote/pages?${params}`);
+          if (res.ok) {
+            const pages: OneNotePage[] = await res.json();
+            for (const page of pages) {
+              const preview = page.content.substring(0, 100).replace(/\n/g, ' ').trim();
+              cards.push({
+                notebookName: nb.name,
+                sectionName: sec.name,
+                title: page.title,
+                preview: preview || 'No additional text',
+                content: page.content,
+                position: page.position,
+              });
+            }
+          }
+        } catch (e) {
+          console.error(`Failed to load pages for ${nb.name}/${sec.name}:`, e);
+        }
+      }
+    }
+    setAllPageCards(cards);
+    setLoadingPages(false);
+  }
 
   const handleEditorChange = useCallback((value: string) => {
     setEditorContent(value);
@@ -175,257 +200,245 @@ export default function OneNotePage() {
     }
   }
 
-  function selectSection(notebook: OneNoteNotebook, section: { name: string; id: string }) {
+  function openPageCard(card: PageCard) {
     if (isDirty && selectedQuickNote) saveNow();
-    setSelectedNotebook(notebook);
-    setSelectedSection(section);
-    setSelectedPage(null);
+    setSelectedPageCard(card);
     setSelectedQuickNote(null);
-    setIsDirty(false);
+    setView('page');
   }
 
-  function selectQuickNote(file: QuickNoteFile) {
+  function openQuickNote(file: QuickNoteFile) {
     if (isDirty && selectedQuickNote) saveNow();
     setSelectedQuickNote(file);
-    setSelectedPage(null);
-    setSelectedSection(null);
-    setSelectedNotebook(null);
-    setIsDirty(false);
+    setSelectedPageCard(null);
+    setView('quicknote-editor');
   }
 
-  function toggleNotebook(name: string) {
-    setExpandedNotebooks(prev => {
-      const next = new Set(prev);
-      if (next.has(name)) next.delete(name);
-      else next.add(name);
-      return next;
-    });
+  function goBack() {
+    if (isDirty && selectedQuickNote) saveNow();
+    setSelectedPageCard(null);
+    setSelectedQuickNote(null);
+    setView('grid');
   }
 
   const notebooks = notebooksQuery.data || [];
-  const pages = pagesQuery.data || [];
   const quickNoteFiles = filesQuery.data || [];
 
-  const filteredPages = searchQuery.trim()
-    ? pages.filter(p => p.title.toLowerCase().includes(searchQuery.toLowerCase()) || p.content.toLowerCase().includes(searchQuery.toLowerCase()))
-    : pages;
+  const filteredCards = searchQuery.trim()
+    ? allPageCards.filter(c =>
+        c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.preview.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.sectionName.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : allPageCards;
 
-  const isViewingOneNotePage = !!selectedPage;
-  const isViewingQuickNote = !!selectedQuickNote;
-  const showPageList = !!selectedSection && !selectedQuickNote;
+  const truncatePath = (nbName: string, secName: string) => {
+    const full = `${nbName} » ${secName}`;
+    return full.length > 24 ? full.substring(0, 22) + '...' : full;
+  };
+
+  if (view === 'page' && selectedPageCard) {
+    return (
+      <div className="h-screen flex flex-col" style={{ background: '#1a1a1a', color: '#e0e0e0' }}>
+        <div className="h-12 flex items-center px-4 gap-3 shrink-0" style={{ background: '#2d2d30', borderBottom: '1px solid #3e3e42' }}>
+          <button onClick={goBack} className="flex items-center gap-1.5 text-white/70 hover:text-white transition-colors" data-testid="button-back">
+            <ArrowLeft className="h-4 w-4" />
+            <span className="text-sm">Back</span>
+          </button>
+          <div className="flex-1" />
+          <span className="text-xs text-white/30">{selectedPageCard.notebookName} » {selectedPageCard.sectionName}</span>
+          <Link href="/">
+            <Button variant="ghost" size="icon" className="h-7 w-7 text-white/50 hover:text-white hover:bg-white/10" data-testid="link-home">
+              <Home className="h-3.5 w-3.5" />
+            </Button>
+          </Link>
+        </div>
+        <div className="flex-1 overflow-y-auto">
+          <OneNotePageContent page={selectedPageCard} />
+        </div>
+      </div>
+    );
+  }
+
+  if (view === 'quicknote-editor' && selectedQuickNote) {
+    return (
+      <div className="h-screen flex flex-col" style={{ background: '#1a1a1a', color: '#e0e0e0' }}>
+        <div className="h-12 flex items-center px-4 gap-3 shrink-0" style={{ background: '#2d2d30', borderBottom: '1px solid #3e3e42' }}>
+          <button onClick={goBack} className="flex items-center gap-1.5 text-white/70 hover:text-white transition-colors" data-testid="button-back">
+            <ArrowLeft className="h-4 w-4" />
+            <span className="text-sm">Back</span>
+          </button>
+          <div className="flex-1" />
+          <Button
+            variant="ghost" size="sm" onClick={saveNow}
+            disabled={saveMutation.isPending || !isDirty}
+            className={`h-7 gap-1 text-xs ${isDirty ? 'text-orange-400' : 'text-white/30'}`}
+            data-testid="button-save"
+          >
+            {saveMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}
+            {saveMutation.isPending ? 'Saving...' : isDirty ? 'Save' : 'Saved'}
+          </Button>
+          <Button
+            variant="ghost" size="icon" onClick={() => { if (confirm('Delete this note from OneDrive?')) deleteMutation.mutate(selectedQuickNote.id); }}
+            className="h-7 w-7 text-white/30 hover:text-red-400"
+            data-testid="button-delete-note"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </Button>
+          <Link href="/">
+            <Button variant="ghost" size="icon" className="h-7 w-7 text-white/50 hover:text-white hover:bg-white/10" data-testid="link-home">
+              <Home className="h-3.5 w-3.5" />
+            </Button>
+          </Link>
+        </div>
+        <div className="flex-1 overflow-y-auto">
+          <QuickNoteEditor
+            file={selectedQuickNote}
+            content={editorContent}
+            onChange={handleEditorChange}
+            isLoading={contentQuery.isLoading && !contentQuery.data}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="h-screen flex flex-col" style={{ background: '#1e1e1e', color: '#d4d4d4' }}>
-      {/* Top bar */}
-      <div className="h-10 flex items-center px-3 gap-2 shrink-0" style={{ background: '#7b2d8e', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-        <NotebookPen className="h-4 w-4 text-white/80" />
-        <span className="text-sm font-semibold text-white" data-testid="text-page-title">OneNote</span>
-        <div className="flex-1" />
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-7 w-7 text-white/60 hover:text-white hover:bg-white/10"
-          onClick={() => notebooksQuery.refetch()}
-          data-testid="button-refresh"
-        >
-          <RefreshCw className={`h-3.5 w-3.5 ${notebooksQuery.isFetching ? 'animate-spin' : ''}`} />
-        </Button>
-        <Link href="/">
-          <Button variant="ghost" size="icon" className="h-7 w-7 text-white/60 hover:text-white hover:bg-white/10" data-testid="link-home">
-            <Home className="h-3.5 w-3.5" />
-          </Button>
-        </Link>
-      </div>
-
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar - Notebooks & Sections */}
-        <div className="w-56 shrink-0 flex flex-col overflow-y-auto" style={{ background: '#252526', borderRight: '1px solid #3c3c3c' }}>
-          <div className="px-3 pt-3 pb-2">
-            <span className="text-[10px] uppercase tracking-wider text-white/30 font-semibold">Notebooks</span>
+    <div className="h-screen flex flex-col" style={{ background: '#1a1a1a', color: '#e0e0e0' }}>
+      {/* Top header */}
+      <div className="shrink-0 pt-4 pb-3 px-5" style={{ background: '#1a1a1a' }}>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-3">
+            <div className="h-9 w-9 rounded-full flex items-center justify-center" style={{ background: '#7b2d8e' }}>
+              <NotebookPen className="h-4 w-4 text-white" />
+            </div>
+            <div>
+              <h1 className="text-base font-semibold text-white" data-testid="text-page-title">Notebooks</h1>
+              <p className="text-[11px] text-white/40">OneNote</p>
+            </div>
           </div>
-
-          {notebooksQuery.isLoading ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-4 w-4 animate-spin text-white/30" />
-            </div>
-          ) : (
-            <div className="flex-1">
-              {notebooks.map(nb => (
-                <div key={nb.name}>
-                  <button
-                    className="w-full flex items-center gap-1.5 px-3 py-1.5 text-left hover:bg-white/5 transition-colors"
-                    onClick={() => toggleNotebook(nb.name)}
-                    data-testid={`notebook-${nb.name}`}
-                  >
-                    {expandedNotebooks.has(nb.name) ? (
-                      <ChevronDown className="h-3 w-3 text-white/40 shrink-0" />
-                    ) : (
-                      <ChevronRight className="h-3 w-3 text-white/40 shrink-0" />
-                    )}
-                    <BookOpen className="h-3.5 w-3.5 shrink-0" style={{ color: '#7b2d8e' }} />
-                    <span className="text-xs text-white/80 truncate">{nb.name}</span>
-                  </button>
-
-                  {expandedNotebooks.has(nb.name) && (
-                    <div className="ml-3">
-                      {nb.sections.map(sec => {
-                        const isActive = selectedSection?.id === sec.id && selectedNotebook?.path === nb.path;
-                        return (
-                          <button
-                            key={sec.id}
-                            className={`w-full flex items-center gap-1.5 px-3 py-1 text-left transition-colors rounded-sm ${isActive ? 'bg-white/10 text-white' : 'hover:bg-white/5 text-white/60'}`}
-                            onClick={() => selectSection(nb, sec)}
-                            data-testid={`section-${sec.name}`}
-                          >
-                            <FileText className="h-3 w-3 shrink-0" style={{ color: isActive ? '#c586c0' : undefined }} />
-                            <span className="text-xs truncate">{sec.name}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              ))}
-
-              {/* QuickNotes section */}
-              <div className="mt-2 border-t border-white/5 pt-1">
-                <button
-                  className="w-full flex items-center gap-1.5 px-3 py-1.5 text-left hover:bg-white/5 transition-colors"
-                  onClick={() => setShowQuickNotes(!showQuickNotes)}
-                  data-testid="toggle-quicknotes"
-                >
-                  {showQuickNotes ? (
-                    <ChevronDown className="h-3 w-3 text-white/40 shrink-0" />
-                  ) : (
-                    <ChevronRight className="h-3 w-3 text-white/40 shrink-0" />
-                  )}
-                  <StickyNote className="h-3.5 w-3.5 text-yellow-500 shrink-0" />
-                  <span className="text-xs text-white/80 truncate">QuickNotes</span>
-                  <span className="text-[10px] text-white/30 ml-auto">{quickNoteFiles.length}</span>
-                </button>
-
-                {showQuickNotes && (
-                  <div className="ml-3">
-                    {quickNoteFiles.map(f => {
-                      const isActive = selectedQuickNote?.id === f.id;
-                      return (
-                        <button
-                          key={f.id}
-                          className={`w-full flex items-center gap-1.5 px-3 py-1 text-left transition-colors rounded-sm ${isActive ? 'bg-white/10 text-white' : 'hover:bg-white/5 text-white/60'}`}
-                          onClick={() => selectQuickNote(f)}
-                          data-testid={`quicknote-${f.id}`}
-                        >
-                          <FileText className="h-3 w-3 shrink-0" />
-                          <span className="text-xs truncate">{f.name}</span>
-                        </button>
-                      );
-                    })}
-                    <button
-                      className="w-full flex items-center gap-1.5 px-3 py-1 text-left hover:bg-white/5 text-white/40 transition-colors"
-                      onClick={() => setIsCreating(true)}
-                      data-testid="button-new-quicknote"
-                    >
-                      <Plus className="h-3 w-3 shrink-0" />
-                      <span className="text-xs">New note</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost" size="icon"
+              className="h-8 w-8 text-white/40 hover:text-white hover:bg-white/10"
+              onClick={() => { notebooksQuery.refetch(); if (notebooksQuery.data) loadAllPages(notebooksQuery.data); }}
+              data-testid="button-refresh"
+            >
+              <RefreshCw className={`h-4 w-4 ${notebooksQuery.isFetching || loadingPages ? 'animate-spin' : ''}`} />
+            </Button>
+            <Link href="/">
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-white/40 hover:text-white hover:bg-white/10" data-testid="link-home">
+                <Home className="h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
         </div>
 
-        {/* Page list panel */}
-        {showPageList && (
-          <div className="w-56 shrink-0 flex flex-col overflow-y-auto" style={{ background: '#2d2d2d', borderRight: '1px solid #3c3c3c' }}>
-            <div className="px-3 pt-3 pb-1 flex items-center justify-between">
-              <span className="text-xs font-semibold text-white/60">{selectedSection?.name}</span>
-            </div>
-
-            {/* Search */}
-            <div className="px-2 pb-2">
-              <div className="relative">
-                <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-white/25" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  placeholder="Search pages..."
-                  className="w-full h-6 pl-7 pr-6 text-[11px] rounded bg-white/5 border border-white/10 text-white placeholder:text-white/25 focus:outline-none focus:border-white/20"
-                  data-testid="input-search-pages"
-                />
-                {searchQuery && (
-                  <button onClick={() => setSearchQuery('')} className="absolute right-1.5 top-1/2 -translate-y-1/2">
-                    <X className="h-3 w-3 text-white/30" />
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {pagesQuery.isLoading ? (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-4 w-4 animate-spin text-white/30" />
-              </div>
-            ) : filteredPages.length === 0 ? (
-              <div className="text-center py-8 text-white/25 text-xs">
-                {searchQuery ? 'No matching pages' : 'No pages found'}
-              </div>
-            ) : (
-              <div className="flex-1">
-                {filteredPages.map((page, i) => {
-                  const isActive = selectedPage?.title === page.title && selectedPage?.position === page.position;
-                  const preview = page.content.substring(0, 80).replace(/\n/g, ' ');
-                  return (
-                    <button
-                      key={`${page.title}-${i}`}
-                      className={`w-full text-left px-3 py-2 transition-colors border-b border-white/5 ${isActive ? 'bg-white/10' : 'hover:bg-white/5'}`}
-                      onClick={() => { setSelectedPage(page); setSelectedQuickNote(null); }}
-                      data-testid={`page-${i}`}
-                    >
-                      <div className="text-xs font-medium text-white/90 truncate">{page.title}</div>
-                      <div className="text-[10px] text-white/30 mt-0.5 line-clamp-2">{preview || '(empty)'}</div>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
+        {/* Top tab pills */}
+        {bottomTab === 'notebooks' && (
+          <div className="flex gap-2">
+            <button
+              className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${topTab === 'recent' ? 'text-white' : 'text-white/50 hover:text-white/70'}`}
+              style={{ background: topTab === 'recent' ? '#4a2d6e' : 'rgba(255,255,255,0.08)', border: topTab === 'recent' ? '1px solid #7b4daa' : '1px solid rgba(255,255,255,0.1)' }}
+              onClick={() => setTopTab('recent')}
+              data-testid="tab-recent-pages"
+            >
+              Recent pages
+            </button>
+            <button
+              className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${topTab === 'notebooks' ? 'text-white' : 'text-white/50 hover:text-white/70'}`}
+              style={{ background: topTab === 'notebooks' ? '#4a2d6e' : 'rgba(255,255,255,0.08)', border: topTab === 'notebooks' ? '1px solid #7b4daa' : '1px solid rgba(255,255,255,0.1)' }}
+              onClick={() => setTopTab('notebooks')}
+              data-testid="tab-notebook-list"
+            >
+              Notebook list
+            </button>
           </div>
         )}
+      </div>
 
-        {/* Main content area */}
-        <div className="flex-1 overflow-y-auto" style={{ background: '#1e1e1e' }}>
-          {isViewingOneNotePage && selectedPage ? (
-            <OneNotePageContent page={selectedPage} />
-          ) : isViewingQuickNote && selectedQuickNote ? (
-            <QuickNoteEditor
-              file={selectedQuickNote}
-              content={editorContent}
-              onChange={handleEditorChange}
-              isLoading={contentQuery.isLoading && !contentQuery.data}
-              isDirty={isDirty}
-              isSaving={saveMutation.isPending}
-              onSave={saveNow}
-              onDelete={() => {
-                if (confirm('Delete this note from OneDrive?')) {
-                  deleteMutation.mutate(selectedQuickNote.id);
-                }
-              }}
-            />
-          ) : (
-            <WelcomeView
-              notebooksCount={notebooks.length}
-              sectionsCount={notebooks.reduce((s, nb) => s + nb.sections.length, 0)}
-              isLoading={notebooksQuery.isLoading}
-            />
-          )}
-        </div>
+      {/* Main content area */}
+      <div className="flex-1 overflow-y-auto px-5 pb-20">
+        {bottomTab === 'notebooks' && topTab === 'recent' && (
+          <RecentPagesGrid
+            cards={filteredCards}
+            isLoading={notebooksQuery.isLoading || loadingPages}
+            onOpenCard={openPageCard}
+            truncatePath={truncatePath}
+          />
+        )}
+        {bottomTab === 'notebooks' && topTab === 'notebooks' && (
+          <NotebookListView
+            notebooks={notebooks}
+            isLoading={notebooksQuery.isLoading}
+            expandedNotebooks={expandedNotebooks}
+            onToggleNotebook={(name) => {
+              setExpandedNotebooks(prev => {
+                const next = new Set(prev);
+                if (next.has(name)) next.delete(name);
+                else next.add(name);
+                return next;
+              });
+            }}
+            allCards={allPageCards}
+            onOpenCard={openPageCard}
+            truncatePath={truncatePath}
+          />
+        )}
+        {bottomTab === 'stickynotes' && (
+          <StickyNotesView
+            files={quickNoteFiles}
+            isLoading={filesQuery.isLoading}
+            onOpenNote={openQuickNote}
+            onStartCreate={() => setIsCreating(true)}
+          />
+        )}
+        {bottomTab === 'search' && (
+          <SearchView
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            cards={filteredCards}
+            quickNotes={quickNoteFiles}
+            onOpenCard={openPageCard}
+            onOpenNote={openQuickNote}
+            truncatePath={truncatePath}
+          />
+        )}
+      </div>
+
+      {/* Bottom navigation bar */}
+      <div className="shrink-0 flex items-center justify-around py-2 px-4" style={{ background: '#2d2d30', borderTop: '1px solid #3e3e42' }}>
+        <button
+          className={`flex flex-col items-center gap-0.5 px-6 py-1 rounded transition-colors ${bottomTab === 'notebooks' ? 'text-white' : 'text-white/40'}`}
+          onClick={() => { setBottomTab('notebooks'); setView('grid'); }}
+          data-testid="nav-notebooks"
+        >
+          <BookOpen className="h-5 w-5" />
+          <span className="text-[10px]">Notebooks</span>
+        </button>
+        <button
+          className={`flex flex-col items-center gap-0.5 px-6 py-1 rounded transition-colors ${bottomTab === 'stickynotes' ? 'text-white' : 'text-white/40'}`}
+          onClick={() => { setBottomTab('stickynotes'); setView('grid'); }}
+          data-testid="nav-stickynotes"
+        >
+          <StickyNote className="h-5 w-5" />
+          <span className="text-[10px]">Sticky Notes</span>
+        </button>
+        <button
+          className={`flex flex-col items-center gap-0.5 px-6 py-1 rounded transition-colors ${bottomTab === 'search' ? 'text-white' : 'text-white/40'}`}
+          onClick={() => { setBottomTab('search'); setView('grid'); }}
+          data-testid="nav-search"
+        >
+          <Search className="h-5 w-5" />
+          <span className="text-[10px]">Search</span>
+        </button>
       </div>
 
       {/* Create note modal */}
       {isCreating && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setIsCreating(false)}>
-          <div className="rounded-lg p-5 w-full max-w-sm" style={{ background: '#2d2d2d', border: '1px solid #3c3c3c' }} onClick={e => e.stopPropagation()}>
-            <h3 className="text-sm font-semibold mb-3 text-white">New Quick Note</h3>
+          <div className="rounded-xl p-5 w-full max-w-sm" style={{ background: '#2d2d30', border: '1px solid #3e3e42' }} onClick={e => e.stopPropagation()}>
+            <h3 className="text-sm font-semibold mb-3 text-white">New Sticky Note</h3>
             <Input
               value={newNoteName}
               onChange={e => setNewNoteName(e.target.value)}
@@ -447,7 +460,7 @@ export default function OneNotePage() {
                   const name = newNoteName.trim().endsWith('.txt') || newNoteName.trim().endsWith('.md') ? newNoteName.trim() : newNoteName.trim() + '.txt';
                   createMutation.mutate({ name, content: '' });
                 }}
-                className="text-xs"
+                className="text-xs text-white"
                 style={{ background: '#7b2d8e' }}
                 data-testid="button-confirm-create"
               >
@@ -462,13 +475,299 @@ export default function OneNotePage() {
   );
 }
 
-function OneNotePageContent({ page }: { page: OneNotePage }) {
+function RecentPagesGrid({ cards, isLoading, onOpenCard, truncatePath }: {
+  cards: PageCard[];
+  isLoading: boolean;
+  onOpenCard: (c: PageCard) => void;
+  truncatePath: (nb: string, sec: string) => string;
+}) {
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <Loader2 className="h-6 w-6 animate-spin text-white/30" />
+        <span className="ml-3 text-sm text-white/30">Loading pages...</span>
+      </div>
+    );
+  }
+
+  if (cards.length === 0) {
+    return (
+      <div className="text-center py-16 text-white/30">
+        <NotebookPen className="h-10 w-10 mx-auto mb-3 opacity-30" />
+        <p className="text-sm">No pages found</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
+      {cards.map((card, i) => (
+        <PageCardComponent key={`${card.title}-${i}`} card={card} onClick={() => onOpenCard(card)} truncatePath={truncatePath} index={i} />
+      ))}
+    </div>
+  );
+}
+
+function PageCardComponent({ card, onClick, truncatePath, index }: {
+  card: PageCard;
+  onClick: () => void;
+  truncatePath: (nb: string, sec: string) => string;
+  index: number;
+}) {
+  return (
+    <button
+      className="text-left rounded-lg p-3 transition-colors hover:brightness-110 flex flex-col justify-between"
+      style={{ background: '#2d2d30', border: '1px solid #3e3e42', minHeight: '140px' }}
+      onClick={onClick}
+      data-testid={`page-card-${index}`}
+    >
+      <div>
+        <div className="text-[10px] text-white/35 mb-1.5 truncate">
+          {truncatePath(card.notebookName, card.sectionName)}
+        </div>
+        <div className="text-sm font-semibold text-white mb-1 line-clamp-2">
+          {card.title || 'Untitled Page'}
+        </div>
+        <div className="text-xs text-white/40 line-clamp-2">
+          {card.preview || 'No additional text'}
+        </div>
+      </div>
+      <div className="flex items-center justify-between mt-3">
+        <FileText className="h-4 w-4" style={{ color: '#7b2d8e' }} />
+        <span className="text-[10px] text-white/25">
+          {new Date().toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' })}
+        </span>
+      </div>
+    </button>
+  );
+}
+
+function NotebookListView({ notebooks, isLoading, expandedNotebooks, onToggleNotebook, allCards, onOpenCard, truncatePath }: {
+  notebooks: OneNoteNotebook[];
+  isLoading: boolean;
+  expandedNotebooks: Set<string>;
+  onToggleNotebook: (name: string) => void;
+  allCards: PageCard[];
+  onOpenCard: (c: PageCard) => void;
+  truncatePath: (nb: string, sec: string) => string;
+}) {
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <Loader2 className="h-6 w-6 animate-spin text-white/30" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      {notebooks.map(nb => (
+        <div key={nb.name} className="rounded-lg overflow-hidden" style={{ background: '#2d2d30', border: '1px solid #3e3e42' }}>
+          <button
+            className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/5 transition-colors"
+            onClick={() => onToggleNotebook(nb.name)}
+            data-testid={`notebook-${nb.name}`}
+          >
+            <div className="h-8 w-8 rounded flex items-center justify-center shrink-0" style={{ background: '#7b2d8e' }}>
+              <BookOpen className="h-4 w-4 text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-medium text-white truncate">{nb.name}</div>
+              <div className="text-[11px] text-white/35">{nb.sections.length} section{nb.sections.length !== 1 ? 's' : ''}</div>
+            </div>
+            {expandedNotebooks.has(nb.name) ? (
+              <ChevronDown className="h-4 w-4 text-white/30 shrink-0" />
+            ) : (
+              <ChevronRight className="h-4 w-4 text-white/30 shrink-0" />
+            )}
+          </button>
+
+          {expandedNotebooks.has(nb.name) && (
+            <div className="px-4 pb-3 space-y-1" style={{ borderTop: '1px solid #3e3e42' }}>
+              {nb.sections.map(sec => {
+                const sectionCards = allCards.filter(c => c.notebookName === nb.name && c.sectionName === sec.name);
+                return (
+                  <div key={sec.id} className="mt-2">
+                    <div className="flex items-center gap-2 px-2 py-1.5">
+                      <FileText className="h-3.5 w-3.5" style={{ color: '#7b2d8e' }} />
+                      <span className="text-xs font-medium text-white/60">{sec.name}</span>
+                      <span className="text-[10px] text-white/25">({sectionCards.length} pages)</span>
+                    </div>
+                    {sectionCards.length > 0 && (
+                      <div className="grid gap-2 ml-5" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}>
+                        {sectionCards.map((card, i) => (
+                          <button
+                            key={`${card.title}-${i}`}
+                            className="text-left rounded-md p-2.5 hover:bg-white/5 transition-colors"
+                            style={{ background: '#252527', border: '1px solid #3e3e42' }}
+                            onClick={() => onOpenCard(card)}
+                            data-testid={`section-page-${i}`}
+                          >
+                            <div className="text-xs font-medium text-white/80 truncate">{card.title || 'Untitled Page'}</div>
+                            <div className="text-[10px] text-white/30 mt-0.5 truncate">{card.preview || 'No additional text'}</div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function StickyNotesView({ files, isLoading, onOpenNote, onStartCreate }: {
+  files: QuickNoteFile[];
+  isLoading: boolean;
+  onOpenNote: (f: QuickNoteFile) => void;
+  onStartCreate: () => void;
+}) {
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <Loader2 className="h-6 w-6 animate-spin text-white/30" />
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-sm font-medium text-white/60">Sticky Notes</h2>
+        <button
+          className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs text-white/60 hover:text-white transition-colors"
+          style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }}
+          onClick={onStartCreate}
+          data-testid="button-new-quicknote"
+        >
+          <Plus className="h-3 w-3" />
+          New
+        </button>
+      </div>
+      {files.length === 0 ? (
+        <div className="text-center py-12 text-white/30">
+          <StickyNote className="h-8 w-8 mx-auto mb-3 opacity-30" />
+          <p className="text-sm">No sticky notes yet</p>
+        </div>
+      ) : (
+        <div className="space-y-1.5">
+          {files.map(f => (
+            <button
+              key={f.id}
+              className="w-full text-left flex items-center gap-3 px-4 py-3 rounded-lg transition-colors hover:bg-white/5"
+              style={{ background: '#2d2d30', border: '1px solid #3e3e42' }}
+              onClick={() => onOpenNote(f)}
+              data-testid={`quicknote-${f.id}`}
+            >
+              <StickyNote className="h-5 w-5 shrink-0" style={{ color: '#e8b230' }} />
+              <div className="flex-1 min-w-0">
+                <div className="text-sm text-white/80 truncate">{f.name}</div>
+                {f.lastModified && (
+                  <div className="text-[10px] text-white/30 mt-0.5">
+                    {new Date(f.lastModified).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' })}
+                  </div>
+                )}
+              </div>
+              <ChevronRight className="h-4 w-4 text-white/20 shrink-0" />
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SearchView({ searchQuery, onSearchChange, cards, quickNotes, onOpenCard, onOpenNote, truncatePath }: {
+  searchQuery: string;
+  onSearchChange: (q: string) => void;
+  cards: PageCard[];
+  quickNotes: QuickNoteFile[];
+  onOpenCard: (c: PageCard) => void;
+  onOpenNote: (f: QuickNoteFile) => void;
+  truncatePath: (nb: string, sec: string) => string;
+}) {
+  const filteredNotes = searchQuery.trim()
+    ? quickNotes.filter(f => f.name.toLowerCase().includes(searchQuery.toLowerCase()))
+    : [];
+
+  return (
+    <div>
+      <div className="relative mb-4">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/25" />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={e => onSearchChange(e.target.value)}
+          placeholder="Search all notes..."
+          className="w-full h-10 pl-10 pr-8 text-sm rounded-lg text-white placeholder:text-white/25 focus:outline-none"
+          style={{ background: '#2d2d30', border: '1px solid #3e3e42' }}
+          autoFocus
+          data-testid="input-search"
+        />
+        {searchQuery && (
+          <button onClick={() => onSearchChange('')} className="absolute right-3 top-1/2 -translate-y-1/2" data-testid="button-clear-search">
+            <X className="h-4 w-4 text-white/30" />
+          </button>
+        )}
+      </div>
+
+      {!searchQuery.trim() ? (
+        <div className="text-center py-12 text-white/25">
+          <Search className="h-8 w-8 mx-auto mb-3 opacity-30" />
+          <p className="text-sm">Type to search your notes</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {cards.length > 0 && (
+            <div>
+              <h3 className="text-xs font-medium text-white/40 mb-2">Notebook Pages ({cards.length})</h3>
+              <div className="grid gap-2" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
+                {cards.map((card, i) => (
+                  <PageCardComponent key={`${card.title}-${i}`} card={card} onClick={() => onOpenCard(card)} truncatePath={truncatePath} index={i} />
+                ))}
+              </div>
+            </div>
+          )}
+          {filteredNotes.length > 0 && (
+            <div>
+              <h3 className="text-xs font-medium text-white/40 mb-2">Sticky Notes ({filteredNotes.length})</h3>
+              <div className="space-y-1">
+                {filteredNotes.map(f => (
+                  <button
+                    key={f.id}
+                    className="w-full text-left flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors"
+                    onClick={() => onOpenNote(f)}
+                  >
+                    <StickyNote className="h-4 w-4 shrink-0" style={{ color: '#e8b230' }} />
+                    <span className="text-sm text-white/70 truncate">{f.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          {cards.length === 0 && filteredNotes.length === 0 && (
+            <div className="text-center py-8 text-white/25 text-sm">
+              No results for "{searchQuery}"
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function OneNotePageContent({ page }: { page: PageCard }) {
   const lines = page.content.split('\n');
 
   return (
     <div className="max-w-3xl mx-auto px-8 py-6">
       <h1 className="text-2xl font-bold text-white mb-1" data-testid="text-onenote-page-title">{page.title}</h1>
-      <div className="h-px mb-6" style={{ background: '#7b2d8e' }} />
+      <div className="text-[11px] text-white/30 mb-2">{page.notebookName} » {page.sectionName}</div>
+      <div className="h-px mb-5" style={{ background: '#7b2d8e' }} />
       <div className="space-y-1.5">
         {lines.map((line, i) => {
           if (!line.trim()) return <div key={i} className="h-3" />;
@@ -532,15 +831,11 @@ function OneNotePageContent({ page }: { page: OneNotePage }) {
   );
 }
 
-function QuickNoteEditor({ file, content, onChange, isLoading, isDirty, isSaving, onSave, onDelete }: {
+function QuickNoteEditor({ file, content, onChange, isLoading }: {
   file: QuickNoteFile;
   content: string;
   onChange: (val: string) => void;
   isLoading: boolean;
-  isDirty: boolean;
-  isSaving: boolean;
-  onSave: () => void;
-  onDelete: () => void;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -563,33 +858,12 @@ function QuickNoteEditor({ file, content, onChange, isLoading, isDirty, isSaving
 
   return (
     <div className="max-w-3xl mx-auto px-8 py-6">
-      <div className="flex items-center justify-between mb-1">
-        <h1 className="text-2xl font-bold text-white" data-testid="text-quicknote-title">{displayName}</h1>
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost" size="sm" onClick={onSave}
-            disabled={isSaving || !isDirty}
-            className={`h-7 gap-1 text-xs ${isDirty ? 'text-orange-400 hover:text-orange-300' : 'text-white/30'}`}
-            data-testid="button-save"
-          >
-            {isSaving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}
-            {isSaving ? 'Saving...' : isDirty ? 'Save' : 'Saved'}
-          </Button>
-          <Button
-            variant="ghost" size="icon" onClick={onDelete}
-            className="h-7 w-7 text-white/30 hover:text-red-400"
-            data-testid="button-delete-note"
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </Button>
-        </div>
-      </div>
+      <h1 className="text-2xl font-bold text-white mb-1" data-testid="text-quicknote-title">{displayName}</h1>
       <div className="text-[10px] text-white/25 mb-4 flex items-center gap-2">
         <StickyNote className="h-3 w-3" />
         <span>Auto-saves to OneDrive</span>
-        {isSaving && <span className="text-yellow-400/60">Saving...</span>}
       </div>
-      <div className="h-px mb-4" style={{ background: '#3c3c3c' }} />
+      <div className="h-px mb-4" style={{ background: '#3e3e42' }} />
       <textarea
         ref={textareaRef}
         value={content}
@@ -600,34 +874,6 @@ function QuickNoteEditor({ file, content, onChange, isLoading, isDirty, isSaving
         spellCheck
         data-testid="textarea-editor"
       />
-    </div>
-  );
-}
-
-function WelcomeView({ notebooksCount, sectionsCount, isLoading }: {
-  notebooksCount: number;
-  sectionsCount: number;
-  isLoading: boolean;
-}) {
-  return (
-    <div className="flex items-center justify-center h-full">
-      <div className="text-center">
-        {isLoading ? (
-          <>
-            <Loader2 className="h-8 w-8 animate-spin text-white/20 mx-auto mb-3" />
-            <p className="text-sm text-white/30">Loading notebooks...</p>
-          </>
-        ) : (
-          <>
-            <NotebookPen className="h-12 w-12 mx-auto mb-4" style={{ color: '#7b2d8e', opacity: 0.5 }} />
-            <h2 className="text-lg font-semibold text-white/60 mb-1">OneNote</h2>
-            <p className="text-xs text-white/30">
-              {notebooksCount} notebook{notebooksCount !== 1 ? 's' : ''} &middot; {sectionsCount} section{sectionsCount !== 1 ? 's' : ''}
-            </p>
-            <p className="text-xs text-white/20 mt-2">Select a section to view pages</p>
-          </>
-        )}
-      </div>
     </div>
   );
 }
