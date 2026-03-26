@@ -2904,7 +2904,8 @@ export default function PDFReaderPage() {
             <div className="overflow-hidden rounded-lg mb-2" style={{ background: 'rgba(0,0,0,0.4)', border: `1px solid ${waveColor}33`, height: '28px', position: 'relative' }}>
               {(() => {
                 const displayName = rawFileName?.replace(/\.pdf$/i, '') || 'No file loaded';
-                const tickerText = `${displayName}${totalChunks > 0 ? ` · Chunk ${currentChunk + 1}/${totalChunks}` : ''}${isPlaying ? ' · ▶ Playing' : isPaused ? ' · ⏸ Paused' : ' · ■ Stopped'}`;
+                const displayChunk = isPlaying || isPaused ? currentChunk + 1 : (checkedChunks.size > 0 ? checkedChunks.size : 0);
+                const tickerText = `${displayName}${totalChunks > 0 ? ` · Chunk ${displayChunk}/${totalChunks}` : ''}${isPlaying ? ' · ▶ Playing' : isPaused ? ' · ⏸ Paused' : checkedChunks.size > 0 ? ` · ${chunkProgress}% Complete` : ' · ■ Stopped'}`;
                 const spacer = '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0';
                 return (
                   <div className="absolute inset-0 flex items-center" style={{ animation: 'ctrl-marquee 20s linear infinite', whiteSpace: 'nowrap' }} data-testid="ctrl-scrolling-ticker">
