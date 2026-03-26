@@ -7841,46 +7841,66 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const tabletSetupPromise = (async () => {
       try {
         const tabletEntity = 'media_player.tablet_cat';
-        const tabletSteps = [
-          { cmd: 'input keyevent KEYCODE_WAKEUP', label: 'wakeup' },
-          { cmd: 'settings put system screen_brightness 255', label: 'brightness' },
-        ];
-        for (const step of tabletSteps) {
+        const haUrl2 = HOME_ASSISTANT_URL.replace(/\/$/, '');
+        const haHeaders2 = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+
+        try {
+          const stateResp = await fetch(`${haUrl2}/api/states/${tabletEntity}`, { headers: haHeaders2 });
+          if (stateResp.ok) {
+            const stateData = await stateResp.json();
+            console.log(`${logPrefix} Tablet entity state: "${stateData.state}"`);
+            if (stateData.state === 'unavailable') {
+              console.error(`${logPrefix} Tablet is UNAVAILABLE in HA — ADB commands will not work`);
+            }
+          } else {
+            console.error(`${logPrefix} Tablet state check failed: HTTP ${stateResp.status}`);
+          }
+        } catch (e: any) {
+          console.error(`${logPrefix} Tablet state check error: ${e.message}`);
+        }
+
+        for (let attempt = 1; attempt <= 2; attempt++) {
           try {
-            await haServiceCall('androidtv/adb_command', { entity_id: tabletEntity, command: step.cmd }, 'Tablet ADB');
-            console.log(`${logPrefix} Tablet ${step.label}: OK`);
+            await haServiceCall('androidtv/adb_command', { entity_id: tabletEntity, command: 'input keyevent KEYCODE_WAKEUP' }, 'Tablet Wakeup');
+            console.log(`${logPrefix} Tablet wakeup: OK (attempt ${attempt})`);
+            break;
           } catch (e: any) {
-            console.error(`${logPrefix} Tablet ${step.label}: FAILED — ${e.message}`);
+            console.error(`${logPrefix} Tablet wakeup attempt ${attempt}: FAILED — ${e.message}`);
+            if (attempt < 2) await new Promise(r => setTimeout(r, 2000));
           }
         }
-        await new Promise(r => setTimeout(r, 1500));
+
         try {
-          await haServiceCall('androidtv/adb_command', {
-            entity_id: tabletEntity,
-            command: `am start --activity-clear-task -a android.intent.action.VIEW -d "${readerUrl}" com.amazon.cloud9`
-          }, 'Tablet ADB Nav');
-          console.log(`${logPrefix} Tablet open URL: OK`);
+          await haServiceCall('androidtv/adb_command', { entity_id: tabletEntity, command: 'settings put system screen_brightness 255' }, 'Tablet Brightness');
+          console.log(`${logPrefix} Tablet brightness: OK`);
         } catch (e: any) {
-          console.error(`${logPrefix} Tablet open URL: FAILED — ${e.message}`);
-          await new Promise(r => setTimeout(r, 2000));
+          console.error(`${logPrefix} Tablet brightness: FAILED — ${e.message}`);
+        }
+
+        await new Promise(r => setTimeout(r, 2000));
+
+        for (let attempt = 1; attempt <= 3; attempt++) {
           try {
             await haServiceCall('androidtv/adb_command', {
               entity_id: tabletEntity,
               command: `am start --activity-clear-task -a android.intent.action.VIEW -d "${readerUrl}" com.amazon.cloud9`
-            }, 'Tablet ADB Nav Retry');
-            console.log(`${logPrefix} Tablet open URL retry: OK`);
-          } catch (e2: any) {
-            console.error(`${logPrefix} Tablet open URL retry: FAILED — ${e2.message}`);
+            }, `Tablet Silk Nav ${attempt}`);
+            console.log(`${logPrefix} Tablet open Silk: OK (attempt ${attempt})`);
+            break;
+          } catch (e: any) {
+            console.error(`${logPrefix} Tablet open Silk attempt ${attempt}/3: FAILED — ${e.message}`);
+            if (attempt < 3) await new Promise(r => setTimeout(r, 2000));
           }
         }
+
         await new Promise(r => setTimeout(r, 1000));
         await haServiceCall('androidtv/adb_command', {
           entity_id: tabletEntity,
           command: 'settings put global policy_control immersive.full=com.amazon.cloud9'
-        }, 'Tablet ADB').catch((e: any) => console.error(`${logPrefix} Tablet immersive: FAILED — ${e.message}`));
+        }, 'Tablet Immersive').catch((e: any) => console.error(`${logPrefix} Tablet immersive: FAILED — ${e.message}`));
         await haServiceCall('androidtv/adb_command', {
           entity_id: tabletEntity, command: 'input keyevent KEYCODE_F11'
-        }, 'Tablet ADB').catch((e: any) => console.error(`${logPrefix} Tablet F11: FAILED — ${e.message}`));
+        }, 'Tablet F11').catch((e: any) => console.error(`${logPrefix} Tablet F11: FAILED — ${e.message}`));
         console.log(`${logPrefix} Tablet setup complete`);
       } catch (e: any) {
         console.error(`${logPrefix} Tablet setup error: ${e.message}`);
@@ -7889,6 +7909,18 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
     const tvSetupPromise = (async () => {
       try {
+        const haUrl2 = HOME_ASSISTANT_URL.replace(/\/$/, '');
+        const haHeaders2 = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+        try {
+          const fsResp = await fetch(`${haUrl2}/api/states/media_player.fire_stick_cat_wr`, { headers: haHeaders2 });
+          if (fsResp.ok) {
+            const fsData = await fsResp.json();
+            console.log(`${logPrefix} Fire Stick entity state: "${fsData.state}"`);
+          }
+        } catch (e: any) {
+          console.error(`${logPrefix} Fire Stick state check error: ${e.message}`);
+        }
+
         await Promise.allSettled([
           haServiceCall('media_player/turn_on', { entity_id: 'media_player.fire_stick_cat_wr' }, 'TV On'),
           haServiceCall('media_player/turn_on', { entity_id: CAT_TV_ENTITY }, 'TV On'),
