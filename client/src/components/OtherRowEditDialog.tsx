@@ -327,7 +327,7 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave, onPr
                 </div>
               )}
             </div>
-            <div style={{ marginLeft: '12px', display: 'flex', gap: '6px', alignItems: 'flex-start', marginTop: '14px' }}>
+            <div style={{ marginLeft: '12px', display: 'flex', gap: '6px', alignItems: 'flex-start', marginTop: '2px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <label className="text-white text-[9px] mb-1">Border</label>
                 <div className="relative" style={{ width: '20px', height: '20px' }}>
