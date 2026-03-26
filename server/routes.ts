@@ -9666,24 +9666,27 @@ document.body.removeChild(a);
 
       let lightState = 'unknown';
       const bodyState = req.body?.state || req.body?.new_state?.state || '';
-      try {
-        const lightResp = await fetch(`${haUrl0}/api/states/${CAT_LIGHTS_ENTITY}`, { headers: haHeaders0 });
-        if (lightResp.ok) {
-          const lightData = await lightResp.json();
-          lightState = lightData?.state || 'unknown';
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          const lightResp = await fetch(`${haUrl0}/api/states/${CAT_LIGHTS_ENTITY}`, { headers: haHeaders0 });
+          if (lightResp.ok) {
+            const lightData = await lightResp.json();
+            lightState = lightData?.state || 'unknown';
+            if (lightState !== 'unknown') break;
+          }
+        } catch (e: any) {
+          console.log(`[Cat Lights] Attempt ${attempt}/3 failed to query light state: ${e.message}`);
         }
-      } catch (e: any) {
-        console.log(`[Cat Lights] Failed to query light state from HA: ${e.message}`);
-        if (bodyState === 'on' || bodyState === 'off') {
-          lightState = bodyState;
-          console.log(`[Cat Lights] Using body state fallback: ${lightState}`);
+        if (attempt < 3) {
+          console.log(`[Cat Lights] Retrying light state query in 1s (attempt ${attempt + 1}/3)...`);
+          await new Promise(r => setTimeout(r, 1000));
         }
       }
       if (lightState === 'unknown' && (bodyState === 'on' || bodyState === 'off')) {
         lightState = bodyState;
-        console.log(`[Cat Lights] HA state unknown, using body state: ${lightState}`);
+        console.log(`[Cat Lights] HA state unknown after 3 attempts, using body state: ${lightState}`);
       }
-      console.log(`[Cat Lights] Actual light state from HA: ${lightState} (body state: ${bodyState})`);
+      console.log(`[Cat Lights] Light state: ${lightState} (body state: ${bodyState})`);
       console.log(`[Cat Lights] Architecture: server-side TTS → Google Nest speaker (media_player.play_media)`);
 
       if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
@@ -9713,6 +9716,12 @@ document.body.removeChild(a);
         } catch (e: any) {
           console.warn(`[Cat Lights] Failed to stop Echo speakers: ${e.message}`);
         }
+        await Promise.allSettled([
+          haServiceCallSafe('media_player/turn_off', { entity_id: 'media_player.fire_stick_cat_wr' }, 'Stop TV FireStick'),
+          haServiceCallSafe('media_player/turn_off', { entity_id: CAT_TV_ENTITY }, 'Stop TV Samsung'),
+        ]);
+        stopped.push("tv");
+        console.log(`[Cat Lights] Fire Stick + Samsung TV turn-off sent`);
         catLightsPromptPending = false;
         catWashPlaybackTrigger = null;
         console.log(`[Cat Lights] Stopped: ${stopped.join(', ') || 'nothing was playing'}`);

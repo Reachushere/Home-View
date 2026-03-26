@@ -526,6 +526,7 @@ rest_command:
     method: POST
     headers:
       Content-Type: "application/json"
+    payload: '{"state": "{{ states(''light.cat_lights'') }}"}'
 
   # Cat Washroom Lights — confirmation ("yes, play the reading")
   cat_lights_confirm_webhook:
