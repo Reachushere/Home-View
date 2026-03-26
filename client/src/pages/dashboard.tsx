@@ -9791,7 +9791,7 @@ export default function Dashboard() {
                             data-testid={`review-item-${item.id}`}
                           >
                             <div
-                              className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 transition-colors ${
+                              className={`w-8 h-8 rounded border flex items-center justify-center flex-shrink-0 transition-colors ${
                                 reviewMode === 'all'
                                   ? 'border-white/10 bg-white/5 cursor-default'
                                   : reviewCheckedIds.has(item.id)
@@ -9811,18 +9811,18 @@ export default function Dashboard() {
                               data-testid={`review-checkbox-${item.id}`}
                             >
                               {reviewMode === 'individual' && reviewCheckedIds.has(item.id) && (
-                                <Check className="h-2.5 w-2.5 text-green-400" />
+                                <Check className="h-5 w-5 text-green-400" />
                               )}
                             </div>
                             <div className="flex-1 min-w-0 flex items-center gap-2">
-                              <span className="text-[9px] font-medium truncate flex-1" style={{ lineHeight: '1.3' }}>{item.title}</span>
+                              <span className="text-[18px] font-medium truncate flex-1" style={{ lineHeight: '1.3' }}>{item.title}</span>
                               {item.startDate && (
-                                <span className="text-[7.5px] text-white/35 flex-shrink-0">
+                                <span className="text-[15px] text-white flex-shrink-0">
                                   {new Date(item.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                                 </span>
                               )}
                               {item.eventStartTime && (
-                                <span className="text-[7.5px] text-white/35 flex-shrink-0">
+                                <span className="text-[15px] text-white flex-shrink-0">
                                   {item.eventStartTime}
                                 </span>
                               )}
@@ -9830,22 +9830,22 @@ export default function Dashboard() {
                             {reviewMode === 'all' && (
                               <div className="flex items-center gap-1 flex-shrink-0">
                                 <button
-                                  className="w-5 h-5 flex items-center justify-center rounded-full border border-green-500/40 text-green-400 hover:bg-green-500/25 disabled:opacity-40"
+                                  className="w-10 h-10 flex items-center justify-center rounded-full border border-green-500/40 text-green-400 hover:bg-green-500/25 disabled:opacity-40"
                                   disabled={processingReviewIds.has(item.id)}
                                   onClick={() => handleAcceptReview(item.id)}
                                   data-testid={`button-accept-review-${item.id}`}
                                   title="Accept"
                                 >
-                                  {processingReviewIds.has(item.id) ? <Loader2 className="h-2.5 w-2.5 animate-spin" /> : <Check className="h-2.5 w-2.5" />}
+                                  {processingReviewIds.has(item.id) ? <Loader2 className="h-5 w-5 animate-spin" /> : <Check className="h-5 w-5" />}
                                 </button>
                                 <button
-                                  className="w-5 h-5 flex items-center justify-center rounded-full border border-red-500/40 text-red-400 hover:bg-red-500/25 disabled:opacity-40"
+                                  className="w-10 h-10 flex items-center justify-center rounded-full border border-red-500/40 text-red-400 hover:bg-red-500/25 disabled:opacity-40 ml-[10px]"
                                   disabled={processingReviewIds.has(item.id)}
                                   onClick={() => handleRejectReview(item.id)}
                                   data-testid={`button-reject-review-${item.id}`}
                                   title="Skip"
                                 >
-                                  <X className="h-2.5 w-2.5" />
+                                  <X className="h-5 w-5" />
                                 </button>
                               </div>
                             )}
