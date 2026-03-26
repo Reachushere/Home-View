@@ -10,6 +10,8 @@ import { easternNow, easternDateStr, easternHour, easternMidnight, taskDateStr, 
 const getEasternNow = easternNow;
 const getEasternDateStr = easternDateStr;
 const getEasternHour = easternHour;
+const getEasternMidnight = easternMidnight;
+const addDaysET = addDays;
 
 const sentReminders = new Set<string>();
 
@@ -82,7 +84,12 @@ let announcementsSentThisCycle = 0;
 const MAX_ANNOUNCEMENTS_PER_CYCLE = 3;
 let lastAnnouncementTime = 0;
 const MIN_ANNOUNCEMENT_GAP_MS = 10000;
-let dailyDigestJustSent = false;
+
+async function digestAlreadySentToday(): Promise<boolean> {
+  const todayStr = getEasternDateStr(new Date());
+  const lastDigestDate = await getAppState("last_digest_date");
+  return lastDigestDate === todayStr;
+}
 
 export async function checkReminders() {
   try {
@@ -144,12 +151,13 @@ export async function checkReminders() {
           const voiceMessage = `Reminder: ${task.title}${task.courseName ? `, for ${task.courseName}` : ''}, is due in ${timeLabel}.`;
 
           const isTravelling = getIsTravellingMode();
+          const digestSentToday = await digestAlreadySentToday();
           const notifications: Promise<{ success: boolean; error?: string }>[] = [
             sendTaskReminder(taskReminder),
             sendHaTaskReminder(taskReminder),
           ];
-          if (dailyDigestJustSent) {
-            console.log(`[Reminder] Skipping individual Echo announcement for "${task.title}" (daily digest already announced)`);
+          if (digestSentToday) {
+            console.log(`[Reminder] Skipping individual Echo announcement for "${task.title}" (daily digest already announced today)`);
           } else if (!isTravelling) {
             notifications.push(sendEchoVoiceAnnouncement(voiceMessage));
           } else {
@@ -219,18 +227,19 @@ export async function checkDailyDigest() {
     if (lastDigestDate === todayStr) return;
 
     await setAppState("last_digest_date", todayStr);
-    dailyDigestJustSent = true;
-    setTimeout(() => { dailyDigestJustSent = false; }, 120000);
-    console.log("[Reminder] Sending daily digest...");
+    console.log("[Reminder] Sending daily digest (Echo announcements suppressed for individual reminders rest of today)...");
 
     const allTasks = await storage.getTasks({ showCompleted: false });
-    const threeDaysFromNow = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+    const threeDaysFromNow = addDaysET(now, 3);
+    const todayMidnight = getEasternMidnight(now);
 
     const upcomingTasksRaw: TaskReminder[] = allTasks
       .filter(task => {
         if (task.isCompleted || !task.dueDate) return false;
-        const due = new Date(task.dueDate);
-        return due >= now && due <= threeDaysFromNow;
+        const dueStr = getEasternDateStr(new Date(task.dueDate));
+        const todayStrCheck = getEasternDateStr(todayMidnight);
+        const endStr = getEasternDateStr(threeDaysFromNow);
+        return dueStr >= todayStrCheck && dueStr <= endStr;
       })
       .map(task => ({
         id: task.id,
@@ -282,14 +291,29 @@ export async function checkDailyDigest() {
         console.log(`[Reminder] Digest voice: tomorrow=${tomorrowDateStr} (${tomorrowTasks.length}), day2=${day2DateStr} (${day2Tasks.length}), day3=${day3DateStr} (${day3Tasks.length})`);
 
         const MAX_NAMES_TO_READ = 10;
+
+        function deduplicateTaskNames(tasks: TaskReminder[]): string[] {
+          const seen = new Set<string>();
+          const result: string[] = [];
+          for (const t of tasks) {
+            const baseName = t.title.includes(' - ') ? t.title.split(' - ')[0].trim() : t.title.trim();
+            if (!seen.has(baseName.toLowerCase())) {
+              seen.add(baseName.toLowerCase());
+              result.push(baseName);
+            }
+          }
+          return result;
+        }
+
         let voiceMsg = `${greeting}.`;
         if (tomorrowTasks.length > 0) {
-          if (tomorrowTasks.length <= MAX_NAMES_TO_READ) {
-            const tomorrowList = tomorrowTasks.map(t => t.title).join(", ");
+          const dedupedNames = deduplicateTaskNames(tomorrowTasks);
+          if (dedupedNames.length <= MAX_NAMES_TO_READ) {
+            const tomorrowList = dedupedNames.join(", ");
             voiceMsg += ` You have ${tomorrowTasks.length} task${tomorrowTasks.length !== 1 ? 's' : ''} due tomorrow: ${tomorrowList}.`;
           } else {
-            const firstFew = tomorrowTasks.slice(0, 5).map(t => t.title).join(", ");
-            voiceMsg += ` You have ${tomorrowTasks.length} tasks due tomorrow, including: ${firstFew}, and ${tomorrowTasks.length - 5} more.`;
+            const firstFew = dedupedNames.slice(0, 5).join(", ");
+            voiceMsg += ` You have ${tomorrowTasks.length} tasks due tomorrow, including: ${firstFew}, and ${dedupedNames.length - 5} more.`;
           }
         } else {
           voiceMsg += ` No tasks due tomorrow.`;
