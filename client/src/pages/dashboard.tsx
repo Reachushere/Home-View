@@ -9216,13 +9216,14 @@ export default function Dashboard() {
     Object.entries(byCourse).forEach(([code, tasks]) => {
       if (tasks.length === 0) return;
       const summaryId = `today-summary-${code}`;
+      const fullCourseName = tasks[0].courseName || code;
       const titles = tasks.map(t => t.title).join(', ');
       const summaryText = tasks.length === 1
-        ? `${code}: ${tasks[0].title} — due today`
-        : `${code}: ${tasks.length} tasks due today — ${titles}`;
+        ? `${tasks[0].title} — due today`
+        : `${tasks.length} tasks due today — ${titles}`;
       items.push({
         id: summaryId,
-        courseName: code,
+        courseName: fullCourseName,
         subject: summaryText,
         body: summaryText,
         snippet: summaryText,
