@@ -22405,17 +22405,10 @@ export default function Dashboard() {
                         </div>
                       );
                     };
-                    const pinnedTasks = courseTasks.slice(0, 2);
-                    const scrollTasks = courseTasks.slice(2);
                     return (
-                      <>
-                        {pinnedTasks.map((t, tIdx) => renderCourseTask(t, tIdx))}
-                        {scrollTasks.length > 0 && (
-                          <div data-scroll-tasks style={{ flex: 1, minHeight: 0, overflowY: 'auto', scrollbarWidth: 'none', touchAction: 'pan-y', overscrollBehavior: 'contain', WebkitOverflowScrolling: 'touch' } as any}>
-                            {scrollTasks.map((t, tIdx) => renderCourseTask(t, tIdx + 2))}
-                          </div>
-                        )}
-                      </>
+                      <div data-scroll-tasks style={{ flex: 1, minHeight: 0, overflowY: 'auto', scrollbarWidth: 'none', touchAction: 'pan-y', overscrollBehavior: 'contain', WebkitOverflowScrolling: 'touch' } as any}>
+                        {courseTasks.map((t, tIdx) => renderCourseTask(t, tIdx))}
+                      </div>
                     );
                   })()}
                 </div>,
