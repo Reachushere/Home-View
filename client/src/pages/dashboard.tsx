@@ -689,15 +689,16 @@ export default function Dashboard() {
 
   useEffect(() => {
     const checkMorningReview = async () => {
+      const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+      const todayKey = `morning_review_shown_${eastern.getFullYear()}-${String(eastern.getMonth()+1).padStart(2,'0')}-${String(eastern.getDate()).padStart(2,'0')}`;
+      if (sessionStorage.getItem(todayKey)) return;
+      try {
+        await fetch('/api/outlook/sync', { method: 'POST' }).catch(() => {});
+        await fetch('/api/pending-review/dedup', { method: 'POST' }).catch(() => {});
+      } catch {}
       const items = await fetchPendingReview();
       if (items.length > 0) {
-        const now = new Date();
-        const eastern = new Date(now.toLocaleString('en-US', { timeZone: 'America/Toronto' }));
-        const todayKey = `morning_review_shown_${eastern.getFullYear()}-${String(eastern.getMonth()+1).padStart(2,'0')}-${String(eastern.getDate()).padStart(2,'0')}`;
-        if (!sessionStorage.getItem(todayKey) && !localStorage.getItem(todayKey)) {
-          sessionStorage.setItem(todayKey, '1');
-          setShowMorningReview(true);
-        }
+        setShowMorningReview(true);
       }
     };
     checkMorningReview();
@@ -706,13 +707,10 @@ export default function Dashboard() {
   const triggerOutlookSyncAndReview = useCallback(async () => {
     try {
       await fetch('/api/outlook/sync', { method: 'POST' });
+      await fetch('/api/pending-review/dedup', { method: 'POST' }).catch(() => {});
       const items = await fetchPendingReview();
       if (items.length > 0) {
-        const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
-        const todayKey = `morning_review_shown_${eastern.getFullYear()}-${String(eastern.getMonth()+1).padStart(2,'0')}-${String(eastern.getDate()).padStart(2,'0')}`;
-        if (!localStorage.getItem(todayKey)) {
-          setShowMorningReview(true);
-        }
+        setShowMorningReview(true);
       }
     } catch (e) { console.error('[Review] Outlook sync + review error:', e); }
   }, [fetchPendingReview]);
@@ -752,7 +750,6 @@ export default function Dashboard() {
     const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
     const todayKey = `morning_review_shown_${eastern.getFullYear()}-${String(eastern.getMonth()+1).padStart(2,'0')}-${String(eastern.getDate()).padStart(2,'0')}`;
     sessionStorage.setItem(todayKey, '1');
-    try { localStorage.setItem(todayKey, '1'); } catch {}
     setShowMorningReview(false);
     setReviewMode('all');
     setReviewCheckedIds(new Set());

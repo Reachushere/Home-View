@@ -16495,6 +16495,28 @@ Return ONLY the JSON object, no markdown formatting.`;
     }
   });
 
+  app.post("/api/pending-review/dedup", async (_req, res) => {
+    try {
+      const items = await storage.getPendingReviewItems('pending');
+      const seen = new Map<string, number>();
+      let removed = 0;
+      for (const item of items) {
+        const key = `${item.title}||${item.startDate ? new Date(item.startDate).toISOString().split('T')[0] : 'nodate'}`;
+        if (seen.has(key)) {
+          await storage.deletePendingReviewItem(item.id);
+          removed++;
+        } else {
+          seen.set(key, item.id);
+        }
+      }
+      console.log(`[Review] Dedup: removed ${removed} duplicates from ${items.length} pending items`);
+      res.json({ removed, remaining: items.length - removed });
+    } catch (error: any) {
+      console.error("[Review] Dedup error:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   app.post("/api/outlook/sync", async (_req, res) => {
     try {
       const result = await syncOutlookEventsToReview();
