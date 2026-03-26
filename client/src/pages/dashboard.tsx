@@ -3586,6 +3586,21 @@ export default function Dashboard() {
     } : { r: 107, g: 114, b: 128 }; // gray fallback
   };
   
+  const dimColor = (color: string, factor = 0.5): string => {
+    const rgbaMatch = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+    if (rgbaMatch) {
+      const r = Math.round(parseInt(rgbaMatch[1]) + (255 - parseInt(rgbaMatch[1])) * factor);
+      const g = Math.round(parseInt(rgbaMatch[2]) + (255 - parseInt(rgbaMatch[2])) * factor);
+      const b = Math.round(parseInt(rgbaMatch[3]) + (255 - parseInt(rgbaMatch[3])) * factor);
+      return `rgb(${r}, ${g}, ${b})`;
+    }
+    const { r, g, b } = hexToRgb(color);
+    const dr = Math.round(r + (255 - r) * factor);
+    const dg = Math.round(g + (255 - g) * factor);
+    const db = Math.round(b + (255 - b) * factor);
+    return `rgb(${dr}, ${dg}, ${db})`;
+  };
+
   const getCourseGradientColors = (courseCode: string): { start: string; end: string } => {
     const course = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode.toUpperCase());
     if (course?.colorEnd) return { start: course.color, end: course.colorEnd };
@@ -18944,7 +18959,8 @@ export default function Dashboard() {
                               const isTodayColumn = dayOfWeek === currentDayOfWeek;
                               const isFriday = dayOfWeek === 5;
                               const isActualToday = isSameDayET(day, today);
-                              const cellBg = isActualToday ? '#e4ecf5' : course.bg;
+                              const isActuallyPast = !isActualToday && startOfDayET(day) < today;
+                              const cellBg = isActualToday ? '#e4ecf5' : isActuallyPast ? dimColor(course.bg) : course.bg;
                               
                               // If this day is before today, show empty cell
                               if (isBeforeToday) {
@@ -19222,7 +19238,8 @@ export default function Dashboard() {
                     return weekDays.map((day, dayIdx) => {
                     const isDayToday = isSameDayET(day, new Date());
                     const isDayAfterToday = day > new Date() && !isDayToday;
-                    const cellBgColor = isDayToday ? '#e4ecf5' : course.bg;
+                    const isDayBeforeToday = !isDayToday && day < new Date();
+                    const cellBgColor = isDayToday ? '#e4ecf5' : isDayBeforeToday ? dimColor(course.bg) : course.bg;
                     const cellDate = startOfDayET(day);
                     
                     const dueTasks = allTasks?.filter(task => {
@@ -19259,17 +19276,17 @@ export default function Dashboard() {
                       <div 
                         key={dayIdx} 
                         className="relative pt-0.5"
-                        style={{ backgroundColor: isDayToday ? '#e4ecf5' : course.bg, padding: '2px 1px 2px 1px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                        style={{ backgroundColor: cellBgColor, padding: '2px 1px 2px 1px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
                           e.preventDefault();
                           e.currentTarget.style.backgroundColor = '#8B8070';
                         }}
                         onDragLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = isDayToday ? '#e4ecf5' : course.bg;
+                          e.currentTarget.style.backgroundColor = cellBgColor;
                         }}
                         onDrop={(e) => {
-                          e.currentTarget.style.backgroundColor = isDayToday ? '#e4ecf5' : course.bg;
+                          e.currentTarget.style.backgroundColor = cellBgColor;
                           handleCourseRowDrop(e, course.name, day);
                         }}
                       >
@@ -19698,11 +19715,14 @@ export default function Dashboard() {
                       });
                       const otherCellCount = dayOtherTasks.length + dayOtherProjs.length;
                       const otherHasScroll = otherCellCount > 3;
+                      const isOtherBeforeToday = !isOtherToday && day < new Date();
+                      const otherBaseBg = otherRowColors.courseRowColor || otherRowColors.cellBg;
+                      const otherCellBg = isOtherToday ? '#e4ecf5' : isOtherBeforeToday ? dimColor(otherBaseBg) : otherBaseBg;
                       return (
                         <div
                           key={dayIdx}
                           className={`relative flex flex-col gap-0.5 pt-0.5${otherHasScroll ? ' course-cell-scroll' : ''}`}
-                          style={{ backgroundColor: isOtherToday ? '#e4ecf5' : (otherRowColors.courseRowColor || otherRowColors.cellBg), padding: `2px 2px 2px ${4 + DAY_COL_LEFT_REDUCTION}px`, borderBottom: isOtherToday ? '1px dotted #666' : `1.5px dotted ${otherRowColors.borderColor}`, overflowY: otherHasScroll ? 'auto' : 'hidden', overflowX: 'hidden', scrollbarWidth: 'thin', maxHeight: `${otherRowHeight}px` }}
+                          style={{ backgroundColor: otherCellBg, padding: `2px 2px 2px ${4 + DAY_COL_LEFT_REDUCTION}px`, borderBottom: isOtherToday ? '1px dotted #666' : `1.5px dotted ${otherRowColors.borderColor}`, overflowY: otherHasScroll ? 'auto' : 'hidden', overflowX: 'hidden', scrollbarWidth: 'thin', maxHeight: `${otherRowHeight}px` }}
                           data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
                         >
                           <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', borderLeft: '1px solid rgba(0,0,0,0.12)', zIndex: 5, pointerEvents: 'none' }} />
