@@ -9216,7 +9216,7 @@ export default function Dashboard() {
     Object.entries(byCourse).forEach(([code, tasks]) => {
       if (tasks.length === 0) return;
       const summaryId = `today-summary-${code}`;
-      const fullCourseName = tasks[0].courseName || code;
+      const fullCourseName = code;
       const titles = tasks.map(t => t.title).join(', ');
       const summaryText = tasks.length === 1
         ? `${tasks[0].title} — due today`
