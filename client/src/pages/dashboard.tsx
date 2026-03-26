@@ -9216,6 +9216,21 @@ export default function Dashboard() {
     weekDays = rawWeekDays.slice(0, 7); // Safety limit
   }
   
+  {
+    const todayStartLocal = startOfDayET(new Date());
+    const pastCount = weekDays.filter(d => startOfDayET(d) < todayStartLocal).length;
+    if (pastCount > 0) {
+      const futureDays = weekDays.filter(d => startOfDayET(d) >= todayStartLocal);
+      const lastDay = futureDays.length > 0 ? futureDays[futureDays.length - 1] : weekDays[weekDays.length - 1];
+      const nextDays: Date[] = [];
+      for (let i = 1; i <= pastCount; i++) {
+        const nd = addDays(lastDay, i);
+        nextDays.push(new Date(nd.getFullYear(), nd.getMonth(), nd.getDate(), 12, 0, 0));
+      }
+      weekDays = [...futureDays, ...nextDays];
+    }
+  }
+  
   const thisWeekAnnouncements = (() => {
     if (!weekDays || weekDays.length < 7 || !d2lAnnouncements || d2lAnnouncements.length === 0) return [];
     const wkStart = weekDays[0];
