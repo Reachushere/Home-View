@@ -4461,6 +4461,41 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
+  app.post("/api/announcements", async (req, res) => {
+    try {
+      const { body } = req.body;
+      if (!body || typeof body !== 'string' || !body.trim()) {
+        return res.status(400).json({ error: "body is required" });
+      }
+      const created = await storage.createAnnouncement({
+        emailId: `manual-${Date.now()}`,
+        subject: 'Custom Ticker',
+        body: body.trim(),
+        snippet: body.trim().substring(0, 200),
+        courseName: 'Custom',
+        receivedAt: new Date(),
+      });
+      console.log(`[Ticker] Manually added ticker item id:${created.id} body:"${body.trim().substring(0, 50)}"`);
+      res.json(created);
+    } catch (err: any) {
+      console.error("Error creating announcement:", err.message);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.delete("/api/announcements/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ error: "Invalid id" });
+      await storage.deleteAnnouncement(id);
+      console.log(`[Ticker] Deleted ticker item id:${id}`);
+      res.json({ success: true });
+    } catch (err: any) {
+      console.error("Error deleting announcement:", err.message);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   app.post("/api/announcements/webhook", async (req, res) => {
     try {
       const { emailId, subject, body, snippet, courseName, receivedAt } = req.body;

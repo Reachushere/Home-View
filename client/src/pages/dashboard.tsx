@@ -5385,6 +5385,27 @@ export default function Dashboard() {
     retry: 1,
   });
 
+  const [tickerDialogOpen, setTickerDialogOpen] = useState(false);
+  const [newTickerText, setNewTickerText] = useState('');
+  const addTickerMutation = useMutation({
+    mutationFn: async (body: string) => {
+      const res = await apiRequest('POST', '/api/announcements', { body });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/announcements'] });
+      setNewTickerText('');
+    },
+  });
+  const deleteTickerMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await apiRequest('DELETE', `/api/announcements/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/announcements'] });
+    },
+  });
+
   // Filter files for the current week (exclude completed/listened files)
   const currentWeekFiles = weeklyFiles.filter(f => 
     (f.folder?.startsWith(`week-${selectedWeek}`) || f.folder === `week-${selectedWeek}`) && !f.listened
