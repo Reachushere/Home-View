@@ -9228,9 +9228,14 @@ export default function Dashboard() {
   }
   
   const thisWeekAnnouncements = (() => {
-    if (!weekDays || weekDays.length < 7 || !d2lAnnouncements || d2lAnnouncements.length === 0) return [];
-    const wkStart = weekDays[0];
-    const wkEnd = new Date(weekDays[6]);
+    if (!d2lAnnouncements || d2lAnnouncements.length === 0) return [];
+    const todayLocal = startOfDayET(new Date());
+    const dayOfWeek = todayLocal.getDay();
+    const wkStart = new Date(todayLocal);
+    wkStart.setDate(wkStart.getDate() - dayOfWeek);
+    wkStart.setHours(0, 0, 0, 0);
+    const wkEnd = new Date(wkStart);
+    wkEnd.setDate(wkEnd.getDate() + 6);
     wkEnd.setHours(23, 59, 59, 999);
     return d2lAnnouncements.filter((a: any) => {
       const d = new Date(a.receivedAt || a.date);
