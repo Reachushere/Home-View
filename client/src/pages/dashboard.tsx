@@ -18653,7 +18653,7 @@ export default function Dashboard() {
           </div>
           
           {weatherData?.daily && (
-            <div className="grid w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), height: '16px', marginBottom: '-3px' }}>
+            <div className="grid w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), height: '16px', marginTop: '-2px' }}>
               <div style={{ minWidth: 0 }} />
               {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0 }} />}
               {weekDays.map((day, idx) => {
