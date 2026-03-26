@@ -12419,8 +12419,8 @@ export default function Dashboard() {
                       })()}</span>
                       </span>
                       <span className={`text-[16px] font-medium ${isTodayTask ? 'text-yellow-300' : 'text-white/90'}`}>{a.courseName === 'Custom' ? (a.body || a.snippet || '') : a.subject}</span>
-                      {!isTodayTask && a.courseName !== 'Custom' && displaySnippet && <span className="text-[15px] text-white/55">{displaySnippet}</span>}
-                      {!isTodayTask && <span className="text-[14px] text-white/60 ml-1">{timeAgo}</span>}
+                      {!isTodayTask && a.courseName !== 'Custom' && displaySnippet && <span className="text-[16px] text-white/55">{displaySnippet}</span>}
+                      {!isTodayTask && <span className="text-[16px] text-white/60 ml-1">{timeAgo}</span>}
                     </span>
                   );
                 });
