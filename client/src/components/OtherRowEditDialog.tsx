@@ -33,6 +33,7 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave }: Pr
   const [activeGradientStop, setActiveGradientStop] = useState<'start' | 'end' | number | null>(null);
   const [dialogPos, setDialogPos] = useState({ x: 0, y: 0 });
   const dialogRef = useRef<HTMLDivElement>(null);
+  const gradBarRef = useRef<HTMLDivElement>(null);
   const dragStart = useRef<{ x: number; y: number; mx: number; my: number } | null>(null);
 
   useEffect(() => {
@@ -159,7 +160,7 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave }: Pr
               style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}
               data-testid="text-other-row-title"
             >
-              OTHER Row — Appearance
+              OTHER Row Appearance
             </h2>
           </div>
           <button onClick={onClose} className="text-white/70 hover:text-white" data-testid="button-close-other-edit"><X className="w-4 h-4" /></button>
@@ -167,41 +168,49 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave }: Pr
 
         <div className="p-4 space-y-4">
           <div>
-            <div className="text-white/60 text-[9px] uppercase tracking-wider mb-2">Label Gradient</div>
-            <div className="flex items-end justify-between">
-              <div style={{ position: 'relative', width: '100%' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                  <button className="text-white/40 hover:text-white text-[9px] flex items-center gap-1" onClick={() => {
-                    setEdit({ ...edit, labelStart: edit.labelEnd, labelEnd: edit.labelStart, labelStops: midStops.length ? JSON.stringify(midStops.map(s => ({ ...s, position: 100 - s.position })).reverse()) : '' });
-                  }} data-testid="button-reverse-gradient"><RotateCcw className="w-3 h-3" /> Reverse</button>
-                  {midStops.length > 0 && (
-                    <button className="text-red-400/60 hover:text-red-400 text-[9px]" onClick={() => {
-                      setEdit({ ...edit, labelStops: '' });
-                      setActiveGradientStop(null);
-                    }} data-testid="button-clear-stops">Clear stops</button>
-                  )}
-                </div>
-                <div
-                  style={{ height: '16px', borderRadius: '4px', background: gradientCss, cursor: 'pointer', position: 'relative', border: '1px solid rgba(255,255,255,0.2)' }}
-                  onDoubleClick={(e) => {
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    const pct = Math.round(((e.clientX - rect.left) / rect.width) * 100);
-                    const newStops = [...midStops, { position: pct, color: '#888888' }].sort((a, b) => a.position - b.position);
-                    setEdit({ ...edit, labelStops: JSON.stringify(newStops) });
-                    setActiveGradientStop(newStops.findIndex(s => s.position === pct));
-                  }}
-                  data-testid="gradient-bar"
-                />
-                <div style={{ position: 'absolute', left: '-1px', top: '22px', cursor: 'pointer', zIndex: 10 }} onClick={() => setActiveGradientStop(activeGradientStop === 'start' ? null : 'start')} data-testid="gradient-stop-start">
-                  <svg width="12" height="12" viewBox="0 0 12 12"><polygon points="6,0 12,10 0,10" fill={edit.labelStart} stroke={activeGradientStop === 'start' ? '#ffffff' : 'rgba(255,255,255,0.4)'} strokeWidth={activeGradientStop === 'start' ? '2' : '1'} /></svg>
+            <div className="flex items-start gap-3">
+            <div style={{ width: '200px' }}>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-white text-[9px]">Label Gradient</label>
+                <button className="text-white hover:text-white/80 text-[8px] flex items-center gap-0.5" onClick={() => {
+                  setEdit({ ...edit, labelStart: edit.labelEnd, labelEnd: edit.labelStart, labelStops: midStops.length ? JSON.stringify(midStops.map(s => ({ ...s, position: 100 - s.position })).reverse()) : '' });
+                }} data-testid="button-reverse-gradient"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 4h14M11 1l3 3-3 3M15 12H1M5 9l-3 3 3 3"/></svg><span>Reverse</span></button>
+              </div>
+              <div ref={gradBarRef} className="rounded" style={{ border: '1px solid rgba(255,255,255,0.15)', padding: '1px', background: 'rgba(0,0,0,0.2)', cursor: 'copy' }}
+                onDoubleClick={(e) => {
+                  const bar = gradBarRef.current;
+                  if (!bar) return;
+                  const rect = bar.getBoundingClientRect();
+                  const pct = Math.round(Math.max(5, Math.min(95, ((e.clientX - rect.left - 3) / (rect.width - 6)) * 100)));
+                  const leftStop = allStops.filter(s => s.position <= pct).pop()!;
+                  const rightStop = allStops.find(s => s.position >= pct)!;
+                  const t = rightStop.position === leftStop.position ? 0 : (pct - leftStop.position) / (rightStop.position - leftStop.position);
+                  const lR = parseInt(leftStop.color.slice(1,3),16), lG = parseInt(leftStop.color.slice(3,5),16), lB = parseInt(leftStop.color.slice(5,7),16);
+                  const rR = parseInt(rightStop.color.slice(1,3),16), rG = parseInt(rightStop.color.slice(3,5),16), rB = parseInt(rightStop.color.slice(5,7),16);
+                  const mR = Math.round(lR + (rR-lR)*t), mG = Math.round(lG + (rG-lG)*t), mB = Math.round(lB + (rB-lB)*t);
+                  const newColor = `#${mR.toString(16).padStart(2,'0')}${mG.toString(16).padStart(2,'0')}${mB.toString(16).padStart(2,'0')}`;
+                  const newMid = [...midStops, { position: pct, color: newColor }].sort((a, b) => a.position - b.position);
+                  const newIdx = newMid.findIndex(s => s.position === pct && s.color === newColor);
+                  setEdit({ ...edit, labelStops: JSON.stringify(newMid) });
+                  setActiveGradientStop(newIdx);
+                }}
+                data-testid="gradient-bar">
+                <div style={{ height: '18px', borderRadius: '3px', background: gradientCss }} data-testid="gradient-preview-bar" />
+              </div>
+              <div className="relative" style={{ height: '16px', marginTop: '1px' }}>
+                <div style={{ position: 'absolute', left: '0px', top: 0, cursor: 'pointer', zIndex: 10 }} onClick={() => setActiveGradientStop(activeGradientStop === 'start' ? null : 'start')} data-testid="gradient-stop-start">
+                  <svg width="12" height="12" viewBox="0 0 12 12"><polygon points="6,0 12,10 0,10" fill={edit.labelStart} stroke={activeGradientStop === 'start' ? '#ffffff' : 'rgba(255,255,255,0.4)'} strokeWidth={activeGradientStop === 'start' ? '2' : '1'}/></svg>
                 </div>
                 {midStops.map((stop, idx) => (
-                  <div key={idx} style={{ position: 'absolute', left: `${stop.position}%`, top: '22px', cursor: 'grab', zIndex: 10, transform: 'translateX(-6px)' }}
+                  <div key={idx} style={{ position: 'absolute', left: `calc(${stop.position}% - 6px)`, top: 0, cursor: 'pointer', touchAction: 'none', zIndex: activeGradientStop === idx ? 20 : 5 }}
                     onClick={() => setActiveGradientStop(activeGradientStop === idx ? null : idx)}
                     onPointerDown={(e) => {
-                      const el = e.currentTarget;
+                      e.preventDefault();
+                      e.stopPropagation();
+                      const el = e.currentTarget as HTMLElement;
                       el.setPointerCapture(e.pointerId);
-                      const bar = el.parentElement!;
+                      const bar = gradBarRef.current;
+                      if (!bar) return;
                       const barRect = bar.getBoundingClientRect();
                       const barW = barRect.width;
                       const onMove = (ev: PointerEvent) => {
@@ -215,55 +224,129 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave }: Pr
                       window.addEventListener('pointerup', onUp);
                     }}
                     data-testid={`gradient-stop-mid-${idx}`}>
-                    <svg width="12" height="12" viewBox="0 0 12 12"><polygon points="6,0 11,6 6,12 1,6" fill={stop.color} stroke={activeGradientStop === idx ? '#ffffff' : 'rgba(255,255,255,0.5)'} strokeWidth={activeGradientStop === idx ? '2' : '1'} /></svg>
+                    <svg width="12" height="12" viewBox="0 0 12 12"><polygon points="6,0 11,6 6,12 1,6" fill={stop.color} stroke={activeGradientStop === idx ? '#ffffff' : 'rgba(255,255,255,0.5)'} strokeWidth={activeGradientStop === idx ? '2' : '1'}/></svg>
                   </div>
                 ))}
-                <div style={{ position: 'absolute', right: '0px', top: '22px', cursor: 'pointer', zIndex: 10 }} onClick={() => setActiveGradientStop(activeGradientStop === 'end' ? null : 'end')} data-testid="gradient-stop-end">
-                  <svg width="12" height="12" viewBox="0 0 12 12"><polygon points="6,0 12,10 0,10" fill={edit.labelEnd} stroke={activeGradientStop === 'end' ? '#ffffff' : 'rgba(255,255,255,0.4)'} strokeWidth={activeGradientStop === 'end' ? '2' : '1'} /></svg>
+                <div style={{ position: 'absolute', right: '0px', top: 0, cursor: 'pointer', zIndex: 10 }} onClick={() => setActiveGradientStop(activeGradientStop === 'end' ? null : 'end')} data-testid="gradient-stop-end">
+                  <svg width="12" height="12" viewBox="0 0 12 12"><polygon points="6,0 12,10 0,10" fill={edit.labelEnd} stroke={activeGradientStop === 'end' ? '#ffffff' : 'rgba(255,255,255,0.4)'} strokeWidth={activeGradientStop === 'end' ? '2' : '1'}/></svg>
                 </div>
                 {midStops.length > 0 && <span className="text-white text-[9px] absolute" style={{ bottom: '-23px', left: '0px' }}>Double-click bar to add · drag to move</span>}
               </div>
-            </div>
-            {midStops.length === 0 && <div className="text-white text-[11px] text-left" style={{ marginTop: '7px', marginBottom: '10px' }}>Double-click gradient bar to add a colour stop</div>}
-            {midStops.length > 0 && <div style={{ height: '24px' }} />}
-
-            {activeGradientStop != null && (
-              <div className="mt-1 rounded" style={{ border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(0,0,0,0.4)', padding: '6px' }}>
-                <div className="flex items-center gap-2 mb-1.5">
-                  <div className="w-5 h-5 rounded border border-white/30 shrink-0" style={{ backgroundColor: getActiveColor() }} />
-                  <span className="text-white/60 text-[8px] uppercase tracking-wider">{activeGradientStop === 'start' ? 'Start' : activeGradientStop === 'end' ? 'End' : `Stop ${(activeGradientStop as number) + 1}`} Colour</span>
+              {midStops.length === 0 && <div className="text-white text-[11px] text-left" style={{ marginTop: '7px', marginBottom: '10px' }}>Double-click gradient bar to add a colour stop</div>}
+              {midStops.length > 0 && <div style={{ height: '24px' }} />}
+              {activeGradientStop != null && (
+                <div className="mt-1 rounded" style={{ border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(0,0,0,0.4)', padding: '6px' }}>
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <div className="w-5 h-5 rounded border border-white/30 shrink-0" style={{ backgroundColor: getActiveColor() }} />
+                    <span className="text-white/60 text-[8px] uppercase tracking-wider">{activeGradientStop === 'start' ? 'Start' : activeGradientStop === 'end' ? 'End' : `Stop ${(activeGradientStop as number) + 1}`} Colour</span>
+                    {typeof activeGradientStop === 'number' && (
+                      <button className="text-red-400/70 hover:text-red-400 text-[8px] ml-auto mr-1" onClick={() => {
+                        const updated = midStops.filter((_, i) => i !== activeGradientStop);
+                        setEdit({ ...edit, labelStops: updated.length ? JSON.stringify(updated) : '' });
+                        setActiveGradientStop(null);
+                      }} data-testid="button-delete-stop"><Trash2 className="w-3 h-3" /></button>
+                    )}
+                    <button className={`${typeof activeGradientStop === 'number' ? '' : 'ml-auto '}text-white/40 hover:text-white`} onClick={() => setActiveGradientStop(null)} data-testid="button-close-color-picker"><X className="w-3 h-3" /></button>
+                  </div>
                   {typeof activeGradientStop === 'number' && (
-                    <button className="text-red-400/70 hover:text-red-400 text-[8px] ml-auto mr-1" onClick={() => {
-                      const updated = midStops.filter((_, i) => i !== activeGradientStop);
-                      setEdit({ ...edit, labelStops: updated.length ? JSON.stringify(updated) : '' });
-                      setActiveGradientStop(null);
-                    }} data-testid="button-delete-stop"><Trash2 className="w-3 h-3" /></button>
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className="text-white/50 text-[8px]">Position</span>
+                      <input type="range" min={1} max={99} value={midStops[activeGradientStop]?.position || 50} onChange={(e) => {
+                        const updated = [...midStops];
+                        updated[activeGradientStop as number] = { ...updated[activeGradientStop as number], position: parseInt(e.target.value) };
+                        setEdit({ ...edit, labelStops: JSON.stringify(updated.sort((a, b) => a.position - b.position)) });
+                      }} className="flex-1" style={{ height: '6px', accentColor: getActiveColor() }} data-testid="slider-stop-position" />
+                      <span className="text-white/50 text-[8px] w-6 text-right">{midStops[activeGradientStop]?.position}%</span>
+                    </div>
                   )}
-                  <button className={`${typeof activeGradientStop === 'number' ? '' : 'ml-auto '}text-white/40 hover:text-white`} onClick={() => setActiveGradientStop(null)} data-testid="button-close-color-picker"><X className="w-3 h-3" /></button>
+                  <div className="relative rounded overflow-hidden cursor-crosshair" style={{ height: '80px', touchAction: 'none' }} data-testid={`color-area-${activeGradientStop}`}
+                    onPointerDown={(e) => {
+                      e.preventDefault();
+                      const el = e.currentTarget;
+                      el.setPointerCapture(e.pointerId);
+                      const rect = el.getBoundingClientRect();
+                      const hue = hexToHue(getActiveColor());
+                      const update = (ev: PointerEvent) => {
+                        const x = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
+                        const y = Math.max(0, Math.min(1, (ev.clientY - rect.top) / rect.height));
+                        setActiveColor(svToHex(hue, x, y));
+                      };
+                      update(e.nativeEvent);
+                      const onMove = (ev: PointerEvent) => update(ev);
+                      const onUp = () => { el.releasePointerCapture(e.pointerId); window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); };
+                      window.addEventListener('pointermove', onMove);
+                      window.addEventListener('pointerup', onUp);
+                    }}>
+                    <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(to right, white, hsl(${hexToHue(getActiveColor())}, 100%, 50%))` }} />
+                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent, black)' }} />
+                    {(() => {
+                      const pos = hexToSvPos(getActiveColor());
+                      return (
+                        <div style={{ position: 'absolute', left: `${pos.x * 100}%`, top: `${pos.y * 100}%`, transform: 'translate(-50%, -50%)', width: '12px', height: '12px', borderRadius: '50%', border: '2px solid white', boxShadow: '0 0 3px rgba(0,0,0,0.5), inset 0 0 1px rgba(0,0,0,0.3)', pointerEvents: 'none', backgroundColor: getActiveColor() }} />
+                      );
+                    })()}
+                  </div>
+                  <div className="relative mt-1.5 rounded cursor-pointer" style={{ height: '14px', touchAction: 'none' }} data-testid={`hue-slider-${activeGradientStop}`}
+                    onClick={(e) => {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                      setActiveColor(hueToHex(Math.round(x * 360)));
+                    }}
+                    onPointerDown={(e) => {
+                      e.preventDefault();
+                      const el = e.currentTarget;
+                      el.setPointerCapture(e.pointerId);
+                      const rect = el.getBoundingClientRect();
+                      const update = (ev: PointerEvent) => {
+                        const x = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
+                        setActiveColor(hueToHex(Math.round(x * 360)));
+                      };
+                      update(e.nativeEvent);
+                      const onMove = (ev: PointerEvent) => update(ev);
+                      const onUp = () => { el.releasePointerCapture(e.pointerId); window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); };
+                      window.addEventListener('pointermove', onMove);
+                      window.addEventListener('pointerup', onUp);
+                    }}>
+                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)', borderRadius: '3px' }} />
+                    <div style={{ position: 'absolute', top: '-1px', left: `${(hexToHue(getActiveColor()) / 360) * 100}%`, transform: 'translateX(-50%)', width: '4px', height: '16px', background: 'white', borderRadius: '2px', boxShadow: '0 0 3px rgba(0,0,0,0.5)', border: '1px solid rgba(0,0,0,0.3)', pointerEvents: 'none' }} />
+                  </div>
+                  <div className="flex items-center gap-2 mt-1.5">
+                    <input type="color" value={getActiveColor()} onChange={(e) => setActiveColor(e.target.value)} className="w-5 h-5 rounded border border-white/30 cursor-pointer shrink-0" style={{ padding: 0, background: 'transparent', WebkitAppearance: 'none', appearance: 'none' }} data-testid={`input-edit-color-${activeGradientStop}`} />
+                    <input type="text" value={getActiveColor().toUpperCase()} onChange={(e) => { let v = e.target.value; if (!v.startsWith('#')) v = '#' + v; if (/^#[0-9A-Fa-f]{6}$/.test(v)) setActiveColor(v); }} className="flex-1 bg-black/40 border border-white/20 rounded text-white text-[9px] px-1.5 py-0.5 font-mono" style={{ minWidth: 0 }} data-testid={`input-hex-${activeGradientStop}`} />
+                  </div>
                 </div>
-                <ColorPicker color={getActiveColor()} onChange={setActiveColor} hexToHue={hexToHue} hueToHex={hueToHex} hexToSvPos={hexToSvPos} svToHex={svToHex} />
+              )}
+            </div>
+            <div style={{ marginLeft: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <label className="text-white text-[9px] mb-1">Border</label>
+              <div className="relative" style={{ width: '20px', height: '20px' }}>
+                <div className="absolute inset-0 rounded-sm border border-white/30" style={{ backgroundColor: edit.borderColor || edit.labelStart }} />
+                <input type="color" value={(() => { const v = edit.borderColor; const m = v.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/); if (m) return `#${parseInt(m[1]).toString(16).padStart(2,'0')}${parseInt(m[2]).toString(16).padStart(2,'0')}${parseInt(m[3]).toString(16).padStart(2,'0')}`; return v.startsWith('#') ? v : '#6b7280'; })()} onChange={(e) => setEdit({ ...edit, borderColor: e.target.value })} className="absolute inset-0 opacity-0 cursor-pointer" style={{ width: '20px', height: '20px' }} data-testid="input-border-color-swatch" />
               </div>
-            )}
+              <input type="text" value={edit.borderColor} onChange={e => setEdit({ ...edit, borderColor: e.target.value })} className="bg-black/40 border border-white/20 rounded text-white text-[8px] px-1 py-0.5 font-mono mt-1 text-center" style={{ width: '56px' }} data-testid="input-border-color" />
+            </div>
+            <div style={{ marginLeft: '6px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <label className="text-white text-[9px] mb-1">Row BG</label>
+              <div className="relative" style={{ width: '20px', height: '20px' }}>
+                <div className="absolute inset-0 rounded-sm border border-white/30" style={{ backgroundColor: edit.courseRowColor || edit.labelStart }} />
+                <input type="color" value={(() => { const v = edit.courseRowColor; const m = v.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/); if (m) return `#${parseInt(m[1]).toString(16).padStart(2,'0')}${parseInt(m[2]).toString(16).padStart(2,'0')}${parseInt(m[3]).toString(16).padStart(2,'0')}`; return v.startsWith('#') ? v : '#6b7280'; })()} onChange={(e) => setEdit({ ...edit, courseRowColor: e.target.value })} className="absolute inset-0 opacity-0 cursor-pointer" style={{ width: '20px', height: '20px' }} data-testid="input-course-row-color-swatch" />
+              </div>
+              <input type="text" value={edit.courseRowColor} onChange={e => setEdit({ ...edit, courseRowColor: e.target.value })} className="bg-black/40 border border-white/20 rounded text-white text-[8px] px-1 py-0.5 font-mono mt-1 text-center" style={{ width: '56px' }} data-testid="input-course-row-color" />
+            </div>
+            <div style={{ marginLeft: '6px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <label className="text-white text-[9px] mb-1">Task BG</label>
+              <div className="relative" style={{ width: '20px', height: '20px' }}>
+                <div className="absolute inset-0 rounded-sm border border-white/30" style={{ backgroundColor: edit.taskBgColor || edit.labelStart }} />
+                <input type="color" value={(() => { const v = edit.taskBgColor; const m = v.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/); if (m) return `#${parseInt(m[1]).toString(16).padStart(2,'0')}${parseInt(m[2]).toString(16).padStart(2,'0')}${parseInt(m[3]).toString(16).padStart(2,'0')}`; return v.startsWith('#') ? v : '#6b7280'; })()} onChange={(e) => setEdit({ ...edit, taskBgColor: e.target.value })} className="absolute inset-0 opacity-0 cursor-pointer" style={{ width: '20px', height: '20px' }} data-testid="input-task-bg-swatch" />
+              </div>
+              <input type="text" value={edit.taskBgColor} onChange={e => setEdit({ ...edit, taskBgColor: e.target.value })} className="bg-black/40 border border-white/20 rounded text-white text-[8px] px-1 py-0.5 font-mono mt-1 text-center" style={{ width: '56px' }} data-testid="input-task-bg" />
+            </div>
+            </div>
           </div>
 
           <div>
             <div className="text-white/60 text-[9px] uppercase tracking-wider mb-2">Cell Background</div>
-            <input type="text" value={edit.cellBg} onChange={e => setEdit({ ...edit, cellBg: e.target.value })} className="w-full bg-white/10 text-white text-[11px] rounded px-2 py-1 border border-white/20 focus:outline-none focus:border-white/40" data-testid="input-cell-bg" />
-          </div>
-
-          <div>
-            <div className="text-white/60 text-[9px] uppercase tracking-wider mb-2">Border Colour</div>
-            <input type="text" value={edit.borderColor} onChange={e => setEdit({ ...edit, borderColor: e.target.value })} className="w-full bg-white/10 text-white text-[11px] rounded px-2 py-1 border border-white/20 focus:outline-none focus:border-white/40" data-testid="input-border-color" />
-          </div>
-
-          <div>
-            <div className="text-white/60 text-[9px] uppercase tracking-wider mb-2">Task Background</div>
-            <input type="text" value={edit.taskBgColor} onChange={e => setEdit({ ...edit, taskBgColor: e.target.value })} className="w-full bg-white/10 text-white text-[11px] rounded px-2 py-1 border border-white/20 focus:outline-none focus:border-white/40" data-testid="input-task-bg" />
-          </div>
-
-          <div>
-            <div className="text-white/60 text-[9px] uppercase tracking-wider mb-2">Homework Row Colour</div>
-            <input type="text" value={edit.courseRowColor} onChange={e => setEdit({ ...edit, courseRowColor: e.target.value })} className="w-full bg-white/10 text-white text-[11px] rounded px-2 py-1 border border-white/20 focus:outline-none focus:border-white/40" data-testid="input-course-row-color" />
+            <input type="text" value={edit.cellBg} onChange={e => setEdit({ ...edit, cellBg: e.target.value })} className="w-full bg-black/40 text-white text-[11px] rounded px-2 py-1 border border-white/20 focus:outline-none focus:border-white/40 font-mono" data-testid="input-cell-bg" />
           </div>
 
           <div className="flex items-center justify-between gap-2 pt-2">
@@ -280,80 +363,9 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave }: Pr
             </div>
           </div>
 
-          <div className="mt-3 rounded overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.15)' }}>
-            <div className="text-white/60 text-[9px] uppercase tracking-wider px-2 py-1 bg-white/5">Preview</div>
-            <div className="flex" style={{ height: '36px' }}>
-              <div className="flex items-center justify-center text-[8px] font-[785] text-white/80" style={{ width: '59px', background: `linear-gradient(180deg, ${allStops.map(s => `${s.color} ${s.position}%`).join(', ')})`, borderBottom: `1px dotted ${edit.borderColor}` }}>OTHER</div>
-              <div className="flex-1 flex items-center gap-1 px-2" style={{ background: edit.cellBg, borderBottom: `1.5px dotted ${edit.borderColor}` }}>
-                <div className="text-[9px] px-1 py-0.5 rounded border truncate" style={{ background: edit.taskBgColor, borderColor: edit.borderColor }}>Sample task</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-1 px-2" style={{ height: '24px', background: edit.courseRowColor, borderTop: `1.5px dotted ${edit.borderColor}` }}>
-              <span className="text-[8px] font-[785] uppercase tracking-wide" style={{ color: '#000' }}>Other</span>
-              <span className="text-[8px]" style={{ color: '#000' }}>• Homework row</span>
-            </div>
-          </div>
         </div>
       </div>
     </div>
   );
 }
 
-function ColorPicker({ color, onChange, hexToHue, hueToHex, hexToSvPos, svToHex }: {
-  color: string;
-  onChange: (hex: string) => void;
-  hexToHue: (c: string) => number;
-  hueToHex: (h: number) => string;
-  hexToSvPos: (hex: string) => { x: number; y: number };
-  svToHex: (hue: number, sx: number, sy: number) => string;
-}) {
-  const svRef = useRef<HTMLDivElement>(null);
-  const hue = hexToHue(color);
-  const svPos = hexToSvPos(color);
-
-  const handleSvDrag = useCallback((e: React.PointerEvent) => {
-    const el = e.currentTarget as HTMLDivElement;
-    el.setPointerCapture(e.pointerId);
-    const update = (ev: PointerEvent) => {
-      const rect = el.getBoundingClientRect();
-      const sx = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
-      const sy = Math.max(0, Math.min(1, (ev.clientY - rect.top) / rect.height));
-      onChange(svToHex(hue, sx, sy));
-    };
-    update(e.nativeEvent);
-    const onMove = (ev: PointerEvent) => update(ev);
-    const onUp = () => { el.releasePointerCapture(e.pointerId); window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); };
-    window.addEventListener('pointermove', onMove);
-    window.addEventListener('pointerup', onUp);
-  }, [hue, onChange, svToHex]);
-
-  return (
-    <div className="space-y-2">
-      <div
-        ref={svRef}
-        className="relative rounded cursor-crosshair"
-        style={{ width: '100%', height: '100px', background: `linear-gradient(to right, #fff, ${hueToHex(hue)})` }}
-        onPointerDown={handleSvDrag}
-      >
-        <div className="absolute inset-0 rounded" style={{ background: 'linear-gradient(to bottom, transparent, #000)' }} />
-        <div className="absolute w-3 h-3 border-2 border-white rounded-full" style={{ left: `${svPos.x * 100}%`, top: `${svPos.y * 100}%`, transform: 'translate(-50%, -50%)', boxShadow: '0 0 2px rgba(0,0,0,0.5)' }} />
-      </div>
-      <input
-        type="range"
-        min={0}
-        max={360}
-        value={hue}
-        onChange={(e) => {
-          const newHue = Number(e.target.value);
-          onChange(svToHex(newHue, svPos.x, svPos.y));
-        }}
-        className="w-full h-2 rounded appearance-none cursor-pointer"
-        style={{ background: 'linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)' }}
-        data-testid="hue-slider"
-      />
-      <div className="flex items-center gap-2">
-        <input type="text" value={color} onChange={e => { if (/^#[0-9a-fA-F]{6}$/.test(e.target.value)) onChange(e.target.value); }} className="bg-white/10 text-white text-[10px] rounded px-2 py-1 border border-white/20 w-20 focus:outline-none" data-testid="hex-input" />
-      </div>
-    </div>
-  );
-}

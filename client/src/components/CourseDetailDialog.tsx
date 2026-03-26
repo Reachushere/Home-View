@@ -1807,7 +1807,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                           </button>
                         )}
                       </div>
-                      <span className="text-[9px] text-white mt-0.5">{editInfo.borderColor ? editInfo.borderColor.toUpperCase() : 'Auto'}</span>
+                      <input type="text" value={editInfo.borderColor ? editInfo.borderColor.toUpperCase() : 'Auto'} onChange={e => { let v = e.target.value; if (v === '' || v === 'Auto') { setEditInfo({...editInfo, borderColor: ''}); return; } if (!v.startsWith('#')) v = '#' + v; setEditInfo({...editInfo, borderColor: v}); }} className="bg-black/40 border border-white/20 rounded text-white text-[8px] px-1 py-0.5 font-mono mt-1 text-center focus:outline-none focus:border-white/40" style={{ width: '56px' }} data-testid="input-border-color-hex" />
                     </div>
                     <div style={{ marginLeft: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                       <label className="text-white text-[9px] mb-1">Row BG</label>
@@ -1820,7 +1820,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                           </button>
                         )}
                       </div>
-                      <span className="text-[9px] text-white mt-0.5">{editInfo.courseRowColor ? editInfo.courseRowColor.toUpperCase() : 'Auto'}</span>
+                      <input type="text" value={editInfo.courseRowColor ? editInfo.courseRowColor.toUpperCase() : 'Auto'} onChange={e => { let v = e.target.value; if (v === '' || v === 'Auto') { setEditInfo({...editInfo, courseRowColor: ''}); return; } if (!v.startsWith('#')) v = '#' + v; setEditInfo({...editInfo, courseRowColor: v}); }} className="bg-black/40 border border-white/20 rounded text-white text-[8px] px-1 py-0.5 font-mono mt-1 text-center focus:outline-none focus:border-white/40" style={{ width: '56px' }} data-testid="input-course-row-color-hex" />
                     </div>
                     <div style={{ marginLeft: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                       <label className="text-white text-[9px] mb-1">Task BG</label>
@@ -1833,7 +1833,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                           </button>
                         )}
                       </div>
-                      <span className="text-[9px] text-white mt-0.5">{editInfo.taskBgColor ? editInfo.taskBgColor.toUpperCase() : 'Auto'}</span>
+                      <input type="text" value={editInfo.taskBgColor ? editInfo.taskBgColor.toUpperCase() : 'Auto'} onChange={e => { let v = e.target.value; if (v === '' || v === 'Auto') { setEditInfo({...editInfo, taskBgColor: ''}); return; } if (!v.startsWith('#')) v = '#' + v; setEditInfo({...editInfo, taskBgColor: v}); }} className="bg-black/40 border border-white/20 rounded text-white text-[8px] px-1 py-0.5 font-mono mt-1 text-center focus:outline-none focus:border-white/40" style={{ width: '56px' }} data-testid="input-task-bg-color-hex" />
                     </div>
                     </div>
                     );
