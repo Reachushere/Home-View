@@ -19459,9 +19459,8 @@ export default function Dashboard() {
                   }
                   return false;
                 });
-                const totalOtherItems = otherTasks.length + otherProjects.length;
                 const calOtherHeight = gridSizes.courseRowHeight || 48;
-                const otherRowHeight = totalOtherItems === 0 ? calOtherHeight : Math.max(calOtherHeight, totalOtherItems * 20 + 4);
+                const otherRowHeight = calOtherHeight;
                 return (
                   <div className="grid w-full flex-shrink-0 relative z-[43]" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${otherRowHeight}px` }}>
                     <div className="px-1 py-0.5 text-[8px] font-[785] tracking-wide flex items-center justify-center text-white/80" style={{ background: 'linear-gradient(180deg, #374151 0%, #9ca3af 100%)', borderBottom: '1px dotted #999' }}>
@@ -19485,8 +19484,8 @@ export default function Dashboard() {
                       return (
                         <div
                           key={dayIdx}
-                          className="overflow-hidden relative flex flex-col gap-0.5 pt-0.5"
-                          style={{ backgroundColor: isOtherToday ? '#e4ecf5' : 'rgba(107, 114, 128, 0.30)', padding: `2px 2px 2px ${4 + DAY_COL_LEFT_REDUCTION}px`, borderBottom: isOtherToday ? '1px dotted #666' : '1.5px dotted rgba(107, 114, 128, 0.7)' }}
+                          className="relative flex flex-col gap-0.5 pt-0.5"
+                          style={{ backgroundColor: isOtherToday ? '#e4ecf5' : 'rgba(107, 114, 128, 0.30)', padding: `2px 2px 2px ${4 + DAY_COL_LEFT_REDUCTION}px`, borderBottom: isOtherToday ? '1px dotted #666' : '1.5px dotted rgba(107, 114, 128, 0.7)', maxHeight: '64px', overflowY: 'auto', scrollbarWidth: 'thin' }}
                           data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
                         >
                           <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', borderLeft: '1px solid rgba(0,0,0,0.12)', zIndex: 5, pointerEvents: 'none' }} />
