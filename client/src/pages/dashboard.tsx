@@ -9420,8 +9420,20 @@ export default function Dashboard() {
   
   // Check if a calendar event conflicts with any task
   const eventConflictsWithTask = (event: CalendarEvent) => {
-    const eventStart = new Date(event.startDate);
-    const eventEnd = new Date(event.endDate);
+    // For all-day events, parse date part directly to avoid timezone issues
+    let eventStart: Date;
+    let eventEnd: Date;
+    if (event.isAllDay) {
+      const sp = event.startDate.includes('T') ? event.startDate.split('T')[0] : event.startDate;
+      const [sy, sm, sd] = sp.split('-').map(Number);
+      eventStart = new Date(sy, sm - 1, sd, 12, 0, 0);
+      const ep = event.endDate.includes('T') ? event.endDate.split('T')[0] : event.endDate;
+      const [ey, em, ed] = ep.split('-').map(Number);
+      eventEnd = new Date(ey, em - 1, ed, 12, 0, 0);
+    } else {
+      eventStart = new Date(event.startDate);
+      eventEnd = new Date(event.endDate);
+    }
     
     return allTasks.some(task => {
       const taskDue = new Date(task.dueDate);
@@ -9477,9 +9489,13 @@ export default function Dashboard() {
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     return calendarEvents.filter(e => {
       if (!e.isAllDay) return false;
-      const eventDate = new Date(e.startDate);
+      // For all-day events, extract date part directly to avoid timezone parsing issues
+      // startDate may be "2026-03-26T12:00:00" (no TZ) — parse the YYYY-MM-DD directly
+      const datePart = e.startDate.includes('T') ? e.startDate.split('T')[0] : e.startDate;
+      const [yr, mo, dy] = datePart.split('-').map(Number);
+      const eventDate = new Date(yr, mo - 1, dy, 12, 0, 0);
       // Hide all-day events from days that have already passed
-      const eventDayStart = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
+      const eventDayStart = new Date(yr, mo - 1, dy);
       if (eventDayStart < todayStart) return false;
       // Only show events that conflict with tasks
       if (!eventConflictsWithTask(e)) return false;
