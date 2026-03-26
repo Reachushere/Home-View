@@ -20109,6 +20109,7 @@ export default function Dashboard() {
                               if (!t.courseName) return false;
                               if (t.isCompleted) return false;
                               const taskDueDate = startOfDayET(new Date(t.dueDate));
+                              if (isSameDayET(taskDueDate, todayStart)) return true;
                               if (taskDueDate < todayStart) return false;
                               const taskTime = getTaskTime(t);
                               if (taskTime > now.getTime()) return false;
