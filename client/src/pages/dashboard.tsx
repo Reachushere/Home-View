@@ -12650,12 +12650,12 @@ export default function Dashboard() {
           position: 'fixed',
           left: '50%',
           transform: 'translateX(-50%)',
-          top: `${-8 + d2lTickerHeight}px`,
+          top: `${d2lTickerHeight}px`,
           width: '120px',
           height: '35px',
           cursor: 'pointer',
           pointerEvents: isTopPillOpen ? 'none' : 'auto',
-          zIndex: 10002,
+          zIndex: 110,
           touchAction: 'manipulation',
         }}
         onTouchStart={(e) => {
@@ -12690,10 +12690,11 @@ export default function Dashboard() {
           width: '84px',
           height: '25px',
           cursor: 'pointer',
-          pointerEvents: 'auto',
-          opacity: 0.9,
-          zIndex: 10003,
+          pointerEvents: isTopPillOpen ? 'auto' : 'none',
+          opacity: isTopPillOpen ? 0.9 : 0,
+          zIndex: 110,
           touchAction: 'manipulation',
+          transition: 'opacity 0.3s ease-in-out',
         }}
         onTouchStart={(e) => {
           e.preventDefault();
@@ -18547,7 +18548,7 @@ export default function Dashboard() {
           <div 
             className="absolute pointer-events-none"
             style={{ 
-              top: '-4px', 
+              top: '0px', 
               left: '-15px', 
               right: `${-(calendarReduction - 3) - 15 + 6 + 6 + 2}px`, 
               bottom: '-16px', 
@@ -18623,7 +18624,7 @@ export default function Dashboard() {
                 return (
                   <div key={idx} className="flex items-center justify-center overflow-hidden" style={{ opacity: isPast ? 0.5 : 1 }} data-testid={`weather-above-${dateStr}`}>
                     {dayForecast && (
-                      <span className="text-[8px] text-white/90 whitespace-nowrap leading-none font-medium" style={{ letterSpacing: '-0.2px' }}>
+                      <span className="text-[10px] text-white/90 whitespace-nowrap leading-none font-medium" style={{ letterSpacing: '-0.2px' }}>
                         {wIcon} {Math.round(dayForecast.low)}°/{Math.round(dayForecast.high)}° {desc}
                       </span>
                     )}
@@ -18645,7 +18646,7 @@ export default function Dashboard() {
                 <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.max(200, prev - 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.max(200, prev - 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▼</span></div>
               </div>
             </div>
-          <div ref={calendarBorderRef} className="shadow-lg border border-white flex flex-col relative" style={{ background: '#faf8f5', borderRadius: '8px', overflow: 'hidden', height: 'calc(100% - 2px)', width: 'calc(100%)', marginLeft: '1px', marginTop: '1px' }}>
+          <div ref={calendarBorderRef} className="shadow-lg border border-white flex flex-col relative" style={{ background: '#faf8f5', borderRadius: '8px', overflow: 'hidden', height: 'calc(100% - 2px)', width: 'calc(100%)', marginLeft: '1px', marginTop: '-2px' }}>
             {/* Progress/Saturday divider line - red separator on left border of Saturday column */}
             <div className="absolute top-0 bottom-0 w-[3px] z-50 pointer-events-none overflow-hidden red-separator-shimmer" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 1px)`, backgroundColor: '#ef4444' }}>
               <div className="absolute inset-0 red-separator-shimmer-sweep" />
