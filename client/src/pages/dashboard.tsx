@@ -671,6 +671,8 @@ export default function Dashboard() {
   const [morningReviewItems, setMorningReviewItems] = useState<any[]>([]);
   const [morningReviewLoading, setMorningReviewLoading] = useState(false);
   const [processingReviewIds, setProcessingReviewIds] = useState<Set<number>>(new Set());
+  const [reviewMode, setReviewMode] = useState<'all' | 'individual'>('all');
+  const [reviewCheckedIds, setReviewCheckedIds] = useState<Set<number>>(new Set());
 
   const fetchPendingReview = useCallback(async () => {
     try {
@@ -743,6 +745,23 @@ export default function Dashboard() {
 
   const handleSkipAllForToday = () => {
     setShowMorningReview(false);
+    setReviewMode('all');
+    setReviewCheckedIds(new Set());
+  };
+
+  const handleIndividualConfirm = async () => {
+    setMorningReviewLoading(true);
+    for (const item of morningReviewItems) {
+      if (reviewCheckedIds.has(item.id)) {
+        await handleAcceptReview(item.id);
+      } else {
+        await handleRejectReview(item.id);
+      }
+    }
+    setMorningReviewLoading(false);
+    setShowMorningReview(false);
+    setReviewMode('all');
+    setReviewCheckedIds(new Set());
   };
 
   const handleIcsFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -9584,37 +9603,77 @@ export default function Dashboard() {
               <Sun className="h-4 w-4 text-yellow-400" />
               <span className="text-[12px] font-semibold" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>Morning Review</span>
               <span className="text-[9px] text-white/50 ml-1">{morningReviewItems.length} pending</span>
+              <div className="flex ml-3 rounded overflow-hidden border border-white/15" data-testid="review-mode-tabs">
+                <button
+                  className={`px-3 py-0.5 text-[9px] font-medium transition-colors ${reviewMode === 'all' ? 'bg-white/15 text-white' : 'text-white/40 hover:text-white/60 hover:bg-white/5'}`}
+                  onClick={() => { setReviewMode('all'); setReviewCheckedIds(new Set()); }}
+                  data-testid="review-tab-all"
+                >
+                  All
+                </button>
+                <button
+                  className={`px-3 py-0.5 text-[9px] font-medium transition-colors border-l border-white/15 ${reviewMode === 'individual' ? 'bg-white/15 text-white' : 'text-white/40 hover:text-white/60 hover:bg-white/5'}`}
+                  onClick={() => { setReviewMode('individual'); setReviewCheckedIds(new Set()); }}
+                  data-testid="review-tab-individual"
+                >
+                  Individual
+                </button>
+              </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-6 px-2 text-[9px] border-white/20 text-white/60 hover:text-white hover:bg-white/10"
-                onClick={handleSkipAllForToday}
-                disabled={morningReviewLoading}
-                data-testid="button-reject-all-review"
-              >
-                Skip All
-              </Button>
-              <Button
-                size="sm"
-                className="h-6 px-2 text-[9px] bg-green-600 hover:bg-green-700 text-white"
-                onClick={handleAcceptAll}
-                disabled={morningReviewLoading}
-                data-testid="button-accept-all-review"
-              >
-                {morningReviewLoading ? <Loader2 className="h-2.5 w-2.5 mr-1 animate-spin" /> : <Check className="h-2.5 w-2.5 mr-1" />}
-                Accept All
-              </Button>
+              {reviewMode === 'all' ? (
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-6 px-2 text-[9px] border-white/20 text-white/60 hover:text-white hover:bg-white/10"
+                    onClick={handleSkipAllForToday}
+                    disabled={morningReviewLoading}
+                    data-testid="button-reject-all-review"
+                  >
+                    Skip All
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="h-6 px-2 text-[9px] bg-green-600 hover:bg-green-700 text-white"
+                    onClick={handleAcceptAll}
+                    disabled={morningReviewLoading}
+                    data-testid="button-accept-all-review"
+                  >
+                    {morningReviewLoading ? <Loader2 className="h-2.5 w-2.5 mr-1 animate-spin" /> : <Check className="h-2.5 w-2.5 mr-1" />}
+                    Accept All
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <span className="text-[8px] text-white/40">{reviewCheckedIds.size} selected</span>
+                  <Button
+                    size="sm"
+                    className="h-6 px-2 text-[9px] bg-green-600 hover:bg-green-700 text-white"
+                    onClick={handleIndividualConfirm}
+                    disabled={morningReviewLoading || reviewCheckedIds.size === 0}
+                    data-testid="button-confirm-individual-review"
+                  >
+                    {morningReviewLoading ? <Loader2 className="h-2.5 w-2.5 mr-1 animate-spin" /> : <Check className="h-2.5 w-2.5 mr-1" />}
+                    Confirm
+                  </Button>
+                </>
+              )}
               <button
                 className="w-6 h-6 flex items-center justify-center rounded text-white/50 hover:text-white hover:bg-white/10"
-                onClick={() => setShowMorningReview(false)}
+                onClick={() => { setShowMorningReview(false); setReviewMode('all'); setReviewCheckedIds(new Set()); }}
                 data-testid="button-close-morning-review"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
           </div>
+
+          {reviewMode === 'individual' && (
+            <div className="px-4 py-1 border-b border-white/5 flex-shrink-0">
+              <span className="text-[8px] text-white/40">Check the items you want to keep. Unchecked items will be permanently skipped.</span>
+            </div>
+          )}
 
           <div className="flex-1 overflow-hidden px-4 py-2">
             {morningReviewItems.length === 0 ? (
@@ -9649,6 +9708,30 @@ export default function Dashboard() {
                             style={{ backgroundColor: idx % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent', paddingTop: '5px', paddingBottom: '5px', marginBottom: '0px' }}
                             data-testid={`review-item-${item.id}`}
                           >
+                            <div
+                              className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 transition-colors ${
+                                reviewMode === 'all'
+                                  ? 'border-white/10 bg-white/5 cursor-default'
+                                  : reviewCheckedIds.has(item.id)
+                                    ? 'border-green-500 bg-green-500/30 cursor-pointer'
+                                    : 'border-white/25 hover:border-white/40 cursor-pointer'
+                              }`}
+                              onClick={() => {
+                                if (reviewMode === 'individual') {
+                                  setReviewCheckedIds(prev => {
+                                    const next = new Set(prev);
+                                    if (next.has(item.id)) next.delete(item.id);
+                                    else next.add(item.id);
+                                    return next;
+                                  });
+                                }
+                              }}
+                              data-testid={`review-checkbox-${item.id}`}
+                            >
+                              {reviewMode === 'individual' && reviewCheckedIds.has(item.id) && (
+                                <Check className="h-2.5 w-2.5 text-green-400" />
+                              )}
+                            </div>
                             <div className="flex-1 min-w-0 flex items-center gap-2">
                               <span className="text-[9px] font-medium truncate flex-1" style={{ lineHeight: '1.3' }}>{item.title}</span>
                               {item.startDate && (
@@ -9662,26 +9745,28 @@ export default function Dashboard() {
                                 </span>
                               )}
                             </div>
-                            <div className="flex items-center gap-1 flex-shrink-0">
-                              <button
-                                className="w-5 h-5 flex items-center justify-center rounded-full border border-green-500/40 text-green-400 hover:bg-green-500/25 disabled:opacity-40"
-                                disabled={processingReviewIds.has(item.id)}
-                                onClick={() => handleAcceptReview(item.id)}
-                                data-testid={`button-accept-review-${item.id}`}
-                                title="Accept"
-                              >
-                                {processingReviewIds.has(item.id) ? <Loader2 className="h-2.5 w-2.5 animate-spin" /> : <Check className="h-2.5 w-2.5" />}
-                              </button>
-                              <button
-                                className="w-5 h-5 flex items-center justify-center rounded-full border border-red-500/40 text-red-400 hover:bg-red-500/25 disabled:opacity-40"
-                                disabled={processingReviewIds.has(item.id)}
-                                onClick={() => handleRejectReview(item.id)}
-                                data-testid={`button-reject-review-${item.id}`}
-                                title="Skip"
-                              >
-                                <X className="h-2.5 w-2.5" />
-                              </button>
-                            </div>
+                            {reviewMode === 'all' && (
+                              <div className="flex items-center gap-1 flex-shrink-0">
+                                <button
+                                  className="w-5 h-5 flex items-center justify-center rounded-full border border-green-500/40 text-green-400 hover:bg-green-500/25 disabled:opacity-40"
+                                  disabled={processingReviewIds.has(item.id)}
+                                  onClick={() => handleAcceptReview(item.id)}
+                                  data-testid={`button-accept-review-${item.id}`}
+                                  title="Accept"
+                                >
+                                  {processingReviewIds.has(item.id) ? <Loader2 className="h-2.5 w-2.5 animate-spin" /> : <Check className="h-2.5 w-2.5" />}
+                                </button>
+                                <button
+                                  className="w-5 h-5 flex items-center justify-center rounded-full border border-red-500/40 text-red-400 hover:bg-red-500/25 disabled:opacity-40"
+                                  disabled={processingReviewIds.has(item.id)}
+                                  onClick={() => handleRejectReview(item.id)}
+                                  data-testid={`button-reject-review-${item.id}`}
+                                  title="Skip"
+                                >
+                                  <X className="h-2.5 w-2.5" />
+                                </button>
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>
