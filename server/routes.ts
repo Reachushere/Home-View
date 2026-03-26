@@ -7881,7 +7881,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           console.error(`${logPrefix} Tablet brightness: FAILED — ${e.message}`);
         }
 
-        await new Promise(r => setTimeout(r, 2000));
+        await new Promise(r => setTimeout(r, 4000));
 
         for (let attempt = 1; attempt <= 3; attempt++) {
           try {
@@ -7934,16 +7934,16 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           haServiceCall('media_player/turn_on', { entity_id: CAT_TV_ENTITY }, 'TV On'),
         ]);
         console.log(`${logPrefix} Fire Stick + Samsung TV turned on`);
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        await new Promise(resolve => setTimeout(resolve, 6000));
 
-        for (let srcAttempt = 1; srcAttempt <= 3; srcAttempt++) {
+        for (let srcAttempt = 1; srcAttempt <= 4; srcAttempt++) {
           try {
             await haServiceCall('media_player/select_source', { entity_id: CAT_TV_ENTITY, source: 'HDMI1' }, 'TV Source');
             console.log(`${logPrefix} Samsung TV switched to Fire Stick HDMI input (attempt ${srcAttempt})`);
             break;
           } catch (e: any) {
-            console.error(`${logPrefix} Samsung TV source switch attempt ${srcAttempt}/3: ${e.message}`);
-            if (srcAttempt < 3) await new Promise(r => setTimeout(r, 2000));
+            console.error(`${logPrefix} Samsung TV source switch attempt ${srcAttempt}/4: ${e.message}`);
+            if (srcAttempt < 4) await new Promise(r => setTimeout(r, 3000));
           }
         }
 
