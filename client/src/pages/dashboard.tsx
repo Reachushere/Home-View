@@ -22979,7 +22979,7 @@ export default function Dashboard() {
                 {/* Next Week Section */}
                 <div data-homework-section="nextweek" data-semester-label={hwWeeklyTimeline[1]?.semLabel || ''} style={{ display: 'flex', flexDirection: 'column', gap: '0px', padding: '2px 0 4px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '12px' }}>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-                    <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[1]?.label || 'Next week'}</span>
+                    <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[1]?.label || 'Week'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)' }}>({dueNextWeekTasks.length})</span>
                   </div>
                 </div>
@@ -23020,46 +23020,6 @@ export default function Dashboard() {
                         const dueDates = group.tasks.map(t => ({ date: startOfDayET(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
                           <div key={group.key} data-hw-group-row style={{ display: 'flex', alignItems: 'flex-start', gap: '0px', marginBottom: '2px' }}>
-                            <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', alignSelf: 'flex-start', marginLeft: '2px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2 }} data-testid={`mini-cal-group-${group.key}`}>
-                              <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
-                                {hwWeeklyTimeline[1]?.sublabel || 'Next week'}
-                              </span>
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', width: '100%' }}>
-                                <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: '100%', justifyContent: 'flex-end' }}>
-                                  {['Su','Mo','Tu','We','Th','Fr','Sa'].map((dl, dli) => (
-                                    <div key={dli} style={{ flex: 1, minWidth: 0, fontSize: '8px', fontWeight: 600, textAlign: 'center', color: '#ffffff' }}>{dl}</div>
-                                  ))}
-                                </div>
-                                {group.weeks.map((weekStart: Date, wi: number) => {
-                                  const isLastWeek = wi === group.weeks.length - 1;
-                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
-                                  return (
-                                    <div key={wi} style={{ display: 'flex', gap: '2px', padding: '1px 2px', width: '100%', justifyContent: 'flex-end', borderRadius: isLastWeek ? '4px' : '3px', backgroundColor: isLastWeek ? 'rgba(255,255,255,0.15)' : `rgba(255,255,255,${0.08 + wi * 0.04})`, border: isLastWeek ? '0.5px solid rgba(255,255,255,0.55)' : '0.5px solid rgba(255,255,255,0.15)' }}>
-                                      {days.map((d, di) => {
-                                        const isToday = isSameDayET(d, today);
-                                        const dueMatch = dueDates.find(dd => isSameDayET(d, dd.date));
-                                        const isDue = !!dueMatch;
-                                        const dueColor = dueMatch ? (dynamicCourseColors[dueMatch.courseCode]?.hex || getCourseGradientColors(dueMatch.courseCode).start) : '';
-                                        return (
-                                          <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDayET(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
-                                            flex: 1, minWidth: 0, height: '11px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-                                            color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
-                                            backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.15)',
-                                            border: isDue && !isToday ? `1px solid ${dueColor}` : 'none',
-                                          }} data-testid={`mini-cal-date-${format(d, 'yyyy-MM-dd')}`}>
-                                            {d.getDate()}
-                                          </div>
-                                        );
-                                      })}
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </div>
-                            <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', alignSelf: 'stretch', position: 'relative', zIndex: 3 }}>
-                              <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
-                            </div>
                             <div style={{ flex: 1, minWidth: 0, marginRight: '-7px' }}>
                               {group.tasks.filter((t, i, arr) => t.type !== "class" || arr.findIndex(x => x.type === "class" && x.title === t.title && x.courseName === t.courseName) === i).map((task, taskIdx) => {
                                 const progressColor = getProgressColor(task, 'thisweek');
@@ -23071,7 +23031,7 @@ export default function Dashboard() {
                                 const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                                 const isLastTask = taskIdx === group.tasks.length - 1;
                                 return (
-                                  <div key={task.id} className="" style={{ position: 'relative', overflow: 'visible', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: taskIdx % 2 === 0 ? '#051729' : 'transparent', marginLeft: '-8px', marginRight: '-7px', paddingLeft: '8px', paddingRight: '7px' }}
+                                  <div key={task.id} className="" style={{ position: 'relative', overflow: 'visible', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: 'transparent', marginLeft: '-8px', marginRight: '-7px', paddingLeft: '8px', paddingRight: '7px' }}
                                     onMouseEnter={() => setHoveredCountdownTaskIdDebounced(task.id)}
                                     onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                                     ref={(rowEl) => {
