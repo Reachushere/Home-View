@@ -12371,7 +12371,7 @@ export default function Dashboard() {
                   const displaySnippet = cleanSnippet && cleanSnippet !== a.subject ? ` — ${cleanSnippet.slice(0, 120)}${cleanSnippet.length > 120 ? '…' : ''}` : '';
                   const isTodayTask = !!(a as any)._isTodayTask;
                   return (
-                    <span key={`${a.id}-${i}`} className={`inline-flex items-center gap-1.5 mx-8 ${isTodayTask ? 'animate-balloon-pulse' : ''}`} data-testid={`announcement-${a.id}-${i}`}>
+                    <span key={`${a.id}-${i}`} className="inline-flex items-center gap-1.5 mx-8" data-testid={`announcement-${a.id}-${i}`}>
                       <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', verticalAlign: 'middle' }}>
                         <img src={tmuBoxesLogo} alt="TMU" style={{ height: '27px', width: 'auto', objectFit: 'contain' }} />
                         <span className="font-bold" style={{ position: 'absolute', color: '#ffffff', fontSize: '8px', letterSpacing: '0.5px', textAlign: 'center', lineHeight: '1', textShadow: '0 0 2px rgba(0,0,0,0.5)', left: '50%', top: '50%', transform: 'translate(calc(-50% + -1px), calc(-50% + 3px))', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>{(() => {
@@ -12420,7 +12420,7 @@ export default function Dashboard() {
                 });
                 return Object.entries(courseGroups).map(([code, tasks]) => (
                   <div key={`today-${code}`} className="flex items-center gap-2 py-1.5" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                    <span className="text-[10px] font-bold text-yellow-300 animate-balloon-pulse flex-shrink-0" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>DUE TODAY</span>
+                    <span className="text-[10px] font-bold text-yellow-300 flex-shrink-0" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>DUE TODAY</span>
                     <span className="text-[12px] text-yellow-200 truncate" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>
                       {tasks.length === 1 ? `${code}: ${tasks[0].title}` : `${code}: ${tasks.length} tasks due today`}
                     </span>
