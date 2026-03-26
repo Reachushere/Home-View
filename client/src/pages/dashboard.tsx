@@ -9548,10 +9548,15 @@ export default function Dashboard() {
   // Get all-day tasks (tasks without specific time - only midnight)
   const getAllDayTasks = (day: Date) => {
     const dayKey = _etDateKey(day);
+    const activeCourseNames = (coursesData?.courses || []).map(c => c.name?.split(' - ')[0]?.trim().toUpperCase()).filter(Boolean);
     return allTasks.filter(t => {
       if (t.isCompleted) return false;
       if (isCASL101Finished(t)) return false;
       if (t.eventStartTime) return false;
+      if (t.type !== 'other') {
+        const taskCourseCode = t.courseName?.split(' - ')[0]?.trim().toUpperCase();
+        if (taskCourseCode && activeCourseNames.some(ac => taskCourseCode.startsWith(ac))) return false;
+      }
       const dueDate = new Date(t.dueDate);
       const isMidnightET = getETHours(dueDate) === 0 && getETMinutes(dueDate) === 0;
       const isMidnightUTC = dueDate.getUTCHours() === 0 && dueDate.getUTCMinutes() === 0;
@@ -19818,7 +19823,7 @@ export default function Dashboard() {
               ); })()}
 
             {/* ALL DAY Row - Fixed, not scrollable - Only shows true all-day tasks (midnight due time) */}
-            {(showAllDayRow || weekHasAllDayItems) && (<div ref={allDayRowRef} className="grid z-[44] w-full flex-shrink-0 relative group/alldayrow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.allDayRowHeight}px` }}>
+            {false && (<div ref={allDayRowRef} className="grid z-[44] w-full flex-shrink-0 relative group/alldayrow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.allDayRowHeight}px` }}>
               <div className="text-[10px] font-medium tracking-wide flex items-center justify-center text-white/60 relative border-b border-border/50" style={{ backgroundColor: colorSettings.headerBar }}>
                 ALL DAY
               </div>
