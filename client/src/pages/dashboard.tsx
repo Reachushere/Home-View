@@ -11375,7 +11375,7 @@ export default function Dashboard() {
               alignItems: 'center',
               justifyContent: 'center',
               gap: '6px',
-              left: '-12px',
+              left: '-17px',
               right: '0px',
             }}
             data-testid="next-task-countdown"
