@@ -12506,8 +12506,8 @@ export default function Dashboard() {
                 data-testid="select-ticker-tag"
               >
                 <option value="Custom" style={{ background: '#1a1a2e' }}>📌 Custom</option>
-                {(coursesData?.courses || []).filter((c: any) => c.name?.trim()).map((c: any) => {
-                  const code = c.name.split(' - ')[0]?.trim().replace(/\s/g, '').toUpperCase();
+                {semesterSettings && [1, 2, 3].map(i => {
+                  const code = ((semesterSettings as any)[`course${i}Code`] || '').trim().replace(/\s/g, '').toUpperCase();
                   return code ? <option key={code} value={code} style={{ background: '#1a1a2e' }}>{code}</option> : null;
                 })}
                 <option value="REMINDER" style={{ background: '#1a1a2e' }}>REMINDER</option>
