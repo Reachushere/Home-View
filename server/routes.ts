@@ -9766,6 +9766,22 @@ document.body.removeChild(a);
 
       const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
 
+      const earlyDeviceWakePromise = (async () => {
+        const tabletEntity = 'media_player.tablet_cat';
+        const fireStickEntity = 'media_player.fire_stick_cat_wr';
+        try {
+          await Promise.allSettled([
+            haServiceCallSafe('androidtv/adb_command', { entity_id: tabletEntity, command: 'input keyevent KEYCODE_WAKEUP' }, 'Cat Lights Early Tablet Wake'),
+            haServiceCallSafe('androidtv/adb_command', { entity_id: fireStickEntity, command: 'input keyevent KEYCODE_WAKEUP' }, 'Cat Lights Early TV Wake'),
+            haServiceCallSafe('media_player/turn_on', { entity_id: fireStickEntity }, 'Cat Lights Early FireStick On'),
+            haServiceCallSafe('media_player/turn_on', { entity_id: CAT_TV_ENTITY }, 'Cat Lights Early Samsung On'),
+          ]);
+          console.log(`[Cat Lights] Early device wake: tablet + TV wake commands sent`);
+        } catch (e: any) {
+          console.warn(`[Cat Lights] Early device wake failed (non-fatal): ${e.message}`);
+        }
+      })();
+
       const immediatePromptPromise = (async () => {
         try {
           await Promise.allSettled([
@@ -9811,7 +9827,7 @@ document.body.removeChild(a);
         syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Lights]').catch(e => console.log(`[Cat Lights] Background sync error: ${e.message}`));
       }
 
-      await immediatePromptPromise;
+      await Promise.allSettled([immediatePromptPromise, earlyDeviceWakePromise]);
 
       try {
         const lightCheckResp = await fetch(`${haUrl0}/api/states/${CAT_LIGHTS_ENTITY}`, { headers: haHeaders0 });
