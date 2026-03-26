@@ -7777,18 +7777,12 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const textExtractionPromise = extractFileText(fileToPlay);
 
     try {
-      await Promise.all([
-        fetch(`${haUrl}/api/services/media_player/volume_set`, {
-          method: 'POST', headers: haHeaders,
-          body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.45 }),
-        }),
-        fetch(`${haUrl}/api/services/media_player/volume_set`, {
-          method: 'POST', headers: haHeaders,
-          body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.45 }),
-        }),
-      ]);
-      console.log(`${logPrefix} Set volume to 0.75`);
-    } catch (e: any) { console.warn(`${logPrefix} Volume set error (non-fatal): ${e.message}`); }
+      await fetch(`${haUrl}/api/services/media_player/volume_set`, {
+        method: 'POST', headers: haHeaders,
+        body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.45 }),
+      });
+      console.log(`${logPrefix} Set HA Voice volume to 0.45`);
+    } catch (e: any) { console.warn(`${logPrefix} HA Voice volume set error (non-fatal): ${e.message}`); }
 
     const fileText = await textExtractionPromise;
     console.log(`${logPrefix} Text extraction ready (${fileText ? fileText.length : 0} chars)`);
@@ -7959,6 +7953,11 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     })() : Promise.resolve();
 
     await Promise.allSettled([tabletSetupPromise, tvSetupPromise, chunk0PreGenPromise, confirmTTSPromise]);
+
+    try {
+      await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.45 }, 'Nest Playback Vol');
+      console.log(`${logPrefix} Nest volume set to 0.45 for playback`);
+    } catch (e: any) { console.warn(`${logPrefix} Nest playback volume set error (non-fatal): ${e.message}`); }
 
     currentTabletReaderUrl = readerUrl;
     startNestChunkPlayback(fileToPlay.id, fileName, fileChunks, resumeFromChunk, currentSession, voice, preGeneratedChunk0Path);
