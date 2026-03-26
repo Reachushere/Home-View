@@ -15,10 +15,10 @@ const DEFAULTS: OtherRowColors = {
   labelStart: '#374151',
   labelEnd: '#9ca3af',
   labelStops: '',
-  cellBg: 'rgba(107, 114, 128, 0.30)',
-  borderColor: 'rgba(107, 114, 128, 0.7)',
-  taskBgColor: 'rgba(107, 114, 128, 0.25)',
-  courseRowColor: 'rgba(107, 114, 128, 0.30)',
+  cellBg: '#3a3f4a',
+  borderColor: '#5c6370',
+  taskBgColor: '#363b44',
+  courseRowColor: '#3a3f4a',
 };
 
 interface Props {

@@ -2182,9 +2182,9 @@ export default function Dashboard() {
   }>(() => {
     try {
       const saved = localStorage.getItem('otherRowColors');
-      if (saved) { const p = JSON.parse(saved); return { ...p, courseRowColor: p.courseRowColor || 'rgba(107, 114, 128, 0.30)' }; }
+      if (saved) { const p = JSON.parse(saved); return { ...p, courseRowColor: p.courseRowColor || '#3a3f4a' }; }
     } catch {}
-    return { labelStart: '#374151', labelEnd: '#9ca3af', labelStops: '', cellBg: 'rgba(107, 114, 128, 0.30)', borderColor: 'rgba(107, 114, 128, 0.7)', taskBgColor: 'rgba(107, 114, 128, 0.25)', courseRowColor: 'rgba(107, 114, 128, 0.30)' };
+    return { labelStart: '#374151', labelEnd: '#9ca3af', labelStops: '', cellBg: '#3a3f4a', borderColor: '#5c6370', taskBgColor: '#363b44', courseRowColor: '#3a3f4a' };
   });
   const saveOtherRowColors = useCallback((colors: typeof otherRowColors) => {
     setOtherRowColors(colors);
