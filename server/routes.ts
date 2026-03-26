@@ -9871,6 +9871,45 @@ document.body.removeChild(a);
 
       const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
 
+      const nowToronto = getNowInToronto();
+      const currentHour = nowToronto.getHours();
+      const currentMinute = nowToronto.getMinutes();
+      const inHARestartWindow = currentHour === 4 && currentMinute < 10;
+
+      if (inHARestartWindow) {
+        const minutesLeft = 10 - currentMinute;
+        console.log(`[Cat Lights] HA restart window detected (4:${String(currentMinute).padStart(2, '0')} AM) — waiting ${minutesLeft} minutes until 4:10 AM`);
+
+        try {
+          await haServiceCall('tts/speak', {
+            entity_id: HA_CLOUD_TTS_ENTITY,
+            media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
+            message: `Home Assistant is currently restarting. I'll check your readings in about ${minutesLeft} minute${minutesLeft === 1 ? '' : 's'}.`
+          }, 'Cat Lights HA Restart Notice');
+          console.log(`[Cat Lights] HA restart notice played`);
+        } catch (e: any) {
+          console.warn(`[Cat Lights] HA restart notice TTS failed (expected during restart): ${e.message}`);
+        }
+
+        const msUntil410 = minutesLeft * 60 * 1000;
+        await new Promise(r => setTimeout(r, msUntil410));
+
+        try {
+          const lightCheckResp = await fetch(`${haUrl0}/api/states/${CAT_LIGHTS_ENTITY}`, { headers: haHeaders0 });
+          if (lightCheckResp.ok) {
+            const lightCheckData = await lightCheckResp.json();
+            if (lightCheckData?.state === 'off') {
+              console.log(`[Cat Lights] Lights turned off during HA restart wait — aborting`);
+              catLightsPromptPending = false;
+              return;
+            }
+            console.log(`[Cat Lights] Lights still on after HA restart wait — proceeding`);
+          }
+        } catch (e: any) {
+          console.warn(`[Cat Lights] Post-restart light check failed: ${e.message} — proceeding anyway`);
+        }
+      }
+
       const earlyDeviceWakePromise = (async () => {
         const tabletEntity = 'media_player.tablet_cat';
         const fireStickEntity = 'media_player.fire_stick_cat_wr';
