@@ -2716,6 +2716,7 @@ export default function Dashboard() {
     progressColumnWidth: number;
     allDayRowHeight: number;
     courseRowHeight: number;
+    otherRowHeight: number;
     timeSlotHeight: number;
     timeSlotHeights: number[]; // Individual heights for each hour (0-23)
   }>(() => {
@@ -2727,6 +2728,7 @@ export default function Dashboard() {
       progressColumnWidth: 0.87, // homework progress column
       allDayRowHeight: 36,
       courseRowHeight: 36,
+      otherRowHeight: 64,
       timeSlotHeight: 36,
       timeSlotHeights: defaultHeights
     };
@@ -2756,6 +2758,7 @@ export default function Dashboard() {
       [0,1,2,3,4,5,6,21,22,23].forEach(i => { if (parsed.timeSlotHeights[i] < 36) parsed.timeSlotHeights[i] = 36; });
       if (!parsed.timeSlotHeight) parsed.timeSlotHeight = 36;
       if (!parsed.courseRowHeight) parsed.courseRowHeight = 48;
+      if (!parsed.otherRowHeight) parsed.otherRowHeight = 64;
       if (parsed.moduleColumnWidth === undefined) parsed.moduleColumnWidth = 0;
       if (!parsed.timeColumnWidth) parsed.timeColumnWidth = 59;
       migrateOldWidths(parsed);
@@ -2772,6 +2775,7 @@ export default function Dashboard() {
       [0,1,2,3,4,5,6,21,22,23].forEach(i => { if (parsed.timeSlotHeights[i] < 36) parsed.timeSlotHeights[i] = 36; });
       if (!parsed.timeSlotHeight) parsed.timeSlotHeight = 36;
       if (!parsed.courseRowHeight) parsed.courseRowHeight = 48;
+      if (!parsed.otherRowHeight) parsed.otherRowHeight = 64;
       if (parsed.moduleColumnWidth === undefined) parsed.moduleColumnWidth = 0;
       if (!parsed.timeColumnWidth) parsed.timeColumnWidth = 59;
       migrateOldWidths(parsed);
@@ -2949,7 +2953,7 @@ export default function Dashboard() {
     document.addEventListener('touchend', onUp);
   };
 
-  const handleRowResizeStart = (e: React.MouseEvent | React.TouchEvent, rowType: 'allDay' | 'course' | 'timeSlot', hourIndex?: number) => {
+  const handleRowResizeStart = (e: React.MouseEvent | React.TouchEvent, rowType: 'allDay' | 'course' | 'other' | 'timeSlot', hourIndex?: number) => {
     e.preventDefault();
     e.stopPropagation();
     let startHeight: number;
@@ -2957,6 +2961,8 @@ export default function Dashboard() {
       startHeight = gridSizes.allDayRowHeight;
     } else if (rowType === 'course') {
       startHeight = gridSizes.courseRowHeight;
+    } else if (rowType === 'other') {
+      startHeight = gridSizes.otherRowHeight;
     } else if (hourIndex !== undefined) {
       startHeight = gridSizes.timeSlotHeights[hourIndex];
     } else {
@@ -2998,6 +3004,8 @@ export default function Dashboard() {
           setGridSizes(prev => ({ ...prev, allDayRowHeight: Math.min(100, newHeight) }));
         } else if (rowResizing.rowType === 'course') {
           setGridSizes(prev => ({ ...prev, courseRowHeight: Math.min(82, newHeight) }));
+        } else if (rowResizing.rowType === 'other') {
+          setGridSizes(prev => ({ ...prev, otherRowHeight: Math.min(150, newHeight) }));
         } else if (rowResizing.rowType === 'timeSlot' && rowResizing.hourIndex !== undefined) {
           setGridSizes(prev => {
             const newHeights = [...prev.timeSlotHeights];
@@ -19459,10 +19467,9 @@ export default function Dashboard() {
                   }
                   return false;
                 });
-                const calOtherHeight = gridSizes.courseRowHeight || 48;
-                const otherRowHeight = calOtherHeight;
+                const otherRowHeight = gridSizes.otherRowHeight || 64;
                 return (
-                  <div className="grid w-full flex-shrink-0 relative z-[43]" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${otherRowHeight}px` }}>
+                  <div className="grid w-full flex-shrink-0 relative z-[43] group/otherrow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${otherRowHeight}px` }}>
                     <div className="px-1 py-0.5 text-[8px] font-[785] tracking-wide flex items-center justify-center text-white/80" style={{ background: 'linear-gradient(180deg, #374151 0%, #9ca3af 100%)', borderBottom: '1px dotted #999' }}>
                       OTHER
                     </div>
@@ -19485,7 +19492,7 @@ export default function Dashboard() {
                         <div
                           key={dayIdx}
                           className="relative flex flex-col gap-0.5 pt-0.5"
-                          style={{ backgroundColor: isOtherToday ? '#e4ecf5' : 'rgba(107, 114, 128, 0.30)', padding: `2px 2px 2px ${4 + DAY_COL_LEFT_REDUCTION}px`, borderBottom: isOtherToday ? '1px dotted #666' : '1.5px dotted rgba(107, 114, 128, 0.7)', maxHeight: '64px', overflowY: 'auto', scrollbarWidth: 'thin' }}
+                          style={{ backgroundColor: isOtherToday ? '#e4ecf5' : 'rgba(107, 114, 128, 0.30)', padding: `2px 2px 2px ${4 + DAY_COL_LEFT_REDUCTION}px`, borderBottom: isOtherToday ? '1px dotted #666' : '1.5px dotted rgba(107, 114, 128, 0.7)', maxHeight: `${otherRowHeight}px`, overflowY: 'auto', scrollbarWidth: 'thin' }}
                           data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
                         >
                           <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', borderLeft: '1px solid rgba(0,0,0,0.12)', zIndex: 5, pointerEvents: 'none' }} />
@@ -19562,6 +19569,12 @@ export default function Dashboard() {
                         </div>
                       );
                     })}
+                    <div
+                      className="absolute bottom-0 left-0 right-0 h-[3px] cursor-row-resize z-[50] opacity-0 group-hover/otherrow:opacity-100 hover:bg-blue-400/50 transition-opacity"
+                      onMouseDown={(e) => handleRowResizeStart(e, 'other')}
+                      onTouchStart={(e) => handleRowResizeStart(e, 'other')}
+                      data-testid="other-row-resize-handle"
+                    />
                   </div>
                 ); })()}
               </div>
