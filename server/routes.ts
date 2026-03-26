@@ -8108,7 +8108,13 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       f.folder?.toLowerCase().includes('module') ||
       f.originalName?.toLowerCase().includes('module');
 
-    const withPriority = files.map(f => ({
+    const hasUnlistenedModules = files.some(f => isModule(f) && !f.listened);
+
+    const eligible = hasUnlistenedModules
+      ? files.filter(f => isModule(f))
+      : files;
+
+    const withPriority = eligible.map(f => ({
       file: f,
       coursePriority: getCoursePriorityForFile(f),
       isModule: isModule(f) ? 0 : 1,
@@ -8118,6 +8124,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       if (a.coursePriority !== b.coursePriority) return a.coursePriority - b.coursePriority;
       return a.isModule - b.isModule;
     });
+
+    console.log(`[FileOrder] ${files.length} files, ${hasUnlistenedModules ? 'modules still pending — readings blocked' : 'all modules done — readings unlocked'}, ${eligible.length} eligible`);
 
     return withPriority.map(w => w.file);
   }
@@ -9239,7 +9247,18 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       return getFileWeek(f) === weekNumber;
     });
 
-    const orderedUnlistened = [...unlistenedFiles].sort((a, b) => {
+    const allWeekUnlistened = allFiles.filter((f: any) => !f.listened && f.id !== excludeFileId && getFileWeek(f) === weekNumber);
+    const hasUnlistenedModules = allWeekUnlistened.some(f => isModuleFile(f));
+
+    const filteredUnlistened = hasUnlistenedModules
+      ? unlistenedFiles.filter(f => isModuleFile(f))
+      : unlistenedFiles;
+
+    const filteredPartials = hasUnlistenedModules
+      ? currentWeekPartials.filter(f => isModuleFile(f))
+      : currentWeekPartials;
+
+    const orderedUnlistened = [...filteredUnlistened].sort((a, b) => {
       const aPri = getCoursePriorityForFile(a);
       const bPri = getCoursePriorityForFile(b);
       if (aPri !== bPri) return aPri - bPri;
@@ -9248,7 +9267,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       return aModule - bModule;
     });
 
-    const orderedFiles = [...currentWeekPartials, ...orderedUnlistened];
+    console.log(`[CatWashFile] week=${weekNumber}, unlistened=${allWeekUnlistened.length}, ${hasUnlistenedModules ? 'modules pending — readings blocked' : 'all modules done — readings unlocked'}`);
+
+    const orderedFiles = [...filteredPartials, ...orderedUnlistened];
     return orderedFiles.length > 0 ? orderedFiles[0] : null;
   }
 

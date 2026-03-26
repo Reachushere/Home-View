@@ -19473,6 +19473,25 @@ export default function Dashboard() {
                       return `linear-gradient(180deg, ${startColor} 0%, ${endColor} 100%)`;
                     })();
                     const handlePlayFiles = (fileType: 'module' | 'reading') => {
+                      const weekFiles = allFiles.filter(f => {
+                        const weekMatch = f.folder?.match(/week-(\d+)/i);
+                        return weekMatch && parseInt(weekMatch[1], 10) === selectedWeek;
+                      });
+                      const isModuleFile = (f: any) => f.folder?.toLowerCase().includes('module') || f.originalName?.toLowerCase().includes('module');
+                      const hasUnlistenedModules = weekFiles.some(f => isModuleFile(f) && !f.listened);
+
+                      if (fileType === 'reading' && hasUnlistenedModules) {
+                        const nextModule = weekFiles.filter(f => isModuleFile(f) && !f.listened)[0];
+                        if (nextModule) {
+                          toast({ title: `Modules not complete yet — playing next module instead` });
+                          const readerUrl = nextModule.objectPath?.startsWith('http')
+                            ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(nextModule.objectPath || '')}&name=${encodeURIComponent(nextModule.displayName || nextModule.originalName)}&autoplay=1`
+                            : `/pdf-reader/${nextModule.id}?autoplay=1`;
+                          window.open(readerUrl, '_blank');
+                          return;
+                        }
+                      }
+
                       const courseCodeLower = courseCode.toLowerCase();
                       const folderKey = `week-${selectedWeek}-${courseCodeLower}-${fileType}`;
                       const filesForType = allFiles.filter(f => f.folder === folderKey);
