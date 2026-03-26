@@ -8,6 +8,7 @@ This project is a full-stack task management application designed for academic u
 
 Preferred communication style: Simple, everyday language.
 Publishing preference: Always publish with mobile-ready compatibility enabled.
+Publish reminder: Every time I suggest publishing, I MUST ask the user: "Would you like me to email you a copy of the HA automation and webhook code that changed?" If they say yes, compile all relevant webhook endpoint code (from server/routes.ts) and HA automation YAML (from Self_Hosting_Guide.md) that work together for the changed automation, and email it to them via the app's email system.
 
 ## System Architecture
 
