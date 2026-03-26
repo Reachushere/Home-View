@@ -22860,7 +22860,7 @@ export default function Dashboard() {
                             <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', alignSelf: 'stretch', position: 'relative', zIndex: 3 }}>
                               <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
                             </div>
-                            <div style={{ flex: 1, minWidth: 0, marginRight: '-7px' }}><div style={{ overflow: 'visible', scrollbarWidth: 'none', marginLeft: `${-(hwGroupBarWidth / 2 + 26)}px`, paddingLeft: `${hwGroupBarWidth / 2 + 26}px` }}>
+                            <div style={{ flex: 1, minWidth: 0, marginRight: '-7px' }}><div style={{ overflow: 'visible', scrollbarWidth: 'none' }}>
                               {group.tasks.filter((t, i, arr) => t.type !== "class" || arr.findIndex(x => x.type === "class" && x.title === t.title && x.courseName === t.courseName) === i).map((task, taskIdx) => {
                                 const progressColor = getProgressColor(task, 'tomorrow');
                                 const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
@@ -22936,7 +22936,7 @@ export default function Dashboard() {
                                             </div>
                                           )}
                                         </div>
-                                        <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', gap: '1px', marginLeft: '-3px', position: 'relative', left: '-15px' }}>
+                                        <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', gap: '1px', marginLeft: '-3px', position: 'relative', left: '-9px' }}>
                                           <span className="text-[8px]" style={{ color: '#ffffff', lineHeight: 1, letterSpacing: '0.3px' }}>Due In</span>
                                           <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
 
