@@ -7612,17 +7612,28 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         if (sessionAge > maxAge) {
           console.log(`[PlaybackRecovery] Found stale session (${Math.round(sessionAge / 60000)}m old, status=${persisted.status}) — clearing`);
           await clearPlaybackSession();
+        } else if (persisted.status === 'paused') {
+          console.log(`[PlaybackRecovery] Found paused session: "${persisted.fileName}" at chunk ${persisted.chunkIndex}/${persisted.totalChunks} — saving progress, not resuming`);
+          try {
+            await storage.updateFile(persisted.fileId, { lastChunkIndex: persisted.chunkIndex });
+          } catch {}
+          await clearPlaybackSession();
         } else {
-          const statusLabel = persisted.status === 'paused' ? 'paused' : 'interrupted';
-          console.log(`[PlaybackRecovery] Found ${statusLabel} session: "${persisted.fileName}" at chunk ${persisted.chunkIndex}/${persisted.totalChunks} (${Math.round(sessionAge / 1000)}s ago)`);
+          console.log(`[PlaybackRecovery] Found active session: "${persisted.fileName}" at chunk ${persisted.chunkIndex}/${persisted.totalChunks} (${Math.round(sessionAge / 1000)}s ago) — RESUMING`);
           const file = await storage.getFile(persisted.fileId);
           if (file && !file.listened) {
+            const resumeChunk = persisted.chunkIndex;
             try {
-              await storage.updateFile(persisted.fileId, { lastChunkIndex: persisted.chunkIndex });
-              console.log(`[PlaybackRecovery] Saved chunk progress ${persisted.chunkIndex} for file ${persisted.fileId}`);
+              await storage.updateFile(persisted.fileId, { lastChunkIndex: resumeChunk });
             } catch {}
-            console.log(`[PlaybackRecovery] Progress saved silently — no announcement, no speaker stop`);
             await clearPlaybackSession();
+
+            catWashPlaybackTrigger = persisted.trigger || 'manual';
+            console.log(`[PlaybackRecovery] Starting full playback flow from chunk ${resumeChunk}`);
+            const updatedFile = await storage.getFile(persisted.fileId);
+            if (updatedFile) {
+              startConfirmedPlaybackFlow(updatedFile, '[PlaybackRecovery]', 'echo', null);
+            }
           } else {
             console.log(`[PlaybackRecovery] File ${persisted.fileId} not found or already listened — clearing`);
             await clearPlaybackSession();
