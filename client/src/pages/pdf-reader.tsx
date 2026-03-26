@@ -2437,7 +2437,14 @@ export default function PDFReaderPage() {
             </div>
           )}
 
-          {followOnly && followState?.active && (
+          {followOnly && followState?.active && (() => {
+            const isSpeaking = followState.estimatedWordIndex > 0;
+            const currentWord = followState.words[followState.estimatedWordIndex] || '';
+            const isVowelSound = /^[aeiouAEIOU]/.test(currentWord) || /[aeiou]{2}/i.test(currentWord);
+            const wordLen = currentWord.length;
+            const mouthOpen = isSpeaking ? (wordLen > 6 ? 14 : wordLen > 3 ? 10 : 7) : 2;
+            const mouthWidth = isSpeaking ? (isVowelSound ? 12 : wordLen > 5 ? 16 : 14) : 10;
+            return (
             <div className="fixed inset-0 z-50 flex flex-col" style={{ background: '#0a0a1a' }}>
               <div className="flex items-center justify-between px-6 py-3 border-b border-white/10">
                 <span className="text-sm font-medium text-blue-300">{followState.fileName}</span>
@@ -2448,25 +2455,66 @@ export default function PDFReaderPage() {
               <div className="bg-white/10 h-1 overflow-hidden">
                 <div className="bg-blue-400 h-full transition-all duration-300" style={{ width: `${Math.round(((followState.chunkIndex) / followState.totalChunks) * 100)}%` }} />
               </div>
-              <div className="flex-1 overflow-y-auto px-8 py-6" data-testid="follow-text-display" id="follow-scroll-container">
-                {followState.words.length > 0 ? (
-                  <p className="text-2xl leading-relaxed">
-                    {followState.words.map((word, idx) => (
-                      <span key={idx} id={idx === followState.estimatedWordIndex ? "follow-active-word" : undefined} ref={idx === followState.estimatedWordIndex ? (el) => { if (el) { const container = document.getElementById('follow-scroll-container'); if (container) { const elRect = el.getBoundingClientRect(); const contRect = container.getBoundingClientRect(); const elCenter = elRect.top - contRect.top + container.scrollTop; container.scrollTo({ top: elCenter - contRect.height / 3, behavior: 'smooth' }); } } } : undefined} className={`${idx === followState.estimatedWordIndex ? "bg-yellow-400/80 text-black font-bold px-1 rounded" : idx < followState.estimatedWordIndex ? "text-white/25" : "text-white/60"} transition-colors duration-75`}>
-                        {word}{" "}
-                      </span>
-                    ))}
-                  </p>
-                ) : followState.chunkText ? (
-                  <p className="text-2xl leading-relaxed text-white/90">{followState.chunkText}</p>
-                ) : (
-                  <div className="flex items-center justify-center h-full">
-                    <span className="text-lg text-white/40 animate-pulse">Loading text...</span>
-                  </div>
-                )}
+              <div className="flex-1 flex overflow-hidden">
+                <div className="flex-shrink-0 flex flex-col items-center justify-center px-4" style={{ width: '180px' }}>
+                  <svg viewBox="0 0 100 130" width="160" height="208" data-testid="professor-avatar">
+                    <defs>
+                      <radialGradient id="skinGrad" cx="50%" cy="40%" r="50%">
+                        <stop offset="0%" stopColor="#fde8d0" />
+                        <stop offset="100%" stopColor="#e8c4a0" />
+                      </radialGradient>
+                      <linearGradient id="jacketGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stopColor="#2d3748" />
+                        <stop offset="100%" stopColor="#1a202c" />
+                      </linearGradient>
+                    </defs>
+                    <rect x="25" y="85" width="50" height="45" rx="8" fill="url(#jacketGrad)" />
+                    <rect x="43" y="80" width="14" height="15" rx="3" fill="#e8c4a0" />
+                    <line x1="50" y1="95" x2="50" y2="115" stroke="#4a90d9" strokeWidth="3" />
+                    <polygon points="50,95 46,105 54,105" fill="#4a90d9" />
+                    <circle cx="50" cy="48" r="28" fill="url(#skinGrad)" />
+                    <ellipse cx="38" cy="44" rx="4" ry="4.5" fill="white" />
+                    <ellipse cx="62" cy="44" rx="4" ry="4.5" fill="white" />
+                    <circle cx="39" cy="44" r="2.2" fill="#2d3748" />
+                    <circle cx="63" cy="44" r="2.2" fill="#2d3748" />
+                    <circle cx="39.8" cy="43.2" r="0.8" fill="white" />
+                    <circle cx="63.8" cy="43.2" r="0.8" fill="white" />
+                    <path d="M 30 40 Q 34 36, 38 38" stroke="#4a3728" strokeWidth="1.8" fill="none" />
+                    <path d="M 62 38 Q 66 36, 70 40" stroke="#4a3728" strokeWidth="1.8" fill="none" />
+                    <ellipse cx="50" cy="52" rx="2.5" ry="1.5" fill="#d4a574" />
+                    <ellipse cx="50" cy={isSpeaking ? 61 : 60} rx={mouthWidth / 2} ry={mouthOpen / 2} fill={isSpeaking ? "#8b2020" : "#c4756a"} style={{ transition: 'all 0.08s ease' }} />
+                    {isSpeaking && mouthOpen > 8 && (
+                      <ellipse cx="50" cy={59} rx={mouthWidth / 2 - 1} ry="1.5" fill="white" opacity="0.9" style={{ transition: 'all 0.08s ease' }} />
+                    )}
+                    <path d="M 22 35 Q 30 10, 50 8 Q 70 10, 78 35 Q 75 28, 50 25 Q 25 28, 22 35" fill="#6b5b4f" />
+                    <path d="M 22 35 Q 20 30, 23 25 Q 28 15, 50 12 Q 72 15, 77 25 Q 80 30, 78 35" fill="#8b7b6f" opacity="0.5" />
+                    <rect x="28" y="39" width="44" height="1.5" rx="0.75" fill="#b8a080" opacity="0.4" />
+                    <circle cx="28" cy="40" r="1.5" fill="#b8a080" opacity="0.3" />
+                    <circle cx="72" cy="40" r="1.5" fill="#b8a080" opacity="0.3" />
+                  </svg>
+                  <span className="text-xs text-white/30 mt-2">Prof. Reader</span>
+                </div>
+                <div className="flex-1 overflow-y-auto px-6 py-6" data-testid="follow-text-display" id="follow-scroll-container">
+                  {followState.words.length > 0 ? (
+                    <p className="text-2xl leading-relaxed">
+                      {followState.words.map((word, idx) => (
+                        <span key={idx} id={idx === followState.estimatedWordIndex ? "follow-active-word" : undefined} ref={idx === followState.estimatedWordIndex ? (el) => { if (el) { const container = document.getElementById('follow-scroll-container'); if (container) { const elRect = el.getBoundingClientRect(); const contRect = container.getBoundingClientRect(); const elCenter = elRect.top - contRect.top + container.scrollTop; container.scrollTo({ top: elCenter - contRect.height / 3, behavior: 'smooth' }); } } } : undefined} className={`${idx === followState.estimatedWordIndex ? "bg-yellow-400/80 text-black font-bold px-1 rounded" : idx < followState.estimatedWordIndex ? "text-white/25" : "text-white/60"} transition-colors duration-75`}>
+                          {word}{" "}
+                        </span>
+                      ))}
+                    </p>
+                  ) : followState.chunkText ? (
+                    <p className="text-2xl leading-relaxed text-white/90">{followState.chunkText}</p>
+                  ) : (
+                    <div className="flex items-center justify-center h-full">
+                      <span className="text-lg text-white/40 animate-pulse">Loading text...</span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-          )}
+            );
+          })()}
 
           {followOnly && !followState?.active && (
             <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: '#0a0a1a' }}>
