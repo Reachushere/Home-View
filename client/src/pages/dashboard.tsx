@@ -1012,6 +1012,15 @@ export default function Dashboard() {
   const [calendarLeft, setCalendarLeft] = useState(27); // Left edge of calendar wrapper
   const calendarReductionRef = useRef(0);
   const [calendarReduction, setCalendarReductionRaw] = useState(() => {
+    const sw = window.screen.width;
+    const sh = window.screen.height;
+    const pr = window.devicePixelRatio || 1;
+    const did = `device_${sw}x${sh}@${pr}`;
+    const deviceSaved = localStorage.getItem(`calendarReduction_${did}`);
+    if (deviceSaved) {
+      const dv = parseInt(deviceSaved, 10);
+      if (!isNaN(dv)) { calendarReductionRef.current = dv; return dv; }
+    }
     const saved = localStorage.getItem('calendarReduction');
     const v = saved ? parseInt(saved, 10) : 0;
     calendarReductionRef.current = v;
@@ -20625,6 +20634,7 @@ export default function Dashboard() {
               const pixelRatio = window.devicePixelRatio || 1;
               const deviceId = `device_${screenWidth}x${screenHeight}@${pixelRatio}`;
               localStorage.setItem(`calendarHeight_${deviceId}`, String(calendarHeight));
+              localStorage.setItem(`calendarReduction_${deviceId}`, String(calendarReduction));
               localStorage.setItem(`gridSizes_${deviceId}`, JSON.stringify(gridSizes));
               toast({ title: "Saved", description: "Calendar size saved as default" });
             }}
