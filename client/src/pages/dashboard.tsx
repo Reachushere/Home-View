@@ -22648,9 +22648,7 @@ export default function Dashboard() {
             ) : (
               <div ref={hwTimelineDividerRef} style={{ display: 'flex', flexDirection: 'column', minHeight: 0, position: 'relative' }}>
                 <div
-                  style={{ position: 'absolute', top: 0, bottom: 0, left: `${1 + hwGroupBarWidth}px`, width: '8px', marginLeft: '-4px', cursor: 'col-resize', zIndex: 10 }}
-                  onMouseDown={handleHwGroupBarDragStart}
-                  onTouchStart={handleHwGroupBarDragStart}
+                  style={{ position: 'absolute', top: 0, bottom: 0, left: `${1 + hwGroupBarWidth}px`, width: '8px', marginLeft: '-4px', zIndex: 10, pointerEvents: 'none' }}
                   data-testid="hw-group-bar-handle"
                 />
                 {/* Today Section */}
