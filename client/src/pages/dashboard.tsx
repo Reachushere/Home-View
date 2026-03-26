@@ -22285,7 +22285,7 @@ export default function Dashboard() {
                   overflowY: 'auto',
                   scrollbarWidth: 'thin',
                   scrollBehavior: 'smooth',
-                  padding: '2px 6px 2px 6px',
+                  padding: '2px 6px 0px 6px',
                   display: 'flex',
                   flexDirection: 'column',
                   touchAction: 'pan-y',
