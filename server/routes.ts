@@ -7967,19 +7967,35 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           }
         }
 
-        await new Promise(r => setTimeout(r, 1000));
-        await haServiceCall('androidtv/adb_command', {
-          entity_id: tabletEntity,
-          command: 'settings put global policy_control immersive.full=com.amazon.cloud9'
-        }, 'Tablet Immersive').catch((e: any) => console.error(`${logPrefix} Tablet immersive: FAILED — ${e.message}`));
-        await haServiceCall('androidtv/adb_command', {
-          entity_id: tabletEntity, command: 'input keyevent KEYCODE_F11'
-        }, 'Tablet F11').catch((e: any) => console.error(`${logPrefix} Tablet F11: FAILED — ${e.message}`));
-        await new Promise(r => setTimeout(r, 2000));
-        await haServiceCall('androidtv/adb_command', {
-          entity_id: tabletEntity, command: 'input tap 500 400'
-        }, 'Tablet Tap Fullscreen').catch((e: any) => console.error(`${logPrefix} Tablet tap: FAILED — ${e.message}`));
-        console.log(`${logPrefix} Tablet setup complete (with tap for fullscreen)`);
+        await new Promise(r => setTimeout(r, 3000));
+
+        const sendTabletFullscreen = async (fAttempt: number) => {
+          try {
+            await haServiceCall('androidtv/adb_command', {
+              entity_id: tabletEntity,
+              command: 'settings put global policy_control immersive.full=com.amazon.cloud9'
+            }, `Tablet Immersive ${fAttempt}`);
+            console.log(`${logPrefix} Tablet immersive mode set (attempt ${fAttempt})`);
+          } catch (e: any) { console.error(`${logPrefix} Tablet immersive ${fAttempt}: FAILED — ${e.message}`); }
+          try {
+            await haServiceCall('androidtv/adb_command', {
+              entity_id: tabletEntity, command: 'input keyevent KEYCODE_F11'
+            }, `Tablet F11 ${fAttempt}`);
+            console.log(`${logPrefix} Tablet F11 sent (attempt ${fAttempt})`);
+          } catch (e: any) { console.error(`${logPrefix} Tablet F11 ${fAttempt}: FAILED — ${e.message}`); }
+          await new Promise(r => setTimeout(r, 1500));
+          try {
+            await haServiceCall('androidtv/adb_command', {
+              entity_id: tabletEntity, command: 'input tap 540 360'
+            }, `Tablet Tap ${fAttempt}`);
+            console.log(`${logPrefix} Tablet center tap sent (attempt ${fAttempt})`);
+          } catch (e: any) { console.error(`${logPrefix} Tablet tap ${fAttempt}: FAILED — ${e.message}`); }
+        };
+
+        await sendTabletFullscreen(1);
+        setTimeout(() => sendTabletFullscreen(2), 8000);
+        setTimeout(() => sendTabletFullscreen(3), 16000);
+        console.log(`${logPrefix} Tablet setup complete (with 3 fullscreen attempts at 0s, 8s, 16s)`);
       } catch (e: any) {
         console.error(`${logPrefix} Tablet setup error: ${e.message}`);
       }
@@ -7987,6 +8003,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
     const tvSetupPromise = (async () => {
       try {
+        console.log(`${logPrefix} ====== TV SETUP START ======`);
         const haUrl2 = HOME_ASSISTANT_URL.replace(/\/$/, '');
         const haHeaders2 = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
         try {
@@ -7994,39 +8011,48 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           if (fsResp.ok) {
             const fsData = await fsResp.json();
             console.log(`${logPrefix} Fire Stick entity state: "${fsData.state}"`);
+          } else {
+            console.error(`${logPrefix} Fire Stick state check HTTP ${fsResp.status}`);
           }
         } catch (e: any) {
           console.error(`${logPrefix} Fire Stick state check error: ${e.message}`);
         }
 
-        await Promise.allSettled([
-          haServiceCall('media_player/turn_on', { entity_id: 'media_player.fire_stick_cat_wr' }, 'TV On'),
-          haServiceCall('media_player/turn_on', { entity_id: CAT_TV_ENTITY }, 'TV On'),
+        const turnOnResults = await Promise.allSettled([
+          haServiceCall('media_player/turn_on', { entity_id: 'media_player.fire_stick_cat_wr' }, 'FireStick TurnOn'),
+          haServiceCall('media_player/turn_on', { entity_id: CAT_TV_ENTITY }, 'Samsung TV TurnOn'),
         ]);
-        console.log(`${logPrefix} Fire Stick + Samsung TV turned on`);
-        await new Promise(resolve => setTimeout(resolve, 6000));
+        turnOnResults.forEach((r, i) => {
+          const label = i === 0 ? 'Fire Stick' : 'Samsung TV';
+          if (r.status === 'fulfilled') console.log(`${logPrefix} ${label} turn_on: OK`);
+          else console.error(`${logPrefix} ${label} turn_on: FAILED — ${(r as any).reason?.message || r.reason}`);
+        });
+        console.log(`${logPrefix} Waiting 8s for TV to boot...`);
+        await new Promise(resolve => setTimeout(resolve, 8000));
 
         for (let srcAttempt = 1; srcAttempt <= 4; srcAttempt++) {
           try {
-            await haServiceCall('media_player/select_source', { entity_id: CAT_TV_ENTITY, source: 'HDMI1' }, 'TV Source');
-            console.log(`${logPrefix} Samsung TV switched to Fire Stick HDMI input (attempt ${srcAttempt})`);
+            await haServiceCall('media_player/select_source', { entity_id: CAT_TV_ENTITY, source: 'HDMI1' }, `TV Source ${srcAttempt}`);
+            console.log(`${logPrefix} Samsung TV HDMI1 selected (attempt ${srcAttempt})`);
             break;
           } catch (e: any) {
-            console.error(`${logPrefix} Samsung TV source switch attempt ${srcAttempt}/4: ${e.message}`);
+            console.error(`${logPrefix} Samsung TV HDMI1 attempt ${srcAttempt}/4: ${e.message}`);
             if (srcAttempt < 4) await new Promise(r => setTimeout(r, 3000));
           }
         }
 
+        console.log(`${logPrefix} Opening URL on Fire Stick...`);
         const tvOpened = await openUrlOnFireStick(haUrl, 'media_player.fire_stick_cat_wr', tvFollowUrl);
-        console.log(`${logPrefix} TV follow URL sent (success=${tvOpened}), Silk opens fullscreen (immersive mode)`);
+        console.log(`${logPrefix} TV URL result: success=${tvOpened}`);
         if (!tvOpened) {
-          console.log(`${logPrefix} TV URL open failed — retrying after 5s`);
-          await new Promise(r => setTimeout(r, 5000));
+          console.log(`${logPrefix} TV URL open failed — retrying after 6s`);
+          await new Promise(r => setTimeout(r, 6000));
           const tvRetry = await openUrlOnFireStick(haUrl, 'media_player.fire_stick_cat_wr', tvFollowUrl);
-          console.log(`${logPrefix} TV follow URL retry (success=${tvRetry})`);
+          console.log(`${logPrefix} TV URL retry result: success=${tvRetry}`);
         }
+        console.log(`${logPrefix} ====== TV SETUP COMPLETE ======`);
       } catch (e: any) {
-        console.log(`${logPrefix} TV setup error: ${e.message}`);
+        console.error(`${logPrefix} ====== TV SETUP ERROR: ${e.message} ======`);
       }
     })();
 
@@ -9489,56 +9515,85 @@ document.body.removeChild(a);
 
   // Helper to open URL on Fire Stick via androidtv integration
   async function openUrlOnFireStick(haUrl: string, entityId: string, url: string): Promise<boolean> {
-    try {
-      await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: 'input keyevent KEYCODE_WAKEUP' }, 'FireStick Wake');
-      console.log(`[Cat Wash] Fire Stick ${entityId} WAKEUP sent`);
-      await new Promise(resolve => setTimeout(resolve, 3000));
-    } catch (e: any) {
-      console.log(`[Cat Wash] Fire Stick WAKEUP failed: ${e.message}`);
+    console.log(`[Cat Wash] ====== openUrlOnFireStick START (${entityId}) ======`);
+
+    for (let wakeAttempt = 1; wakeAttempt <= 2; wakeAttempt++) {
+      try {
+        await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: 'input keyevent KEYCODE_WAKEUP' }, `FireStick Wake ${wakeAttempt}`);
+        console.log(`[Cat Wash] Fire Stick WAKEUP sent (attempt ${wakeAttempt})`);
+        break;
+      } catch (e: any) {
+        console.log(`[Cat Wash] Fire Stick WAKEUP attempt ${wakeAttempt} failed: ${e.message}`);
+        if (wakeAttempt < 2) await new Promise(r => setTimeout(r, 2000));
+      }
     }
+    await new Promise(resolve => setTimeout(resolve, 4000));
+
+    try {
+      await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: 'input keyevent KEYCODE_HOME' }, 'FireStick Home');
+      console.log(`[Cat Wash] Fire Stick HOME sent`);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    } catch (e: any) {
+      console.log(`[Cat Wash] Fire Stick HOME failed: ${e.message}`);
+    }
+
     try {
       await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: 'am force-stop com.amazon.cloud9' }, 'FireStick Kill Silk');
-      console.log(`[Cat Wash] Fire Stick ${entityId} force-stopped Silk`);
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log(`[Cat Wash] Fire Stick force-stopped Silk`);
+      await new Promise(resolve => setTimeout(resolve, 1500));
     } catch (e: any) {
       console.log(`[Cat Wash] Fire Stick force-stop Silk failed: ${e.message}`);
     }
+
     currentTvFollowUrl = url;
     const appUrl = DEPLOYED_APP_URL;
     const redirectUrl = `${appUrl}/api/cat-wash/tv-follow`;
-    console.log(`[Cat Wash] TV redirect URL stored. Opening simple redirect: ${redirectUrl}`);
+    console.log(`[Cat Wash] TV redirect URL stored. Opening: ${redirectUrl}`);
     console.log(`[Cat Wash] TV will redirect to: ${url}`);
+
     for (let attempt = 1; attempt <= 3; attempt++) {
       try {
         const adbCmd = `am start --activity-clear-task -a android.intent.action.VIEW -d "${redirectUrl}" com.amazon.cloud9`;
         await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: adbCmd }, `FireStick Open URL ${attempt}`);
-        console.log(`[Cat Wash] Fire Stick ${entityId} URL opened (attempt ${attempt})`);
+        console.log(`[Cat Wash] Fire Stick URL opened (attempt ${attempt})`);
+
         const sendFullscreenCmds = async (fAttempt: number) => {
           try {
-            await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: 'settings put global policy_control immersive.full=com.amazon.cloud9' }, 'FireStick Immersive');
+            await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: 'settings put global policy_control immersive.full=com.amazon.cloud9' }, `FireStick Immersive ${fAttempt}`);
             console.log(`[Cat Wash] Fire Stick immersive mode set (attempt ${fAttempt})`);
-            await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: 'input keyevent KEYCODE_DPAD_CENTER' }, 'FireStick DPAD');
+          } catch (e: any) {
+            console.log(`[Cat Wash] Fire Stick immersive ${fAttempt} failed: ${e.message}`);
+          }
+          try {
+            await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: 'input keyevent KEYCODE_DPAD_CENTER' }, `FireStick DPAD ${fAttempt}`);
             console.log(`[Cat Wash] Fire Stick DPAD_CENTER sent (attempt ${fAttempt})`);
           } catch (e: any) {
-            console.log(`[Cat Wash] Fire Stick fullscreen attempt ${fAttempt} failed: ${e.message}`);
+            console.log(`[Cat Wash] Fire Stick DPAD ${fAttempt} failed: ${e.message}`);
           }
         };
+
         setTimeout(() => sendFullscreenCmds(1), 5000);
-        setTimeout(() => sendFullscreenCmds(2), 10000);
-        setTimeout(() => sendFullscreenCmds(3), 18000);
+        setTimeout(() => sendFullscreenCmds(2), 12000);
+        setTimeout(() => sendFullscreenCmds(3), 20000);
+
+        console.log(`[Cat Wash] ====== openUrlOnFireStick SUCCESS ======`);
         return true;
       } catch (e: any) {
         console.log(`[Cat Wash] Fire Stick adb_command attempt ${attempt} failed: ${e.message}`);
-        if (attempt < 3) await new Promise(r => setTimeout(r, 3000));
+        if (attempt < 3) await new Promise(r => setTimeout(r, 4000));
       }
     }
+
+    console.log(`[Cat Wash] All ADB attempts failed — trying play_media fallback`);
     try {
       await haServiceCall('media_player/play_media', { entity_id: entityId, media_content_id: redirectUrl, media_content_type: 'url' }, 'FireStick play_media');
-      console.log(`[Cat Wash] Fire Stick ${entityId} play_media url succeeded`);
+      console.log(`[Cat Wash] Fire Stick play_media url succeeded`);
       return true;
     } catch (e: any) {
-      console.log(`[Cat Wash] Fire Stick play_media failed: ${e.message}`);
+      console.log(`[Cat Wash] Fire Stick play_media also failed: ${e.message}`);
     }
+
+    console.log(`[Cat Wash] ====== openUrlOnFireStick FAILED ======`);
     return false;
   }
 
