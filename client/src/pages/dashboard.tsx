@@ -962,17 +962,17 @@ export default function Dashboard() {
   const hwDividerDragRef = useRef<{ startX: number; startPercent: number; containerWidth: number } | null>(null);
   const centerCircleOnGroupBar = (el: HTMLDivElement | null) => {
     if (!el) return;
-    let parent = el.parentElement;
-    while (parent && !parent.hasAttribute('data-hw-group-row')) parent = parent.parentElement;
-    if (!parent) return;
-    const bar = parent.querySelector('[data-hw-group-bar]') as HTMLElement;
+    let groupRow = el.parentElement;
+    while (groupRow && !groupRow.hasAttribute('data-hw-group-row')) groupRow = groupRow.parentElement;
+    if (!groupRow) return;
+    const bar = groupRow.querySelector('[data-hw-group-bar]') as HTMLElement;
     if (!bar) return;
     const barRect = bar.getBoundingClientRect();
     const barCenterX = barRect.left + barRect.width / 2;
-    const elParent = el.parentElement;
-    if (!elParent) return;
-    const parentRect = elParent.getBoundingClientRect();
-    el.style.left = `${barCenterX - parentRect.left - 9}px`;
+    const op = el.offsetParent as HTMLElement;
+    if (!op) return;
+    const opRect = op.getBoundingClientRect();
+    el.style.left = `${barCenterX - opRect.left - 9}px`;
   };
   const [hwGroupBarWidth, setHwGroupBarWidth] = useState(() => {
     const saved = localStorage.getItem('hwGroupBarWidth');
