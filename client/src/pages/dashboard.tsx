@@ -1034,7 +1034,7 @@ export default function Dashboard() {
     });
   };
   const [calendarReductionUserSet, setCalendarReductionUserSetRaw] = useState(() => {
-    const resetKey = 'calendarHeight_reset_v11';
+    const resetKey = 'calendarHeight_reset_v12';
     if (!localStorage.getItem(resetKey)) return false;
     return !!localStorage.getItem('calendarReduction');
   });
@@ -20636,6 +20636,7 @@ export default function Dashboard() {
               localStorage.setItem('calendarHeight', String(calendarHeight));
               localStorage.setItem('calendarReduction', String(calendarReduction));
               localStorage.setItem('gridSizes', JSON.stringify(gridSizes));
+              setCalendarReductionUserSet(true);
               const screenWidth = window.screen.width;
               const screenHeight = window.screen.height;
               const pixelRatio = window.devicePixelRatio || 1;
