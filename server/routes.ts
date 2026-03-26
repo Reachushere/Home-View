@@ -7622,12 +7622,13 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
               console.log(`[PlaybackRecovery] Saved chunk progress ${persisted.chunkIndex} for file ${persisted.fileId}`);
             } catch {}
 
-            try {
-              await haServiceCall('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Stop Nest on recovery');
-              console.log(`[PlaybackRecovery] Stopped Nest speaker`);
-            } catch (e: any) {
-              console.warn(`[PlaybackRecovery] Could not stop Nest: ${e.message}`);
+            const stopEntities = [NEST_SPEAKER_ENTITY, CAT_WR_HA_VOICE_ENTITY, ...CAT_ECHO_ENTITIES];
+            for (const entity of stopEntities) {
+              try {
+                await haServiceCall('media_player/media_stop', { entity_id: entity }, `Stop ${entity} on recovery`);
+              } catch {}
             }
+            console.log(`[PlaybackRecovery] Stopped all cat washroom speakers`);
 
             const cleanName = persisted.fileName.replace(/\.pdf$/i, '').replace(/[_-]+/g, ' ').trim();
             const message = persisted.status === 'paused'
