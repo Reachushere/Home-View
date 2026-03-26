@@ -9870,14 +9870,14 @@ export default function Dashboard() {
                               )}
                             </div>
                             <div className="flex-1 min-w-0 flex items-center gap-2">
-                              <span className="text-[18px] font-medium truncate flex-1" style={{ lineHeight: '1.3' }}>{item.title}</span>
+                              <span className="text-[15px] font-medium truncate flex-1" style={{ lineHeight: '1.3' }}>{item.title}</span>
                               {item.startDate && (
-                                <span className="text-[15px] text-white flex-shrink-0">
+                                <span className="text-[12px] text-white flex-shrink-0">
                                   {new Date(item.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                                 </span>
                               )}
                               {item.eventStartTime && (
-                                <span className="text-[15px] text-white flex-shrink-0">
+                                <span className="text-[12px] text-white flex-shrink-0">
                                   {item.eventStartTime}
                                 </span>
                               )}
