@@ -9218,17 +9218,13 @@ export default function Dashboard() {
   
   {
     const todayStartLocal = startOfDayET(new Date());
-    const pastCount = weekDays.filter(d => startOfDayET(d) < todayStartLocal).length;
-    if (pastCount > 0) {
-      const futureDays = weekDays.filter(d => startOfDayET(d) >= todayStartLocal);
-      const lastDay = futureDays.length > 0 ? futureDays[futureDays.length - 1] : weekDays[weekDays.length - 1];
-      const nextDays: Date[] = [];
-      for (let i = 1; i <= pastCount; i++) {
-        const nd = addDays(lastDay, i);
-        nextDays.push(new Date(nd.getFullYear(), nd.getMonth(), nd.getDate(), 12, 0, 0));
+    weekDays = weekDays.map(d => {
+      if (startOfDayET(d) < todayStartLocal) {
+        const nd = addDays(d, 7);
+        return new Date(nd.getFullYear(), nd.getMonth(), nd.getDate(), 12, 0, 0);
       }
-      weekDays = [...futureDays, ...nextDays];
-    }
+      return d;
+    });
   }
   
   const thisWeekAnnouncements = (() => {
@@ -22622,7 +22618,7 @@ export default function Dashboard() {
               if (lastRect) {
                 const lastBottom = lastRect.top + lastRect.height - upcomingTop - firstOffset;
                 const otherRowH = gridSizes.courseRowHeight || 48;
-                return `${lastBottom + otherRowH + 2 - 50}px`;
+                return `${lastBottom + otherRowH + 2 - 60}px`;
               }
             }
             return '12px';
