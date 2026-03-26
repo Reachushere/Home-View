@@ -19253,13 +19253,13 @@ export default function Dashboard() {
                           const daysUntil = differenceInCalendarDays(new Date(nextTask.dueDate), new Date());
                           const badgeBg = getCourseGradientColors(cCode2).start;
                           return (
-                            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '14px', backgroundColor: badgeBg, zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                              <span style={{ fontSize: '9px', color: '#ffffff', whiteSpace: 'nowrap', fontWeight: 500 }}>Next Task Due In: <span style={{ color: '#ffffff', fontWeight: 700, fontSize: '9px' }}>{daysUntil}d</span></span>
+                            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '15px', backgroundColor: badgeBg, zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'visible' }}>
+                              <span style={{ fontSize: '9px', color: '#ffffff', whiteSpace: 'nowrap', fontWeight: 500, lineHeight: '15px' }}>Next Task Due In: <span style={{ color: '#ffffff', fontWeight: 700, fontSize: '9px' }}>{daysUntil}d</span></span>
                             </div>
                           );
                         })()}
-                        {isDayAfterToday && <div style={{ height: '14px', flexShrink: 0 }} />}
-                        <div className={`flex flex-col gap-0.5${cellHasScroll ? ' course-cell-scroll' : ''}`} style={{ overflowY: cellHasScroll ? 'auto' : 'hidden', overflowX: 'hidden', flex: 1, minHeight: 0, ...(isDayToday ? { paddingTop: '14px' } : {}) }}>
+                        {isDayAfterToday && <div style={{ height: '15px', flexShrink: 0 }} />}
+                        <div className={`flex flex-col gap-0.5${cellHasScroll ? ' course-cell-scroll' : ''}`} style={{ overflowY: cellHasScroll ? 'auto' : 'hidden', overflowX: 'hidden', flex: 1, minHeight: 0, ...(isDayToday ? { paddingTop: '15px' } : {}) }}>
                         {/* Course-associated projects */}
                         {allProjects.filter(proj => {
                           if (!proj.courseName) return false;
