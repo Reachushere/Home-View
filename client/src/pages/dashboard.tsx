@@ -969,10 +969,10 @@ export default function Dashboard() {
     if (!bar) return;
     const barRect = bar.getBoundingClientRect();
     const barCenterX = barRect.left + barRect.width / 2;
-    const op = el.offsetParent as HTMLElement;
-    if (!op) return;
-    const opRect = op.getBoundingClientRect();
-    el.style.left = `${barCenterX - opRect.left - 9 + 75}px`;
+    const elParent = el.parentElement;
+    if (!elParent) return;
+    const parentRect = elParent.getBoundingClientRect();
+    el.style.left = `${barCenterX - parentRect.left - 9}px`;
   };
   const [hwGroupBarWidth, setHwGroupBarWidth] = useState(() => {
     const saved = localStorage.getItem('hwGroupBarWidth');
