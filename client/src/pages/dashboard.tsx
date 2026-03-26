@@ -975,9 +975,10 @@ export default function Dashboard() {
   useEffect(() => {
     const update = () => {
       if (hwTimelineDividerRef.current) {
-        const rect = hwTimelineDividerRef.current.getBoundingClientRect();
+        const scrollParent = hwTimelineDividerRef.current.parentElement;
+        const rect = scrollParent ? scrollParent.getBoundingClientRect() : hwTimelineDividerRef.current.getBoundingClientRect();
         setHwTimelinePos(prev => {
-          const newTop = Math.round(rect.top - 16);
+          const newTop = Math.round(rect.top - 8);
           const newLeft = Math.round(rect.left + rect.width / 2 - 25);
           if (prev && prev.top === newTop && prev.left === newLeft) return prev;
           return { top: newTop, left: newLeft };
