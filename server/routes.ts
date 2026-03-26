@@ -8027,17 +8027,17 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           if (r.status === 'fulfilled') console.log(`${logPrefix} ${label} turn_on: OK`);
           else console.error(`${logPrefix} ${label} turn_on: FAILED — ${(r as any).reason?.message || r.reason}`);
         });
-        console.log(`${logPrefix} Waiting 8s for TV to boot...`);
-        await new Promise(resolve => setTimeout(resolve, 8000));
+        console.log(`${logPrefix} Waiting 12s for TV to boot...`);
+        await new Promise(resolve => setTimeout(resolve, 12000));
 
-        for (let srcAttempt = 1; srcAttempt <= 4; srcAttempt++) {
+        for (let srcAttempt = 1; srcAttempt <= 5; srcAttempt++) {
           try {
             await haServiceCall('media_player/select_source', { entity_id: CAT_TV_ENTITY, source: 'HDMI1' }, `TV Source ${srcAttempt}`);
             console.log(`${logPrefix} Samsung TV HDMI1 selected (attempt ${srcAttempt})`);
             break;
           } catch (e: any) {
-            console.error(`${logPrefix} Samsung TV HDMI1 attempt ${srcAttempt}/4: ${e.message}`);
-            if (srcAttempt < 4) await new Promise(r => setTimeout(r, 3000));
+            console.error(`${logPrefix} Samsung TV HDMI1 attempt ${srcAttempt}/5: ${e.message}`);
+            if (srcAttempt < 5) await new Promise(r => setTimeout(r, 5000));
           }
         }
 

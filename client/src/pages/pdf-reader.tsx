@@ -618,7 +618,26 @@ export default function PDFReaderPage() {
     poll();
     const interval = setInterval(poll, 500);
     return () => clearInterval(interval);
-  }, [followOnly]);
+  }, [followOnly, catWashFollow, autoplayParam]);
+
+  const lastFollowChunkRef = useRef<number>(-1);
+  useEffect(() => {
+    if (!catWashFollow || followOnly || !followState?.active) return;
+    if (followState.chunkIndex !== lastFollowChunkRef.current) {
+      lastFollowChunkRef.current = followState.chunkIndex;
+      const el = document.querySelector(`[data-testid="chunk-row-${followState.chunkIndex}"]`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [catWashFollow, followOnly, followState?.active, followState?.chunkIndex]);
+
+  useEffect(() => {
+    if (!catWashFollow || followOnly || !followState?.active) return;
+    const wordIdx = followState.estimatedWordIndex || 0;
+    if (wordIdx > 0 && wordIdx % 5 === 0) {
+      const wordEl = document.querySelector(`[data-word-index="${wordIdx}"]`);
+      if (wordEl) wordEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [followState?.estimatedWordIndex]);
 
   useEffect(() => {
     if (!catWashFollow || !autoplayParam) return;
@@ -2573,7 +2592,8 @@ export default function PDFReaderPage() {
           {!isEditingText && !followOnly && (
             <div className="p-4 space-y-3">
               {chunksList.map((chunk, idx) => {
-                const isActive = currentChunk === idx && isPlaying;
+                const isFollowActive = catWashFollow && !followOnly && followState?.active && followState.chunkIndex === idx;
+                const isActive = (currentChunk === idx && isPlaying) || !!isFollowActive;
                 const isChecked = checkedChunks.has(idx);
                 return (
                   <div
@@ -2704,7 +2724,23 @@ export default function PDFReaderPage() {
                         }
                       }}>
                         <span className="text-white/40 mr-1.5 font-medium">{idx + 1}.</span>
-                        {isActive && chunkWords.length > 0 ? (
+                        {isFollowActive && followState?.words && followState.words.length > 0 ? (
+                          followState.words.map((word: string, wIdx: number) => (
+                            <span
+                              key={wIdx}
+                              data-word-index={wIdx}
+                              className={`${
+                                wIdx === (followState.estimatedWordIndex || 0)
+                                  ? "bg-red-500 text-white font-semibold px-0.5 rounded"
+                                  : wIdx < (followState.estimatedWordIndex || 0)
+                                  ? "text-white/40"
+                                  : ""
+                              } transition-colors duration-100`}
+                            >
+                              {word}{" "}
+                            </span>
+                          ))
+                        ) : isActive && !isFollowActive && chunkWords.length > 0 ? (
                           chunkWords.map((word, wIdx) => (
                             <span
                               key={wIdx}
