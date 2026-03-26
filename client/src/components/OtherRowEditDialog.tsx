@@ -26,19 +26,28 @@ interface Props {
   onClose: () => void;
   colors: OtherRowColors;
   onSave: (colors: OtherRowColors) => void;
+  onPreview?: (colors: OtherRowColors) => void;
 }
 
-export default function OtherRowEditDialog({ open, onClose, colors, onSave }: Props) {
+export default function OtherRowEditDialog({ open, onClose, colors, onSave, onPreview }: Props) {
   const [edit, setEdit] = useState<OtherRowColors>(colors);
   const [activeGradientStop, setActiveGradientStop] = useState<'start' | 'end' | number | null>(null);
   const [dialogPos, setDialogPos] = useState({ x: 0, y: 0 });
   const dialogRef = useRef<HTMLDivElement>(null);
   const gradBarRef = useRef<HTMLDivElement>(null);
   const dragStart = useRef<{ x: number; y: number; mx: number; my: number } | null>(null);
+  const originalColorsRef = useRef<OtherRowColors>(colors);
 
   useEffect(() => {
-    if (open) setEdit(colors);
+    if (open) {
+      setEdit(colors);
+      originalColorsRef.current = colors;
+    }
   }, [open, colors]);
+
+  useEffect(() => {
+    if (open && onPreview) onPreview(edit);
+  }, [edit, open]);
 
   const handleDragStart = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     const pt = 'touches' in e ? e.touches[0] : e;
@@ -123,7 +132,7 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave }: Pr
   const headerGradient = `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${edit.labelStart}cc 40%, ${edit.labelEnd}bb 100%)`;
 
   return (
-    <div className="fixed inset-0 z-[10002] flex items-center justify-center" onClick={onClose} data-testid="other-row-edit-overlay">
+    <div className="fixed inset-0 z-[10002] flex items-center justify-center" onClick={() => { if (onPreview) onPreview(originalColorsRef.current); onClose(); }} data-testid="other-row-edit-overlay">
       <div className="absolute inset-0 bg-black/40" />
       <div
         ref={dialogRef}
@@ -163,7 +172,7 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave }: Pr
               OTHER Row Appearance
             </h2>
           </div>
-          <button onClick={onClose} className="text-white/70 hover:text-white" data-testid="button-close-other-edit"><X className="w-4 h-4" /></button>
+          <button onClick={() => { if (onPreview) onPreview(originalColorsRef.current); onClose(); }} className="text-white/70 hover:text-white" data-testid="button-close-other-edit"><X className="w-4 h-4" /></button>
         </div>
 
         <div className="p-4 space-y-4">
@@ -360,7 +369,7 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave }: Pr
               <RotateCcw className="w-3 h-3" /> Reset to defaults
             </button>
             <div className="flex gap-2">
-              <button className="px-3 py-1.5 text-[10px] text-white/70 hover:text-white rounded border border-white/20 hover:border-white/40" onClick={onClose} data-testid="button-cancel-other-edit">Cancel</button>
+              <button className="px-3 py-1.5 text-[10px] text-white/70 hover:text-white rounded border border-white/20 hover:border-white/40" onClick={() => { if (onPreview) onPreview(originalColorsRef.current); onClose(); }} data-testid="button-cancel-other-edit">Cancel</button>
               <button className="px-3 py-1.5 text-[10px] text-white bg-white/20 hover:bg-white/30 rounded border border-white/30" onClick={() => { onSave(edit); onClose(); }} data-testid="button-save-other-edit">Save</button>
             </div>
           </div>
