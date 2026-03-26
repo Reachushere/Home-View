@@ -22984,7 +22984,7 @@ export default function Dashboard() {
                   </div>
                 </div>
                 {dueNextWeekTasks.length === 0 ? (
-                  <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks next week</div>
+                  <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks for {hwWeeklyTimeline[1]?.label || 'this week'}</div>
                 ) : (
                   <div className="flex flex-col gap-0.5" style={{ marginTop: '5px' }}>
                     {(() => {
