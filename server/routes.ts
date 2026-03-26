@@ -8103,11 +8103,25 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       f.folder?.toLowerCase().includes('module') ||
       f.originalName?.toLowerCase().includes('module');
 
-    const hasUnlistenedModules = files.some(f => isModule(f) && !f.listened);
+    const getCourseCode = (f: any): string => {
+      const folder = (f.folder || '').toLowerCase();
+      const name = (f.originalName || '').toLowerCase();
+      const match = folder.match(/([a-z]{3,5}\s?\d{3})/i) || name.match(/([a-z]{3,5}\s?\d{3})/i);
+      return match ? match[1].toUpperCase().replace(/\s/g, '') : 'UNKNOWN';
+    };
 
-    const eligible = hasUnlistenedModules
-      ? files.filter(f => isModule(f))
-      : files;
+    const coursesWithUnlistenedModules = new Set<string>();
+    for (const f of files) {
+      if (isModule(f) && !f.listened) {
+        coursesWithUnlistenedModules.add(getCourseCode(f));
+      }
+    }
+
+    const eligible = files.filter(f => {
+      if (isModule(f)) return true;
+      const code = getCourseCode(f);
+      return !coursesWithUnlistenedModules.has(code);
+    });
 
     const withPriority = eligible.map(f => ({
       file: f,
@@ -8120,7 +8134,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       return a.isModule - b.isModule;
     });
 
-    console.log(`[FileOrder] ${files.length} files, ${hasUnlistenedModules ? 'modules still pending — readings blocked' : 'all modules done — readings unlocked'}, ${eligible.length} eligible`);
+    const blockedCourses = coursesWithUnlistenedModules.size > 0 ? Array.from(coursesWithUnlistenedModules).join(', ') : 'none';
+    console.log(`[FileOrder] ${files.length} files, per-course module blocking (blocked: ${blockedCourses}), ${eligible.length} eligible`);
 
     return withPriority.map(w => w.file);
   }
@@ -9243,15 +9258,30 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     });
 
     const allWeekUnlistened = allFiles.filter((f: any) => !f.listened && f.id !== excludeFileId && getFileWeek(f) === weekNumber);
-    const hasUnlistenedModules = allWeekUnlistened.some(f => isModuleFile(f));
 
-    const filteredUnlistened = hasUnlistenedModules
-      ? unlistenedFiles.filter(f => isModuleFile(f))
-      : unlistenedFiles;
+    const getCourseCodeForFile = (f: any): string => {
+      const folder = (f.folder || '').toLowerCase();
+      const name = (f.originalName || '').toLowerCase();
+      const match = folder.match(/([a-z]{3,5}\s?\d{3})/i) || name.match(/([a-z]{3,5}\s?\d{3})/i);
+      return match ? match[1].toUpperCase().replace(/\s/g, '') : 'UNKNOWN';
+    };
 
-    const filteredPartials = hasUnlistenedModules
-      ? currentWeekPartials.filter(f => isModuleFile(f))
-      : currentWeekPartials;
+    const coursesWithUnlistenedModules = new Set<string>();
+    for (const f of allWeekUnlistened) {
+      if (isModuleFile(f)) {
+        coursesWithUnlistenedModules.add(getCourseCodeForFile(f));
+      }
+    }
+
+    const filteredUnlistened = unlistenedFiles.filter(f => {
+      if (isModuleFile(f)) return true;
+      return !coursesWithUnlistenedModules.has(getCourseCodeForFile(f));
+    });
+
+    const filteredPartials = currentWeekPartials.filter(f => {
+      if (isModuleFile(f)) return true;
+      return !coursesWithUnlistenedModules.has(getCourseCodeForFile(f));
+    });
 
     const orderedUnlistened = [...filteredUnlistened].sort((a, b) => {
       const aPri = getCoursePriorityForFile(a);
@@ -9262,7 +9292,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       return aModule - bModule;
     });
 
-    console.log(`[CatWashFile] week=${weekNumber}, unlistened=${allWeekUnlistened.length}, ${hasUnlistenedModules ? 'modules pending — readings blocked' : 'all modules done — readings unlocked'}`);
+    const blockedCourses = coursesWithUnlistenedModules.size > 0 ? Array.from(coursesWithUnlistenedModules).join(', ') : 'none';
+    console.log(`[CatWashFile] week=${weekNumber}, unlistened=${allWeekUnlistened.length}, per-course module blocking (blocked: ${blockedCourses})`);
 
     const orderedFiles = [...filteredPartials, ...orderedUnlistened];
     return orderedFiles.length > 0 ? orderedFiles[0] : null;
@@ -9461,14 +9492,14 @@ document.body.removeChild(a);
     try {
       await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: 'input keyevent KEYCODE_WAKEUP' }, 'FireStick Wake');
       console.log(`[Cat Wash] Fire Stick ${entityId} WAKEUP sent`);
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 3000));
     } catch (e: any) {
       console.log(`[Cat Wash] Fire Stick WAKEUP failed: ${e.message}`);
     }
     try {
       await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: 'am force-stop com.amazon.cloud9' }, 'FireStick Kill Silk');
       console.log(`[Cat Wash] Fire Stick ${entityId} force-stopped Silk`);
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 1000));
     } catch (e: any) {
       console.log(`[Cat Wash] Fire Stick force-stop Silk failed: ${e.message}`);
     }
@@ -9477,26 +9508,29 @@ document.body.removeChild(a);
     const redirectUrl = `${appUrl}/api/cat-wash/tv-follow`;
     console.log(`[Cat Wash] TV redirect URL stored. Opening simple redirect: ${redirectUrl}`);
     console.log(`[Cat Wash] TV will redirect to: ${url}`);
-    try {
-      const adbCmd = `am start --activity-clear-task -a android.intent.action.VIEW -d "${redirectUrl}" com.amazon.cloud9`;
-      await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: adbCmd }, 'FireStick Open URL');
-      console.log(`[Cat Wash] Fire Stick ${entityId} URL opened`);
-      const sendFullscreenCmds = async (attempt: number) => {
-        try {
-          await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: 'settings put global policy_control immersive.full=com.amazon.cloud9' }, 'FireStick Immersive');
-          console.log(`[Cat Wash] Fire Stick immersive mode set (attempt ${attempt})`);
-          await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: 'input keyevent KEYCODE_DPAD_CENTER' }, 'FireStick DPAD');
-          console.log(`[Cat Wash] Fire Stick DPAD_CENTER sent (attempt ${attempt})`);
-        } catch (e: any) {
-          console.log(`[Cat Wash] Fire Stick fullscreen attempt ${attempt} failed: ${e.message}`);
-        }
-      };
-      setTimeout(() => sendFullscreenCmds(1), 5000);
-      setTimeout(() => sendFullscreenCmds(2), 10000);
-      setTimeout(() => sendFullscreenCmds(3), 18000);
-      return true;
-    } catch (e: any) {
-      console.log(`[Cat Wash] Fire Stick adb_command failed: ${e.message}`);
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const adbCmd = `am start --activity-clear-task -a android.intent.action.VIEW -d "${redirectUrl}" com.amazon.cloud9`;
+        await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: adbCmd }, `FireStick Open URL ${attempt}`);
+        console.log(`[Cat Wash] Fire Stick ${entityId} URL opened (attempt ${attempt})`);
+        const sendFullscreenCmds = async (fAttempt: number) => {
+          try {
+            await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: 'settings put global policy_control immersive.full=com.amazon.cloud9' }, 'FireStick Immersive');
+            console.log(`[Cat Wash] Fire Stick immersive mode set (attempt ${fAttempt})`);
+            await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: 'input keyevent KEYCODE_DPAD_CENTER' }, 'FireStick DPAD');
+            console.log(`[Cat Wash] Fire Stick DPAD_CENTER sent (attempt ${fAttempt})`);
+          } catch (e: any) {
+            console.log(`[Cat Wash] Fire Stick fullscreen attempt ${fAttempt} failed: ${e.message}`);
+          }
+        };
+        setTimeout(() => sendFullscreenCmds(1), 5000);
+        setTimeout(() => sendFullscreenCmds(2), 10000);
+        setTimeout(() => sendFullscreenCmds(3), 18000);
+        return true;
+      } catch (e: any) {
+        console.log(`[Cat Wash] Fire Stick adb_command attempt ${attempt} failed: ${e.message}`);
+        if (attempt < 3) await new Promise(r => setTimeout(r, 3000));
+      }
     }
     try {
       await haServiceCall('media_player/play_media', { entity_id: entityId, media_content_id: redirectUrl, media_content_type: 'url' }, 'FireStick play_media');
