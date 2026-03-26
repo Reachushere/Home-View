@@ -22987,45 +22987,104 @@ export default function Dashboard() {
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks for {hwWeeklyTimeline[1]?.label || 'this week'}</div>
                 ) : (
                   <div className="flex flex-col gap-0.5" style={{ marginTop: '5px' }}>
-                    {dueTodayTasks.map((task, tIdx) => {
-                      const progressColor = getProgressColor(task, 'today');
-                      const courseName = task.courseName?.split(' - ').slice(1).join(' - ') || task.courseName?.split(' - ')[0] || '';
-                      const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
-                      const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
-                      return (
-                        <div key={`today-in-w11-${task.id}`} style={{ position: 'relative', overflow: 'visible', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: 'transparent', paddingLeft: `${2 + hwGroupBarWidth + 4 + 3 + 10 + 2}px`, paddingRight: '4px' }}>
-                          <div style={{ display: 'flex', alignItems: 'flex-start', padding: '3px 0', gap: '6px' }}>
-                            <div style={{ width: '22px', height: '22px', borderRadius: '4px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: progressColor, border: '1px solid rgba(255,255,255,0.2)' }}>
-                              <span style={{ fontSize: '7px', fontWeight: 600, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase' }}>{format(new Date(task.dueDate), 'MMM')}</span>
-                              <span style={{ fontSize: '8px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textAlign: 'center', display: 'block', marginTop: '1px' }}>{format(new Date(task.dueDate), 'd')}</span>
+                    {dueTodayTasks.length > 0 && (
+                      <div data-hw-group-row style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '4px' }}>
+                        <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', alignSelf: 'flex-start', marginLeft: '2px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2 }}>
+                          <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
+                            {format(new Date(), 'MMMM d')}
+                          </span>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', width: '100%' }}>
+                            <div style={{ display: 'flex', gap: '2px', padding: '0 2px', width: '100%', justifyContent: 'flex-end' }}>
+                              {['Su','Mo','Tu','We','Th','Fr','Sa'].map((dl, dli) => (
+                                <div key={dli} style={{ flex: 1, minWidth: 0, fontSize: '8px', fontWeight: 600, textAlign: 'center', color: '#ffffff' }}>{dl}</div>
+                              ))}
                             </div>
-                            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '20px' }}>
-                              <button
-                                className="text-[10px] truncate hover:underline cursor-pointer leading-none w-full"
-                                onClick={() => setEditingTask(task)}
-                                data-testid={`task-link-w11-today-${task.id}`}
-                                data-upcoming-task-name
-                                style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block', color: '#ffffff' }}
-                              >
-                                {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title; })() : task.title}
-                              </button>
-                              <div className="text-[9px] text-white" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '2px', whiteSpace: 'nowrap' }}>
-                                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName}</span>
-                              </div>
-                              {cfp && cfp.moduleP.hasFiles && (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '2px', paddingTop: '2px' }}>
-                                  <span className="text-[11px] text-white font-medium" style={{ marginLeft: '0px', lineHeight: 1 }}>M</span>
-                                  <div style={{ width: '17px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(255,255,255,0.15)', overflow: 'hidden' }}>
-                                    {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
-                                  </div>
-                                  <span className="text-[11px] font-bold text-white" style={{ flexShrink: 0, minWidth: '22px', textAlign: 'right', lineHeight: 1 }}>{cfp.moduleP.percent}%</span>
+                            {(() => {
+                              const todayDate = startOfDayET(new Date());
+                              const weekStart = startOfWeek(todayDate, { weekStartsOn: 0 });
+                              const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
+                              const dueDates = dueTodayTasks.map(t => ({ date: startOfDayET(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
+                              return (
+                                <div style={{ display: 'flex', gap: '2px', padding: '1px 2px', width: '100%', justifyContent: 'flex-end', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.15)', border: '0.5px solid rgba(255,255,255,0.55)' }}>
+                                  {days.map((d, di) => {
+                                    const isToday = isSameDayET(d, todayDate);
+                                    const dueMatch = dueDates.find(dd => isSameDayET(d, dd.date));
+                                    const isDue = !!dueMatch;
+                                    const dueColor = dueMatch ? getCourseGradientColors(dueMatch.courseCode).end : '';
+                                    return (
+                                      <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDayET(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
+                                        flex: 1, minWidth: 0, height: '11px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                                        color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
+                                        backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.15)',
+                                        border: isDue && !isToday ? `1px solid ${dueColor}` : 'none',
+                                      }} data-testid={`mini-cal-w11-today-${format(d, 'yyyy-MM-dd')}`}>
+                                        {d.getDate()}
+                                      </div>
+                                    );
+                                  })}
                                 </div>
-                              )}
-                            </div>
+                              );
+                            })()}
                           </div>
                         </div>
-                      );
-                    })}
+                        <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', alignSelf: 'stretch', position: 'relative', zIndex: 3 }}>
+                          <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0, marginRight: '-7px' }}><div style={{ maxHeight: '80px', overflowY: 'auto', scrollbarWidth: 'none', marginLeft: `${-(hwGroupBarWidth / 2 + 26)}px`, paddingLeft: `${hwGroupBarWidth / 2 + 26}px` }}>
+                          <div className="flex flex-col gap-0.5">
+                            {dueTodayTasks.map((task, tIdx) => {
+                              const progressBarWidth = getProgressBarWidth(task);
+                              const progressColor = getProgressColor(task, 'today');
+                              const daysUntil = differenceInCalendarDays(new Date(task.dueDate), new Date());
+                              const courseName = task.courseName?.split(' - ').slice(1).join(' - ') || task.courseName?.split(' - ')[0] || '';
+                              const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
+                              const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
+                              const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
+                              return (
+                                <div key={`w11-today-${task.id}`} style={{ position: 'relative', overflow: 'visible', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: tIdx % 2 === 0 ? '#051729' : 'transparent', marginLeft: '-12px', marginRight: '-7px', paddingLeft: '12px', paddingRight: '7px' }}
+                                  onMouseEnter={() => setHoveredCountdownTaskIdDebounced(task.id)}
+                                  onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
+                                >
+                                  <div data-swipe-content style={{ display: 'flex', alignItems: 'flex-start', padding: '3px 0', position: 'relative' }}>
+                                    <div ref={centerCircleOnGroupBar} style={{ position: 'absolute', left: '2px', top: '50%', transform: 'translateY(-50%)', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 5 }}>
+                                      <span style={{ fontSize: '6px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.3px', marginTop: '1px', marginBottom: '-1px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
+                                      <span style={{ fontSize: '8px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textAlign: 'center', display: 'block', marginTop: '1px' }}>{format(new Date(task.dueDate), 'd')}</span>
+                                    </div>
+                                    <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '20px' }}>
+                                      <div>
+                                        <button
+                                          className="text-[10px] truncate hover:underline cursor-pointer leading-none w-full"
+                                          onClick={() => setEditingTask(task)}
+                                          data-testid={`task-link-w11-today-${task.id}`}
+                                          data-upcoming-task-name
+                                          style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block', color: '#ffffff' }}
+                                        >
+                                          {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title; })() : task.title}
+                                        </button>
+                                        <div className="text-[9px] text-white" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '2px', whiteSpace: 'nowrap' }}>
+                                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName}</span>
+                                        </div>
+                                      </div>
+                                      {cfp && cfp.moduleP.hasFiles && (
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '2px', paddingTop: '2px' }}>
+                                          <span className="text-[11px] text-white font-medium" style={{ marginLeft: '0px', lineHeight: 1 }}>M</span>
+                                          <div style={{ width: '17px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(255,255,255,0.15)', overflow: 'hidden' }}>
+                                            {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
+                                          </div>
+                                          <span className="text-[11px] font-bold text-white" style={{ flexShrink: 0, minWidth: '22px', textAlign: 'right', lineHeight: 1 }}>{cfp.moduleP.percent}%</span>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                        </div>
+                      </div>
+                    )}
                     {(() => {
                       const today = startOfDayET(new Date());
                       const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
