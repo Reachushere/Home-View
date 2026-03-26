@@ -23046,7 +23046,8 @@ export default function Dashboard() {
                                   onMouseEnter={() => setHoveredCountdownTaskIdDebounced(task.id)}
                                   onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                                 >
-                                  <div data-swipe-content style={{ display: 'flex', alignItems: 'flex-start', padding: '3px 0', position: 'relative' }}>
+                                  <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '4px', touchAction: 'pan-y' }}>
+                                  <div style={{ display: 'flex', gap: '2px', alignItems: 'stretch' }}>
                                     <div ref={centerCircleOnGroupBar} style={{ position: 'absolute', left: '2px', top: '50%', transform: 'translateY(-50%)', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 5 }}>
                                       <span style={{ fontSize: '6px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.3px', marginTop: '1px', marginBottom: '-1px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
                                       <span style={{ fontSize: '8px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textAlign: 'center', display: 'block', marginTop: '1px' }}>{format(new Date(task.dueDate), 'd')}</span>
@@ -23076,6 +23077,7 @@ export default function Dashboard() {
                                         </div>
                                       )}
                                     </div>
+                                  </div>
                                   </div>
                                 </div>
                               );
