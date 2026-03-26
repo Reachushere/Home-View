@@ -8387,7 +8387,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   async function waitForNestPlaybackEnd(estimatedMs: number, sessionId: number): Promise<boolean> {
     const startTime = Date.now();
     const ABORT_CHECK_MS = 2000;
-    const timerWaitMs = estimatedMs + 3000;
+    const timerWaitMs = estimatedMs + 1000;
 
     for (let waited = 0; waited < timerWaitMs; waited += ABORT_CHECK_MS) {
       if (!catWashPlaybackActive || catWashSessionId !== sessionId) {
@@ -8402,25 +8402,16 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       return true;
     }
 
-    let consecutiveIdle = 0;
-    const IDLE_THRESHOLD = 2;
-    const HA_CHECK_INTERVAL_MS = 5000;
-    const maxExtraWait = 20000;
+    const HA_CHECK_INTERVAL_MS = 2000;
+    const maxExtraWait = 15000;
 
     for (let extra = 0; extra < maxExtraWait; extra += HA_CHECK_INTERVAL_MS) {
       if (!catWashPlaybackActive || catWashSessionId !== sessionId) return false;
       try {
         const state = await getNestMediaState();
-        if (state.state === 'idle' || state.state === 'off') {
-          consecutiveIdle++;
-          if (consecutiveIdle >= IDLE_THRESHOLD) {
-            console.log(`[Nest] Chunk confirmed done via HA (${Math.round((Date.now() - startTime) / 1000)}s total)`);
-            return true;
-          }
-        } else if (state.state === 'playing' || state.state === 'buffering') {
-          consecutiveIdle = 0;
-        } else {
-          consecutiveIdle++;
+        if (state.state === 'idle' || state.state === 'off' || state.state === 'paused') {
+          console.log(`[Nest] Chunk confirmed done via HA (${Math.round((Date.now() - startTime) / 1000)}s total)`);
+          return true;
         }
       } catch {
         console.log(`[Nest] HA state check failed — trusting timer`);
