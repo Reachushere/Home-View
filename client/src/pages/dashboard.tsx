@@ -22742,7 +22742,7 @@ export default function Dashboard() {
                             <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '14px' }}>
                               <div>
                                 <button
-                                  className="text-[11px] truncate hover:underline cursor-pointer leading-none w-full"
+                                  className="text-[10px] truncate hover:underline cursor-pointer leading-none w-full"
                                   onClick={() => setEditingTask(task)}
                                   data-testid={`task-link-today-${task.id}`}
                                   data-upcoming-task-name
@@ -22901,7 +22901,7 @@ export default function Dashboard() {
                                         <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '14px' }}>
                                           <div>
                                             <button
-                                              className="text-[11px] truncate hover:underline cursor-pointer leading-none w-full"
+                                              className="text-[10px] truncate hover:underline cursor-pointer leading-none w-full"
                                               onClick={() => setEditingTask(task)}
                                               data-testid={`task-link-tomorrow-${task.id}`}
                                               data-upcoming-task-name
@@ -23081,7 +23081,7 @@ export default function Dashboard() {
                                         <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '8px' }}>
                                           <div>
                                             <button
-                                              className="text-[11px] truncate hover:underline cursor-pointer leading-none w-full"
+                                              className="text-[10px] truncate hover:underline cursor-pointer leading-none w-full"
                                               onClick={() => setEditingTask(task)}
                                               data-testid={`task-link-week-${task.id}`}
                                               data-upcoming-task-name
@@ -23275,7 +23275,7 @@ export default function Dashboard() {
                                         <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '8px' }}>
                                           <div>
                                             <button
-                                              className="text-[11px] truncate hover:underline cursor-pointer leading-none w-full"
+                                              className="text-[10px] truncate hover:underline cursor-pointer leading-none w-full"
                                               onClick={() => setEditingTask(task)}
                                               data-testid={`upcoming-2w-task-${task.id}`}
                                               data-upcoming-task-name
@@ -23472,7 +23472,7 @@ export default function Dashboard() {
                                         <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '8px' }}>
                                           <div>
                                             <button
-                                              className="text-[11px] truncate hover:underline cursor-pointer leading-none w-full"
+                                              className="text-[10px] truncate hover:underline cursor-pointer leading-none w-full"
                                               onClick={() => setEditingTask(task)}
                                               data-testid={`task-link-beyond-${task.id}`}
                                               data-upcoming-task-name
