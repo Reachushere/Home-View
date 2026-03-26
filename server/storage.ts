@@ -755,7 +755,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAnnouncements(): Promise<Announcement[]> {
-    return db.select().from(announcements).orderBy(desc(announcements.receivedAt));
+    return db.select().from(announcements).orderBy(announcements.receivedAt);
   }
 
   async createAnnouncement(data: InsertAnnouncement): Promise<Announcement> {
