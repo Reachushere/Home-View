@@ -103,27 +103,6 @@ export async function pushTickerToHA(storage: IStorage, port: number | string): 
       segments.push(`🌿 Pollen: ${pollenText}`);
     }
 
-    const customAnnouncements = await storage.getAnnouncements();
-    const tickerNow = new Date();
-    const announcementTexts: string[] = [];
-    for (const a of customAnnouncements) {
-      if (!a.courseName) continue;
-      const received = new Date(a.receivedAt);
-      const isCustom = a.courseName === 'Custom';
-      if (!isCustom) {
-        const dayOfWeek = received.getDay();
-        const daysUntilFriday = dayOfWeek <= 5 ? (5 - dayOfWeek) : (5 + 7 - dayOfWeek);
-        const fridayEnd = new Date(received);
-        fridayEnd.setDate(received.getDate() + daysUntilFriday);
-        fridayEnd.setHours(23, 59, 59, 999);
-        if (tickerNow > fridayEnd) continue;
-      }
-      const body = a.body || a.snippet || a.subject || '';
-      const prefix = isCustom ? '📌' : `📢 ${a.courseName}:`;
-      announcementTexts.push(`${prefix} ${body}`);
-      segments.push(`${prefix} ${body}`);
-    }
-
     if (newsRes && Array.isArray(newsRes)) {
       const US_SOURCES = ['CNN','Politico','Raw Story','MSNBC','ABC News','Fox News'];
       const ca: any[] = [], us: any[] = [], bbc: any[] = [];
@@ -166,7 +145,6 @@ export async function pushTickerToHA(storage: IStorage, port: number | string): 
       forecast_brief: forecastBrief,
       pollen: pollenText,
       alerts: alertItems,
-      announcements: announcementTexts,
       news: newsItems.slice(0, 30).map(n => `${n.source}: ${n.title}${n.ago ? ` (${n.ago})` : ''}`),
       news_detailed: newsItems.slice(0, 30),
       last_updated: new Date().toISOString(),
