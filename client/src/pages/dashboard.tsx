@@ -12302,10 +12302,10 @@ export default function Dashboard() {
       </div>
 
       {tickerDialogOpen && (
-        <div className="fixed inset-0 flex items-start justify-center pt-[50px]" style={{ zIndex: 10010, backgroundColor: 'rgba(0,0,0,0.6)' }} onClick={(e) => { if (e.target === e.currentTarget) setTickerDialogOpen(false); }} data-testid="ticker-dialog-overlay">
-          <div className="rounded-lg shadow-2xl w-[500px] max-h-[500px] flex flex-col" style={{ backgroundColor: '#1a1a2e', border: '1px solid rgba(255,255,255,0.15)' }} data-testid="ticker-dialog">
-            <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-              <span className="text-white font-semibold text-[14px]">Ticker Items</span>
+        <div className="fixed inset-0 flex items-start justify-center pt-[50px]" style={{ zIndex: 10010, backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={(e) => { if (e.target === e.currentTarget) setTickerDialogOpen(false); }} data-testid="ticker-dialog-overlay">
+          <div className="sm:rounded-lg shadow-2xl w-[500px] max-h-[500px] flex flex-col overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }} data-testid="ticker-dialog">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+              <span className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>TICKER ITEMS</span>
               <button onClick={() => setTickerDialogOpen(false)} className="text-white/60 hover:text-white text-[18px] leading-none" data-testid="button-close-ticker">&times;</button>
             </div>
             <div className="flex-1 overflow-y-auto px-4 py-2" style={{ scrollbarWidth: 'thin' }}>
@@ -12329,20 +12329,22 @@ export default function Dashboard() {
                 ))
               )}
             </div>
-            <div className="px-4 py-3 flex items-center gap-2" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+            <div className="px-4 py-3 flex items-center gap-2" style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
               <input
                 type="text"
                 value={newTickerText}
                 onChange={(e) => setNewTickerText(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter' && newTickerText.trim()) { addTickerMutation.mutate(newTickerText.trim()); } }}
                 placeholder="Add ticker item..."
-                className="flex-1 bg-white/5 text-white text-[12px] px-3 py-2 rounded border border-white/10 focus:border-white/30 focus:outline-none placeholder:text-white/30"
+                className="flex-1 text-white text-[12px] px-3 py-2 rounded focus:outline-none placeholder:text-white/30"
+                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
                 data-testid="input-new-ticker"
               />
               <button
                 onClick={() => { if (newTickerText.trim()) addTickerMutation.mutate(newTickerText.trim()); }}
                 disabled={!newTickerText.trim() || addTickerMutation.isPending}
-                className="shrink-0 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-[12px] font-semibold px-3 py-2 rounded transition-colors"
+                className="shrink-0 disabled:opacity-40 text-white text-[12px] font-semibold px-3 py-2 rounded transition-colors hover:brightness-110"
+                style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.15)', border: '1px solid rgba(255,255,255,0.2)' }}
                 data-testid="button-add-ticker"
               >
                 + Add
