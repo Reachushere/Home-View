@@ -18714,7 +18714,7 @@ export default function Dashboard() {
                           {day.getDay() === 6 && !isToday && (
                             <div className="absolute top-0 left-0 right-0 text-center" style={{ fontSize: '7.5px', fontWeight: 700, letterSpacing: '0.5px', color: '#FFFF00', lineHeight: '1', paddingTop: '2px' }}>NEW SCHOOL WEEK</div>
                           )}
-                          <div className="flex items-center gap-1.5" style={{ marginTop: isToday ? '10px' : (day.getDay() === 6 ? '10px' : undefined) }}>
+                          <div className="flex items-center gap-1.5">
                             <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? '#fff' : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
                             <div style={{ fontSize: isToday ? '25px' : '24px', fontWeight: isToday ? 600 : 700, color: isToday ? '#FFFF00' : '#fff' }}>{dayNum}</div>
                           </div>
