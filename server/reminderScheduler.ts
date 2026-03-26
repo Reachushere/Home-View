@@ -94,6 +94,7 @@ let announcementsSentThisCycle = 0;
 const MAX_ANNOUNCEMENTS_PER_CYCLE = 3;
 let lastAnnouncementTime = 0;
 const MIN_ANNOUNCEMENT_GAP_MS = 10000;
+let dailyDigestJustSent = false;
 
 export async function checkReminders() {
   try {
@@ -159,7 +160,9 @@ export async function checkReminders() {
             sendTaskReminder(taskReminder),
             sendHaTaskReminder(taskReminder),
           ];
-          if (!isTravelling) {
+          if (dailyDigestJustSent) {
+            console.log(`[Reminder] Skipping individual Echo announcement for "${task.title}" (daily digest already announced)`);
+          } else if (!isTravelling) {
             notifications.push(sendEchoVoiceAnnouncement(voiceMessage));
           } else {
             console.log(`[Reminder] Skipping Echo announcement for "${task.title}" (travelling mode)`);
@@ -228,12 +231,14 @@ export async function checkDailyDigest() {
     if (lastDigestDate === todayStr) return;
 
     await setAppState("last_digest_date", todayStr);
+    dailyDigestJustSent = true;
+    setTimeout(() => { dailyDigestJustSent = false; }, 120000);
     console.log("[Reminder] Sending daily digest...");
 
     const allTasks = await storage.getTasks({ showCompleted: false });
     const threeDaysFromNow = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
 
-    const upcomingTasks: TaskReminder[] = allTasks
+    const upcomingTasksRaw: TaskReminder[] = allTasks
       .filter(task => {
         if (task.isCompleted || !task.dueDate) return false;
         const due = new Date(task.dueDate);
@@ -246,6 +251,15 @@ export async function checkDailyDigest() {
         courseName: task.courseName,
         type: task.type,
       }));
+    const seenTitles = new Set<string>();
+    const upcomingTasks = upcomingTasksRaw.filter(t => {
+      if (seenTitles.has(t.title)) return false;
+      seenTitles.add(t.title);
+      return true;
+    });
+    if (upcomingTasks.length !== upcomingTasksRaw.length) {
+      console.log(`[Reminder] Daily digest: deduplicated ${upcomingTasksRaw.length} → ${upcomingTasks.length} tasks (removed ${upcomingTasksRaw.length - upcomingTasks.length} duplicate titles)`);
+    }
 
     if (upcomingTasks.length > 0) {
       const result = await sendDailyDigest(upcomingTasks);
