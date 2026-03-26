@@ -2739,7 +2739,7 @@ export default function Dashboard() {
       progressColumnWidth: 0.87, // homework progress column
       allDayRowHeight: 36,
       courseRowHeight: 36,
-      otherRowHeight: 64,
+      otherRowHeight: 36,
       timeSlotHeight: 36,
       timeSlotHeights: defaultHeights
     };
@@ -2769,7 +2769,7 @@ export default function Dashboard() {
       [0,1,2,3,4,5,6,21,22,23].forEach(i => { if (parsed.timeSlotHeights[i] < 36) parsed.timeSlotHeights[i] = 36; });
       if (!parsed.timeSlotHeight) parsed.timeSlotHeight = 36;
       if (!parsed.courseRowHeight) parsed.courseRowHeight = 48;
-      if (!parsed.otherRowHeight) parsed.otherRowHeight = 64;
+      if (!parsed.otherRowHeight) parsed.otherRowHeight = 36;
       if (parsed.moduleColumnWidth === undefined) parsed.moduleColumnWidth = 0;
       if (!parsed.timeColumnWidth) parsed.timeColumnWidth = 59;
       migrateOldWidths(parsed);
@@ -2786,7 +2786,7 @@ export default function Dashboard() {
       [0,1,2,3,4,5,6,21,22,23].forEach(i => { if (parsed.timeSlotHeights[i] < 36) parsed.timeSlotHeights[i] = 36; });
       if (!parsed.timeSlotHeight) parsed.timeSlotHeight = 36;
       if (!parsed.courseRowHeight) parsed.courseRowHeight = 48;
-      if (!parsed.otherRowHeight) parsed.otherRowHeight = 64;
+      if (!parsed.otherRowHeight) parsed.otherRowHeight = 36;
       if (parsed.moduleColumnWidth === undefined) parsed.moduleColumnWidth = 0;
       if (!parsed.timeColumnWidth) parsed.timeColumnWidth = 59;
       migrateOldWidths(parsed);
@@ -19561,7 +19561,7 @@ export default function Dashboard() {
                   }
                   return false;
                 });
-                const otherRowHeight = gridSizes.otherRowHeight || 64;
+                const otherRowHeight = gridSizes.otherRowHeight || 36;
                 return (
                   <div className="grid w-full flex-shrink-0 relative z-[43] group/otherrow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${otherRowHeight}px` }}>
                     <div className="px-1 py-0.5 text-[8px] font-[785] tracking-wide flex items-center justify-center text-white/80" style={{ background: 'linear-gradient(180deg, #374151 0%, #9ca3af 100%)', borderBottom: '1px dotted #999' }}>
