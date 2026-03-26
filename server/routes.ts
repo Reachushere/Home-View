@@ -9943,6 +9943,13 @@ document.body.removeChild(a);
         stopped.push("ttsSession");
       }
 
+      await Promise.allSettled([
+        haServiceCallSafe('media_player/turn_off', { entity_id: 'media_player.fire_stick_cat_wr' }, 'Stop TV FireStick'),
+        haServiceCallSafe('media_player/turn_off', { entity_id: CAT_TV_ENTITY }, 'Stop TV Samsung'),
+      ]);
+      stopped.push("tv");
+      console.log(`[Cat Wash Stop Webhook] Fire Stick + Samsung TV turn-off sent`);
+
       console.log(`[Cat Wash Stop Webhook] Stopped: ${stopped.join(', ') || 'nothing was playing'}`);
       res.json({ action: "stopped", stoppedItems: stopped });
 
