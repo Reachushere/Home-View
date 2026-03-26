@@ -3099,6 +3099,14 @@ export default function Dashboard() {
         const sw = window.screen.width, sh = window.screen.height, pr = window.devicePixelRatio || 1;
         localStorage.setItem(`calendarReduction_device_${sw}x${sh}@${pr}`, String(calendarReduction));
       }
+      if (columnResizing?.isResizing || rowResizing?.isResizing) {
+        setTimeout(() => {
+          const cur = JSON.stringify(gridSizes);
+          localStorage.setItem('gridSizes', cur);
+          const sw = window.screen.width, sh = window.screen.height, pr = window.devicePixelRatio || 1;
+          localStorage.setItem(`gridSizes_device_${sw}x${sh}@${pr}`, cur);
+        }, 0);
+      }
       setColumnResizing(null);
       setRowResizing(null);
     };
@@ -5076,6 +5084,9 @@ export default function Dashboard() {
           setRedoStack([]);
         }
       }
+      localStorage.setItem('calendarHeight', String(lastHeight));
+      const sw = window.screen.width, sh = window.screen.height, pr = window.devicePixelRatio || 1;
+      localStorage.setItem(`calendarHeight_device_${sw}x${sh}@${pr}`, String(lastHeight));
       setIsResizing(false);
       resizeRef.current = null;
     };
@@ -20757,6 +20768,11 @@ export default function Dashboard() {
               localStorage.setItem(`calendarHeight_${deviceId}`, String(calendarHeight));
               localStorage.setItem(`calendarReduction_${deviceId}`, String(calendarReduction));
               localStorage.setItem(`gridSizes_${deviceId}`, JSON.stringify(gridSizes));
+              fetch('/api/degree-tracking/bulk', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ calendarHeight, calendarReduction, gridSizes }),
+              }).catch(() => {});
               toast({ title: "Saved", description: "Calendar size saved as default" });
             }}
             data-testid="button-set-default-size"
