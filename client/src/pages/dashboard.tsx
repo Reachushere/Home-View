@@ -18706,15 +18706,15 @@ export default function Dashboard() {
                         <>
                           {isToday && (
                             <div className="absolute top-0 left-0 right-0 text-center z-20" style={{ padding: '0' }} data-testid="today-full-date">
-                              <span style={{ display: 'block', fontSize: '8px', fontWeight: 700, color: '#000000', backgroundColor: '#FFFF00', lineHeight: '14px', letterSpacing: '0.3px', padding: '0 4px' }}>
+                              <span style={{ display: 'block', fontSize: '8px', fontWeight: 700, color: '#000000', backgroundColor: '#FFFF00', lineHeight: '11px', letterSpacing: '0.3px', padding: '0 4px' }}>
                                 {format(day, 'EEEE, MMMM d')}
                               </span>
                             </div>
                           )}
-                          {day.getDay() === 6 && (
-                            <div className="absolute top-0 left-0 right-0 text-center" style={{ fontSize: '7.5px', fontWeight: 700, letterSpacing: '0.5px', color: '#FFFF00', lineHeight: '1', paddingTop: '8px' }}>NEW SCHOOL WEEK</div>
+                          {day.getDay() === 6 && !isToday && (
+                            <div className="absolute top-0 left-0 right-0 text-center" style={{ fontSize: '7.5px', fontWeight: 700, letterSpacing: '0.5px', color: '#FFFF00', lineHeight: '1', paddingTop: '2px' }}>NEW SCHOOL WEEK</div>
                           )}
-                          <div className="flex items-center gap-1.5" style={{ marginTop: (day.getDay() === 6 || isToday) ? '13px' : undefined }}>
+                          <div className="flex items-center gap-1.5" style={{ marginTop: isToday ? '10px' : (day.getDay() === 6 ? '10px' : undefined) }}>
                             <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? '#fff' : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
                             <div style={{ fontSize: isToday ? '25px' : '24px', fontWeight: isToday ? 600 : 700, color: isToday ? '#FFFF00' : '#fff' }}>{dayNum}</div>
                           </div>
