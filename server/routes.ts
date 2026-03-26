@@ -9881,7 +9881,7 @@ document.body.removeChild(a);
 
       const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
 
-      const nowToronto = getNowInToronto();
+      const nowToronto = torontoDate();
       const currentHour = nowToronto.getHours();
       const currentMinute = nowToronto.getMinutes();
       const inHARestartWindow = currentHour === 4 && currentMinute < 10;
@@ -15992,7 +15992,7 @@ Return ONLY the JSON object, no markdown formatting.`;
     try {
       const status = (_req.query.status as string) || undefined;
       const items = await storage.getPendingReviewItems(status);
-      const todayStart = new Date(getNowInToronto().toDateString());
+      const todayStart = new Date(torontoDate().toDateString());
       const filtered = items.filter(item => {
         if (!item.startDate) return true;
         const itemDate = new Date(new Date(item.startDate).toDateString());
