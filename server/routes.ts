@@ -7238,6 +7238,63 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       }
     }
 
+    if (method === 'samsung-browser') {
+      const tvEntity = CAT_TV_ENTITY;
+      console.log(`[TV Test] Testing Samsung Smart TV browser methods on ${tvEntity}`);
+
+      const samsungMethods = [
+        { service: 'media_player/play_media', data: { entity_id: tvEntity, media_content_id: testUrl, media_content_type: 'url' }, label: 'Samsung play_media url' },
+        { service: 'media_player/play_media', data: { entity_id: tvEntity, media_content_id: testUrl, media_content_type: 'browser' }, label: 'Samsung play_media browser' },
+        { service: 'media_player/select_source', data: { entity_id: tvEntity, source: 'Internet' }, label: 'Samsung select_source Internet' },
+        { service: 'media_player/select_source', data: { entity_id: tvEntity, source: 'Web Browser' }, label: 'Samsung select_source Web Browser' },
+        { service: 'media_player/select_source', data: { entity_id: tvEntity, source: 'Browser' }, label: 'Samsung select_source Browser' },
+        { service: 'samsungtv/select_source', data: { entity_id: tvEntity, source: 'Internet' }, label: 'Samsung samsungtv/select_source Internet' },
+      ];
+      for (const { service, data, label } of samsungMethods) {
+        try {
+          await haServiceCall(service, data, `TV Test ${label}`);
+          console.log(`[TV Test] ${label}: OK`);
+          results.push({ method: label, success: true });
+        } catch (e: any) {
+          console.log(`[TV Test] ${label}: FAILED — ${e.message}`);
+          results.push({ method: label, success: false, error: e.message });
+        }
+        await new Promise(r => setTimeout(r, 3000));
+      }
+    }
+
+    if (method === 'samsung-open-url') {
+      const tvEntity = CAT_TV_ENTITY;
+      try {
+        await haServiceCall('media_player/play_media', { entity_id: tvEntity, media_content_id: testUrl, media_content_type: 'url' }, 'Samsung Open URL');
+        console.log(`[TV Test] Samsung open URL: OK`);
+        results.push({ method: 'samsung_open_url', success: true });
+      } catch (e: any) {
+        console.log(`[TV Test] Samsung open URL: FAILED — ${e.message}`);
+        results.push({ method: 'samsung_open_url', success: false, error: e.message });
+      }
+    }
+
+    if (method === 'samsung-sources') {
+      const tvEntity = CAT_TV_ENTITY;
+      try {
+        const stateResp2 = await fetch(`${HOME_ASSISTANT_URL.replace(/\/$/, '')}/api/states/${tvEntity}`, {
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' }
+        });
+        if (stateResp2.ok) {
+          const stateData2 = await stateResp2.json();
+          console.log(`[TV Test] Samsung TV state: "${stateData2.state}"`);
+          console.log(`[TV Test] Samsung TV source: "${stateData2.attributes?.source}"`);
+          console.log(`[TV Test] Samsung TV source_list: ${JSON.stringify(stateData2.attributes?.source_list)}`);
+          console.log(`[TV Test] Samsung TV app_name: "${stateData2.attributes?.app_name}"`);
+          console.log(`[TV Test] Samsung TV supported_features: ${stateData2.attributes?.supported_features}`);
+          results.push({ method: 'samsung_state', success: true, error: `state=${stateData2.state}, source=${stateData2.attributes?.source}, sources=${JSON.stringify(stateData2.attributes?.source_list)}, app=${stateData2.attributes?.app_name}` });
+        }
+      } catch (e: any) {
+        results.push({ method: 'samsung_state', success: false, error: e.message });
+      }
+    }
+
     if (method === 'firestick-internet') {
       try {
         await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: 'am force-stop com.amazon.cloud9' }, 'TV Test Kill Old');
