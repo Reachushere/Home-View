@@ -22987,6 +22987,45 @@ export default function Dashboard() {
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks for {hwWeeklyTimeline[1]?.label || 'this week'}</div>
                 ) : (
                   <div className="flex flex-col gap-0.5" style={{ marginTop: '5px' }}>
+                    {dueTodayTasks.map((task, tIdx) => {
+                      const progressColor = getProgressColor(task, 'today');
+                      const courseName = task.courseName?.split(' - ').slice(1).join(' - ') || task.courseName?.split(' - ')[0] || '';
+                      const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
+                      const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
+                      return (
+                        <div key={`today-in-w11-${task.id}`} style={{ position: 'relative', overflow: 'visible', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: 'transparent', paddingLeft: '4px', paddingRight: '4px' }}>
+                          <div style={{ display: 'flex', alignItems: 'flex-start', padding: '3px 0', gap: '6px' }}>
+                            <div style={{ width: '22px', height: '22px', borderRadius: '4px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: progressColor, border: '1px solid rgba(255,255,255,0.2)' }}>
+                              <span style={{ fontSize: '7px', fontWeight: 600, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase' }}>{format(new Date(task.dueDate), 'MMM')}</span>
+                              <span style={{ fontSize: '8px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textAlign: 'center', display: 'block', marginTop: '1px' }}>{format(new Date(task.dueDate), 'd')}</span>
+                            </div>
+                            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                              <button
+                                className="text-[10px] truncate hover:underline cursor-pointer leading-none w-full"
+                                onClick={() => setEditingTask(task)}
+                                data-testid={`task-link-w11-today-${task.id}`}
+                                data-upcoming-task-name
+                                style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'block', color: '#ffffff' }}
+                              >
+                                {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title; })() : task.title}
+                              </button>
+                              <div className="text-[9px] text-white" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '2px', whiteSpace: 'nowrap' }}>
+                                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName}</span>
+                              </div>
+                              {cfp && cfp.moduleP.hasFiles && (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '2px', paddingTop: '2px' }}>
+                                  <span className="text-[11px] text-white font-medium" style={{ marginLeft: '0px', lineHeight: 1 }}>M</span>
+                                  <div style={{ width: '17px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(255,255,255,0.15)', overflow: 'hidden' }}>
+                                    {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
+                                  </div>
+                                  <span className="text-[11px] font-bold text-white" style={{ flexShrink: 0, minWidth: '22px', textAlign: 'right', lineHeight: 1 }}>{cfp.moduleP.percent}%</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
                     {(() => {
                       const today = startOfDayET(new Date());
                       const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
