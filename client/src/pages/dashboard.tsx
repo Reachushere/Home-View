@@ -12302,9 +12302,9 @@ export default function Dashboard() {
                         return (<>{courseCode && <span style={{ marginBottom: '-2px' }}>{courseCode}</span>}{nameWords.map((w: string, wi: number) => (<span key={wi} style={{ fontSize: '7px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: '1', whiteSpace: 'nowrap' }}>{w}</span>))}</>);
                       })()}</span>
                       </span>
-                      <span className="text-[13px] text-white/90 font-medium">{a.courseName === 'Custom' ? (a.body || a.snippet || '') : a.subject}</span>
-                      {a.courseName !== 'Custom' && displaySnippet && <span className="text-[12px] text-white/55">{displaySnippet}</span>}
-                      <span className="text-[11px] text-white/60 ml-1">{timeAgo}</span>
+                      <span className="text-[16px] text-white/90 font-medium">{a.courseName === 'Custom' ? (a.body || a.snippet || '') : a.subject}</span>
+                      {a.courseName !== 'Custom' && displaySnippet && <span className="text-[15px] text-white/55">{displaySnippet}</span>}
+                      <span className="text-[14px] text-white/60 ml-1">{timeAgo}</span>
                     </span>
                   );
                 });
@@ -12315,7 +12315,7 @@ export default function Dashboard() {
               <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
                 <img src={tmuBoxesLogo} alt="TMU" style={{ height: '27px', width: 'auto', objectFit: 'contain' }} />
               </span>
-              <span className="text-[13px] text-white/40 ml-2">No announcements</span>
+              <span className="text-[16px] text-white/40 ml-2">No announcements</span>
             </div>
           )}
         </div>
