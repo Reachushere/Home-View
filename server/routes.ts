@@ -7183,6 +7183,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   let coursePlayPriority: Record<string, number> = {};
   const CAT_LIGHTS_PROMPT_COOLDOWN_MS = 3 * 60 * 1000;
   let catLightsBypassCooldown = false;
+  let lastPlaybackStoppedAt: number = 0;
   let toothbrushPollInterval: ReturnType<typeof setInterval> | null = null;
 
   interface PersistedPlaybackSession {
@@ -9029,6 +9030,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     nestPlaybackAbort = null;
     currentTvFollowUrl = null;
     currentTabletReaderUrl = null;
+    lastPlaybackStoppedAt = Date.now();
     stopToothbrushPolling();
     stopWordAdvancement();
     await clearPlaybackSession();
@@ -9744,6 +9746,12 @@ document.body.removeChild(a);
       if (catLightsPromptPending) {
         console.log(`[Cat Lights] Prompt already pending — skipping duplicate`);
         return res.json({ action: "skipped", reason: "Prompt already pending" });
+      }
+
+      const msSinceStop = Date.now() - lastPlaybackStoppedAt;
+      if (msSinceStop < 60000) {
+        console.log(`[Cat Lights] Playback was stopped ${Math.round(msSinceStop / 1000)}s ago — skipping prompt (60s cooldown)`);
+        return res.json({ action: "skipped", reason: "Post-stop cooldown" });
       }
 
       if (catWashPlaybackActive && catWashPlaybackState) {
