@@ -107,18 +107,21 @@ export async function pushTickerToHA(storage: IStorage, port: number | string): 
     const tickerNow = new Date();
     const announcementTexts: string[] = [];
     for (const a of customAnnouncements) {
-      if (!a.courseName || a.courseName === 'Custom') continue;
+      if (!a.courseName) continue;
       const received = new Date(a.receivedAt);
-      const dayOfWeek = received.getDay();
-      const daysUntilFriday = dayOfWeek <= 5 ? (5 - dayOfWeek) : (5 + 7 - dayOfWeek);
-      const fridayEnd = new Date(received);
-      fridayEnd.setDate(received.getDate() + daysUntilFriday);
-      fridayEnd.setHours(23, 59, 59, 999);
-      if (tickerNow <= fridayEnd) {
-        const body = a.body || a.snippet || a.subject || '';
-        announcementTexts.push(`📢 ${a.courseName}: ${body}`);
-        segments.push(`📢 ${a.courseName}: ${body}`);
+      const isCustom = a.courseName === 'Custom';
+      if (!isCustom) {
+        const dayOfWeek = received.getDay();
+        const daysUntilFriday = dayOfWeek <= 5 ? (5 - dayOfWeek) : (5 + 7 - dayOfWeek);
+        const fridayEnd = new Date(received);
+        fridayEnd.setDate(received.getDate() + daysUntilFriday);
+        fridayEnd.setHours(23, 59, 59, 999);
+        if (tickerNow > fridayEnd) continue;
       }
+      const body = a.body || a.snippet || a.subject || '';
+      const prefix = isCustom ? '📌' : `📢 ${a.courseName}:`;
+      announcementTexts.push(`${prefix} ${body}`);
+      segments.push(`${prefix} ${body}`);
     }
 
     if (newsRes && Array.isArray(newsRes)) {
