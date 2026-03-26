@@ -269,6 +269,7 @@ export default function PDFReaderPage() {
     return (saved && ["alloy","ash","echo","fable","onyx"].includes(saved) ? saved : "echo") as Voice;
   });
   const [isFullPage, setIsFullPage] = useState(false);
+  const [isFullScreen, setIsFullScreen] = useState(!!document.fullscreenElement);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [volume, setVolume] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
@@ -395,6 +396,12 @@ export default function PDFReaderPage() {
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  useEffect(() => {
+    const onFsChange = () => setIsFullScreen(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", onFsChange);
+    return () => document.removeEventListener("fullscreenchange", onFsChange);
   }, []);
 
   useEffect(() => {
@@ -2282,6 +2289,25 @@ export default function PDFReaderPage() {
                 )}
               </div>
             )}
+            <Button
+              size="icon"
+              variant="ghost"
+              className="text-white hover:bg-white/20"
+              style={{ height: '30px', width: '30px', minHeight: '30px', minWidth: '30px', marginLeft: '5px' }}
+              data-testid="button-fullscreen-toggle"
+              title={isFullScreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+              onClick={() => {
+                if (document.fullscreenElement) {
+                  document.exitFullscreen?.();
+                } else {
+                  const el: any = document.documentElement;
+                  const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+                  if (req) req.call(el);
+                }
+              }}
+            >
+              {isFullScreen ? <Minimize2 style={{ height: '20px', width: '20px' }} /> : <Maximize2 style={{ height: '20px', width: '20px' }} />}
+            </Button>
           </div>
         </div>
       </div>}
@@ -2876,14 +2902,18 @@ export default function PDFReaderPage() {
             )}
 
             <div className="overflow-hidden rounded-lg mb-2" style={{ background: 'rgba(0,0,0,0.4)', border: `1px solid ${waveColor}33`, height: '28px', position: 'relative' }}>
-              <div className="absolute inset-0 flex items-center" style={{ animation: 'ctrl-marquee 18s linear infinite', whiteSpace: 'nowrap', paddingLeft: '100%' }} data-testid="ctrl-scrolling-ticker">
-                <span className="text-[12px] font-medium mx-6" style={{ color: '#ffffff', fontFamily: "'Courier New', monospace", textShadow: '0 0 8px rgba(255,255,255,0.5)' }}>
-                  {courseCodeFromFolder ? `${courseCodeFromFolder}` : ''}{courseCodeFromFolder ? ' · ' : ''}{rawFileName?.replace(/\.pdf$/i, '') || 'No file loaded'}{totalChunks > 0 ? ` · Chunk ${currentChunk + 1}/${totalChunks}` : ''}{isPlaying ? ' · ▶ Playing' : isPaused ? ' · ⏸ Paused' : ' · ■ Stopped'}
-                </span>
-                <span className="text-[12px] font-medium mx-6" style={{ color: '#ffffff', fontFamily: "'Courier New', monospace", textShadow: '0 0 8px rgba(255,255,255,0.5)' }}>
-                  {courseCodeFromFolder ? `${courseCodeFromFolder}` : ''}{courseCodeFromFolder ? ' · ' : ''}{rawFileName?.replace(/\.pdf$/i, '') || 'No file loaded'}{totalChunks > 0 ? ` · Chunk ${currentChunk + 1}/${totalChunks}` : ''}{isPlaying ? ' · ▶ Playing' : isPaused ? ' · ⏸ Paused' : ' · ■ Stopped'}
-                </span>
-              </div>
+              {(() => {
+                const displayName = rawFileName?.replace(/\.pdf$/i, '') || 'No file loaded';
+                const tickerText = `${displayName}${totalChunks > 0 ? ` · Chunk ${currentChunk + 1}/${totalChunks}` : ''}${isPlaying ? ' · ▶ Playing' : isPaused ? ' · ⏸ Paused' : ' · ■ Stopped'}`;
+                const spacer = '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0';
+                return (
+                  <div className="absolute inset-0 flex items-center" style={{ animation: 'ctrl-marquee 20s linear infinite', whiteSpace: 'nowrap' }} data-testid="ctrl-scrolling-ticker">
+                    <span className="text-[12px] font-medium" style={{ color: '#ffffff', fontFamily: "'Courier New', monospace", textShadow: '0 0 8px rgba(255,255,255,0.5)' }}>
+                      {tickerText}{spacer}{tickerText}{spacer}
+                    </span>
+                  </div>
+                );
+              })()}
             </div>
 
             {totalChunks > 0 && (
@@ -2892,8 +2922,8 @@ export default function PDFReaderPage() {
               </div>
             )}
 
-            <div className="flex justify-center mb-1">
-              <div style={{ width: '120px', height: '36px', flexShrink: 0 }}>
+            <div className="flex justify-center" style={{ marginBottom: '-2px' }}>
+              <div style={{ width: '120px', height: '20px', flexShrink: 0 }}>
                 <canvas
                   ref={canvasRef}
                   className="w-full h-full pointer-events-none"
@@ -2904,12 +2934,12 @@ export default function PDFReaderPage() {
 
             <div className="flex items-center" style={{ overflow: 'visible', padding: '0 8px' }}>
               <div className="flex-1 flex items-center justify-evenly">
-                <button className="w-10 h-10 flex flex-col items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={restartCurrentChunk} disabled={!isPlaying} title="Restart current chunk" data-testid="button-refresh-chunk-inline">
-                  <RefreshCw className="h-4 w-4 text-white" />
+                <button className="w-12 h-12 flex flex-col items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={restartCurrentChunk} disabled={!isPlaying} title="Restart current chunk" data-testid="button-refresh-chunk-inline">
+                  <RefreshCw className="h-5 w-5 text-white" />
                   <span className="text-[8px] text-white/70 leading-none mt-0.5">Restart</span>
                 </button>
 
-                <button className="w-10 h-10 flex flex-col items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={() => {
+                <button className="w-12 h-12 flex flex-col items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={() => {
                   setCheckedChunks(new Set());
                   setCurrentChunk(0);
                   const fileKey = getFileKey();
@@ -2917,17 +2947,17 @@ export default function PDFReaderPage() {
                   if (allProgress[fileKey]) { allProgress[fileKey] = { total: allProgress[fileKey].total, checked: 0 }; localStorage.setItem('allChunkProgress', JSON.stringify(allProgress)); }
                   if (file) { fetch(`/api/files/${file.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ lastChunkIndex: 0, listened: false }) }); }
                 }} disabled={checkedChunks.size === 0} title="Reset all progress" data-testid="button-reset-progress">
-                  <X className="h-4 w-4 text-white" />
+                  <X className="h-5 w-5 text-white" />
                   <span className="text-[8px] text-white/70 leading-none mt-0.5">Reset</span>
                 </button>
 
-                <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15); } }} disabled={!isPlaying} data-testid="button-rewind-15" title="Rewind 15s">
-                  <RotateCcw className="h-4 w-4 text-white" />
+                <button className="w-12 h-12 flex items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15); } }} disabled={!isPlaying} data-testid="button-rewind-15" title="Rewind 15s">
+                  <RotateCcw className="h-5 w-5 text-white" />
                   <span className="text-[9px] text-white font-medium ml-0.5">15s</span>
                 </button>
 
-                <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={skipBack} disabled={(!isPlaying && !(catWashFollow && followState?.active)) || currentChunk === 0} data-testid="button-skip-back" title="Previous chunk">
-                  <SkipBack className="h-5 w-5 text-white" />
+                <button className="w-12 h-12 flex items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={skipBack} disabled={(!isPlaying && !(catWashFollow && followState?.active)) || currentChunk === 0} data-testid="button-skip-back" title="Previous chunk">
+                  <SkipBack className="h-6 w-6 text-white" />
                 </button>
               </div>
 
@@ -2992,16 +3022,16 @@ export default function PDFReaderPage() {
               </div>
 
               <div className="flex-1 flex items-center justify-evenly">
-                <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={skipForward} disabled={(!isPlaying && !(catWashFollow && followState?.active)) || currentChunk >= totalChunks - 1} data-testid="button-skip-forward-left" title="Next chunk">
-                  <SkipForward className="h-5 w-5 text-white" />
+                <button className="w-12 h-12 flex items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={skipForward} disabled={(!isPlaying && !(catWashFollow && followState?.active)) || currentChunk >= totalChunks - 1} data-testid="button-skip-forward-left" title="Next chunk">
+                  <SkipForward className="h-6 w-6 text-white" />
                 </button>
 
-                <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 15); } }} disabled={!isPlaying} data-testid="button-forward-15" title="Forward 15s">
+                <button className="w-12 h-12 flex items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={() => { if (audioRef.current && isPlaying) { audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 15); } }} disabled={!isPlaying} data-testid="button-forward-15" title="Forward 15s">
                   <span className="text-[9px] text-white font-medium mr-0.5">15s</span>
-                  <RotateCw className="h-4 w-4 text-white" />
+                  <RotateCw className="h-5 w-5 text-white" />
                 </button>
 
-                <button className="w-10 h-10 flex flex-col items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={() => {
+                <button className="w-12 h-12 flex flex-col items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 shrink-0" onClick={() => {
                   if (catWashFollow && (followState?.active || catWashPaused)) {
                     fetch("/api/webhook/voice-command", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ command: "stop" }) })
                       .then(() => { setFollowState(null); setCatWashPaused(false); })
@@ -3010,7 +3040,7 @@ export default function PDFReaderPage() {
                     stopReading();
                   }
                 }} disabled={!isPlaying && !(catWashFollow && followState?.active) && !catWashPaused} data-testid="button-stop" title="Stop">
-                  <Square className="h-4 w-4 text-white fill-white" />
+                  <Square className="h-5 w-5 text-white fill-white" />
                   <span className="text-[8px] text-white/70 leading-none mt-0.5">Stop</span>
                 </button>
               </div>
