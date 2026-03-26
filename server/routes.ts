@@ -7995,8 +7995,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     await Promise.allSettled([tabletSetupPromise, tvSetupPromise, chunk0PreGenPromise, confirmTTSPromise]);
 
     try {
-      await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.65 }, 'Nest Playback Vol');
-      console.log(`${logPrefix} Nest volume set to 0.65 for playback`);
+      await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Nest Playback Vol');
+      console.log(`${logPrefix} Nest volume set to 0.75 for playback`);
     } catch (e: any) { console.warn(`${logPrefix} Nest playback volume set error (non-fatal): ${e.message}`); }
 
     currentTabletReaderUrl = readerUrl;
