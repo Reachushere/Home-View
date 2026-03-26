@@ -13573,7 +13573,7 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      <OtherRowEditDialog open={otherRowEditOpen} onClose={() => setOtherRowEditOpen(false)} colors={otherRowColors} onSave={saveOtherRowColors} onPreview={setOtherRowColors} />
+      <OtherRowEditDialog open={otherRowEditOpen} onClose={() => setOtherRowEditOpen(false)} colors={otherRowColors} onSave={saveOtherRowColors} onPreview={setOtherRowColors} headerBarColor={colorSettings.headerBar} />
       {selectedCertCourse && (() => {
         const info = buildCourseInfoForCert();
         if (!info) return null;

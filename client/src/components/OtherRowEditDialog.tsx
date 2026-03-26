@@ -27,9 +27,10 @@ interface Props {
   colors: OtherRowColors;
   onSave: (colors: OtherRowColors) => void;
   onPreview?: (colors: OtherRowColors) => void;
+  headerBarColor?: string;
 }
 
-export default function OtherRowEditDialog({ open, onClose, colors, onSave, onPreview }: Props) {
+export default function OtherRowEditDialog({ open, onClose, colors, onSave, onPreview, headerBarColor = '#051729' }: Props) {
   const [edit, setEdit] = useState<OtherRowColors>(colors);
   const [activeGradientStop, setActiveGradientStop] = useState<'start' | 'end' | number | null>(null);
   const [dialogPos, setDialogPos] = useState({ x: 0, y: 0 });
@@ -129,7 +130,7 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave, onPr
     return `#${f(r1)}${f(g1)}${f(b1)}`;
   };
 
-  const headerGradient = `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${edit.labelStart}cc 40%, ${edit.labelEnd}bb 100%)`;
+  const headerGradient = `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${headerBarColor}cc 40%, ${headerBarColor}bb 100%)`;
 
   return (
     <div className="fixed inset-0 z-[10002] flex items-center justify-center" onClick={() => { if (onPreview) onPreview(originalColorsRef.current); onClose(); }} data-testid="other-row-edit-overlay">
