@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import Cropper from "react-easy-crop";
 import { NewCourseWizard } from "@/components/NewCourseWizard";
 import { CourseDetailDialog } from "@/components/CourseDetailDialog";
+import OtherRowEditDialog from "@/components/OtherRowEditDialog";
 import { FastInput, FastTextarea } from "@/components/FastInput";
 import { SemesterChecklistDialog } from "@/components/SemesterChecklistDialog";
 import { Document, Page, pdfjs } from 'react-pdf';
@@ -2169,6 +2170,26 @@ export default function Dashboard() {
   });
   const [isSchoolDialogOpen, setIsSchoolDialogOpen] = useState(false);
   const [isSchoolCoursesDialogOpen, setIsSchoolCoursesDialogOpen] = useState(false);
+  const [otherRowEditOpen, setOtherRowEditOpen] = useState(false);
+  const [otherRowColors, setOtherRowColors] = useState<{
+    labelStart: string;
+    labelEnd: string;
+    labelStops: string;
+    cellBg: string;
+    borderColor: string;
+    taskBgColor: string;
+    courseRowColor: string;
+  }>(() => {
+    try {
+      const saved = localStorage.getItem('otherRowColors');
+      if (saved) { const p = JSON.parse(saved); return { ...p, courseRowColor: p.courseRowColor || 'rgba(107, 114, 128, 0.30)' }; }
+    } catch {}
+    return { labelStart: '#374151', labelEnd: '#9ca3af', labelStops: '', cellBg: 'rgba(107, 114, 128, 0.30)', borderColor: 'rgba(107, 114, 128, 0.7)', taskBgColor: 'rgba(107, 114, 128, 0.25)', courseRowColor: 'rgba(107, 114, 128, 0.30)' };
+  });
+  const saveOtherRowColors = useCallback((colors: typeof otherRowColors) => {
+    setOtherRowColors(colors);
+    localStorage.setItem('otherRowColors', JSON.stringify(colors));
+  }, []);
   const [schoolCoursesOpenSource, setSchoolCoursesOpenSource] = useState<'pill' | 'degree'>('degree');
   const [semSettingsDialogKey, setSemSettingsDialogKey] = useState<string | null>(null);
   const [perSemesterSettings, setPerSemesterSettings] = useState<Record<string, { week1StartDate: string; semesterType: string; numberOfWeeks: number; timezone: string; readingWeekDate: string; isTravelling: boolean; travelTimezone: string; travelStartDate: string; travelEndDate: string }>>(() => {
@@ -13526,6 +13547,7 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
+      <OtherRowEditDialog open={otherRowEditOpen} onClose={() => setOtherRowEditOpen(false)} colors={otherRowColors} onSave={saveOtherRowColors} />
       {selectedCertCourse && (() => {
         const info = buildCourseInfoForCert();
         if (!info) return null;
@@ -19612,11 +19634,12 @@ export default function Dashboard() {
                 const otherRowHeight = gridSizes.otherRowHeight || 36;
                 return (
                   <div className="grid w-full flex-shrink-0 relative z-[43] group/otherrow" style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${otherRowHeight}px` }}>
-                    <div className="px-1 py-0.5 text-[8px] font-[785] tracking-wide flex items-center justify-center text-white/80" style={{ background: 'linear-gradient(180deg, #374151 0%, #9ca3af 100%)', borderBottom: '1px dotted #999' }}>
+                    <div className="px-1 py-0.5 text-[8px] font-[785] tracking-wide flex items-center justify-center text-white/80 relative cursor-pointer hover:brightness-110" onClick={() => setOtherRowEditOpen(true)} style={{ background: (() => { const stops = otherRowColors.labelStops ? (() => { try { return JSON.parse(otherRowColors.labelStops); } catch { return []; } })() : []; const allStops = [{ position: 0, color: otherRowColors.labelStart }, ...stops, { position: 100, color: otherRowColors.labelEnd }]; return `linear-gradient(180deg, ${allStops.map((s: any) => `${s.color} ${s.position}%`).join(', ')})`; })(), borderBottom: `1px dotted ${otherRowColors.borderColor || '#999'}` }} data-testid="other-row-label">
                       OTHER
+                      <div style={{ position: 'absolute', top: '1px', right: '1px', zIndex: 2 }} onClick={(e) => { e.stopPropagation(); setOtherRowEditOpen(true); }} data-testid="pencil-edit-other-row"><Pencil className="w-[9px] h-[9px] text-white" strokeWidth={3} /></div>
                     </div>
                     {gridSizes.moduleColumnWidth > 0 && (
-                      <div style={{ backgroundColor: 'rgba(107, 114, 128, 0.20)' }} />
+                      <div style={{ backgroundColor: otherRowColors.cellBg }} />
                     )}
                     {weekDays.map((day, dayIdx) => {
                       const cellDate = startOfDayET(day);
@@ -19645,7 +19668,7 @@ export default function Dashboard() {
                         <div
                           key={dayIdx}
                           className={`relative flex flex-col gap-0.5 pt-0.5${otherHasScroll ? ' course-cell-scroll' : ''}`}
-                          style={{ backgroundColor: isOtherToday ? '#e4ecf5' : 'rgba(107, 114, 128, 0.30)', padding: `2px 2px 2px ${4 + DAY_COL_LEFT_REDUCTION}px`, borderBottom: isOtherToday ? '1px dotted #666' : '1.5px dotted rgba(107, 114, 128, 0.7)', overflowY: otherHasScroll ? 'auto' : 'hidden', overflowX: 'hidden', scrollbarWidth: 'thin', maxHeight: `${otherRowHeight}px` }}
+                          style={{ backgroundColor: isOtherToday ? '#e4ecf5' : otherRowColors.cellBg, padding: `2px 2px 2px ${4 + DAY_COL_LEFT_REDUCTION}px`, borderBottom: isOtherToday ? '1px dotted #666' : `1.5px dotted ${otherRowColors.borderColor}`, overflowY: otherHasScroll ? 'auto' : 'hidden', overflowX: 'hidden', scrollbarWidth: 'thin', maxHeight: `${otherRowHeight}px` }}
                           data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
                         >
                           <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', borderLeft: '1px solid rgba(0,0,0,0.12)', zIndex: 5, pointerEvents: 'none' }} />
@@ -19660,8 +19683,8 @@ export default function Dashboard() {
                                 key={task.id}
                                 className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer w-full min-w-0 ${isUnackedReminder ? "animate-reminder-pulse" : isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                                 style={{
-                                  backgroundColor: isUnackedReminder ? 'rgba(220, 38, 38, 0.25)' : 'rgba(107, 114, 128, 0.25)',
-                                  borderColor: isUnackedReminder ? 'rgba(220, 38, 38, 0.6)' : 'rgba(107, 114, 128, 0.5)',
+                                  backgroundColor: isUnackedReminder ? 'rgba(220, 38, 38, 0.25)' : otherRowColors.taskBgColor,
+                                  borderColor: isUnackedReminder ? 'rgba(220, 38, 38, 0.6)' : otherRowColors.borderColor,
                                 }}
                                 title={task.title}
                                 data-testid={`other-task-${task.id}`}
@@ -19698,8 +19721,8 @@ export default function Dashboard() {
                                 key={`proj-${proj.id}`}
                                 className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                                 style={{
-                                  backgroundColor: 'rgba(107, 114, 128, 0.25)',
-                                  borderColor: proj.color || 'rgba(107, 114, 128, 0.5)',
+                                  backgroundColor: otherRowColors.taskBgColor,
+                                  borderColor: proj.color || otherRowColors.borderColor,
                                   borderStyle: 'dashed',
                                 }}
                                 onClick={() => { setEditingProject(proj); setProjectDialogOpen(true); }}
@@ -22547,10 +22570,10 @@ export default function Dashboard() {
                     left: 0,
                     right: 0,
                     height: `${otherRowHeight}px`,
-                    background: 'rgba(107, 114, 128, 0.30)',
+                    background: otherRowColors.courseRowColor,
                     zIndex: 41,
-                    borderTop: '1.5px dotted black',
-                    borderBottom: '1.5px dotted black',
+                    borderTop: `1.5px dotted ${otherRowColors.borderColor}`,
+                    borderBottom: `1.5px dotted ${otherRowColors.borderColor}`,
                     display: 'flex',
                     alignItems: 'center',
                     overflowX: 'hidden',
