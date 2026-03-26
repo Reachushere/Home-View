@@ -7064,12 +7064,21 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
     if (method === 'all' || method === 'wake') {
       try {
-        await haServiceCall('media_player/turn_on', { entity_id: entityId }, 'TV Test TurnOn');
-        console.log(`[TV Test] turn_on: OK`);
-        results.push({ method: 'turn_on', success: true });
+        await haServiceCall('media_player/turn_on', { entity_id: CAT_TV_ENTITY }, 'TV Test Samsung TurnOn');
+        console.log(`[TV Test] Samsung TV turn_on: OK`);
+        results.push({ method: 'samsung_turn_on', success: true });
       } catch (e: any) {
-        console.log(`[TV Test] turn_on failed: ${e.message}`);
-        results.push({ method: 'turn_on', success: false, error: e.message });
+        console.log(`[TV Test] Samsung TV turn_on failed: ${e.message}`);
+        results.push({ method: 'samsung_turn_on', success: false, error: e.message });
+      }
+
+      try {
+        await haServiceCall('media_player/turn_on', { entity_id: entityId }, 'TV Test FireStick TurnOn');
+        console.log(`[TV Test] Fire Stick turn_on: OK`);
+        results.push({ method: 'firestick_turn_on', success: true });
+      } catch (e: any) {
+        console.log(`[TV Test] Fire Stick turn_on failed: ${e.message}`);
+        results.push({ method: 'firestick_turn_on', success: false, error: e.message });
       }
 
       try {
@@ -7080,7 +7089,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         console.log(`[TV Test] WAKEUP failed: ${e.message}`);
         results.push({ method: 'wakeup', success: false, error: e.message });
       }
-      await new Promise(r => setTimeout(r, 3000));
+
+      console.log(`[TV Test] Waiting 12s for TV to boot...`);
+      await new Promise(r => setTimeout(r, 12000));
     }
 
     if (method === 'all' || method === 'silk') {
