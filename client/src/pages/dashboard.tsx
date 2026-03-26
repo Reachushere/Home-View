@@ -749,6 +749,17 @@ export default function Dashboard() {
     setReviewCheckedIds(new Set());
   };
 
+  const handleSkipAllForever = async () => {
+    setMorningReviewLoading(true);
+    for (const item of morningReviewItems) {
+      await handleRejectReview(item.id);
+    }
+    setMorningReviewLoading(false);
+    setShowMorningReview(false);
+    setReviewMode('all');
+    setReviewCheckedIds(new Set());
+  };
+
   const handleIndividualConfirm = async () => {
     setMorningReviewLoading(true);
     for (const item of morningReviewItems) {
@@ -9711,9 +9722,20 @@ export default function Dashboard() {
                     className="h-6 px-2 text-[9px] border-white/20 text-white/60 hover:text-white hover:bg-white/10"
                     onClick={handleSkipAllForToday}
                     disabled={morningReviewLoading}
-                    data-testid="button-reject-all-review"
+                    data-testid="button-skip-all-24h-review"
                   >
-                    Skip All
+                    Skip All 24h
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-6 px-2 text-[9px] border-red-500/30 text-red-400/70 hover:text-red-300 hover:bg-red-500/10"
+                    onClick={handleSkipAllForever}
+                    disabled={morningReviewLoading}
+                    data-testid="button-skip-all-forever-review"
+                  >
+                    {morningReviewLoading ? <Loader2 className="h-2.5 w-2.5 mr-1 animate-spin" /> : null}
+                    Skip All Forever
                   </Button>
                   <Button
                     size="sm"
