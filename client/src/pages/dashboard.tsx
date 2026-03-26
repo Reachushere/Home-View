@@ -2780,7 +2780,7 @@ export default function Dashboard() {
       progressColumnWidth: 0.87, // homework progress column
       allDayRowHeight: 36,
       courseRowHeight: 36,
-      otherRowHeight: 36,
+      otherRowHeight: 57,
       timeSlotHeight: 36,
       timeSlotHeights: defaultHeights
     };
@@ -2810,7 +2810,7 @@ export default function Dashboard() {
       [0,1,2,3,4,5,6,21,22,23].forEach(i => { if (parsed.timeSlotHeights[i] < 36) parsed.timeSlotHeights[i] = 36; });
       if (!parsed.timeSlotHeight) parsed.timeSlotHeight = 36;
       if (!parsed.courseRowHeight) parsed.courseRowHeight = 48;
-      if (!parsed.otherRowHeight) parsed.otherRowHeight = 36;
+      if (!parsed.otherRowHeight) parsed.otherRowHeight = 57;
       if (parsed.moduleColumnWidth === undefined) parsed.moduleColumnWidth = 0;
       if (!parsed.timeColumnWidth) parsed.timeColumnWidth = 59;
       migrateOldWidths(parsed);
@@ -2827,7 +2827,7 @@ export default function Dashboard() {
       [0,1,2,3,4,5,6,21,22,23].forEach(i => { if (parsed.timeSlotHeights[i] < 36) parsed.timeSlotHeights[i] = 36; });
       if (!parsed.timeSlotHeight) parsed.timeSlotHeight = 36;
       if (!parsed.courseRowHeight) parsed.courseRowHeight = 48;
-      if (!parsed.otherRowHeight) parsed.otherRowHeight = 36;
+      if (!parsed.otherRowHeight) parsed.otherRowHeight = 57;
       if (parsed.moduleColumnWidth === undefined) parsed.moduleColumnWidth = 0;
       if (!parsed.timeColumnWidth) parsed.timeColumnWidth = 59;
       migrateOldWidths(parsed);
@@ -19662,7 +19662,7 @@ export default function Dashboard() {
                   }
                   return false;
                 });
-                const otherRowHeight = gridSizes.otherRowHeight || 36;
+                const otherRowHeight = gridSizes.otherRowHeight || 57;
                 return (
                   <div className="grid w-full flex-shrink-0 relative z-[43] group/otherrow" style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${otherRowHeight}px` }}>
                     <div className="px-1 py-0.5 text-[8px] font-[785] tracking-wide flex items-center justify-center text-white/80 relative cursor-pointer hover:brightness-110" onClick={() => setOtherRowEditOpen(true)} style={{ background: (() => { const stops = otherRowColors.labelStops ? (() => { try { return JSON.parse(otherRowColors.labelStops); } catch { return []; } })() : []; const allStops = [{ position: 0, color: otherRowColors.labelStart }, ...stops, { position: 100, color: otherRowColors.labelEnd }]; return `linear-gradient(180deg, ${allStops.map((s: any) => `${s.color} ${s.position}%`).join(', ')})`; })(), borderBottom: `1px dotted ${otherRowColors.borderColor || '#999'}` }} data-testid="other-row-label">
@@ -22572,7 +22572,7 @@ export default function Dashboard() {
               if (lastRect) {
                 const upcomingTopLocal = calendarBorderTop || (calendarTop + 15);
                 const otherTop = lastRect.top + lastRect.height - upcomingTopLocal - firstRowOffset;
-                const otherRowHeight = gridSizes.otherRowHeight || 36;
+                const otherRowHeight = gridSizes.otherRowHeight || 57;
                 rows.push(
                   <div key="other-progress-row" style={{
                     position: 'absolute',
