@@ -7622,6 +7622,13 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
               console.log(`[PlaybackRecovery] Saved chunk progress ${persisted.chunkIndex} for file ${persisted.fileId}`);
             } catch {}
 
+            try {
+              await haServiceCall('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Stop Nest on recovery');
+              console.log(`[PlaybackRecovery] Stopped Nest speaker`);
+            } catch (e: any) {
+              console.warn(`[PlaybackRecovery] Could not stop Nest: ${e.message}`);
+            }
+
             const cleanName = persisted.fileName.replace(/\.pdf$/i, '').replace(/[_-]+/g, ' ').trim();
             const message = persisted.status === 'paused'
               ? `Bryn, the server restarted while playback of ${cleanName} was paused. Your position at chunk ${persisted.chunkIndex + 1} of ${persisted.totalChunks} has been saved.`
