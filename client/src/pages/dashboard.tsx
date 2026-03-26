@@ -22527,9 +22527,9 @@ export default function Dashboard() {
                       return groups.map((group, groupIdx) => {
                         const dueDates = group.tasks.map(t => ({ date: startOfDayET(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
-                          <div key={group.key} data-hw-group-row style={{ display: 'flex', alignItems: 'stretch', marginTop: groupIdx === 0 ? '-16px' : '0px' }}>
-                            <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', marginLeft: '-3px', marginRight: '2px', overflow: 'visible', position: 'relative', zIndex: 2 }}>
-                              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', width: '100%' }}>
+                          <div key={group.key} data-hw-group-row style={{ display: 'flex', alignItems: 'flex-start', marginTop: groupIdx === 0 ? '-16px' : '0px' }}>
+                            <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', alignSelf: 'flex-start', marginLeft: '-3px', marginRight: '2px', overflow: 'visible', position: 'relative', zIndex: 2 }}>
+                              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', width: '100%' }}>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', width: '100%' }}>
                                 <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: '100%', justifyContent: 'flex-end' }}>
                                   {['Su','Mo','Tu','We','Th','Fr','Sa'].map((dl, dli) => (
