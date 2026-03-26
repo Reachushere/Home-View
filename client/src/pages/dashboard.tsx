@@ -12402,7 +12402,23 @@ export default function Dashboard() {
               <span className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>TICKER ITEMS</span>
             </div>
             <div className="flex-1 overflow-y-auto px-4 py-2" style={{ scrollbarWidth: 'thin' }}>
-              {d2lAnnouncements.length === 0 ? (
+              {todayCourseTasks.length > 0 && (() => {
+                const courseGroups: Record<string, typeof todayCourseTasks> = {};
+                todayCourseTasks.forEach(t => {
+                  const code = t.courseName?.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') || 'TASK';
+                  if (!courseGroups[code]) courseGroups[code] = [];
+                  courseGroups[code].push(t);
+                });
+                return Object.entries(courseGroups).map(([code, tasks]) => (
+                  <div key={`today-${code}`} className="flex items-center gap-2 py-1.5" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                    <span className="text-[10px] font-bold text-yellow-300 animate-balloon-pulse flex-shrink-0" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>DUE TODAY</span>
+                    <span className="text-[12px] text-yellow-200 truncate" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>
+                      {tasks.length === 1 ? `${code}: ${tasks[0].title}` : `${code}: ${tasks.length} tasks due today`}
+                    </span>
+                  </div>
+                ));
+              })()}
+              {d2lAnnouncements.length === 0 && todayCourseTasks.length === 0 ? (
                 <div className="text-white/40 text-[12px] text-center py-6">No ticker items</div>
               ) : (
                 d2lAnnouncements.map((a: any, idx: number) => (
