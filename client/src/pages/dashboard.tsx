@@ -12417,15 +12417,18 @@ export default function Dashboard() {
               if (!el) return;
               if ((el as any).__d2lTickerEl === el) return;
               (el as any).__d2lTickerEl = el;
+              let isFirstRun = true;
               const startScroll = () => {
                 if (!el || !el.parentElement) return;
                 const parentWidth = el.parentElement.clientWidth || window.innerWidth;
                 const contentWidth = el.scrollWidth;
                 if (contentWidth <= 0) return;
-                const totalTravel = parentWidth + contentWidth;
+                const startPos = isFirstRun ? Math.min(parentWidth, 100) : parentWidth;
+                isFirstRun = false;
+                const totalTravel = startPos + contentWidth;
                 const speed = 65;
                 const dur = totalTravel / speed;
-                el.style.setProperty('--ticker-start', `${parentWidth}px`);
+                el.style.setProperty('--ticker-start', `${startPos}px`);
                 el.style.setProperty('--ticker-end', `-${contentWidth}px`);
                 el.style.animation = 'none';
                 void el.offsetWidth;
