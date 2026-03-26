@@ -9694,18 +9694,20 @@ export default function Dashboard() {
           <div className="flex items-center justify-between px-4 py-2 border-b border-white/40" style={{ flexShrink: 0, backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
             <div className="flex items-center gap-2">
               <Sun className="h-4 w-4 text-yellow-400" />
-              <span className="text-[12px] font-semibold" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>Morning Review</span>
-              <span className="text-[9px] text-white/50 ml-1">{morningReviewItems.length} pending</span>
-              <div className="flex ml-3 rounded overflow-hidden border border-white/15" data-testid="review-mode-tabs">
+              <span className="font-normal text-white truncate" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>Morning Review</span>
+              <span className="text-[9px] text-white/60 ml-1" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>{morningReviewItems.length} pending</span>
+              <div className="flex ml-3 rounded overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.25)' }} data-testid="review-mode-tabs">
                 <button
-                  className={`px-3 py-0.5 text-[9px] font-medium transition-colors ${reviewMode === 'all' ? 'bg-white/15 text-white' : 'text-white/40 hover:text-white/60 hover:bg-white/5'}`}
+                  className={`px-3 py-0.5 text-[9px] font-medium transition-colors ${reviewMode === 'all' ? 'text-white' : 'text-white/50 hover:text-white/70'}`}
+                  style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif", background: reviewMode === 'all' ? 'rgba(255,255,255,0.15)' : 'transparent' }}
                   onClick={() => { setReviewMode('all'); setReviewCheckedIds(new Set()); }}
                   data-testid="review-tab-all"
                 >
                   All
                 </button>
                 <button
-                  className={`px-3 py-0.5 text-[9px] font-medium transition-colors border-l border-white/15 ${reviewMode === 'individual' ? 'bg-white/15 text-white' : 'text-white/40 hover:text-white/60 hover:bg-white/5'}`}
+                  className={`px-3 py-0.5 text-[9px] font-medium transition-colors ${reviewMode === 'individual' ? 'text-white' : 'text-white/50 hover:text-white/70'}`}
+                  style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif", borderLeft: '1px solid rgba(255,255,255,0.25)', background: reviewMode === 'individual' ? 'rgba(255,255,255,0.15)' : 'transparent' }}
                   onClick={() => { setReviewMode('individual'); setReviewCheckedIds(new Set()); }}
                   data-testid="review-tab-individual"
                 >
@@ -9748,17 +9750,17 @@ export default function Dashboard() {
                 </>
               ) : (
                 <>
-                  <span className="text-[8px] text-white/40">{reviewCheckedIds.size} selected</span>
-                  <Button
-                    size="sm"
-                    className="h-6 px-2 text-[9px] bg-green-600 hover:bg-green-700 text-white"
+                  <span className="text-[9px] text-white/50">{reviewCheckedIds.size} selected</span>
+                  <button
+                    className="h-7 px-3 text-[10px] font-medium text-white rounded disabled:opacity-40"
+                    style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.15)', border: '1px solid rgba(255,255,255,0.2)', fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}
                     onClick={handleIndividualConfirm}
                     disabled={morningReviewLoading || reviewCheckedIds.size === 0}
                     data-testid="button-confirm-individual-review"
                   >
-                    {morningReviewLoading ? <Loader2 className="h-2.5 w-2.5 mr-1 animate-spin" /> : <Check className="h-2.5 w-2.5 mr-1" />}
+                    {morningReviewLoading ? <Loader2 className="h-2.5 w-2.5 mr-1 animate-spin inline" /> : <Check className="h-2.5 w-2.5 mr-1 inline" />}
                     Confirm
-                  </Button>
+                  </button>
                 </>
               )}
               <button
