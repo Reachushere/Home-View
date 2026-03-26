@@ -18950,7 +18950,7 @@ export default function Dashboard() {
                           return (
                             <div
                               key={`proj-${proj.id}`}
-                              className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
+                              className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer ${isDueTomorrow ? "animate-slow-blink" : ""}`}
                               style={{
                                 backgroundColor: isOnTargetDay ? 'white' : 'white',
                                 borderColor: proj.color || course.darkColor,
@@ -19052,7 +19052,7 @@ export default function Dashboard() {
                               <div style={{ position: 'absolute', right: '-3px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '1px', backgroundColor: course.darkColor, zIndex: 2 }} />
                             )}
                             <div 
-                              className={`flex flex-col gap-0 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer w-full min-w-0 ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
+                              className={`flex flex-col gap-0 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer w-full min-w-0 ${isDueTomorrow ? "animate-slow-blink" : ""}`}
                               style={{ 
                                 backgroundColor: (() => { const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === course.name); if (cMatch?.taskBgColor) return cMatch.taskBgColor; const cEnd = cMatch?.colorEnd; const endRgb = hexToRgb(cEnd || course.darkColor); return `rgb(${Math.max(0,endRgb.r-12)},${Math.max(0,endRgb.g-12)},${Math.max(0,endRgb.b-12)})`; })(),
                                 borderColor: course.darkColor,
