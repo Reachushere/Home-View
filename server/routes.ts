@@ -7756,6 +7756,10 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           method: 'POST', headers: haHeaders,
           body: JSON.stringify({ entity_id: CAT_WR_MEDIA_GROUP }),
         }),
+        fetch(`${haUrl}/api/services/media_player/media_pause`, {
+          method: 'POST', headers: haHeaders,
+          body: JSON.stringify({ entity_id: CAT_WR_MEDIA_GROUP }),
+        }),
       ]);
     } else {
       await Promise.allSettled([
@@ -7771,8 +7775,16 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           method: 'POST', headers: haHeaders,
           body: JSON.stringify({ entity_id: CAT_WR_MEDIA_GROUP }),
         }),
+        fetch(`${haUrl}/api/services/media_player/media_pause`, {
+          method: 'POST', headers: haHeaders,
+          body: JSON.stringify({ entity_id: CAT_ECHO_ENTITIES }),
+        }),
+        fetch(`${haUrl}/api/services/media_player/media_pause`, {
+          method: 'POST', headers: haHeaders,
+          body: JSON.stringify({ entity_id: CAT_WR_MEDIA_GROUP }),
+        }),
       ]);
-      console.log(`[Speakers] Stopped Nest + cat washroom Echos + media group`);
+      console.log(`[Speakers] Stopped Nest + cat washroom Echos + media group (stop + pause)`);
     }
   }
 
@@ -10099,6 +10111,13 @@ document.body.removeChild(a);
         stopped.push("ttsSession");
       }
 
+      try {
+        await stopAllCatWashroomSpeakers(haUrl);
+        stopped.push("echoSpeakers");
+      } catch (e: any) {
+        console.warn(`[Cat Wash Stop Webhook] Failed to stop Echo speakers: ${e.message}`);
+      }
+
       await Promise.allSettled([
         haServiceCallSafe('media_player/turn_off', { entity_id: 'media_player.fire_stick_cat_wr' }, 'Stop TV FireStick'),
         haServiceCallSafe('media_player/turn_off', { entity_id: CAT_TV_ENTITY }, 'Stop TV Samsung'),
@@ -10106,6 +10125,7 @@ document.body.removeChild(a);
       stopped.push("tv");
       console.log(`[Cat Wash Stop Webhook] Fire Stick + Samsung TV turn-off sent`);
 
+      catWashPlaybackTrigger = null;
       console.log(`[Cat Wash Stop Webhook] Stopped: ${stopped.join(', ') || 'nothing was playing'}`);
       res.json({ action: "stopped", stoppedItems: stopped });
 
