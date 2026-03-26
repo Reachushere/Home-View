@@ -22,11 +22,8 @@ function useAutoFullscreen() {
   const [requested, setRequested] = useState(false);
   const isSilk = typeof navigator !== 'undefined' && 
     (/\bSilk\b/i.test(navigator.userAgent) || /\bKF[A-Z]{2,4}\b/.test(navigator.userAgent) || /\bFireTV\b/i.test(navigator.userAgent) || /\bAFT[A-Z]\b/.test(navigator.userAgent));
-  const wantsFullscreen = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('fullscreen') === 'true';
-  const shouldFullscreen = isSilk || wantsFullscreen;
-
   useEffect(() => {
-    if (!shouldFullscreen) return;
+    if (!isSilk) return;
     const isInIframe = window.self !== window.top;
     const heightVal = isInIframe ? '100%' : '100vh';
     const widthVal = isInIframe ? '100%' : '100vw';
@@ -49,7 +46,7 @@ function useAutoFullscreen() {
   }, [requested]);
 
   useEffect(() => {
-    if (!shouldFullscreen || requested) return;
+    if (!isSilk || requested) return;
     requestFullscreen();
     const interval = setInterval(() => {
       if (document.fullscreenElement) { setRequested(true); clearInterval(interval); return; }
