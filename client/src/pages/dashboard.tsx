@@ -693,7 +693,7 @@ export default function Dashboard() {
         const now = new Date();
         const eastern = new Date(now.toLocaleString('en-US', { timeZone: 'America/Toronto' }));
         const todayKey = `morning_review_shown_${eastern.getFullYear()}-${String(eastern.getMonth()+1).padStart(2,'0')}-${String(eastern.getDate()).padStart(2,'0')}`;
-        if (!sessionStorage.getItem(todayKey)) {
+        if (!sessionStorage.getItem(todayKey) && !localStorage.getItem(todayKey)) {
           sessionStorage.setItem(todayKey, '1');
           setShowMorningReview(true);
         }
@@ -707,7 +707,11 @@ export default function Dashboard() {
       await fetch('/api/outlook/sync', { method: 'POST' });
       const items = await fetchPendingReview();
       if (items.length > 0) {
-        setShowMorningReview(true);
+        const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+        const todayKey = `morning_review_shown_${eastern.getFullYear()}-${String(eastern.getMonth()+1).padStart(2,'0')}-${String(eastern.getDate()).padStart(2,'0')}`;
+        if (!localStorage.getItem(todayKey)) {
+          setShowMorningReview(true);
+        }
       }
     } catch (e) { console.error('[Review] Outlook sync + review error:', e); }
   }, [fetchPendingReview]);
@@ -744,6 +748,10 @@ export default function Dashboard() {
   };
 
   const handleSkipAllForToday = () => {
+    const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+    const todayKey = `morning_review_shown_${eastern.getFullYear()}-${String(eastern.getMonth()+1).padStart(2,'0')}-${String(eastern.getDate()).padStart(2,'0')}`;
+    sessionStorage.setItem(todayKey, '1');
+    try { localStorage.setItem(todayKey, '1'); } catch {}
     setShowMorningReview(false);
     setReviewMode('all');
     setReviewCheckedIds(new Set());
