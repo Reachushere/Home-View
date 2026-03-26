@@ -12372,7 +12372,7 @@ export default function Dashboard() {
       </div>
 
       {/* D2L Announcement Ticker - fixed at very top of page, matches bottom news ticker style */}
-      <div className="fixed left-0 right-0 overflow-hidden flex" style={{ top: 0, height: '38px', zIndex: 105, backgroundColor: '#000000', background: 'linear-gradient(90deg, #000000 0%, #14141e 50%, #000000 100%)', borderBottom: '1px solid rgba(255,255,255,0.15)' }} data-testid="announcement-ticker">
+      <div className="fixed left-0 right-0 overflow-hidden flex" style={{ top: 0, height: '38px', zIndex: 111, backgroundColor: '#000000', background: 'linear-gradient(90deg, #000000 0%, #14141e 50%, #000000 100%)', borderBottom: '1px solid rgba(255,255,255,0.15)' }} data-testid="announcement-ticker">
         <div className="flex-shrink-0 flex items-center justify-center cursor-pointer" style={{ height: '38px', width: 'auto' }} onClick={() => setTickerDialogOpen(true)} data-testid="button-ticker-manage">
           <img src={d2lTickerLabel} alt="D2L" style={{ height: '38px', width: 'auto', objectFit: 'contain' }} />
         </div>
