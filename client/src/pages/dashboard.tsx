@@ -2810,7 +2810,7 @@ export default function Dashboard() {
       [0,1,2,3,4,5,6,21,22,23].forEach(i => { if (parsed.timeSlotHeights[i] < 36) parsed.timeSlotHeights[i] = 36; });
       if (!parsed.timeSlotHeight) parsed.timeSlotHeight = 36;
       if (!parsed.courseRowHeight) parsed.courseRowHeight = 48;
-      if (!parsed.otherRowHeight) parsed.otherRowHeight = 57;
+      if (!parsed.otherRowHeight || parsed.otherRowHeight < 57) parsed.otherRowHeight = 57;
       if (parsed.moduleColumnWidth === undefined) parsed.moduleColumnWidth = 0;
       if (!parsed.timeColumnWidth) parsed.timeColumnWidth = 59;
       migrateOldWidths(parsed);
@@ -2827,7 +2827,7 @@ export default function Dashboard() {
       [0,1,2,3,4,5,6,21,22,23].forEach(i => { if (parsed.timeSlotHeights[i] < 36) parsed.timeSlotHeights[i] = 36; });
       if (!parsed.timeSlotHeight) parsed.timeSlotHeight = 36;
       if (!parsed.courseRowHeight) parsed.courseRowHeight = 48;
-      if (!parsed.otherRowHeight) parsed.otherRowHeight = 57;
+      if (!parsed.otherRowHeight || parsed.otherRowHeight < 57) parsed.otherRowHeight = 57;
       if (parsed.moduleColumnWidth === undefined) parsed.moduleColumnWidth = 0;
       if (!parsed.timeColumnWidth) parsed.timeColumnWidth = 59;
       migrateOldWidths(parsed);
