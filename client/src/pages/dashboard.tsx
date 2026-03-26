@@ -9796,7 +9796,7 @@ export default function Dashboard() {
                                   ? 'border-white/10 bg-white/5 cursor-default'
                                   : reviewCheckedIds.has(item.id)
                                     ? 'border-green-500 bg-green-500/30 cursor-pointer'
-                                    : 'border-white/25 hover:border-white/40 cursor-pointer'
+                                    : 'border-white/50 bg-white/10 hover:border-white/70 cursor-pointer'
                               }`}
                               onClick={() => {
                                 if (reviewMode === 'individual') {
