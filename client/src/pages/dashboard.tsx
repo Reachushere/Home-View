@@ -11311,7 +11311,7 @@ export default function Dashboard() {
                       <span data-countdown-bullet={next.id} style={{ color: isDueZero ? '#dc2626' : '#ffffff', fontSize: '14px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span>
                       {isDueZero ? (
                         <>
-                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>DUE TODAY:</span>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}>DUE TODAY:</span>
                           <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: next.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{next.title}</span>
                         </>
                       ) : (
@@ -11355,7 +11355,7 @@ export default function Dashboard() {
                       <span data-countdown-bullet={next.id} style={{ color: isDueZero2 ? '#dc2626' : '#ffffff', fontSize: '14px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span>
                       {isDueZero2 ? (
                         <>
-                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>DUE TODAY:</span>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}>DUE TODAY:</span>
                           <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: next.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{next.title}</span>
                         </>
                       ) : (
