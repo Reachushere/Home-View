@@ -279,13 +279,47 @@ export async function checkDailyDigest() {
 
       const isTravelling = getIsTravellingMode();
       if (!isTravelling) {
-        const taskList = upcomingTasks.map(t => t.title).join(", ");
         const hour = getEasternHour(new Date());
         const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
-        const voiceMsg = `${greeting}. You have ${upcomingTasks.length} task${upcomingTasks.length !== 1 ? 's' : ''} due soon: ${taskList}.`;
+
+        const tomorrowStart = new Date(now);
+        tomorrowStart.setDate(tomorrowStart.getDate() + 1);
+        tomorrowStart.setHours(0, 0, 0, 0);
+        const tomorrowEnd = new Date(tomorrowStart);
+        tomorrowEnd.setDate(tomorrowEnd.getDate() + 1);
+        const day2End = new Date(tomorrowEnd);
+        day2End.setDate(day2End.getDate() + 1);
+
+        const tomorrowTasks = upcomingTasks.filter(t => {
+          const d = new Date(t.dueDate);
+          return d >= tomorrowStart && d < tomorrowEnd;
+        });
+        const day2Tasks = upcomingTasks.filter(t => {
+          const d = new Date(t.dueDate);
+          return d >= tomorrowEnd && d < day2End;
+        });
+        const day3Tasks = upcomingTasks.filter(t => {
+          const d = new Date(t.dueDate);
+          return d >= day2End;
+        });
+
+        let voiceMsg = `${greeting}.`;
+        if (tomorrowTasks.length > 0) {
+          const tomorrowList = tomorrowTasks.map(t => t.title).join(", ");
+          voiceMsg += ` You have ${tomorrowTasks.length} task${tomorrowTasks.length !== 1 ? 's' : ''} due tomorrow: ${tomorrowList}.`;
+        } else {
+          voiceMsg += ` No tasks due tomorrow.`;
+        }
+        if (day2Tasks.length > 0) {
+          voiceMsg += ` Also, ${day2Tasks.length} task${day2Tasks.length !== 1 ? 's' : ''} the day after.`;
+        }
+        if (day3Tasks.length > 0) {
+          voiceMsg += ` And ${day3Tasks.length} more in 3 days.`;
+        }
+
         const echoResult = await sendEchoVoiceAnnouncement(voiceMsg);
         if (echoResult.success) {
-          console.log(`[Reminder] Daily digest Echo announcement sent`);
+          console.log(`[Reminder] Daily digest Echo announcement sent (${tomorrowTasks.length} tomorrow, ${day2Tasks.length} day2, ${day3Tasks.length} day3)`);
         } else {
           console.error(`[Reminder] Daily digest Echo announcement failed:`, echoResult.error);
         }
