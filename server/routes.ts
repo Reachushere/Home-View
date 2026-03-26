@@ -7621,27 +7621,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
               await storage.updateFile(persisted.fileId, { lastChunkIndex: persisted.chunkIndex });
               console.log(`[PlaybackRecovery] Saved chunk progress ${persisted.chunkIndex} for file ${persisted.fileId}`);
             } catch {}
-
-            const stopEntities = [NEST_SPEAKER_ENTITY, CAT_WR_HA_VOICE_ENTITY, ...CAT_ECHO_ENTITIES];
-            await Promise.allSettled(stopEntities.map(entity =>
-              haServiceCall('media_player/media_stop', { entity_id: entity }, `Stop ${entity} on recovery`)
-            ));
-            console.log(`[PlaybackRecovery] Stopped all cat washroom speakers`);
-            await new Promise(r => setTimeout(r, 3000));
-
-            const cleanName = persisted.fileName.replace(/\.pdf$/i, '').replace(/[_-]+/g, ' ').trim();
-            const chunkMsg = `chunk ${persisted.chunkIndex + 1} of ${persisted.totalChunks}`;
-            const message = `Playback of ${cleanName} has been stopped. Your position at ${chunkMsg} has been saved.`;
-            try {
-              await haServiceCall('tts/speak', {
-                entity_id: HA_CLOUD_TTS_ENTITY,
-                media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
-                message
-              }, 'Recovery TTS');
-              console.log(`[PlaybackRecovery] Notified user via HA Voice`);
-            } catch (e: any) {
-              console.warn(`[PlaybackRecovery] Could not notify user: ${e.message}`);
-            }
+            console.log(`[PlaybackRecovery] Progress saved silently — no announcement, no speaker stop`);
             await clearPlaybackSession();
           } else {
             console.log(`[PlaybackRecovery] File ${persisted.fileId} not found or already listened — clearing`);
