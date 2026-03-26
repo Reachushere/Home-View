@@ -7846,25 +7846,50 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
     const tabletSetupPromise = (async () => {
       try {
-        for (const cmd of ['input keyevent KEYCODE_WAKEUP', 'settings put system screen_brightness 255']) {
-          await haServiceCall('androidtv/adb_command', { entity_id: 'media_player.tablet_cat', command: cmd }, 'Tablet ADB');
+        const tabletEntity = 'media_player.tablet_cat';
+        const tabletSteps = [
+          { cmd: 'input keyevent KEYCODE_WAKEUP', label: 'wakeup' },
+          { cmd: 'settings put system screen_brightness 255', label: 'brightness' },
+        ];
+        for (const step of tabletSteps) {
+          try {
+            await haServiceCall('androidtv/adb_command', { entity_id: tabletEntity, command: step.cmd }, 'Tablet ADB');
+            console.log(`${logPrefix} Tablet ${step.label}: OK`);
+          } catch (e: any) {
+            console.error(`${logPrefix} Tablet ${step.label}: FAILED — ${e.message}`);
+          }
         }
         await new Promise(r => setTimeout(r, 1500));
-        await haServiceCall('androidtv/adb_command', {
-          entity_id: 'media_player.tablet_cat',
-          command: `am start --activity-clear-task -a android.intent.action.VIEW -d "${readerUrl}" com.amazon.cloud9`
-        }, 'Tablet ADB Nav');
+        try {
+          await haServiceCall('androidtv/adb_command', {
+            entity_id: tabletEntity,
+            command: `am start --activity-clear-task -a android.intent.action.VIEW -d "${readerUrl}" com.amazon.cloud9`
+          }, 'Tablet ADB Nav');
+          console.log(`${logPrefix} Tablet open URL: OK`);
+        } catch (e: any) {
+          console.error(`${logPrefix} Tablet open URL: FAILED — ${e.message}`);
+          await new Promise(r => setTimeout(r, 2000));
+          try {
+            await haServiceCall('androidtv/adb_command', {
+              entity_id: tabletEntity,
+              command: `am start --activity-clear-task -a android.intent.action.VIEW -d "${readerUrl}" com.amazon.cloud9`
+            }, 'Tablet ADB Nav Retry');
+            console.log(`${logPrefix} Tablet open URL retry: OK`);
+          } catch (e2: any) {
+            console.error(`${logPrefix} Tablet open URL retry: FAILED — ${e2.message}`);
+          }
+        }
         await new Promise(r => setTimeout(r, 1000));
         await haServiceCall('androidtv/adb_command', {
-          entity_id: 'media_player.tablet_cat',
+          entity_id: tabletEntity,
           command: 'settings put global policy_control immersive.full=com.amazon.cloud9'
-        }, 'Tablet ADB');
+        }, 'Tablet ADB').catch((e: any) => console.error(`${logPrefix} Tablet immersive: FAILED — ${e.message}`));
         await haServiceCall('androidtv/adb_command', {
-          entity_id: 'media_player.tablet_cat', command: 'input keyevent KEYCODE_F11'
-        }, 'Tablet ADB');
-        console.log(`${logPrefix} Tablet: wakeup + brightness + Silk same-tab URL + immersive + F11 fullscreen`);
+          entity_id: tabletEntity, command: 'input keyevent KEYCODE_F11'
+        }, 'Tablet ADB').catch((e: any) => console.error(`${logPrefix} Tablet F11: FAILED — ${e.message}`));
+        console.log(`${logPrefix} Tablet setup complete`);
       } catch (e: any) {
-        console.log(`${logPrefix} Tablet setup error: ${e.message}`);
+        console.error(`${logPrefix} Tablet setup error: ${e.message}`);
       }
     })();
 
@@ -7877,11 +7902,15 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         console.log(`${logPrefix} Fire Stick + Samsung TV turned on`);
         await new Promise(resolve => setTimeout(resolve, 3000));
 
-        try {
-          await haServiceCall('media_player/select_source', { entity_id: CAT_TV_ENTITY, source: 'HDMI1' }, 'TV Source');
-          console.log(`${logPrefix} Samsung TV switched to Fire Stick HDMI input`);
-        } catch (e: any) {
-          console.log(`${logPrefix} Samsung TV source switch error: ${e.message}`);
+        for (let srcAttempt = 1; srcAttempt <= 3; srcAttempt++) {
+          try {
+            await haServiceCall('media_player/select_source', { entity_id: CAT_TV_ENTITY, source: 'HDMI1' }, 'TV Source');
+            console.log(`${logPrefix} Samsung TV switched to Fire Stick HDMI input (attempt ${srcAttempt})`);
+            break;
+          } catch (e: any) {
+            console.error(`${logPrefix} Samsung TV source switch attempt ${srcAttempt}/3: ${e.message}`);
+            if (srcAttempt < 3) await new Promise(r => setTimeout(r, 2000));
+          }
         }
 
         await openUrlOnFireStick(haUrl, 'media_player.fire_stick_cat_wr', tvFollowUrl);
