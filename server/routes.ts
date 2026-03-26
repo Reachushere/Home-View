@@ -9733,6 +9733,7 @@ document.body.removeChild(a);
         console.log(`[Cat Lights] Fire Stick + Samsung TV turn-off sent`);
         catLightsPromptPending = false;
         catWashPlaybackTrigger = null;
+        await clearPlaybackSession();
         console.log(`[Cat Lights] Stopped: ${stopped.join(', ') || 'nothing was playing'}`);
         return res.json({ action: "stopped", reason: "Light turned off", stoppedItems: stopped });
       }
@@ -9769,6 +9770,17 @@ document.body.removeChild(a);
           return res.json({ action: "skipped", reason: "Playback already active", currentFile: catWashPlaybackState.fileName });
         }
       }
+
+      try {
+        const verifyResp = await fetch(`${haUrl0}/api/states/${CAT_LIGHTS_ENTITY}`, { headers: haHeaders0 });
+        if (verifyResp.ok) {
+          const verifyData = await verifyResp.json();
+          if (verifyData?.state === 'off') {
+            console.log(`[Cat Lights] Body said ON but HA confirms light is OFF — aborting`);
+            return res.json({ action: "ignored", reason: "Light actually off (verified)" });
+          }
+        }
+      } catch {}
 
       catLightsLastPromptAt = Date.now();
       catLightsPromptPending = true;
