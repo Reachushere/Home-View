@@ -22541,11 +22541,8 @@ export default function Dashboard() {
                   left: `${effectiveDividerPct}%`,
                   width: '6px',
                   marginLeft: '-3px',
-                  cursor: 'col-resize',
                   zIndex: 50,
                 }}
-                onMouseDown={handleHwDividerDragStart}
-                onTouchStart={handleHwDividerDragStart}
                 data-testid="hw-divider-handle"
               />
 
