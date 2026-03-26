@@ -18658,10 +18658,20 @@ export default function Dashboard() {
               </div>
             </div>
           <div ref={calendarBorderRef} className="shadow-lg border border-white flex flex-col relative" style={{ background: '#faf8f5', borderRadius: '8px', overflow: 'hidden', height: 'calc(100% - 2px)', width: 'calc(100%)', marginLeft: '1px', marginTop: '-2px' }}>
-            {/* Progress/Saturday divider line - red separator on left border of Saturday column */}
-            <div className="absolute top-0 bottom-0 w-[3px] z-50 pointer-events-none overflow-hidden red-separator-shimmer" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 1px)`, backgroundColor: '#ef4444' }}>
-              <div className="absolute inset-0 red-separator-shimmer-sweep" />
+            {/* Progress/Saturday divider line - grey separator on left border of Saturday column */}
+            <div className="absolute top-0 bottom-0 w-[3px] z-50 pointer-events-none overflow-hidden" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 1px)`, backgroundColor: '#888888' }}>
             </div>
+            {/* Red separator on left border of today column */}
+            {(() => {
+              const now = new Date();
+              const todayIdx = weekDays.findIndex(d => isSameDayET(d, now));
+              if (todayIdx < 0) return null;
+              return (
+                <div className="absolute top-0 bottom-0 w-[3px] z-50 pointer-events-none overflow-hidden red-separator-shimmer" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${gridSizes.dayColumnWidths.slice(0, todayIdx).reduce((a: number, b: number) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 1px)`, backgroundColor: '#ef4444' }}>
+                  <div className="absolute inset-0 red-separator-shimmer-sweep" />
+                </div>
+              );
+            })()}
             
             <div ref={calendarContentRef} className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" style={{ borderRadius: '8px' }} onClick={() => setSelectedTaskId(null)}>
             
