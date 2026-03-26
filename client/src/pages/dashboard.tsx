@@ -22175,7 +22175,7 @@ export default function Dashboard() {
                           const tFs = '8';
                           const tFw = isActive ? '450' : '350';
                           const tFs2 = '7';
-                          const tFill = '#ffffff';
+                          const tFill = isActive ? '#1a1a2e' : '#1a1a2e';
                           return semTabs.indexOf(tab) === semTabs.length - 1 ? (
                           <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">2029</text>
                         ) : (tab.letter === 'F' && tab.year === '28') ? (
