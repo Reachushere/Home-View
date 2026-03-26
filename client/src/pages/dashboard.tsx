@@ -19049,7 +19049,8 @@ export default function Dashboard() {
                 
                 // Calculate how many tasks this course has in the current week to set dynamic height
                 const courseTaskCount = tasks?.filter(task => {
-                  if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
+                  const courseCode = course.name.split(' - ')[0]?.trim().toUpperCase() || '';
+                  if (!courseCode || !task.courseName?.toUpperCase().startsWith(courseCode)) return false;
                   if (task.isCompleted) return false;
                   if (task.type === 'other') return false;
                   const taskDueDate = startOfDayET(new Date(task.dueDate));
@@ -19127,8 +19128,9 @@ export default function Dashboard() {
                   {(() => {
                     const cwWeekStart = startOfDayET(weekDays[0]);
                     const cwWeekEnd = startOfDayET(addDays(weekDays[5], 1));
+                    const courseCodeUpper = course.name.split(' - ')[0]?.trim().toUpperCase() || '';
                     const courseWeekTasks = (allTasks?.filter(task => {
-                      if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
+                      if (!courseCodeUpper || !task.courseName?.toUpperCase().startsWith(courseCodeUpper)) return false;
                       if (task.isCompleted) return false;
                       if (task.type === 'other') return false;
                       const taskDueDate = startOfDayET(new Date(task.dueDate));
@@ -19221,7 +19223,7 @@ export default function Dashboard() {
                     const cellDate = startOfDayET(day);
                     
                     const dueTasks = allTasks?.filter(task => {
-                      if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
+                      if (!courseCodeUpper || !task.courseName?.toUpperCase().startsWith(courseCodeUpper)) return false;
                       if (task.isCompleted) return false;
                       if (task.type === 'other') return false;
                       const taskDueDate = startOfDayET(new Date(task.dueDate));
@@ -19229,7 +19231,7 @@ export default function Dashboard() {
                     }) || [];
                     
                     const prepTasks = allTasks?.filter(task => {
-                      if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
+                      if (!courseCodeUpper || !task.courseName?.toUpperCase().startsWith(courseCodeUpper)) return false;
                       if (task.isCompleted) return false;
                       if (task.type === 'other') return false;
                       if (!task.startDate) return false;
