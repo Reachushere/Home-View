@@ -18540,23 +18540,6 @@ export default function Dashboard() {
               );
             })}
           </div>
-          {/* TODAY label - positioned above calendar card */}
-          <div className="grid w-full pointer-events-none" style={{ gridTemplateColumns: getGridTemplateColumns(), height: '0px', position: 'relative', zIndex: 60 }}>
-            <div />
-            {gridSizes.moduleColumnWidth > 0 && <div />}
-            {weekDays.map((day, idx) => {
-              const isToday = isSameDayET(day, new Date());
-              return (
-                <div key={idx} style={{ position: 'relative' }}>
-                  {isToday && (
-                    <div className={`absolute right-0 flex items-center justify-center overflow-hidden`} style={{ backgroundColor: '#FFFF00', height: '14px', bottom: '0px', padding: '0 2px', left: '2px' }}>
-                      <span className="font-medium text-black" style={{ fontSize: '9.5px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', letterSpacing: '0.3px' }}>{format(day, 'EEEE, MMMM d, yyyy')}</span>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
           <div className="flex-1 min-h-0 relative" style={{ overflow: 'visible' }}>
             <div
               style={{ position: 'absolute', left: '9px', top: '-28px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
