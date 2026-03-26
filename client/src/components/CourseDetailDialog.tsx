@@ -447,7 +447,12 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   };
 
   const sortedTasks = useMemo(() => {
-    if (sortField === 'manual') return courseTasks;
+    const pushCompleted = (list: typeof courseTasks) => {
+      const incomplete = list.filter(t => !t.isCompleted);
+      const completed = list.filter(t => t.isCompleted);
+      return [...incomplete, ...completed];
+    };
+    if (sortField === 'manual') return pushCompleted(courseTasks);
     const sorted = [...courseTasks].sort((a, b) => {
       let cmp = 0;
       switch (sortField) {
@@ -465,7 +470,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
       }
       return sortDir === 'desc' ? -cmp : cmp;
     });
-    return sorted;
+    return pushCompleted(sorted);
   }, [courseTasks, sortField, sortDir]);
 
   const [dragId, setDragId] = useState<number | null>(null);
