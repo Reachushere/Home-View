@@ -2877,10 +2877,10 @@ export default function PDFReaderPage() {
 
             <div className="overflow-hidden rounded-lg mb-2" style={{ background: 'rgba(0,0,0,0.4)', border: `1px solid ${waveColor}33`, height: '28px', position: 'relative' }}>
               <div className="absolute inset-0 flex items-center" style={{ animation: 'ctrl-marquee 18s linear infinite', whiteSpace: 'nowrap', paddingLeft: '100%' }} data-testid="ctrl-scrolling-ticker">
-                <span className="text-[12px] font-medium mx-6" style={{ color: waveColor, fontFamily: "'Courier New', monospace", textShadow: `0 0 8px ${waveColor}88` }}>
+                <span className="text-[12px] font-medium mx-6" style={{ color: '#ffffff', fontFamily: "'Courier New', monospace", textShadow: '0 0 8px rgba(255,255,255,0.5)' }}>
                   {courseCodeFromFolder ? `${courseCodeFromFolder}` : ''}{courseCodeFromFolder ? ' · ' : ''}{rawFileName?.replace(/\.pdf$/i, '') || 'No file loaded'}{totalChunks > 0 ? ` · Chunk ${currentChunk + 1}/${totalChunks}` : ''}{isPlaying ? ' · ▶ Playing' : isPaused ? ' · ⏸ Paused' : ' · ■ Stopped'}
                 </span>
-                <span className="text-[12px] font-medium mx-6" style={{ color: waveColor, fontFamily: "'Courier New', monospace", textShadow: `0 0 8px ${waveColor}88` }}>
+                <span className="text-[12px] font-medium mx-6" style={{ color: '#ffffff', fontFamily: "'Courier New', monospace", textShadow: '0 0 8px rgba(255,255,255,0.5)' }}>
                   {courseCodeFromFolder ? `${courseCodeFromFolder}` : ''}{courseCodeFromFolder ? ' · ' : ''}{rawFileName?.replace(/\.pdf$/i, '') || 'No file loaded'}{totalChunks > 0 ? ` · Chunk ${currentChunk + 1}/${totalChunks}` : ''}{isPlaying ? ' · ▶ Playing' : isPaused ? ' · ⏸ Paused' : ' · ■ Stopped'}
                 </span>
               </div>
