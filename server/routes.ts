@@ -8310,37 +8310,52 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           console.error(`${logPrefix} Fire Stick state check error: ${e.message}`);
         }
 
-        const turnOnResults = await Promise.allSettled([
-          haServiceCall('media_player/turn_on', { entity_id: 'media_player.fire_stick_cat_wr' }, 'FireStick TurnOn'),
-          haServiceCall('media_player/turn_on', { entity_id: CAT_TV_ENTITY }, 'Samsung TV TurnOn'),
-        ]);
-        turnOnResults.forEach((r, i) => {
-          const label = i === 0 ? 'Fire Stick' : 'Samsung TV';
-          if (r.status === 'fulfilled') console.log(`${logPrefix} ${label} turn_on: OK`);
-          else console.error(`${logPrefix} ${label} turn_on: FAILED — ${(r as any).reason?.message || r.reason}`);
-        });
+        let samsungAvailable = false;
+        try {
+          await haServiceCall('media_player/turn_on', { entity_id: CAT_TV_ENTITY }, 'Samsung TV TurnOn');
+          console.log(`${logPrefix} Samsung TV turn_on: OK`);
+          samsungAvailable = true;
+        } catch (e: any) {
+          console.error(`${logPrefix} Samsung TV turn_on failed: ${e.message}`);
+        }
         console.log(`${logPrefix} Waiting 12s for TV to boot...`);
         await new Promise(resolve => setTimeout(resolve, 12000));
 
-        for (let srcAttempt = 1; srcAttempt <= 5; srcAttempt++) {
+        let tvOpened = false;
+        if (samsungAvailable) {
+          console.log(`${logPrefix} Opening URL on Samsung TV browser via play_media...`);
           try {
-            await haServiceCall('media_player/select_source', { entity_id: CAT_TV_ENTITY, source: 'HDMI1' }, `TV Source ${srcAttempt}`);
-            console.log(`${logPrefix} Samsung TV HDMI1 selected (attempt ${srcAttempt})`);
-            break;
+            await haServiceCall('media_player/play_media', { entity_id: CAT_TV_ENTITY, media_content_id: tvFollowUrl, media_content_type: 'url' }, 'Samsung TV play_media URL');
+            console.log(`${logPrefix} Samsung TV play_media URL: OK`);
+            tvOpened = true;
           } catch (e: any) {
-            console.error(`${logPrefix} Samsung TV HDMI1 attempt ${srcAttempt}/5: ${e.message}`);
-            if (srcAttempt < 5) await new Promise(r => setTimeout(r, 5000));
+            console.error(`${logPrefix} Samsung TV play_media URL failed: ${e.message}`);
           }
         }
 
-        console.log(`${logPrefix} Opening URL on Fire Stick...`);
-        const tvOpened = await openUrlOnFireStick(haUrl, 'media_player.fire_stick_cat_wr', tvFollowUrl);
-        console.log(`${logPrefix} TV URL result: success=${tvOpened}`);
         if (!tvOpened) {
-          console.log(`${logPrefix} TV URL open failed — retrying after 6s`);
-          await new Promise(r => setTimeout(r, 6000));
-          const tvRetry = await openUrlOnFireStick(haUrl, 'media_player.fire_stick_cat_wr', tvFollowUrl);
-          console.log(`${logPrefix} TV URL retry result: success=${tvRetry}`);
+          console.log(`${logPrefix} Samsung browser failed — falling back to Fire Stick + Silk...`);
+          try {
+            await haServiceCall('media_player/turn_on', { entity_id: 'media_player.fire_stick_cat_wr' }, 'FireStick TurnOn');
+            console.log(`${logPrefix} Fire Stick turn_on: OK`);
+          } catch (e: any) {
+            console.error(`${logPrefix} Fire Stick turn_on: ${e.message}`);
+          }
+          await new Promise(r => setTimeout(r, 8000));
+          try {
+            await haServiceCall('media_player/select_source', { entity_id: CAT_TV_ENTITY, source: 'HDMI' }, 'TV Source HDMI');
+            console.log(`${logPrefix} Samsung TV HDMI selected`);
+          } catch (e: any) {
+            console.error(`${logPrefix} Samsung TV HDMI select: ${e.message}`);
+          }
+          await new Promise(r => setTimeout(r, 3000));
+          const fsOpened = await openUrlOnFireStick(haUrl, 'media_player.fire_stick_cat_wr', tvFollowUrl);
+          console.log(`${logPrefix} Fire Stick URL result: success=${fsOpened}`);
+          if (!fsOpened) {
+            await new Promise(r => setTimeout(r, 6000));
+            const fsRetry = await openUrlOnFireStick(haUrl, 'media_player.fire_stick_cat_wr', tvFollowUrl);
+            console.log(`${logPrefix} Fire Stick URL retry: success=${fsRetry}`);
+          }
         }
         console.log(`${logPrefix} ====== TV SETUP COMPLETE ======`);
       } catch (e: any) {
