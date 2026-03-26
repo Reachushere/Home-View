@@ -9162,6 +9162,46 @@ export default function Dashboard() {
       return d >= wkStart && d <= wkEnd;
     });
   })();
+
+  const todayCourseTasks = useMemo(() => {
+    if (!allTasks || allTasks.length === 0) return [];
+    const today = startOfDayET(new Date());
+    const courseNames = (coursesData?.courses || []).map((c: any) => c.name?.split(' - ')[0]?.trim().toUpperCase()).filter(Boolean);
+    return allTasks.filter(t => {
+      if (t.isCompleted) return false;
+      if (t.type === 'class' || t.type === 'module' || t.type === 'other' || t.type === 'meeting' || t.type === 'reminder') return false;
+      if (!t.courseName) return false;
+      const tCode = t.courseName.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '');
+      if (!courseNames.some((cn: string) => cn.replace(/\s/g, '') === tCode)) return false;
+      return isSameDayET(new Date(t.dueDate), today);
+    });
+  }, [allTasks, coursesData?.courses]);
+
+  const tickerWithTodayTasks = useMemo(() => {
+    if (todayCourseTasks.length === 0) return thisWeekAnnouncements;
+    const courseGroups: Record<string, typeof todayCourseTasks> = {};
+    todayCourseTasks.forEach(t => {
+      const code = t.courseName?.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') || 'TASK';
+      if (!courseGroups[code]) courseGroups[code] = [];
+      courseGroups[code].push(t);
+    });
+    const syntheticItems = Object.entries(courseGroups).map(([code, tasks]) => {
+      const body = tasks.length === 1
+        ? `${code}: ${tasks[0].title} — due today`
+        : `${code}: ${tasks.length} tasks due today`;
+      return {
+        id: `today-tasks-${code}`,
+        courseName: code,
+        subject: body,
+        body: body,
+        snippet: body,
+        receivedAt: new Date().toISOString(),
+        _isTodayTask: true,
+      };
+    });
+    return [...syntheticItems, ...thisWeekAnnouncements];
+  }, [thisWeekAnnouncements, todayCourseTasks]);
+
   const d2lTickerHeight = 38;
 
   // Time slots for the day view - always show all 24 hours
@@ -12243,7 +12283,7 @@ export default function Dashboard() {
           <img src={d2lTickerLabel} alt="D2L" style={{ height: '38px', width: 'auto', objectFit: 'contain' }} />
         </div>
         <div className="flex-1 overflow-hidden relative h-full">
-          {thisWeekAnnouncements.length > 0 ? (
+          {tickerWithTodayTasks.length > 0 ? (
             <div ref={(el) => {
               if (!el) return;
               const applyAnim = () => {
@@ -12274,7 +12314,7 @@ export default function Dashboard() {
               }
             }} className="flex items-center h-full whitespace-nowrap" style={{ position: 'relative' }}>
               {(() => {
-                return thisWeekAnnouncements.map((a: any, i: number) => {
+                return tickerWithTodayTasks.map((a: any, i: number) => {
                   const timeAgo = (() => {
                     const diff = Date.now() - new Date(a.receivedAt || a.date).getTime();
                     const mins = Math.floor(diff / 60000);
@@ -12287,8 +12327,9 @@ export default function Dashboard() {
                   const snippetText = a.snippet || a.body || '';
                   const cleanSnippet = snippetText.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
                   const displaySnippet = cleanSnippet && cleanSnippet !== a.subject ? ` — ${cleanSnippet.slice(0, 120)}${cleanSnippet.length > 120 ? '…' : ''}` : '';
+                  const isTodayTask = !!(a as any)._isTodayTask;
                   return (
-                    <span key={`${a.id}-${i}`} className="inline-flex items-center gap-1.5 mx-8" data-testid={`announcement-${a.id}-${i}`}>
+                    <span key={`${a.id}-${i}`} className={`inline-flex items-center gap-1.5 mx-8 ${isTodayTask ? 'animate-balloon-pulse' : ''}`} data-testid={`announcement-${a.id}-${i}`}>
                       <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', verticalAlign: 'middle' }}>
                         <img src={tmuBoxesLogo} alt="TMU" style={{ height: '27px', width: 'auto', objectFit: 'contain' }} />
                         <span className="font-bold" style={{ position: 'absolute', color: '#ffffff', fontSize: '8px', letterSpacing: '0.5px', textAlign: 'center', lineHeight: '1', textShadow: '0 0 2px rgba(0,0,0,0.5)', left: '50%', top: '50%', transform: 'translate(calc(-50% + -1px), calc(-50% + 3px))', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>{(() => {
@@ -12302,9 +12343,9 @@ export default function Dashboard() {
                         return (<>{courseCode && <span style={{ marginBottom: '-2px' }}>{courseCode}</span>}{nameWords.map((w: string, wi: number) => (<span key={wi} style={{ fontSize: '7px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: '1', whiteSpace: 'nowrap' }}>{w}</span>))}</>);
                       })()}</span>
                       </span>
-                      <span className="text-[16px] text-white/90 font-medium">{a.courseName === 'Custom' ? (a.body || a.snippet || '') : a.subject}</span>
-                      {a.courseName !== 'Custom' && displaySnippet && <span className="text-[15px] text-white/55">{displaySnippet}</span>}
-                      <span className="text-[14px] text-white/60 ml-1">{timeAgo}</span>
+                      <span className={`text-[16px] font-medium ${isTodayTask ? 'text-yellow-300' : 'text-white/90'}`}>{a.courseName === 'Custom' ? (a.body || a.snippet || '') : a.subject}</span>
+                      {!isTodayTask && a.courseName !== 'Custom' && displaySnippet && <span className="text-[15px] text-white/55">{displaySnippet}</span>}
+                      {!isTodayTask && <span className="text-[14px] text-white/60 ml-1">{timeAgo}</span>}
                     </span>
                   );
                 });
