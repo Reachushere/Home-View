@@ -2475,38 +2475,26 @@ export default function PDFReaderPage() {
           )}
 
           {catWashFollow && !followOnly && followState?.active && (
-            <div className="m-4 p-4 rounded-lg border border-blue-400/30" style={{ background: 'rgba(30,60,120,0.4)' }}>
-              <div className="flex items-center justify-between mb-2">
+            <div className="mx-4 mt-4 mb-2 p-3 rounded-lg border border-blue-400/30 flex items-center justify-between" style={{ background: 'rgba(30,60,120,0.4)' }}>
+              <div className="flex items-center gap-3">
                 <span className="text-sm font-medium text-blue-300">Following Cat Wash Playback</span>
                 <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded-full">
                   Chunk {followState.chunkIndex + 1} of {followState.totalChunks} ({Math.round(((followState.chunkIndex + followState.progress) / followState.totalChunks) * 100)}%)
                 </span>
               </div>
-              <div className="bg-white/10 rounded-full h-2 overflow-hidden mb-3">
-                <div className="bg-blue-400 h-full transition-all duration-300" style={{ width: `${Math.round(((followState.chunkIndex + followState.progress) / followState.totalChunks) * 100)}%` }} />
-              </div>
-              {followState.words.length > 0 && (
-                <div className="overflow-y-auto p-4 rounded border border-white/10 text-xl leading-relaxed" style={{ background: 'rgba(0,0,0,0.3)', maxHeight: 'calc(100vh - 340px)' }} data-testid="follow-text-display-tablet" id="follow-scroll-container-tablet">
-                  {followState.words.map((word, idx) => (
-                    <span key={idx} ref={idx === followState.estimatedWordIndex ? (el) => { if (el) { const container = document.getElementById('follow-scroll-container-tablet'); if (container) { const elRect = el.getBoundingClientRect(); const contRect = container.getBoundingClientRect(); const elCenter = elRect.top - contRect.top + container.scrollTop; container.scrollTo({ top: elCenter - contRect.height / 3, behavior: 'smooth' }); } } } : undefined} className={`${idx === followState.estimatedWordIndex ? "bg-yellow-400/80 text-black font-semibold px-0.5 rounded" : idx < followState.estimatedWordIndex ? "text-white/30" : "text-white/60"} transition-colors duration-100`}>
-                      {word}{" "}
-                    </span>
-                  ))}
-                </div>
-              )}
-              <button className="mt-3 text-xs text-red-400 hover:text-red-300 underline" onClick={() => fetch("/api/webhook/voice-command", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ command: "stop" }) }).then(() => { setFollowState(null); setCatWashPaused(false); })} data-testid="stop-catwash-playback">
+              <button className="text-xs text-red-400 hover:text-red-300 underline" onClick={() => fetch("/api/webhook/voice-command", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ command: "stop" }) }).then(() => { setFollowState(null); setCatWashPaused(false); })} data-testid="stop-catwash-playback">
                 Stop Playback
               </button>
             </div>
           )}
 
           {catWashFollow && !followOnly && !autoplayParam && !followState?.active && (
-            <div className="m-4 p-4 rounded-lg border border-white/10 text-center" style={{ background: 'rgba(0,0,0,0.3)' }}>
+            <div className="mx-4 mt-4 mb-2 p-3 rounded-lg border border-white/10 text-center" style={{ background: 'rgba(0,0,0,0.3)' }}>
               <span className="text-sm text-white/50">{catWashPaused ? 'Paused. Tap play to resume.' : 'Waiting for playback to start...'}</span>
             </div>
           )}
 
-          {!isEditingText && !followOnly && !(catWashFollow && followState?.active) && (
+          {!isEditingText && !followOnly && (
             <div className="p-4 space-y-3">
               {chunksList.map((chunk, idx) => {
                 const isActive = currentChunk === idx && isPlaying;
