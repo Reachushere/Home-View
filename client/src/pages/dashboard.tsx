@@ -19290,7 +19290,7 @@ export default function Dashboard() {
                       OTHER
                     </div>
                     {gridSizes.moduleColumnWidth > 0 && (
-                      <div style={{ backgroundColor: '#000000' }} />
+                      <div style={{ backgroundColor: 'rgba(107, 114, 128, 0.20)' }} />
                     )}
                     {weekDays.map((day, dayIdx) => {
                       const cellDate = startOfDayET(day);
@@ -19308,7 +19308,7 @@ export default function Dashboard() {
                         <div
                           key={dayIdx}
                           className="overflow-hidden relative flex flex-col gap-0.5 pt-0.5"
-                          style={{ backgroundColor: isOtherToday ? '#1a1a1a' : '#000000', padding: `2px 2px 2px ${4 + DAY_COL_LEFT_REDUCTION}px`, borderBottom: isOtherToday ? '1px dotted #444' : '1.5px dotted rgba(255,255,255,0.15)' }}
+                          style={{ backgroundColor: isOtherToday ? '#e4ecf5' : 'rgba(107, 114, 128, 0.30)', padding: `2px 2px 2px ${4 + DAY_COL_LEFT_REDUCTION}px`, borderBottom: isOtherToday ? '1px dotted #666' : '1.5px dotted rgba(107, 114, 128, 0.7)' }}
                           data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
                         >
                           <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', borderLeft: '1px solid rgba(0,0,0,0.12)', zIndex: 5, pointerEvents: 'none' }} />
@@ -19323,8 +19323,8 @@ export default function Dashboard() {
                                 key={task.id}
                                 className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer w-full min-w-0 ${isUnackedReminder ? "animate-reminder-pulse" : isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                                 style={{
-                                  backgroundColor: isUnackedReminder ? 'rgba(220, 38, 38, 0.35)' : 'rgba(255, 255, 255, 0.1)',
-                                  borderColor: isUnackedReminder ? 'rgba(220, 38, 38, 0.6)' : 'rgba(255, 255, 255, 0.25)',
+                                  backgroundColor: isUnackedReminder ? 'rgba(220, 38, 38, 0.25)' : 'rgba(107, 114, 128, 0.25)',
+                                  borderColor: isUnackedReminder ? 'rgba(220, 38, 38, 0.6)' : 'rgba(107, 114, 128, 0.5)',
                                 }}
                                 title={task.title}
                                 data-testid={`other-task-${task.id}`}
@@ -19333,18 +19333,18 @@ export default function Dashboard() {
                                   checked={task.isCompleted || false}
                                   onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
                                   onClick={(e) => e.stopPropagation()}
-                                  className="h-3 w-3 shrink-0 border-white data-[state=checked]:bg-white data-[state=checked]:border-white"
+                                  className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
                                   data-testid={`checkbox-other-${task.id}`}
                                 />
                                 <span
                                   onClick={() => setEditingTask(task)}
-                                  className={`truncate font-bold text-white flex-1 min-w-0 cursor-pointer hover:opacity-80 ${task.isCompleted ? "line-through" : ""}`}
+                                  className={`truncate font-bold text-black flex-1 min-w-0 cursor-pointer hover:opacity-80 ${task.isCompleted ? "line-through" : ""}`}
                                 >
                                   {task.title}
                                 </span>
                                 {task.referenceLink && (
                                   <a href={task.referenceLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={task.referenceLink} data-testid={`link-icon-other-${task.id}`}>
-                                    <ExternalLink className="h-2.5 w-2.5 text-white/60 hover:text-white" />
+                                    <ExternalLink className="h-2.5 w-2.5 text-black/60 hover:text-black" />
                                   </a>
                                 )}
                               </div>
@@ -19369,16 +19369,16 @@ export default function Dashboard() {
                                 key={`proj-${proj.id}`}
                                 className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                                 style={{
-                                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                  borderColor: proj.color || 'rgba(255, 255, 255, 0.25)',
+                                  backgroundColor: 'rgba(107, 114, 128, 0.25)',
+                                  borderColor: proj.color || 'rgba(107, 114, 128, 0.5)',
                                   borderStyle: 'dashed',
                                 }}
                                 onClick={() => { setEditingProject(proj); setProjectDialogOpen(true); }}
                                 title={proj.name}
                                 data-testid={`other-project-${proj.id}`}
                               >
-                                <FolderKanban className="h-3 w-3 shrink-0" style={{ color: proj.color || '#9ca3af' }} />
-                                <span className="truncate font-bold text-white pl-0.5 flex-1 min-w-0">{proj.name}</span>
+                                <FolderKanban className="h-3 w-3 shrink-0" style={{ color: proj.color || '#6b7280' }} />
+                                <span className="truncate font-bold text-black pl-0.5 flex-1 min-w-0">{proj.name}</span>
                               </div>
                             );
                           })}
