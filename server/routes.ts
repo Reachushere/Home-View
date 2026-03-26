@@ -7623,17 +7623,15 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
             } catch {}
 
             const stopEntities = [NEST_SPEAKER_ENTITY, CAT_WR_HA_VOICE_ENTITY, ...CAT_ECHO_ENTITIES];
-            for (const entity of stopEntities) {
-              try {
-                await haServiceCall('media_player/media_stop', { entity_id: entity }, `Stop ${entity} on recovery`);
-              } catch {}
-            }
+            await Promise.allSettled(stopEntities.map(entity =>
+              haServiceCall('media_player/media_stop', { entity_id: entity }, `Stop ${entity} on recovery`)
+            ));
             console.log(`[PlaybackRecovery] Stopped all cat washroom speakers`);
+            await new Promise(r => setTimeout(r, 3000));
 
             const cleanName = persisted.fileName.replace(/\.pdf$/i, '').replace(/[_-]+/g, ' ').trim();
-            const message = persisted.status === 'paused'
-              ? `Bryn, the server restarted while playback of ${cleanName} was paused. Your position at chunk ${persisted.chunkIndex + 1} of ${persisted.totalChunks} has been saved.`
-              : `Bryn, the server restarted during playback of ${cleanName}. Your position at chunk ${persisted.chunkIndex + 1} of ${persisted.totalChunks} has been saved. You can resume next time.`;
+            const chunkMsg = `chunk ${persisted.chunkIndex + 1} of ${persisted.totalChunks}`;
+            const message = `Playback of ${cleanName} has been stopped. Your position at ${chunkMsg} has been saved.`;
             try {
               await haServiceCall('tts/speak', {
                 entity_id: HA_CLOUD_TTS_ENTITY,
