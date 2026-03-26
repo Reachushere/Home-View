@@ -19322,7 +19322,7 @@ export default function Dashboard() {
                           );
                         })()}
                         {isDayAfterToday && <div style={{ height: '15px', flexShrink: 0 }} />}
-                        <div className={`flex flex-col gap-0.5${cellHasScroll ? ' course-cell-scroll' : ''}`} style={{ overflowY: cellHasScroll ? 'auto' : 'visible', overflowX: 'hidden', flex: 1, minHeight: 0, ...(isDayToday ? { paddingTop: '15px' } : {}) }}>
+                        <div className={`flex flex-col gap-0.5${cellHasScroll ? ' course-cell-scroll' : ''}`} style={{ overflowY: cellHasScroll ? 'auto' : 'visible', overflowX: 'hidden', flex: 1, minHeight: 0, ...(cellHasScroll ? { maxHeight: isDayToday ? '83px' : '68px' } : {}), ...(isDayToday ? { paddingTop: '15px' } : {}) }}>
                         {/* Course-associated projects */}
                         {allProjects.filter(proj => {
                           if (!proj.courseName) return false;
