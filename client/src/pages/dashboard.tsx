@@ -22539,8 +22539,7 @@ export default function Dashboard() {
               if (lastRect) {
                 const upcomingTopLocal = calendarBorderTop || (calendarTop + 15);
                 const otherTop = lastRect.top + lastRect.height - upcomingTopLocal - firstRowOffset;
-                const calOtherRowHeight = gridSizes.courseRowHeight || 48;
-                const otherRowHeight = calOtherRowHeight;
+                const otherRowHeight = gridSizes.otherRowHeight || 36;
                 rows.push(
                   <div key="other-progress-row" style={{
                     position: 'absolute',
@@ -22548,7 +22547,7 @@ export default function Dashboard() {
                     left: 0,
                     right: 0,
                     height: `${otherRowHeight}px`,
-                    background: 'rgba(205, 204, 207, 0.75)',
+                    background: 'rgba(107, 114, 128, 0.30)',
                     zIndex: 41,
                     borderTop: '1.5px dotted black',
                     borderBottom: '1.5px dotted black',
