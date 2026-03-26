@@ -2292,7 +2292,7 @@ export default function PDFReaderPage() {
             <div className="flex items-center justify-between px-4 py-1.5 border-b border-white/10">
               <span className="text-[10px] uppercase tracking-wider text-white/50 font-semibold">Filtered Text</span>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] text-white/40">{checkedChunks.size}/{totalChunks} chunks</span>
+                <span className="text-[14px] font-semibold text-white">{checkedChunks.size}/{totalChunks} chunks</span>
               </div>
             </div>
             {searchOpen && (
