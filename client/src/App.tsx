@@ -22,8 +22,10 @@ function useAutoFullscreen() {
   const [requested, setRequested] = useState(false);
   const isSilk = typeof navigator !== 'undefined' && 
     (/\bSilk\b/i.test(navigator.userAgent) || /\bKF[A-Z]{2,4}\b/.test(navigator.userAgent) || /\bFireTV\b/i.test(navigator.userAgent) || /\bAFT[A-Z]\b/.test(navigator.userAgent));
+  const urlWantsFullscreen = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('fullscreen') === 'true';
+  const shouldFullscreen = isSilk || urlWantsFullscreen;
   useEffect(() => {
-    if (!isSilk) return;
+    if (!shouldFullscreen) return;
     const isInIframe = window.self !== window.top;
     const heightVal = isInIframe ? '100%' : '100vh';
     const widthVal = isInIframe ? '100%' : '100vw';
@@ -33,7 +35,7 @@ function useAutoFullscreen() {
     if (meta) {
       meta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
     }
-  }, [isSilk]);
+  }, [shouldFullscreen]);
 
   const requestFullscreen = useCallback(() => {
     if (requested) return;
@@ -46,7 +48,7 @@ function useAutoFullscreen() {
   }, [requested]);
 
   useEffect(() => {
-    if (!isSilk || requested) return;
+    if (!shouldFullscreen || requested) return;
     requestFullscreen();
     const interval = setInterval(() => {
       if (document.fullscreenElement) { setRequested(true); clearInterval(interval); return; }
@@ -64,7 +66,7 @@ function useAutoFullscreen() {
       document.removeEventListener('keydown', handler);
       window.removeEventListener('focus', handler);
     };
-  }, [isSilk, requested, requestFullscreen]);
+  }, [shouldFullscreen, requested, requestFullscreen]);
 }
 
 function Router() {
