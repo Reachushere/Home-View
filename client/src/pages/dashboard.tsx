@@ -9203,17 +9203,29 @@ export default function Dashboard() {
 
   const todayTaskTickerItems = useMemo(() => {
     if (todayCourseTasks.length === 0) return [];
-    const items: Array<{ id: string; courseName: string; subject: string; body: string; snippet: string; receivedAt: string; _isTodayTask: true }> = [];
+    const byCourse: Record<string, typeof todayCourseTasks> = {};
     todayCourseTasks.forEach(t => {
       const code = t.courseName?.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') || 'TASK';
       const taskId = `today-task-${t.id}`;
-      if (dismissedTodayTaskIds.has(taskId)) return;
+      const summaryId = `today-summary-${code}`;
+      if (dismissedTodayTaskIds.has(taskId) || dismissedTodayTaskIds.has(summaryId)) return;
+      if (!byCourse[code]) byCourse[code] = [];
+      byCourse[code].push(t);
+    });
+    const items: Array<{ id: string; courseName: string; subject: string; body: string; snippet: string; receivedAt: string; _isTodayTask: true }> = [];
+    Object.entries(byCourse).forEach(([code, tasks]) => {
+      if (tasks.length === 0) return;
+      const summaryId = `today-summary-${code}`;
+      const titles = tasks.map(t => t.title).join(', ');
+      const summaryText = tasks.length === 1
+        ? `${code}: ${tasks[0].title} — due today`
+        : `${code}: ${tasks.length} tasks due today — ${titles}`;
       items.push({
-        id: taskId,
+        id: summaryId,
         courseName: code,
-        subject: `${code}: ${t.title} — due today`,
-        body: `${code}: ${t.title} — due today`,
-        snippet: `${code}: ${t.title} — due today`,
+        subject: summaryText,
+        body: summaryText,
+        snippet: summaryText,
         receivedAt: new Date().toISOString(),
         _isTodayTask: true,
       });
