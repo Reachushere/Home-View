@@ -317,29 +317,31 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave }: Pr
                 </div>
               )}
             </div>
-            <div style={{ marginLeft: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <label className="text-white text-[9px] mb-1">Border</label>
-              <div className="relative" style={{ width: '20px', height: '20px' }}>
-                <div className="absolute inset-0 rounded-sm border border-white/30" style={{ backgroundColor: edit.borderColor || edit.labelStart }} />
-                <input type="color" value={(() => { const v = edit.borderColor; const m = v.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/); if (m) return `#${parseInt(m[1]).toString(16).padStart(2,'0')}${parseInt(m[2]).toString(16).padStart(2,'0')}${parseInt(m[3]).toString(16).padStart(2,'0')}`; return v.startsWith('#') ? v : '#6b7280'; })()} onChange={(e) => setEdit({ ...edit, borderColor: e.target.value })} className="absolute inset-0 opacity-0 cursor-pointer" style={{ width: '20px', height: '20px' }} data-testid="input-border-color-swatch" />
+            <div style={{ marginLeft: '12px', display: 'flex', gap: '6px', alignItems: 'flex-start', marginTop: '14px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <label className="text-white text-[9px] mb-1">Border</label>
+                <div className="relative" style={{ width: '20px', height: '20px' }}>
+                  <div className="absolute inset-0 rounded-sm border border-white/30" style={{ backgroundColor: edit.borderColor || edit.labelStart }} />
+                  <input type="color" value={(() => { const v = edit.borderColor; const m = v.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/); if (m) return `#${parseInt(m[1]).toString(16).padStart(2,'0')}${parseInt(m[2]).toString(16).padStart(2,'0')}${parseInt(m[3]).toString(16).padStart(2,'0')}`; return v.startsWith('#') ? v : '#6b7280'; })()} onChange={(e) => setEdit({ ...edit, borderColor: e.target.value })} className="absolute inset-0 opacity-0 cursor-pointer" style={{ width: '20px', height: '20px' }} data-testid="input-border-color-swatch" />
+                </div>
+                <input type="text" value={edit.borderColor} onChange={e => setEdit({ ...edit, borderColor: e.target.value })} className="bg-black/40 border border-white/20 rounded text-white text-[8px] px-1 py-0.5 font-mono mt-1 text-center" style={{ width: '56px' }} data-testid="input-border-color" />
               </div>
-              <input type="text" value={edit.borderColor} onChange={e => setEdit({ ...edit, borderColor: e.target.value })} className="bg-black/40 border border-white/20 rounded text-white text-[8px] px-1 py-0.5 font-mono mt-1 text-center" style={{ width: '56px' }} data-testid="input-border-color" />
-            </div>
-            <div style={{ marginLeft: '6px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <label className="text-white text-[9px] mb-1">Row BG</label>
-              <div className="relative" style={{ width: '20px', height: '20px' }}>
-                <div className="absolute inset-0 rounded-sm border border-white/30" style={{ backgroundColor: edit.courseRowColor || edit.labelStart }} />
-                <input type="color" value={(() => { const v = edit.courseRowColor; const m = v.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/); if (m) return `#${parseInt(m[1]).toString(16).padStart(2,'0')}${parseInt(m[2]).toString(16).padStart(2,'0')}${parseInt(m[3]).toString(16).padStart(2,'0')}`; return v.startsWith('#') ? v : '#6b7280'; })()} onChange={(e) => setEdit({ ...edit, courseRowColor: e.target.value })} className="absolute inset-0 opacity-0 cursor-pointer" style={{ width: '20px', height: '20px' }} data-testid="input-course-row-color-swatch" />
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <label className="text-white text-[9px] mb-1">Row BG</label>
+                <div className="relative" style={{ width: '20px', height: '20px' }}>
+                  <div className="absolute inset-0 rounded-sm border border-white/30" style={{ backgroundColor: edit.courseRowColor || edit.labelStart }} />
+                  <input type="color" value={(() => { const v = edit.courseRowColor; const m = v.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/); if (m) return `#${parseInt(m[1]).toString(16).padStart(2,'0')}${parseInt(m[2]).toString(16).padStart(2,'0')}${parseInt(m[3]).toString(16).padStart(2,'0')}`; return v.startsWith('#') ? v : '#6b7280'; })()} onChange={(e) => setEdit({ ...edit, courseRowColor: e.target.value })} className="absolute inset-0 opacity-0 cursor-pointer" style={{ width: '20px', height: '20px' }} data-testid="input-course-row-color-swatch" />
+                </div>
+                <input type="text" value={edit.courseRowColor} onChange={e => setEdit({ ...edit, courseRowColor: e.target.value })} className="bg-black/40 border border-white/20 rounded text-white text-[8px] px-1 py-0.5 font-mono mt-1 text-center" style={{ width: '56px' }} data-testid="input-course-row-color" />
               </div>
-              <input type="text" value={edit.courseRowColor} onChange={e => setEdit({ ...edit, courseRowColor: e.target.value })} className="bg-black/40 border border-white/20 rounded text-white text-[8px] px-1 py-0.5 font-mono mt-1 text-center" style={{ width: '56px' }} data-testid="input-course-row-color" />
-            </div>
-            <div style={{ marginLeft: '6px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <label className="text-white text-[9px] mb-1">Task BG</label>
-              <div className="relative" style={{ width: '20px', height: '20px' }}>
-                <div className="absolute inset-0 rounded-sm border border-white/30" style={{ backgroundColor: edit.taskBgColor || edit.labelStart }} />
-                <input type="color" value={(() => { const v = edit.taskBgColor; const m = v.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/); if (m) return `#${parseInt(m[1]).toString(16).padStart(2,'0')}${parseInt(m[2]).toString(16).padStart(2,'0')}${parseInt(m[3]).toString(16).padStart(2,'0')}`; return v.startsWith('#') ? v : '#6b7280'; })()} onChange={(e) => setEdit({ ...edit, taskBgColor: e.target.value })} className="absolute inset-0 opacity-0 cursor-pointer" style={{ width: '20px', height: '20px' }} data-testid="input-task-bg-swatch" />
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <label className="text-white text-[9px] mb-1">Task BG</label>
+                <div className="relative" style={{ width: '20px', height: '20px' }}>
+                  <div className="absolute inset-0 rounded-sm border border-white/30" style={{ backgroundColor: edit.taskBgColor || edit.labelStart }} />
+                  <input type="color" value={(() => { const v = edit.taskBgColor; const m = v.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/); if (m) return `#${parseInt(m[1]).toString(16).padStart(2,'0')}${parseInt(m[2]).toString(16).padStart(2,'0')}${parseInt(m[3]).toString(16).padStart(2,'0')}`; return v.startsWith('#') ? v : '#6b7280'; })()} onChange={(e) => setEdit({ ...edit, taskBgColor: e.target.value })} className="absolute inset-0 opacity-0 cursor-pointer" style={{ width: '20px', height: '20px' }} data-testid="input-task-bg-swatch" />
+                </div>
+                <input type="text" value={edit.taskBgColor} onChange={e => setEdit({ ...edit, taskBgColor: e.target.value })} className="bg-black/40 border border-white/20 rounded text-white text-[8px] px-1 py-0.5 font-mono mt-1 text-center" style={{ width: '56px' }} data-testid="input-task-bg" />
               </div>
-              <input type="text" value={edit.taskBgColor} onChange={e => setEdit({ ...edit, taskBgColor: e.target.value })} className="bg-black/40 border border-white/20 rounded text-white text-[8px] px-1 py-0.5 font-mono mt-1 text-center" style={{ width: '56px' }} data-testid="input-task-bg" />
             </div>
             </div>
           </div>
