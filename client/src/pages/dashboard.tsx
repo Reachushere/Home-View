@@ -18669,8 +18669,10 @@ export default function Dashboard() {
                       return (
                         <>
                           {isToday && (
-                            <div className="absolute top-0 left-0 right-0 text-center z-20" style={{ fontSize: '8px', fontWeight: 700, color: '#FFFF00', lineHeight: '1', paddingTop: '2px', letterSpacing: '0.3px' }} data-testid="today-full-date">
-                              {format(day, 'EEEE, MMMM d')}
+                            <div className="absolute top-0 left-0 right-0 text-center z-20" style={{ paddingTop: '1px' }} data-testid="today-full-date">
+                              <span style={{ display: 'inline-block', fontSize: '8px', fontWeight: 700, color: '#000000', backgroundColor: '#FFFF00', lineHeight: '1', letterSpacing: '0.3px', padding: '2px 4px', borderRadius: '2px' }}>
+                                {format(day, 'EEEE, MMMM d')}
+                              </span>
                             </div>
                           )}
                           {day.getDay() === 6 && (
