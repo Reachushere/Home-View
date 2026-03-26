@@ -9633,7 +9633,7 @@ export default function Dashboard() {
         backgroundColor: colorSettings.mainBackgroundOverlay ? safeHex(colorSettings.mainBackground, '#3a8bbf') : '#000000',
       }}
     >
-      {!selectedCertCourse && !isSchoolCoursesDialogOpen && !semSettingsDialogKey && !dashboardCommentTarget && !showMorningReview && !isSettingsPanelOpen && hwTimelinePos && createPortal(
+      {false && hwTimelinePos && createPortal(
         <div style={{ position: 'fixed', top: `${hwTimelinePos.top}px`, left: `${hwTimelinePos.left}px`, width: '50px', height: '15px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2147483647, pointerEvents: 'none', opacity: hwIsScrolling ? 0.5 : 1, transition: 'opacity 0.2s ease' }}>
           <span style={{ fontSize: '8px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.7px', lineHeight: 1 }}>Timeline</span>
         </div>,
@@ -11400,18 +11400,20 @@ export default function Dashboard() {
       })()}
 
       {/* Top Pill - Slide up/down container for toolbar buttons */}
+      <div style={{ position: 'fixed', top: `${d2lTickerHeight}px`, left: 0, right: 0, bottom: 0, zIndex: 110, pointerEvents: 'none', overflow: 'hidden' }}>
       <div 
         ref={topPillRef}
         id="top-pill-container"
         style={{
-          position: 'fixed',
+          position: 'absolute',
           zIndex: 110,
           left: '22px',
           right: '22px',
+          pointerEvents: 'auto',
           transform: `translateY(${isTopPillOpen ? '14px' : '-77px'})`,
           transition: topPillMounted ? 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
           animation: (!isTopPillOpen && topPillMounted) ? 'top-pill-container-nudge 6s ease-in-out 1s infinite' : 'none',
-          top: `${d2lTickerHeight}px`,
+          top: '0px',
           height: '57px',
           paddingTop: '1px',
           paddingBottom: '1px',
@@ -12369,6 +12371,7 @@ export default function Dashboard() {
           <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', prepDays: 0, priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder2: DEFAULT_REMINDER_2, reminder3: null, reminder4: null, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' }); setIsQuickAddOpen(true); }); }}>+ Add Task</Button>
 
         </div>
+      </div>
       </div>
 
       {/* D2L Announcement Ticker - fixed at very top of page, matches bottom news ticker style */}
@@ -18679,8 +18682,8 @@ export default function Dashboard() {
                       return (
                         <>
                           {isToday && (
-                            <div className="absolute top-0 left-0 right-0 text-center z-20" style={{ paddingTop: '1px' }} data-testid="today-full-date">
-                              <span style={{ display: 'inline-block', fontSize: '8px', fontWeight: 700, color: '#000000', backgroundColor: '#FFFF00', lineHeight: '1', letterSpacing: '0.3px', padding: '2px 4px', borderRadius: '2px' }}>
+                            <div className="absolute top-0 left-0 right-0 text-center z-20" style={{ padding: '0' }} data-testid="today-full-date">
+                              <span style={{ display: 'block', fontSize: '8px', fontWeight: 700, color: '#000000', backgroundColor: '#FFFF00', lineHeight: '14px', letterSpacing: '0.3px', padding: '0 4px' }}>
                                 {format(day, 'EEEE, MMMM d')}
                               </span>
                             </div>
@@ -22605,7 +22608,11 @@ export default function Dashboard() {
               }
             }
             return '12px';
-          })(), flex: 1, paddingBottom: '0px', overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', zIndex: 2 }} ref={homeworkScrollRef} onScroll={() => { setHwIsScrolling(true); if (hwScrollTimerRef.current) clearTimeout(hwScrollTimerRef.current); hwScrollTimerRef.current = setTimeout(() => setHwIsScrolling(false), 300); const sc = homeworkScrollRef.current; if (sc) { setHwScrolledDown(sc.scrollTop > 5); const sections = sc.querySelectorAll('[data-semester-label]'); let bestLabel: string | null = null; let bestDist = Infinity; const containerTop = sc.getBoundingClientRect().top; sections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestDist) { bestDist = dist; bestLabel = el.getAttribute('data-semester-label') || null; } }); if (bestLabel) setHwVisibleSemLabel(bestLabel); } }}>
+          })(), flex: 1, paddingBottom: '0px', overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', zIndex: 2 }}>
+          <div style={{ width: '50px', height: '15px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', margin: '0 auto 0 auto', flexShrink: 0 }}>
+            <span style={{ fontSize: '8px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.7px', lineHeight: 1 }}>Timeline</span>
+          </div>
+          <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'none', position: 'relative' }} ref={homeworkScrollRef} onScroll={() => { setHwIsScrolling(true); if (hwScrollTimerRef.current) clearTimeout(hwScrollTimerRef.current); hwScrollTimerRef.current = setTimeout(() => setHwIsScrolling(false), 300); const sc = homeworkScrollRef.current; if (sc) { setHwScrolledDown(sc.scrollTop > 5); const sections = sc.querySelectorAll('[data-semester-label]'); let bestLabel: string | null = null; let bestDist = Infinity; const containerTop = sc.getBoundingClientRect().top; sections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestDist) { bestDist = dist; bestLabel = el.getAttribute('data-semester-label') || null; } }); if (bestLabel) setHwVisibleSemLabel(bestLabel); } }}>
             {isLoading ? (
               <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
             ) : (
@@ -23473,6 +23480,7 @@ export default function Dashboard() {
                 })()}
               </div>
             )}
+          </div>
           </div>
           </div>
         </section>
