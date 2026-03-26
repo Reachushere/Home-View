@@ -33,7 +33,7 @@ function useAutoFullscreen() {
     if (meta) {
       meta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
     }
-  }, [shouldFullscreen]);
+  }, [isSilk]);
 
   const requestFullscreen = useCallback(() => {
     if (requested) return;
@@ -64,7 +64,7 @@ function useAutoFullscreen() {
       document.removeEventListener('keydown', handler);
       window.removeEventListener('focus', handler);
     };
-  }, [shouldFullscreen, requested, requestFullscreen]);
+  }, [isSilk, requested, requestFullscreen]);
 }
 
 function Router() {
