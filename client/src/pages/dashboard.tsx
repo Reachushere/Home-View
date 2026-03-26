@@ -741,12 +741,7 @@ export default function Dashboard() {
     setShowMorningReview(false);
   };
 
-  const handleRejectAll = async () => {
-    setMorningReviewLoading(true);
-    for (const item of morningReviewItems) {
-      await handleRejectReview(item.id);
-    }
-    setMorningReviewLoading(false);
+  const handleSkipAllForToday = () => {
     setShowMorningReview(false);
   };
 
@@ -9595,7 +9590,7 @@ export default function Dashboard() {
                 variant="outline"
                 size="sm"
                 className="h-6 px-2 text-[9px] border-white/20 text-white/60 hover:text-white hover:bg-white/10"
-                onClick={handleRejectAll}
+                onClick={handleSkipAllForToday}
                 disabled={morningReviewLoading}
                 data-testid="button-reject-all-review"
               >
@@ -9630,7 +9625,11 @@ export default function Dashboard() {
             ) : (
               <div className="flex gap-4 h-full">
                 {['outlook_calendar', 'gmail'].map(source => {
-                  const items = morningReviewItems.filter(i => i.source === source);
+                  const items = morningReviewItems.filter(i => i.source === source).sort((a, b) => {
+                    const dateA = a.startDate ? new Date(a.startDate).getTime() : a.createdAt ? new Date(a.createdAt).getTime() : 0;
+                    const dateB = b.startDate ? new Date(b.startDate).getTime() : b.createdAt ? new Date(b.createdAt).getTime() : 0;
+                    return dateA - dateB;
+                  });
                   const label = source === 'outlook_calendar' ? 'Outlook Calendar' : 'Gmail';
                   const icon = source === 'outlook_calendar' ? <CalendarDays className="h-3 w-3 text-blue-400" /> : <Mail className="h-3 w-3 text-red-400" />;
                   return (
