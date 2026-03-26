@@ -4442,6 +4442,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       const now = new Date();
       const active = [];
       for (const a of all) {
+        if (a.courseName === 'Custom') {
+          active.push(a);
+          continue;
+        }
         const received = new Date(a.receivedAt);
         const dayOfWeek = received.getDay();
         const daysUntilFriday = dayOfWeek <= 5 ? (5 - dayOfWeek) : (5 + 7 - dayOfWeek);

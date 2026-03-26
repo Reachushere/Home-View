@@ -12219,7 +12219,7 @@ export default function Dashboard() {
 
       {/* D2L Announcement Ticker - fixed at very top of page, matches bottom news ticker style */}
       <div className="fixed left-0 right-0 overflow-hidden flex" style={{ top: 0, height: '38px', zIndex: 10005, backgroundColor: '#000000', background: 'linear-gradient(90deg, #000000 0%, #14141e 50%, #000000 100%)', borderBottom: '1px solid rgba(255,255,255,0.15)' }} data-testid="announcement-ticker">
-        <div className="flex-shrink-0 flex items-center justify-center" style={{ height: '38px', width: 'auto' }}>
+        <div className="flex-shrink-0 flex items-center justify-center cursor-pointer" style={{ height: '38px', width: 'auto' }} onClick={() => setTickerDialogOpen(true)} data-testid="button-ticker-manage">
           <img src={d2lTickerLabel} alt="D2L" style={{ height: '38px', width: 'auto', objectFit: 'contain' }} />
         </div>
         <div className="flex-1 overflow-hidden relative h-full">
@@ -12300,6 +12300,57 @@ export default function Dashboard() {
           )}
         </div>
       </div>
+
+      {tickerDialogOpen && (
+        <div className="fixed inset-0 flex items-start justify-center pt-[50px]" style={{ zIndex: 10010, backgroundColor: 'rgba(0,0,0,0.6)' }} onClick={(e) => { if (e.target === e.currentTarget) setTickerDialogOpen(false); }} data-testid="ticker-dialog-overlay">
+          <div className="rounded-lg shadow-2xl w-[500px] max-h-[500px] flex flex-col" style={{ backgroundColor: '#1a1a2e', border: '1px solid rgba(255,255,255,0.15)' }} data-testid="ticker-dialog">
+            <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+              <span className="text-white font-semibold text-[14px]">Ticker Items</span>
+              <button onClick={() => setTickerDialogOpen(false)} className="text-white/60 hover:text-white text-[18px] leading-none" data-testid="button-close-ticker">&times;</button>
+            </div>
+            <div className="flex-1 overflow-y-auto px-4 py-2" style={{ scrollbarWidth: 'thin' }}>
+              {d2lAnnouncements.length === 0 ? (
+                <div className="text-white/40 text-[12px] text-center py-6">No ticker items</div>
+              ) : (
+                d2lAnnouncements.map((a: any) => (
+                  <div key={a.id} className="flex items-center gap-2 py-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }} data-testid={`ticker-item-${a.id}`}>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded font-semibold" style={{ backgroundColor: a.courseName === 'Custom' ? 'rgba(255,255,255,0.1)' : 'rgba(99,102,241,0.3)', color: a.courseName === 'Custom' ? '#9ca3af' : '#a5b4fc' }}>
+                      {a.courseName === 'Custom' ? '📌' : a.courseName}
+                    </span>
+                    <span className="text-white text-[12px] flex-1 min-w-0 truncate">{a.body || a.snippet || a.subject}</span>
+                    <button
+                      onClick={() => deleteTickerMutation.mutate(a.id)}
+                      className="shrink-0 text-white/30 hover:text-red-400 transition-colors p-1"
+                      data-testid={`button-delete-ticker-${a.id}`}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+            <div className="px-4 py-3 flex items-center gap-2" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+              <input
+                type="text"
+                value={newTickerText}
+                onChange={(e) => setNewTickerText(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter' && newTickerText.trim()) { addTickerMutation.mutate(newTickerText.trim()); } }}
+                placeholder="Add ticker item..."
+                className="flex-1 bg-white/5 text-white text-[12px] px-3 py-2 rounded border border-white/10 focus:border-white/30 focus:outline-none placeholder:text-white/30"
+                data-testid="input-new-ticker"
+              />
+              <button
+                onClick={() => { if (newTickerText.trim()) addTickerMutation.mutate(newTickerText.trim()); }}
+                disabled={!newTickerText.trim() || addTickerMutation.isPending}
+                className="shrink-0 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-[12px] font-semibold px-3 py-2 rounded transition-colors"
+                data-testid="button-add-ticker"
+              >
+                + Add
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Top pill tab - centered to page, outside pill container to avoid transform issues */}
       <div
