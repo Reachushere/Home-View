@@ -978,7 +978,7 @@ export default function Dashboard() {
         const scrollParent = hwTimelineDividerRef.current.parentElement;
         const rect = scrollParent ? scrollParent.getBoundingClientRect() : hwTimelineDividerRef.current.getBoundingClientRect();
         setHwTimelinePos(prev => {
-          const newTop = Math.round(rect.top - 14);
+          const newTop = Math.round(rect.top - 15);
           const newLeft = Math.round(rect.left + rect.width / 2 - 25);
           if (prev && prev.top === newTop && prev.left === newLeft) return prev;
           return { top: newTop, left: newLeft };
