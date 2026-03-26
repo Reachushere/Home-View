@@ -18650,7 +18650,7 @@ export default function Dashboard() {
           )}
           <div className="flex-1 min-h-0 relative" style={{ overflow: 'visible' }}>
             <div
-              style={{ position: 'absolute', left: '9px', top: '-29px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
+              style={{ position: 'absolute', left: '9px', top: '-32px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
               data-testid="calendar-top-resize-handle"
             >
               <div style={{ width: '191px', height: '14px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
@@ -20693,7 +20693,7 @@ export default function Dashboard() {
           </div>
           {/* Calendar Height Resize Handle — bottom-center, fully outside overflow:clip */}
           <div
-            style={{ position: 'absolute', left: '50%', bottom: '-13px', transform: 'translateX(-50%)', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60, pointerEvents: 'auto' }}
+            style={{ position: 'absolute', left: '50%', bottom: '-16px', transform: 'translateX(-50%)', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60, pointerEvents: 'auto' }}
             data-testid="calendar-height-resize-handle"
           >
             <div style={{ width: '191px', height: '14px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
