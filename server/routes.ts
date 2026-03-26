@@ -4442,7 +4442,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       const now = new Date();
       const active = [];
       for (const a of all) {
-        if (a.courseName === 'Custom') {
+        if (a.courseName === 'Custom' || a.courseName === 'REMINDER' || a.courseName === 'URGENT') {
           active.push(a);
           continue;
         }
@@ -4471,12 +4471,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       if (!body || typeof body !== 'string' || !body.trim()) {
         return res.status(400).json({ error: "body is required" });
       }
+      const tag = req.body.courseName || 'Custom';
       const created = await storage.createAnnouncement({
         emailId: `manual-${Date.now()}`,
-        subject: 'Custom Ticker',
+        subject: tag === 'Custom' ? 'Custom Ticker' : `${tag} Ticker`,
         body: body.trim(),
         snippet: body.trim().substring(0, 200),
-        courseName: 'Custom',
+        courseName: tag,
         receivedAt: new Date(),
       });
       console.log(`[Ticker] Manually added ticker item id:${created.id} body:"${body.trim().substring(0, 50)}"`);

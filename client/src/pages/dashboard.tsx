@@ -5387,9 +5387,10 @@ export default function Dashboard() {
 
   const [tickerDialogOpen, setTickerDialogOpen] = useState(false);
   const [newTickerText, setNewTickerText] = useState('');
+  const [newTickerTag, setNewTickerTag] = useState('Custom');
   const addTickerMutation = useMutation({
-    mutationFn: async (body: string) => {
-      const res = await apiRequest('POST', '/api/announcements', { body });
+    mutationFn: async ({ body, tag }: { body: string; tag: string }) => {
+      const res = await apiRequest('POST', '/api/announcements', { body, courseName: tag });
       return res.json();
     },
     onSuccess: () => {
@@ -12380,7 +12381,7 @@ export default function Dashboard() {
                     data-testid={`ticker-item-${a.id}`}
                   >
                     <GripVertical className="h-3.5 w-3.5 text-white/25 shrink-0" />
-                    <span className="text-[10px] px-1.5 py-0.5 rounded font-semibold" style={{ backgroundColor: a.courseName === 'Custom' ? 'rgba(255,255,255,0.1)' : 'rgba(99,102,241,0.3)', color: a.courseName === 'Custom' ? '#9ca3af' : '#a5b4fc' }}>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded font-semibold" style={{ backgroundColor: a.courseName === 'Custom' ? 'rgba(255,255,255,0.1)' : a.courseName === 'URGENT' ? 'rgba(239,68,68,0.4)' : a.courseName === 'REMINDER' ? 'rgba(234,179,8,0.35)' : 'rgba(99,102,241,0.3)', color: a.courseName === 'Custom' ? '#9ca3af' : a.courseName === 'URGENT' ? '#fca5a5' : a.courseName === 'REMINDER' ? '#fde047' : '#a5b4fc' }}>
                       {a.courseName === 'Custom' ? '📌' : a.courseName}
                     </span>
                     <span className="text-white text-[12px] flex-1 min-w-0 truncate">{a.body || a.snippet || a.subject}</span>
@@ -12396,18 +12397,33 @@ export default function Dashboard() {
               )}
             </div>
             <div className="px-4 py-3 flex items-center gap-2" style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
+              <select
+                value={newTickerTag}
+                onChange={(e) => setNewTickerTag(e.target.value)}
+                className="text-white text-[11px] px-2 py-2 rounded focus:outline-none"
+                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', minWidth: '90px' }}
+                data-testid="select-ticker-tag"
+              >
+                <option value="Custom" style={{ background: '#1a1a2e' }}>📌 Custom</option>
+                {(coursesData?.courses || []).filter((c: any) => c.name?.trim()).map((c: any) => {
+                  const code = c.name.split(' - ')[0]?.trim().replace(/\s/g, '').toUpperCase();
+                  return code ? <option key={code} value={code} style={{ background: '#1a1a2e' }}>{code}</option> : null;
+                })}
+                <option value="REMINDER" style={{ background: '#1a1a2e' }}>REMINDER</option>
+                <option value="URGENT" style={{ background: '#1a1a2e' }}>URGENT</option>
+              </select>
               <input
                 type="text"
                 value={newTickerText}
                 onChange={(e) => setNewTickerText(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter' && newTickerText.trim()) { addTickerMutation.mutate(newTickerText.trim()); } }}
+                onKeyDown={(e) => { if (e.key === 'Enter' && newTickerText.trim()) { addTickerMutation.mutate({ body: newTickerText.trim(), tag: newTickerTag }); } }}
                 placeholder="Add ticker item..."
                 className="flex-1 text-white text-[12px] px-3 py-2 rounded focus:outline-none placeholder:text-white/30"
                 style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
                 data-testid="input-new-ticker"
               />
               <button
-                onClick={() => { if (newTickerText.trim()) addTickerMutation.mutate(newTickerText.trim()); }}
+                onClick={() => { if (newTickerText.trim()) addTickerMutation.mutate({ body: newTickerText.trim(), tag: newTickerTag }); }}
                 disabled={!newTickerText.trim() || addTickerMutation.isPending}
                 className="shrink-0 disabled:opacity-40 text-white text-[12px] font-semibold px-3 py-2 rounded transition-colors hover:brightness-110"
                 style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.15)', border: '1px solid rgba(255,255,255,0.2)' }}
