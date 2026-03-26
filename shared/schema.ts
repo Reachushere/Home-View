@@ -626,6 +626,7 @@ export const announcements = pgTable("announcements", {
   snippet: text("snippet"),
   courseName: text("course_name"),
   receivedAt: timestamp("received_at").defaultNow(),
+  sortOrder: integer("sort_order").default(0),
 });
 
 export const insertAnnouncementSchema = createInsertSchema(announcements).omit({ id: true });

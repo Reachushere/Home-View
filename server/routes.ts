@@ -8,7 +8,7 @@ import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { db } from "./db";
 import { sql, eq } from "drizzle-orm";
-import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, COURSES, type RepeatType, type RepeatIntervalUnit, type InsertTask, type FileRecord, degreeTrackingData, feedbackNotes, insertFeedbackNoteSchema, appState } from "@shared/schema";
+import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, COURSES, type RepeatType, type RepeatIntervalUnit, type InsertTask, type FileRecord, degreeTrackingData, feedbackNotes, insertFeedbackNoteSchema, appState, announcements } from "@shared/schema";
 import { z } from "zod";
 import { LIBERAL_STUDIES_COURSES, OPEN_ELECTIVE_COURSES } from "@shared/electiveCourses";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
@@ -4496,6 +4496,20 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       res.json({ success: true });
     } catch (err: any) {
       console.error("Error deleting announcement:", err.message);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post("/api/announcements/reorder", async (req, res) => {
+    try {
+      const { orderedIds } = req.body;
+      if (!Array.isArray(orderedIds)) return res.status(400).json({ error: "orderedIds array required" });
+      for (let i = 0; i < orderedIds.length; i++) {
+        await db.update(announcements).set({ sortOrder: i }).where(eq(announcements.id, orderedIds[i]));
+      }
+      res.json({ success: true });
+    } catch (err: any) {
+      console.error("Error reordering announcements:", err.message);
       res.status(500).json({ error: err.message });
     }
   });

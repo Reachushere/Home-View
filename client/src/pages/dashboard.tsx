@@ -5405,6 +5405,17 @@ export default function Dashboard() {
       queryClient.invalidateQueries({ queryKey: ['/api/announcements'] });
     },
   });
+  const reorderTickerMutation = useMutation({
+    mutationFn: async (orderedIds: number[]) => {
+      await apiRequest('POST', '/api/announcements/reorder', { orderedIds });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/announcements'] });
+    },
+  });
+  const [tickerDragIdx, setTickerDragIdx] = useState<number | null>(null);
+  const [tickerDragOverIdx, setTickerDragOverIdx] = useState<number | null>(null);
+  const tickerTouchDragRef = useRef<{ startY: number; idx: number; el: HTMLElement | null } | null>(null);
 
   // Filter files for the current week (exclude completed/listened files)
   const currentWeekFiles = weeklyFiles.filter(f => 
@@ -12312,8 +12323,63 @@ export default function Dashboard() {
               {d2lAnnouncements.length === 0 ? (
                 <div className="text-white/40 text-[12px] text-center py-6">No ticker items</div>
               ) : (
-                d2lAnnouncements.map((a: any) => (
-                  <div key={a.id} className="flex items-center gap-2 py-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }} data-testid={`ticker-item-${a.id}`}>
+                d2lAnnouncements.map((a: any, idx: number) => (
+                  <div
+                    key={a.id}
+                    draggable
+                    onDragStart={(e) => { setTickerDragIdx(idx); e.dataTransfer.effectAllowed = 'move'; }}
+                    onDragOver={(e) => { e.preventDefault(); setTickerDragOverIdx(idx); }}
+                    onDragEnd={() => {
+                      if (tickerDragIdx !== null && tickerDragOverIdx !== null && tickerDragIdx !== tickerDragOverIdx) {
+                        const items = [...d2lAnnouncements];
+                        const [moved] = items.splice(tickerDragIdx, 1);
+                        items.splice(tickerDragOverIdx, 0, moved);
+                        reorderTickerMutation.mutate(items.map((i: any) => i.id));
+                      }
+                      setTickerDragIdx(null);
+                      setTickerDragOverIdx(null);
+                    }}
+                    onTouchStart={(e) => {
+                      const touch = e.touches[0];
+                      tickerTouchDragRef.current = { startY: touch.clientY, idx, el: e.currentTarget as HTMLElement };
+                    }}
+                    onTouchMove={(e) => {
+                      if (!tickerTouchDragRef.current) return;
+                      const touch = e.touches[0];
+                      const container = (e.currentTarget as HTMLElement).parentElement;
+                      if (!container) return;
+                      const children = Array.from(container.querySelectorAll('[data-ticker-drag-item]'));
+                      for (let i = 0; i < children.length; i++) {
+                        const rect = children[i].getBoundingClientRect();
+                        if (touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+                          setTickerDragOverIdx(i);
+                          break;
+                        }
+                      }
+                      setTickerDragIdx(tickerTouchDragRef.current.idx);
+                    }}
+                    onTouchEnd={() => {
+                      if (tickerDragIdx !== null && tickerDragOverIdx !== null && tickerDragIdx !== tickerDragOverIdx) {
+                        const items = [...d2lAnnouncements];
+                        const [moved] = items.splice(tickerDragIdx, 1);
+                        items.splice(tickerDragOverIdx, 0, moved);
+                        reorderTickerMutation.mutate(items.map((i: any) => i.id));
+                      }
+                      setTickerDragIdx(null);
+                      setTickerDragOverIdx(null);
+                      tickerTouchDragRef.current = null;
+                    }}
+                    data-ticker-drag-item
+                    className="flex items-center gap-2 py-2 cursor-grab active:cursor-grabbing"
+                    style={{
+                      borderBottom: '1px solid rgba(255,255,255,0.06)',
+                      opacity: tickerDragIdx === idx ? 0.4 : 1,
+                      borderTop: tickerDragOverIdx === idx && tickerDragIdx !== null && tickerDragIdx !== idx ? '2px solid rgba(99,102,241,0.8)' : '2px solid transparent',
+                      transition: 'opacity 0.15s',
+                    }}
+                    data-testid={`ticker-item-${a.id}`}
+                  >
+                    <GripVertical className="h-3.5 w-3.5 text-white/25 shrink-0" />
                     <span className="text-[10px] px-1.5 py-0.5 rounded font-semibold" style={{ backgroundColor: a.courseName === 'Custom' ? 'rgba(255,255,255,0.1)' : 'rgba(99,102,241,0.3)', color: a.courseName === 'Custom' ? '#9ca3af' : '#a5b4fc' }}>
                       {a.courseName === 'Custom' ? '📌' : a.courseName}
                     </span>
