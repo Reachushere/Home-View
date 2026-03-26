@@ -12418,9 +12418,9 @@ export default function Dashboard() {
                         return (<>{courseCode && <span style={{ marginBottom: '-2px' }}>{courseCode}</span>}{nameWords.map((w: string, wi: number) => (<span key={wi} style={{ fontSize: '7px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: '1', whiteSpace: 'nowrap' }}>{w}</span>))}</>);
                       })()}</span>
                       </span>
-                      <span className={`text-[16px] font-medium ${isTodayTask ? 'text-yellow-300' : 'text-white/90'}`}>{a.courseName === 'Custom' ? (a.body || a.snippet || '') : a.subject}</span>
-                      {!isTodayTask && a.courseName !== 'Custom' && displaySnippet && <span className="text-[16px] text-white/55">{displaySnippet}</span>}
-                      {!isTodayTask && <span className="text-[16px] text-white/60 ml-1">{timeAgo}</span>}
+                      <span className={`text-[14px] font-medium ${isTodayTask ? 'text-yellow-300' : 'text-white/90'}`}>{a.courseName === 'Custom' ? (a.body || a.snippet || '') : a.subject}</span>
+                      {!isTodayTask && a.courseName !== 'Custom' && displaySnippet && <span className="text-[14px] text-white/55">{displaySnippet}</span>}
+                      {!isTodayTask && <span className="text-[14px] text-white/60 ml-1">{timeAgo}</span>}
                     </span>
                   );
                 });
