@@ -9564,6 +9564,10 @@ export default function Dashboard() {
     });
   };
   
+  const weekHasAllDayItems = useMemo(() => {
+    return weekDays.some(day => getAllDayTasks(day).length > 0 || getAllDayCalendarEvents(day).length > 0);
+  }, [allTasks, weekDays, calendarEvents]);
+
   // Get paler version of a color for prep days extension
   const getPalerColor = (colorClass: string) => {
     // Convert bg-green-200 style classes to paler versions
@@ -19814,7 +19818,7 @@ export default function Dashboard() {
               ); })()}
 
             {/* ALL DAY Row - Fixed, not scrollable - Only shows true all-day tasks (midnight due time) */}
-            {showAllDayRow && (<div ref={allDayRowRef} className="grid z-[44] w-full flex-shrink-0 relative group/alldayrow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.allDayRowHeight}px` }}>
+            {(showAllDayRow || weekHasAllDayItems) && (<div ref={allDayRowRef} className="grid z-[44] w-full flex-shrink-0 relative group/alldayrow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.allDayRowHeight}px` }}>
               <div className="text-[10px] font-medium tracking-wide flex items-center justify-center text-white/60 relative border-b border-border/50" style={{ backgroundColor: colorSettings.headerBar }}>
                 ALL DAY
               </div>
