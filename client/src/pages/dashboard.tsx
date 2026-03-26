@@ -23021,9 +23021,11 @@ export default function Dashboard() {
                         return (
                           <div key={group.key} data-hw-group-row style={{ display: 'flex', alignItems: 'flex-start', gap: '0px', marginBottom: '2px' }}>
                             <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', alignSelf: 'flex-start', marginLeft: '2px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2 }} data-testid={`mini-cal-w11-group-${group.key}`}>
+                              {!/Week\s+\d/i.test(hwWeeklyTimeline[1]?.label || '') && (
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 {hwWeeklyTimeline[1]?.sublabel || 'Next week'}
                               </span>
+                              )}
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', width: '100%' }}>
                                 <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: '100%', justifyContent: 'flex-end' }}>
                                   {['Su','Mo','Tu','We','Th','Fr','Sa'].map((dl, dli) => (
@@ -23216,9 +23218,11 @@ export default function Dashboard() {
                         return (
                           <div key={group.key} data-hw-group-row style={{ display: 'flex', alignItems: 'flex-start', gap: '0px', marginBottom: '2px' }}>
                             <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', alignSelf: 'flex-start', marginLeft: '2px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2 }} data-testid={`mini-cal-2w-group-${group.key}`}>
+                              {!/Week\s+\d/i.test(hwWeeklyTimeline[2]?.label || '') && (
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 {hwWeeklyTimeline[2]?.sublabel || 'Two weeks'}
                               </span>
+                              )}
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', width: '100%' }}>
                                 <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: '100%', justifyContent: 'flex-end' }}>
                                   {['Su','Mo','Tu','We','Th','Fr','Sa'].map((dl, dli) => (
