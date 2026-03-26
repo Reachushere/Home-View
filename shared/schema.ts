@@ -366,7 +366,7 @@ export const tasks = pgTable("tasks", {
   assignmentGroup: text("assignment_group"), // Group name for organizing assignments
   sortOrder: integer("sort_order").default(0), // Order within group or list
   isAcknowledged: boolean("is_acknowledged").default(true), // For reminders: false until user acknowledges
-  excludeFromGpa: boolean("exclude_from_gpa").default(false),
+  excludeFromGpa: boolean("exclude_from_gpa").default(true),
   inviteEmails: text("invite_emails").array(),
 });
 

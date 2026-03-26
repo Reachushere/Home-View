@@ -740,6 +740,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           weekNumber: 1,
           gradeWeight: parsed.gradeWeight || null,
           attachments: [uploadResult.objectPath],
+          excludeFromGpa: true,
         });
         queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
         toast({ title: "Assignment created", description: `"${parsed.title}" created with PDF attached. Please set the due date.` });
@@ -873,6 +874,15 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     }
 
     try {
+      const existingDupe = courseTasks.find(t =>
+        t.title.trim().toLowerCase() === (item.title || '').trim().toLowerCase()
+      );
+      if (existingDupe) {
+        setSyllabusItemStates(prev => ({ ...prev, [idx]: { ...prev[idx], accepted: true } }));
+        toast({ title: "Already exists", description: `"${item.title}" is already in your assignments.` });
+        return;
+      }
+
       let dueDate: Date;
       if (item.date) {
         dueDate = new Date(item.date);
@@ -898,6 +908,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
         reminder1: 30,
         reminder2: 120,
         gradeWeight: item.weight || null,
+        excludeFromGpa: true,
       });
 
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
@@ -961,6 +972,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
       gradeWeight: newTask.gradeWeight ? parseInt(newTask.gradeWeight) : null,
       gradeTotal: newTask.gradeTotal ? parseInt(newTask.gradeTotal) : null,
       gradeValue: newTask.gradeValue ? parseInt(newTask.gradeValue) : null,
+      excludeFromGpa: true,
     });
   };
 
