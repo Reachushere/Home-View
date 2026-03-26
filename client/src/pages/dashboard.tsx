@@ -22544,6 +22544,7 @@ export default function Dashboard() {
                   width: '6px',
                   marginLeft: '-3px',
                   zIndex: 50,
+                  pointerEvents: 'none',
                 }}
                 data-testid="hw-divider-handle"
               />
