@@ -7038,6 +7038,154 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 </html>`);
   });
 
+  app.get("/api/cat-wash/test-tv-browser", async (_req, res) => {
+    const entityId = 'media_player.fire_stick_cat_wr';
+    const testUrl = `${DEPLOYED_APP_URL}/api/cat-wash/tv-follow`;
+    const method = String(_req.query.method || 'all');
+    const results: { method: string; success: boolean; error?: string }[] = [];
+
+    currentTvFollowUrl = `${DEPLOYED_APP_URL}/pdf-reader?catWashFollow=true`;
+
+    console.log(`[TV Test] ====== TEST START (method=${method}) ======`);
+    console.log(`[TV Test] Entity: ${entityId}`);
+    console.log(`[TV Test] URL: ${testUrl}`);
+
+    try {
+      const stateResp = await fetch(`${HOME_ASSISTANT_URL.replace(/\/$/, '')}/api/states/${entityId}`, {
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' }
+      });
+      if (stateResp.ok) {
+        const stateData = await stateResp.json();
+        console.log(`[TV Test] Fire Stick state: "${stateData.state}", attrs: ${JSON.stringify(stateData.attributes?.source || 'unknown')}`);
+      }
+    } catch (e: any) {
+      console.log(`[TV Test] State check failed: ${e.message}`);
+    }
+
+    if (method === 'all' || method === 'wake') {
+      try {
+        await haServiceCall('media_player/turn_on', { entity_id: entityId }, 'TV Test TurnOn');
+        console.log(`[TV Test] turn_on: OK`);
+        results.push({ method: 'turn_on', success: true });
+      } catch (e: any) {
+        console.log(`[TV Test] turn_on failed: ${e.message}`);
+        results.push({ method: 'turn_on', success: false, error: e.message });
+      }
+
+      try {
+        await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: 'input keyevent KEYCODE_WAKEUP' }, 'TV Test Wake');
+        console.log(`[TV Test] WAKEUP: OK`);
+        results.push({ method: 'wakeup', success: true });
+      } catch (e: any) {
+        console.log(`[TV Test] WAKEUP failed: ${e.message}`);
+        results.push({ method: 'wakeup', success: false, error: e.message });
+      }
+      await new Promise(r => setTimeout(r, 3000));
+    }
+
+    if (method === 'all' || method === 'silk') {
+      try {
+        await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: 'am force-stop com.amazon.cloud9' }, 'TV Test Kill Silk');
+        console.log(`[TV Test] force-stop Silk: OK`);
+      } catch (e: any) {
+        console.log(`[TV Test] force-stop Silk failed: ${e.message}`);
+      }
+      await new Promise(r => setTimeout(r, 1500));
+
+      const adbCmd = `am start --activity-clear-task -a android.intent.action.VIEW -d "${testUrl}" com.amazon.cloud9`;
+      try {
+        await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: adbCmd }, 'TV Test Silk');
+        console.log(`[TV Test] Silk am start: OK`);
+        results.push({ method: 'silk_am_start', success: true });
+      } catch (e: any) {
+        console.log(`[TV Test] Silk am start failed: ${e.message}`);
+        results.push({ method: 'silk_am_start', success: false, error: e.message });
+      }
+    }
+
+    if (method === 'silk-no-flags') {
+      try {
+        await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: 'am force-stop com.amazon.cloud9' }, 'TV Test Kill Silk2');
+      } catch (e: any) {}
+      await new Promise(r => setTimeout(r, 1500));
+
+      const adbCmd = `am start -a android.intent.action.VIEW -d "${testUrl}" com.amazon.cloud9`;
+      try {
+        await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: adbCmd }, 'TV Test Silk NoFlags');
+        console.log(`[TV Test] Silk (no flags): OK`);
+        results.push({ method: 'silk_no_flags', success: true });
+      } catch (e: any) {
+        console.log(`[TV Test] Silk (no flags) failed: ${e.message}`);
+        results.push({ method: 'silk_no_flags', success: false, error: e.message });
+      }
+    }
+
+    if (method === 'generic') {
+      const adbCmd = `am start -a android.intent.action.VIEW -d "${testUrl}"`;
+      try {
+        await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: adbCmd }, 'TV Test Generic');
+        console.log(`[TV Test] Generic intent: OK`);
+        results.push({ method: 'generic_intent', success: true });
+      } catch (e: any) {
+        console.log(`[TV Test] Generic intent failed: ${e.message}`);
+        results.push({ method: 'generic_intent', success: false, error: e.message });
+      }
+    }
+
+    if (method === 'play_media') {
+      try {
+        await haServiceCall('media_player/play_media', { entity_id: entityId, media_content_id: testUrl, media_content_type: 'url' }, 'TV Test PlayMedia');
+        console.log(`[TV Test] play_media: OK`);
+        results.push({ method: 'play_media', success: true });
+      } catch (e: any) {
+        console.log(`[TV Test] play_media failed: ${e.message}`);
+        results.push({ method: 'play_media', success: false, error: e.message });
+      }
+    }
+
+    if (method === 'silk-activity') {
+      try {
+        await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: 'am force-stop com.amazon.cloud9' }, 'TV Test Kill Silk3');
+      } catch (e: any) {}
+      await new Promise(r => setTimeout(r, 1500));
+
+      const adbCmd = `am start -n com.amazon.cloud9/.BrowserActivity -a android.intent.action.VIEW -d "${testUrl}"`;
+      try {
+        await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: adbCmd }, 'TV Test SilkActivity');
+        console.log(`[TV Test] Silk BrowserActivity: OK`);
+        results.push({ method: 'silk_browser_activity', success: true });
+      } catch (e: any) {
+        console.log(`[TV Test] Silk BrowserActivity failed: ${e.message}`);
+        results.push({ method: 'silk_browser_activity', success: false, error: e.message });
+      }
+    }
+
+    if (method === 'list-browsers') {
+      const cmds = [
+        'pm list packages | grep -i brows',
+        'pm list packages | grep -i silk',
+        'pm list packages | grep -i cloud9',
+        'pm list packages | grep -i chrome',
+        'pm list packages | grep -i firefox',
+        'pm list packages | grep -i web',
+      ];
+      for (const cmd of cmds) {
+        try {
+          await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: cmd }, `TV Test List ${cmd.split('grep')[1]?.trim()}`);
+          console.log(`[TV Test] ${cmd}: OK (check HA logs for output)`);
+          results.push({ method: cmd, success: true });
+        } catch (e: any) {
+          console.log(`[TV Test] ${cmd}: ${e.message}`);
+          results.push({ method: cmd, success: false, error: e.message });
+        }
+      }
+    }
+
+    console.log(`[TV Test] ====== TEST COMPLETE ======`);
+    console.log(`[TV Test] Results: ${JSON.stringify(results)}`);
+    res.json({ results, testUrl });
+  });
+
   const SERVER_START_TIME = Date.now();
   const SERVER_STARTUP_COOLDOWN_MS = 60 * 1000;
 
