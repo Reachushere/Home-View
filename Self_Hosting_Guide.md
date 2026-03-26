@@ -60,7 +60,7 @@ A Raspberry Pi 5 on the same local network is the right approach — fast, cheap
 
 | Item | Model / Spec | Approx. Price | Amazon Link |
 |------|-------------|---------------|-------------|
-| **Raspberry Pi 5** | **8 GB RAM** | ~$80 USD | [amazon.ca/dp/B0CTG5148Q](https://www.amazon.ca/dp/B0CTG5148Q) |
+| **Raspberry Pi 5** | **8 GB RAM** | ~$80 USD | [amazon.ca/dp/B0CK2FCG1K](https://www.amazon.ca/Raspberry-Pi-8GB-2023-Processor/dp/B0CK2FCG1K) |
 | **Power Supply** | Official Raspberry Pi 5 27W USB-C | ~$12 | [amazon.ca/dp/B0CN1HP2P7](https://www.amazon.ca/dp/B0CN1HP2P7) |
 | **microSD Card** | Samsung EVO Select 128 GB (A2-rated) | ~$13 | [amazon.ca/dp/B09B1HMJ9Z](https://www.amazon.ca/dp/B09B1HMJ9Z) |
 | **Active Cooler** | Official Raspberry Pi 5 Active Cooler | ~$5 | [amazon.ca/dp/B0CN1GXRKQ](https://www.amazon.ca/dp/B0CN1GXRKQ) |
