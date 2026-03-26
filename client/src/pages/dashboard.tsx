@@ -9849,6 +9849,17 @@ export default function Dashboard() {
                                 </button>
                               </div>
                             )}
+                            {reviewMode === 'individual' && reviewCheckedIds.has(item.id) && (
+                              <button
+                                className="w-10 h-10 flex items-center justify-center rounded-full border border-red-500/40 text-red-400 hover:bg-red-500/25 disabled:opacity-40 flex-shrink-0"
+                                disabled={processingReviewIds.has(item.id)}
+                                onClick={() => handleRejectReview(item.id)}
+                                data-testid={`button-dismiss-review-${item.id}`}
+                                title="Dismiss"
+                              >
+                                <X className="h-5 w-5" />
+                              </button>
+                            )}
                           </div>
                         ))}
                       </div>
