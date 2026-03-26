@@ -22620,7 +22620,7 @@ export default function Dashboard() {
 
             return rows;
           })()}
-          <div className="flex-1 px-2 flex flex-col" style={{ marginTop: (() => {
+          <div className="flex-1 flex flex-col" style={{ paddingLeft: '8px', paddingRight: '0px', marginTop: (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
             if (courseRowRects.length > 0) {
               const firstOffset = 0;
