@@ -22315,9 +22315,9 @@ export default function Dashboard() {
                           onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                           onClick={() => setEditingTask(t)}
                         >
-                          <span style={{ fontSize: '9px', color: '#ffffff', flexShrink: 0 }}>•</span>
-                          <span className="truncate" style={{ fontSize: '8px', color: '#ffffff', textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400, flex: 1, minWidth: 0 }}>{t.title}</span>
-                          <span className="flex-shrink-0" style={{ fontSize: '8px', color: '#ffffff', fontWeight: 400, marginLeft: 'auto' }}>{dueStr}</span>
+                          <span style={{ fontSize: '9px', color: '#000000', flexShrink: 0 }}>•</span>
+                          <span className="truncate" style={{ fontSize: '8px', color: '#000000', fontWeight: 400, flex: 1, minWidth: 0 }}>{t.title}</span>
+                          <span className="flex-shrink-0" style={{ fontSize: '8px', color: '#000000', fontWeight: 400, marginLeft: 'auto' }}>{dueStr}</span>
                         </div>
                       );
                     })}
