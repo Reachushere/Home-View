@@ -20158,6 +20158,11 @@ export default function Dashboard() {
                             const missedSchoolTasks = allTasks.filter(t => {
                               if (!t.courseName) return false;
                               if (t.isCompleted) return false;
+                              if (!t.eventStartTime) {
+                                const d = new Date(t.dueDate);
+                                if (d.getUTCHours() === 0 && d.getUTCMinutes() === 0) return false;
+                                if (getETHours(d) === 0 && getETMinutes(d) === 0) return false;
+                              }
                               const taskDueDate = startOfDayET(new Date(t.dueDate));
                               if (isSameDayET(taskDueDate, todayStart)) return true;
                               if (taskDueDate < todayStart) return false;
@@ -20641,6 +20646,11 @@ export default function Dashboard() {
             const overdueTasks = allTasks.filter(t => {
               if (!t.courseName) return false;
               if (t.isCompleted) return false;
+              if (!t.eventStartTime) {
+                const d = new Date(t.dueDate);
+                if (d.getUTCHours() === 0 && d.getUTCMinutes() === 0) return false;
+                if (getETHours(d) === 0 && getETMinutes(d) === 0) return false;
+              }
               const taskDueDate = startOfDayET(new Date(t.dueDate));
               if (taskDueDate < todayStart) return false;
               const taskTime = getTaskTime(t);
