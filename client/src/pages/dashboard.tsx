@@ -12347,21 +12347,26 @@ export default function Dashboard() {
         <div className="flex-1 overflow-hidden relative h-full">
           {tickerWithTodayTasks.length > 0 ? (
             <div ref={(el) => {
-              if (!el) return;
+              if (!el || (el as any).__d2lTickerInit) return;
+              (el as any).__d2lTickerInit = true;
+              const startScroll = () => {
+                if (!el || !el.parentElement) return;
+                const parentWidth = el.parentElement.clientWidth || window.innerWidth;
+                const contentWidth = el.scrollWidth;
+                const totalTravel = parentWidth + contentWidth;
+                const speed = 65;
+                const dur = totalTravel / speed;
+                el.style.setProperty('--ticker-start', `${parentWidth}px`);
+                el.style.setProperty('--ticker-end', `-${contentWidth}px`);
+                el.style.animation = 'none';
+                void el.offsetWidth;
+                el.style.animation = `tickerScroll ${dur}s linear 1`;
+              };
+              el.addEventListener('animationend', () => {
+                requestAnimationFrame(startScroll);
+              });
               const applyAnim = () => {
                 if (!el) return;
-                const items = Array.from(el.querySelectorAll(':scope > a, :scope > span')) as HTMLElement[];
-                const parentWidth = el.parentElement?.clientWidth || window.innerWidth;
-                const startScroll = () => {
-                  el.style.transform = '';
-                  const contentWidth = el.scrollWidth;
-                  const totalTravel = parentWidth + contentWidth;
-                  const speed = 65;
-                  const dur = totalTravel / speed;
-                  el.style.setProperty('--ticker-start', `${parentWidth}px`);
-                  el.style.setProperty('--ticker-end', `-${contentWidth}px`);
-                  el.style.animation = `tickerScroll ${dur}s linear infinite`;
-                };
                 startScroll();
               };
               const imgs = el.querySelectorAll('img');
