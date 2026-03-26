@@ -212,9 +212,7 @@ async function haServiceCallSafe(service: string, data: object, label = 'HA'): P
   }
 }
 
-function torontoDate(): Date {
-  return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
-}
+import { easternNow as torontoDate, easternDateStr, easternHour, easternMidnight, taskDateStr, addDays } from "./timezone";
 
 function formatLocalDate(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;

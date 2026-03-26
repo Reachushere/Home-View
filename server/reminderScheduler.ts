@@ -5,23 +5,11 @@ import { db } from "./db";
 import { appState } from "@shared/schema";
 import { eq } from "drizzle-orm";
 import { syncOutlookEventsToReview } from "./outlookCalendar";
+import { easternNow, easternDateStr, easternHour, easternMidnight, taskDateStr, addDays } from "./timezone";
 
-function getEasternNow(): Date {
-  return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
-}
-
-function getEasternDateStr(date: Date): string {
-  const fmt = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Toronto', year: 'numeric', month: '2-digit', day: '2-digit' });
-  const parts = fmt.formatToParts(date);
-  const y = parts.find(p => p.type === 'year')!.value;
-  const m = parts.find(p => p.type === 'month')!.value;
-  const d = parts.find(p => p.type === 'day')!.value;
-  return `${y}-${m}-${d}`;
-}
-
-function getEasternHour(date: Date): number {
-  return parseInt(date.toLocaleString('en-US', { hour: 'numeric', hour12: false, timeZone: 'America/Toronto' }), 10) % 24;
-}
+const getEasternNow = easternNow;
+const getEasternDateStr = easternDateStr;
+const getEasternHour = easternHour;
 
 const sentReminders = new Set<string>();
 
@@ -282,31 +270,27 @@ export async function checkDailyDigest() {
         const hour = getEasternHour(new Date());
         const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
-        const tomorrowStart = new Date(now);
-        tomorrowStart.setDate(tomorrowStart.getDate() + 1);
-        tomorrowStart.setHours(0, 0, 0, 0);
-        const tomorrowEnd = new Date(tomorrowStart);
-        tomorrowEnd.setDate(tomorrowEnd.getDate() + 1);
-        const day2End = new Date(tomorrowEnd);
-        day2End.setDate(day2End.getDate() + 1);
+        const todayMid = easternMidnight();
+        const tomorrowDateStr = easternDateStr(addDays(todayMid, 1));
+        const day2DateStr = easternDateStr(addDays(todayMid, 2));
+        const day3DateStr = easternDateStr(addDays(todayMid, 3));
 
-        const tomorrowTasks = upcomingTasks.filter(t => {
-          const d = new Date(t.dueDate);
-          return d >= tomorrowStart && d < tomorrowEnd;
-        });
-        const day2Tasks = upcomingTasks.filter(t => {
-          const d = new Date(t.dueDate);
-          return d >= tomorrowEnd && d < day2End;
-        });
-        const day3Tasks = upcomingTasks.filter(t => {
-          const d = new Date(t.dueDate);
-          return d >= day2End;
-        });
+        const tomorrowTasks = upcomingTasks.filter(t => taskDateStr(t.dueDate) === tomorrowDateStr);
+        const day2Tasks = upcomingTasks.filter(t => taskDateStr(t.dueDate) === day2DateStr);
+        const day3Tasks = upcomingTasks.filter(t => taskDateStr(t.dueDate) === day3DateStr);
 
+        console.log(`[Reminder] Digest voice: tomorrow=${tomorrowDateStr} (${tomorrowTasks.length}), day2=${day2DateStr} (${day2Tasks.length}), day3=${day3DateStr} (${day3Tasks.length})`);
+
+        const MAX_NAMES_TO_READ = 10;
         let voiceMsg = `${greeting}.`;
         if (tomorrowTasks.length > 0) {
-          const tomorrowList = tomorrowTasks.map(t => t.title).join(", ");
-          voiceMsg += ` You have ${tomorrowTasks.length} task${tomorrowTasks.length !== 1 ? 's' : ''} due tomorrow: ${tomorrowList}.`;
+          if (tomorrowTasks.length <= MAX_NAMES_TO_READ) {
+            const tomorrowList = tomorrowTasks.map(t => t.title).join(", ");
+            voiceMsg += ` You have ${tomorrowTasks.length} task${tomorrowTasks.length !== 1 ? 's' : ''} due tomorrow: ${tomorrowList}.`;
+          } else {
+            const firstFew = tomorrowTasks.slice(0, 5).map(t => t.title).join(", ");
+            voiceMsg += ` You have ${tomorrowTasks.length} tasks due tomorrow, including: ${firstFew}, and ${tomorrowTasks.length - 5} more.`;
+          }
         } else {
           voiceMsg += ` No tasks due tomorrow.`;
         }

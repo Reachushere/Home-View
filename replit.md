@@ -10,6 +10,18 @@ Preferred communication style: Simple, everyday language.
 Publishing preference: Always publish with mobile-ready compatibility enabled.
 Publish reminder: Every time I suggest publishing, I MUST ask the user: "Would you like me to email you a copy of the HA automation and webhook code that changed?" If they say yes, compile all relevant webhook endpoint code (from server/routes.ts) and HA automation YAML (from Self_Hosting_Guide.md) that work together for the changed automation, and email it to them via the app's email system.
 
+## CRITICAL: Timezone Rule (5747-Protected)
+
+**ALL server-side date/time logic MUST use `server/timezone.ts` functions.** The timezone is locked to `America/Toronto` and requires password `5747` to change. This is NON-NEGOTIABLE.
+
+- NEVER use raw `new Date()` for date comparisons, day boundaries, or hour checks
+- NEVER use `setHours(0,0,0,0)` on a raw Date — use `easternMidnight()` instead
+- NEVER compute "tomorrow" or day boundaries with UTC arithmetic — use `easternDateStr()` + `addDays()`
+- ALWAYS import from `server/timezone.ts`: `easternNow`, `easternDateStr`, `easternHour`, `easternMidnight`, `taskDateStr`, `addDays`
+- ALWAYS compare task dates using `taskDateStr(dueDate)` which returns YYYY-MM-DD in Eastern time
+- The daily digest voice message has a MAX_NAMES_TO_READ cap of 10 — if more tasks, read first 5 names + "and X more"
+- This rule has been broken multiple times before. It MUST NOT be broken again.
+
 ## System Architecture
 
 ### Frontend
