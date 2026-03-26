@@ -5442,6 +5442,10 @@ export default function Dashboard() {
       queryClient.invalidateQueries({ queryKey: ['/api/announcements'] });
     },
   });
+  const [dismissedTodayTaskIds, setDismissedTodayTaskIds] = useState<Set<string>>(() => {
+    try { const s = localStorage.getItem('dismissedTodayTaskIds'); if (s) { const parsed = JSON.parse(s); return new Set(parsed.filter((x: any) => typeof x === 'string')); } } catch {}
+    return new Set();
+  });
   const [tickerDragIdx, setTickerDragIdx] = useState<number | null>(null);
   const [tickerDragOverIdx, setTickerDragOverIdx] = useState<number | null>(null);
   const tickerTouchDragRef = useRef<{ startY: number; idx: number; el: HTMLElement | null } | null>(null);
@@ -9197,30 +9201,30 @@ export default function Dashboard() {
     });
   }, [allTasks, coursesData?.courses]);
 
-  const tickerWithTodayTasks = useMemo(() => {
-    if (todayCourseTasks.length === 0) return thisWeekAnnouncements;
-    const courseGroups: Record<string, typeof todayCourseTasks> = {};
+  const todayTaskTickerItems = useMemo(() => {
+    if (todayCourseTasks.length === 0) return [];
+    const items: Array<{ id: string; courseName: string; subject: string; body: string; snippet: string; receivedAt: string; _isTodayTask: true }> = [];
     todayCourseTasks.forEach(t => {
       const code = t.courseName?.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') || 'TASK';
-      if (!courseGroups[code]) courseGroups[code] = [];
-      courseGroups[code].push(t);
-    });
-    const syntheticItems = Object.entries(courseGroups).map(([code, tasks]) => {
-      const body = tasks.length === 1
-        ? `${code}: ${tasks[0].title} — due today`
-        : `${code}: ${tasks.length} tasks due today`;
-      return {
-        id: `today-tasks-${code}`,
+      const taskId = `today-task-${t.id}`;
+      if (dismissedTodayTaskIds.has(taskId)) return;
+      items.push({
+        id: taskId,
         courseName: code,
-        subject: body,
-        body: body,
-        snippet: body,
+        subject: `${code}: ${t.title} — due today`,
+        body: `${code}: ${t.title} — due today`,
+        snippet: `${code}: ${t.title} — due today`,
         receivedAt: new Date().toISOString(),
         _isTodayTask: true,
-      };
+      });
     });
-    return [...syntheticItems, ...thisWeekAnnouncements];
-  }, [thisWeekAnnouncements, todayCourseTasks]);
+    return items;
+  }, [todayCourseTasks, dismissedTodayTaskIds]);
+
+  const tickerWithTodayTasks = useMemo(() => {
+    if (todayTaskTickerItems.length === 0) return thisWeekAnnouncements;
+    return [...todayTaskTickerItems, ...thisWeekAnnouncements];
+  }, [thisWeekAnnouncements, todayTaskTickerItems]);
 
   const d2lTickerHeight = 38;
 
@@ -12411,26 +12415,10 @@ export default function Dashboard() {
               <span className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>TICKER ITEMS</span>
             </div>
             <div className="flex-1 overflow-y-auto px-4 py-2" style={{ scrollbarWidth: 'thin' }}>
-              {todayCourseTasks.length > 0 && (() => {
-                const courseGroups: Record<string, typeof todayCourseTasks> = {};
-                todayCourseTasks.forEach(t => {
-                  const code = t.courseName?.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') || 'TASK';
-                  if (!courseGroups[code]) courseGroups[code] = [];
-                  courseGroups[code].push(t);
-                });
-                return Object.entries(courseGroups).map(([code, tasks]) => (
-                  <div key={`today-${code}`} className="flex items-center gap-2 py-1.5" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                    <span className="text-[10px] font-bold text-yellow-300 flex-shrink-0" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>DUE TODAY</span>
-                    <span className="text-[12px] text-yellow-200 truncate" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>
-                      {tasks.length === 1 ? `${code}: ${tasks[0].title}` : `${code}: ${tasks.length} tasks due today`}
-                    </span>
-                  </div>
-                ));
-              })()}
-              {d2lAnnouncements.length === 0 && todayCourseTasks.length === 0 ? (
-                <div className="text-white/40 text-[12px] text-center py-6">No ticker items</div>
-              ) : (
-                d2lAnnouncements.map((a: any, idx: number) => (
+              {(() => {
+                const allDialogItems = [...todayTaskTickerItems.map((t: any) => ({ ...t, _isSynthetic: true })), ...d2lAnnouncements];
+                if (allDialogItems.length === 0) return <div className="text-white/40 text-[12px] text-center py-6">No ticker items</div>;
+                return allDialogItems.map((a: any, idx: number) => (
                   <div
                     key={a.id}
                     draggable
@@ -12492,19 +12480,28 @@ export default function Dashboard() {
                       </span>
                       <span className="text-white text-[12px] flex-1 min-w-0 truncate">{a.body || a.snippet || a.subject}</span>
                       <button
-                        onClick={() => deleteTickerMutation.mutate(a.id)}
+                        onClick={() => {
+                          if (a._isSynthetic) {
+                            const newSet = new Set(dismissedTodayTaskIds);
+                            newSet.add(a.id);
+                            setDismissedTodayTaskIds(newSet);
+                            localStorage.setItem('dismissedTodayTaskIds', JSON.stringify([...newSet]));
+                          } else {
+                            deleteTickerMutation.mutate(a.id);
+                          }
+                        }}
                         className="shrink-0 text-white/30 hover:text-red-400 transition-colors p-1"
                         data-testid={`button-delete-ticker-${a.id}`}
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
                     </div>
-                    {idx < d2lAnnouncements.length - 1 && (
+                    {idx < allDialogItems.length - 1 && (
                       <div style={{ marginLeft: '22px', marginRight: '8px', borderBottom: '1px solid rgba(255,255,255,0.12)' }} />
                     )}
                   </div>
-                ))
-              )}
+                ));
+              })()}
             </div>
             <div className="px-4 py-3 flex items-center gap-2" style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
               <select
