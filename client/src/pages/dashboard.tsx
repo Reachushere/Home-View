@@ -22177,10 +22177,10 @@ export default function Dashboard() {
               </div>
             );
           })()}
-          <div style={{ padding: '0 8px', height: '46px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 46, overflow: 'visible', marginBottom: '-12px', boxShadow: '0 3px 6px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3)' }}>
+          <div style={{ padding: '0 8px', height: courseRowRects.length > 0 ? `${courseRowRects[0].top - (calendarBorderTop || (calendarTop + 15))}px` : '46px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 46, overflow: 'visible', marginBottom: '0px', boxShadow: '0 3px 6px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3)' }}>
             <div style={{ position: 'absolute', top: '15px', left: '22px', right: 0, height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)' }} />
-            <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: '6px', top: '31px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Homework Progress</span>
-            <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: `${effectiveDividerPct}%`, top: '31px', letterSpacing: '0.3px', whiteSpace: 'nowrap', paddingLeft: '6px' }}>Assignments</span>
+            <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: '6px', bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Homework Progress</span>
+            <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: `${effectiveDividerPct}%`, bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', paddingLeft: '6px' }}>Assignments</span>
             {weatherData && (
               <div style={{ position: 'absolute', left: '28px', top: '1px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span className="text-[10.5px] font-medium" style={{ color: 'rgba(255,255,255,1)' }} data-testid="homework-weather-temp">Current: {Math.round(weatherData.temp)}°C</span>
@@ -22197,7 +22197,7 @@ export default function Dashboard() {
           </div>
           {courseRowRects.length > 0 && courseProgressDataRef.current.length > 0 && (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
-            const firstRowOffset = courseRowRects[0] ? (courseRowRects[0].top - upcomingTop - 45) : 0;
+            const firstRowOffset = 0;
             const leftWidth = (() => {
               if (homeworkSpacerRef.current && homeworkSectionRef.current) {
                 const spacerRect = homeworkSpacerRef.current.getBoundingClientRect();
@@ -22591,7 +22591,7 @@ export default function Dashboard() {
           <div className="flex-1 px-2 flex flex-col" style={{ marginTop: (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
             if (courseRowRects.length > 0) {
-              const firstOffset = courseRowRects[0] ? (courseRowRects[0].top - upcomingTop - 45) : 0;
+              const firstOffset = 0;
               const lastRect = courseRowRects[courseRowRects.length - 1];
               if (lastRect) {
                 const lastBottom = lastRect.top + lastRect.height - upcomingTop - firstOffset;

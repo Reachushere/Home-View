@@ -8017,8 +8017,14 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           }
         }
 
-        await openUrlOnFireStick(haUrl, 'media_player.fire_stick_cat_wr', tvFollowUrl);
-        console.log(`${logPrefix} TV follow URL sent, Silk opens fullscreen (immersive mode)`);
+        const tvOpened = await openUrlOnFireStick(haUrl, 'media_player.fire_stick_cat_wr', tvFollowUrl);
+        console.log(`${logPrefix} TV follow URL sent (success=${tvOpened}), Silk opens fullscreen (immersive mode)`);
+        if (!tvOpened) {
+          console.log(`${logPrefix} TV URL open failed — retrying after 5s`);
+          await new Promise(r => setTimeout(r, 5000));
+          const tvRetry = await openUrlOnFireStick(haUrl, 'media_player.fire_stick_cat_wr', tvFollowUrl);
+          console.log(`${logPrefix} TV follow URL retry (success=${tvRetry})`);
+        }
       } catch (e: any) {
         console.log(`${logPrefix} TV setup error: ${e.message}`);
       }
