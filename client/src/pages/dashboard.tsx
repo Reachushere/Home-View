@@ -9217,10 +9217,9 @@ export default function Dashboard() {
       if (tasks.length === 0) return;
       const summaryId = `today-summary-${code}`;
       const fullCourseName = code;
-      const titles = tasks.map(t => t.title).join(', ');
       const summaryText = tasks.length === 1
         ? `${tasks[0].title} — due today`
-        : `${tasks.length} tasks due today — ${titles}`;
+        : `${tasks.length} tasks due today`;
       items.push({
         id: summaryId,
         courseName: fullCourseName,
