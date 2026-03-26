@@ -9716,37 +9716,35 @@ export default function Dashboard() {
             <div className="flex items-center gap-2">
               {reviewMode === 'all' ? (
                 <>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-6 px-2 text-[9px] border-white/20 text-white/60 hover:text-white hover:bg-white/10"
+                  <button
+                    className="h-7 px-3 text-[10px] font-medium text-white rounded disabled:opacity-40"
+                    style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.15)', border: '1px solid rgba(255,255,255,0.2)', fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}
                     onClick={handleSkipAllForToday}
                     disabled={morningReviewLoading}
                     data-testid="button-skip-all-24h-review"
                   >
                     Skip All 24h
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-6 px-2 text-[9px] border-red-500/30 text-red-400/70 hover:text-red-300 hover:bg-red-500/10"
+                  </button>
+                  <button
+                    className="h-7 px-3 text-[10px] font-medium text-white rounded disabled:opacity-40"
+                    style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.15)', border: '1px solid rgba(255,255,255,0.2)', fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}
                     onClick={handleSkipAllForever}
                     disabled={morningReviewLoading}
                     data-testid="button-skip-all-forever-review"
                   >
-                    {morningReviewLoading ? <Loader2 className="h-2.5 w-2.5 mr-1 animate-spin" /> : null}
+                    {morningReviewLoading ? <Loader2 className="h-2.5 w-2.5 mr-1 animate-spin inline" /> : null}
                     Skip All Forever
-                  </Button>
-                  <Button
-                    size="sm"
-                    className="h-6 px-2 text-[9px] bg-green-600 hover:bg-green-700 text-white"
+                  </button>
+                  <button
+                    className="h-7 px-3 text-[10px] font-medium text-white rounded disabled:opacity-40"
+                    style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.15)', border: '1px solid rgba(255,255,255,0.2)', fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}
                     onClick={handleAcceptAll}
                     disabled={morningReviewLoading}
                     data-testid="button-accept-all-review"
                   >
-                    {morningReviewLoading ? <Loader2 className="h-2.5 w-2.5 mr-1 animate-spin" /> : <Check className="h-2.5 w-2.5 mr-1" />}
+                    {morningReviewLoading ? <Loader2 className="h-2.5 w-2.5 mr-1 animate-spin inline" /> : <Check className="h-2.5 w-2.5 mr-1 inline" />}
                     Accept All
-                  </Button>
+                  </button>
                 </>
               ) : (
                 <>
