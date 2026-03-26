@@ -18575,22 +18575,38 @@ export default function Dashboard() {
             </Button>
           </div>
           
-          {/* BRYN reminder - positioned above today column outside the card */}
-          <div className="grid w-full h-[15px] flex-shrink-0" data-tpo data-tpo-opacity="1" style={{ gridTemplateColumns: getGridTemplateColumns(), marginTop: '-4px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out' }}>
-            <div style={{ minWidth: 0 }} /> {/* Time column spacer */}
-            {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0 }} />} {/* Module column spacer */}
-            {weekDays.map((day, idx) => {
-              const isToday = isSameDayET(day, new Date());
-              const todayHasTasks = isToday && allTasks.some(t => 
-                t.dueDate && !t.isCompleted && isSameDayET(new Date(t.dueDate), day)
-              );
-              return (
-                <div key={idx} style={{ minWidth: 0, width: '100%', fontFamily: "'Nunito', 'Avenir', sans-serif" }} className={`text-[11px] font-medium text-white tracking-wide text-center leading-[15px] ${isToday && todayHasTasks ? 'animate-pulse' : ''}`}>
-                  {isToday && todayHasTasks ? `${profileData.firstName.toUpperCase()}: Review your today tasks` : ''}
-                </div>
-              );
-            })}
-          </div>
+          {weatherData?.daily && (
+            <div className="grid w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), height: '16px', marginBottom: '0px' }}>
+              <div style={{ minWidth: 0 }} />
+              {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0 }} />}
+              {weekDays.map((day, idx) => {
+                const dateStr = format(day, 'yyyy-MM-dd');
+                const dayForecast = weatherData.daily?.find(d => d.date === dateStr);
+                const isPast = day < startOfDayET(new Date());
+                const WMO_SHORT: Record<number, string> = { 0:'Clear',1:'Clear',2:'Cloudy',3:'Overcast',45:'Fog',48:'Fog',51:'Drizzle',53:'Drizzle',55:'Drizzle',61:'Rain',63:'Rain',65:'Rain',66:'Fr. Rain',67:'Fr. Rain',71:'Snow',73:'Snow',75:'Snow',77:'Snow',80:'Showers',81:'Showers',82:'Showers',85:'Snow',86:'Snow',95:'Storm',96:'Storm',99:'Storm' };
+                const wIcon = ((wc: number | undefined) => {
+                  if (wc === undefined) return '';
+                  if (wc === 0) return '☀️'; if (wc === 1) return '🌤️'; if (wc === 2) return '⛅'; if (wc === 3) return '☁️';
+                  if (wc === 45 || wc === 48) return '🌫️';
+                  if (wc >= 51 && wc <= 55) return '🌦️'; if (wc >= 56 && wc <= 57) return '🌧️';
+                  if (wc >= 61 && wc <= 65) return '🌧️'; if (wc >= 66 && wc <= 67) return '🧊';
+                  if (wc >= 71 && wc <= 77) return '❄️'; if (wc >= 80 && wc <= 82) return '🌦️';
+                  if (wc >= 85 && wc <= 86) return '🌨️'; if (wc >= 95) return '⛈️';
+                  return '';
+                })(dayForecast?.weatherCode);
+                const desc = dayForecast?.weatherCode !== undefined ? (WMO_SHORT[dayForecast.weatherCode] || '') : '';
+                return (
+                  <div key={idx} className="flex items-center justify-center overflow-hidden" style={{ opacity: isPast ? 0.5 : 1 }} data-testid={`weather-above-${dateStr}`}>
+                    {dayForecast && (
+                      <span className="text-[8px] text-white/90 whitespace-nowrap leading-none font-medium" style={{ letterSpacing: '-0.2px' }}>
+                        {wIcon} {Math.round(dayForecast.low)}°/{Math.round(dayForecast.high)}° {desc}
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
           <div className="flex-1 min-h-0 relative" style={{ overflow: 'visible' }}>
             <div
               style={{ position: 'absolute', left: '9px', top: '-28px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
@@ -18611,46 +18627,7 @@ export default function Dashboard() {
             </div>
             
             <div ref={calendarContentRef} className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" style={{ borderRadius: '8px' }} onClick={() => setSelectedTaskId(null)}>
-            {/* Weather Row - Above date headers */}
-            {weatherData?.daily && (
-              <div data-calendar-grid="true" className="grid z-[44] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), height: '16px', borderBottom: '1px solid rgba(255,255,255,0.15)' }}>
-                <div style={{ backgroundColor: colorSettings.headerBar }} />
-                {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: colorSettings.headerBar }} />}
-                {weekDays.map((day, idx) => {
-                  const dateStr = format(day, 'yyyy-MM-dd');
-                  const dayForecast = weatherData.daily?.find(d => d.date === dateStr);
-                  const isPast = day < startOfDayET(new Date());
-                  const WMO_SHORT: Record<number, string> = { 0:'Clear',1:'Clear',2:'Cloudy',3:'Overcast',45:'Fog',48:'Fog',51:'Drizzle',53:'Drizzle',55:'Drizzle',61:'Rain',63:'Rain',65:'Rain',66:'Fr. Rain',67:'Fr. Rain',71:'Snow',73:'Snow',75:'Snow',77:'Snow',80:'Showers',81:'Showers',82:'Showers',85:'Snow',86:'Snow',95:'Storm',96:'Storm',99:'Storm' };
-                  const wIcon = ((wc: number | undefined) => {
-                    if (wc === undefined) return '';
-                    if (wc === 0) return '☀️';
-                    if (wc === 1) return '🌤️';
-                    if (wc === 2) return '⛅';
-                    if (wc === 3) return '☁️';
-                    if (wc === 45 || wc === 48) return '🌫️';
-                    if (wc >= 51 && wc <= 55) return '🌦️';
-                    if (wc >= 56 && wc <= 57) return '🌧️';
-                    if (wc >= 61 && wc <= 65) return '🌧️';
-                    if (wc >= 66 && wc <= 67) return '🧊';
-                    if (wc >= 71 && wc <= 77) return '❄️';
-                    if (wc >= 80 && wc <= 82) return '🌦️';
-                    if (wc >= 85 && wc <= 86) return '🌨️';
-                    if (wc >= 95) return '⛈️';
-                    return '';
-                  })(dayForecast?.weatherCode);
-                  const desc = dayForecast?.weatherCode !== undefined ? (WMO_SHORT[dayForecast.weatherCode] || '') : '';
-                  return (
-                    <div key={idx} className="border-l border-border flex items-center justify-center overflow-hidden" style={{ backgroundColor: colorSettings.headerBar, opacity: isPast ? 0.5 : 1 }} data-testid={`weather-row-${dateStr}`}>
-                      {dayForecast && (
-                        <span className="text-[8px] text-white/90 whitespace-nowrap leading-none font-medium" style={{ letterSpacing: '-0.2px' }}>
-                          {wIcon} {Math.round(dayForecast.low)}°/{Math.round(dayForecast.high)}° {desc}
-                        </span>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+            
             {/* Day Headers - Fixed, not scrollable */}
             <div data-calendar-grid="true" className="grid z-[44] h-[48px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), borderBottom: '1px solid #666' }}>
               <div className="flex items-center justify-center relative" style={{ backgroundColor: colorSettings.headerBar }}>
