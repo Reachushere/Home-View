@@ -7899,7 +7899,11 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         await haServiceCall('androidtv/adb_command', {
           entity_id: tabletEntity, command: 'input keyevent KEYCODE_F11'
         }, 'Tablet F11').catch((e: any) => console.error(`${logPrefix} Tablet F11: FAILED — ${e.message}`));
-        console.log(`${logPrefix} Tablet setup complete`);
+        await new Promise(r => setTimeout(r, 2000));
+        await haServiceCall('androidtv/adb_command', {
+          entity_id: tabletEntity, command: 'input tap 500 400'
+        }, 'Tablet Tap Fullscreen').catch((e: any) => console.error(`${logPrefix} Tablet tap: FAILED — ${e.message}`));
+        console.log(`${logPrefix} Tablet setup complete (with tap for fullscreen)`);
       } catch (e: any) {
         console.error(`${logPrefix} Tablet setup error: ${e.message}`);
       }
@@ -9664,25 +9668,26 @@ document.body.removeChild(a);
 
       let lightState = 'unknown';
       const bodyState = req.body?.state || req.body?.new_state?.state || '';
-      for (let attempt = 1; attempt <= 3; attempt++) {
-        try {
-          const lightResp = await fetch(`${haUrl0}/api/states/${CAT_LIGHTS_ENTITY}`, { headers: haHeaders0 });
-          if (lightResp.ok) {
-            const lightData = await lightResp.json();
-            lightState = lightData?.state || 'unknown';
-            if (lightState !== 'unknown') break;
-          }
-        } catch (e: any) {
-          console.log(`[Cat Lights] Attempt ${attempt}/3 failed to query light state: ${e.message}`);
-        }
-        if (attempt < 3) {
-          console.log(`[Cat Lights] Retrying light state query in 1s (attempt ${attempt + 1}/3)...`);
-          await new Promise(r => setTimeout(r, 1000));
-        }
-      }
-      if (lightState === 'unknown' && (bodyState === 'on' || bodyState === 'off')) {
+      if (bodyState === 'on' || bodyState === 'off') {
         lightState = bodyState;
-        console.log(`[Cat Lights] HA state unknown after 3 attempts, using body state: ${lightState}`);
+        console.log(`[Cat Lights] Using body state directly: ${lightState}`);
+      } else {
+        for (let attempt = 1; attempt <= 3; attempt++) {
+          try {
+            const lightResp = await fetch(`${haUrl0}/api/states/${CAT_LIGHTS_ENTITY}`, { headers: haHeaders0 });
+            if (lightResp.ok) {
+              const lightData = await lightResp.json();
+              lightState = lightData?.state || 'unknown';
+              if (lightState !== 'unknown') break;
+            }
+          } catch (e: any) {
+            console.log(`[Cat Lights] Attempt ${attempt}/3 failed to query light state: ${e.message}`);
+          }
+          if (attempt < 3) {
+            console.log(`[Cat Lights] Retrying light state query in 1s (attempt ${attempt + 1}/3)...`);
+            await new Promise(r => setTimeout(r, 1000));
+          }
+        }
       }
       console.log(`[Cat Lights] Light state: ${lightState} (body state: ${bodyState})`);
       console.log(`[Cat Lights] Architecture: server-side TTS → Google Nest speaker (media_player.play_media)`);
