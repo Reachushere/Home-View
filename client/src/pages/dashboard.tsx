@@ -18656,7 +18656,7 @@ export default function Dashboard() {
           </div>
           
           {weatherData?.daily && (
-            <div className="grid w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), height: '16px', marginBottom: '0px' }}>
+            <div className="grid w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), height: '16px', marginBottom: '-1px' }}>
               <div style={{ minWidth: 0 }} />
               {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0 }} />}
               {weekDays.map((day, idx) => {
@@ -18678,7 +18678,7 @@ export default function Dashboard() {
                 return (
                   <div key={idx} className="flex items-center justify-center overflow-hidden" style={{ opacity: isPast ? 0.5 : 1 }} data-testid={`weather-above-${dateStr}`}>
                     {dayForecast && (
-                      <span className="text-[10px] text-white/90 whitespace-nowrap leading-none font-medium" style={{ letterSpacing: '-0.2px' }}>
+                      <span className="text-[11px] text-white/90 whitespace-nowrap leading-none font-medium" style={{ letterSpacing: '-0.2px' }}>
                         {wIcon} {Math.round(dayForecast.low)}°/{Math.round(dayForecast.high)}° {desc}
                       </span>
                     )}
