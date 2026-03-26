@@ -22100,7 +22100,7 @@ export default function Dashboard() {
                         } fill={isActive ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.3)'} stroke={isActive ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.7)'} strokeWidth={isActive ? '1.5' : '1.2'} />
                         {(() => {
                           const tFs = '8';
-                          const tFw = isActive ? '500' : '400';
+                          const tFw = isActive ? '450' : '350';
                           const tFs2 = '7';
                           const tFill = '#ffffff';
                           return semTabs.indexOf(tab) === semTabs.length - 1 ? (
