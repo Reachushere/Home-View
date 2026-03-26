@@ -2814,6 +2814,8 @@ export default function Dashboard() {
   
   useEffect(() => {
     localStorage.setItem('gridSizes', JSON.stringify(gridSizes));
+    const sw = window.screen.width, sh = window.screen.height, pr = window.devicePixelRatio || 1;
+    localStorage.setItem(`gridSizes_device_${sw}x${sh}@${pr}`, JSON.stringify(gridSizes));
     const timer = setTimeout(() => {
       saveDegreeKeyDebounced('gridSizes', gridSizes);
     }, 1500);
@@ -2823,6 +2825,8 @@ export default function Dashboard() {
   // Save calendar height to localStorage
   useEffect(() => {
     localStorage.setItem('calendarHeight', calendarHeight.toString());
+    const sw = window.screen.width, sh = window.screen.height, pr = window.devicePixelRatio || 1;
+    localStorage.setItem(`calendarHeight_device_${sw}x${sh}@${pr}`, calendarHeight.toString());
     const timer = setTimeout(() => {
       saveDegreeKeyDebounced('calendarHeight', calendarHeight);
     }, 1500);
@@ -3062,10 +3066,14 @@ export default function Dashboard() {
         setIsResizingHomework(false);
         resizingHomeworkRef.current = null;
         localStorage.setItem('calendarReduction', String(calendarReduction));
+        const sw = window.screen.width, sh = window.screen.height, pr = window.devicePixelRatio || 1;
+        localStorage.setItem(`calendarReduction_device_${sw}x${sh}@${pr}`, String(calendarReduction));
       } else if (isResizingHomework) {
         setIsResizingHomework(false);
         resizingHomeworkRef.current = null;
         localStorage.setItem('calendarReduction', String(calendarReduction));
+        const sw = window.screen.width, sh = window.screen.height, pr = window.devicePixelRatio || 1;
+        localStorage.setItem(`calendarReduction_device_${sw}x${sh}@${pr}`, String(calendarReduction));
       }
       setColumnResizing(null);
       setRowResizing(null);
