@@ -15943,7 +15943,13 @@ Return ONLY the JSON object, no markdown formatting.`;
     try {
       const status = (_req.query.status as string) || undefined;
       const items = await storage.getPendingReviewItems(status);
-      res.json(items);
+      const todayStart = new Date(getNowInToronto().toDateString());
+      const filtered = items.filter(item => {
+        if (!item.startDate) return true;
+        const itemDate = new Date(new Date(item.startDate).toDateString());
+        return itemDate >= todayStart;
+      });
+      res.json(filtered);
     } catch (error: any) {
       console.error("[Review] Error fetching pending items:", error);
       res.status(500).json({ error: error.message });
