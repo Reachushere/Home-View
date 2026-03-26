@@ -22993,13 +22993,13 @@ export default function Dashboard() {
                       const taskCourseCode = task.courseName?.split(' - ')[0]?.toUpperCase() || '';
                       const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
                       return (
-                        <div key={`today-in-w11-${task.id}`} style={{ position: 'relative', overflow: 'visible', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: 'transparent', paddingLeft: '4px', paddingRight: '4px' }}>
+                        <div key={`today-in-w11-${task.id}`} style={{ position: 'relative', overflow: 'visible', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: 'transparent', paddingLeft: `${2 + hwGroupBarWidth + 4 + 3 + 10 + 2}px`, paddingRight: '4px' }}>
                           <div style={{ display: 'flex', alignItems: 'flex-start', padding: '3px 0', gap: '6px' }}>
                             <div style={{ width: '22px', height: '22px', borderRadius: '4px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: progressColor, border: '1px solid rgba(255,255,255,0.2)' }}>
                               <span style={{ fontSize: '7px', fontWeight: 600, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase' }}>{format(new Date(task.dueDate), 'MMM')}</span>
                               <span style={{ fontSize: '8px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textAlign: 'center', display: 'block', marginTop: '1px' }}>{format(new Date(task.dueDate), 'd')}</span>
                             </div>
-                            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '20px' }}>
                               <button
                                 className="text-[10px] truncate hover:underline cursor-pointer leading-none w-full"
                                 onClick={() => setEditingTask(task)}
