@@ -12318,7 +12318,6 @@ export default function Dashboard() {
           <div className="sm:rounded-lg shadow-2xl w-[500px] max-h-[500px] flex flex-col overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }} data-testid="ticker-dialog">
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
               <span className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>TICKER ITEMS</span>
-              <button onClick={() => setTickerDialogOpen(false)} className="text-white/60 hover:text-white text-[18px] leading-none" data-testid="button-close-ticker">&times;</button>
             </div>
             <div className="flex-1 overflow-y-auto px-4 py-2" style={{ scrollbarWidth: 'thin' }}>
               {d2lAnnouncements.length === 0 ? (
@@ -12431,6 +12430,29 @@ export default function Dashboard() {
               >
                 + Add
               </button>
+            </div>
+            <div className="flex items-center justify-end gap-2 px-4 py-3" style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
+              <Button
+                variant="outline"
+                className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 w-[110px]"
+                style={{ fontSize: '12px' }}
+                onClick={() => setTickerDialogOpen(false)}
+                data-testid="button-cancel-ticker-dialog"
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="outline"
+                className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8 w-[110px]"
+                style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '12px' }}
+                onClick={() => {
+                  toast({ title: "Saved", description: "Ticker items saved." });
+                  setTickerDialogOpen(false);
+                }}
+                data-testid="button-save-ticker-dialog"
+              >
+                Save
+              </Button>
             </div>
           </div>
         </div>
