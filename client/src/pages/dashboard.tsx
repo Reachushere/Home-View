@@ -12378,27 +12378,31 @@ export default function Dashboard() {
                       tickerTouchDragRef.current = null;
                     }}
                     data-ticker-drag-item
-                    className="flex items-center gap-2 py-2 cursor-grab active:cursor-grabbing"
+                    className="cursor-grab active:cursor-grabbing"
                     style={{
-                      borderBottom: '1px solid rgba(255,255,255,0.06)',
                       opacity: tickerDragIdx === idx ? 0.4 : 1,
                       borderTop: tickerDragOverIdx === idx && tickerDragIdx !== null && tickerDragIdx !== idx ? '2px solid rgba(99,102,241,0.8)' : '2px solid transparent',
                       transition: 'opacity 0.15s',
                     }}
                     data-testid={`ticker-item-${a.id}`}
                   >
-                    <GripVertical className="h-3.5 w-3.5 text-white/25 shrink-0" />
-                    <span className="text-[10px] px-1.5 py-0.5 rounded font-semibold" style={{ backgroundColor: a.courseName === 'Custom' ? 'rgba(255,255,255,0.1)' : a.courseName === 'URGENT' ? 'rgba(239,68,68,0.4)' : a.courseName === 'REMINDER' ? 'rgba(234,179,8,0.35)' : 'rgba(99,102,241,0.3)', color: a.courseName === 'Custom' ? '#9ca3af' : a.courseName === 'URGENT' ? '#fca5a5' : a.courseName === 'REMINDER' ? '#fde047' : '#a5b4fc' }}>
-                      {a.courseName === 'Custom' ? '📌' : a.courseName}
-                    </span>
-                    <span className="text-white text-[12px] flex-1 min-w-0 truncate">{a.body || a.snippet || a.subject}</span>
-                    <button
-                      onClick={() => deleteTickerMutation.mutate(a.id)}
-                      className="shrink-0 text-white/30 hover:text-red-400 transition-colors p-1"
-                      data-testid={`button-delete-ticker-${a.id}`}
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
+                    <div className="flex items-center gap-2 py-2">
+                      <GripVertical className="h-3.5 w-3.5 text-white/25 shrink-0" />
+                      <span className="text-[10px] px-1.5 py-0.5 rounded font-semibold" style={{ backgroundColor: a.courseName === 'Custom' ? 'rgba(255,255,255,0.1)' : a.courseName === 'URGENT' ? 'rgba(239,68,68,0.4)' : a.courseName === 'REMINDER' ? 'rgba(234,179,8,0.35)' : 'rgba(99,102,241,0.3)', color: a.courseName === 'Custom' ? '#9ca3af' : a.courseName === 'URGENT' ? '#fca5a5' : a.courseName === 'REMINDER' ? '#fde047' : '#a5b4fc' }}>
+                        {a.courseName === 'Custom' ? '📌' : a.courseName}
+                      </span>
+                      <span className="text-white text-[12px] flex-1 min-w-0 truncate">{a.body || a.snippet || a.subject}</span>
+                      <button
+                        onClick={() => deleteTickerMutation.mutate(a.id)}
+                        className="shrink-0 text-white/30 hover:text-red-400 transition-colors p-1"
+                        data-testid={`button-delete-ticker-${a.id}`}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                    {idx < d2lAnnouncements.length - 1 && (
+                      <div style={{ marginLeft: '22px', marginRight: '8px', borderBottom: '1px solid rgba(255,255,255,0.12)' }} />
+                    )}
                   </div>
                 ))
               )}
