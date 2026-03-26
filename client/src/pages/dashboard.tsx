@@ -22821,7 +22821,7 @@ export default function Dashboard() {
                         const dueDates = group.tasks.map(t => ({ date: startOfDayET(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
                           <div key={group.key} data-hw-group-row style={{ display: 'flex', alignItems: 'flex-start', marginTop: groupIdx === 0 ? '-16px' : '0px' }}>
-                            <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', alignSelf: 'flex-start', marginLeft: '-3px', marginRight: '2px', overflow: 'visible', position: 'relative', zIndex: 2 }}>
+                            <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', alignSelf: 'flex-start', marginLeft: '2px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2 }}>
                               <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', width: '100%' }}>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', width: '100%' }}>
                                 <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: '100%', justifyContent: 'flex-end' }}>
@@ -22898,7 +22898,7 @@ export default function Dashboard() {
                                           <span style={{ fontSize: '7px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.3px', marginTop: '1px', marginBottom: '-1px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
                                           <span style={{ fontSize: '9px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textAlign: 'center', display: 'block', marginTop: '1px' }}>{format(new Date(task.dueDate), 'd')}</span>
                                         </div>
-                                        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '21px' }}>
+                                        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '14px' }}>
                                           <div>
                                             <button
                                               className="text-[10px] truncate hover:underline cursor-pointer leading-none w-full"
