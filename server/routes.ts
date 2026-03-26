@@ -9665,6 +9665,7 @@ document.body.removeChild(a);
       await new Promise(r => setTimeout(r, 800));
 
       let lightState = 'unknown';
+      const bodyState = req.body?.state || req.body?.new_state?.state || '';
       try {
         const lightResp = await fetch(`${haUrl0}/api/states/${CAT_LIGHTS_ENTITY}`, { headers: haHeaders0 });
         if (lightResp.ok) {
@@ -9673,8 +9674,16 @@ document.body.removeChild(a);
         }
       } catch (e: any) {
         console.log(`[Cat Lights] Failed to query light state from HA: ${e.message}`);
+        if (bodyState === 'on' || bodyState === 'off') {
+          lightState = bodyState;
+          console.log(`[Cat Lights] Using body state fallback: ${lightState}`);
+        }
       }
-      console.log(`[Cat Lights] Actual light state from HA: ${lightState}`);
+      if (lightState === 'unknown' && (bodyState === 'on' || bodyState === 'off')) {
+        lightState = bodyState;
+        console.log(`[Cat Lights] HA state unknown, using body state: ${lightState}`);
+      }
+      console.log(`[Cat Lights] Actual light state from HA: ${lightState} (body state: ${bodyState})`);
       console.log(`[Cat Lights] Architecture: server-side TTS → Google Nest speaker (media_player.play_media)`);
 
       if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
