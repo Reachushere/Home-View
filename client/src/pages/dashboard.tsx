@@ -12688,7 +12688,7 @@ export default function Dashboard() {
           transform: 'translateX(-50%)',
           top: `${-9 + d2lTickerHeight}px`,
           width: '84px',
-          height: '25px',
+          height: '27px',
           cursor: 'pointer',
           pointerEvents: 'auto',
           opacity: 0.9,
@@ -12728,7 +12728,7 @@ export default function Dashboard() {
           }, delay);
         }}
       >
-        <svg width="84" height="25" viewBox="0 0 84 25" style={{ display: 'block' }}>
+        <svg width="84" height="27" viewBox="0 -1 84 27" style={{ display: 'block' }}>
           <path d="M0,0 L84,0 L84,9 Q75,9 75,14 L75,13 Q75,25 63,25 L21,25 Q9,25 9,13 L9,14 Q9,9 0,9 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
         </svg>
         <div style={{ position: 'absolute', left: '50%', top: '6px', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', borderRadius: '50%', width: '20px', height: '20px' }}>
