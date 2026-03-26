@@ -232,7 +232,7 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave }: Pr
                 </div>
                 {midStops.length > 0 && <span className="text-white text-[9px] absolute" style={{ bottom: '-23px', left: '0px' }}>Double-click bar to add · drag to move</span>}
               </div>
-              {midStops.length === 0 && <div className="text-white text-[11px] text-left" style={{ marginTop: '7px', marginBottom: '10px' }}>Double-click gradient bar to add a colour stop</div>}
+              {midStops.length === 0 && <div className="text-white text-[9px] text-left" style={{ marginTop: '7px', marginBottom: '10px' }}>Double-click gradient bar to add a colour stop</div>}
               {midStops.length > 0 && <div style={{ height: '24px' }} />}
               {activeGradientStop != null && (
                 <div className="mt-1 rounded" style={{ border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(0,0,0,0.4)', padding: '6px' }}>
