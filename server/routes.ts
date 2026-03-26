@@ -530,9 +530,11 @@ function cleanTextForTTS(text: string): string {
   console.log("After French filter:", cleanedText.length);
   
   // Remove entire References/Bibliography/Works Cited sections (heading + all content after)
+  // Works with both newline-separated and space-joined text
   cleanedText = cleanedText
     .replace(/(?:^|\n)\s*(?:References|Bibliography|Works?\s*Cited|Literature\s*Cited|Sources?\s*Cited|Endnotes|Footnotes|Notes)\s*\n[\s\S]*$/gim, '')
-    .replace(/(?:^|\n)\s*(?:References|Bibliography|Works?\s*Cited)\s*(?:\n|$)[\s\S]*$/gim, '');
+    .replace(/(?:^|\n)\s*(?:References|Bibliography|Works?\s*Cited)\s*(?:\n|$)[\s\S]*$/gim, '')
+    .replace(/\b(?:References|Bibliography|Works?\s*Cited|Reference\s*List)\s+(?:[A-Z][a-z]+,?\s+[A-Z]\.[\s\S]*$)/gim, '');
 
   // Remove inline APA/MLA-style citations like (Smith, 2020) or (Smith & Jones, 2019, p. 45)
   cleanedText = cleanedText
@@ -544,6 +546,10 @@ function cleanTextForTTS(text: string): string {
     .replace(/^[A-Z][a-z]+,\s+[A-Z]\.(?:\s*[A-Z]\.)*\s+\(\d{4}\)\..*$/gm, '')
     .replace(/^[A-Z][a-z]+,\s+[A-Z]\.(?:\s*[A-Z]\.)*\s+(?:and|&)\s+[A-Z][a-z]+,\s+[A-Z]\..*\(\d{4}\)\..*$/gm, '')
     .replace(/^[A-Z][a-z]+,\s+[A-Z]\.\s+\(\d{4},\s+\w+\s+\d+\)\..*$/gm, '');
+
+  // Remove dense citation blocks that survive other filters (sequences of Author, Year patterns)
+  cleanedText = cleanedText
+    .replace(/(?:[A-Z][a-z]+,\s+[A-Z]\.(?:\s*[A-Z]\.)*\s*(?:,?\s*(?:&|and)\s+[A-Z][a-z]+,\s+[A-Z]\.(?:\s*[A-Z]\.)*\s*)*\(\d{4}[a-z]?\)\.\s*[^.]*\.\s*(?:[A-Z][a-z]+[^.]*\.\s*)?(?:\d+\([^)]*\)[^.]*\.\s*)?){2,}/g, '');
 
   // Remove section headings (standalone or at start of lines followed by content)
   cleanedText = cleanedText
@@ -8970,7 +8976,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     }
   }
 
-  async function stopNestPlaybackWithGoodbye(reason: string): Promise<void> {
+  async function stopNestPlaybackWithGoodbye(reason: string, keepOpen: boolean = false): Promise<void> {
     const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
     const appUrl = DEPLOYED_APP_URL;
 
@@ -9030,8 +9036,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
     const stopTimestamp = Date.now();
     await Promise.all([
-      setTabletCommand({ action: 'stop_playback', goodbyeText: '', timestamp: stopTimestamp }, true, 'master'),
-      setTabletCommand({ action: 'stop_playback', timestamp: stopTimestamp }, true, 'tv'),
+      setTabletCommand({ action: 'stop_playback', goodbyeText: '', keepOpen, timestamp: stopTimestamp }, true, 'master'),
+      setTabletCommand({ action: 'stop_playback', keepOpen, timestamp: stopTimestamp }, true, 'tv'),
     ]);
 
     await Promise.allSettled([
@@ -10005,7 +10011,7 @@ document.body.removeChild(a);
 
       if (catWashPlaybackActive) {
         stopped.push(`playback:${fileName}`);
-        await stopNestPlaybackWithGoodbye(req.body?.trigger || 'toothbrush');
+        await stopNestPlaybackWithGoodbye(req.body?.trigger || 'toothbrush', !!req.body?.keepOpen);
       }
 
       if (currentTTSSession) {
@@ -12507,7 +12513,7 @@ document.body.removeChild(a);
     }
   });
 
-  const TTS_FILTER_VERSION = 3;
+  const TTS_FILTER_VERSION = 4;
   setTimeout(async () => {
     try {
       const rows = await db.select().from(appState).where(eq(appState.key, 'tts_filter_version'));

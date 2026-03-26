@@ -685,7 +685,9 @@ export default function PDFReaderPage() {
               console.log('[TabletNav] Goodbye TTS failed:', e);
             }
           }
-          window.location.href = '/';
+          if (!data.keepOpen) {
+            window.location.href = '/';
+          }
         } else if (data.action === 'go_home') {
           lastNavTimestamp.current = data.timestamp;
           try { localStorage.setItem('lastNavTimestamp', String(data.timestamp)); } catch {}
