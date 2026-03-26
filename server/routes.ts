@@ -7192,6 +7192,82 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       }
     }
 
+    if (method === 'adb-test') {
+      const testCmds = [
+        { cmd: 'input keyevent KEYCODE_HOME', label: 'HOME button' },
+        { cmd: 'input keyevent 26', label: 'POWER button' },
+        { cmd: 'dumpsys package com.amazon.cloud9 | head -1', label: 'Check Silk installed' },
+        { cmd: 'getprop ro.product.model', label: 'Get device model' },
+      ];
+      for (const { cmd, label } of testCmds) {
+        try {
+          await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: cmd }, `TV Test ${label}`);
+          console.log(`[TV Test] ${label}: OK`);
+          results.push({ method: label, success: true });
+        } catch (e: any) {
+          console.log(`[TV Test] ${label}: FAILED — ${e.message}`);
+          results.push({ method: label, success: false, error: e.message });
+        }
+        await new Promise(r => setTimeout(r, 2000));
+      }
+    }
+
+    if (method === 'remote') {
+      const remoteEntities = [
+        'remote.fire_stick_cat_wr',
+        'remote.cat_wr_fire_stick',
+        'remote.fire_tv_cat_wr',
+      ];
+      for (const remoteEntity of remoteEntities) {
+        try {
+          const stateResp2 = await fetch(`${HOME_ASSISTANT_URL.replace(/\/$/, '')}/api/states/${remoteEntity}`, {
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' }
+          });
+          if (stateResp2.ok) {
+            const stateData2 = await stateResp2.json();
+            console.log(`[TV Test] Remote entity ${remoteEntity}: state="${stateData2.state}"`);
+            results.push({ method: `remote_check_${remoteEntity}`, success: true });
+          } else {
+            console.log(`[TV Test] Remote entity ${remoteEntity}: HTTP ${stateResp2.status}`);
+            results.push({ method: `remote_check_${remoteEntity}`, success: false, error: `HTTP ${stateResp2.status}` });
+          }
+        } catch (e: any) {
+          console.log(`[TV Test] Remote entity ${remoteEntity}: ${e.message}`);
+          results.push({ method: `remote_check_${remoteEntity}`, success: false, error: e.message });
+        }
+      }
+    }
+
+    if (method === 'firestick-internet') {
+      try {
+        await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: 'am force-stop com.amazon.cloud9' }, 'TV Test Kill Old');
+      } catch (e: any) {}
+      await new Promise(r => setTimeout(r, 1000));
+
+      const browsers = [
+        { pkg: 'com.amazon.cloud9', activity: 'com.amazon.cloud9.BrowserActivity', label: 'Silk BrowserActivity' },
+        { pkg: 'com.amazon.cloud9', activity: 'com.amazon.cloud9.MainActivity', label: 'Silk MainActivity' },
+        { pkg: 'com.amazon.cloud9', activity: null, label: 'Silk (package only)' },
+        { pkg: 'com.amazon.internet', activity: null, label: 'Amazon Internet' },
+        { pkg: 'org.mozilla.tv.firefox', activity: null, label: 'Firefox TV' },
+        { pkg: 'com.phlox.tvwebbrowser', activity: null, label: 'TV Web Browser' },
+      ];
+      for (const { pkg, activity, label } of browsers) {
+        try {
+          const cmd = activity
+            ? `am start -n ${pkg}/${activity} -a android.intent.action.VIEW -d "${testUrl}"`
+            : `am start -a android.intent.action.VIEW -d "${testUrl}" ${pkg}`;
+          await haServiceCall('androidtv/adb_command', { entity_id: entityId, command: cmd }, `TV Test ${label}`);
+          console.log(`[TV Test] ${label}: OK`);
+          results.push({ method: label, success: true });
+        } catch (e: any) {
+          console.log(`[TV Test] ${label}: FAILED — ${e.message}`);
+          results.push({ method: label, success: false, error: e.message });
+        }
+        await new Promise(r => setTimeout(r, 3000));
+      }
+    }
+
     console.log(`[TV Test] ====== TEST COMPLETE ======`);
     console.log(`[TV Test] Results: ${JSON.stringify(results)}`);
     res.json({ results, testUrl });
