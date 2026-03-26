@@ -9724,10 +9724,10 @@ export default function Dashboard() {
       {/* Morning Review - Full Page Overlay */}
       {showMorningReview && (
         <div className="fixed inset-0 flex flex-col text-white" style={{ zIndex: 10010, background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }} data-testid="dialog-morning-review">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-white/40" style={{ flexShrink: 0, backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+          <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
             <div className="flex items-center gap-2">
-              <Sun className="h-4 w-4 text-yellow-400" />
-              <span className="font-normal text-white truncate" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>Morning Review</span>
+              <Sun className="text-yellow-400" style={{ width: '15px', height: '15px' }} />
+              <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>Morning Review</h2>
               <span className="text-[9px] text-white/60 ml-1" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>{morningReviewItems.length} pending</span>
               <div className="flex ml-3 rounded overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.25)' }} data-testid="review-mode-tabs">
                 <button
