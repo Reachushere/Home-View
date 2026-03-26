@@ -12496,10 +12496,10 @@ export default function Dashboard() {
                   >
                     <div className="flex items-center gap-2 py-2">
                       <GripVertical className="h-3.5 w-3.5 text-white/25 shrink-0" />
-                      <span className="text-[10px] px-1.5 py-0.5 rounded font-semibold" style={{ backgroundColor: a.courseName === 'Custom' ? 'rgba(255,255,255,0.1)' : a.courseName === 'URGENT' ? 'rgba(239,68,68,0.4)' : a.courseName === 'REMINDER' ? 'rgba(234,179,8,0.35)' : 'rgba(99,102,241,0.3)', color: a.courseName === 'Custom' ? '#9ca3af' : a.courseName === 'URGENT' ? '#fca5a5' : a.courseName === 'REMINDER' ? '#fde047' : '#a5b4fc' }}>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded font-semibold shrink-0" style={{ minWidth: '60px', textAlign: 'center', backgroundColor: a.courseName === 'Custom' ? 'rgba(255,255,255,0.1)' : a.courseName === 'URGENT' ? 'rgba(239,68,68,0.4)' : a.courseName === 'REMINDER' ? 'rgba(234,179,8,0.35)' : 'rgba(99,102,241,0.3)', color: a.courseName === 'Custom' ? '#9ca3af' : a.courseName === 'URGENT' ? '#fca5a5' : a.courseName === 'REMINDER' ? '#fde047' : '#a5b4fc' }}>
                         {a.courseName === 'Custom' ? '📌' : a.courseName}
                       </span>
-                      <span className="text-white text-[12px] flex-1 min-w-0 truncate">{a.body || a.snippet || a.subject}</span>
+                      <span className="text-white text-[12px] flex-1 min-w-0 truncate text-left">{a.body || a.snippet || a.subject}</span>
                       <button
                         onClick={() => {
                           if (a._isSynthetic) {
