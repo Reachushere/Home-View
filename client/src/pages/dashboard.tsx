@@ -22292,23 +22292,12 @@ export default function Dashboard() {
                   justifyContent: 'flex-start',
                 }}
                 onWheel={(e) => {
-                  e.stopPropagation();
                   const el = e.currentTarget;
-                  el.scrollTop += e.deltaY * 0.3;
-                  e.preventDefault();
-                }}
-                onTouchStart={(e) => {
-                  const el = e.currentTarget;
-                  (el as any)._touchStartY = e.touches[0].clientY;
-                  (el as any)._touchStartScroll = el.scrollTop;
-                }}
-                onTouchMove={(e) => {
-                  const el = e.currentTarget;
-                  const startY = (el as any)._touchStartY;
-                  if (startY !== undefined) {
-                    const delta = startY - e.touches[0].clientY;
-                    el.scrollTop = (el as any)._touchStartScroll + delta;
+                  const scrollInner = el.querySelector('[data-scroll-tasks]') as HTMLElement;
+                  if (scrollInner && scrollInner.scrollHeight > scrollInner.clientHeight) {
                     e.stopPropagation();
+                    scrollInner.scrollTop += e.deltaY * 0.5;
+                    e.preventDefault();
                   }
                 }}>
                   
@@ -22410,7 +22399,7 @@ export default function Dashboard() {
                       <>
                         {pinnedTasks.map((t, tIdx) => renderCourseTask(t, tIdx))}
                         {scrollTasks.length > 0 && (
-                          <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', scrollbarWidth: 'none' }}>
+                          <div data-scroll-tasks style={{ flex: 1, minHeight: 0, overflowY: 'auto', scrollbarWidth: 'none', touchAction: 'pan-y', overscrollBehavior: 'contain', WebkitOverflowScrolling: 'touch' } as any}>
                             {scrollTasks.map((t, tIdx) => renderCourseTask(t, tIdx + 2))}
                           </div>
                         )}
