@@ -130,7 +130,7 @@ export default function PDFReaderPage() {
   }, []);
 
   useEffect(() => {
-    if (!fullscreenParam && !catWashFollow) return;
+    if (!fullscreenParam && !catWashFollow && !autoplayParam) return;
     const enterFullscreen = () => {
       if (!document.fullscreenElement) {
         const el = document.documentElement as any;
@@ -176,7 +176,7 @@ export default function PDFReaderPage() {
       document.removeEventListener('visibilitychange', handleVisChange);
       if (wakeLock) wakeLock.release().catch(() => {});
     };
-  }, [fullscreenParam, catWashFollow]);
+  }, [fullscreenParam, catWashFollow, autoplayParam]);
 
   useEffect(() => {
     if (fileId || isOneDriveRoute || oneDriveUrl) return;
@@ -2043,7 +2043,7 @@ export default function PDFReaderPage() {
   })();
 
   return (
-    <div className="h-screen flex flex-col relative overflow-hidden">
+    <div className="flex flex-col relative overflow-hidden" style={{ height: '100dvh' }}>
       <img src={tmuBgPath} alt="" className="absolute inset-0 w-full h-full object-cover" />
       <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(0,15,40,0.15) 0%, rgba(0,10,30,0.25) 100%)' }} />
       <audio ref={audioRef} onEnded={handleAudioEnded} onTimeUpdate={handleTimeUpdate} crossOrigin="anonymous" />
