@@ -18651,7 +18651,7 @@ export default function Dashboard() {
           )}
           <div className="flex-1 min-h-0 relative" style={{ overflow: 'visible' }}>
             <div
-              style={{ position: 'absolute', left: '9px', top: '-31px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
+              style={{ position: 'absolute', left: '9px', top: '-16px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
               data-testid="calendar-top-resize-handle"
             >
               <div style={{ width: '191px', height: '14px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
@@ -19824,8 +19824,8 @@ export default function Dashboard() {
                               isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""
                             } ${task.isCompleted ? "text-gray-400" : "text-black"}`}
                             style={{
-                              backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#dbeafe'),
-                              borderColor: task.isCompleted ? '#d1d5db' : (colors?.hex || '#60a5fa'),
+                              backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || (task.type === 'other' ? otherRowColors.taskBgColor : '#dbeafe')),
+                              borderColor: task.isCompleted ? '#d1d5db' : (colors?.hex || (task.type === 'other' ? otherRowColors.borderColor : '#60a5fa')),
                               borderWidth: '1.5px'
                             }}
                             onContextMenu={(e) => {
@@ -20264,8 +20264,8 @@ export default function Dashboard() {
                                   width: hoveredCalTaskId === task.id ? 'calc(100% - 4px)' : `calc(${columnWidth}% - 4px)`,
                                   height: `${taskHeight}px`,
                                   zIndex: hoveredCalTaskId === task.id ? 56 : (hoveredCountdownTaskId === task.id ? 55 : (selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43))),
-                                  backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
-                                  border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1px solid ${task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')}`,
+                                  backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || (task.type === 'other' ? otherRowColors.taskBgColor : '#e5e7eb')),
+                                  border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1px solid ${task.isCompleted ? '#d1d5db' : (colors?.border || (task.type === 'other' ? otherRowColors.borderColor : '#9ca3af'))}`,
                                   transform: hoveredCountdownTaskId === task.id ? 'scale(1.15)' : undefined,
                                   boxShadow: hoveredCalTaskId === task.id ? '0 4px 12px rgba(0,0,0,0.3)' : (hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined),
                                   transition: 'left 0.15s ease, width 0.15s ease, box-shadow 0.15s ease, transform 0.2s ease',
@@ -20420,8 +20420,8 @@ export default function Dashboard() {
                         width: `calc((${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 4px)`,
                         height: `${heightPx}px`,
                         zIndex: hoveredCountdownTaskId === task.id ? 55 : (selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43)),
-                        backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
-                        borderColor: task.isCompleted ? '#d1d5db' : (colors?.hex || colors?.border || '#9ca3af'),
+                        backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || (task.type === 'other' ? otherRowColors.taskBgColor : '#e5e7eb')),
+                        borderColor: task.isCompleted ? '#d1d5db' : (colors?.hex || colors?.border || (task.type === 'other' ? otherRowColors.borderColor : '#9ca3af')),
                         transform: hoveredCountdownTaskId === task.id ? 'scale(1.08)' : undefined,
                         boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
                         transition: 'transform 0.2s ease, box-shadow 0.2s ease',
@@ -21489,9 +21489,9 @@ export default function Dashboard() {
                                     task.isCompleted ? "line-through" : ""
                                   }`}
                                   style={{
-                                    backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
+                                    backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || (task.type === 'other' ? otherRowColors.taskBgColor : '#e5e7eb')),
                                     color: task.isCompleted ? '#6b7280' : (colors?.text || '#000'),
-                                    borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')
+                                    borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || (task.type === 'other' ? otherRowColors.borderColor : '#9ca3af'))
                                   }}
                                   title={task.title}
                                 >
