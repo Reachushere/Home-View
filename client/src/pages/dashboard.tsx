@@ -17089,7 +17089,7 @@ export default function Dashboard() {
                         />
                         <div
                           className={`flex flex-col items-center cursor-pointer hover:opacity-80 transition-opacity flex-shrink-0 ${!(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) && hasSemStarted(semKey) ? 'aas-unchecked-pulse' : ''}`}
-                          style={{ width: '24px', marginTop: '2px', marginLeft: '10px' }}
+                          style={{ width: '24px', marginTop: '2px', marginLeft: '8px' }}
                           data-testid={`aas-status-${semCourse.code}`}
                           onClick={(e) => { e.stopPropagation(); toggleAasSent(semCourse.code); }}
                         >
@@ -17100,7 +17100,7 @@ export default function Dashboard() {
                         </div>
                         <button
                           className="flex-shrink-0 text-white/40 hover:text-yellow-300 transition-colors p-0.5"
-                          style={{ marginLeft: '15px' }}
+                          style={{ marginLeft: '10px' }}
                           title="Course comments"
                           onClick={(e) => { e.stopPropagation(); setDashboardCommentTarget(dashboardCommentTarget?.type === 'course' && dashboardCommentTarget?.id === semCourse.code ? null : { type: 'course', id: semCourse.code, label: `${displayName}${subtitle ? ' - ' + subtitle : ''}` }); }}
                           data-testid={`button-comment-course-${semCourse.code}`}
