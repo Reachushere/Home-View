@@ -9847,14 +9847,14 @@ export default function Dashboard() {
       {/* Morning Review - Full Page Overlay */}
       {showMorningReview && (
         <div className="fixed inset-0 flex flex-col text-white" style={{ zIndex: 10010, background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }} data-testid="dialog-morning-review">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+          <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
             <div className="flex items-center gap-2">
               <Sun className="text-yellow-400" style={{ width: '15px', height: '15px' }} />
-              <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>Morning Review</h2>
+              <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>MORNING REVIEW</h2>
               <span className="text-[9px] text-white/60 ml-1" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>{morningReviewItems.length} pending</span>
               <div className="flex ml-3 rounded overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.25)' }} data-testid="review-mode-tabs">
                 <button
-                  className={`px-3 py-0.5 text-[9px] font-medium transition-colors ${reviewMode === 'all' ? 'text-white' : 'text-white/50 hover:text-white/70'}`}
+                  className={`px-4 py-1 text-[11px] font-medium transition-colors ${reviewMode === 'all' ? 'text-white' : 'text-white/50 hover:text-white/70'}`}
                   style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif", background: reviewMode === 'all' ? 'rgba(255,255,255,0.15)' : 'transparent' }}
                   onClick={() => { setReviewMode('all'); setReviewCheckedIds(new Set()); }}
                   data-testid="review-tab-all"
@@ -9862,7 +9862,7 @@ export default function Dashboard() {
                   All
                 </button>
                 <button
-                  className={`px-3 py-0.5 text-[9px] font-medium transition-colors ${reviewMode === 'individual' ? 'text-white' : 'text-white/50 hover:text-white/70'}`}
+                  className={`px-4 py-1 text-[11px] font-medium transition-colors ${reviewMode === 'individual' ? 'text-white' : 'text-white/50 hover:text-white/70'}`}
                   style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif", borderLeft: '1px solid rgba(255,255,255,0.25)', background: reviewMode === 'individual' ? 'rgba(255,255,255,0.15)' : 'transparent' }}
                   onClick={() => { setReviewMode('individual'); setReviewCheckedIds(new Set()); }}
                   data-testid="review-tab-individual"
@@ -9875,7 +9875,7 @@ export default function Dashboard() {
               {reviewMode === 'all' ? (
                 <>
                   <button
-                    className="h-7 px-3 text-[10px] font-medium text-white rounded disabled:opacity-40"
+                    className="h-8 px-4 text-[11px] font-medium text-white rounded disabled:opacity-40"
                     style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.15)', border: '1px solid rgba(255,255,255,0.2)', fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}
                     onClick={handleSkipAllForToday}
                     disabled={morningReviewLoading}
@@ -9884,43 +9884,43 @@ export default function Dashboard() {
                     Skip All 24h
                   </button>
                   <button
-                    className="h-7 px-3 text-[10px] font-medium text-white rounded disabled:opacity-40"
+                    className="h-8 px-4 text-[11px] font-medium text-white rounded disabled:opacity-40"
                     style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.15)', border: '1px solid rgba(255,255,255,0.2)', fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}
                     onClick={handleSkipAllForever}
                     disabled={morningReviewLoading}
                     data-testid="button-skip-all-forever-review"
                   >
-                    {morningReviewLoading ? <Loader2 className="h-2.5 w-2.5 mr-1 animate-spin inline" /> : null}
+                    {morningReviewLoading ? <Loader2 className="h-3 w-3 mr-1 animate-spin inline" /> : null}
                     Skip All Forever
                   </button>
                   <button
-                    className="h-7 px-3 text-[10px] font-medium text-white rounded disabled:opacity-40"
+                    className="h-8 px-4 text-[11px] font-medium text-white rounded disabled:opacity-40"
                     style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.15)', border: '1px solid rgba(255,255,255,0.2)', fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}
                     onClick={handleAcceptAll}
                     disabled={morningReviewLoading}
                     data-testid="button-accept-all-review"
                   >
-                    {morningReviewLoading ? <Loader2 className="h-2.5 w-2.5 mr-1 animate-spin inline" /> : <Check className="h-2.5 w-2.5 mr-1 inline" />}
+                    {morningReviewLoading ? <Loader2 className="h-3 w-3 mr-1 animate-spin inline" /> : <Check className="h-3 w-3 mr-1 inline" />}
                     Accept All
                   </button>
                 </>
               ) : (
                 <>
-                  <span className="text-[9px] text-white/50">{reviewCheckedIds.size} selected</span>
+                  <span className="text-[10px] text-white/50">{reviewCheckedIds.size} selected</span>
                   <button
-                    className="h-7 px-3 text-[10px] font-medium text-white rounded disabled:opacity-40"
+                    className="h-8 px-4 text-[11px] font-medium text-white rounded disabled:opacity-40"
                     style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.15)', border: '1px solid rgba(255,255,255,0.2)', fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}
                     onClick={handleIndividualConfirm}
                     disabled={morningReviewLoading || reviewCheckedIds.size === 0}
                     data-testid="button-confirm-individual-review"
                   >
-                    {morningReviewLoading ? <Loader2 className="h-2.5 w-2.5 mr-1 animate-spin inline" /> : <Check className="h-2.5 w-2.5 mr-1 inline" />}
+                    {morningReviewLoading ? <Loader2 className="h-3 w-3 mr-1 animate-spin inline" /> : <Check className="h-3 w-3 mr-1 inline" />}
                     Confirm
                   </button>
                 </>
               )}
               <button
-                className="w-6 h-6 flex items-center justify-center rounded text-white/50 hover:text-white hover:bg-white/10"
+                className="w-7 h-7 flex items-center justify-center rounded text-white/50 hover:text-white hover:bg-white/10"
                 onClick={() => { setShowMorningReview(false); setReviewMode('all'); setReviewCheckedIds(new Set()); }}
                 data-testid="button-close-morning-review"
               >
@@ -9955,8 +9955,7 @@ export default function Dashboard() {
                     <div key={source} className="flex-1 flex flex-col min-w-0" data-testid={`review-group-${source}`}>
                       <div className="flex items-center gap-1.5 pb-1 border-b border-white/15 flex-shrink-0">
                         {icon}
-                        <span className="text-[8px] font-semibold uppercase tracking-wider text-white/60">{label}</span>
-                        <span className="text-[8px] text-white/30 ml-auto">{items.length}</span>
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-white">{label} ({items.length})</span>
                       </div>
                       <div className="flex-1 overflow-y-auto mt-1" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.2) transparent' }}>
                         {items.length === 0 ? (
@@ -9969,7 +9968,7 @@ export default function Dashboard() {
                             data-testid={`review-item-${item.id}`}
                           >
                             <div
-                              className={`w-8 h-8 rounded border flex items-center justify-center flex-shrink-0 transition-colors ${
+                              className={`w-6 h-6 rounded border flex items-center justify-center flex-shrink-0 transition-colors ${
                                 reviewMode === 'all'
                                   ? 'border-white/10 bg-white/5 cursor-default'
                                   : reviewCheckedIds.has(item.id)
