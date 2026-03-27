@@ -2282,9 +2282,9 @@ export default function Dashboard() {
     if (allAssigned.some(c => c.code.toUpperCase().replace(/\s/g, '') === codeNorm)) return;
     const now = new Date();
     const semStartDatesMap: Record<string, string> = {
-      'ss2025': '2025-05-05', 'f2025': '2025-09-01', 'w2026': '2026-01-01',
-      'ss2026': '2026-05-04', 'f2026': '2026-09-01', 'w2027': '2027-01-01',
-      'ss2027': '2027-05-03', 'f2027': '2027-09-01', 'w2028': '2028-01-01', 'ss2028': '2028-05-01', 'f2028': '2028-09-01',
+      'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12',
+      'ss2026': '2026-05-04', 'f2026': '2026-09-07', 'w2027': '2027-01-11',
+      'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10', 'ss2028': '2028-05-01', 'f2028': '2028-09-11',
     };
     const futureSems = semesterKeyOrder.filter(k => {
       const start = semStartDatesMap[k];
@@ -2375,9 +2375,9 @@ export default function Dashboard() {
   });
   const SEMESTER_COURSE_DEFS = [
     { key: 'ss2025', start: '2025-05-05', end: '2025-08-08', codes: ['CPPA101','CPPA120','CPPA102'] },
-    { key: 'f2025', start: '2025-09-01', end: '2025-12-31', codes: ['CPPA125','CGCM738','CPPA121'] },
-    { key: 'w2026', start: '2026-01-01', end: '2026-04-30', codes: ['CPPA122','CFNF400','CASL101'] },
-    { key: 'ss2026', start: '2026-05-04', end: '2026-08-04', codes: ['CECN210','CPHL110','CHIS105'] },
+    { key: 'f2025', start: '2025-09-08', end: '2025-12-12', codes: ['CPPA125','CGCM738','CPPA121'] },
+    { key: 'w2026', start: '2026-01-12', end: '2026-04-17', codes: ['CPPA122','CFNF400','CASL101'] },
+    { key: 'ss2026', start: '2026-05-04', end: '2026-08-07', codes: ['CECN210','CPHL110','CHIS105'] },
   ];
 
   useEffect(() => {
@@ -3417,9 +3417,9 @@ export default function Dashboard() {
   useEffect(() => {
     if (!isSchoolCoursesDialogOpen) return;
     const semStartDates: Record<string, string> = {
-      'ss2025': '2025-05-05', 'f2025': '2025-09-01', 'w2026': '2026-01-01',
-      'ss2026': '2026-05-04', 'f2026': '2026-09-01', 'w2027': '2027-01-01',
-      'ss2027': '2027-05-03', 'f2027': '2027-09-01', 'w2028': '2028-01-01',
+      'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12',
+      'ss2026': '2026-05-04', 'f2026': '2026-09-07', 'w2027': '2027-01-11',
+      'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10',
     };
     const semesterDefs = [
       { key: 'ss2025', courses: ['CPPA101','CPPA120','CPPA102'] },
@@ -7997,7 +7997,7 @@ export default function Dashboard() {
     semesterName: "Spring/Summer 2026 Semester",
     semesterType: "spring_summer" as string,
     semesterStartDate: "2026-05-04",
-    semesterEndDate: "2026-08-04",
+    semesterEndDate: "2026-08-07",
     course1Code: "CECN210",
     course1Name: "CECN210 - Understanding Economics",
     course1Professor: "",
@@ -8032,7 +8032,7 @@ export default function Dashboard() {
     course3ClassTime: "09:30",
     course3ClassEndTime: "12:30",
     course3StartDate: "2026-06-23",
-    course3EndDate: "2026-08-04",
+    course3EndDate: "2026-08-07",
     course3SpringSummerTerm: "second_half" as string,
     secondaryCalendarId: "",
   });
@@ -13196,17 +13196,17 @@ export default function Dashboard() {
                 const now = new Date();
                 const currentSemIdx = (() => {
                   if (now >= new Date('2025-05-05') && now <= new Date('2025-08-08')) return semKeyOrder.indexOf('ss2025');
-                  if (now >= new Date('2025-09-01') && now <= new Date('2025-12-31')) return semKeyOrder.indexOf('f2025');
-                  if (now >= new Date('2026-01-01') && now <= new Date('2026-04-30')) return semKeyOrder.indexOf('w2026');
-                  if (now >= new Date('2026-05-04') && now <= new Date('2026-08-04')) return semKeyOrder.indexOf('ss2026');
-                  if (now >= new Date('2026-09-01') && now <= new Date('2026-12-31')) return semKeyOrder.indexOf('f2026');
-                  if (now >= new Date('2027-01-01') && now <= new Date('2027-04-30')) return semKeyOrder.indexOf('w2027');
-                  if (now >= new Date('2027-05-01') && now <= new Date('2027-08-31')) return semKeyOrder.indexOf('ss2027');
-                  if (now >= new Date('2027-09-01') && now <= new Date('2027-12-31')) return semKeyOrder.indexOf('f2027');
-                  if (now >= new Date('2028-01-01') && now <= new Date('2028-04-30')) return semKeyOrder.indexOf('w2028');
-                  if (now >= new Date('2028-05-01') && now <= new Date('2028-08-31')) return semKeyOrder.indexOf('ss2028');
-                  if (now >= new Date('2028-09-01') && now <= new Date('2028-12-31')) return semKeyOrder.indexOf('f2028');
-                  if (now >= new Date('2029-01-01') && now <= new Date('2029-04-30')) return semKeyOrder.indexOf('w2029');
+                  if (now >= new Date('2025-09-08') && now <= new Date('2025-12-12')) return semKeyOrder.indexOf('f2025');
+                  if (now >= new Date('2026-01-12') && now <= new Date('2026-04-17')) return semKeyOrder.indexOf('w2026');
+                  if (now >= new Date('2026-05-04') && now <= new Date('2026-08-07')) return semKeyOrder.indexOf('ss2026');
+                  if (now >= new Date('2026-09-07') && now <= new Date('2026-12-11')) return semKeyOrder.indexOf('f2026');
+                  if (now >= new Date('2027-01-11') && now <= new Date('2027-04-16')) return semKeyOrder.indexOf('w2027');
+                  if (now >= new Date('2027-05-03') && now <= new Date('2027-08-06')) return semKeyOrder.indexOf('ss2027');
+                  if (now >= new Date('2027-09-13') && now <= new Date('2027-12-17')) return semKeyOrder.indexOf('f2027');
+                  if (now >= new Date('2028-01-10') && now <= new Date('2028-04-14')) return semKeyOrder.indexOf('w2028');
+                  if (now >= new Date('2028-05-01') && now <= new Date('2028-08-04')) return semKeyOrder.indexOf('ss2028');
+                  if (now >= new Date('2028-09-11') && now <= new Date('2028-12-15')) return semKeyOrder.indexOf('f2028');
+                  if (now >= new Date('2029-01-08') && now <= new Date('2029-04-13')) return semKeyOrder.indexOf('w2029');
                   return -1;
                 })();
                 const relevantSemKeys = currentSemIdx >= 0 ? semKeyOrder.slice(0, currentSemIdx + 1) : [];
@@ -17016,7 +17016,7 @@ export default function Dashboard() {
 
                   const isCurrent = (code: string) => {
                     const now = new Date();
-                    const w2026End = new Date('2026-04-30');
+                    const w2026End = new Date('2026-04-17');
                     return now <= w2026End && ['CPPA122', 'CFNF400', 'CASL101'].includes(code.toUpperCase().replace(/\s/g, ''));
                   };
 
@@ -17093,6 +17093,7 @@ export default function Dashboard() {
                         </div>
                         <button
                           className="flex-shrink-0 text-white/40 hover:text-yellow-300 transition-colors p-0.5"
+                          style={{ marginLeft: '10px' }}
                           title="Course comments"
                           onClick={(e) => { e.stopPropagation(); setDashboardCommentTarget(dashboardCommentTarget?.type === 'course' && dashboardCommentTarget?.id === semCourse.code ? null : { type: 'course', id: semCourse.code, label: `${displayName}${subtitle ? ' - ' + subtitle : ''}` }); }}
                           data-testid={`button-comment-course-${semCourse.code}`}
@@ -19166,7 +19167,7 @@ export default function Dashboard() {
                 const springSummerCourses = [
                   { name: 'CECN210 - Understanding Economics', color: '#059669', colorEnd: '#34D399', professor: '', professorEmail: '', startDate: '2026-05-04', endDate: '2026-07-31' },
                   { name: 'CPHL110 - Philosophy of Religion', color: '#2563EB', colorEnd: '#60A5FA', professor: '', professorEmail: '', startDate: '2026-05-05', endDate: '2026-06-16' },
-                  { name: 'CHIS105 - Inventing Popular Culture', color: '#DC2626', colorEnd: '#F87171', professor: '', professorEmail: '', startDate: '2026-06-23', endDate: '2026-08-04' },
+                  { name: 'CHIS105 - Inventing Popular Culture', color: '#DC2626', colorEnd: '#F87171', professor: '', professorEmail: '', startDate: '2026-06-23', endDate: '2026-08-07' },
                 ];
                 const currentWeekStart = weekDays[0];
                 const currentWeekEnd = weekDays[6];
@@ -26959,22 +26960,31 @@ function SchoolForm({
         <Label className="text-[10px] font-medium">Semesters</Label>
         <div className="space-y-1 text-[10px]">
           {[
-            { key: 'ss2025', label: 'Spring/Summer 2025', dates: 'May 5 – Aug 8, 2025' },
-            { key: 'f2025', label: 'Fall 2025', dates: 'Sep – Dec 2025' },
-            { key: 'w2026', label: 'Winter 2026', dates: 'Jan – Apr 2026' },
-            { key: 'ss2026', label: 'Spring/Summer 2026', dates: 'May 4 – Aug 4, 2026' },
-            { key: 'f2026', label: 'Fall 2026', dates: 'Sep – Dec 2026' },
-            { key: 'w2027', label: 'Winter 2027', dates: 'Jan – Apr 2027' },
-            { key: 'ss2027', label: 'Spring/Summer 2027', dates: 'May – Aug 2027' },
-            { key: 'f2027', label: 'Fall 2027', dates: 'Sep – Dec 2027' },
-            { key: 'w2028', label: 'Winter 2028', dates: 'Jan – Apr 2028' },
-            { key: 'ss2028', label: 'Spring/Summer 2028', dates: 'May – Aug 2028' },
-            { key: 'f2028', label: 'Fall 2028', dates: 'Sep – Dec 2028' },
+            { key: 'ss2025', label: 'Spring/Summer 2025', dates: 'May 5 – August 8, 2025' },
+            { key: 'f2025', label: 'Fall 2025', dates: 'September 8 – December 12, 2025' },
+            { key: 'w2026', label: 'Winter 2026', dates: 'January 12 – April 17, 2026' },
+            { key: 'ss2026', label: 'Spring/Summer 2026', dates: 'May 4 – August 7, 2026' },
+            { key: 'f2026', label: 'Fall 2026', dates: 'September 7 – December 11, 2026' },
+            { key: 'w2027', label: 'Winter 2027', dates: 'January 11 – April 16, 2027' },
+            { key: 'ss2027', label: 'Spring/Summer 2027', dates: 'May 3 – August 6, 2027' },
+            { key: 'f2027', label: 'Fall 2027', dates: 'September 13 – December 17, 2027' },
+            { key: 'w2028', label: 'Winter 2028', dates: 'January 10 – April 14, 2028' },
+            { key: 'ss2028', label: 'Spring/Summer 2028', dates: 'May 1 – August 4, 2028' },
+            { key: 'f2028', label: 'Fall 2028', dates: 'September 11 – December 15, 2028' },
           ].map(sem => {
             const isCurrent = (() => {
               const now = new Date();
-              if (sem.key === 'w2026' && now >= new Date('2026-01-01') && now <= new Date('2026-04-30')) return true;
-              if (sem.key === 'ss2026' && now >= new Date('2026-05-04') && now <= new Date('2026-08-04')) return true;
+              if (sem.key === 'ss2025' && now >= new Date('2025-05-05') && now <= new Date('2025-08-08')) return true;
+              if (sem.key === 'f2025' && now >= new Date('2025-09-08') && now <= new Date('2025-12-12')) return true;
+              if (sem.key === 'w2026' && now >= new Date('2026-01-12') && now <= new Date('2026-04-17')) return true;
+              if (sem.key === 'ss2026' && now >= new Date('2026-05-04') && now <= new Date('2026-08-07')) return true;
+              if (sem.key === 'f2026' && now >= new Date('2026-09-07') && now <= new Date('2026-12-11')) return true;
+              if (sem.key === 'w2027' && now >= new Date('2027-01-11') && now <= new Date('2027-04-16')) return true;
+              if (sem.key === 'ss2027' && now >= new Date('2027-05-03') && now <= new Date('2027-08-06')) return true;
+              if (sem.key === 'f2027' && now >= new Date('2027-09-13') && now <= new Date('2027-12-17')) return true;
+              if (sem.key === 'w2028' && now >= new Date('2028-01-10') && now <= new Date('2028-04-14')) return true;
+              if (sem.key === 'ss2028' && now >= new Date('2028-05-01') && now <= new Date('2028-08-04')) return true;
+              if (sem.key === 'f2028' && now >= new Date('2028-09-11') && now <= new Date('2028-12-15')) return true;
               return false;
             })();
             return (
