@@ -1663,7 +1663,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     <input className={`w-full h-6 text-[10px] bg-white/10 text-white rounded px-1.5 placeholder:text-white/25 ${editInfo.deliveryMode === 'virtual' && !editInfo.zoomLink?.trim() ? 'border border-red-500/70' : 'border border-white/15'}`} value={editInfo.zoomLink} onChange={(e) => setEditInfo({...editInfo, zoomLink: e.target.value})} placeholder={editInfo.deliveryMode === 'virtual' ? "Required — https://zoom.us/..." : "https://zoom.us/..."} data-testid="input-edit-zoom" />
                   </div>
                 </div>
-                <div className="grid grid-cols-[1fr_130px_130px] gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   <div>
                     <label className="text-white text-[9px] mb-0.5 block">Semester</label>
                     <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={semesterKeyFromTermYear(editInfo.semesterTerm, editInfo.year)} onChange={(e) => { const opt = SEMESTER_OPTIONS.find(o => o.key === e.target.value); if (opt) { setEditInfo({...editInfo, semesterTerm: opt.term, year: opt.year, startDate: opt.start, endDate: opt.end }); } else { setEditInfo({...editInfo, semesterTerm: '', year: '', startDate: '', endDate: '' }); } }} data-testid="select-edit-semester-term">
