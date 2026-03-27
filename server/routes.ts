@@ -8174,7 +8174,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       : Promise.resolve();
 
     const initialChunkText = fileChunks[resumeFromChunk] || '';
-    const initialWords = initialChunkText.split(/\s+/).filter((w: string) => w.length > 0);
+    const initialCleanedText = cleanTextForTTS(initialChunkText);
+    const initialWords = initialCleanedText.split(/\s+/).filter((w: string) => w.length > 0);
     const initialWordCount = initialWords.length;
     const initialEstimatedMs = Math.max(5000, (initialWordCount / 175) * 60 * 1000 + 1000);
 
@@ -8986,7 +8987,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         if (catWashPlaybackState) {
           catWashPlaybackState.chunkIndex = i;
           const chunkText = chunks[i] || '';
-          catWashPlaybackState.currentWords = chunkText.split(/\s+/).filter((w: string) => w.length > 0);
+          const cleanedChunkText = cleanTextForTTS(chunkText);
+          catWashPlaybackState.currentWords = cleanedChunkText.split(/\s+/).filter((w: string) => w.length > 0);
           catWashPlaybackState.wordIndex = 0;
         }
 
@@ -9103,6 +9105,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
                 if (!catWashPlaybackActive || catWashSessionId !== sessionId) break;
                 if (catWashPlaybackState) {
                   catWashPlaybackState.chunkIndex = ei;
+                  const echoCleanedText = cleanTextForTTS(chunks[ei] || '');
+                  catWashPlaybackState.currentWords = echoCleanedText.split(/\s+/).filter((w: string) => w.length > 0);
+                  catWashPlaybackState.wordIndex = 0;
                 }
                 const ok = await playChunkViaEchoTTS(chunks[ei], sessionId);
                 if (!ok) {
@@ -9132,6 +9137,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
                 if (!catWashPlaybackActive || catWashSessionId !== sessionId) break;
                 if (catWashPlaybackState) {
                   catWashPlaybackState.chunkIndex = hi;
+                  const haCleanedText = cleanTextForTTS(chunks[hi] || '');
+                  catWashPlaybackState.currentWords = haCleanedText.split(/\s+/).filter((w: string) => w.length > 0);
+                  catWashPlaybackState.wordIndex = 0;
                 }
                 const ok = await playChunkViaHACloudTTS(chunks[hi], sessionId);
                 if (!ok) {
@@ -9291,6 +9299,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         catWashPlaybackStartedAt = null;
         catWashPlaybackState = null;
         nestPlaybackAbort = null;
+        lastPlaybackStoppedAt = Date.now();
         stopToothbrushPolling();
         stopWordAdvancement();
       }
@@ -9416,6 +9425,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   async function stopNestPlaybackWithGoodbye(reason: string, keepOpen: boolean = false): Promise<void> {
     const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
     const appUrl = DEPLOYED_APP_URL;
+
+    lastPlaybackStoppedAt = Date.now();
 
     clearVoiceCommandPause_();
 
@@ -10160,14 +10171,20 @@ document.body.removeChild(a);
       const haUrl0 = HOME_ASSISTANT_URL?.replace(/\/$/, '') || '';
       const haHeaders0 = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
 
-      await new Promise(r => setTimeout(r, 800));
-
       let lightState = 'unknown';
-      const bodyState = req.body?.state || req.body?.new_state?.state || '';
+      const bodyState = req.body?.state || req.body?.new_state?.state || req.body?.to_state || '';
+      const bodyAction = req.body?.action || '';
       if (bodyState === 'on' || bodyState === 'off') {
         lightState = bodyState;
         console.log(`[Cat Lights] Using body state directly: ${lightState}`);
+      } else if (bodyAction === 'turn_off' || bodyAction === 'off') {
+        lightState = 'off';
+        console.log(`[Cat Lights] Using body action as OFF: ${bodyAction}`);
+      } else if (bodyAction === 'turn_on' || bodyAction === 'on') {
+        lightState = 'on';
+        console.log(`[Cat Lights] Using body action as ON: ${bodyAction}`);
       } else {
+        await new Promise(r => setTimeout(r, 300));
         for (let attempt = 1; attempt <= 3; attempt++) {
           try {
             const lightResp = await fetch(`${haUrl0}/api/states/${CAT_LIGHTS_ENTITY}`, { headers: haHeaders0 });
@@ -10249,6 +10266,14 @@ document.body.removeChild(a);
       if (msSinceStop < 60000) {
         console.log(`[Cat Lights] Playback was stopped ${Math.round(msSinceStop / 1000)}s ago — skipping prompt (60s cooldown)`);
         return res.json({ action: "skipped", reason: "Post-stop cooldown" });
+      }
+
+      if (catWashManuallyStoppedAt) {
+        const msSinceManualStop = Date.now() - catWashManuallyStoppedAt.getTime();
+        if (msSinceManualStop < 120000) {
+          console.log(`[Cat Lights] Manual stop was ${Math.round(msSinceManualStop / 1000)}s ago — skipping prompt (120s manual-stop cooldown)`);
+          return res.json({ action: "skipped", reason: "Post-manual-stop cooldown" });
+        }
       }
 
       if (catWashPlaybackActive && catWashPlaybackState) {
@@ -10856,6 +10881,7 @@ document.body.removeChild(a);
     catWashPlaybackStartedAt = null;
     catWashPlaybackState = null;
     catWashManuallyStoppedAt = new Date();
+    lastPlaybackStoppedAt = Date.now();
     currentTvFollowUrl = null;
     currentTabletReaderUrl = null;
     stopToothbrushPolling();
