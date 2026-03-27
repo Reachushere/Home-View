@@ -22578,7 +22578,7 @@ export default function Dashboard() {
               const lastRect = courseRowRects[courseRowRects.length - 1];
               if (lastRect) {
                 const lastBottom = lastRect.top + lastRect.height - upcomingTop - firstOffset;
-                const otherRowH = gridSizes.courseRowHeight || 48;
+                const otherRowH = gridSizes.otherRowHeight || 57;
                 return `${lastBottom + otherRowH + 2 - 41}px`;
               }
             }
