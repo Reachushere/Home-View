@@ -1444,6 +1444,12 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   {courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Elective" : "Liberal Studies"}
                 </span>
               )}
+              {gradeCalc && (
+                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md flex-shrink-0" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }} data-testid="grade-calculator-inline">
+                  <span className="text-[11px] font-bold text-white" data-testid="text-current-grade">{gradeCalc.currentGrade}</span>
+                  <span className="text-[10px] text-white">({gradeCalc.currentPercent.toFixed(1)}%)</span>
+                </div>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-2 text-[9px] text-white flex-shrink-0">
@@ -1459,11 +1465,21 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           <div className="flex items-center gap-2">
             <span className="text-[11px] text-white uppercase font-medium">Course Info</span>
             {gradeCalc && (
-              <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }} data-testid="grade-calculator-inline">
-                <span className="text-[11px] font-bold text-white" data-testid="text-current-grade">{gradeCalc.currentGrade}</span>
-                <span className="text-[10px] text-white">({gradeCalc.currentPercent.toFixed(1)}%)</span>
-                <span className="text-[9px] text-white flex items-center" style={{ marginTop: '4px' }}>{gradeCalc.gradedCount} graded · {gradeCalc.gradedWeight.toFixed(0)}%</span>
-              </div>
+              <span className="text-[9px] text-white flex items-center" style={{ marginTop: '2px' }}>{gradeCalc.gradedCount} graded · {gradeCalc.gradedWeight.toFixed(0)}%</span>
+            )}
+            {syllabusObjectPath && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  window.open(`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`, '_blank');
+                }}
+                className="h-6 px-2 text-[10px] text-white border-white/30 hover:bg-white/10 hover:text-white bg-transparent"
+                data-testid="button-view-syllabus"
+              >
+                <Paperclip className="w-3 h-3 mr-1" />
+                View Syllabus
+              </Button>
             )}
             <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-md" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}>
               <span className="text-[9px] text-white">Rank</span>
@@ -1481,20 +1497,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           </div>
               {!isEditingInfo ? (
                 <div className="flex items-center gap-2">
-                  {syllabusObjectPath && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        window.open(`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`, '_blank');
-                      }}
-                      className="h-6 px-2 text-[10px] text-white border-white/30 hover:bg-white/10 hover:text-white bg-transparent"
-                      data-testid="button-view-syllabus"
-                    >
-                      <Paperclip className="w-3 h-3 mr-1" />
-                      View Syllabus
-                    </Button>
-                  )}
                   <button
                     onClick={() => setIsEditingInfo(true)}
                     className="flex items-center gap-1.5 text-[11px] text-white hover:text-white transition-colors font-semibold"
@@ -2762,7 +2764,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 <h3 className="text-[11px] font-medium text-white uppercase">Assignments</h3>
                 <span className="text-[9px] text-white">
                   {completedCount}/{courseTasks.length} done
-                  {totalWeight > 0 && <span style={{ color: totalWeight > 100 ? '#ef4444' : totalWeight < 100 ? '#f97316' : 'white' }}> · {totalWeight.toFixed(2)}% weight</span>}
+                  {totalWeight > 0 && <span className="text-[11px] font-medium" style={{ color: totalWeight > 100 ? '#ef4444' : totalWeight < 100 ? '#f97316' : 'white' }}> · {totalWeight.toFixed(2)}% weight</span>}
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
