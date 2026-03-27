@@ -14144,7 +14144,14 @@ export default function Dashboard() {
                 }
               }
               if ((updates as any).courseRank !== undefined) {
-                const semKey = (updates as any).semesterKey || semesterKeyFromUpdates(updates);
+                let semKey = (updates as any).semesterKey || semesterKeyFromUpdates(updates);
+                if (!semKey) {
+                  const cc = courseCode.replace(/\s/g, '').toUpperCase();
+                  for (const sk of semesterKeyOrder) {
+                    const courses = semesterCourseAssignments[sk] || [];
+                    if (courses.some(c => c.code.replace(/\s/g, '').toUpperCase() === cc)) { semKey = sk; break; }
+                  }
+                }
                 if (semKey) {
                   const priorityKey = `${semKey}:${courseCode.replace(/\s/g, '')}`;
                   const rankVal = (updates as any).courseRank || 0;

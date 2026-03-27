@@ -2316,7 +2316,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             <div style={{ border: '2px solid rgba(255,255,255,0.2)', borderRadius: '8px', padding: '12px' }}>
             <div
               className="flex items-center justify-between cursor-pointer group"
-              onClick={() => { const next = !showWeekMappings; setShowWeekMappings(next); if (next) setTimeout(() => { const el = weekMappingsRef.current; if (el) { const scrollParent = el.closest('.overflow-y-auto'); if (scrollParent) { scrollParent.scrollTo({ top: el.offsetTop - scrollParent.getBoundingClientRect().top, behavior: 'smooth' }); } else { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } } }, 80); }}
+              onClick={() => { const next = !showWeekMappings; setShowWeekMappings(next); if (next) setTimeout(() => { const el = weekMappingsRef.current; if (el) { const scrollParent = el.closest('.overflow-y-auto'); if (scrollParent) { scrollParent.scrollTo({ top: 0, behavior: 'smooth' }); } } }, 80); }}
               data-testid="button-toggle-week-mappings"
             >
               <div className="flex items-center gap-2">
