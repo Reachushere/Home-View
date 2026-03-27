@@ -1473,7 +1473,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 onClick={() => {
                   window.open(`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`, '_blank');
                 }}
-                className="h-5 px-2 text-[10px] text-white border-white/40 hover:bg-white/15 hover:text-white bg-white/10"
+                className="px-2 text-[10px] text-white border-white/40 hover:bg-white/15 hover:text-white bg-white/10"
+                style={{ alignSelf: 'stretch', height: 'auto' }}
                 data-testid="button-view-syllabus"
               >
                 <Paperclip className="w-3 h-3 mr-1" />
