@@ -9851,7 +9851,6 @@ export default function Dashboard() {
             <div className="flex items-center gap-2">
               <Sun className="text-yellow-400" style={{ width: '15px', height: '15px' }} />
               <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>MORNING REVIEW</h2>
-              <span className="text-[9px] text-white/60 ml-1" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>{morningReviewItems.length} pending</span>
               <div className="flex ml-3 rounded overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.25)' }} data-testid="review-mode-tabs">
                 <button
                   className={`px-4 py-1 text-[11px] font-medium transition-colors ${reviewMode === 'all' ? 'text-white' : 'text-white/50 hover:text-white/70'}`}
@@ -9919,13 +9918,6 @@ export default function Dashboard() {
                   </button>
                 </>
               )}
-              <button
-                className="w-7 h-7 flex items-center justify-center rounded text-white/50 hover:text-white hover:bg-white/10"
-                onClick={() => { setShowMorningReview(false); setReviewMode('all'); setReviewCheckedIds(new Set()); }}
-                data-testid="button-close-morning-review"
-              >
-                <X className="h-4 w-4" />
-              </button>
             </div>
           </div>
 
