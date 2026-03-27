@@ -23707,7 +23707,7 @@ export default function Dashboard() {
                 <div className="flex items-end justify-center" style={{ overflow: 'visible', padding: '0 2px', gap: '2px' }}>
                   {[
                     { id: 'hw-ctrl-restart', icon: <RefreshCw className="h-3.5 w-3.5 text-white" />, label: 'Restart', onClick: () => { const iframe = document.querySelector('iframe[name="pdf-reader-frame"]') as HTMLIFrameElement; if (iframe?.contentWindow) iframe.contentWindow.postMessage({ type: 'tts-restart' }, '*'); } },
-                    { id: 'hw-ctrl-reset', icon: <X className="h-3.5 w-3.5 text-white" />, label: 'Reset' },
+                    { id: 'hw-ctrl-reset', icon: <X className="h-3.5 w-3.5 text-white" />, label: 'Reset', onClick: () => { const iframe = document.querySelector('iframe[name="pdf-reader-frame"]') as HTMLIFrameElement; if (iframe?.contentWindow) iframe.contentWindow.postMessage({ type: 'tts-reset' }, '*'); } },
                     { id: 'hw-ctrl-rewind', icon: <RotateCcw className="h-3.5 w-3.5 text-white" />, label: '-15s' },
                     { id: 'hw-ctrl-prev', icon: <SkipBack className="h-3.5 w-3.5 text-white" />, label: 'Prev' },
                   ].map(btn => (

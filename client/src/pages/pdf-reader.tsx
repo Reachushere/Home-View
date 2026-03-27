@@ -260,6 +260,24 @@ export default function PDFReaderPage() {
       window.parent.postMessage({ type: 'tts-state-update', isPlaying }, '*');
     }
   }, [isPlaying]);
+
+  useEffect(() => {
+    if (window.parent === window) return;
+    const handler = (e: MessageEvent) => {
+      if (!e.data?.type) return;
+      if (e.data.type === 'tts-reset') {
+        if (audioRef.current) { audioRef.current.pause(); audioRef.current.src = ''; }
+        setIsPlaying(false);
+        setIsPaused(false);
+        setCurrentChunk(0);
+        const el = document.querySelector(`[data-testid="chunk-row-0"]`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    };
+    window.addEventListener('message', handler);
+    return () => window.removeEventListener('message', handler);
+  }, []);
+
   const [isPreloading, setIsPreloading] = useState(false);
   const [currentChunk, setCurrentChunk] = useState(0);
   const [totalChunks, setTotalChunks] = useState(0);
