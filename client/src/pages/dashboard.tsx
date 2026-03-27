@@ -9995,7 +9995,7 @@ export default function Dashboard() {
                               <span className="text-[13px] font-medium truncate flex-1" style={{ lineHeight: '1.3' }}>{item.title}</span>
                               {item.startDate && (
                                 <span className="text-[12px] text-white flex-shrink-0">
-                                  {new Date(item.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                  {new Date(item.startDate).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                                 </span>
                               )}
                               {item.eventStartTime && (
