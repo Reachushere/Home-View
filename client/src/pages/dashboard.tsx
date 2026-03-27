@@ -182,7 +182,6 @@ import {
   Moon as MoonIcon,
   Mic,
   MicOff,
-  Upload,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
@@ -9790,6 +9789,15 @@ export default function Dashboard() {
           <span style={{ fontSize: '8px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.7px', lineHeight: 1 }}>Timeline</span>
         </div>,
         document.body
+      )}
+      {bookAnimState && (
+        <BookAnimation
+          isOpen={bookAnimState.isOpen}
+          onComplete={bookAnimState.onDone}
+          bookColor={bookAnimState.color}
+          title={bookAnimState.title}
+          courseCode={bookAnimState.courseCode}
+        />
       )}
       {/* Background photo layer - always shown when set, behind overlay */}
       {colorSettings.backgroundPhoto && (
@@ -22528,7 +22536,12 @@ export default function Dashboard() {
                             <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px' }}>
                               <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>Reading Week {selectedWeek}</span>
                             </div>
-                            <span className="text-[8px] leading-none italic" style={{ color: '#ffffff', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>N/A</span>
+                            <div className="flex items-center" style={{ position: 'relative' }}>
+                              <span className="text-[8px] leading-none italic" style={{ color: '#ffffff', textShadow: '0 0 2px rgba(0,0,0,0.5)', flex: 1 }}>N/A</span>
+                              <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`upload-reading-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handleUpload('reading'); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handleUpload('reading'); }}>
+                                <Upload className="h-3 w-3 text-purple-300/60 hover:text-purple-300 transition-colors" />
+                              </div>
+                            </div>
                           </>
                         )}
                         {pd.readingP.hasFiles && (
@@ -22538,18 +22551,21 @@ export default function Dashboard() {
                             </div>
                             <div className="flex items-center gap-[5px]" style={{ position: 'relative' }}>
                               {pd.readingUnread > 0 && pd.readingP.percent < 100 && (
-                                <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, position: 'absolute', right: '63px', top: '50%', transform: 'translateY(-50%)' }}>
+                                <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, position: 'absolute', right: '78px', top: '50%', transform: 'translateY(-50%)' }}>
                                   {pd.readingUnread}
                                 </div>
                               )}
-                              <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', flex: 1, marginRight: '63px', marginLeft: '1px', marginTop: '4px' }}>
+                              <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', flex: 1, marginRight: '78px', marginLeft: '1px', marginTop: '4px' }}>
                                 {pd.readingP.percent > 0 && (
                                   <div className="h-full rounded-full" style={{ width: `${pd.readingP.percent}%`, backgroundColor: getProgressColor(pd.readingP.percent) }} />
                                 )}
                               </div>
-                              <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ position: 'absolute', right: '31px', top: '50%', transform: 'translateY(-50%)' }}>{pd.readingP.percent}%</span>
-                              <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '6px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`play-reading-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayReading(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayReading(); }}>
+                              <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ position: 'absolute', right: '46px', top: '50%', transform: 'translateY(-50%)' }}>{pd.readingP.percent}%</span>
+                              <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '20px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`play-reading-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayReading(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayReading(); }}>
                                 <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-opacity duration-200" style={{ width: '18px', height: 'auto', display: 'block', opacity: pd.readingP.percent === 100 ? 0.4 : 1 }} />
+                              </div>
+                              <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`upload-reading-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handleUpload('reading'); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handleUpload('reading'); }}>
+                                <Upload className="h-3 w-3 text-purple-300/60 hover:text-purple-300 transition-colors" />
                               </div>
                             </div>
                           </>
