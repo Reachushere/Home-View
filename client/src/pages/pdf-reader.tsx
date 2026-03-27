@@ -867,6 +867,57 @@ export default function PDFReaderPage() {
     fetch("/api/debug-beacon", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ step, data }) }).catch(() => {});
   };
 
+  const catWashChunksLoadedRef = useRef(false);
+  useEffect(() => {
+    if (catWashFollow && !autoplayParam && !catWashChunksLoadedRef.current && pdfUrl && numPages > 0) {
+      catWashChunksLoadedRef.current = true;
+      beacon("catWashFollow-loading-chunks", { fileId, numPages });
+      const loadChunks = async () => {
+        let textToRead = extractedTextRef.current || extractedText;
+        if (!textToRead) {
+          textToRead = await extractAllText();
+        }
+        if (!textToRead && fileId) {
+          try {
+            const resp = await fetch(`/api/files/${fileId}/text`);
+            if (resp.ok) {
+              const data = await resp.json();
+              if (data.text) {
+                textToRead = data.text;
+                setExtractedText(data.text);
+              }
+            }
+          } catch {}
+        }
+        if (textToRead) {
+          const newChunks = chunkText(textToRead);
+          chunksRef.current = newChunks;
+          setChunksList(newChunks);
+          setTotalChunks(newChunks.length);
+          beacon("catWashFollow-chunks-loaded", { numChunks: newChunks.length });
+          const key = getFileKey();
+          let serverChecked = new Set<number>();
+          if (file?.checkedChunks) {
+            try { const arr = JSON.parse(file.checkedChunks); if (Array.isArray(arr)) serverChecked = new Set(arr); } catch {}
+          }
+          if (serverChecked.size > 0) {
+            setCheckedChunks(serverChecked);
+            saveCheckedChunks(key, serverChecked, newChunks.length);
+          }
+          if (resumeChunkParam !== null && resumeChunkParam < newChunks.length) {
+            setCurrentChunk(resumeChunkParam);
+            currentChunkRef.current = resumeChunkParam;
+            setTimeout(() => {
+              const el = document.querySelector(`[data-testid="chunk-row-${resumeChunkParam}"]`);
+              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+          }
+        }
+      };
+      loadChunks();
+    }
+  }, [catWashFollow, autoplayParam, pdfUrl, numPages]);
+
   useEffect(() => {
     if (autoplayParam && !autoplayTriggeredRef.current && pdfUrl && numPages > 0) {
       autoplayTriggeredRef.current = true;
