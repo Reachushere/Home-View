@@ -13277,6 +13277,103 @@ document.body.removeChild(a);
     }
   });
 
+  app.post("/api/course-week-upload", async (req, res) => {
+    try {
+      const courseCode = (req.headers['x-course-code'] as string || '').trim();
+      const courseName = (req.headers['x-course-name'] as string || '').trim();
+      const weekNum = parseInt(req.headers['x-week-num'] as string || '0', 10);
+      const uploadType = (req.headers['x-upload-type'] as string || 'module').toLowerCase();
+      const weekDateRange = (req.headers['x-week-date-range'] as string || '').trim();
+      const fileName = (req.headers['x-file-name'] as string || 'upload.pdf').trim();
+      const contentType = (req.headers['content-type'] as string || 'application/pdf');
+
+      if (!courseCode || !weekNum || !weekDateRange) {
+        return res.status(400).json({ error: 'Missing required headers: x-course-code, x-week-num, x-week-date-range' });
+      }
+      if (uploadType !== 'module' && uploadType !== 'reading') {
+        return res.status(400).json({ error: 'x-upload-type must be "module" or "reading"' });
+      }
+
+      const chunks: Buffer[] = [];
+      req.on('data', (chunk: Buffer) => chunks.push(chunk));
+      await new Promise<void>((resolve, reject) => {
+        req.on('end', resolve);
+        req.on('error', reject);
+      });
+      const fileBuffer = Buffer.concat(chunks);
+
+      if (fileBuffer.length === 0) {
+        return res.status(400).json({ error: 'Empty file' });
+      }
+
+      const semesterSettings = await storage.getSemesterSchedule();
+      const semType = getSemesterTypeFolder(semesterSettings?.semesterType);
+      const startDate = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date();
+      const year = startDate.getFullYear();
+
+      const codeClean = courseCode.replace(/\s/g, '');
+      const courseFolderName = courseName ? `${codeClean} - ${courseName}` : codeClean;
+      const weekFolderName = `Week ${weekNum} - ${weekDateRange}`;
+      const subFolder = uploadType === 'module' ? 'Module' : 'Reading';
+      const oneDrivePath = `/School/1. TMU/Courses/${year}/${semType}/${courseFolderName}/${weekFolderName}/${subFolder}`;
+
+      console.log(`[CourseUpload] Uploading ${fileName} to OneDrive: ${oneDrivePath}`);
+
+      const { uploadOneDriveFile, createOneDriveFolder } = await import("./onedrive");
+      
+      const basePath = `/School/1. TMU/Courses/${year}/${semType}`;
+      await createOneDriveFolder(basePath, courseFolderName);
+      await createOneDriveFolder(`${basePath}/${courseFolderName}`, weekFolderName);
+      await createOneDriveFolder(`${basePath}/${courseFolderName}/${weekFolderName}`, subFolder);
+
+      const oneDriveResult = await uploadOneDriveFile(oneDrivePath, fileName, fileBuffer, contentType);
+      console.log(`[CourseUpload] OneDrive upload success: ${fileName} → ${oneDrivePath} (${fileBuffer.length} bytes)`);
+
+      const { ObjectStorageService } = await import("./replit_integrations/object_storage");
+      const objectStorage = new ObjectStorageService();
+      const uploadUrl = await objectStorage.getObjectEntityUploadURL();
+      const uploadResponse = await fetch(uploadUrl, {
+        method: 'PUT',
+        body: fileBuffer,
+        headers: { 'Content-Type': contentType }
+      });
+      if (!uploadResponse.ok) {
+        console.error(`[CourseUpload] Object storage upload failed: ${uploadResponse.status}`);
+        return res.status(500).json({ error: 'Object storage upload failed' });
+      }
+      const objectPath = objectStorage.normalizeObjectEntityPath(uploadUrl);
+
+      const folderName = `week-${weekNum}-${codeClean.toLowerCase()}-${uploadType}`;
+      const newFile = await storage.createFile({
+        originalName: fileName,
+        displayName: fileName,
+        objectPath,
+        contentType,
+        size: fileBuffer.length,
+        folder: folderName,
+        listened: false,
+      });
+      console.log(`[CourseUpload] File record created: ${fileName} → ${folderName} (id: ${newFile?.id})`);
+
+      if (newFile?.id) {
+        queueFileForPreparation(newFile.id);
+        console.log(`[CourseUpload] Queued ${fileName} for TTS preparation`);
+      }
+
+      res.json({
+        success: true,
+        fileId: newFile?.id,
+        folder: folderName,
+        oneDrivePath: `${oneDrivePath}/${fileName}`,
+        oneDriveWebUrl: oneDriveResult?.webUrl,
+        objectPath,
+      });
+    } catch (error: any) {
+      console.error("[CourseUpload] Error:", error);
+      res.status(500).json({ error: error.message || "Failed to upload course file" });
+    }
+  });
+
   const recentlyPreparedFiles: { id: number; name: string; folder: string; totalChunks: number; textLength: number; preparedAt: string }[] = [];
   (globalThis as any).__recentlyPreparedFiles = recentlyPreparedFiles;
 

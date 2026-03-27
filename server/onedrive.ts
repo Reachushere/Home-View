@@ -246,6 +246,38 @@ export async function createOneDriveTextFile(parentPath: string, fileName: strin
   }
 }
 
+export async function uploadOneDriveFile(parentPath: string, fileName: string, fileBuffer: Buffer, contentType: string = 'application/pdf'): Promise<any> {
+  const accessToken = await getAccessToken();
+  try {
+    const fullPath = `${parentPath}/${fileName}`;
+    const encodedPath = encodeURIComponent(fullPath).replace(/%2F/g, '/');
+    const url = `https://graph.microsoft.com/v1.0/me/drive/root:${encodedPath}:/content`;
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': contentType,
+      },
+      body: fileBuffer,
+    });
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`OneDrive upload failed (${response.status}): ${errorText}`);
+    }
+    const data = await response.json();
+    return {
+      id: data.id,
+      name: data.name,
+      lastModified: data.lastModifiedDateTime,
+      webUrl: data.webUrl,
+      size: data.size,
+    };
+  } catch (error: any) {
+    console.error(`Error uploading file "${fileName}" to "${parentPath}":`, error.message || error);
+    throw error;
+  }
+}
+
 export async function updateOneDriveFileContent(itemId: string, content: string): Promise<any> {
   const client = await getOneDriveClient();
   try {

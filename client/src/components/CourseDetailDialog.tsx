@@ -288,6 +288,58 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   const [showReadingWeekCalendar, setShowReadingWeekCalendar] = useState(false);
   const [readingWeekCalMonth, setReadingWeekCalMonth] = useState(new Date());
   const [selectedReadingWeekStart, setSelectedReadingWeekStart] = useState<Date | null>(null);
+  const [weekUploadingState, setWeekUploadingState] = useState<Record<string, boolean>>({});
+  const [courseWeekCalendarOpen, setCourseWeekCalendarOpen] = useState<number | null>(null);
+  const [courseWeekCalMonth, setCourseWeekCalMonth] = useState(new Date());
+
+  const handleWeekFileUpload = useCallback(async (weekNum: number, uploadType: 'module' | 'reading') => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.pdf,.doc,.docx,.ppt,.pptx,.txt';
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      const stateKey = `${weekNum}-${uploadType}`;
+      setWeekUploadingState(prev => ({ ...prev, [stateKey]: true }));
+      try {
+        const weekDates = getWeekDates(weekNum, semesterStart, readingWeekStart);
+        const ws = new Date(weekDates.start);
+        const we = new Date(weekDates.end);
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const startStr = `${months[ws.getMonth()]} ${ws.getDate()}`;
+        const endStr = ws.getMonth() === we.getMonth() ? `${we.getDate()}` : `${months[we.getMonth()]} ${we.getDate()}`;
+        const dateRange = `${startStr}-${endStr}`;
+
+        const codeClean = courseInfo.courseCode.replace(/\s/g, '');
+        const namePart = courseInfo.fullName || courseInfo.courseName || '';
+
+        const resp = await fetch('/api/course-week-upload', {
+          method: 'POST',
+          headers: {
+            'Content-Type': file.type || 'application/pdf',
+            'x-course-code': codeClean,
+            'x-course-name': namePart,
+            'x-week-num': String(weekNum),
+            'x-upload-type': uploadType,
+            'x-week-date-range': dateRange,
+            'x-file-name': file.name,
+          },
+          body: file,
+        });
+        const result = await resp.json();
+        if (resp.ok && result.success) {
+          toast({ title: `${uploadType === 'module' ? 'Module' : 'Reading'} uploaded`, description: `${file.name} saved to OneDrive and queued for TTS preparation` });
+        } else {
+          toast({ title: 'Upload failed', description: result.error || 'Unknown error', variant: 'destructive' });
+        }
+      } catch (err: any) {
+        toast({ title: 'Upload error', description: err.message, variant: 'destructive' });
+      } finally {
+        setWeekUploadingState(prev => ({ ...prev, [stateKey]: false }));
+      }
+    };
+    input.click();
+  }, [courseInfo.courseCode, courseInfo.courseName, courseInfo.fullName, semesterStart, readingWeekStart, toast]);
   const { uploadFile, isUploading } = useUpload();
   const [editInfo, setEditInfo] = useState({
     professor: courseInfo.professor || '',
@@ -2207,7 +2259,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             >
               <div className="flex items-center gap-2">
                 <Calendar className="h-3.5 w-3.5 text-white/70" />
-                <h3 className="text-[11px] font-medium text-white">Week Numbers</h3>
+                <h3 className="text-[11px] font-medium text-white">Weeks and Modules</h3>
                 {(() => {
                   const confirmed = Object.values(weekMappingEdits).filter(v => v.confirmed).length;
                   const total = LAST_WEEK - FIRST_WEEK + 1;
@@ -2538,17 +2590,87 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         </div>
                       </div>
 
-                      <input
-                        type="text"
-                        placeholder="Course week"
-                        value={edit.courseWeekLabel}
-                        onChange={(e) => {
-                          setWeekMappingEdits(prev => ({ ...prev, [weekNum]: { ...edit, courseWeekLabel: e.target.value } }));
-                        }}
-                        onBlur={() => saveWeekMapping(weekNum, edit)}
-                        className="w-20 h-5 text-[8px] bg-white/10 border border-white/25 rounded px-1.5 text-white placeholder:text-white/70 focus:border-white/50 outline-none"
-                        data-testid={`input-course-week-label-${weekNum}`}
-                      />
+                      <button
+                        onClick={() => handleWeekFileUpload(weekNum, 'reading')}
+                        disabled={weekUploadingState[`${weekNum}-reading`]}
+                        className="flex-shrink-0 h-5 px-1.5 text-[7px] font-medium bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/30 rounded flex items-center gap-0.5 transition-colors disabled:opacity-50"
+                        data-testid={`button-upload-reading-${weekNum}`}
+                      >
+                        {weekUploadingState[`${weekNum}-reading`] ? <Loader2 className="h-2.5 w-2.5 animate-spin" /> : <Upload className="h-2.5 w-2.5" />}
+                        Reading
+                      </button>
+
+                      <button
+                        onClick={() => handleWeekFileUpload(weekNum, 'module')}
+                        disabled={weekUploadingState[`${weekNum}-module`]}
+                        className="flex-shrink-0 h-5 px-1.5 text-[7px] font-medium bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/30 rounded flex items-center gap-0.5 transition-colors disabled:opacity-50"
+                        data-testid={`button-upload-module-${weekNum}`}
+                      >
+                        {weekUploadingState[`${weekNum}-module`] ? <Loader2 className="h-2.5 w-2.5 animate-spin" /> : <Upload className="h-2.5 w-2.5" />}
+                        Module
+                      </button>
+
+                      <div className="relative flex-shrink-0">
+                        <button
+                          onClick={() => { setCourseWeekCalendarOpen(courseWeekCalendarOpen === weekNum ? null : weekNum); setCourseWeekCalMonth(weekStart); }}
+                          className="w-20 h-5 text-[8px] bg-white/10 border border-white/25 rounded px-1.5 text-white hover:border-white/40 flex items-center gap-1 transition-colors"
+                          data-testid={`button-course-week-label-${weekNum}`}
+                        >
+                          <Calendar className="h-2.5 w-2.5 flex-shrink-0 text-white/50" />
+                          <span className="truncate">{edit.courseWeekLabel || 'Set week'}</span>
+                        </button>
+                        {courseWeekCalendarOpen === weekNum && (
+                          <div className="absolute right-0 top-6 z-50 bg-gray-900 border border-white/25 rounded-lg p-2 shadow-xl" style={{ width: '200px' }} onClick={(e) => e.stopPropagation()}>
+                            <div className="flex items-center justify-between mb-1">
+                              <button onClick={() => setCourseWeekCalMonth(new Date(courseWeekCalMonth.getFullYear(), courseWeekCalMonth.getMonth() - 1, 1))} className="text-white/50 hover:text-white p-0.5"><ChevronLeft className="h-3 w-3" /></button>
+                              <span className="text-[9px] text-white font-medium">{courseWeekCalMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
+                              <button onClick={() => setCourseWeekCalMonth(new Date(courseWeekCalMonth.getFullYear(), courseWeekCalMonth.getMonth() + 1, 1))} className="text-white/50 hover:text-white p-0.5"><ChevronRight className="h-3 w-3" /></button>
+                            </div>
+                            <div className="grid grid-cols-7 gap-0.5 text-center">
+                              {['S','M','T','W','T','F','S'].map((d, i) => <div key={i} className="text-[7px] text-white/40 font-medium py-0.5">{d}</div>)}
+                              {(() => {
+                                const yr = courseWeekCalMonth.getFullYear();
+                                const mo = courseWeekCalMonth.getMonth();
+                                const firstDow = new Date(yr, mo, 1).getDay();
+                                const dim = new Date(yr, mo + 1, 0).getDate();
+                                const cells = [];
+                                for (let i = 0; i < firstDow; i++) cells.push(<div key={`e-${i}`} />);
+                                for (let d = 1; d <= dim; d++) {
+                                  const dt = new Date(yr, mo, d);
+                                  const wn = getWeekNumber(dt, semesterStart, readingWeekStart);
+                                  const isThisWeek = wn === weekNum;
+                                  cells.push(
+                                    <button
+                                      key={d}
+                                      className={`text-[8px] py-0.5 rounded transition-colors ${isThisWeek ? 'bg-blue-500/30 text-blue-200 font-bold' : 'text-white/70 hover:bg-white/10'}`}
+                                      onClick={() => {
+                                        const label = `Week ${weekNum}`;
+                                        const newState = { ...edit, courseWeekLabel: label };
+                                        setWeekMappingEdits(prev => ({ ...prev, [weekNum]: newState }));
+                                        saveWeekMapping(weekNum, newState);
+                                        setCourseWeekCalendarOpen(null);
+                                      }}
+                                    >{d}</button>
+                                  );
+                                }
+                                return cells;
+                              })()}
+                            </div>
+                            <div className="mt-1 flex gap-1">
+                              <input
+                                type="text"
+                                placeholder="Custom label"
+                                value={edit.courseWeekLabel}
+                                onChange={(e) => setWeekMappingEdits(prev => ({ ...prev, [weekNum]: { ...edit, courseWeekLabel: e.target.value } }))}
+                                onBlur={() => saveWeekMapping(weekNum, edit)}
+                                className="flex-1 h-5 text-[8px] bg-white/10 border border-white/25 rounded px-1.5 text-white placeholder:text-white/40 focus:border-white/50 outline-none"
+                                data-testid={`input-course-week-label-${weekNum}`}
+                              />
+                              <button onClick={() => setCourseWeekCalendarOpen(null)} className="text-[7px] text-white/50 hover:text-white px-1">Done</button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
 
                       <input
                         type="text"
@@ -2558,7 +2680,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                           setWeekMappingEdits(prev => ({ ...prev, [weekNum]: { ...edit, notes: e.target.value } }));
                         }}
                         onBlur={() => saveWeekMapping(weekNum, edit)}
-                        className="w-24 h-5 text-[8px] bg-white/10 border border-white/25 rounded px-1.5 text-white placeholder:text-white/70 focus:border-white/50 outline-none"
+                        className="w-20 h-5 text-[8px] bg-white/10 border border-white/25 rounded px-1.5 text-white placeholder:text-white/70 focus:border-white/50 outline-none"
                         data-testid={`input-week-notes-${weekNum}`}
                       />
                     </div>
