@@ -4741,8 +4741,29 @@ export default function Dashboard() {
     const info = certCourseMap[certKey];
     if (!info) return;
     const elective = openElectives[certKey];
-    const code = elective?.trim() ? elective.split(' ')[0] || info.code : info.code;
-    const name = elective?.trim() ? elective : info.name;
+    let code = info.code;
+    let name = info.name;
+    if (elective?.trim()) {
+      const parts = elective.trim().split(/\s+/);
+      if (parts.length >= 2 && /^\d/.test(parts[1])) {
+        code = parts[0] + parts[1];
+        name = parts.slice(2).join(' ') || elective;
+      } else {
+        code = parts[0];
+        name = elective;
+      }
+    }
+    const matchedCourse = coursesData.courses.find(c => {
+      const cCode = c.name.split(' - ')[0]?.trim().replace(/\s/g, '');
+      const codeNorm = code.replace(/\s/g, '');
+      return cCode === codeNorm || cCode === 'C' + codeNorm || cCode.replace(/^C(?=[A-Z]{2,})/, '') === codeNorm;
+    });
+    if (matchedCourse) {
+      const mCode = matchedCourse.name.split(' - ')[0]?.trim();
+      const mName = matchedCourse.name.split(' - ').slice(1).join(' - ').trim();
+      code = mCode;
+      name = mName;
+    }
     setIsSettingsPanelOpen(false);
     setOpenedCourseFromDegreeTracking(true);
     startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: name, certKey }));
