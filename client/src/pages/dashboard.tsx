@@ -2187,6 +2187,11 @@ export default function Dashboard() {
   const saveOtherRowColors = useCallback((colors: typeof otherRowColors) => {
     setOtherRowColors(colors);
     localStorage.setItem('otherRowColors', JSON.stringify(colors));
+    fetch('/api/degree-tracking', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key: 'otherRowColors', value: colors }),
+    }).catch(() => {});
   }, []);
   const [schoolCoursesOpenSource, setSchoolCoursesOpenSource] = useState<'pill' | 'degree'>('degree');
   const [semSettingsDialogKey, setSemSettingsDialogKey] = useState<string | null>(null);
@@ -4118,6 +4123,13 @@ export default function Dashboard() {
           setSemesterCourseAssignments(prev => {
             const merged = { ...prev, ...data.semesterCourseAssignments };
             localStorage.setItem('semesterCourseAssignments', JSON.stringify(merged));
+            return merged;
+          });
+        }
+        if (data.otherRowColors) {
+          setOtherRowColors(prev => {
+            const merged = { ...prev, ...data.otherRowColors };
+            localStorage.setItem('otherRowColors', JSON.stringify(merged));
             return merged;
           });
         }
