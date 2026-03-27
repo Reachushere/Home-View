@@ -889,14 +889,14 @@ export default function Dashboard() {
   const [rescheduleTask, setRescheduleTask] = useState<Task | null>(null);
   const [isTodayExpanded, setIsTodayExpanded] = useState(false);
   const [calendarHeight, setCalendarHeight] = useState(() => {
-    const defaultHeight = window.innerHeight - 80;
+    const defaultHeight = window.innerHeight - 45;
     const minHeight = 200;
     const maxHeight = window.innerHeight - 60;
     const screenWidth = window.screen.width;
     const screenHeight = window.screen.height;
     const pixelRatio = window.devicePixelRatio || 1;
     const deviceId = `device_${screenWidth}x${screenHeight}@${pixelRatio}`;
-    const resetKey = 'calendarHeight_reset_v12';
+    const resetKey = 'calendarHeight_reset_v13';
     if (!localStorage.getItem(resetKey)) {
       localStorage.removeItem('calendarHeight');
       localStorage.removeItem(`calendarHeight_${deviceId}`);
@@ -1078,7 +1078,7 @@ export default function Dashboard() {
     });
   };
   const [calendarReductionUserSet, setCalendarReductionUserSetRaw] = useState(() => {
-    const resetKey = 'calendarHeight_reset_v12';
+    const resetKey = 'calendarHeight_reset_v13';
     if (!localStorage.getItem(resetKey)) return false;
     return !!localStorage.getItem('calendarReduction');
   });
