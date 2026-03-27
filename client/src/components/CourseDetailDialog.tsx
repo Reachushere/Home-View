@@ -3000,10 +3000,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   <div className={`flex-1 min-w-0 ${hdrCls('title')}`} style={{ marginLeft: isEditingInfo ? '21px' : '21px' }} onClick={() => toggleSort('title')} data-testid="sort-title">Assignments<SortIcon field="title" />
                   </div>
                   <div className="flex items-end flex-shrink-0 text-white" style={{ gap: '10px', position: 'relative', left: isEditingInfo ? '-24px' : '-15px' }}>
-                    <span className={`w-[33px] text-center leading-tight ${hdrCls('score')}`} onClick={() => toggleSort('score')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: isEditingInfo ? '-5px' : '-3px' }} data-testid="sort-score">
+                    <span className={`w-[33px] text-center leading-tight ${hdrCls('score')}`} onClick={() => toggleSort('score')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: isEditingInfo ? '-5px' : '-5px' }} data-testid="sort-score">
                       Score<SortIcon field="score" />
                     </span>
-                    <span className={`w-[33px] text-center leading-tight ${hdrCls('total')}`} onClick={() => toggleSort('total')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: isEditingInfo ? '-4px' : '-2px' }} data-testid="sort-total">
+                    <span className={`w-[33px] text-center leading-tight ${hdrCls('total')}`} onClick={() => toggleSort('total')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: isEditingInfo ? '-4px' : '-4px' }} data-testid="sort-total">
                       Total<SortIcon field="total" />
                     </span>
                     <span className={`w-[33px] text-center leading-tight ${hdrCls('weight')}`} onClick={() => toggleSort('weight')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: isEditingInfo ? '-1px' : undefined }} data-testid="sort-weight">
