@@ -22480,19 +22480,22 @@ export default function Dashboard() {
                     borderTop: `1.5px dotted ${otherRowColors.borderColor}`,
                     borderBottom: `1.5px dotted ${otherRowColors.borderColor}`,
                     display: 'flex',
-                    alignItems: 'center',
+                    alignItems: 'stretch',
                     overflowX: 'hidden',
-                    overflowY: 'auto',
+                    overflowY: 'hidden',
                     scrollbarWidth: 'none',
-                    padding: '0 6px 0 4px',
-                  }}
-                  onWheel={(e) => {
-                    e.stopPropagation();
-                    e.currentTarget.scrollTop += e.deltaY;
-                    e.preventDefault();
+                    padding: '0',
                   }}>
-                    <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                    <span className="text-[8px] font-[785] uppercase tracking-wide" style={{ flexShrink: 0, color: '#000000' }}>Other</span>
+                    <div style={{ width: `${effectiveDividerPct}%`, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px' }}>
+                      <span className="text-[8px] font-[785] uppercase tracking-wide" style={{ color: '#000000' }}>Other</span>
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '1px 6px 0px 6px', overflowY: 'auto', scrollbarWidth: 'none' }}
+                      onWheel={(e) => {
+                        e.stopPropagation();
+                        e.currentTarget.scrollTop += e.deltaY;
+                        e.preventDefault();
+                      }}
+                    >
                     {otherProgressTasks.length === 0 && (
                       <span className="text-[10px] italic" style={{ color: '#5a595e', textAlign: 'center', pointerEvents: 'none' }}>No upcoming items</span>
                     )}
@@ -22521,7 +22524,7 @@ export default function Dashboard() {
 
             return rows;
           })()}
-          <div className="flex-1 flex flex-col" style={{ paddingLeft: '0px', paddingRight: '0px', marginTop: (() => {
+          <div className="flex-1 flex flex-col" style={{ paddingLeft: '8px', paddingRight: '0px', marginTop: (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
             if (courseRowRects.length > 0) {
               const firstOffset = 0;
