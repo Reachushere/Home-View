@@ -20639,7 +20639,7 @@ export default function Dashboard() {
                                     </div>
                                   </div>
                                 )}
-                                <div className="absolute top-0 bottom-0 z-[3] pointer-events-none" style={{ left: hourTasks.length > 0 ? '50%' : `${gridSizes.timeSlotHeight + 5}px`, right: '1px', display: 'flex', gap: '4px' }} data-testid="hours-until-next-task">
+                                <div className="absolute top-0 bottom-0 z-[3] pointer-events-none" style={{ left: (hourTasks.length > 0 || continuingTasks.length > 0) ? '50%' : `${gridSizes.timeSlotHeight + 5}px`, right: '1px', display: 'flex', gap: '4px' }} data-testid="hours-until-next-task">
                                   {(() => {
                                     const courseCode = nextSchoolTask?.courseName?.split(' - ')[0]?.trim() || '';
                                     const gradColors = getCourseGradientColors(courseCode);
@@ -20928,7 +20928,7 @@ export default function Dashboard() {
                       style={{
                         top: `${topPx}px`,
                         left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${gridSizes.dayColumnWidths.slice(0, dayIdx).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) + 2px)`,
-                        width: `calc((${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 4px)`,
+                        width: (() => { const now = new Date(); const currentHourNow = now.getHours(); const taskDay = weekDays[dayIdx]; const isTodayCol = isSameDayET(taskDay, now); const isCurrentHourOverlap = isTodayCol && startHour <= currentHourNow && endHour > currentHourNow && !(currentHourNow >= 21 || currentHourNow < 6); return isCurrentHourOverlap ? `calc((${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 2 - 4px)` : `calc((${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 4px)`; })(),
                         height: `${heightPx}px`,
                         zIndex: hoveredCountdownTaskId === task.id ? 55 : (selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43)),
                         backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || (task.type === 'other' ? otherRowColors.taskBgColor : '#e5e7eb')),
