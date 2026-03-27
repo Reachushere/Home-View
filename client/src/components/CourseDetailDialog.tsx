@@ -2984,7 +2984,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 `cursor-pointer select-none hover:text-white/80 transition-colors ${sortField === field ? 'text-white/90' : ''}`;
               return (
                 <div className="flex items-end px-1.5 py-1 text-[8px] font-bold text-white" style={{ margin: '0 4px', letterSpacing: '0' }}>
-                  <div className="flex-shrink-0" style={{ width: '14px', marginRight: '10px' }} />
+                  <div className="flex-shrink-0 flex justify-center" style={{ width: '14px', marginRight: '10px', overflow: 'visible' }}>
+                    <span className="text-[8px] font-bold text-white" style={{ whiteSpace: 'nowrap' }}>Done</span>
+                  </div>
                   <div className="flex-shrink-0" style={{ width: '16px', marginRight: '10px' }} />
                   <div className="flex-shrink-0 flex justify-center" style={{ width: '15px', marginLeft: '8px', marginRight: '10px', overflow: 'visible' }}>
                     <span className="text-[8px] font-bold text-white" style={{ whiteSpace: 'nowrap' }}>Assign</span>
