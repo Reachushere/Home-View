@@ -8436,6 +8436,30 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         console.log(`${logPrefix} Waiting 8s for TV + Fire Stick boot...`);
         await new Promise(resolve => setTimeout(resolve, 8000));
 
+        for (let tvCheck = 1; tvCheck <= 3; tvCheck++) {
+          try {
+            const tvStateResp = await fetch(`${HA_URL}/api/states/${CAT_TV_ENTITY}`, { headers: { Authorization: `Bearer ${HA_TOKEN}`, 'Content-Type': 'application/json' } });
+            if (tvStateResp.ok) {
+              const tvStateData = await tvStateResp.json();
+              const tvState = tvStateData?.state || 'unknown';
+              console.log(`${logPrefix} Samsung TV state check ${tvCheck}/3: ${tvState}`);
+              catWashTrace('TV', `Samsung TV state check ${tvCheck}: ${tvState}`);
+              if (tvState === 'on' || tvState === 'playing' || tvState === 'idle' || tvState === 'paused') {
+                console.log(`${logPrefix} Samsung TV is ON — proceeding`);
+                break;
+              }
+              if (tvCheck < 3) {
+                console.log(`${logPrefix} Samsung TV still off — sending another WoL + CEC kick`);
+                await haServiceCallSafe('media_player/turn_on', { entity_id: CAT_TV_ENTITY }, `Samsung TV WoL retry ${tvCheck}`);
+                await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_WAKEUP' }, `FireStick WAKEUP retry ${tvCheck}`).catch(() => {});
+                await new Promise(r => setTimeout(r, 5000));
+              }
+            }
+          } catch (e: any) {
+            console.warn(`${logPrefix} Samsung TV state check ${tvCheck} failed: ${e.message}`);
+          }
+        }
+
         const launchSilkOnTV = async (silkAttempt: number) => {
           try {
             await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'monkey -p com.amazon.cloud9 -c android.intent.category.LAUNCHER 1' }, `FireStick Launch Silk via monkey ${silkAttempt}`);
