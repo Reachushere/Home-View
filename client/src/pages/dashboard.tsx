@@ -20616,7 +20616,7 @@ export default function Dashboard() {
                                     </div>
                                   </div>
                                 )}
-                                <div className="absolute top-0 bottom-0 z-[3] pointer-events-none" style={{ left: `${gridSizes.timeSlotHeight + 5}px`, right: '1px', display: 'flex', gap: '4px' }} data-testid="hours-until-next-task">
+                                <div className="absolute top-0 bottom-0 z-[3] pointer-events-none" style={{ left: hourTasks.length > 0 ? '50%' : `${gridSizes.timeSlotHeight + 5}px`, right: '1px', display: 'flex', gap: '4px' }} data-testid="hours-until-next-task">
                                   {(() => {
                                     const courseCode = nextSchoolTask?.courseName?.split(' - ')[0]?.trim() || '';
                                     const gradColors = getCourseGradientColors(courseCode);
@@ -20740,8 +20740,8 @@ export default function Dashboard() {
                                 }`}
                                 style={{
                                   top: `${topOffset}px`,
-                                  left: hoveredCalTaskId === task.id ? '2px' : `calc(${taskIdx * columnWidth}% + 2px)`,
-                                  width: hoveredCalTaskId === task.id ? 'calc(100% - 4px)' : `calc(${columnWidth}% - 4px)`,
+                                  left: hoveredCalTaskId === task.id ? '2px' : (() => { const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return hasNextDueBox ? `calc(${taskIdx * columnWidth / 2}% + 2px)` : `calc(${taskIdx * columnWidth}% + 2px)`; })(),
+                                  width: hoveredCalTaskId === task.id ? 'calc(100% - 4px)' : (() => { const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return hasNextDueBox ? `calc(${columnWidth / 2}% - 4px)` : `calc(${columnWidth}% - 4px)`; })(),
                                   height: `${taskHeight}px`,
                                   zIndex: hoveredCalTaskId === task.id ? 56 : (hoveredCountdownTaskId === task.id ? 55 : (selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43))),
                                   backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || (task.type === 'other' ? otherRowColors.taskBgColor : '#e5e7eb')),
