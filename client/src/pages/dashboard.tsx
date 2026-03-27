@@ -17118,7 +17118,7 @@ export default function Dashboard() {
                             : dm === 'online' ? <img src={wifiLogoPath} alt="Online" style={{ width: '13px', height: 'auto', opacity: 0.9 }} /> : null;
                         })()}
                         </div>
-                        <span className="text-[10px] truncate min-w-0 flex-1 cursor-pointer hover:underline" style={{ marginLeft: '28px' }} onClick={(e) => { e.stopPropagation(); const certKey = pastEntry?.certKey || semCourse.code; startTransition(() => setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey })); }} data-testid={`course-name-click-${semCourse.code}`}><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
+                        <span className="text-[10px] truncate min-w-0 flex-1 cursor-pointer hover:underline" style={{ marginLeft: '18px' }} onClick={(e) => { e.stopPropagation(); const certKey = pastEntry?.certKey || semCourse.code; startTransition(() => setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey })); }} data-testid={`course-name-click-${semCourse.code}`}><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
                         <div className="flex items-center gap-1 flex-shrink-0" style={{ marginRight: '-3px' }}>
                           {(() => {
                             const profName = currentCourse?.professor || profInfo.professor;
