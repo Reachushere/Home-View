@@ -22477,91 +22477,51 @@ export default function Dashboard() {
                       <span className="text-[9px] font-bold text-white/60 text-center" style={{ lineHeight: '1.6' }}>N/A</span>
                     </div>
                   ) : (
-                    <>
-                      <div className="flex-1 flex flex-col justify-center cursor-pointer" style={{ paddingLeft: '7px', paddingRight: '4px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', overflow: 'visible', position: 'relative', gap: '0px' }} onClick={pd.handlePlayModule} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayModule(); }}>
-                        {!pd.moduleP.hasFiles && (
-                          <>
-                            <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px' }}>
-                              <span className="text-[8px] font-normal leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>Module Week {selectedWeek}</span>
-                            </div>
-                            <div className="flex items-center" style={{ position: 'relative' }}>
-                              <span className="text-[8px] leading-none italic" style={{ color: '#ffffff', textShadow: '0 0 2px rgba(0,0,0,0.5)', flex: 1 }}>N/A</span>
-                              <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`upload-module-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handleUpload('module'); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handleUpload('module'); }}>
-                                <Upload className="h-3 w-3 text-blue-300/60 hover:text-blue-300 transition-colors" />
+                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '3px 4px', flex: 1 }}>
+                      {[
+                        { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), testPlay: `play-module-${pd.courseCode.toLowerCase()}`, testUpload: `upload-module-${pd.courseCode.toLowerCase()}`, iconColor: 'text-blue-300/60 hover:text-blue-300' },
+                        { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, iconColor: 'text-purple-300/60 hover:text-purple-300' },
+                      ].map(item => {
+                        const circleSize = 38;
+                        const strokeWidth = 3.5;
+                        const radius = (circleSize - strokeWidth) / 2;
+                        const circumference = 2 * Math.PI * radius;
+                        const offset = circumference - (item.p.percent / 100) * circumference;
+                        const progressColor = item.p.percent === 100 ? '#22c55e' : item.p.percent > 0 ? '#38bdf8' : 'rgba(255,255,255,0.3)';
+                        return (
+                          <div key={item.type} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px', position: 'relative', flex: 1, minWidth: 0 }}>
+                            {item.p.hasFiles && item.unread > 0 && item.p.percent < 100 && (
+                              <div className="bg-[#FF0000] text-white text-[6px] font-bold rounded-full min-w-[10px] h-[10px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ position: 'absolute', top: '-2px', right: '2px', zIndex: 10 }}>
+                                {item.unread}
                               </div>
-                            </div>
-                          </>
-                        )}
-                        {pd.moduleP.hasFiles && (
-                          <>
-                            <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px', ...(pd.courseCode.toUpperCase().startsWith('CPPA') ? { position: 'relative' as const, top: '2px' } : {}) }}>
-                              <Paperclip className="h-[8px] w-[8px] text-white flex-shrink-0" style={{ filter: 'drop-shadow(0 0 2px rgba(0,0,0,0.5))' }} />
-                              <span className="text-[8px] font-normal leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>Module Week {selectedWeek}</span>
-                            </div>
-                            <div className="flex items-center gap-[5px]" style={{ position: 'relative' }}>
-                              {pd.moduleUnread > 0 && pd.moduleP.percent < 100 && (
-                                <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, position: 'absolute', right: '78px', top: '50%', transform: 'translateY(-50%)' }}>
-                                  {pd.moduleUnread}
-                                </div>
-                              )}
-                              <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', flex: 1, marginRight: '78px', marginLeft: '1px', marginTop: '4px' }}>
-                                {pd.moduleP.percent > 0 && (
-                                  <div className="h-full rounded-full" style={{ width: `${pd.moduleP.percent}%`, backgroundColor: getProgressColor(pd.moduleP.percent) }} />
+                            )}
+                            <div style={{ position: 'relative', width: circleSize, height: circleSize, cursor: 'pointer' }} onClick={item.play} onTouchEnd={(e) => { e.preventDefault(); item.play(); }} data-testid={item.testPlay}>
+                              <svg width={circleSize} height={circleSize} style={{ transform: 'rotate(-90deg)' }}>
+                                <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={strokeWidth} />
+                                {item.p.hasFiles && item.p.percent > 0 && (
+                                  <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke={progressColor} strokeWidth={strokeWidth} strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
                                 )}
+                              </svg>
+                              <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '8px', fontWeight: 700, color: '#fff', textShadow: '0 0 3px rgba(0,0,0,0.5)' }}>
+                                {item.p.hasFiles ? `${item.p.percent}%` : 'N/A'}
+                              </span>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                              {item.p.hasFiles && <Paperclip className="h-[6px] w-[6px] text-white/70 flex-shrink-0" />}
+                              <span style={{ fontSize: '6px', fontWeight: 600, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.5px', textShadow: '0 0 2px rgba(0,0,0,0.5)', whiteSpace: 'nowrap' }}>{item.label}</span>
+                            </div>
+                            <div style={{ display: 'flex', gap: '3px', alignItems: 'center', marginTop: '-1px' }}>
+                              <div className="cursor-pointer" data-testid={item.testPlay} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }}>
+                                <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-opacity duration-200" style={{ width: '14px', height: 'auto', display: 'block', opacity: item.p.percent === 100 ? 0.4 : 1 }} />
                               </div>
-                              <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ position: 'absolute', right: '46px', top: '50%', transform: 'translateY(-50%)' }}>{pd.moduleP.percent}%</span>
-                              <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '20px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`play-module-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayModule(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayModule(); }}>
-                                <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-opacity duration-200" style={{ width: '18px', height: 'auto', display: 'block', opacity: pd.moduleP.percent === 100 ? 0.4 : 1 }} />
-                              </div>
-                              <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`upload-module-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handleUpload('module'); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handleUpload('module'); }}>
-                                <Upload className="h-3 w-3 text-blue-300/60 hover:text-blue-300 transition-colors" />
+                              <div className="cursor-pointer" data-testid={item.testUpload} onClick={(e) => { e.stopPropagation(); item.upload(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.upload(); }}>
+                                <Upload className={`h-[10px] w-[10px] ${item.iconColor} transition-colors`} />
                               </div>
                             </div>
-                          </>
-                        )}
-                      </div>
-                      <div className="flex-1 flex flex-col justify-center cursor-pointer" style={{ paddingLeft: '7px', paddingRight: '4px', overflow: 'visible', position: 'relative', gap: '0px' }} onClick={pd.handlePlayReading} onTouchEnd={(e) => { e.preventDefault(); pd.handlePlayReading(); }}>
-                        {!pd.readingP.hasFiles && (
-                          <>
-                            <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px' }}>
-                              <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>Reading Week {selectedWeek}</span>
-                            </div>
-                            <div className="flex items-center" style={{ position: 'relative' }}>
-                              <span className="text-[8px] leading-none italic" style={{ color: '#ffffff', textShadow: '0 0 2px rgba(0,0,0,0.5)', flex: 1 }}>N/A</span>
-                              <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`upload-reading-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handleUpload('reading'); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handleUpload('reading'); }}>
-                                <Upload className="h-3 w-3 text-purple-300/60 hover:text-purple-300 transition-colors" />
-                              </div>
-                            </div>
-                          </>
-                        )}
-                        {pd.readingP.hasFiles && (
-                          <>
-                            <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px', ...(pd.courseCode.toUpperCase().startsWith('CPPA') ? { position: 'relative' as const, top: '2px' } : {}) }}>
-                              <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>Reading Week {selectedWeek}</span>
-                            </div>
-                            <div className="flex items-center gap-[5px]" style={{ position: 'relative' }}>
-                              {pd.readingUnread > 0 && pd.readingP.percent < 100 && (
-                                <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, position: 'absolute', right: '78px', top: '50%', transform: 'translateY(-50%)' }}>
-                                  {pd.readingUnread}
-                                </div>
-                              )}
-                              <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', flex: 1, marginRight: '78px', marginLeft: '1px', marginTop: '4px' }}>
-                                {pd.readingP.percent > 0 && (
-                                  <div className="h-full rounded-full" style={{ width: `${pd.readingP.percent}%`, backgroundColor: getProgressColor(pd.readingP.percent) }} />
-                                )}
-                              </div>
-                              <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ position: 'absolute', right: '46px', top: '50%', transform: 'translateY(-50%)' }}>{pd.readingP.percent}%</span>
-                              <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '20px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`play-reading-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayReading(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayReading(); }}>
-                                <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-opacity duration-200" style={{ width: '18px', height: 'auto', display: 'block', opacity: pd.readingP.percent === 100 ? 0.4 : 1 }} />
-                              </div>
-                              <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`upload-reading-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handleUpload('reading'); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handleUpload('reading'); }}>
-                                <Upload className="h-3 w-3 text-purple-300/60 hover:text-purple-300 transition-colors" />
-                              </div>
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    </>
+                          </div>
+                        );
+                      })}
+                    </div>
                   )}
                 </div>
               );
@@ -23667,89 +23627,51 @@ export default function Dashboard() {
                           <span className="text-[9px] font-bold text-white/60">N/A</span>
                         </div>
                       ) : (
-                        <>
-                          <div
-                            className="flex-1 flex flex-col justify-center cursor-pointer active:bg-white/10 transition-colors"
-                            style={{ paddingLeft: '8px', paddingRight: '6px', borderBottom: '0.5px solid rgba(255,255,255,0.15)', position: 'relative', minHeight: '30px', paddingTop: '3px', paddingBottom: '3px' }}
-                            onClick={() => setHwFloating(prev => ({ ...prev, showControls: !prev.showControls }))}
-                            onTouchEnd={(e) => { e.preventDefault(); setHwFloating(prev => ({ ...prev, showControls: !prev.showControls })); }}
-                          >
-                            {!pd.moduleP.hasFiles ? (
-                              <>
-                                <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px' }}>
-                                  <span className="text-[8px] font-normal leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>Module Week {selectedWeek}</span>
-                                </div>
-                                <span className="text-[8px] leading-none italic" style={{ color: '#ffffff', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>N/A</span>
-                              </>
-                            ) : (
-                              <>
-                                <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px' }}>
-                                  <Paperclip className="h-[8px] w-[8px] text-white flex-shrink-0" style={{ filter: 'drop-shadow(0 0 2px rgba(0,0,0,0.5))' }} />
-                                  <span className="text-[8px] font-normal leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>Module Week {selectedWeek}</span>
-                                  {pd.moduleUnread > 0 && pd.moduleP.percent < 100 && (
-                                    <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, position: 'absolute', right: '68px' }}>
-                                      {pd.moduleUnread}
-                                    </div>
-                                  )}
-                                </div>
-                                <div className="flex items-center gap-[5px]">
-                                  <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', flex: 1, marginRight: '68px', marginLeft: '1px', marginTop: '4px' }}>
-                                    {pd.moduleP.percent > 0 && (
-                                      <div className="h-full rounded-full" style={{ width: `${pd.moduleP.percent}%`, backgroundColor: getProgressColor(pd.moduleP.percent) }} />
+                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '4px 6px', flex: 1 }}>
+                          {[
+                            { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), testPlay: `float-play-module-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-module-${pd.courseCode.toLowerCase()}`, iconColor: 'text-blue-300/60 hover:text-blue-300' },
+                            { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), testPlay: `float-play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-reading-${pd.courseCode.toLowerCase()}`, iconColor: 'text-purple-300/60 hover:text-purple-300' },
+                          ].map(item => {
+                            const circleSize = 42;
+                            const strokeWidth = 3.5;
+                            const radius = (circleSize - strokeWidth) / 2;
+                            const circumference = 2 * Math.PI * radius;
+                            const offset = circumference - (item.p.percent / 100) * circumference;
+                            const progressColor = item.p.percent === 100 ? '#22c55e' : item.p.percent > 0 ? '#38bdf8' : 'rgba(255,255,255,0.3)';
+                            return (
+                              <div key={item.type} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px', position: 'relative', flex: 1, minWidth: 0 }}>
+                                {item.p.hasFiles && item.unread > 0 && item.p.percent < 100 && (
+                                  <div className="bg-[#FF0000] text-white text-[6px] font-bold rounded-full min-w-[10px] h-[10px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ position: 'absolute', top: '-2px', right: '2px', zIndex: 10 }}>
+                                    {item.unread}
+                                  </div>
+                                )}
+                                <div style={{ position: 'relative', width: circleSize, height: circleSize, cursor: 'pointer' }} onClick={item.play} onTouchEnd={(e) => { e.preventDefault(); item.play(); }} data-testid={item.testPlay}>
+                                  <svg width={circleSize} height={circleSize} style={{ transform: 'rotate(-90deg)' }}>
+                                    <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={strokeWidth} />
+                                    {item.p.hasFiles && item.p.percent > 0 && (
+                                      <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke={progressColor} strokeWidth={strokeWidth} strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
                                     )}
+                                  </svg>
+                                  <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700, color: '#fff', textShadow: '0 0 3px rgba(0,0,0,0.5)' }}>
+                                    {item.p.hasFiles ? `${item.p.percent}%` : 'N/A'}
+                                  </span>
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                  {item.p.hasFiles && <Paperclip className="h-[6px] w-[6px] text-white/70 flex-shrink-0" />}
+                                  <span style={{ fontSize: '7px', fontWeight: 600, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.5px', textShadow: '0 0 2px rgba(0,0,0,0.5)', whiteSpace: 'nowrap' }}>{item.label}</span>
+                                </div>
+                                <div style={{ display: 'flex', gap: '3px', alignItems: 'center', marginTop: '-1px' }}>
+                                  <div className="cursor-pointer" onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }}>
+                                    <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-opacity duration-200" style={{ width: '14px', height: 'auto', display: 'block', opacity: item.p.percent === 100 ? 0.4 : 1 }} />
                                   </div>
-                                  <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ position: 'absolute', right: '48px', top: '50%', transform: 'translateY(-50%)' }}>{pd.moduleP.percent}%</span>
-                                  <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '26px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`float-play-module-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); setHwFloating(prev => ({ ...prev, showControls: !prev.showControls })); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setHwFloating(prev => ({ ...prev, showControls: !prev.showControls })); }}>
-                                    <Play className="hover:opacity-80 transition-opacity duration-200" style={{ width: '14px', height: '14px', opacity: pd.moduleP.percent === 100 ? 0.4 : 1, color: '#fff', fill: 'currentColor' }} />
-                                  </div>
-                                  <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '6px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`float-reader-module-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayModule(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayModule(); }}>
-                                    <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-opacity duration-200" style={{ width: '18px', height: 'auto', display: 'block', opacity: pd.moduleP.percent === 100 ? 0.4 : 1 }} />
+                                  <div className="cursor-pointer" data-testid={item.testUpload} onClick={(e) => { e.stopPropagation(); item.upload(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.upload(); }}>
+                                    <Upload className={`h-[10px] w-[10px] ${item.iconColor} transition-colors`} />
                                   </div>
                                 </div>
-                              </>
-                            )}
-                          </div>
-                          <div
-                            className="flex-1 flex flex-col justify-center cursor-pointer active:bg-white/10 transition-colors"
-                            style={{ paddingLeft: '8px', paddingRight: '6px', position: 'relative', minHeight: '30px', paddingTop: '3px', paddingBottom: '3px' }}
-                            onClick={() => setHwFloating(prev => ({ ...prev, showControls: !prev.showControls }))}
-                            onTouchEnd={(e) => { e.preventDefault(); setHwFloating(prev => ({ ...prev, showControls: !prev.showControls })); }}
-                          >
-                            {!pd.readingP.hasFiles ? (
-                              <>
-                                <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px' }}>
-                                  <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>Reading Week {selectedWeek}</span>
-                                </div>
-                                <span className="text-[8px] leading-none italic" style={{ color: '#ffffff', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>N/A</span>
-                              </>
-                            ) : (
-                              <>
-                                <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px' }}>
-                                  <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>Reading Week {selectedWeek}</span>
-                                  {pd.readingUnread > 0 && pd.readingP.percent < 100 && (
-                                    <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, position: 'absolute', right: '68px' }}>
-                                      {pd.readingUnread}
-                                    </div>
-                                  )}
-                                </div>
-                                <div className="flex items-center gap-[5px]">
-                                  <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', flex: 1, marginRight: '68px', marginLeft: '1px', marginTop: '4px' }}>
-                                    {pd.readingP.percent > 0 && (
-                                      <div className="h-full rounded-full" style={{ width: `${pd.readingP.percent}%`, backgroundColor: getProgressColor(pd.readingP.percent) }} />
-                                    )}
-                                  </div>
-                                  <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ position: 'absolute', right: '48px', top: '50%', transform: 'translateY(-50%)' }}>{pd.readingP.percent}%</span>
-                                  <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '26px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`float-play-reading-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); setHwFloating(prev => ({ ...prev, showControls: !prev.showControls })); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setHwFloating(prev => ({ ...prev, showControls: !prev.showControls })); }}>
-                                    <Play className="hover:opacity-80 transition-opacity duration-200" style={{ width: '14px', height: '14px', opacity: pd.readingP.percent === 100 ? 0.4 : 1, color: '#fff', fill: 'currentColor' }} />
-                                  </div>
-                                  <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '6px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`float-reader-reading-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayReading(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayReading(); }}>
-                                    <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-opacity duration-200" style={{ width: '18px', height: 'auto', display: 'block', opacity: pd.readingP.percent === 100 ? 0.4 : 1 }} />
-                                  </div>
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        </>
+                              </div>
+                            );
+                          })}
+                        </div>
                       )}
                     </div>
                   );
