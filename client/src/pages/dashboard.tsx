@@ -22056,20 +22056,20 @@ export default function Dashboard() {
                         <div className="flex items-center gap-2 mt-0.5">
                           {hasMFiles && (
                             <div className="flex items-center gap-1">
-                              <span className="text-[7px] text-white/60 font-medium uppercase">M</span>
+                              <span className="text-[7px] font-medium uppercase" style={{ color: '#000000' }}>M</span>
                               <div style={{ width: '32px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: '2px', position: 'relative' }}>
                                 <div style={{ width: `${mPct}%`, height: '3px', backgroundColor: pColor(mPct), borderRadius: '2px' }} />
                               </div>
-                              <span className="text-[7px] font-bold" style={{ color: pColor(mPct) }}>{mPct}%</span>
+                              <span className="text-[7px] font-bold" style={{ color: '#000000' }}>{mPct}%</span>
                             </div>
                           )}
                           {hasRFiles && (
                             <div className="flex items-center gap-1">
-                              <span className="text-[7px] text-white/60 font-medium uppercase">R</span>
+                              <span className="text-[7px] font-medium uppercase" style={{ color: '#000000' }}>R</span>
                               <div style={{ width: '32px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: '2px', position: 'relative' }}>
                                 <div style={{ width: `${rPct}%`, height: '3px', backgroundColor: pColor(rPct), borderRadius: '2px' }} />
                               </div>
-                              <span className="text-[7px] font-bold" style={{ color: pColor(rPct) }}>{rPct}%</span>
+                              <span className="text-[7px] font-bold" style={{ color: '#000000' }}>{rPct}%</span>
                             </div>
                           )}
                         </div>
