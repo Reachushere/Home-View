@@ -11734,7 +11734,7 @@ export default function Dashboard() {
       })()}
 
       {/* Top Pill - Slide up/down container for toolbar buttons */}
-      <div style={{ position: 'fixed', top: `${d2lTickerHeight}px`, left: 0, right: 0, bottom: 0, zIndex: 110, pointerEvents: 'none', overflow: 'hidden' }}>
+      <div style={{ position: 'fixed', top: `${d2lTickerHeight}px`, left: 0, right: 0, bottom: 0, zIndex: editingTask ? 1 : 110, pointerEvents: 'none', overflow: 'hidden' }}>
       <div 
         ref={topPillRef}
         id="top-pill-container"
@@ -11743,7 +11743,7 @@ export default function Dashboard() {
           zIndex: 110,
           left: '22px',
           right: '22px',
-          pointerEvents: 'auto',
+          pointerEvents: editingTask ? 'none' : 'auto',
           transform: `translateY(${isTopPillOpen ? '14px' : '-77px'})`,
           transition: topPillMounted ? 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
           animation: (!isTopPillOpen && topPillMounted) ? 'top-pill-container-nudge 6s ease-in-out 1s infinite' : 'none',
