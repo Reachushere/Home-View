@@ -1441,7 +1441,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 {courseInfo.courseCode} — {courseInfo.courseName}
               </h2>
               {courseInfo.courseType && (
-                <span className="text-[9px] text-white px-1.5 py-0.5 rounded border border-white/30 bg-white/10 flex-shrink-0">
+                <span className="text-[9px] text-white px-1.5 rounded-md border border-white/30 bg-white/10 flex-shrink-0 flex items-center" style={{ alignSelf: 'stretch' }}>
                   {courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Elective" : "Liberal Studies"}
                 </span>
               )}
