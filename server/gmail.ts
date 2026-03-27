@@ -92,6 +92,55 @@ async function gmailGet(endpoint: string): Promise<any> {
   return resp.json();
 }
 
+export async function sendGmail(params: { to: string; subject: string; htmlBody: string; textBody?: string }): Promise<{ success: boolean; error?: string }> {
+  try {
+    const token = await getAccessToken();
+    const boundary = 'boundary_' + Date.now();
+    const mimeLines = [
+      `To: ${params.to}`,
+      `Subject: ${params.subject}`,
+      `MIME-Version: 1.0`,
+      `Content-Type: multipart/alternative; boundary="${boundary}"`,
+      '',
+      `--${boundary}`,
+      `Content-Type: text/plain; charset="UTF-8"`,
+      '',
+      params.textBody || params.htmlBody.replace(/<[^>]+>/g, ''),
+      '',
+      `--${boundary}`,
+      `Content-Type: text/html; charset="UTF-8"`,
+      '',
+      params.htmlBody,
+      '',
+      `--${boundary}--`,
+    ].join('\r\n');
+
+    const raw = Buffer.from(mimeLines).toString('base64url');
+
+    const resp = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ raw }),
+    });
+
+    if (!resp.ok) {
+      const errBody = await resp.text();
+      console.error('[Gmail] Send error:', errBody);
+      return { success: false, error: `Gmail API error ${resp.status}: ${errBody}` };
+    }
+
+    const data = await resp.json();
+    console.log('[Gmail] Email sent successfully, id:', data.id);
+    return { success: true };
+  } catch (err: any) {
+    console.error('[Gmail] Send error:', err.message);
+    return { success: false, error: err.message };
+  }
+}
+
 export async function fetchD2LAnnouncements(maxResults: number = 20): Promise<D2LAnnouncement[]> {
   try {
     const query = encodeURIComponent(`from:${D2L_SENDER}`);
