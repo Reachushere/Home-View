@@ -8471,14 +8471,76 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           }
         };
 
-        let silkLaunched = await launchSilkOnTV(1);
-        if (!silkLaunched) {
-          await new Promise(r => setTimeout(r, 3000));
-          silkLaunched = await launchSilkOnTV(2);
+        console.log(`${logPrefix} Waiting 5s before Silk launch to let Fire Stick UI fully boot...`);
+        await new Promise(r => setTimeout(r, 5000));
+
+        try {
+          await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_WAKEUP' }, 'FireStick WAKEUP pre-Silk');
+          console.log(`${logPrefix} Extra WAKEUP sent before Silk launch`);
+        } catch (e: any) {}
+
+        await new Promise(r => setTimeout(r, 2000));
+
+        let silkLaunched = false;
+        for (let silkAttempt = 1; silkAttempt <= 4; silkAttempt++) {
+          try {
+            await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'monkey -p com.amazon.cloud9 -c android.intent.category.LAUNCHER 1' }, `FireStick Launch Silk monkey ${silkAttempt}`);
+            console.log(`${logPrefix} Silk launched via monkey (attempt ${silkAttempt})`);
+            silkLaunched = true;
+            break;
+          } catch (e: any) {
+            console.warn(`${logPrefix} Silk monkey attempt ${silkAttempt}/4 failed: ${e.message}`);
+            if (silkAttempt < 4) {
+              const waitMs = silkAttempt === 1 ? 4000 : silkAttempt === 2 ? 6000 : 8000;
+              if (silkAttempt === 3) {
+                console.log(`${logPrefix} Sending WAKEUP + HOME before final monkey attempt`);
+                try {
+                  await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_WAKEUP' }, 'FireStick WAKEUP retry');
+                  await new Promise(r => setTimeout(r, 1000));
+                  await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_HOME' }, 'FireStick HOME retry');
+                } catch (e2: any) {}
+              }
+              await new Promise(r => setTimeout(r, waitMs));
+            }
+          }
         }
-        if (!silkLaunched) {
-          await new Promise(r => setTimeout(r, 5000));
-          silkLaunched = await launchSilkOnTV(3);
+
+        if (silkLaunched) {
+          await new Promise(r => setTimeout(r, 3000));
+          let fgApp = '';
+          try {
+            const fgResp = await fetch(`${haUrl}/api/states/${FIRE_STICK_ADB_ENTITY}`, { headers: haHdrs });
+            if (fgResp.ok) {
+              const fgData = await fgResp.json();
+              fgApp = fgData?.attributes?.app_id || fgData?.attributes?.app_name || '';
+              console.log(`${logPrefix} Fire Stick foreground app: ${fgApp} (state: ${fgData?.state})`);
+            }
+          } catch (e: any) {
+            console.warn(`${logPrefix} Could not check foreground app: ${e.message}`);
+          }
+          if (fgApp && !fgApp.includes('cloud9') && !fgApp.includes('silk')) {
+            console.log(`${logPrefix} Silk is NOT in foreground (got: ${fgApp}), retrying monkey after 5s`);
+            await new Promise(r => setTimeout(r, 5000));
+            try {
+              await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'monkey -p com.amazon.cloud9 -c android.intent.category.LAUNCHER 1' }, 'FireStick Silk monkey post-verify');
+              console.log(`${logPrefix} Post-verify monkey sent`);
+            } catch (e: any) {
+              console.warn(`${logPrefix} Post-verify monkey failed: ${e.message}`);
+            }
+            await new Promise(r => setTimeout(r, 3000));
+          } else {
+            console.log(`${logPrefix} Silk appears to be in foreground — good`);
+          }
+
+          if (tvFollowUrl) {
+            console.log(`${logPrefix} Navigating Silk to reader URL via am start`);
+            try {
+              await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: `am start -a android.intent.action.VIEW -d "${tvFollowUrl}" com.amazon.cloud9` }, 'FireStick Silk Navigate URL');
+              console.log(`${logPrefix} Silk URL navigation sent`);
+            } catch (e: any) {
+              console.warn(`${logPrefix} Silk URL am start failed (non-fatal): ${e.message}`);
+            }
+          }
         }
 
         try {
