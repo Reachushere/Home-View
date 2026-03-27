@@ -108,7 +108,7 @@ export default function PDFReaderPage() {
   const resumeChunkParam = urlParams.get("resumeChunk") ? parseInt(urlParams.get("resumeChunk")!) : null;
   const catWashFollow = urlParams.get("catWashFollow") === "true";
   const isInIframe = (() => { try { return window.self !== window.top; } catch { return true; } })();
-  const followOnly = urlParams.get("followOnly") === "true" || isInIframe;
+  const followOnly = urlParams.get("followOnly") === "true" || (isInIframe && !urlParams.get("autoplay") && window.name !== 'book-reader-iframe');
   const voiceParam = urlParams.get("voice");
   const fullscreenParam = urlParams.get("fullscreen") === "true";
   const autoplayTriggeredRef = useRef(

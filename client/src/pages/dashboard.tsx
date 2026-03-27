@@ -9813,6 +9813,10 @@ export default function Dashboard() {
             animation: 'bookOverlayFadeIn 0.4s ease forwards',
           }}
           data-testid="book-reader-overlay"
+          onClick={(e) => { if (e.target === e.currentTarget) setBookReaderOverlay(null); }}
+          onKeyDown={(e) => { if (e.key === 'Escape') setBookReaderOverlay(null); }}
+          tabIndex={-1}
+          ref={(el) => el?.focus()}
         >
           <style>{`
             @keyframes bookOverlayFadeIn {
