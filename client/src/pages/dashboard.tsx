@@ -22635,7 +22635,7 @@ export default function Dashboard() {
               if (lastRect) {
                 const lastBottom = lastRect.top + lastRect.height - upcomingTop - firstOffset;
                 const otherRowH = gridSizes.otherRowHeight || 57;
-                return `${lastBottom + otherRowH + 2 - 41}px`;
+                return `${lastBottom + otherRowH + 2 - 49}px`;
               }
             }
             return '12px';
