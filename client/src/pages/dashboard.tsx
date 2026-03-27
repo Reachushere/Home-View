@@ -4241,6 +4241,7 @@ export default function Dashboard() {
           'coursePlayPriority', 'courseDisplayNames', 'profileData',
           'checkedCourses', 'inProgressCourses', 'courseGrades', 'openElectives',
           'gridSizes', 'calendarHeight', 'calendarReduction', 'showAllDayRow',
+          'otherRowColors',
         ];
         const payload: Record<string, any> = {};
         for (const key of syncKeys) {
@@ -12315,6 +12316,7 @@ export default function Dashboard() {
                   'coursePlayPriority', 'courseDisplayNames', 'profileData',
                   'checkedCourses', 'inProgressCourses', 'courseGrades', 'openElectives',
                   'gridSizes', 'calendarHeight', 'calendarReduction', 'showAllDayRow',
+                  'otherRowColors',
                 ];
                 const payload: Record<string, any> = {};
                 for (const key of syncKeys) {
