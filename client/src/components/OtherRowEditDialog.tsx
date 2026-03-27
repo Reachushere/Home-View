@@ -140,7 +140,7 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave, onPr
         ref={dialogRef}
         className="relative rounded-lg overflow-hidden"
         style={{
-          width: '360px',
+          width: '420px',
           maxHeight: '520px',
           overflowY: 'auto',
           scrollbarWidth: 'thin',
@@ -350,78 +350,78 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave, onPr
                 );
               })}
             </div>
-            {activeSwatchPicker && (() => {
-              const fieldMap = { border: 'borderColor' as const, rowBg: 'courseRowColor' as const, taskBg: 'taskBgColor' as const };
-              const labelMap = { border: 'Border', rowBg: 'Row BG', taskBg: 'Task BG' };
-              const field = fieldMap[activeSwatchPicker];
-              const val = edit[field] || edit.labelStart;
-              const hexVal = (() => { const m = val.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/); if (m) return `#${parseInt(m[1]).toString(16).padStart(2,'0')}${parseInt(m[2]).toString(16).padStart(2,'0')}${parseInt(m[3]).toString(16).padStart(2,'0')}`; return val.startsWith('#') ? val : '#6b7280'; })();
-              const setSwatchColor = (hex: string) => setEdit({ ...edit, [field]: hex });
-              return (
-                <div className="mt-2 rounded" style={{ border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(0,0,0,0.4)', padding: '6px' }}>
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <div className="w-5 h-5 rounded border border-white/30 shrink-0" style={{ backgroundColor: hexVal }} />
-                    <span className="text-white/60 text-[8px] uppercase tracking-wider">{labelMap[activeSwatchPicker]} Colour</span>
-                    <button className="ml-auto text-white/40 hover:text-white" onClick={() => setActiveSwatchPicker(null)} data-testid="button-close-swatch-picker"><X className="w-3 h-3" /></button>
-                  </div>
-                  <div className="relative rounded overflow-hidden cursor-crosshair" style={{ height: '80px', touchAction: 'none' }} data-testid={`swatch-color-area-${activeSwatchPicker}`}
-                    onPointerDown={(e) => {
-                      e.preventDefault();
-                      const el = e.currentTarget;
-                      el.setPointerCapture(e.pointerId);
-                      const rect = el.getBoundingClientRect();
-                      const hue = hexToHue(hexVal);
-                      const update = (ev: PointerEvent) => {
-                        const x = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
-                        const y = Math.max(0, Math.min(1, (ev.clientY - rect.top) / rect.height));
-                        setSwatchColor(svToHex(hue, x, y));
-                      };
-                      update(e.nativeEvent);
-                      const onMove = (ev: PointerEvent) => update(ev);
-                      const onUp = () => { el.releasePointerCapture(e.pointerId); window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); };
-                      window.addEventListener('pointermove', onMove);
-                      window.addEventListener('pointerup', onUp);
-                    }}>
-                    <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(to right, white, hsl(${hexToHue(hexVal)}, 100%, 50%))` }} />
-                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent, black)' }} />
-                    {(() => {
-                      const pos = hexToSvPos(hexVal);
-                      return (
-                        <div style={{ position: 'absolute', left: `${pos.x * 100}%`, top: `${pos.y * 100}%`, transform: 'translate(-50%, -50%)', width: '12px', height: '12px', borderRadius: '50%', border: '2px solid white', boxShadow: '0 0 3px rgba(0,0,0,0.5), inset 0 0 1px rgba(0,0,0,0.3)', pointerEvents: 'none', backgroundColor: hexVal }} />
-                      );
-                    })()}
-                  </div>
-                  <div className="relative mt-1.5 rounded cursor-pointer" style={{ height: '14px', touchAction: 'none' }} data-testid={`swatch-hue-slider-${activeSwatchPicker}`}
-                    onClick={(e) => {
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-                      setSwatchColor(hueToHex(Math.round(x * 360)));
-                    }}
-                    onPointerDown={(e) => {
-                      e.preventDefault();
-                      const el = e.currentTarget;
-                      el.setPointerCapture(e.pointerId);
-                      const rect = el.getBoundingClientRect();
-                      const onMove = (ev: PointerEvent) => {
-                        const x = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
-                        setSwatchColor(hueToHex(Math.round(x * 360)));
-                      };
-                      onMove(e.nativeEvent);
-                      const onUp = () => { el.releasePointerCapture(e.pointerId); window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); };
-                      window.addEventListener('pointermove', onMove);
-                      window.addEventListener('pointerup', onUp);
-                    }}>
-                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)', borderRadius: '3px' }} />
-                    <div style={{ position: 'absolute', top: '-1px', left: `${(hexToHue(hexVal) / 360) * 100}%`, transform: 'translateX(-50%)', width: '4px', height: '16px', background: 'white', borderRadius: '2px', boxShadow: '0 0 3px rgba(0,0,0,0.5)', border: '1px solid rgba(0,0,0,0.3)', pointerEvents: 'none' }} />
-                  </div>
-                  <div className="flex items-center gap-2 mt-1.5">
-                    <input type="text" value={hexVal.toUpperCase()} onChange={(e) => { let v = e.target.value; if (!v.startsWith('#')) v = '#' + v; if (/^#[0-9A-Fa-f]{6}$/.test(v)) setSwatchColor(v); }} className="flex-1 bg-black/40 border border-white/20 rounded text-white text-[9px] px-1.5 py-0.5 font-mono" style={{ minWidth: 0 }} data-testid={`swatch-hex-${activeSwatchPicker}`} />
-                  </div>
-                </div>
-              );
-            })()}
             </div>
           </div>
+          {activeSwatchPicker && (() => {
+            const fieldMap = { border: 'borderColor' as const, rowBg: 'courseRowColor' as const, taskBg: 'taskBgColor' as const };
+            const labelMap = { border: 'Border', rowBg: 'Row BG', taskBg: 'Task BG' };
+            const field = fieldMap[activeSwatchPicker];
+            const val = edit[field] || edit.labelStart;
+            const hexVal = (() => { const m = val.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/); if (m) return `#${parseInt(m[1]).toString(16).padStart(2,'0')}${parseInt(m[2]).toString(16).padStart(2,'0')}${parseInt(m[3]).toString(16).padStart(2,'0')}`; return val.startsWith('#') ? val : '#6b7280'; })();
+            const setSwatchColor = (hex: string) => setEdit({ ...edit, [field]: hex });
+            return (
+              <div className="rounded" style={{ border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(0,0,0,0.4)', padding: '6px' }}>
+                <div className="flex items-center gap-2 mb-1.5">
+                  <div className="w-5 h-5 rounded border border-white/30 shrink-0" style={{ backgroundColor: hexVal }} />
+                  <span className="text-white/60 text-[8px] uppercase tracking-wider">{labelMap[activeSwatchPicker]} Colour</span>
+                  <button className="ml-auto text-white/40 hover:text-white" onClick={() => setActiveSwatchPicker(null)} data-testid="button-close-swatch-picker"><X className="w-3 h-3" /></button>
+                </div>
+                <div className="relative rounded overflow-hidden cursor-crosshair" style={{ height: '80px', touchAction: 'none' }} data-testid={`swatch-color-area-${activeSwatchPicker}`}
+                  onPointerDown={(e) => {
+                    e.preventDefault();
+                    const el = e.currentTarget;
+                    el.setPointerCapture(e.pointerId);
+                    const rect = el.getBoundingClientRect();
+                    const hue = hexToHue(hexVal);
+                    const update = (ev: PointerEvent) => {
+                      const x = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
+                      const y = Math.max(0, Math.min(1, (ev.clientY - rect.top) / rect.height));
+                      setSwatchColor(svToHex(hue, x, y));
+                    };
+                    update(e.nativeEvent);
+                    const onMove = (ev: PointerEvent) => update(ev);
+                    const onUp = () => { el.releasePointerCapture(e.pointerId); window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); };
+                    window.addEventListener('pointermove', onMove);
+                    window.addEventListener('pointerup', onUp);
+                  }}>
+                  <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(to right, white, hsl(${hexToHue(hexVal)}, 100%, 50%))` }} />
+                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent, black)' }} />
+                  {(() => {
+                    const pos = hexToSvPos(hexVal);
+                    return (
+                      <div style={{ position: 'absolute', left: `${pos.x * 100}%`, top: `${pos.y * 100}%`, transform: 'translate(-50%, -50%)', width: '12px', height: '12px', borderRadius: '50%', border: '2px solid white', boxShadow: '0 0 3px rgba(0,0,0,0.5), inset 0 0 1px rgba(0,0,0,0.3)', pointerEvents: 'none', backgroundColor: hexVal }} />
+                    );
+                  })()}
+                </div>
+                <div className="relative mt-1.5 rounded cursor-pointer" style={{ height: '14px', touchAction: 'none' }} data-testid={`swatch-hue-slider-${activeSwatchPicker}`}
+                  onClick={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                    setSwatchColor(hueToHex(Math.round(x * 360)));
+                  }}
+                  onPointerDown={(e) => {
+                    e.preventDefault();
+                    const el = e.currentTarget;
+                    el.setPointerCapture(e.pointerId);
+                    const rect = el.getBoundingClientRect();
+                    const onMove = (ev: PointerEvent) => {
+                      const x = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
+                      setSwatchColor(hueToHex(Math.round(x * 360)));
+                    };
+                    onMove(e.nativeEvent);
+                    const onUp = () => { el.releasePointerCapture(e.pointerId); window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); };
+                    window.addEventListener('pointermove', onMove);
+                    window.addEventListener('pointerup', onUp);
+                  }}>
+                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)', borderRadius: '3px' }} />
+                  <div style={{ position: 'absolute', top: '-1px', left: `${(hexToHue(hexVal) / 360) * 100}%`, transform: 'translateX(-50%)', width: '4px', height: '16px', background: 'white', borderRadius: '2px', boxShadow: '0 0 3px rgba(0,0,0,0.5)', border: '1px solid rgba(0,0,0,0.3)', pointerEvents: 'none' }} />
+                </div>
+                <div className="flex items-center gap-2 mt-1.5">
+                  <input type="text" value={hexVal.toUpperCase()} onChange={(e) => { let v = e.target.value; if (!v.startsWith('#')) v = '#' + v; if (/^#[0-9A-Fa-f]{6}$/.test(v)) setSwatchColor(v); }} className="flex-1 bg-black/40 border border-white/20 rounded text-white text-[9px] px-1.5 py-0.5 font-mono" style={{ minWidth: 0 }} data-testid={`swatch-hex-${activeSwatchPicker}`} />
+                </div>
+              </div>
+            );
+          })()}
 
           <div>
             <div className="text-white/60 text-[9px] uppercase tracking-wider mb-2">Cell Background</div>
