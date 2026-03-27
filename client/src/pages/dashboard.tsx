@@ -723,7 +723,11 @@ export default function Dashboard() {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ overrides }),
       });
-      setMorningReviewItems(prev => prev.filter(i => i.id !== id));
+      setMorningReviewItems(prev => {
+        const next = prev.filter(i => i.id !== id);
+        if (next.length === 0) setTimeout(() => setShowMorningReview(false), 400);
+        return next;
+      });
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
     } catch (e) { console.error('[Review] accept error:', e); }
     setProcessingReviewIds(prev => { const s = new Set(prev); s.delete(id); return s; });
@@ -748,7 +752,11 @@ export default function Dashboard() {
     setProcessingReviewIds(prev => new Set(prev).add(id));
     try {
       await fetch(`/api/pending-review/${id}/reject`, { method: 'POST' });
-      setMorningReviewItems(prev => prev.filter(i => i.id !== id));
+      setMorningReviewItems(prev => {
+        const next = prev.filter(i => i.id !== id);
+        if (next.length === 0) setTimeout(() => setShowMorningReview(false), 400);
+        return next;
+      });
     } catch (e) { console.error('[Review] reject error:', e); }
     setProcessingReviewIds(prev => { const s = new Set(prev); s.delete(id); return s; });
   };
