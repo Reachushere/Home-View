@@ -8322,11 +8322,13 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         await new Promise(resolve => setTimeout(resolve, 12000));
 
         let tvOpened = false;
+        const tvFollowWrapperUrl = `${appUrl}/api/cat-wash/tv-follow?url=${encodeURIComponent(tvFollowUrl)}`;
+        currentTvFollowUrl = tvFollowUrl;
         if (samsungAvailable) {
-          console.log(`${logPrefix} Opening URL on Samsung TV browser via play_media...`);
+          console.log(`${logPrefix} Opening TV follow wrapper on Samsung TV browser via play_media...`);
           try {
-            await haServiceCall('media_player/play_media', { entity_id: CAT_TV_ENTITY, media_content_id: tvFollowUrl, media_content_type: 'url' }, 'Samsung TV play_media URL');
-            console.log(`${logPrefix} Samsung TV play_media URL: OK`);
+            await haServiceCall('media_player/play_media', { entity_id: CAT_TV_ENTITY, media_content_id: tvFollowWrapperUrl, media_content_type: 'url' }, 'Samsung TV play_media URL');
+            console.log(`${logPrefix} Samsung TV play_media URL (wrapper): OK`);
             tvOpened = true;
           } catch (e: any) {
             console.error(`${logPrefix} Samsung TV play_media URL failed: ${e.message}`);
@@ -8349,11 +8351,11 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
             console.error(`${logPrefix} Samsung TV HDMI select: ${e.message}`);
           }
           await new Promise(r => setTimeout(r, 3000));
-          const fsOpened = await openUrlOnFireStick(haUrl, 'media_player.fire_stick_cat_wr', tvFollowUrl);
+          const fsOpened = await openUrlOnFireStick(haUrl, 'media_player.fire_stick_cat_wr', tvFollowWrapperUrl);
           console.log(`${logPrefix} Fire Stick URL result: success=${fsOpened}`);
           if (!fsOpened) {
             await new Promise(r => setTimeout(r, 6000));
-            const fsRetry = await openUrlOnFireStick(haUrl, 'media_player.fire_stick_cat_wr', tvFollowUrl);
+            const fsRetry = await openUrlOnFireStick(haUrl, 'media_player.fire_stick_cat_wr', tvFollowWrapperUrl);
             console.log(`${logPrefix} Fire Stick URL retry: success=${fsRetry}`);
           }
         }
