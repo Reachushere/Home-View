@@ -2251,7 +2251,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             </div>
           )}
 
-          <div className="p-3 border-t border-white/10">
+          <div style={{ padding: '12px 30px' }}>
+            <div style={{ border: '2px solid rgba(255,255,255,0.2)', borderRadius: '8px', padding: '12px' }}>
             <div
               className="flex items-center justify-between cursor-pointer group"
               onClick={() => setShowWeekMappings(!showWeekMappings)}
@@ -2689,8 +2690,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               </div>
             )}
           </div>
-
-          <div className="border-t border-white/10" />
+          </div>
+          </div>
 
           <div style={{ padding: '12px 30px' }}>
             <div style={{ border: '2px solid rgba(255,255,255,0.2)', borderRadius: '8px', padding: '12px' }}>
