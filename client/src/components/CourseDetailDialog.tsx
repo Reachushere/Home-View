@@ -1480,14 +1480,28 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             </div>
           </div>
               {!isEditingInfo ? (
-                <button
-                  onClick={() => setIsEditingInfo(true)}
-                  className="flex items-center gap-1.5 text-[11px] text-white hover:text-white transition-colors font-semibold"
-                  data-testid="button-edit-course-info"
-                >
-                  Edit
-                  <Pencil className="w-4 h-4" />
-                </button>
+                <div className="flex items-center gap-2">
+                  {syllabusObjectPath && (
+                    <button
+                      onClick={() => {
+                        window.open(`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`, '_blank');
+                      }}
+                      className="flex items-center gap-1 text-[10px] text-white hover:text-white/80 transition-colors"
+                      data-testid="button-view-syllabus"
+                    >
+                      <Paperclip className="w-3 h-3" />
+                      View Syllabus
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setIsEditingInfo(true)}
+                    className="flex items-center gap-1.5 text-[11px] text-white hover:text-white transition-colors font-semibold"
+                    data-testid="button-edit-course-info"
+                  >
+                    Edit
+                    <Pencil className="w-4 h-4" />
+                  </button>
+                </div>
               ) : (
                 <div className="flex items-center gap-1.5">
                   <button
@@ -2040,20 +2054,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     );
                   })()}
                 </div>
-                {syllabusObjectPath && (
-                  <div className="flex justify-end">
-                    <button
-                      onClick={() => {
-                        window.open(`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`, '_blank');
-                      }}
-                      className="h-6 px-2 text-[9px] bg-emerald-600/40 hover:bg-emerald-600/60 text-white border border-emerald-400/40 rounded-md flex items-center gap-1 transition-colors whitespace-nowrap"
-                      data-testid="button-view-syllabus"
-                    >
-                      <Paperclip className="h-3 w-3" />
-                      View Syllabus
-                    </button>
-                  </div>
-                )}
                 {courseInfo.zoomLink && (
                   <a
                     href={courseInfo.zoomLink}
