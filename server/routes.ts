@@ -8542,7 +8542,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
         for (let tvCheck = 1; tvCheck <= 3; tvCheck++) {
           try {
-            const tvStateResp = await fetch(`${HA_URL}/api/states/${CAT_TV_ENTITY}`, { headers: { Authorization: `Bearer ${HA_TOKEN}`, 'Content-Type': 'application/json' } });
+            const tvStateResp = await fetch(`${HOME_ASSISTANT_URL.replace(/\/$/, '')}/api/states/${CAT_TV_ENTITY}`, { headers: { Authorization: `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' } });
             if (tvStateResp.ok) {
               const tvStateData = await tvStateResp.json();
               const tvState = tvStateData?.state || 'unknown';
