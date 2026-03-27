@@ -2459,7 +2459,7 @@ export default function Dashboard() {
     const saved = localStorage.getItem('blinkSettings');
     const parsed = saved ? JSON.parse(saved) : {};
     return {
-      todayColumnBlink: parsed.todayColumnBlink ?? true,
+      todayColumnBlink: parsed.todayColumnBlink ?? false,
       allDayFilesBlink: parsed.allDayFilesBlink ?? true,
       taskBoxFilesBlink: parsed.taskBoxFilesBlink ?? true,
       todayColumnBlinkSpeed: parsed.todayColumnBlinkSpeed ?? parsed.blinkSpeed ?? 0.6,
