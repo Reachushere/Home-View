@@ -2760,7 +2760,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 <h3 className="text-[11px] font-medium text-white uppercase">Assignments</h3>
                 <span className="text-[9px] text-white">
                   {completedCount}/{courseTasks.length} done
-                  {totalWeight > 0 && ` · ${totalWeight.toFixed(2)}% weight`}
+                  {totalWeight > 0 && <span style={{ color: totalWeight > 100 ? '#ef4444' : totalWeight < 100 ? '#f97316' : 'white' }}> · {totalWeight.toFixed(2)}% weight</span>}
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
