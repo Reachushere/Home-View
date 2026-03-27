@@ -52,6 +52,7 @@ import pdfSearchLogo from "@assets/Adobe61_1772583825907.png";
 import pdfIconPath from "@assets/Adobee_1772801638235.png";
 import zoomCamPath from "@assets/Zoomcam_1773655084814.png";
 import readerIconPath from "@assets/Adobe65_1772615790465.png";
+import BookAnimation from "@/components/BookAnimation";
 import dragTabPath from "@assets/drag-tab.svg";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -181,6 +182,7 @@ import {
   Moon as MoonIcon,
   Mic,
   MicOff,
+  Upload,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
@@ -888,6 +890,8 @@ export default function Dashboard() {
   const [maxTaskNameWidth, setMaxTaskNameWidth] = useState<number>(0);
   const [rescheduleTask, setRescheduleTask] = useState<Task | null>(null);
   const [isTodayExpanded, setIsTodayExpanded] = useState(false);
+  const [bookAnimState, setBookAnimState] = useState<{ isOpen: boolean; courseCode: string; title: string; color: string; onDone: () => void } | null>(null);
+  const [hwUploadingState, setHwUploadingState] = useState<Record<string, boolean>>({});
   const [calendarHeight, setCalendarHeight] = useState(() => {
     const defaultHeight = window.innerHeight - 45;
     const minHeight = 200;
@@ -1107,6 +1111,7 @@ export default function Dashboard() {
     hasNoData: boolean;
     handlePlayModule: () => void;
     handlePlayReading: () => void;
+    handleUpload: (type: 'module' | 'reading') => void;
   }>>([]);
   const [courseProgressTick, setCourseProgressTick] = useState(0);
   const [completedFiles, setCompletedFiles] = useState<Set<string>>(() => {
@@ -19731,6 +19736,64 @@ export default function Dashboard() {
                       hasNoData,
                       handlePlayModule: () => handlePlayFiles('module'),
                       handlePlayReading: () => handlePlayFiles('reading'),
+                      handleUpload: (uploadType: 'module' | 'reading') => {
+                        const input = document.createElement('input');
+                        input.type = 'file';
+                        input.accept = '.pdf,.doc,.docx,.ppt,.pptx,.txt';
+                        input.onchange = async (ev) => {
+                          const file = (ev.target as HTMLInputElement).files?.[0];
+                          if (!file) return;
+                          const stateKey = `${courseCode}-${selectedWeek}-${uploadType}`;
+                          setHwUploadingState(prev => ({ ...prev, [stateKey]: true }));
+                          try {
+                            const wd = getWeekDates(selectedWeek, new Date(semesterSettings?.semesterStartDate || Date.now()), semesterSettings?.readingWeekStart);
+                            const ws = new Date(wd.start);
+                            const we = new Date(wd.end);
+                            const mos = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                            const s1 = `${mos[ws.getMonth()]} ${ws.getDate()}`;
+                            const s2 = ws.getMonth() === we.getMonth() ? `${we.getDate()}` : `${mos[we.getMonth()]} ${we.getDate()}`;
+                            const dr = `${s1}-${s2}`;
+                            const codeClean = courseCode.replace(/\s/g, '');
+                            const resp = await fetch('/api/course-week-upload', {
+                              method: 'POST',
+                              headers: {
+                                'Content-Type': file.type || 'application/pdf',
+                                'x-course-code': codeClean,
+                                'x-course-name': course?.name?.split(' - ').slice(1).join(' - ') || '',
+                                'x-week-num': String(selectedWeek),
+                                'x-upload-type': uploadType,
+                                'x-week-date-range': dr,
+                                'x-file-name': file.name,
+                              },
+                              body: file,
+                            });
+                            const result = await resp.json();
+                            if (resp.ok && result.success) {
+                              toast({ title: `${uploadType === 'module' ? 'Module' : 'Reading'} uploaded`, description: `${file.name} saved and queued for TTS` });
+                              queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                              setBookAnimState({
+                                isOpen: true,
+                                courseCode: codeClean,
+                                title: file.name,
+                                color: courseHexColor,
+                                onDone: () => {
+                                  setBookAnimState(null);
+                                  if (result.fileId) {
+                                    window.open(`/pdf-reader/${result.fileId}?autoplay=1`, '_blank');
+                                  }
+                                },
+                              });
+                            } else {
+                              toast({ title: 'Upload failed', description: result.error || 'Unknown error', variant: 'destructive' });
+                            }
+                          } catch (err: any) {
+                            toast({ title: 'Upload error', description: err.message, variant: 'destructive' });
+                          } finally {
+                            setHwUploadingState(prev => ({ ...prev, [stateKey]: false }));
+                          }
+                        };
+                        input.click();
+                      },
                     };
                     return null;
                   })()}
@@ -22424,7 +22487,12 @@ export default function Dashboard() {
                             <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px' }}>
                               <span className="text-[8px] font-normal leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>Module Week {selectedWeek}</span>
                             </div>
-                            <span className="text-[8px] leading-none italic" style={{ color: '#ffffff', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>N/A</span>
+                            <div className="flex items-center" style={{ position: 'relative' }}>
+                              <span className="text-[8px] leading-none italic" style={{ color: '#ffffff', textShadow: '0 0 2px rgba(0,0,0,0.5)', flex: 1 }}>N/A</span>
+                              <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`upload-module-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handleUpload('module'); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handleUpload('module'); }}>
+                                <Upload className="h-3 w-3 text-blue-300/60 hover:text-blue-300 transition-colors" />
+                              </div>
+                            </div>
                           </>
                         )}
                         {pd.moduleP.hasFiles && (
@@ -22434,18 +22502,21 @@ export default function Dashboard() {
                             </div>
                             <div className="flex items-center gap-[5px]" style={{ position: 'relative' }}>
                               {pd.moduleUnread > 0 && pd.moduleP.percent < 100 && (
-                                <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, position: 'absolute', right: '63px', top: '50%', transform: 'translateY(-50%)' }}>
+                                <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, position: 'absolute', right: '78px', top: '50%', transform: 'translateY(-50%)' }}>
                                   {pd.moduleUnread}
                                 </div>
                               )}
-                              <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', flex: 1, marginRight: '63px', marginLeft: '1px', marginTop: '4px' }}>
+                              <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', flex: 1, marginRight: '78px', marginLeft: '1px', marginTop: '4px' }}>
                                 {pd.moduleP.percent > 0 && (
                                   <div className="h-full rounded-full" style={{ width: `${pd.moduleP.percent}%`, backgroundColor: getProgressColor(pd.moduleP.percent) }} />
                                 )}
                               </div>
-                              <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ position: 'absolute', right: '31px', top: '50%', transform: 'translateY(-50%)' }}>{pd.moduleP.percent}%</span>
-                              <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '6px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`play-module-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayModule(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayModule(); }}>
+                              <span className="text-[9px] font-bold flex-shrink-0 leading-none text-white" style={{ position: 'absolute', right: '46px', top: '50%', transform: 'translateY(-50%)' }}>{pd.moduleP.percent}%</span>
+                              <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '20px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`play-module-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayModule(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayModule(); }}>
                                 <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-opacity duration-200" style={{ width: '18px', height: 'auto', display: 'block', opacity: pd.moduleP.percent === 100 ? 0.4 : 1 }} />
+                              </div>
+                              <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`upload-module-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handleUpload('module'); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handleUpload('module'); }}>
+                                <Upload className="h-3 w-3 text-blue-300/60 hover:text-blue-300 transition-colors" />
                               </div>
                             </div>
                           </>
