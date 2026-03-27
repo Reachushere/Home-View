@@ -102,7 +102,7 @@ const PARTNER_PHONE_ENTITY = "device_tracker.y_phone_app";
 const HA_CLOUD_TTS_ENTITY = "tts.home_assistant_cloud";
 const CAT_LIGHTS_ENTITY = "light.cat_lights";
 const CAT_TV_ENTITY = "media_player.tv_cat_wr";
-const FIRE_STICK_ADB_ENTITY = "media_player.fire_tv_172_24_2_91";
+const FIRE_STICK_ADB_ENTITY = "media_player.fire_tv_172_24_0_88";
 const CAT_WR_MEDIA_GROUP = "media_player.cat_washroom_media_group";
 const CAT_ECHO_ENTITIES = [
   "media_player.echo_cat_left_am",
@@ -10894,7 +10894,8 @@ document.body.removeChild(a);
       }
 
       try {
-        await stopAllCatWashroomSpeakers(haUrl);
+        const haUrlStop = HOME_ASSISTANT_URL.replace(/\/$/, '');
+        await stopAllCatWashroomSpeakers(haUrlStop);
         stopped.push("echoSpeakers");
       } catch (e: any) {
         console.warn(`[Cat Wash Stop Webhook] Failed to stop Echo speakers: ${e.message}`);
