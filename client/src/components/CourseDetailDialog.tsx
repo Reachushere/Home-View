@@ -2997,7 +2997,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               </div>
             )}
 
-            <div className="flex flex-col" style={{ gap: '5px' }} data-testid="assignments-list">
+            <div className="flex flex-col overflow-y-auto" style={{ gap: '5px', maxHeight: '300px', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent' }} data-testid="assignments-list">
               {allGroups.map(groupName => {
                 const tasks = groupedTasks[groupName] || [];
                 const isCollapsed = collapsedGroups.has(groupName);

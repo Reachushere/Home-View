@@ -23176,32 +23176,17 @@ export default function Dashboard() {
                     {(() => {
                       const today = startOfDayET(new Date());
                       const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
-                      const getCalKey = (task: any) => {
-                        const dueDate = startOfDayET(new Date(task.dueDate));
-                        const dueWeekStart = startOfWeek(dueDate, { weekStartsOn: 0 });
-                        const weeks: Date[] = [];
-                        let ws = todayWeekStart;
-                        while (ws <= dueWeekStart) { weeks.push(ws); ws = addDays(ws, 7); }
-                        if (weeks.length > 4) weeks.splice(0, weeks.length - 4);
-                        return weeks.map(w => w.toISOString()).join('|');
-                      };
-                      const groups: { key: string; tasks: typeof dueNextWeekTasks; weeks: Date[] }[] = [];
-                      const groupMap = new Map<string, number>();
-                      dueNextWeekTasks.forEach(task => {
-                        const key = getCalKey(task);
-                        if (groupMap.has(key)) {
-                          groups[groupMap.get(key)!].tasks.push(task);
-                        } else {
-                          const dueDate = startOfDayET(new Date(task.dueDate));
-                          const dueWeekStart = startOfWeek(dueDate, { weekStartsOn: 0 });
-                          const weeks: Date[] = [];
-                          let ws = todayWeekStart;
-                          while (ws <= dueWeekStart) { weeks.push(ws); ws = addDays(ws, 7); }
-                          if (weeks.length > 4) weeks.splice(0, weeks.length - 4);
-                          groupMap.set(key, groups.length);
-                          groups.push({ key, tasks: [task], weeks });
-                        }
-                      });
+                      const latestDueWeekStart = dueNextWeekTasks.reduce((latest, task) => {
+                        const dueWeekStart = startOfWeek(startOfDayET(new Date(task.dueDate)), { weekStartsOn: 0 });
+                        return dueWeekStart > latest ? dueWeekStart : latest;
+                      }, todayWeekStart);
+                      const allWeeks: Date[] = [];
+                      let ws = todayWeekStart;
+                      while (ws <= latestDueWeekStart) { allWeeks.push(ws); ws = addDays(ws, 7); }
+                      if (allWeeks.length > 4) allWeeks.splice(0, allWeeks.length - 4);
+                      const groups: { key: string; tasks: typeof dueNextWeekTasks; weeks: Date[] }[] = [
+                        { key: 'w11-all', tasks: [...dueNextWeekTasks], weeks: allWeeks }
+                      ];
                       return groups.map((group) => {
                         const dueDates = group.tasks.map(t => ({ date: startOfDayET(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
