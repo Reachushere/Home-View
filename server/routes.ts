@@ -8401,6 +8401,33 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         console.log(`${logPrefix} Waiting 15s for TV + Fire Stick boot...`);
         await new Promise(resolve => setTimeout(resolve, 15000));
 
+        const appUrl = DEPLOYED_APP_URL;
+        if (appUrl && currentTvFollowUrl) {
+          const browserUrl = currentTvFollowUrl;
+          console.log(`${logPrefix} Opening Silk browser with play_media: ${browserUrl}`);
+          catWashTrace('TV', 'Opening Silk browser via play_media', { url: browserUrl });
+          try {
+            await haServiceCall('media_player/play_media', {
+              entity_id: FIRE_STICK_ADB_ENTITY,
+              media_content_id: browserUrl,
+              media_content_type: 'url'
+            }, 'FireStick play_media URL');
+            console.log(`${logPrefix} Silk browser opened via play_media`);
+            setTimeout(async () => {
+              try {
+                await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'settings put global policy_control immersive.full=com.amazon.cloud9' }, 'FireStick Immersive');
+                console.log(`${logPrefix} Fire Stick immersive mode set`);
+              } catch (e: any) {
+                console.log(`${logPrefix} Fire Stick immersive failed: ${e.message}`);
+              }
+            }, 5000);
+          } catch (e: any) {
+            console.warn(`${logPrefix} play_media URL failed: ${e.message}`);
+          }
+        } else {
+          console.log(`${logPrefix} No TV follow URL set — skipping browser open`);
+        }
+
         catWashTrace('TV', `SETUP COMPLETE`);
         console.log(`${logPrefix} ====== TV SETUP COMPLETE ======`);
       } catch (e: any) {
