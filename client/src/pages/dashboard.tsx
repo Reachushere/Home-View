@@ -479,7 +479,7 @@ const PrioritySelect = memo(function PrioritySelect({ priorityKey, initialValue,
   return (
     <select
       className="text-[11px] font-semibold text-white bg-white/10 rounded px-1 py-0.5 border border-white/20 focus:outline-none focus:border-white/50 cursor-pointer appearance-none text-center"
-      style={{ width: '22px', minWidth: '22px', WebkitAppearance: 'none', MozAppearance: 'none' }}
+      style={{ width: '22px', minWidth: '22px', WebkitAppearance: 'none', MozAppearance: 'none', marginLeft: '5px' }}
       value={val}
       onClick={(e) => e.stopPropagation()}
       onChange={(e) => {
