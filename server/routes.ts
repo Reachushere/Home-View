@@ -10964,12 +10964,12 @@ document.body.removeChild(a);
         await fetch(`${haUrl}/api/services/media_player/turn_off`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ entity_id: 'media_player.fire_stick_cat_wr' }),
+          body: JSON.stringify({ entity_id: FIRE_STICK_ADB_ENTITY }),
         });
         await fetch(`${haUrl}/api/services/media_player/turn_off`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ entity_id: 'media_player.samsung_tv' }),
+          body: JSON.stringify({ entity_id: CAT_TV_ENTITY }),
         });
         console.log(`[Cat Wash Stop] TV turned off`);
         stopped.push("tv");
@@ -11050,11 +11050,11 @@ document.body.removeChild(a);
           try {
             await fetch(`${haUrl}/api/services/media_player/turn_off`, {
               method: 'POST', headers: haHeaders,
-              body: JSON.stringify({ entity_id: 'media_player.fire_stick_cat_wr' }),
+              body: JSON.stringify({ entity_id: FIRE_STICK_ADB_ENTITY }),
             });
             await fetch(`${haUrl}/api/services/media_player/turn_off`, {
               method: 'POST', headers: haHeaders,
-              body: JSON.stringify({ entity_id: 'media_player.samsung_tv' }),
+              body: JSON.stringify({ entity_id: CAT_TV_ENTITY }),
             });
           } catch {}
 
@@ -11163,11 +11163,11 @@ document.body.removeChild(a);
           try {
             await fetch(`${haUrl}/api/services/media_player/turn_off`, {
               method: 'POST', headers: haHeaders,
-              body: JSON.stringify({ entity_id: 'media_player.fire_stick_cat_wr' }),
+              body: JSON.stringify({ entity_id: FIRE_STICK_ADB_ENTITY }),
             });
             await fetch(`${haUrl}/api/services/media_player/turn_off`, {
               method: 'POST', headers: haHeaders,
-              body: JSON.stringify({ entity_id: 'media_player.samsung_tv' }),
+              body: JSON.stringify({ entity_id: CAT_TV_ENTITY }),
             });
           } catch {}
 
@@ -11374,11 +11374,11 @@ document.body.removeChild(a);
           try {
             await fetch(`${haUrl}/api/services/media_player/turn_off`, {
               method: 'POST', headers: haHeaders,
-              body: JSON.stringify({ entity_id: 'media_player.fire_stick_cat_wr' }),
+              body: JSON.stringify({ entity_id: FIRE_STICK_ADB_ENTITY }),
             });
             await fetch(`${haUrl}/api/services/media_player/turn_off`, {
               method: 'POST', headers: haHeaders,
-              body: JSON.stringify({ entity_id: 'media_player.samsung_tv' }),
+              body: JSON.stringify({ entity_id: CAT_TV_ENTITY }),
             });
           } catch {}
 
