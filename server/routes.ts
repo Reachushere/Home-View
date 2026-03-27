@@ -8287,39 +8287,35 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         await new Promise(r => setTimeout(r, 5000));
 
         let silkOpened = false;
-
-        try {
-          await haServiceCall('androidtv/adb_command', {
-            entity_id: tabletEntity,
-            command: 'monkey -p com.amazon.cloud9 -c android.intent.category.LAUNCHER 1'
-          }, 'Tablet Launch Silk via monkey');
-          console.log(`${logPrefix} Tablet Silk launched via monkey`);
-          silkOpened = true;
-        } catch (e: any) {
-          console.warn(`${logPrefix} Tablet Silk monkey launch failed: ${e.message}`);
-        }
-
-        if (!silkOpened) {
-          for (let attempt = 1; attempt <= 3; attempt++) {
-            try {
-              await haServiceCall('androidtv/adb_command', {
-                entity_id: tabletEntity,
-                command: `am start --activity-clear-task -a android.intent.action.VIEW -d "${readerUrl}" com.amazon.cloud9`
-              }, `Tablet Silk Nav ${attempt}`);
-              console.log(`${logPrefix} Tablet open Silk via am start: OK (attempt ${attempt})`);
-              silkOpened = true;
-              break;
-            } catch (e: any) {
-              console.error(`${logPrefix} Tablet open Silk attempt ${attempt}/3: FAILED — ${e.message}`);
-              if (attempt < 3) await new Promise(r => setTimeout(r, 3000));
-            }
+        for (let attempt = 1; attempt <= 4; attempt++) {
+          try {
+            await haServiceCall('androidtv/adb_command', {
+              entity_id: tabletEntity,
+              command: `am start --activity-clear-task -a android.intent.action.VIEW -d "${readerUrl}" com.amazon.cloud9`
+            }, `Tablet Silk Nav ${attempt}`);
+            console.log(`${logPrefix} Tablet open Silk: OK (attempt ${attempt})`);
+            silkOpened = true;
+            break;
+          } catch (e: any) {
+            console.error(`${logPrefix} Tablet open Silk attempt ${attempt}/4: FAILED — ${e.message}`);
+            if (attempt < 4) await new Promise(r => setTimeout(r, 3000));
           }
         }
 
-        if (silkOpened) {
-          await new Promise(r => setTimeout(r, 3000));
-          setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: Date.now() }, false, 'tablet');
-          console.log(`${logPrefix} Tablet nav command set for polling pickup`);
+        if (!silkOpened) {
+          console.error(`${logPrefix} All Silk navigation attempts failed — trying force-stop + retry`);
+          try {
+            await haServiceCall('androidtv/adb_command', { entity_id: tabletEntity, command: 'am force-stop com.amazon.cloud9' }, 'Tablet Force-Stop Silk');
+            await new Promise(r => setTimeout(r, 2000));
+            await haServiceCall('androidtv/adb_command', {
+              entity_id: tabletEntity,
+              command: `am start -a android.intent.action.VIEW -d "${readerUrl}" com.amazon.cloud9`
+            }, 'Tablet Silk Nav Final');
+            console.log(`${logPrefix} Tablet open Silk after force-stop: OK`);
+            silkOpened = true;
+          } catch (e: any) {
+            console.error(`${logPrefix} Tablet Silk final attempt after force-stop: FAILED — ${e.message}`);
+          }
         }
 
         await new Promise(r => setTimeout(r, 5000));
