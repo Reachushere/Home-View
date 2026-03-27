@@ -2750,8 +2750,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               </div>
             )}
           </div>
-          </div>
-          </div>
 
           <div ref={assignmentsRef}>
             <div style={{ border: '2px solid rgba(255,255,255,0.2)', borderRadius: '8px', padding: '12px' }}>
@@ -3122,6 +3120,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             )}
 
           </>)}
+          </div>
           </div>
           </div>
         </div>
