@@ -2996,7 +2996,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   </div>
                   <div className={`flex-1 min-w-0 ${hdrCls('title')}`} style={{ marginLeft: '22px' }} onClick={() => toggleSort('title')} data-testid="sort-title">Assignments<SortIcon field="title" />
                   </div>
-                  <div className="flex items-end flex-shrink-0 text-white" style={{ gap: '10px', position: 'relative', left: '-15px' }}>
+                  <div className="flex items-end flex-shrink-0 text-white" style={{ gap: '10px', position: 'relative', left: isEditingInfo ? '-22px' : '-15px' }}>
                     <span className={`w-[33px] text-center leading-tight ${hdrCls('score')}`} onClick={() => toggleSort('score')} style={{ display: 'inline-flex', justifyContent: 'center' }} data-testid="sort-score">
                       Score<SortIcon field="score" />
                     </span>
@@ -3010,7 +3010,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                       Percent<SortIcon field="percent" />
                     </span>
                   </div>
-                  <div className="flex items-end flex-shrink-0" style={{ gap: '10px', marginLeft: '1px' }}>
+                  <div className="flex items-end flex-shrink-0" style={{ gap: '10px', marginLeft: isEditingInfo ? '-6px' : '1px' }}>
                     <div style={{ width: '24px', textAlign: 'center', lineHeight: '1.1' }}><span className="text-[8px] font-bold text-white">Grade<br/>Received</span></div>
                     <div style={{ width: '19px', textAlign: 'center', marginLeft: '6px' }}><span className="text-[8px] font-bold text-white">Copy</span></div>
                     <div style={{ width: '19px' }} />
@@ -3083,7 +3083,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 <div className="flex-shrink-0" style={{ width: '15px', marginLeft: '3px', marginRight: '10px' }} />
                 <div className="flex-shrink-0" style={{ width: '19px', marginLeft: '17px', marginRight: '10px' }} />
                 <div className="flex-1 min-w-0 text-[11px] font-bold text-white" style={{ marginLeft: '21px' }}>Totals</div>
-                <div className="flex items-center flex-shrink-0" style={{ gap: '10px', position: 'relative', left: '-8px' }}>
+                <div className="flex items-center flex-shrink-0" style={{ gap: '10px', position: 'relative', left: isEditingInfo ? '-15px' : '-8px' }}>
                   <span className="text-[11px] font-bold w-[33px] text-center text-amber-400" data-testid="text-sum-value">
                     {(() => { const v = courseTasks.filter(t => !t.excludeFromGpa).reduce((s, t) => s + (t.gradeValue || 0), 0); return v ? v.toFixed(2) : '—'; })()}
                   </span>
@@ -3097,7 +3097,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   </span>
                   <span className="w-[33px]" />
                 </div>
-                <div className="flex items-center flex-shrink-0" style={{ gap: '10px', marginLeft: '8px', visibility: 'hidden' }}>
+                <div className="flex items-center flex-shrink-0" style={{ gap: '10px', marginLeft: isEditingInfo ? '1px' : '8px', visibility: 'hidden' }}>
                   <div style={{ width: '24px', height: '14px' }} />
                   <div style={{ padding: '2px', marginLeft: '6px' }}><div style={{ width: '15px', height: '15px' }} /></div>
                   <div style={{ padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
