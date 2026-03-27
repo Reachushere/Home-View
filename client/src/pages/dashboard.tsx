@@ -22609,7 +22609,7 @@ export default function Dashboard() {
             {isLoading ? (
               <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
             ) : (
-              <div ref={hwTimelineDividerRef} style={{ display: 'flex', flexDirection: 'column', minHeight: 0, position: 'relative' }}>
+              <div ref={hwTimelineDividerRef} style={{ display: 'flex', flexDirection: 'column', minHeight: 0, position: 'relative', paddingLeft: '5px' }}>
                 <div
                   style={{ position: 'absolute', top: 0, bottom: 0, left: `${1 + hwGroupBarWidth}px`, width: '8px', marginLeft: '-4px', zIndex: 10, pointerEvents: 'none' }}
                   data-testid="hw-group-bar-handle"
