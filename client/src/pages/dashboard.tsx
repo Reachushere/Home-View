@@ -13933,6 +13933,31 @@ export default function Dashboard() {
             courseInfo={info}
             certificateName={certName}
             initialEditMode={!!selectedCertCourse?.openInEdit}
+            courseRank={(() => {
+              const cc = selectedCertCourse!.courseCode.replace(/\s/g, '');
+              for (const sk of semesterKeyOrder) {
+                const pk = `${sk}:${cc}`;
+                if (coursePlayPriority[pk]) return coursePlayPriority[pk];
+              }
+              return 0;
+            })()}
+            usedRanks={(() => {
+              const cc = selectedCertCourse!.courseCode.replace(/\s/g, '');
+              let semKey = '';
+              for (const sk of semesterKeyOrder) {
+                const courses = semesterCourseAssignments[sk] || [];
+                if (courses.some(c => c.code.replace(/\s/g, '').toUpperCase() === cc.toUpperCase())) { semKey = sk; break; }
+              }
+              if (!semKey) return [];
+              const used: number[] = [];
+              const semCourses = semesterCourseAssignments[semKey] || [];
+              for (const sc of semCourses) {
+                const pk = `${semKey}:${sc.code.replace(/\s/g, '')}`;
+                const v = coursePlayPriority[pk];
+                if (v && v > 0 && sc.code.replace(/\s/g, '').toUpperCase() !== cc.toUpperCase()) used.push(v);
+              }
+              return used;
+            })()}
             onClose={() => {
               startTransition(() => setSelectedCertCourse(null));
               if (isSchoolCoursesDialogOpen) {
@@ -14117,6 +14142,26 @@ export default function Dashboard() {
                     }
                   }
                 }
+              }
+              if ((updates as any).courseRank !== undefined) {
+                const semKey = (updates as any).semesterKey || semesterKeyFromUpdates(updates);
+                if (semKey) {
+                  const priorityKey = `${semKey}:${courseCode.replace(/\s/g, '')}`;
+                  const rankVal = (updates as any).courseRank || 0;
+                  setDraftPriorityBoth(prev => ({ ...prev, [priorityKey]: rankVal }));
+                  const updatedPriorities = { ...draftCoursePlayPriorityRef.current, [priorityKey]: rankVal };
+                  setCoursePlayPriority(updatedPriorities);
+                  localStorage.setItem('coursePlayPriority', JSON.stringify(updatedPriorities));
+                  fetch('/api/course-play-priority', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updatedPriorities) }).catch(() => {});
+                }
+              }
+              function semesterKeyFromUpdates(u: any): string {
+                const t = u.semesterTerm; const y = u.year;
+                if (!t || !y) return '';
+                if (t.startsWith('spring_summer')) return `ss${y}`;
+                if (t === 'fall') return `f${y}`;
+                if (t === 'winter') return `w${y}`;
+                return '';
               }
               if ((updates as any).semesterKey) {
                 const targetKey = (updates as any).semesterKey;

@@ -99,7 +99,7 @@ interface CourseInfo {
 interface CourseDetailDialogProps {
   courseInfo: CourseInfo;
   onClose: () => void;
-  onSaveCourseInfo?: (updates: { professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; classTime2?: string; classEndTime2?: string; zoomLink?: string; semesterTerm?: string; year?: string; startDate?: string; endDate?: string; color?: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; semesterKey?: string }) => void;
+  onSaveCourseInfo?: (updates: { professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; classTime2?: string; classEndTime2?: string; zoomLink?: string; semesterTerm?: string; year?: string; startDate?: string; endDate?: string; color?: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; semesterKey?: string; courseRank?: number }) => void;
   onLiveColorChange?: (updates: { color?: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string }) => void;
   onGradeCalculated?: (grade: string, percent: string) => void;
   onDeleteCourse?: () => void;
@@ -109,6 +109,8 @@ interface CourseDetailDialogProps {
   certificateName?: string;
   onPushUndo?: (action: { type: string; description: string; data: any }) => void;
   initialEditMode?: boolean;
+  courseRank?: number;
+  usedRanks?: number[];
 }
 
 interface NewTaskForm {
@@ -224,7 +226,7 @@ function semesterKeyFromTermYear(term?: string, year?: string): string {
   return '';
 }
 
-export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLiveColorChange, onGradeCalculated, onDeleteCourse, onOpenEditTask, semesterStart, readingWeekStart, certificateName, onPushUndo, initialEditMode }: CourseDetailDialogProps) {
+export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLiveColorChange, onGradeCalculated, onDeleteCourse, onOpenEditTask, semesterStart, readingWeekStart, certificateName, onPushUndo, initialEditMode, courseRank, usedRanks }: CourseDetailDialogProps) {
   const { toast } = useToast();
   const [showAddForm, setShowAddForm] = useState(false);
   const [newTask, setNewTask] = useState<NewTaskForm>(createEmptyTaskForm());
@@ -387,6 +389,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     borderColor: courseInfo.borderColor || '',
     courseRowColor: courseInfo.courseRowColor || '',
     taskBgColor: courseInfo.taskBgColor || '',
+    courseRank: courseRank ?? 0,
   });
 
   useEffect(() => {
@@ -1519,7 +1522,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                       }
                       if (onSaveCourseInfo) {
                         const semKey = semesterKeyFromTermYear(editInfo.semesterTerm, editInfo.year);
-                        onSaveCourseInfo({ ...editInfo, semesterKey: semKey || undefined });
+                        onSaveCourseInfo({ ...editInfo, semesterKey: semKey || undefined, courseRank: editInfo.courseRank || undefined });
                       }
                       if (editInfo.professor?.trim()) {
                         fetch('/api/key-contacts/sync-professor', {
@@ -1627,12 +1630,24 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     <input className={`w-full h-6 text-[10px] bg-white/10 text-white rounded px-1.5 placeholder:text-white/25 ${editInfo.deliveryMode === 'virtual' && !editInfo.zoomLink?.trim() ? 'border border-red-500/70' : 'border border-white/15'}`} value={editInfo.zoomLink} onChange={(e) => setEditInfo({...editInfo, zoomLink: e.target.value})} placeholder={editInfo.deliveryMode === 'virtual' ? "Required — https://zoom.us/..." : "https://zoom.us/..."} data-testid="input-edit-zoom" />
                   </div>
                 </div>
-                <div>
-                  <label className="text-white text-[9px] mb-0.5 block">Semester</label>
-                  <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={semesterKeyFromTermYear(editInfo.semesterTerm, editInfo.year)} onChange={(e) => { const opt = SEMESTER_OPTIONS.find(o => o.key === e.target.value); if (opt) { setEditInfo({...editInfo, semesterTerm: opt.term, year: opt.year, startDate: opt.start, endDate: opt.end }); } else { setEditInfo({...editInfo, semesterTerm: '', year: '', startDate: '', endDate: '' }); } }} data-testid="select-edit-semester-term">
-                    <option value="" className="bg-gray-800">—</option>
-                    {SEMESTER_OPTIONS.map(o => <option key={o.key} value={o.key} className="bg-gray-800">{o.label}</option>)}
-                  </select>
+                <div className="grid grid-cols-[1fr_auto] gap-2">
+                  <div>
+                    <label className="text-white text-[9px] mb-0.5 block">Semester</label>
+                    <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={semesterKeyFromTermYear(editInfo.semesterTerm, editInfo.year)} onChange={(e) => { const opt = SEMESTER_OPTIONS.find(o => o.key === e.target.value); if (opt) { setEditInfo({...editInfo, semesterTerm: opt.term, year: opt.year, startDate: opt.start, endDate: opt.end }); } else { setEditInfo({...editInfo, semesterTerm: '', year: '', startDate: '', endDate: '' }); } }} data-testid="select-edit-semester-term">
+                      <option value="" className="bg-gray-800">—</option>
+                      {SEMESTER_OPTIONS.map(o => <option key={o.key} value={o.key} className="bg-gray-800">{o.label}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-white text-[9px] mb-0.5 block">Rank</label>
+                    <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" style={{ width: '42px' }} value={editInfo.courseRank} onChange={(e) => setEditInfo({...editInfo, courseRank: parseInt(e.target.value)})} data-testid="select-edit-course-rank">
+                      <option value={0} className="bg-gray-800">—</option>
+                      {[1, 2, 3].map(n => {
+                        const taken = (usedRanks || []).includes(n) && editInfo.courseRank !== n;
+                        return <option key={n} value={n} className="bg-gray-800" disabled={taken} style={taken ? { color: '#555' } : {}}>{n}</option>;
+                      })}
+                    </select>
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
@@ -3144,7 +3159,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               onClick={() => {
                 if (onSaveCourseInfo) {
                   const semKey = semesterKeyFromTermYear(editInfo.semesterTerm, editInfo.year);
-                  onSaveCourseInfo({ ...editInfo, semesterKey: semKey || undefined });
+                  onSaveCourseInfo({ ...editInfo, semesterKey: semKey || undefined, courseRank: editInfo.courseRank || undefined });
                 }
                 if (editInfo.professor?.trim()) {
                   fetch('/api/key-contacts/sync-professor', {
