@@ -10382,11 +10382,9 @@ document.body.removeChild(a);
         try {
           await Promise.allSettled([
             haServiceCallSafe('androidtv/adb_command', { entity_id: tabletEntity, command: 'input keyevent KEYCODE_WAKEUP' }, 'Cat Lights Early Tablet Wake'),
-            haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_WAKEUP' }, 'Cat Lights Early TV Wake'),
-            haServiceCallSafe('media_player/turn_on', { entity_id: FIRE_STICK_ADB_ENTITY }, 'Cat Lights Early FireStick On'),
-            haServiceCallSafe('media_player/turn_on', { entity_id: CAT_TV_ENTITY }, 'Cat Lights Early Samsung On'),
+            haServiceCallSafe('androidtv/adb_command', { entity_id: tabletEntity, command: 'settings put system screen_brightness 255' }, 'Cat Lights Early Tablet Brightness'),
           ]);
-          console.log(`[Cat Lights] Early device wake: tablet + TV wake commands sent`);
+          console.log(`[Cat Lights] Early device wake: tablet wake + brightness sent (TV deferred until confirmation)`);
         } catch (e: any) {
           console.warn(`[Cat Lights] Early device wake failed (non-fatal): ${e.message}`);
         }
