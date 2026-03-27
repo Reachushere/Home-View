@@ -11931,7 +11931,7 @@ export default function Dashboard() {
               className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
               style={{ background: 'transparent' }}
               data-testid="button-courses-pill"
-              title="Courses"
+              title="Semesters and Courses"
               onClick={() => {
                 startTransition(() => {
                   setDraftPriorityBoth({ ...coursePlayPriority });
@@ -16899,7 +16899,7 @@ export default function Dashboard() {
                 <div className="flex items-center gap-2">
                   <GraduationCap className="text-white" style={{ width: '15px', height: '15px' }} />
                   <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
-                    COURSES
+                    SEMESTERS AND COURSES
                   </h2>
                 </div>
                 <div
