@@ -1632,7 +1632,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     <input className={`w-full h-6 text-[10px] bg-white/10 text-white rounded px-1.5 placeholder:text-white/25 ${editInfo.deliveryMode === 'virtual' && !editInfo.zoomLink?.trim() ? 'border border-red-500/70' : 'border border-white/15'}`} value={editInfo.zoomLink} onChange={(e) => setEditInfo({...editInfo, zoomLink: e.target.value})} placeholder={editInfo.deliveryMode === 'virtual' ? "Required — https://zoom.us/..." : "https://zoom.us/..."} data-testid="input-edit-zoom" />
                   </div>
                 </div>
-                <div className="grid grid-cols-[1fr_auto_auto_auto] gap-2">
+                <div className="grid grid-cols-[1fr_130px_130px_42px] gap-2">
                   <div>
                     <label className="text-white text-[9px] mb-0.5 block">Semester</label>
                     <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={semesterKeyFromTermYear(editInfo.semesterTerm, editInfo.year)} onChange={(e) => { const opt = SEMESTER_OPTIONS.find(o => o.key === e.target.value); if (opt) { setEditInfo({...editInfo, semesterTerm: opt.term, year: opt.year, startDate: opt.start, endDate: opt.end }); } else { setEditInfo({...editInfo, semesterTerm: '', year: '', startDate: '', endDate: '' }); } }} data-testid="select-edit-semester-term">
@@ -2306,7 +2306,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             <div style={{ border: '2px solid rgba(255,255,255,0.2)', borderRadius: '8px', padding: '12px' }}>
             <div
               className="flex items-center justify-between cursor-pointer group"
-              onClick={() => { const next = !showWeekMappings; setShowWeekMappings(next); if (next) setTimeout(() => weekMappingsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50); }}
+              onClick={() => { const next = !showWeekMappings; setShowWeekMappings(next); if (next) setTimeout(() => { const el = weekMappingsRef.current; if (el) { const scrollParent = el.closest('.overflow-y-auto'); if (scrollParent) { scrollParent.scrollTo({ top: el.offsetTop - scrollParent.getBoundingClientRect().top, behavior: 'smooth' }); } else { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } } }, 80); }}
               data-testid="button-toggle-week-mappings"
             >
               <div className="flex items-center gap-2">
@@ -2748,7 +2748,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             <div style={{ border: '2px solid rgba(255,255,255,0.2)', borderRadius: '8px', padding: '12px' }}>
             <div
               className="flex items-center justify-between cursor-pointer group"
-              onClick={() => { const next = !showAssignments; setShowAssignments(next); if (next) setTimeout(() => assignmentsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50); }}
+              onClick={() => { const next = !showAssignments; setShowAssignments(next); if (next) setTimeout(() => { const el = assignmentsRef.current; if (el) { const scrollParent = el.closest('.overflow-y-auto'); if (scrollParent) { scrollParent.scrollTo({ top: el.offsetTop - scrollParent.getBoundingClientRect().top, behavior: 'smooth' }); } else { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } } }, 80); }}
               data-testid="button-toggle-assignments"
             >
               <div className="flex items-center gap-2">
