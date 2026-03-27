@@ -8231,6 +8231,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         const haUrl2 = HOME_ASSISTANT_URL.replace(/\/$/, '');
         const haHeaders2 = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
 
+        let tabletAvailable = true;
         try {
           const stateResp = await fetch(`${haUrl2}/api/states/${tabletEntity}`, { headers: haHeaders2 });
           if (stateResp.ok) {
@@ -8238,6 +8239,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
             console.log(`${logPrefix} Tablet entity state: "${stateData.state}"`);
             if (stateData.state === 'unavailable') {
               console.error(`${logPrefix} Tablet is UNAVAILABLE in HA — ADB commands will not work`);
+              tabletAvailable = false;
             }
           } else {
             console.error(`${logPrefix} Tablet state check failed: HTTP ${stateResp.status}`);
@@ -8246,14 +8248,32 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           console.error(`${logPrefix} Tablet state check error: ${e.message}`);
         }
 
-        for (let attempt = 1; attempt <= 2; attempt++) {
+        if (!tabletAvailable) {
+          console.log(`${logPrefix} Attempting to re-ping tablet ADB to recover...`);
+          await new Promise(r => setTimeout(r, 3000));
+          try {
+            const stateResp2 = await fetch(`${haUrl2}/api/states/${tabletEntity}`, { headers: haHeaders2 });
+            if (stateResp2.ok) {
+              const sd2 = await stateResp2.json();
+              if (sd2.state !== 'unavailable') {
+                tabletAvailable = true;
+                console.log(`${logPrefix} Tablet recovered: state="${sd2.state}"`);
+              } else {
+                console.error(`${logPrefix} Tablet still unavailable after retry — skipping tablet setup`);
+                return;
+              }
+            }
+          } catch {}
+        }
+
+        for (let attempt = 1; attempt <= 3; attempt++) {
           try {
             await haServiceCall('androidtv/adb_command', { entity_id: tabletEntity, command: 'input keyevent KEYCODE_WAKEUP' }, 'Tablet Wakeup');
             console.log(`${logPrefix} Tablet wakeup: OK (attempt ${attempt})`);
             break;
           } catch (e: any) {
-            console.error(`${logPrefix} Tablet wakeup attempt ${attempt}: FAILED — ${e.message}`);
-            if (attempt < 2) await new Promise(r => setTimeout(r, 2000));
+            console.error(`${logPrefix} Tablet wakeup attempt ${attempt}/3: FAILED — ${e.message}`);
+            if (attempt < 3) await new Promise(r => setTimeout(r, 2000));
           }
         }
 
@@ -8264,23 +8284,41 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           console.error(`${logPrefix} Tablet brightness: FAILED — ${e.message}`);
         }
 
-        await new Promise(r => setTimeout(r, 4000));
+        await new Promise(r => setTimeout(r, 5000));
 
-        for (let attempt = 1; attempt <= 3; attempt++) {
+        let silkOpened = false;
+        for (let attempt = 1; attempt <= 4; attempt++) {
           try {
             await haServiceCall('androidtv/adb_command', {
               entity_id: tabletEntity,
               command: `am start --activity-clear-task -a android.intent.action.VIEW -d "${readerUrl}" com.amazon.cloud9`
             }, `Tablet Silk Nav ${attempt}`);
             console.log(`${logPrefix} Tablet open Silk: OK (attempt ${attempt})`);
+            silkOpened = true;
             break;
           } catch (e: any) {
-            console.error(`${logPrefix} Tablet open Silk attempt ${attempt}/3: FAILED — ${e.message}`);
-            if (attempt < 3) await new Promise(r => setTimeout(r, 2000));
+            console.error(`${logPrefix} Tablet open Silk attempt ${attempt}/4: FAILED — ${e.message}`);
+            if (attempt < 4) await new Promise(r => setTimeout(r, 3000));
           }
         }
 
-        await new Promise(r => setTimeout(r, 3000));
+        if (!silkOpened) {
+          console.error(`${logPrefix} All Silk navigation attempts failed — trying force-stop + retry`);
+          try {
+            await haServiceCall('androidtv/adb_command', { entity_id: tabletEntity, command: 'am force-stop com.amazon.cloud9' }, 'Tablet Force-Stop Silk');
+            await new Promise(r => setTimeout(r, 2000));
+            await haServiceCall('androidtv/adb_command', {
+              entity_id: tabletEntity,
+              command: `am start -a android.intent.action.VIEW -d "${readerUrl}" com.amazon.cloud9`
+            }, 'Tablet Silk Nav Final');
+            console.log(`${logPrefix} Tablet open Silk after force-stop: OK`);
+            silkOpened = true;
+          } catch (e: any) {
+            console.error(`${logPrefix} Tablet Silk final attempt after force-stop: FAILED — ${e.message}`);
+          }
+        }
+
+        await new Promise(r => setTimeout(r, 5000));
 
         const sendTabletFullscreen = async (fAttempt: number) => {
           try {
@@ -8290,6 +8328,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
             }, `Tablet Immersive ${fAttempt}`);
             console.log(`${logPrefix} Tablet immersive mode set (attempt ${fAttempt})`);
           } catch (e: any) { console.error(`${logPrefix} Tablet immersive ${fAttempt}: FAILED — ${e.message}`); }
+          await new Promise(r => setTimeout(r, 500));
           try {
             await haServiceCall('androidtv/adb_command', {
               entity_id: tabletEntity, command: 'input keyevent KEYCODE_F11'
@@ -8308,7 +8347,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         await sendTabletFullscreen(1);
         setTimeout(() => sendTabletFullscreen(2), 8000);
         setTimeout(() => sendTabletFullscreen(3), 16000);
-        console.log(`${logPrefix} Tablet setup complete (with 3 fullscreen attempts at 0s, 8s, 16s)`);
+        setTimeout(() => sendTabletFullscreen(4), 30000);
+        console.log(`${logPrefix} Tablet setup complete (with 4 fullscreen attempts at 0s, 8s, 16s, 30s)`);
       } catch (e: any) {
         console.error(`${logPrefix} Tablet setup error: ${e.message}`);
       }
