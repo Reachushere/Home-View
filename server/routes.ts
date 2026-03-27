@@ -8287,35 +8287,39 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         await new Promise(r => setTimeout(r, 5000));
 
         let silkOpened = false;
-        for (let attempt = 1; attempt <= 4; attempt++) {
-          try {
-            await haServiceCall('androidtv/adb_command', {
-              entity_id: tabletEntity,
-              command: `am start --activity-clear-task -a android.intent.action.VIEW -d "${readerUrl}" com.amazon.cloud9`
-            }, `Tablet Silk Nav ${attempt}`);
-            console.log(`${logPrefix} Tablet open Silk: OK (attempt ${attempt})`);
-            silkOpened = true;
-            break;
-          } catch (e: any) {
-            console.error(`${logPrefix} Tablet open Silk attempt ${attempt}/4: FAILED — ${e.message}`);
-            if (attempt < 4) await new Promise(r => setTimeout(r, 3000));
-          }
+
+        try {
+          await haServiceCall('androidtv/adb_command', {
+            entity_id: tabletEntity,
+            command: 'monkey -p com.amazon.cloud9 -c android.intent.category.LAUNCHER 1'
+          }, 'Tablet Launch Silk via monkey');
+          console.log(`${logPrefix} Tablet Silk launched via monkey`);
+          silkOpened = true;
+        } catch (e: any) {
+          console.warn(`${logPrefix} Tablet Silk monkey launch failed: ${e.message}`);
         }
 
         if (!silkOpened) {
-          console.error(`${logPrefix} All Silk navigation attempts failed — trying force-stop + retry`);
-          try {
-            await haServiceCall('androidtv/adb_command', { entity_id: tabletEntity, command: 'am force-stop com.amazon.cloud9' }, 'Tablet Force-Stop Silk');
-            await new Promise(r => setTimeout(r, 2000));
-            await haServiceCall('androidtv/adb_command', {
-              entity_id: tabletEntity,
-              command: `am start -a android.intent.action.VIEW -d "${readerUrl}" com.amazon.cloud9`
-            }, 'Tablet Silk Nav Final');
-            console.log(`${logPrefix} Tablet open Silk after force-stop: OK`);
-            silkOpened = true;
-          } catch (e: any) {
-            console.error(`${logPrefix} Tablet Silk final attempt after force-stop: FAILED — ${e.message}`);
+          for (let attempt = 1; attempt <= 3; attempt++) {
+            try {
+              await haServiceCall('androidtv/adb_command', {
+                entity_id: tabletEntity,
+                command: `am start --activity-clear-task -a android.intent.action.VIEW -d "${readerUrl}" com.amazon.cloud9`
+              }, `Tablet Silk Nav ${attempt}`);
+              console.log(`${logPrefix} Tablet open Silk via am start: OK (attempt ${attempt})`);
+              silkOpened = true;
+              break;
+            } catch (e: any) {
+              console.error(`${logPrefix} Tablet open Silk attempt ${attempt}/3: FAILED — ${e.message}`);
+              if (attempt < 3) await new Promise(r => setTimeout(r, 3000));
+            }
           }
+        }
+
+        if (silkOpened) {
+          await new Promise(r => setTimeout(r, 3000));
+          setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: Date.now() }, false, 'tablet');
+          console.log(`${logPrefix} Tablet nav command set for polling pickup`);
         }
 
         await new Promise(r => setTimeout(r, 5000));
@@ -8360,6 +8364,24 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         catWashTrace('TV', 'SETUP START');
         currentTvFollowUrl = tvFollowUrl;
 
+        const haUrl = HOME_ASSISTANT_URL?.replace(/\/$/, '') || '';
+        const haHdrs = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+
+        let fireStickState = 'unknown';
+        try {
+          const fsResp = await fetch(`${haUrl}/api/states/${FIRE_STICK_ADB_ENTITY}`, { headers: haHdrs });
+          if (fsResp.ok) {
+            const fsData = await fsResp.json();
+            fireStickState = fsData?.state || 'unknown';
+          }
+        } catch (e: any) {
+          console.warn(`${logPrefix} Could not query Fire Stick state: ${e.message}`);
+        }
+        console.log(`${logPrefix} Fire Stick current state: ${fireStickState}`);
+        catWashTrace('TV', `Fire Stick state: ${fireStickState}`);
+
+        const fireStickIsOff = fireStickState === 'off' || fireStickState === 'standby' || fireStickState === 'unavailable' || fireStickState === 'idle';
+
         try {
           await haServiceCallSafe('media_player/turn_on', { entity_id: CAT_TV_ENTITY }, 'Samsung TV TurnOn (WoL)');
           console.log(`${logPrefix} Samsung TV turn_on sent (WoL)`);
@@ -8367,26 +8389,43 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           console.warn(`${logPrefix} Samsung TV turn_on failed (non-fatal): ${e.message}`);
         }
 
-        catWashTrace('TV', 'Turning Fire Stick OFF first to trigger CEC wake on turn_on');
-        try {
-          await haServiceCall('media_player/turn_off', { entity_id: FIRE_STICK_ADB_ENTITY }, 'FireStick TurnOff for CEC reset');
-          console.log(`${logPrefix} Fire Stick turned OFF for CEC reset`);
-        } catch (e: any) {
-          console.warn(`${logPrefix} Fire Stick turn_off failed (non-fatal): ${e.message}`);
-        }
-        await new Promise(r => setTimeout(r, 5000));
-
-        catWashTrace('TV', 'Turning Fire Stick ON (CEC will turn on Samsung TV + switch HDMI)');
-        for (let fsOnAttempt = 1; fsOnAttempt <= 3; fsOnAttempt++) {
+        if (fireStickIsOff) {
+          catWashTrace('TV', 'Fire Stick is OFF/standby — turning ON directly (CEC will wake Samsung TV). No OFF cycle needed.');
+          console.log(`${logPrefix} Fire Stick is off/standby — just turning ON (preserves Silk if backgrounded)`);
+          for (let fsOnAttempt = 1; fsOnAttempt <= 3; fsOnAttempt++) {
+            try {
+              await haServiceCall('media_player/turn_on', { entity_id: FIRE_STICK_ADB_ENTITY }, `FireStick TurnOn attempt ${fsOnAttempt}`);
+              console.log(`${logPrefix} Fire Stick turn_on: OK (attempt ${fsOnAttempt}) — CEC should turn on Samsung TV`);
+              catWashTrace('TV', `Fire Stick turn_on OK on attempt ${fsOnAttempt}`);
+              break;
+            } catch (e: any) {
+              catWashTrace('TV', `Fire Stick turn_on attempt ${fsOnAttempt}/3 FAILED`, { error: e.message });
+              console.error(`${logPrefix} Fire Stick turn_on attempt ${fsOnAttempt}/3 failed: ${e.message}`);
+              if (fsOnAttempt < 3) await new Promise(r => setTimeout(r, 3000));
+            }
+          }
+        } else {
+          catWashTrace('TV', 'Fire Stick is already ON — doing OFF→ON cycle for CEC wake');
+          console.log(`${logPrefix} Fire Stick is already on (${fireStickState}) — OFF→ON cycle for CEC`);
           try {
-            await haServiceCall('media_player/turn_on', { entity_id: FIRE_STICK_ADB_ENTITY }, `FireStick TurnOn attempt ${fsOnAttempt}`);
-            console.log(`${logPrefix} Fire Stick turn_on: OK (attempt ${fsOnAttempt}) — CEC should turn on Samsung TV`);
-            catWashTrace('TV', `Fire Stick turn_on OK on attempt ${fsOnAttempt}`);
-            break;
+            await haServiceCall('media_player/turn_off', { entity_id: FIRE_STICK_ADB_ENTITY }, 'FireStick TurnOff for CEC reset');
+            console.log(`${logPrefix} Fire Stick turned OFF for CEC reset`);
           } catch (e: any) {
-            catWashTrace('TV', `Fire Stick turn_on attempt ${fsOnAttempt}/3 FAILED`, { error: e.message });
-            console.error(`${logPrefix} Fire Stick turn_on attempt ${fsOnAttempt}/3 failed: ${e.message}`);
-            if (fsOnAttempt < 3) await new Promise(r => setTimeout(r, 3000));
+            console.warn(`${logPrefix} Fire Stick turn_off failed (non-fatal): ${e.message}`);
+          }
+          await new Promise(r => setTimeout(r, 5000));
+
+          for (let fsOnAttempt = 1; fsOnAttempt <= 3; fsOnAttempt++) {
+            try {
+              await haServiceCall('media_player/turn_on', { entity_id: FIRE_STICK_ADB_ENTITY }, `FireStick TurnOn attempt ${fsOnAttempt}`);
+              console.log(`${logPrefix} Fire Stick turn_on: OK (attempt ${fsOnAttempt}) — CEC should turn on Samsung TV`);
+              catWashTrace('TV', `Fire Stick turn_on OK on attempt ${fsOnAttempt}`);
+              break;
+            } catch (e: any) {
+              catWashTrace('TV', `Fire Stick turn_on attempt ${fsOnAttempt}/3 FAILED`, { error: e.message });
+              console.error(`${logPrefix} Fire Stick turn_on attempt ${fsOnAttempt}/3 failed: ${e.message}`);
+              if (fsOnAttempt < 3) await new Promise(r => setTimeout(r, 3000));
+            }
           }
         }
 
@@ -8397,35 +8436,39 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           console.warn(`${logPrefix} Fire Stick WAKEUP failed (non-fatal): ${e.message}`);
         }
 
-        catWashTrace('TV', 'Waiting 15s for Fire Stick CEC boot + Samsung TV to wake and switch HDMI');
+        catWashTrace('TV', 'Waiting 15s for Fire Stick + Samsung TV to wake');
         console.log(`${logPrefix} Waiting 15s for TV + Fire Stick boot...`);
         await new Promise(resolve => setTimeout(resolve, 15000));
 
-        const appUrl = DEPLOYED_APP_URL;
-        if (appUrl && currentTvFollowUrl) {
-          const browserUrl = currentTvFollowUrl;
-          console.log(`${logPrefix} Opening Silk browser with play_media: ${browserUrl}`);
-          catWashTrace('TV', 'Opening Silk browser via play_media', { url: browserUrl });
+        catWashTrace('TV', 'Sending KEYCODE_BACK to dismiss any Fire TV overlay, then re-focusing Silk');
+        try {
+          await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_BACK' }, 'FireStick BACK');
+          console.log(`${logPrefix} Fire Stick BACK sent (dismiss overlay)`);
+          await new Promise(r => setTimeout(r, 1000));
+        } catch (e: any) {
+          console.warn(`${logPrefix} Fire Stick BACK failed: ${e.message}`);
+        }
+
+        try {
+          await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'monkey -p com.amazon.cloud9 -c android.intent.category.LAUNCHER 1' }, 'FireStick Launch Silk via monkey');
+          console.log(`${logPrefix} Silk launched via monkey command`);
+        } catch (e: any) {
+          console.warn(`${logPrefix} Silk monkey launch failed: ${e.message} — trying input-based approach`);
           try {
-            await haServiceCall('media_player/play_media', {
-              entity_id: FIRE_STICK_ADB_ENTITY,
-              media_content_id: browserUrl,
-              media_content_type: 'url'
-            }, 'FireStick play_media URL');
-            console.log(`${logPrefix} Silk browser opened via play_media`);
-            setTimeout(async () => {
-              try {
-                await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'settings put global policy_control immersive.full=com.amazon.cloud9' }, 'FireStick Immersive');
-                console.log(`${logPrefix} Fire Stick immersive mode set`);
-              } catch (e: any) {
-                console.log(`${logPrefix} Fire Stick immersive failed: ${e.message}`);
-              }
-            }, 5000);
-          } catch (e: any) {
-            console.warn(`${logPrefix} play_media URL failed: ${e.message}`);
+            await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_BUTTON_1' }, 'FireStick Recents');
+            await new Promise(r => setTimeout(r, 2000));
+            await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_DPAD_CENTER' }, 'FireStick Select Silk');
+            console.log(`${logPrefix} Attempted Silk via recents`);
+          } catch (e2: any) {
+            console.warn(`${logPrefix} Recents approach also failed: ${e2.message}`);
           }
-        } else {
-          console.log(`${logPrefix} No TV follow URL set — skipping browser open`);
+        }
+
+        try {
+          await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'settings put global policy_control immersive.full=com.amazon.cloud9' }, 'FireStick Immersive');
+          console.log(`${logPrefix} Fire Stick immersive mode set`);
+        } catch (e: any) {
+          console.log(`${logPrefix} Fire Stick immersive failed: ${e.message}`);
         }
 
         catWashTrace('TV', `SETUP COMPLETE`);
