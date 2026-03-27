@@ -17100,7 +17100,7 @@ export default function Dashboard() {
                         >
                           <MessageSquare className="w-3 h-3" strokeWidth={2.5} />
                         </button>
-                        <div className="flex-shrink-0" style={{ width: '33px', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', paddingLeft: '0px' }}>
+                        <div className="flex-shrink-0" style={{ width: '33px', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', paddingLeft: '0px', marginLeft: '15px' }}>
                         {(() => {
                           const cc = semCourse.code.replace(/\s/g, '');
                           let dm = courseDeliveryModes[cc] || '';
