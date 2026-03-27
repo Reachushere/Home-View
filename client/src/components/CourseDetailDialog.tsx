@@ -2784,25 +2784,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             </div>
 
             {showAssignments && (<>
-            {totalWeight > 0 && (
-              <div className="mb-2">
-                <div className="flex items-center gap-2 text-[9px] mb-1">
-                  <span className="text-white">Grade Weight</span>
-                  <span className={`font-medium ${Math.abs(totalWeight - 100) < 0.005 ? "text-green-400" : totalWeight > 100 ? "text-red-400" : "text-amber-400"}`}>
-                    {totalWeight.toFixed(2)}%{Math.abs(totalWeight - 100) < 0.005 ? " ✓" : totalWeight > 100 ? " !" : ""}
-                  </span>
-                </div>
-                <div className="w-full bg-white/10 rounded-full h-1.5">
-                  <div
-                    className="h-1.5 rounded-full transition-all"
-                    style={{
-                      width: `${Math.min(totalWeight, 100)}%`,
-                      backgroundColor: totalWeight === 100 ? "#22c55e" : totalWeight > 100 ? "#ef4444" : "#f59e0b",
-                    }}
-                  />
-                </div>
-              </div>
-            )}
 
             {showAddForm && (
               <div className="bg-white/5 border border-white/15 rounded-lg p-3 mb-3 space-y-2" data-testid="add-assignment-form">
@@ -3004,8 +2985,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 <div className="flex items-end px-1.5 py-1 text-[8px] font-bold text-white" style={{ margin: '0 4px', letterSpacing: '0' }}>
                   <div className="flex-shrink-0" style={{ width: '14px', marginRight: '10px' }} />
                   <div className="flex-shrink-0" style={{ width: '16px', marginRight: '10px' }} />
-                  <div className="flex-shrink-0 flex justify-center" style={{ width: '19px', marginLeft: '3px', marginRight: '10px', overflow: 'visible' }}>
+                  <div className="flex-shrink-0 flex justify-center" style={{ width: '15px', marginLeft: '3px', marginRight: '10px', overflow: 'visible' }}>
                     <span className="text-[8px] font-bold text-white" style={{ whiteSpace: 'nowrap' }}>Assign</span>
+                  </div>
+                  <div className="flex-shrink-0 flex justify-center" style={{ width: '14px', marginLeft: '8px', marginRight: '4px', overflow: 'visible' }}>
                   </div>
                   <div className="flex-shrink-0 flex justify-center" style={{ width: '19px', marginLeft: '17px', marginRight: '10px', overflow: 'visible' }}>
                     <span className="text-[8px] font-bold text-white" style={{ whiteSpace: 'nowrap' }}>Comments</span>

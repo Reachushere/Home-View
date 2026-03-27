@@ -16932,16 +16932,16 @@ export default function Dashboard() {
                 {(() => {
                   const semesterMeta = [
                     { key: 'ss2025', year: 2025, label: 'Spring/Summer 2025', dates: 'May 5 – August 8, 2025' },
-                    { key: 'f2025', year: 2025, label: 'Fall 2025', dates: 'September 1 – December 31, 2025' },
-                    { key: 'w2026', year: 2026, label: 'Winter 2026', dates: 'January 1 – April 30, 2026' },
-                    { key: 'ss2026', year: 2026, label: 'Spring/Summer 2026', dates: 'May 4 – August 4, 2026' },
-                    { key: 'f2026', year: 2026, label: 'Fall 2026', dates: 'September 1 – December 31, 2026' },
-                    { key: 'w2027', year: 2027, label: 'Winter 2027', dates: 'January 1 – April 30, 2027' },
+                    { key: 'f2025', year: 2025, label: 'Fall 2025', dates: 'September 8 – December 12, 2025' },
+                    { key: 'w2026', year: 2026, label: 'Winter 2026', dates: 'January 12 – April 17, 2026' },
+                    { key: 'ss2026', year: 2026, label: 'Spring/Summer 2026', dates: 'May 4 – August 7, 2026' },
+                    { key: 'f2026', year: 2026, label: 'Fall 2026', dates: 'September 7 – December 11, 2026' },
+                    { key: 'w2027', year: 2027, label: 'Winter 2027', dates: 'January 11 – April 16, 2027' },
                     { key: 'ss2027', year: 2027, label: 'Spring/Summer 2027', dates: 'May 3 – August 6, 2027' },
-                    { key: 'f2027', year: 2027, label: 'Fall 2027', dates: 'September 1 – December 31, 2027' },
-                    { key: 'w2028', year: 2028, label: 'Winter 2028', dates: 'January 1 – April 30, 2028' },
+                    { key: 'f2027', year: 2027, label: 'Fall 2027', dates: 'September 13 – December 17, 2027' },
+                    { key: 'w2028', year: 2028, label: 'Winter 2028', dates: 'January 10 – April 14, 2028' },
                     { key: 'ss2028', year: 2028, label: 'Spring/Summer 2028', dates: 'May 1 – August 4, 2028' },
-                    { key: 'f2028', year: 2028, label: 'Fall 2028', dates: 'September 1 – December 31, 2028' },
+                    { key: 'f2028', year: 2028, label: 'Fall 2028', dates: 'September 11 – December 15, 2028' },
                   ];
                   const semesterDefs = semesterMeta.map(m => ({ ...m, courses: semesterCourseAssignments[m.key] || [] }));
 
@@ -16949,9 +16949,16 @@ export default function Dashboard() {
                   const currentSemKey = (() => {
                     const now = new Date();
                     if (now >= new Date('2025-05-05') && now <= new Date('2025-08-08')) return 'ss2025';
-                    if (now >= new Date('2025-09-01') && now <= new Date('2025-12-31')) return 'f2025';
-                    if (now >= new Date('2026-01-01') && now <= new Date('2026-04-30')) return 'w2026';
-                    if (now >= new Date('2026-05-04') && now <= new Date('2026-08-04')) return 'ss2026';
+                    if (now >= new Date('2025-09-08') && now <= new Date('2025-12-12')) return 'f2025';
+                    if (now >= new Date('2026-01-12') && now <= new Date('2026-04-17')) return 'w2026';
+                    if (now >= new Date('2026-05-04') && now <= new Date('2026-08-07')) return 'ss2026';
+                    if (now >= new Date('2026-09-07') && now <= new Date('2026-12-11')) return 'f2026';
+                    if (now >= new Date('2027-01-11') && now <= new Date('2027-04-16')) return 'w2027';
+                    if (now >= new Date('2027-05-03') && now <= new Date('2027-08-06')) return 'ss2027';
+                    if (now >= new Date('2027-09-13') && now <= new Date('2027-12-17')) return 'f2027';
+                    if (now >= new Date('2028-01-10') && now <= new Date('2028-04-14')) return 'w2028';
+                    if (now >= new Date('2028-05-01') && now <= new Date('2028-08-04')) return 'ss2028';
+                    if (now >= new Date('2028-09-11') && now <= new Date('2028-12-15')) return 'f2028';
                     return '';
                   })();
                   if (currentSemKey) {
@@ -16969,9 +16976,9 @@ export default function Dashboard() {
                   }
 
                   const semStartDates: Record<string, string> = {
-                    'ss2025': '2025-05-05', 'f2025': '2025-09-01', 'w2026': '2026-01-01',
-                    'ss2026': '2026-05-04', 'f2026': '2026-09-01', 'w2027': '2027-01-01',
-                    'ss2027': '2027-05-03', 'f2027': '2027-09-01', 'w2028': '2028-01-01', 'ss2028': '2028-05-01', 'f2028': '2028-09-01',
+                    'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12',
+                    'ss2026': '2026-05-04', 'f2026': '2026-09-07', 'w2027': '2027-01-11',
+                    'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10', 'ss2028': '2028-05-01', 'f2028': '2028-09-11',
                   };
                   const hasSemStarted = (key: string) => {
                     const start = semStartDates[key];
@@ -17103,7 +17110,7 @@ export default function Dashboard() {
                             : dm === 'online' ? <img src={wifiLogoPath} alt="Online" style={{ width: '13px', height: 'auto', opacity: 0.9 }} /> : null;
                         })()}
                         </div>
-                        <span className="text-[10px] truncate min-w-0 flex-1 cursor-pointer hover:underline" style={{ marginLeft: '8px' }} onClick={(e) => { e.stopPropagation(); const certKey = pastEntry?.certKey || semCourse.code; startTransition(() => setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey })); }} data-testid={`course-name-click-${semCourse.code}`}><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
+                        <span className="text-[10px] truncate min-w-0 flex-1 cursor-pointer hover:underline" style={{ marginLeft: '28px' }} onClick={(e) => { e.stopPropagation(); const certKey = pastEntry?.certKey || semCourse.code; startTransition(() => setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey })); }} data-testid={`course-name-click-${semCourse.code}`}><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
                         <div className="flex items-center gap-1 flex-shrink-0" style={{ marginRight: '-3px' }}>
                           {(() => {
                             const profName = currentCourse?.professor || profInfo.professor;
