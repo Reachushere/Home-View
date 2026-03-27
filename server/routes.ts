@@ -10222,8 +10222,9 @@ document.body.removeChild(a);
       const haHeaders0 = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
 
       let lightState = 'unknown';
-      const bodyState = req.body?.state || req.body?.new_state?.state || req.body?.to_state || '';
+      const bodyState = req.body?.state || req.body?.new_state?.state || req.body?.to_state || req.body?.trigger?.to_state?.state || '';
       const bodyAction = req.body?.action || '';
+      console.log(`[Cat Lights] Body parsing: state="${bodyState}", action="${bodyAction}", trigger=${JSON.stringify(req.body?.trigger || 'none')}`);
       if (bodyState === 'on' || bodyState === 'off') {
         lightState = bodyState;
         console.log(`[Cat Lights] Using body state directly: ${lightState}`);
@@ -10234,14 +10235,31 @@ document.body.removeChild(a);
         lightState = 'on';
         console.log(`[Cat Lights] Using body action as ON: ${bodyAction}`);
       } else {
-        await new Promise(r => setTimeout(r, 300));
+        await new Promise(r => setTimeout(r, 1000));
         for (let attempt = 1; attempt <= 3; attempt++) {
           try {
             const lightResp = await fetch(`${haUrl0}/api/states/${CAT_LIGHTS_ENTITY}`, { headers: haHeaders0 });
             if (lightResp.ok) {
               const lightData = await lightResp.json();
               lightState = lightData?.state || 'unknown';
-              if (lightState !== 'unknown') break;
+              if (lightState !== 'unknown') {
+                if (attempt === 1 && lightState === 'on') {
+                  console.log(`[Cat Lights] First query returned ON — verifying with second query after 500ms`);
+                  await new Promise(r => setTimeout(r, 500));
+                  try {
+                    const verifyResp2 = await fetch(`${haUrl0}/api/states/${CAT_LIGHTS_ENTITY}`, { headers: haHeaders0 });
+                    if (verifyResp2.ok) {
+                      const verifyData2 = await verifyResp2.json();
+                      const confirmedState = verifyData2?.state || 'unknown';
+                      if (confirmedState === 'off') {
+                        console.log(`[Cat Lights] Second query shows OFF — light was briefly on or transitioning. Using OFF.`);
+                        lightState = 'off';
+                      }
+                    }
+                  } catch {}
+                }
+                break;
+              }
             }
           } catch (e: any) {
             console.log(`[Cat Lights] Attempt ${attempt}/3 failed to query light state: ${e.message}`);
