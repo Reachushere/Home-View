@@ -22506,6 +22506,7 @@ export default function Dashboard() {
                         {pd.moduleP.hasFiles && (
                           <>
                             <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px', ...(pd.courseCode.toUpperCase().startsWith('CPPA') ? { position: 'relative' as const, top: '2px' } : {}) }}>
+                              <Paperclip className="h-[8px] w-[8px] text-white flex-shrink-0" style={{ filter: 'drop-shadow(0 0 2px rgba(0,0,0,0.5))' }} />
                               <span className="text-[8px] font-normal leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>Module Week {selectedWeek}</span>
                             </div>
                             <div className="flex items-center gap-[5px]" style={{ position: 'relative' }}>
@@ -23694,6 +23695,7 @@ export default function Dashboard() {
                             ) : (
                               <>
                                 <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px' }}>
+                                  <Paperclip className="h-[8px] w-[8px] text-white flex-shrink-0" style={{ filter: 'drop-shadow(0 0 2px rgba(0,0,0,0.5))' }} />
                                   <span className="text-[8px] font-normal leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>Module Week {selectedWeek}</span>
                                   {pd.moduleUnread > 0 && pd.moduleP.percent < 100 && (
                                     <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, position: 'absolute', right: '68px' }}>
