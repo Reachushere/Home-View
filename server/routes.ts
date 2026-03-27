@@ -8154,11 +8154,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     startToothbrushPolling();
 
     const lightsNavTimestamp = Date.now();
-    await Promise.all([
-      setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: lightsNavTimestamp }, true, 'master'),
-      setTabletCommand({ action: 'navigate', url: tvFollowUrl, timestamp: lightsNavTimestamp }, true, 'tv'),
-    ]);
-    console.log(`${logPrefix} tablet-nav set for devices`);
+    await setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: lightsNavTimestamp }, true, 'master');
+    console.log(`${logPrefix} tablet-nav set for master (TV nav deferred until Silk launches)`);
 
     const textExtractionPromise = extractFileText(fileToPlay);
 
@@ -8285,6 +8282,14 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         }
 
         await new Promise(r => setTimeout(r, 5000));
+
+        try {
+          await haServiceCall('androidtv/adb_command', { entity_id: tabletEntity, command: 'am force-stop com.amazon.cloud9' }, 'Tablet Force-Stop Silk Pre');
+          console.log(`${logPrefix} Tablet force-stop Silk before launch: OK`);
+          await new Promise(r => setTimeout(r, 2000));
+        } catch (e: any) {
+          console.warn(`${logPrefix} Tablet force-stop Silk before launch failed (non-fatal): ${e.message}`);
+        }
 
         let silkOpened = false;
         for (let attempt = 1; attempt <= 4; attempt++) {
@@ -8481,19 +8486,29 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
         await new Promise(r => setTimeout(r, 2000));
 
+        try {
+          await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'am force-stop com.amazon.cloud9' }, 'FireStick Force-Stop Silk Pre');
+          console.log(`${logPrefix} Force-stopped Silk before fresh launch`);
+          await new Promise(r => setTimeout(r, 2000));
+        } catch (e: any) {
+          console.warn(`${logPrefix} Force-stop Silk failed (non-fatal): ${e.message}`);
+        }
+
         let silkLaunched = false;
-        for (let silkAttempt = 1; silkAttempt <= 4; silkAttempt++) {
+        for (let silkAttempt = 1; silkAttempt <= 3; silkAttempt++) {
           try {
-            await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'monkey -p com.amazon.cloud9 -c android.intent.category.LAUNCHER 1' }, `FireStick Launch Silk monkey ${silkAttempt}`);
-            console.log(`${logPrefix} Silk launched via monkey (attempt ${silkAttempt})`);
+            const silkCmd = tvFollowUrl
+              ? `am start --activity-clear-task -a android.intent.action.VIEW -d "${tvFollowUrl}" com.amazon.cloud9`
+              : 'monkey -p com.amazon.cloud9 -c android.intent.category.LAUNCHER 1';
+            await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: silkCmd }, `FireStick Launch Silk ${silkAttempt}`);
+            console.log(`${logPrefix} Silk launched with URL (attempt ${silkAttempt})`);
             silkLaunched = true;
             break;
           } catch (e: any) {
-            console.warn(`${logPrefix} Silk monkey attempt ${silkAttempt}/4 failed: ${e.message}`);
-            if (silkAttempt < 4) {
-              const waitMs = silkAttempt === 1 ? 4000 : silkAttempt === 2 ? 6000 : 8000;
-              if (silkAttempt === 3) {
-                console.log(`${logPrefix} Sending WAKEUP + HOME before final monkey attempt`);
+            console.warn(`${logPrefix} Silk launch attempt ${silkAttempt}/3 failed: ${e.message}`);
+            if (silkAttempt < 3) {
+              const waitMs = silkAttempt === 1 ? 5000 : 8000;
+              if (silkAttempt === 2) {
                 try {
                   await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_WAKEUP' }, 'FireStick WAKEUP retry');
                   await new Promise(r => setTimeout(r, 1000));
@@ -8507,40 +8522,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
         if (silkLaunched) {
           await new Promise(r => setTimeout(r, 3000));
-          let fgApp = '';
-          try {
-            const fgResp = await fetch(`${haUrl}/api/states/${FIRE_STICK_ADB_ENTITY}`, { headers: haHdrs });
-            if (fgResp.ok) {
-              const fgData = await fgResp.json();
-              fgApp = fgData?.attributes?.app_id || fgData?.attributes?.app_name || '';
-              console.log(`${logPrefix} Fire Stick foreground app: ${fgApp} (state: ${fgData?.state})`);
-            }
-          } catch (e: any) {
-            console.warn(`${logPrefix} Could not check foreground app: ${e.message}`);
-          }
-          if (fgApp && !fgApp.includes('cloud9') && !fgApp.includes('silk')) {
-            console.log(`${logPrefix} Silk is NOT in foreground (got: ${fgApp}), retrying monkey after 5s`);
-            await new Promise(r => setTimeout(r, 5000));
-            try {
-              await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'monkey -p com.amazon.cloud9 -c android.intent.category.LAUNCHER 1' }, 'FireStick Silk monkey post-verify');
-              console.log(`${logPrefix} Post-verify monkey sent`);
-            } catch (e: any) {
-              console.warn(`${logPrefix} Post-verify monkey failed: ${e.message}`);
-            }
-            await new Promise(r => setTimeout(r, 3000));
-          } else {
-            console.log(`${logPrefix} Silk appears to be in foreground — good`);
-          }
-
-          if (tvFollowUrl) {
-            console.log(`${logPrefix} Navigating Silk to reader URL via am start`);
-            try {
-              await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: `am start -a android.intent.action.VIEW -d "${tvFollowUrl}" com.amazon.cloud9` }, 'FireStick Silk Navigate URL');
-              console.log(`${logPrefix} Silk URL navigation sent`);
-            } catch (e: any) {
-              console.warn(`${logPrefix} Silk URL am start failed (non-fatal): ${e.message}`);
-            }
-          }
+          console.log(`${logPrefix} Setting TV tablet-nav command now that Silk is launched`);
+          await setTabletCommand({ action: 'navigate', url: tvFollowUrl, timestamp: Date.now() }, true, 'tv');
         }
 
         try {
