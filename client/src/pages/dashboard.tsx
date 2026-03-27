@@ -2284,7 +2284,7 @@ export default function Dashboard() {
     const semStartDatesMap: Record<string, string> = {
       'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12',
       'ss2026': '2026-05-04', 'f2026': '2026-09-07', 'w2027': '2027-01-11',
-      'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10', 'ss2028': '2028-05-01', 'f2028': '2028-09-11',
+      'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10', 'ss2028': '2028-05-01', 'f2028': '2028-09-11', 'w2029': '2029-01-08',
     };
     const futureSems = semesterKeyOrder.filter(k => {
       const start = semStartDatesMap[k];
@@ -3419,7 +3419,7 @@ export default function Dashboard() {
     const semStartDates: Record<string, string> = {
       'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12',
       'ss2026': '2026-05-04', 'f2026': '2026-09-07', 'w2027': '2027-01-11',
-      'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10',
+      'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10', 'ss2028': '2028-05-01', 'f2028': '2028-09-11', 'w2029': '2029-01-08',
     };
     const semesterDefs = [
       { key: 'ss2025', courses: ['CPPA101','CPPA120','CPPA102'] },
@@ -16949,6 +16949,7 @@ export default function Dashboard() {
                     { key: 'w2028', year: 2028, label: 'Winter 2028', dates: 'January 10 – April 14, 2028' },
                     { key: 'ss2028', year: 2028, label: 'Spring/Summer 2028', dates: 'May 1 – August 4, 2028' },
                     { key: 'f2028', year: 2028, label: 'Fall 2028', dates: 'September 11 – December 15, 2028' },
+                    { key: 'w2029', year: 2029, label: 'Winter 2029', dates: 'January 8 – April 13, 2029' },
                   ];
                   const semesterDefs = semesterMeta.map(m => ({ ...m, courses: semesterCourseAssignments[m.key] || [] }));
 
@@ -16966,6 +16967,7 @@ export default function Dashboard() {
                     if (now >= new Date('2028-01-10') && now <= new Date('2028-04-14')) return 'w2028';
                     if (now >= new Date('2028-05-01') && now <= new Date('2028-08-04')) return 'ss2028';
                     if (now >= new Date('2028-09-11') && now <= new Date('2028-12-15')) return 'f2028';
+                    if (now >= new Date('2029-01-08') && now <= new Date('2029-04-13')) return 'w2029';
                     return '';
                   })();
                   if (currentSemKey) {
@@ -16985,7 +16987,7 @@ export default function Dashboard() {
                   const semStartDates: Record<string, string> = {
                     'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12',
                     'ss2026': '2026-05-04', 'f2026': '2026-09-07', 'w2027': '2027-01-11',
-                    'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10', 'ss2028': '2028-05-01', 'f2028': '2028-09-11',
+                    'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10', 'ss2028': '2028-05-01', 'f2028': '2028-09-11', 'w2029': '2029-01-08',
                   };
                   const hasSemStarted = (key: string) => {
                     const start = semStartDates[key];
@@ -17107,7 +17109,7 @@ export default function Dashboard() {
                         >
                           <MessageSquare className="w-3 h-3" strokeWidth={2.5} />
                         </button>
-                        <div className="flex-shrink-0" style={{ width: '33px', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', paddingLeft: '0px', marginLeft: '8px' }}>
+                        <div className="flex-shrink-0" style={{ width: '33px', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', paddingLeft: '0px', marginLeft: '5px' }}>
                         {(() => {
                           const cc = semCourse.code.replace(/\s/g, '');
                           let dm = courseDeliveryModes[cc] || '';
@@ -17118,7 +17120,7 @@ export default function Dashboard() {
                             : dm === 'online' ? <img src={wifiLogoPath} alt="Online" style={{ width: '13px', height: 'auto', opacity: 0.9 }} /> : null;
                         })()}
                         </div>
-                        <span className="text-[10px] truncate min-w-0 flex-1 cursor-pointer hover:underline" style={{ marginLeft: '11px' }} onClick={(e) => { e.stopPropagation(); const certKey = pastEntry?.certKey || semCourse.code; startTransition(() => setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey })); }} data-testid={`course-name-click-${semCourse.code}`}><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
+                        <span className="text-[10px] truncate min-w-0 flex-1 cursor-pointer hover:underline" style={{ marginLeft: '5px' }} onClick={(e) => { e.stopPropagation(); const certKey = pastEntry?.certKey || semCourse.code; startTransition(() => setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey })); }} data-testid={`course-name-click-${semCourse.code}`}><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
                         <div className="flex items-center gap-1 flex-shrink-0" style={{ marginRight: '-3px' }}>
                           {(() => {
                             const profName = currentCourse?.professor || profInfo.professor;
@@ -17238,7 +17240,7 @@ export default function Dashboard() {
                                 }
                               }}
                             >
-                              <div className="px-2 py-1.5 border-b flex items-center justify-between flex-shrink-0" style={{ background: isCurrentSem ? 'rgba(10,15,30,0.85)' : (() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); return isPast ? 'rgba(160,160,160,0.35)' : 'transparent'; })(), borderColor: isCurrentSem ? '#ffffff' : (() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); return isPast ? 'rgba(150,150,150,0.5)' : 'rgba(255,255,255,0.3)'; })(), ...(isCurrentSem ? { boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)' } : {}), position: 'relative' }}>
+                              <div className="px-2 py-1.5 border-b flex items-center justify-between flex-shrink-0" style={{ background: isCurrentSem ? 'rgba(10,15,30,0.85)' : (() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); return isPast ? 'rgba(160,160,160,0.35)' : 'transparent'; })(), borderColor: isCurrentSem ? '#ffffff' : (() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); return isPast ? 'rgba(150,150,150,0.5)' : 'rgba(255,255,255,0.3)'; })(), ...(isCurrentSem ? { boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)' } : {}), position: 'relative' }}>
                                 
                                 <div className="flex items-center gap-1.5 flex-wrap">
                                   <Settings
@@ -17250,7 +17252,7 @@ export default function Dashboard() {
                                   <span className="text-[10px] font-bold whitespace-nowrap" style={{ color: '#ffffff' }}>{sem.label}</span>
                                   <span className="text-[9px] whitespace-nowrap px-1.5 py-0.5 rounded border" style={{ color: '#ffffff', background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)' }}>{sem.dates}</span>
                                   {isCurrentSem && <span className="text-[7px] font-bold text-white bg-emerald-500/20 px-1 py-0.5 rounded-full border border-white">CURRENT</span>}
-                                  {(() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); return isPast ? <span className="text-[7px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded" style={{ color: '#ffffff', background: '#000000' }}>COMPLETE</span> : null; })()}
+                                  {(() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); return isPast ? <span className="text-[9px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded border" style={{ color: '#ffffff', background: '#000000', borderColor: 'rgba(255,255,255,0.2)' }}>COMPLETE</span> : null; })()}
                                 </div>
                                 <span className="text-[10px] text-white whitespace-nowrap ml-1">{(() => {
                                   const letterToGpa: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D': 1.0, 'F': 0 };
@@ -26978,6 +26980,7 @@ function SchoolForm({
             { key: 'w2028', label: 'Winter 2028', dates: 'January 10 – April 14, 2028' },
             { key: 'ss2028', label: 'Spring/Summer 2028', dates: 'May 1 – August 4, 2028' },
             { key: 'f2028', label: 'Fall 2028', dates: 'September 11 – December 15, 2028' },
+            { key: 'w2029', label: 'Winter 2029', dates: 'January 8 – April 13, 2029' },
           ].map(sem => {
             const isCurrent = (() => {
               const now = new Date();
@@ -26992,6 +26995,7 @@ function SchoolForm({
               if (sem.key === 'w2028' && now >= new Date('2028-01-10') && now <= new Date('2028-04-14')) return true;
               if (sem.key === 'ss2028' && now >= new Date('2028-05-01') && now <= new Date('2028-08-04')) return true;
               if (sem.key === 'f2028' && now >= new Date('2028-09-11') && now <= new Date('2028-12-15')) return true;
+              if (sem.key === 'w2029' && now >= new Date('2029-01-08') && now <= new Date('2029-04-13')) return true;
               return false;
             })();
             return (
