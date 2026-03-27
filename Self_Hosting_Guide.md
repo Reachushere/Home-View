@@ -588,7 +588,7 @@ rest_command:
     headers:
       Content-Type: "application/json"
       x-webhook-secret: "YOUR_SITE_PASSWORD"
-    payload: '{"entity_id":"media_player.nestaudio6787"}'
+    payload: '{"entity_id":"media_player.bathroom_speaker"}'
 ```
 
 ---
@@ -731,7 +731,7 @@ The cat washroom has a study reading system that plays your school readings alou
 | HA Voice ESPHome Device | `media_player.home_assistant_voice_097c38_media_player` | Voice prompts ("Would you like to play...?") |
 | Fire Tablet (Cat WR) | `media_player.tablet_cat` | Displays PDF reader page with synced text |
 | Samsung TV (Cat WR) | `media_player.tv_cat_wr` | Displays PDF reader follow-along page |
-| Fire Stick (Cat WR TV) | `media_player.fire_stick_cat_wr` | Drives Samsung TV display via HDMI |
+| Fire Stick (Cat WR TV) | `media_player.fire_tv_172_24_0_88` | Drives Samsung TV display via HDMI |
 | Echo Cat Left | `media_player.echo_cat_left_am` | CHUM FM playback (Echo speaker group) |
 | Echo Cat Right | `media_player.echo_cat_right_am` | CHUM FM playback (Echo speaker group) |
 | Echo Cat Middle | `media_player.echo_cat_washroom_middle` | CHUM FM playback (Echo speaker group) |
@@ -833,8 +833,8 @@ The cat washroom has a study reading system that plays your school readings alou
 
 **1. If a reading is actively playing:**
 - Save current chunk progress to database
-- Stop Nest speaker: `media_player/media_stop` on `media_player.nestaudio6787`
-- Turn off Fire Stick: `media_player/turn_off` on `media_player.fire_stick_cat_wr`
+- Stop Nest speaker: `media_player/media_stop` on `media_player.bathroom_speaker`
+- Turn off Fire Stick: `media_player/turn_off` on `media_player.fire_tv_172_24_0_88`
 - Turn off Samsung TV: `media_player/turn_off` on `media_player.tv_cat_wr`
 - Play goodbye TTS on Nest speaker:
 
@@ -848,7 +848,7 @@ The cat washroom has a study reading system that plays your school readings alou
 - Stop the TTS session
 
 **3. Stop all cat washroom speakers (always, even if nothing was playing):**
-- `media_player/media_stop` on `media_player.nestaudio6787`
+- `media_player/media_stop` on `media_player.bathroom_speaker`
 - `media_player/media_stop` on all 3 Echo speakers (`echo_cat_left_am`, `echo_cat_right_am`, `echo_cat_washroom_middle`)
 - `media_player/media_stop` on `media_player.cat_washroom_media_group`
 
@@ -884,7 +884,7 @@ The cat washroom has a study reading system that plays your school readings alou
 - ADB: `input keyevent KEYCODE_F11` — fullscreen
 
 **TV Setup**:
-- `media_player/turn_on` on `media_player.fire_stick_cat_wr` — wake Fire Stick
+- `media_player/turn_on` on `media_player.fire_tv_172_24_0_88` — wake Fire Stick
 - `media_player/turn_on` on `media_player.tv_cat_wr` — turn on Samsung TV
 - Wait 3 seconds (let TV boot)
 - `media_player/select_source` on `media_player.tv_cat_wr`, source: `"HDMI1"` — switch to Fire Stick input
@@ -911,7 +911,7 @@ For each chunk (starting from resume point):
 - Check session is still valid (not cancelled, not stale)
 - Generate or use pre-prepared TTS audio for this chunk
 - Play on Nest speaker:
-  - `media_player/media_stop` on `media_player.nestaudio6787`
+  - `media_player/media_stop` on `media_player.bathroom_speaker`
   - `media_player/volume_set` @ 0.75
   - `media_player/play_media` with the audio URL
 - Wait for estimated chunk duration (word count / 175 wpm + 1 second buffer)
@@ -972,7 +972,7 @@ For each chunk (starting from resume point):
 ### Step-by-step:
 
 **1. Query which speakers are currently active:**
-- Check state of `media_player.nestaudio6787` (Nest)
+- Check state of `media_player.bathroom_speaker` (Nest)
 - Check state of `media_player.cat_washroom_media_group` (Echo group)
 - Active = state is `"playing"`, `"paused"`, or `"buffering"`
 - If none active, default to Nest speaker
@@ -1178,7 +1178,9 @@ The chunk playback loop has a circuit breaker that triggers after 3 consecutive 
 | Context | Volume |
 |---------|--------|
 | Voice prompts ("Would you like to play?") | 0.35 |
-| Reading playback (Nest + HA Voice) | 0.45 |
+| HA Voice confirmation prompt | 0.45 |
+| Nest pre-confirm / playback | 0.75 |
+| Fallback / cat-lights volume | 0.35 |
 
 ### 5. Confirm TTS Plays on the Nest, Not HA Voice
 
