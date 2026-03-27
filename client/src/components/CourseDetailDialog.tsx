@@ -36,6 +36,7 @@ import {
   ArrowUp,
   ArrowDown,
   Flag,
+  ClipboardList,
 } from "lucide-react";
 import zoomLogoPath from "@assets/Zoom2_1773776262533.png";
 import wifiLogoPath from "@assets/Wifi_1773656687145.png";
@@ -2309,7 +2310,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             </div>
           )}
 
-          <div style={{ padding: `${isEditingInfo ? 12 : 4}px 12px 12px 12px`, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div style={{ padding: `${isEditingInfo ? 12 : 0}px 12px 12px 12px`, display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <div ref={weekMappingsRef}>
             <div style={{ border: '2px solid rgba(255,255,255,0.2)', borderRadius: '8px', padding: '12px' }}>
             <div
@@ -2759,6 +2760,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               data-testid="button-toggle-assignments"
             >
               <div className="flex items-center gap-2">
+                <ClipboardList className="h-3.5 w-3.5 text-white/70" />
                 <h3 className="text-[11px] font-medium text-white uppercase">Assignments</h3>
                 <span className="text-[9px] text-white">
                   {completedCount}/{courseTasks.length} done
