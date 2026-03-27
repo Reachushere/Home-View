@@ -270,16 +270,17 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave, onPr
                       <span className="text-white/50 text-[8px] w-6 text-right">{midStops[activeGradientStop]?.position}%</span>
                     </div>
                   )}
-                  <div className="relative rounded overflow-hidden cursor-crosshair" style={{ height: '80px', touchAction: 'none' }} data-testid={`color-area-${activeGradientStop}`}
+                  <div className="relative rounded cursor-crosshair" style={{ height: '92px', touchAction: 'none' }} data-testid={`color-area-${activeGradientStop}`}
                     onPointerDown={(e) => {
                       e.preventDefault();
                       const el = e.currentTarget;
                       el.setPointerCapture(e.pointerId);
                       const rect = el.getBoundingClientRect();
+                      const pad = 6;
                       const hue = hexToHue(getActiveColor());
                       const update = (ev: PointerEvent) => {
-                        const x = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
-                        const y = Math.max(0, Math.min(1, (ev.clientY - rect.top) / rect.height));
+                        const x = Math.max(0, Math.min(1, (ev.clientX - rect.left - pad) / (rect.width - pad * 2)));
+                        const y = Math.max(0, Math.min(1, (ev.clientY - rect.top - pad) / (rect.height - pad * 2)));
                         setActiveColor(svToHex(hue, x, y));
                       };
                       update(e.nativeEvent);
@@ -288,12 +289,12 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave, onPr
                       window.addEventListener('pointermove', onMove);
                       window.addEventListener('pointerup', onUp);
                     }}>
-                    <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(to right, white, hsl(${hexToHue(getActiveColor())}, 100%, 50%))` }} />
-                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent, black)' }} />
+                    <div style={{ position: 'absolute', top: '6px', left: '6px', right: '6px', bottom: '6px', borderRadius: '3px', background: `linear-gradient(to right, white, hsl(${hexToHue(getActiveColor())}, 100%, 50%))` }} />
+                    <div style={{ position: 'absolute', top: '6px', left: '6px', right: '6px', bottom: '6px', borderRadius: '3px', background: 'linear-gradient(to bottom, transparent, black)' }} />
                     {(() => {
                       const pos = hexToSvPos(getActiveColor());
                       return (
-                        <div style={{ position: 'absolute', left: `${pos.x * 100}%`, top: `${pos.y * 100}%`, transform: 'translate(-50%, -50%)', width: '12px', height: '12px', borderRadius: '50%', border: '2px solid white', boxShadow: '0 0 3px rgba(0,0,0,0.5), inset 0 0 1px rgba(0,0,0,0.3)', pointerEvents: 'none', backgroundColor: getActiveColor() }} />
+                        <div style={{ position: 'absolute', left: `calc(6px + ${pos.x} * (100% - 12px))`, top: `calc(6px + ${pos.y} * (100% - 12px))`, transform: 'translate(-50%, -50%)', width: '12px', height: '12px', borderRadius: '50%', border: '2px solid white', boxShadow: '0 0 3px rgba(0,0,0,0.5), inset 0 0 1px rgba(0,0,0,0.3)', pointerEvents: 'none', backgroundColor: getActiveColor() }} />
                       );
                     })()}
                   </div>
@@ -366,16 +367,17 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave, onPr
                   <span className="text-white/60 text-[8px] uppercase tracking-wider">{labelMap[activeSwatchPicker]} Colour</span>
                   <button className="ml-auto text-white/40 hover:text-white" onClick={() => setActiveSwatchPicker(null)} data-testid="button-close-swatch-picker"><X className="w-3 h-3" /></button>
                 </div>
-                <div className="relative rounded overflow-hidden cursor-crosshair" style={{ height: '80px', touchAction: 'none' }} data-testid={`swatch-color-area-${activeSwatchPicker}`}
+                <div className="relative rounded cursor-crosshair" style={{ height: '92px', touchAction: 'none' }} data-testid={`swatch-color-area-${activeSwatchPicker}`}
                   onPointerDown={(e) => {
                     e.preventDefault();
                     const el = e.currentTarget;
                     el.setPointerCapture(e.pointerId);
                     const rect = el.getBoundingClientRect();
+                    const pad = 6;
                     const hue = hexToHue(hexVal);
                     const update = (ev: PointerEvent) => {
-                      const x = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
-                      const y = Math.max(0, Math.min(1, (ev.clientY - rect.top) / rect.height));
+                      const x = Math.max(0, Math.min(1, (ev.clientX - rect.left - pad) / (rect.width - pad * 2)));
+                      const y = Math.max(0, Math.min(1, (ev.clientY - rect.top - pad) / (rect.height - pad * 2)));
                       setSwatchColor(svToHex(hue, x, y));
                     };
                     update(e.nativeEvent);
@@ -384,12 +386,12 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave, onPr
                     window.addEventListener('pointermove', onMove);
                     window.addEventListener('pointerup', onUp);
                   }}>
-                  <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(to right, white, hsl(${hexToHue(hexVal)}, 100%, 50%))` }} />
-                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent, black)' }} />
+                  <div style={{ position: 'absolute', top: '6px', left: '6px', right: '6px', bottom: '6px', borderRadius: '3px', background: `linear-gradient(to right, white, hsl(${hexToHue(hexVal)}, 100%, 50%))` }} />
+                  <div style={{ position: 'absolute', top: '6px', left: '6px', right: '6px', bottom: '6px', borderRadius: '3px', background: 'linear-gradient(to bottom, transparent, black)' }} />
                   {(() => {
                     const pos = hexToSvPos(hexVal);
                     return (
-                      <div style={{ position: 'absolute', left: `${pos.x * 100}%`, top: `${pos.y * 100}%`, transform: 'translate(-50%, -50%)', width: '12px', height: '12px', borderRadius: '50%', border: '2px solid white', boxShadow: '0 0 3px rgba(0,0,0,0.5), inset 0 0 1px rgba(0,0,0,0.3)', pointerEvents: 'none', backgroundColor: hexVal }} />
+                      <div style={{ position: 'absolute', left: `calc(6px + ${pos.x} * (100% - 12px))`, top: `calc(6px + ${pos.y} * (100% - 12px))`, transform: 'translate(-50%, -50%)', width: '12px', height: '12px', borderRadius: '50%', border: '2px solid white', boxShadow: '0 0 3px rgba(0,0,0,0.5), inset 0 0 1px rgba(0,0,0,0.3)', pointerEvents: 'none', backgroundColor: hexVal }} />
                     );
                   })()}
                 </div>
