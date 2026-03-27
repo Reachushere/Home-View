@@ -19136,7 +19136,7 @@ export default function Dashboard() {
                             </div>
                           )}
                           {day.getDay() === 6 && !isToday && (
-                            <div className="absolute top-0 left-0 right-0 text-center" style={{ fontSize: '7.5px', fontWeight: 700, letterSpacing: '0.5px', color: '#FFFF00', lineHeight: '1', paddingTop: '2px' }}>NEW SCHOOL WEEK</div>
+                            <div className="absolute top-0 left-0 right-0 text-center" style={{ fontSize: '7.5px', fontWeight: 700, letterSpacing: '0.5px', color: '#86efac', lineHeight: '1', paddingTop: '2px' }}>NEW SCHOOL WEEK</div>
                           )}
                           {!isToday && (() => {
                             const now = new Date();
