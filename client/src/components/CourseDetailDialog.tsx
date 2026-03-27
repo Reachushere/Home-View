@@ -3084,6 +3084,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 <div className="flex-shrink-0" style={{ width: '14px', marginRight: '10px' }} />
                 <div className="flex-shrink-0" style={{ width: '16px', marginRight: '10px' }} />
                 <div className="flex-shrink-0" style={{ width: '15px', marginLeft: '3px', marginRight: '10px' }} />
+                <div className="flex-shrink-0" style={{ width: '14px', marginLeft: '8px', marginRight: '4px' }} />
                 <div className="flex-shrink-0" style={{ width: '19px', marginLeft: '17px', marginRight: '10px' }} />
                 <div className="flex-1 min-w-0 text-[11px] font-bold text-white" style={{ marginLeft: '21px' }}>Totals</div>
                 <div className="flex items-center flex-shrink-0" style={{ gap: '10px', position: 'relative', left: isEditingInfo ? '-17px' : '-8px' }}>
