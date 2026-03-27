@@ -9273,7 +9273,9 @@ export default function Dashboard() {
     const today = startOfDayET(new Date());
     const courseNames = (coursesData?.courses || []).map((c: any) => c.name?.split(' - ')[0]?.trim().toUpperCase()).filter(Boolean);
     return allTasks.filter(t => {
-      if (t.isCompleted) return false;
+      if (t.isCompleted || t.isMissed) return false;
+      if (t.hideFromSummary) return false;
+      if (isCASL101Finished(t)) return false;
       if (t.type === 'class' || t.type === 'module' || t.type === 'other' || t.type === 'meeting' || t.type === 'reminder') return false;
       if (!t.courseName) return false;
       const tCode = t.courseName.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '');
