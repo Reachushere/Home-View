@@ -2760,7 +2760,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               onClick={() => { const next = !showAssignments; setShowAssignments(next); if (next) setTimeout(() => { const el = assignmentsRef.current; if (el) { const scrollParent = el.closest('.overflow-y-auto'); if (scrollParent) { scrollParent.scrollTo({ top: 0, behavior: 'smooth' }); } else { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } } }, 80); }}
               data-testid="button-toggle-assignments"
             >
-              <div className="flex items-center gap-2" style={!isEditingInfo ? { marginLeft: '4px' } : undefined}>
+              <div className="flex items-center gap-2">
                 <ClipboardList className="h-3.5 w-3.5 text-white/70" />
                 <h3 className="text-[11px] font-medium text-white uppercase">Assignments</h3>
                 <span className="text-[9px] text-white">
@@ -2991,7 +2991,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   </div>
                   <div className="flex-shrink-0 flex justify-center" style={{ width: '14px', marginLeft: '8px', marginRight: '4px', overflow: 'visible' }}>
                   </div>
-                  <div className="flex-shrink-0 flex justify-center" style={{ width: '19px', marginLeft: isEditingInfo ? '18px' : '22px', marginRight: '10px', overflow: 'visible' }}>
+                  <div className="flex-shrink-0 flex justify-center" style={{ width: '19px', marginLeft: '18px', marginRight: '10px', overflow: 'visible' }}>
                     <span className="text-[8px] font-bold text-white" style={{ whiteSpace: 'nowrap' }}>Comments</span>
                   </div>
                   <div className={`flex-1 min-w-0 ${hdrCls('title')}`} style={{ marginLeft: '22px' }} onClick={() => toggleSort('title')} data-testid="sort-title">Assignments<SortIcon field="title" />
