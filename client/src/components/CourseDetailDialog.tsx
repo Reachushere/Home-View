@@ -1482,16 +1482,18 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               {!isEditingInfo ? (
                 <div className="flex items-center gap-2">
                   {syllabusObjectPath && (
-                    <button
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => {
                         window.open(`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`, '_blank');
                       }}
-                      className="flex items-center gap-1 text-[10px] text-white hover:text-white/80 transition-colors"
+                      className="h-6 px-2 text-[10px] text-white border-white/30 hover:bg-white/10 hover:text-white bg-transparent"
                       data-testid="button-view-syllabus"
                     >
-                      <Paperclip className="w-3 h-3" />
+                      <Paperclip className="w-3 h-3 mr-1" />
                       View Syllabus
-                    </button>
+                    </Button>
                   )}
                   <button
                     onClick={() => setIsEditingInfo(true)}
@@ -1573,7 +1575,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               )}
         </div>
         <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(255,255,255,0.2) transparent" }}>
-          <div className="p-3 border-b border-white/10 space-y-2">
+          <div className="p-3 space-y-2">
             {isEditingInfo ? (
               <div className="space-y-2 text-[10px]">
                 <div className="flex items-center gap-1.5 justify-start">
@@ -2306,7 +2308,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             </div>
           )}
 
-          <div style={{ padding: '12px 30px 12px 30px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div style={{ padding: '12px 12px 12px 12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <div ref={weekMappingsRef}>
             <div style={{ border: '2px solid rgba(255,255,255,0.2)', borderRadius: '8px', padding: '12px' }}>
             <div
