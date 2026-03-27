@@ -1466,7 +1466,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               </div>
             )}
             <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-md" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}>
-              <span className="text-[9px] text-white/50">Rank</span>
+              <span className="text-[9px] text-white">Rank</span>
               <select className="h-5 text-[10px] bg-transparent border-none text-white rounded px-0.5 outline-none cursor-pointer" style={{ WebkitAppearance: 'none', appearance: 'none', paddingRight: '2px' }} value={courseRank} onChange={(e) => {
                 const val = parseInt(e.target.value);
                 onSaveCourseInfo({ courseRank: val });
