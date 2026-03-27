@@ -1465,6 +1465,19 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 <span className="text-[9px] text-white/50 flex items-center">{gradeCalc.gradedCount} graded · {gradeCalc.gradedWeight.toFixed(0)}%</span>
               </div>
             )}
+            <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-md" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}>
+              <span className="text-[9px] text-white/50">Rank</span>
+              <select className="h-5 text-[10px] bg-transparent border-none text-white rounded px-0.5 outline-none cursor-pointer" style={{ WebkitAppearance: 'none', appearance: 'none', paddingRight: '2px' }} value={courseRank} onChange={(e) => {
+                const val = parseInt(e.target.value);
+                onSaveCourseInfo({ courseRank: val });
+              }} data-testid="select-course-rank-header">
+                <option value={0} className="bg-gray-800">—</option>
+                {[1, 2, 3].map(n => {
+                  const taken = (usedRanks || []).includes(n) && courseRank !== n;
+                  return <option key={n} value={n} className="bg-gray-800" disabled={taken} style={taken ? { color: '#555' } : {}}>{n}</option>;
+                })}
+              </select>
+            </div>
           </div>
               {!isEditingInfo ? (
                 <button
@@ -1632,7 +1645,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     <input className={`w-full h-6 text-[10px] bg-white/10 text-white rounded px-1.5 placeholder:text-white/25 ${editInfo.deliveryMode === 'virtual' && !editInfo.zoomLink?.trim() ? 'border border-red-500/70' : 'border border-white/15'}`} value={editInfo.zoomLink} onChange={(e) => setEditInfo({...editInfo, zoomLink: e.target.value})} placeholder={editInfo.deliveryMode === 'virtual' ? "Required — https://zoom.us/..." : "https://zoom.us/..."} data-testid="input-edit-zoom" />
                   </div>
                 </div>
-                <div className="grid grid-cols-[1fr_130px_130px_42px] gap-2">
+                <div className="grid grid-cols-[1fr_130px_130px] gap-2">
                   <div>
                     <label className="text-white text-[9px] mb-0.5 block">Semester</label>
                     <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={semesterKeyFromTermYear(editInfo.semesterTerm, editInfo.year)} onChange={(e) => { const opt = SEMESTER_OPTIONS.find(o => o.key === e.target.value); if (opt) { setEditInfo({...editInfo, semesterTerm: opt.term, year: opt.year, startDate: opt.start, endDate: opt.end }); } else { setEditInfo({...editInfo, semesterTerm: '', year: '', startDate: '', endDate: '' }); } }} data-testid="select-edit-semester-term">
@@ -1647,16 +1660,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   <div>
                     <label className="text-white text-[9px] mb-0.5 block">End</label>
                     <input type="date" className="w-full h-6 text-[10px] bg-white/10 border border-white/15 rounded px-1" style={{ color: 'white', colorScheme: 'dark' }} value={editInfo.endDate} onChange={(e) => setEditInfo({...editInfo, endDate: e.target.value})} data-testid="input-edit-end-date" />
-                  </div>
-                  <div>
-                    <label className="text-white text-[9px] mb-0.5 block">Rank</label>
-                    <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" style={{ width: '42px' }} value={editInfo.courseRank} onChange={(e) => setEditInfo({...editInfo, courseRank: parseInt(e.target.value)})} data-testid="select-edit-course-rank">
-                      <option value={0} className="bg-gray-800">—</option>
-                      {[1, 2, 3].map(n => {
-                        const taken = (usedRanks || []).includes(n) && editInfo.courseRank !== n;
-                        return <option key={n} value={n} className="bg-gray-800" disabled={taken} style={taken ? { color: '#555' } : {}}>{n}</option>;
-                      })}
-                    </select>
                   </div>
                 </div>
                 {editInfo.deliveryMode !== 'online' && (() => {
@@ -2302,7 +2305,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             </div>
           )}
 
-          <div ref={weekMappingsRef} style={{ padding: '12px 30px' }}>
+          <div style={{ padding: '12px 30px 12px 30px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div ref={weekMappingsRef}>
             <div style={{ border: '2px solid rgba(255,255,255,0.2)', borderRadius: '8px', padding: '12px' }}>
             <div
               className="flex items-center justify-between cursor-pointer group"
@@ -2311,7 +2315,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             >
               <div className="flex items-center gap-2">
                 <Calendar className="h-3.5 w-3.5 text-white/70" />
-                <h3 className="text-[11px] font-medium text-white">Weeks and Modules</h3>
+                <h3 className="text-[11px] font-medium text-white uppercase">Weeks and Modules</h3>
                 {(() => {
                   const confirmed = Object.values(weekMappingEdits).filter(v => v.confirmed).length;
                   const total = LAST_WEEK - FIRST_WEEK + 1;
@@ -2744,7 +2748,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           </div>
           </div>
 
-          <div ref={assignmentsRef} style={{ padding: '0px 30px 12px 30px' }}>
+          <div ref={assignmentsRef}>
             <div style={{ border: '2px solid rgba(255,255,255,0.2)', borderRadius: '8px', padding: '12px' }}>
             <div
               className="flex items-center justify-between cursor-pointer group"
@@ -3113,6 +3117,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             )}
 
           </>)}
+          </div>
           </div>
         </div>
 
