@@ -16583,8 +16583,11 @@ Return ONLY the JSON object, no markdown formatting.`;
       const items = await storage.getPendingReviewItems('pending');
       const seen = new Map<string, number>();
       let removed = 0;
+      const normalizeTitle = (t: string) => t.toLowerCase().replace(/\s+/g, ' ').replace(/[^a-z0-9 ]/g, '').trim();
       for (const item of items) {
-        const key = `${item.title}||${item.startDate ? new Date(item.startDate).toISOString().split('T')[0] : 'nodate'}`;
+        const normTitle = normalizeTitle(item.title || '');
+        const dateKey = item.startDate ? new Date(item.startDate).toISOString().split('T')[0] : 'nodate';
+        const key = `${normTitle}||${dateKey}||${item.source || ''}`;
         if (seen.has(key)) {
           await storage.deletePendingReviewItem(item.id);
           removed++;

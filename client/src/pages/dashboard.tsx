@@ -9988,11 +9988,11 @@ export default function Dashboard() {
                               data-testid={`review-checkbox-${item.id}`}
                             >
                               {reviewMode === 'individual' && reviewCheckedIds.has(item.id) && (
-                                <Check className="h-5 w-5 text-green-400" />
+                                <Check className="h-4 w-4 text-green-400" />
                               )}
                             </div>
                             <div className="flex-1 min-w-0 flex items-center gap-2">
-                              <span className="text-[15px] font-medium truncate flex-1" style={{ lineHeight: '1.3' }}>{item.title}</span>
+                              <span className="text-[13px] font-medium truncate flex-1" style={{ lineHeight: '1.3' }}>{item.title}</span>
                               {item.startDate && (
                                 <span className="text-[12px] text-white flex-shrink-0">
                                   {new Date(item.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
@@ -10007,7 +10007,7 @@ export default function Dashboard() {
                             {reviewMode === 'all' && (
                               <div className="flex items-center gap-1 flex-shrink-0">
                                 <button
-                                  className="w-10 h-10 flex items-center justify-center rounded-full border border-green-500/40 text-green-400 hover:bg-green-500/25 disabled:opacity-40"
+                                  className="w-11 h-11 flex items-center justify-center rounded-full border border-green-500/40 text-green-400 hover:bg-green-500/25 disabled:opacity-40"
                                   disabled={processingReviewIds.has(item.id)}
                                   onClick={() => handleAcceptReview(item.id)}
                                   data-testid={`button-accept-review-${item.id}`}
@@ -10016,7 +10016,7 @@ export default function Dashboard() {
                                   {processingReviewIds.has(item.id) ? <Loader2 className="h-5 w-5 animate-spin" /> : <Check className="h-5 w-5" />}
                                 </button>
                                 <button
-                                  className="w-10 h-10 flex items-center justify-center rounded-full border border-red-500/40 text-red-400 hover:bg-red-500/25 disabled:opacity-40 ml-[10px]"
+                                  className="w-11 h-11 flex items-center justify-center rounded-full border border-red-500/40 text-red-400 hover:bg-red-500/25 disabled:opacity-40 ml-[10px]"
                                   disabled={processingReviewIds.has(item.id)}
                                   onClick={() => handleRejectReview(item.id)}
                                   data-testid={`button-reject-review-${item.id}`}
@@ -10028,7 +10028,7 @@ export default function Dashboard() {
                             )}
                             {reviewMode === 'individual' && reviewCheckedIds.has(item.id) && (
                               <button
-                                className="w-10 h-10 flex items-center justify-center rounded-full border border-red-500/40 text-red-400 hover:bg-red-500/25 disabled:opacity-40 flex-shrink-0"
+                                className="w-11 h-11 flex items-center justify-center rounded-full border border-red-500/40 text-red-400 hover:bg-red-500/25 disabled:opacity-40 flex-shrink-0"
                                 disabled={processingReviewIds.has(item.id)}
                                 onClick={() => handleRejectReview(item.id)}
                                 data-testid={`button-dismiss-review-${item.id}`}
