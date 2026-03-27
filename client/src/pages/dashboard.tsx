@@ -16931,17 +16931,17 @@ export default function Dashboard() {
                 </div>
                 {(() => {
                   const semesterMeta = [
-                    { key: 'ss2025', year: 2025, label: 'Spring/Summer 2025', dates: 'May 5 – Aug 8, 2025' },
-                    { key: 'f2025', year: 2025, label: 'Fall 2025', dates: 'Sep 1 – Dec 31, 2025' },
-                    { key: 'w2026', year: 2026, label: 'Winter 2026', dates: 'Jan 1 – Apr 30, 2026' },
-                    { key: 'ss2026', year: 2026, label: 'Spring/Summer 2026', dates: 'May 4 – Aug 4, 2026' },
-                    { key: 'f2026', year: 2026, label: 'Fall 2026', dates: 'Sep 1 – Dec 31, 2026' },
-                    { key: 'w2027', year: 2027, label: 'Winter 2027', dates: 'Jan 1 – Apr 30, 2027' },
-                    { key: 'ss2027', year: 2027, label: 'Spring/Summer 2027', dates: 'May 3 – Aug 6, 2027' },
-                    { key: 'f2027', year: 2027, label: 'Fall 2027', dates: 'Sep 1 – Dec 31, 2027' },
-                    { key: 'w2028', year: 2028, label: 'Winter 2028', dates: 'Jan 1 – Apr 30, 2028' },
-                    { key: 'ss2028', year: 2028, label: 'Spring/Summer 2028', dates: 'May 1 – Aug 4, 2028' },
-                    { key: 'f2028', year: 2028, label: 'Fall 2028', dates: 'Sep 1 – Dec 31, 2028' },
+                    { key: 'ss2025', year: 2025, label: 'Spring/Summer 2025', dates: 'May 5 – August 8, 2025' },
+                    { key: 'f2025', year: 2025, label: 'Fall 2025', dates: 'September 1 – December 31, 2025' },
+                    { key: 'w2026', year: 2026, label: 'Winter 2026', dates: 'January 1 – April 30, 2026' },
+                    { key: 'ss2026', year: 2026, label: 'Spring/Summer 2026', dates: 'May 4 – August 4, 2026' },
+                    { key: 'f2026', year: 2026, label: 'Fall 2026', dates: 'September 1 – December 31, 2026' },
+                    { key: 'w2027', year: 2027, label: 'Winter 2027', dates: 'January 1 – April 30, 2027' },
+                    { key: 'ss2027', year: 2027, label: 'Spring/Summer 2027', dates: 'May 3 – August 6, 2027' },
+                    { key: 'f2027', year: 2027, label: 'Fall 2027', dates: 'September 1 – December 31, 2027' },
+                    { key: 'w2028', year: 2028, label: 'Winter 2028', dates: 'January 1 – April 30, 2028' },
+                    { key: 'ss2028', year: 2028, label: 'Spring/Summer 2028', dates: 'May 1 – August 4, 2028' },
+                    { key: 'f2028', year: 2028, label: 'Fall 2028', dates: 'September 1 – December 31, 2028' },
                   ];
                   const semesterDefs = semesterMeta.map(m => ({ ...m, courses: semesterCourseAssignments[m.key] || [] }));
 
@@ -17233,7 +17233,7 @@ export default function Dashboard() {
                                     data-testid={`button-sem-settings-${sem.key}`}
                                   />
                                   <span className="text-[10px] font-bold whitespace-nowrap" style={{ color: '#ffffff' }}>{sem.label}</span>
-                                  <span className="text-[8px] whitespace-nowrap px-1.5 py-0.5 rounded border" style={{ color: '#ffffff', background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)' }}>{sem.dates}</span>
+                                  <span className="text-[9px] whitespace-nowrap px-1.5 py-0.5 rounded border" style={{ color: '#ffffff', background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)' }}>{sem.dates}</span>
                                   {isCurrentSem && <span className="text-[7px] font-bold text-white bg-emerald-500/20 px-1 py-0.5 rounded-full border border-white">CURRENT</span>}
                                   {(() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); return isPast ? <span className="text-[7px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded" style={{ color: '#ffffff', background: '#000000' }}>COMPLETE</span> : null; })()}
                                 </div>
