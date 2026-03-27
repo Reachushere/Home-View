@@ -20090,7 +20090,7 @@ export default function Dashboard() {
                             return (
                               <div
                                 key={task.id}
-                                className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer w-full min-w-0 ${isUnackedReminder ? "animate-reminder-pulse" : isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
+                                className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer w-full min-w-0 ${isUnackedReminder ? "animate-reminder-pulse" : ""}`}
                                 style={{
                                   backgroundColor: isUnackedReminder ? 'rgba(220, 38, 38, 0.25)' : otherRowColors.taskBgColor,
                                   borderColor: isUnackedReminder ? 'rgba(220, 38, 38, 0.6)' : otherRowColors.borderColor,
@@ -20128,7 +20128,7 @@ export default function Dashboard() {
                             return (
                               <div
                                 key={`proj-${proj.id}`}
-                                className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
+                                className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer`}
                                 style={{
                                   backgroundColor: otherRowColors.taskBgColor,
                                   borderColor: proj.color || otherRowColors.borderColor,
@@ -20201,7 +20201,7 @@ export default function Dashboard() {
                         >
                           <div
                             className={`group flex items-center gap-1 text-[8px] px-1 py-0.5 truncate rounded border w-full min-w-0 cursor-pointer ${
-                              isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : isDueTomorrow ? "animate-slow-blink" : ""
+                              ""
                             } ${task.isCompleted ? "text-gray-400" : "text-black"}`}
                             style={{
                               backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || (task.type === 'other' ? otherRowColors.taskBgColor : '#dbeafe')),
@@ -20641,7 +20641,7 @@ export default function Dashboard() {
                                 } ${
                                   selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
                                 } ${
-                                  isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : ""
+                                  ""
                                 }`}
                                 style={{
                                   top: `${topOffset}px`,
@@ -20805,7 +20805,7 @@ export default function Dashboard() {
                       } ${
                         selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
                       } ${
-                        isDueToday ? "animate-balloon-pulse animate-zero-day-blink" : ""
+                        ""
                       }`}
                       style={{
                         top: `${topPx}px`,
@@ -21977,7 +21977,7 @@ export default function Dashboard() {
             return (
               <div 
                 key={task.id} 
-                className={`mb-1.5 rounded transition-colors ${draggedFile ? 'hover:bg-white/20 hover:ring-2 hover:ring-white/50' : ''} ${isZeroDaysTask ? 'animate-zero-day-blink' : shouldBlinkInTodayBox || shouldBlinkAssignment ? 'animate-blink-no-sweep' : ''}`} 
+                className={`mb-1.5 rounded transition-colors ${draggedFile ? 'hover:bg-white/20 hover:ring-2 hover:ring-white/50' : ''}`} 
                 data-box-task-id={task.id} 
                 style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
                 onMouseEnter={() => setHoveredCountdownTaskIdDebounced(task.id)}
