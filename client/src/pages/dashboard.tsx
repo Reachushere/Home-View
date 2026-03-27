@@ -163,6 +163,7 @@ import {
   Share,
   Copy,
   Eye,
+  EyeOff,
   Lock,
   AlertCircle,
   Plane,
@@ -8163,6 +8164,15 @@ export default function Dashboard() {
           data: { taskId: variables.id, taskTitle: task?.title || 'task' }
         });
       }
+    },
+  });
+
+  const hideFromSummaryMutation = useMutation({
+    mutationFn: async ({ id, hideFromSummary }: { id: number; hideFromSummary: boolean }) => {
+      return apiRequest("PATCH", `/api/tasks/${id}`, { hideFromSummary });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
     },
   });
 
@@ -20346,6 +20356,14 @@ export default function Dashboard() {
                                   >
                                     {(() => { const t = task.title || ''; const isModRead = /^(module|reading|module\s*(?:&|and)\s*reading)$/i.test(t.trim()); if (isModRead && task.courseName) { const cc = task.courseName.split(' - ')[0]?.trim(); if (cc) return `${cc} ${t}`; } return t; })()}
                                   </div>
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); hideFromSummaryMutation.mutate({ id: task.id, hideFromSummary: !task.hideFromSummary }); }}
+                                    className="shrink-0 p-0 border-0 bg-transparent cursor-pointer"
+                                    title={task.hideFromSummary ? "Hidden from summary" : "Showing in summary"}
+                                    data-testid={`hide-summary-toggle-${task.id}`}
+                                  >
+                                    {task.hideFromSummary ? <EyeOff className="h-2.5 w-2.5 text-red-400" /> : <Eye className="h-2.5 w-2.5 text-gray-400" />}
+                                  </button>
                                   {(() => { const pdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null; return pdfUrl ? <img src={pdfIconPath} alt="Open PDF" style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', animation: 'none', zIndex: 2 }} onClick={(e) => { e.stopPropagation(); e.preventDefault(); if (pdfUrl.startsWith('http')) { window.open(`/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(pdfUrl)}&name=${encodeURIComponent(task.title)}&autoplay=1`, '_blank'); } else { const p = pdfUrl.startsWith('/') ? pdfUrl.slice(1) : encodeURIComponent(pdfUrl); window.open(`/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(p)}&name=${encodeURIComponent(task.title)}&autoplay=1`, '_blank'); } }} data-testid={`pdf-icon-time-${task.id}`} /> : null; })()}
                                 </div>
                                 <div 
@@ -21995,7 +22013,8 @@ export default function Dashboard() {
                           const tFs = '8';
                           const tFw = isActive ? '450' : '350';
                           const tFs2 = '7';
-                          const tFill = isActive ? colorSettings.mainBackground : colorSettings.mainBackground;
+                          const isTopTab = semTabs.indexOf(tab) === 0;
+                          const tFill = isTopTab ? colorSettings.mainBackground : 'rgba(255,255,255,0.6)';
                           return semTabs.indexOf(tab) === semTabs.length - 1 ? (
                           <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">2029</text>
                         ) : (tab.letter === 'F' && tab.year === '28') ? (
@@ -22502,7 +22521,7 @@ export default function Dashboard() {
 
             return rows;
           })()}
-          <div className="flex-1 flex flex-col" style={{ paddingLeft: '8px', paddingRight: '0px', marginTop: (() => {
+          <div className="flex-1 flex flex-col" style={{ paddingLeft: '0px', paddingRight: '0px', marginTop: (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
             if (courseRowRects.length > 0) {
               const firstOffset = 0;
