@@ -19735,7 +19735,7 @@ export default function Dashboard() {
                       progressBg,
                       progressStartColor: courseHexColor,
                       progressEndColor: courseHexColorEnd || courseHexColor,
-                      courseRowColor: courseMatch?.courseRowColor,
+                      courseRowColor: courseMatch?.courseRowColor || courseHexColor,
                       taskBgColor: courseMatch?.taskBgColor,
                       moduleP,
                       readingP,
