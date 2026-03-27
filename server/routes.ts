@@ -8131,10 +8131,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     });
     if (weekFiles.length === 0) return null;
     const ordered = orderFilesByCoursePriority(weekFiles);
-    const partiallyListened = ordered.filter((f: any) => (f.lastChunkIndex || 0) > 0);
-    const fresh = ordered.filter((f: any) => (f.lastChunkIndex || 0) === 0);
-    const prioritized = [...partiallyListened, ...fresh];
-    return prioritized[0] || null;
+    console.log(`[FileOrder] Priority order: ${ordered.map((f: any) => `${f.originalName} (chunk=${f.lastChunkIndex||0})`).join(' → ')}`);
+    return ordered[0] || null;
   }
 
   function isSpotifyPlayingOnEverywhere(): boolean {
