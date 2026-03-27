@@ -1946,7 +1946,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
           method: 'POST', headers,
           body: JSON.stringify({ entity_id: 'weather.toronto_forecast', type: 'daily' }),
         }),
-        fetch('https://api.open-meteo.com/v1/forecast?latitude=43.6275&longitude=-79.3962&daily=sunrise,sunset&timezone=America/Toronto&forecast_days=10&past_days=7'),
+        fetch('https://api.open-meteo.com/v1/forecast?latitude=43.6275&longitude=-79.3962&daily=sunrise,sunset,weather_code,temperature_2m_max,temperature_2m_min&timezone=America/Toronto&forecast_days=10&past_days=7'),
       ]);
 
       const stateData = await stateRes.json();
@@ -1991,6 +1991,26 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
           sunset: sun?.sunset,
         });
       }
+
+      const haDates = new Set(dailyEntries.map(d => d.date));
+      const omTimes = sunData?.daily?.time || [];
+      const omWeatherCodes = sunData?.daily?.weather_code || [];
+      const omMaxTemps = sunData?.daily?.temperature_2m_max || [];
+      const omMinTemps = sunData?.daily?.temperature_2m_min || [];
+      for (let i = 0; i < omTimes.length; i++) {
+        const d = omTimes[i];
+        if (!haDates.has(d)) {
+          dailyEntries.push({
+            date: d,
+            high: omMaxTemps[i] != null ? Math.round(omMaxTemps[i]) : 0,
+            low: omMinTemps[i] != null ? Math.round(omMinTemps[i]) : 0,
+            weatherCode: omWeatherCodes[i] ?? 3,
+            sunrise: sunrises[i],
+            sunset: sunsets[i],
+          });
+        }
+      }
+      dailyEntries.sort((a, b) => a.date.localeCompare(b.date));
 
       const result = {
         current: {

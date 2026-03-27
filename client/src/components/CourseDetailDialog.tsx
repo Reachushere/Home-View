@@ -274,6 +274,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
       });
   }, [courseInfo.courseCode]);
   const [showWeekMappings, setShowWeekMappings] = useState(false);
+  const [showAssignments, setShowAssignments] = useState(true);
   const [weekMappingEdits, setWeekMappingEdits] = useState<Record<number, { confirmed: boolean; courseWeekLabel: string; notes: string }>>({});
   const [weekStyleChoice, setWeekStyleChoice] = useState<string | null>(null);
   const [showWeekCalendar, setShowWeekCalendar] = useState(false);
@@ -2695,7 +2696,11 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
 
           <div style={{ padding: '12px 30px' }}>
             <div style={{ border: '2px solid rgba(255,255,255,0.2)', borderRadius: '8px', padding: '12px' }}>
-            <div className="flex items-center justify-between mb-2">
+            <div
+              className="flex items-center justify-between cursor-pointer group"
+              onClick={() => setShowAssignments(!showAssignments)}
+              data-testid="button-toggle-assignments"
+            >
               <div className="flex items-center gap-2">
                 <h3 className="text-[11px] font-medium text-white uppercase">Assignments</h3>
                 <span className="text-[9px] text-white">
@@ -2704,18 +2709,22 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
-                <Button
-                  size="sm"
-                  onClick={() => setShowAddForm(!showAddForm)}
-                  className="h-6 px-2 text-[9px] bg-white/10 hover:bg-white/20 text-white border border-white/20"
-                  data-testid="button-add-assignment"
-                >
-                  <Plus className="h-3 w-3 mr-1" />
-                  Add
-                </Button>
+                {showAssignments && (
+                  <Button
+                    size="sm"
+                    onClick={(e) => { e.stopPropagation(); setShowAddForm(!showAddForm); }}
+                    className="h-6 px-2 text-[9px] bg-white/10 hover:bg-white/20 text-white border border-white/20"
+                    data-testid="button-add-assignment"
+                  >
+                    <Plus className="h-3 w-3 mr-1" />
+                    Add
+                  </Button>
+                )}
+                {showAssignments ? <ChevronDown className="h-3 w-3 text-white/50" /> : <ChevronRight className="h-3 w-3 text-white/50" />}
               </div>
             </div>
 
+            {showAssignments && (<>
             {totalWeight > 0 && (
               <div className="mb-2">
                 <div className="flex items-center gap-2 text-[9px] mb-1">
@@ -3053,8 +3062,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               </div>
             )}
 
-          {gradeCalc && (
-            <div className="mt-3 pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }} data-testid="grade-calculator-box">
+          </>)}
+          </div>
+        {gradeCalc && (
+            <div className="mt-3" data-testid="grade-calculator-box">
               <div className="flex items-center gap-2 mb-2">
                 <GraduationCap className="h-4 w-4 text-white" />
                 <span className="text-[11px] font-medium text-white uppercase">Grade Calculator</span>
@@ -3067,8 +3078,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               </div>
             </div>
           )}
-          </div>
-        </div>
         </div>
 
         <div className="px-4 py-3 border-t border-white/20 flex items-center justify-between flex-shrink-0" style={{ background: 'rgba(255,255,255,0.08)', position: 'relative', zIndex: 10, opacity: expandedTaskId !== null ? 0.35 : 1, pointerEvents: expandedTaskId !== null ? 'none' : 'auto' }}>
