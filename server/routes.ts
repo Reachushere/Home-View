@@ -8432,32 +8432,29 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           console.warn(`${logPrefix} Fire Stick WAKEUP failed (non-fatal): ${e.message}`);
         }
 
-        catWashTrace('TV', 'Waiting 15s for Fire Stick + Samsung TV to wake');
-        console.log(`${logPrefix} Waiting 15s for TV + Fire Stick boot...`);
-        await new Promise(resolve => setTimeout(resolve, 15000));
+        catWashTrace('TV', 'Waiting 8s for Fire Stick + Samsung TV to wake');
+        console.log(`${logPrefix} Waiting 8s for TV + Fire Stick boot...`);
+        await new Promise(resolve => setTimeout(resolve, 8000));
 
-        catWashTrace('TV', 'Sending KEYCODE_BACK to dismiss any Fire TV overlay, then re-focusing Silk');
-        try {
-          await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_BACK' }, 'FireStick BACK');
-          console.log(`${logPrefix} Fire Stick BACK sent (dismiss overlay)`);
-          await new Promise(r => setTimeout(r, 1000));
-        } catch (e: any) {
-          console.warn(`${logPrefix} Fire Stick BACK failed: ${e.message}`);
-        }
-
-        try {
-          await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'monkey -p com.amazon.cloud9 -c android.intent.category.LAUNCHER 1' }, 'FireStick Launch Silk via monkey');
-          console.log(`${logPrefix} Silk launched via monkey command`);
-        } catch (e: any) {
-          console.warn(`${logPrefix} Silk monkey launch failed: ${e.message} — trying input-based approach`);
+        const launchSilkOnTV = async (silkAttempt: number) => {
           try {
-            await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_BUTTON_1' }, 'FireStick Recents');
-            await new Promise(r => setTimeout(r, 2000));
-            await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_DPAD_CENTER' }, 'FireStick Select Silk');
-            console.log(`${logPrefix} Attempted Silk via recents`);
-          } catch (e2: any) {
-            console.warn(`${logPrefix} Recents approach also failed: ${e2.message}`);
+            await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'monkey -p com.amazon.cloud9 -c android.intent.category.LAUNCHER 1' }, `FireStick Launch Silk via monkey ${silkAttempt}`);
+            console.log(`${logPrefix} Silk launched via monkey command (attempt ${silkAttempt})`);
+            return true;
+          } catch (e: any) {
+            console.warn(`${logPrefix} Silk monkey attempt ${silkAttempt} failed: ${e.message}`);
+            return false;
           }
+        };
+
+        let silkLaunched = await launchSilkOnTV(1);
+        if (!silkLaunched) {
+          await new Promise(r => setTimeout(r, 3000));
+          silkLaunched = await launchSilkOnTV(2);
+        }
+        if (!silkLaunched) {
+          await new Promise(r => setTimeout(r, 5000));
+          silkLaunched = await launchSilkOnTV(3);
         }
 
         try {
