@@ -8902,6 +8902,7 @@ export default function Dashboard() {
     if (isCASL101Finished(t)) return false;
     if (!t.dueDate) return false;
     if (/module/i.test(t.title || '')) return false;
+    if (t.hideFromSummary) return false;
     
     if (isSameDayET(new Date(t.dueDate), today)) return true;
     
@@ -8939,6 +8940,7 @@ export default function Dashboard() {
       if (t.isMissed || t.isCompleted) return false;
       if (isCASL101Finished(t)) return false;
       if (!t.dueDate) return false;
+      if (t.hideFromSummary) return false;
       return true;
     });
     const todayStart = startOfDayET(today);
@@ -19089,6 +19091,7 @@ export default function Dashboard() {
                   if (!courseCode || !task.courseName?.toUpperCase().startsWith(courseCode)) return false;
                   if (task.isCompleted) return false;
                   if (task.type === 'other') return false;
+                  if (task.hideFromSummary) return false;
                   const taskDueDate = startOfDayET(new Date(task.dueDate));
                   const weekStart = startOfDayET(weekDays[0]);
                   const weekEnd = startOfDayET(addDays(weekDays[6], 1));
@@ -19169,6 +19172,7 @@ export default function Dashboard() {
                       if (!courseCodeUpper || !task.courseName?.toUpperCase().startsWith(courseCodeUpper)) return false;
                       if (task.isCompleted) return false;
                       if (task.type === 'other') return false;
+                      if (task.hideFromSummary) return false;
                       const taskDueDate = startOfDayET(new Date(task.dueDate));
                       if (taskDueDate >= cwWeekStart && taskDueDate < cwWeekEnd) return true;
                       if (task.startDate) {
@@ -19673,6 +19677,7 @@ export default function Dashboard() {
                   if (task.type !== 'other' && task.type !== 'meeting' && task.type !== 'reminder') return false;
                   if (task.type === 'meeting' && task.courseName) return false;
                   if (task.isCompleted) return false;
+                  if (task.hideFromSummary) return false;
                   const taskDueDate = startOfDayET(new Date(task.dueDate));
                   const weekStart = startOfDayET(weekDays[0]);
                   const weekEnd = startOfDayET(addDays(weekDays[6], 1));
@@ -21988,7 +21993,7 @@ export default function Dashboard() {
                           const tFs = '8';
                           const tFw = isActive ? '450' : '350';
                           const tFs2 = '7';
-                          const tFill = isActive ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.6)';
+                          const tFill = isActive ? colorSettings.mainBackground : colorSettings.mainBackground;
                           return semTabs.indexOf(tab) === semTabs.length - 1 ? (
                           <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">2029</text>
                         ) : (tab.letter === 'F' && tab.year === '28') ? (
@@ -22200,6 +22205,7 @@ export default function Dashboard() {
                     const allCourseTasks = (allTasks || []).filter(t => {
                       const tc = t.courseName?.split(' ')[0]?.toUpperCase() || '';
                       if (tc !== cCode || t.isCompleted) return false;
+                      if (t.hideFromSummary) return false;
                       const knownCourseCodes = ['CPPA122', 'CFNF400', 'CASL101', 'CECN210', 'CPHL110', 'CHIS105', 'CPPA235'];
                       if (!knownCourseCodes.includes(tc)) return false;
                       const taskDue = new Date(t.dueDate);
@@ -27453,6 +27459,7 @@ function TaskForm({
     repeatInterval: task?.repeatInterval || 1,
     repeatIntervalUnit: (task?.repeatIntervalUnit as typeof REPEAT_INTERVAL_UNITS[number]) || "weeks",
     repeatEndDate: task?.repeatEndDate ? format(new Date(task.repeatEndDate), "yyyy-MM-dd") : "",
+    hideFromSummary: task?.hideFromSummary ?? false,
   });
   const [newAttachment, setNewAttachment] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -27574,6 +27581,7 @@ function TaskForm({
         repeatIntervalUnit: data.repeatType === "custom" ? data.repeatIntervalUnit : null,
         repeatEndDate: data.repeatEndDate ? new Date(data.repeatEndDate).toISOString() : null,
         startDate: finalStartDate ? finalStartDate.toISOString() : null,
+        hideFromSummary: data.hideFromSummary ?? false,
       };
       if (task) {
         if (onUndoPush) {
@@ -27661,6 +27669,7 @@ function TaskForm({
         repeatIntervalUnit: data.repeatType === "custom" ? data.repeatIntervalUnit : null,
         repeatEndDate: data.repeatEndDate ? new Date(data.repeatEndDate).toISOString() : null,
         startDate: finalStartDate ? finalStartDate.toISOString() : null,
+        hideFromSummary: data.hideFromSummary ?? false,
       };
       if (hasSameTitleSiblings && !isLinkedRecurring) {
         payload.originalTitle = task.title;
@@ -28093,6 +28102,18 @@ function TaskForm({
               className="flex w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
               style={{ color: 'black', fontSize: '11px' }}
             />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <label className="flex items-center gap-2 cursor-pointer select-none" data-testid="toggle-hide-from-summary">
+              <input
+                type="checkbox"
+                checked={formData.hideFromSummary}
+                onChange={(e) => setFormData(prev => ({ ...prev, hideFromSummary: e.target.checked }))}
+                className="w-3.5 h-3.5 rounded accent-blue-500"
+              />
+              <span className="text-[10px] text-white/70">Hide from summary rows</span>
+            </label>
           </div>
 
           {task?.attachments && task.attachments.length > 0 && (

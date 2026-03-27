@@ -368,6 +368,7 @@ export const tasks = pgTable("tasks", {
   isAcknowledged: boolean("is_acknowledged").default(true), // For reminders: false until user acknowledges
   excludeFromGpa: boolean("exclude_from_gpa").default(true),
   inviteEmails: text("invite_emails").array(),
+  hideFromSummary: boolean("hide_from_summary").default(false),
 });
 
 // Base schema from drizzle, then override date fields to accept ISO strings
