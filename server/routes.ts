@@ -7538,6 +7538,24 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   let lastPlaybackStoppedAt: number = 0;
   let toothbrushPollInterval: ReturnType<typeof setInterval> | null = null;
 
+  function catWashTrace(source: string, event: string, details?: Record<string, any>) {
+    const now = new Date();
+    const ts = now.toLocaleString('en-US', { timeZone: 'America/Toronto', hour12: true, hour: 'numeric', minute: '2-digit', second: '2-digit' });
+    const state: Record<string, any> = {
+      active: catWashPlaybackActive,
+      sessionId: catWashSessionId,
+      file: catWashPlaybackState?.fileName || null,
+      chunk: catWashPlaybackState ? `${catWashPlaybackState.chunkIndex}/${catWashPlaybackState.totalChunks}` : null,
+      lightsPrompt: catLightsPromptPending,
+      trigger: catWashPlaybackTrigger,
+      msSinceStop: lastPlaybackStoppedAt ? Date.now() - lastPlaybackStoppedAt : null,
+      msSinceManualStop: catWashManuallyStoppedAt ? Date.now() - catWashManuallyStoppedAt.getTime() : null,
+      msSinceStart: catWashPlaybackStartedAt ? Date.now() - catWashPlaybackStartedAt.getTime() : null,
+    };
+    const detailStr = details ? ` | ${JSON.stringify(details)}` : '';
+    console.log(`[TRACE ${ts}] [${source}] ${event} | state=${JSON.stringify(state)}${detailStr}`);
+  }
+
   interface PersistedPlaybackSession {
     fileId: number;
     fileName: string;
@@ -8095,6 +8113,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const authParam = encodeURIComponent(process.env.SITE_PASSWORD || '');
     const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
 
+    catWashTrace('PlaybackFlow', `STARTING file=${fileToPlay.displayName || fileToPlay.originalName} id=${fileToPlay.id}`, { logPrefix, voice });
     audioPreparationPaused = true;
     console.log(`${logPrefix} Paused audio preparation for live playback`);
 
@@ -8312,56 +8331,99 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         }
 
         let samsungAvailable = false;
-        try {
-          await haServiceCall('media_player/turn_on', { entity_id: CAT_TV_ENTITY }, 'Samsung TV TurnOn');
-          console.log(`${logPrefix} Samsung TV turn_on: OK`);
-          samsungAvailable = true;
-        } catch (e: any) {
-          console.error(`${logPrefix} Samsung TV turn_on failed: ${e.message}`);
+        catWashTrace('TV', 'Samsung turn_on retry loop START');
+        for (let tvOnAttempt = 1; tvOnAttempt <= 3; tvOnAttempt++) {
+          try {
+            await haServiceCall('media_player/turn_on', { entity_id: CAT_TV_ENTITY }, `Samsung TV TurnOn attempt ${tvOnAttempt}`);
+            console.log(`${logPrefix} Samsung TV turn_on: OK (attempt ${tvOnAttempt})`);
+            catWashTrace('TV', `Samsung turn_on OK on attempt ${tvOnAttempt}`);
+            samsungAvailable = true;
+            break;
+          } catch (e: any) {
+            catWashTrace('TV', `Samsung turn_on attempt ${tvOnAttempt}/3 FAILED`, { error: e.message });
+            console.error(`${logPrefix} Samsung TV turn_on attempt ${tvOnAttempt}/3 failed: ${e.message}`);
+            if (tvOnAttempt < 3) await new Promise(r => setTimeout(r, 3000));
+          }
         }
+        catWashTrace('TV', `Waiting 12s for boot (samsungAvailable=${samsungAvailable})`);
         console.log(`${logPrefix} Waiting 12s for TV to boot...`);
         await new Promise(resolve => setTimeout(resolve, 12000));
+
+        if (!samsungAvailable) {
+          catWashTrace('TV', 'Samsung final attempt after boot wait');
+          console.log(`${logPrefix} Samsung TV still not responding after 3 attempts — trying once more after boot wait`);
+          try {
+            await haServiceCall('media_player/turn_on', { entity_id: CAT_TV_ENTITY }, 'Samsung TV TurnOn final');
+            console.log(`${logPrefix} Samsung TV turn_on final attempt: OK`);
+            catWashTrace('TV', 'Samsung final attempt OK');
+            samsungAvailable = true;
+            await new Promise(r => setTimeout(r, 8000));
+          } catch (e: any) {
+            catWashTrace('TV', 'Samsung final attempt FAILED', { error: e.message });
+            console.error(`${logPrefix} Samsung TV turn_on final attempt failed: ${e.message}`);
+          }
+        }
 
         let tvOpened = false;
         const tvFollowWrapperUrl = `${appUrl}/api/cat-wash/tv-follow?url=${encodeURIComponent(tvFollowUrl)}`;
         currentTvFollowUrl = tvFollowUrl;
         if (samsungAvailable) {
-          console.log(`${logPrefix} Opening TV follow wrapper on Samsung TV browser via play_media...`);
-          try {
-            await haServiceCall('media_player/play_media', { entity_id: CAT_TV_ENTITY, media_content_id: tvFollowWrapperUrl, media_content_type: 'url' }, 'Samsung TV play_media URL');
-            console.log(`${logPrefix} Samsung TV play_media URL (wrapper): OK`);
-            tvOpened = true;
-          } catch (e: any) {
-            console.error(`${logPrefix} Samsung TV play_media URL failed: ${e.message}`);
+          catWashTrace('TV', 'Samsung play_media retry loop START', { url: tvFollowWrapperUrl });
+          for (let playAttempt = 1; playAttempt <= 2; playAttempt++) {
+            console.log(`${logPrefix} Opening TV follow wrapper on Samsung TV browser via play_media (attempt ${playAttempt})...`);
+            try {
+              await haServiceCall('media_player/play_media', { entity_id: CAT_TV_ENTITY, media_content_id: tvFollowWrapperUrl, media_content_type: 'url' }, `Samsung TV play_media URL attempt ${playAttempt}`);
+              console.log(`${logPrefix} Samsung TV play_media URL (wrapper): OK`);
+              catWashTrace('TV', `Samsung play_media OK on attempt ${playAttempt}`);
+              tvOpened = true;
+              break;
+            } catch (e: any) {
+              catWashTrace('TV', `Samsung play_media attempt ${playAttempt}/2 FAILED`, { error: e.message });
+              console.error(`${logPrefix} Samsung TV play_media URL attempt ${playAttempt} failed: ${e.message}`);
+              if (playAttempt < 2) await new Promise(r => setTimeout(r, 5000));
+            }
           }
         }
 
         if (!tvOpened) {
+          catWashTrace('TV', 'FALLBACK to Fire Stick + Silk', { samsungAvailable });
           console.log(`${logPrefix} Samsung browser failed — falling back to Fire Stick + Silk...`);
-          try {
-            await haServiceCall('media_player/turn_on', { entity_id: 'media_player.fire_stick_cat_wr' }, 'FireStick TurnOn');
-            console.log(`${logPrefix} Fire Stick turn_on: OK`);
-          } catch (e: any) {
-            console.error(`${logPrefix} Fire Stick turn_on: ${e.message}`);
+          for (let fsOnAttempt = 1; fsOnAttempt <= 2; fsOnAttempt++) {
+            try {
+              await haServiceCall('media_player/turn_on', { entity_id: 'media_player.fire_stick_cat_wr' }, `FireStick TurnOn attempt ${fsOnAttempt}`);
+              console.log(`${logPrefix} Fire Stick turn_on: OK (attempt ${fsOnAttempt})`);
+              catWashTrace('TV', `Fire Stick turn_on OK on attempt ${fsOnAttempt}`);
+              break;
+            } catch (e: any) {
+              catWashTrace('TV', `Fire Stick turn_on attempt ${fsOnAttempt}/2 FAILED`, { error: e.message });
+              console.error(`${logPrefix} Fire Stick turn_on attempt ${fsOnAttempt}: ${e.message}`);
+              if (fsOnAttempt < 2) await new Promise(r => setTimeout(r, 3000));
+            }
           }
           await new Promise(r => setTimeout(r, 8000));
           try {
             await haServiceCall('media_player/select_source', { entity_id: CAT_TV_ENTITY, source: 'HDMI' }, 'TV Source HDMI');
             console.log(`${logPrefix} Samsung TV HDMI selected`);
+            catWashTrace('TV', 'Samsung HDMI source selected OK');
           } catch (e: any) {
+            catWashTrace('TV', 'Samsung HDMI select FAILED', { error: e.message });
             console.error(`${logPrefix} Samsung TV HDMI select: ${e.message}`);
           }
           await new Promise(r => setTimeout(r, 3000));
           const fsOpened = await openUrlOnFireStick(haUrl, 'media_player.fire_stick_cat_wr', tvFollowWrapperUrl);
+          catWashTrace('TV', `Fire Stick openUrl result=${fsOpened}`);
           console.log(`${logPrefix} Fire Stick URL result: success=${fsOpened}`);
           if (!fsOpened) {
             await new Promise(r => setTimeout(r, 6000));
             const fsRetry = await openUrlOnFireStick(haUrl, 'media_player.fire_stick_cat_wr', tvFollowWrapperUrl);
+            catWashTrace('TV', `Fire Stick openUrl RETRY result=${fsRetry}`);
             console.log(`${logPrefix} Fire Stick URL retry: success=${fsRetry}`);
           }
         }
+        catWashTrace('TV', `SETUP COMPLETE (tvOpened=${tvOpened})`);
         console.log(`${logPrefix} ====== TV SETUP COMPLETE ======`);
       } catch (e: any) {
+        catWashTrace('TV', `SETUP ERROR`, { error: e.message });
         console.error(`${logPrefix} ====== TV SETUP ERROR: ${e.message} ======`);
       }
     })();
@@ -9295,6 +9357,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       } catch {}
     } finally {
       if (catWashSessionId === sessionId) {
+        catWashTrace('NestPlayback', `FINALLY BLOCK — cleaning up session ${sessionId}`);
         catWashPlaybackActive = false;
         catWashPlaybackStartedAt = null;
         catWashPlaybackState = null;
@@ -9302,6 +9365,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         lastPlaybackStoppedAt = Date.now();
         stopToothbrushPolling();
         stopWordAdvancement();
+      } else {
+        catWashTrace('NestPlayback', `FINALLY BLOCK — session mismatch (loop=${sessionId}, current=${catWashSessionId}), skipping cleanup`);
       }
       audioPreparationPaused = false;
       console.log(`[Nest Playback] Resumed audio preparation`);
@@ -9426,6 +9491,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
     const appUrl = DEPLOYED_APP_URL;
 
+    catWashTrace('StopWithGoodbye', `ENTER reason=${reason} keepOpen=${keepOpen}`);
     lastPlaybackStoppedAt = Date.now();
 
     clearVoiceCommandPause_();
@@ -9489,11 +9555,13 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       setTabletCommand({ action: 'stop_playback', keepOpen, timestamp: stopTimestamp }, true, 'tv'),
     ]);
 
+    catWashTrace('TV', `TURN OFF — Fire Stick + Samsung TV (reason=${reason})`);
     await Promise.allSettled([
       haServiceCallSafe('media_player/turn_off', { entity_id: 'media_player.fire_stick_cat_wr' }, 'Nest Stop TV'),
       haServiceCallSafe('media_player/turn_off', { entity_id: 'media_player.samsung_tv' }, 'Nest Stop TV'),
     ]);
     console.log(`[Nest Stop] Fire Stick + Samsung TV turn-off sent`);
+    catWashTrace('StopWithGoodbye', `EXIT reason=${reason}`);
   }
 
   // GET /api/shower/next-reading - Get next unlistened module/reading file for current week
@@ -10158,6 +10226,7 @@ document.body.removeChild(a);
   // turning the light ON starts/resumes playback on Cat Wash speaker group, turning it OFF stops and saves progress.
   app.post("/api/webhook/cat-lights", async (req, res) => {
     try {
+      catWashTrace('CatLights', 'WEBHOOK RECEIVED', { body: req.body });
       console.log(`[Cat Lights] ====== WEBHOOK TRIGGERED ======`);
       console.log(`[Cat Lights] Timestamp: ${new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' })}`);
       console.log(`[Cat Lights] Request body: ${JSON.stringify(req.body)}`);
@@ -10202,6 +10271,7 @@ document.body.removeChild(a);
           }
         }
       }
+      catWashTrace('CatLights', `STATE RESOLVED: ${lightState}`, { bodyState, bodyAction, method: bodyState === lightState ? 'body' : bodyAction ? 'action' : 'api_query' });
       console.log(`[Cat Lights] Light state: ${lightState} (body state: ${bodyState})`);
       console.log(`[Cat Lights] Architecture: server-side TTS → Google Nest speaker (media_player.play_media)`);
 
@@ -10215,6 +10285,7 @@ document.body.removeChild(a);
 
       // === LIGHT TURNED OFF → Stop all playback + save progress ===
       if (lightState === 'off') {
+        catWashTrace('CatLights', 'LIGHT OFF — stopping all playback');
         console.log("[Cat Lights] Light off — stopping all playback and saving progress");
         const stopped: string[] = [];
         if (catWashPlaybackActive) {
@@ -10264,6 +10335,7 @@ document.body.removeChild(a);
 
       const msSinceStop = Date.now() - lastPlaybackStoppedAt;
       if (msSinceStop < 60000) {
+        catWashTrace('CatLights', 'BLOCKED: post-stop cooldown', { msSinceStop });
         console.log(`[Cat Lights] Playback was stopped ${Math.round(msSinceStop / 1000)}s ago — skipping prompt (60s cooldown)`);
         return res.json({ action: "skipped", reason: "Post-stop cooldown" });
       }
@@ -10271,6 +10343,7 @@ document.body.removeChild(a);
       if (catWashManuallyStoppedAt) {
         const msSinceManualStop = Date.now() - catWashManuallyStoppedAt.getTime();
         if (msSinceManualStop < 120000) {
+          catWashTrace('CatLights', 'BLOCKED: manual-stop cooldown', { msSinceManualStop });
           console.log(`[Cat Lights] Manual stop was ${Math.round(msSinceManualStop / 1000)}s ago — skipping prompt (120s manual-stop cooldown)`);
           return res.json({ action: "skipped", reason: "Post-manual-stop cooldown" });
         }
@@ -10552,6 +10625,7 @@ document.body.removeChild(a);
           }
         } catch {}
 
+        catWashTrace('CatLights', 'CONFIRMATION RECEIVED — starting playback');
         console.log(`[Cat Lights] Confirmation received — starting playback`);
         catLightsPromptPending = false;
 
@@ -10571,6 +10645,7 @@ document.body.removeChild(a);
   // Stops cat wash playback and saves progress.
   app.post("/api/webhook/cat-wash-stop", async (req, res) => {
     try {
+      catWashTrace('CatWashStopWebhook', 'WEBHOOK TRIGGERED', { body: req.body });
       console.log(`[Cat Wash Stop Webhook] ====== WEBHOOK TRIGGERED ======`);
       console.log(`[Cat Wash Stop Webhook] Timestamp: ${new Date().toISOString()}`);
       console.log(`[Cat Wash Stop Webhook] Request body: ${JSON.stringify(req.body)}`);
@@ -10713,6 +10788,7 @@ document.body.removeChild(a);
   // POST /api/webhook/cat-knob-press - STOP button: stops all playback on cat washroom speakers + Nest
   app.post("/api/webhook/cat-knob-press", async (req, res) => {
     try {
+      catWashTrace('KnobPress', 'STOP BUTTON PRESSED', { body: req.body });
       console.log(`[Cat Knob] ====== KNOB PRESS RECEIVED (STOP BUTTON) ======`);
       console.log(`[Cat Knob] Body: ${JSON.stringify(req.body)}`);
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
@@ -10859,6 +10935,7 @@ document.body.removeChild(a);
   // POST /api/cat-wash/stop - Stop ALL playback (cat wash, cat lights, TTS sessions, all echo devices)
   app.post("/api/cat-wash/stop", async (req, res) => {
     const keepOpen = req.body?.keepOpen === true;
+    catWashTrace('CatWashStop', `STOP ALL PLAYBACK keepOpen=${keepOpen}`);
     console.log(`[Cat Wash Stop] === STOP ALL PLAYBACK === (keepOpen=${keepOpen})`);
 
     clearVoiceCommandPause_();
