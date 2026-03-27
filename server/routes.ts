@@ -16670,7 +16670,7 @@ Return ONLY the JSON object, no markdown formatting.`;
       for (const item of items) {
         const normTitle = normalizeTitle(item.title || '');
         const dateKey = item.startDate ? new Date(item.startDate).toISOString().split('T')[0] : 'nodate';
-        const key = `${normTitle}||${dateKey}||${item.source || ''}`;
+        const key = `${normTitle}||${dateKey}`;
         if (seen.has(key)) {
           await storage.deletePendingReviewItem(item.id);
           removed++;
