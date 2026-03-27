@@ -8356,52 +8356,35 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
     const tvSetupPromise = (async () => {
       try {
-        console.log(`${logPrefix} ====== TV SETUP START (Fire Stick primary) ======`);
-        catWashTrace('TV', 'SETUP START — Fire Stick primary path');
+        console.log(`${logPrefix} ====== TV SETUP START (Fire Stick CEC — no Samsung commands) ======`);
+        catWashTrace('TV', 'SETUP START — Fire Stick CEC path (Samsung TV handled via CEC)');
         const tvFollowWrapperUrl = `${appUrl}/api/cat-wash/tv-follow?url=${encodeURIComponent(tvFollowUrl)}`;
         currentTvFollowUrl = tvFollowUrl;
 
-        catWashTrace('TV', 'Samsung TV turn_on START');
-        for (let tvOnAttempt = 1; tvOnAttempt <= 3; tvOnAttempt++) {
-          try {
-            await haServiceCall('media_player/turn_on', { entity_id: CAT_TV_ENTITY }, `Samsung TV TurnOn attempt ${tvOnAttempt}`);
-            console.log(`${logPrefix} Samsung TV turn_on: OK (attempt ${tvOnAttempt})`);
-            catWashTrace('TV', `Samsung turn_on OK on attempt ${tvOnAttempt}`);
-            break;
-          } catch (e: any) {
-            catWashTrace('TV', `Samsung turn_on attempt ${tvOnAttempt}/3 FAILED`, { error: e.message });
-            console.error(`${logPrefix} Samsung TV turn_on attempt ${tvOnAttempt}/3 failed: ${e.message}`);
-            if (tvOnAttempt < 3) await new Promise(r => setTimeout(r, 3000));
-          }
-        }
-
-        catWashTrace('TV', 'Fire Stick turn_on START');
-        for (let fsOnAttempt = 1; fsOnAttempt <= 2; fsOnAttempt++) {
+        catWashTrace('TV', 'Fire Stick turn_on + WAKEUP START (CEC will turn on Samsung TV + switch HDMI)');
+        for (let fsOnAttempt = 1; fsOnAttempt <= 3; fsOnAttempt++) {
           try {
             await haServiceCall('media_player/turn_on', { entity_id: FIRE_STICK_ADB_ENTITY }, `FireStick TurnOn attempt ${fsOnAttempt}`);
-            console.log(`${logPrefix} Fire Stick turn_on: OK (attempt ${fsOnAttempt})`);
+            console.log(`${logPrefix} Fire Stick turn_on: OK (attempt ${fsOnAttempt}) — CEC should turn on Samsung TV`);
             catWashTrace('TV', `Fire Stick turn_on OK on attempt ${fsOnAttempt}`);
             break;
           } catch (e: any) {
-            catWashTrace('TV', `Fire Stick turn_on attempt ${fsOnAttempt}/2 FAILED`, { error: e.message });
-            console.error(`${logPrefix} Fire Stick turn_on attempt ${fsOnAttempt}: ${e.message}`);
-            if (fsOnAttempt < 2) await new Promise(r => setTimeout(r, 3000));
+            catWashTrace('TV', `Fire Stick turn_on attempt ${fsOnAttempt}/3 FAILED`, { error: e.message });
+            console.error(`${logPrefix} Fire Stick turn_on attempt ${fsOnAttempt}/3 failed: ${e.message}`);
+            if (fsOnAttempt < 3) await new Promise(r => setTimeout(r, 3000));
           }
         }
 
-        catWashTrace('TV', 'Waiting 12s for TV + Fire Stick to boot');
-        console.log(`${logPrefix} Waiting 12s for TV + Fire Stick to boot...`);
-        await new Promise(resolve => setTimeout(resolve, 12000));
-
         try {
-          await haServiceCall('media_player/select_source', { entity_id: CAT_TV_ENTITY, source: 'HDMI' }, 'TV Source HDMI');
-          console.log(`${logPrefix} Samsung TV HDMI input selected`);
-          catWashTrace('TV', 'Samsung HDMI source selected OK');
+          await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_WAKEUP' }, 'FireStick WAKEUP');
+          console.log(`${logPrefix} Fire Stick WAKEUP sent`);
         } catch (e: any) {
-          catWashTrace('TV', 'Samsung HDMI select FAILED', { error: e.message });
-          console.error(`${logPrefix} Samsung TV HDMI select: ${e.message}`);
+          console.warn(`${logPrefix} Fire Stick WAKEUP failed (non-fatal): ${e.message}`);
         }
-        await new Promise(r => setTimeout(r, 3000));
+
+        catWashTrace('TV', 'Waiting 15s for Fire Stick CEC boot + Samsung TV to wake and switch HDMI');
+        console.log(`${logPrefix} Waiting 15s for Fire Stick + Samsung TV CEC boot...`);
+        await new Promise(resolve => setTimeout(resolve, 15000));
 
         catWashTrace('TV', 'Opening URL via Fire Stick ADB', { url: tvFollowWrapperUrl });
         const fsOpened = await openUrlOnFireStick(haUrl, FIRE_STICK_ADB_ENTITY, tvFollowWrapperUrl);
