@@ -301,7 +301,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
       });
   }, [courseInfo.courseCode]);
   const [showWeekMappings, setShowWeekMappings] = useState(false);
-  const [showAssignments, setShowAssignments] = useState(false);
+  const [showAssignments, setShowAssignments] = useState(!initialEditMode);
   const weekMappingsRef = useRef<HTMLDivElement>(null);
   const assignmentsRef = useRef<HTMLDivElement>(null);
   const [weekMappingEdits, setWeekMappingEdits] = useState<Record<number, { confirmed: boolean; courseWeekLabel: string; notes: string }>>({});
