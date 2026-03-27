@@ -16932,16 +16932,16 @@ export default function Dashboard() {
                 {(() => {
                   const semesterMeta = [
                     { key: 'ss2025', year: 2025, label: 'Spring/Summer 2025', dates: 'May 5 – Aug 8, 2025' },
-                    { key: 'f2025', year: 2025, label: 'Fall 2025', dates: 'Sep – Dec 2025' },
-                    { key: 'w2026', year: 2026, label: 'Winter 2026', dates: 'Jan – Apr 2026' },
+                    { key: 'f2025', year: 2025, label: 'Fall 2025', dates: 'Sep 1 – Dec 31, 2025' },
+                    { key: 'w2026', year: 2026, label: 'Winter 2026', dates: 'Jan 1 – Apr 30, 2026' },
                     { key: 'ss2026', year: 2026, label: 'Spring/Summer 2026', dates: 'May 4 – Aug 4, 2026' },
-                    { key: 'f2026', year: 2026, label: 'Fall 2026', dates: 'Sep – Dec 2026' },
-                    { key: 'w2027', year: 2027, label: 'Winter 2027', dates: 'Jan – Apr 2027' },
-                    { key: 'ss2027', year: 2027, label: 'Spring/Summer 2027', dates: 'May – Aug 2027' },
-                    { key: 'f2027', year: 2027, label: 'Fall 2027', dates: 'Sep – Dec 2027' },
-                    { key: 'w2028', year: 2028, label: 'Winter 2028', dates: 'Jan – Apr 2028' },
-                    { key: 'ss2028', year: 2028, label: 'Spring/Summer 2028', dates: 'May – Aug 2028' },
-                    { key: 'f2028', year: 2028, label: 'Fall 2028', dates: 'Sep – Dec 2028' },
+                    { key: 'f2026', year: 2026, label: 'Fall 2026', dates: 'Sep 1 – Dec 31, 2026' },
+                    { key: 'w2027', year: 2027, label: 'Winter 2027', dates: 'Jan 1 – Apr 30, 2027' },
+                    { key: 'ss2027', year: 2027, label: 'Spring/Summer 2027', dates: 'May 3 – Aug 6, 2027' },
+                    { key: 'f2027', year: 2027, label: 'Fall 2027', dates: 'Sep 1 – Dec 31, 2027' },
+                    { key: 'w2028', year: 2028, label: 'Winter 2028', dates: 'Jan 1 – Apr 30, 2028' },
+                    { key: 'ss2028', year: 2028, label: 'Spring/Summer 2028', dates: 'May 1 – Aug 4, 2028' },
+                    { key: 'f2028', year: 2028, label: 'Fall 2028', dates: 'Sep 1 – Dec 31, 2028' },
                   ];
                   const semesterDefs = semesterMeta.map(m => ({ ...m, courses: semesterCourseAssignments[m.key] || [] }));
 
