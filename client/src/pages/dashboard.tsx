@@ -729,7 +729,22 @@ export default function Dashboard() {
     setProcessingReviewIds(prev => { const s = new Set(prev); s.delete(id); return s; });
   };
 
-  const handleRejectReview = async (id: number) => {
+  const isGradedReviewItem = (item: any): boolean => {
+    const title = item.title || '';
+    return /\[(CPPA|CFNF|CASL|COMM|ENGL|MATH|PSYC|SOCI)\d+/i.test(title) || !!item.courseName;
+  };
+
+  const handleRejectReview = async (id: number, skipConfirm = false) => {
+    if (!skipConfirm) {
+      const item = morningReviewItems.find(i => i.id === id);
+      if (item && isGradedReviewItem(item)) {
+        const courseMatch = (item.title || '').match(/\[([^\]]+)\]/);
+        const courseLabel = courseMatch ? courseMatch[1] : item.courseName || 'a course';
+        if (!window.confirm(`"${item.title}" is linked to ${courseLabel}. Declining will remove it from your assignments. Are you sure?`)) {
+          return;
+        }
+      }
+    }
     setProcessingReviewIds(prev => new Set(prev).add(id));
     try {
       await fetch(`/api/pending-review/${id}/reject`, { method: 'POST' });
@@ -757,9 +772,16 @@ export default function Dashboard() {
   };
 
   const handleSkipAllForever = async () => {
+    const gradedItems = morningReviewItems.filter(i => isGradedReviewItem(i));
+    if (gradedItems.length > 0) {
+      const names = gradedItems.map(i => `  - ${i.title}`).join('\n');
+      if (!window.confirm(`${gradedItems.length} graded assignment(s) will be removed:\n${names}\n\nAre you sure you want to decline all?`)) {
+        return;
+      }
+    }
     setMorningReviewLoading(true);
     for (const item of morningReviewItems) {
-      await handleRejectReview(item.id);
+      await handleRejectReview(item.id, true);
     }
     setMorningReviewLoading(false);
     setShowMorningReview(false);
@@ -768,12 +790,19 @@ export default function Dashboard() {
   };
 
   const handleIndividualConfirm = async () => {
+    const uncheckedGraded = morningReviewItems.filter(i => !reviewCheckedIds.has(i.id) && isGradedReviewItem(i));
+    if (uncheckedGraded.length > 0) {
+      const names = uncheckedGraded.map(i => `  - ${i.title}`).join('\n');
+      if (!window.confirm(`${uncheckedGraded.length} unchecked graded assignment(s) will be removed:\n${names}\n\nAre you sure?`)) {
+        return;
+      }
+    }
     setMorningReviewLoading(true);
     for (const item of morningReviewItems) {
       if (reviewCheckedIds.has(item.id)) {
         await handleAcceptReview(item.id);
       } else {
-        await handleRejectReview(item.id);
+        await handleRejectReview(item.id, true);
       }
     }
     setMorningReviewLoading(false);
