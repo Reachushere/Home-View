@@ -1409,16 +1409,12 @@ export default function Dashboard() {
     }, 2200);
     return () => clearTimeout(sideTimeout);
   }, []);
+  const [isTopPillOpen, setIsTopPillOpenState] = useState(false);
   const isTopPillOpenRef = useRef(false);
-  const isTopPillOpen = false;
   const setIsTopPillOpen = useCallback((val: boolean) => {
     if (isTopPillOpenRef.current === val) return;
     isTopPillOpenRef.current = val;
-    const pill = document.getElementById('top-pill-container');
-    if (pill) {
-      pill.style.transform = `translateY(${val ? '14px' : '-77px'})`;
-      pill.style.animation = 'none';
-    }
+    startTransition(() => setIsTopPillOpenState(val));
     document.querySelectorAll<HTMLElement>('[data-tpo]').forEach(el => {
       el.style.opacity = val ? '0' : (el.dataset.tpoOpacity || '1');
       el.style.pointerEvents = val ? 'none' : 'auto';
