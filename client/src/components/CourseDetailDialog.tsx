@@ -1461,8 +1461,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             {gradeCalc && (
               <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }} data-testid="grade-calculator-inline">
                 <span className="text-[11px] font-bold text-white" data-testid="text-current-grade">{gradeCalc.currentGrade}</span>
-                <span className="text-[10px] text-white/70">({gradeCalc.currentPercent.toFixed(1)}%)</span>
-                <span className="text-[9px] text-white/50 flex items-center">{gradeCalc.gradedCount} graded · {gradeCalc.gradedWeight.toFixed(0)}%</span>
+                <span className="text-[10px] text-white">({gradeCalc.currentPercent.toFixed(1)}%)</span>
+                <span className="text-[9px] text-white flex items-center" style={{ marginTop: '4px' }}>{gradeCalc.gradedCount} graded · {gradeCalc.gradedWeight.toFixed(0)}%</span>
               </div>
             )}
             <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-md" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}>
@@ -1975,7 +1975,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     <span className="text-white whitespace-nowrap">Professor:</span>
                     <span className="text-white truncate">{courseInfo.professor || "Not set"}</span>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end', marginLeft: '100px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end', marginLeft: '140px' }}>
                     <Mail className="h-3 w-3 text-white flex-shrink-0" style={{ justifySelf: 'end' }} />
                     <span className="text-white whitespace-nowrap" style={{ justifySelf: 'end' }}>Email:</span>
                     {courseInfo.professorEmail ? (
@@ -1992,7 +1992,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     <span className="text-white">{deliveryLabel}</span>
                   </div>
                   {courseInfo.courseType && (
-                    <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end', marginLeft: '100px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end', marginLeft: '140px' }}>
                       <BookOpen className="h-3 w-3 text-white" style={{ justifySelf: 'end' }} />
                       <span className="text-white whitespace-nowrap" style={{ justifySelf: 'end' }}>Type:</span>
                       <span className="text-white" style={{ justifySelf: 'end' }}>{courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Open Elective" : "Liberal Studies"}</span>
@@ -2004,7 +2004,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     <span className="text-white text-[9px]">{certificateName || certificateType || '—'}</span>
                   </div>
                   {courseInfo.deliveryMode === "online" ? (
-                    <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end', marginLeft: '100px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end', marginLeft: '140px' }}>
                       <Clock className="h-3 w-3 text-white flex-shrink-0" style={{ justifySelf: 'end' }} />
                       <span className="text-white" style={{ justifySelf: 'end' }}>Modules:</span>
                       <span className="text-white" style={{ justifySelf: 'end' }}>Weekly</span>
@@ -2012,7 +2012,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   ) : (() => {
                     const fmt = (t: string) => { const [h,m] = t.split(':').map(Number); const p = h >= 12 ? 'PM' : 'AM'; const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h; return `${h12}:${m.toString().padStart(2,'0')} ${p}`; };
                     return (
-                      <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end', marginLeft: '100px' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end', marginLeft: '140px' }}>
                         <Calendar className="h-3 w-3 text-white flex-shrink-0" style={{ justifySelf: 'end' }} />
                         <span className="text-white" style={{ justifySelf: 'end' }}>Schedule:</span>
                         <span className="text-white capitalize" style={{ justifySelf: 'end' }}>
@@ -2060,9 +2060,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1.5 text-[10px] text-white hover:text-white/80 bg-white/10 border border-white/20 rounded px-2 py-1.5"
+                    style={{ maxWidth: '50%' }}
                     data-testid="link-zoom"
                   >
-                    <img src={zoomLogoPath} alt="Zoom" style={{ width: '38px', height: 'auto', filter: 'brightness(0) invert(1)' }} />
+                    <img src={zoomLogoPath} alt="Zoom" style={{ width: '38px', height: 'auto', filter: 'brightness(0) invert(1)', flexShrink: 0 }} />
                     <span className="truncate">{courseInfo.zoomLink}</span>
                     <ExternalLink className="h-2.5 w-2.5 ml-auto flex-shrink-0" />
                   </a>
