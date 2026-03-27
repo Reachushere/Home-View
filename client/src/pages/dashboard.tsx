@@ -21454,7 +21454,7 @@ export default function Dashboard() {
           <div 
             className="absolute pointer-events-none"
             style={{ 
-              top: '-5px', 
+              top: '-7px', 
               left: '-15px', 
               right: '-15px', 
               bottom: '-27px', 
