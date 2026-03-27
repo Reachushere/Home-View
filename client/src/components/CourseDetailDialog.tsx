@@ -2996,7 +2996,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   </div>
                   <div className={`flex-1 min-w-0 ${hdrCls('title')}`} style={{ marginLeft: '22px' }} onClick={() => toggleSort('title')} data-testid="sort-title">Assignments<SortIcon field="title" />
                   </div>
-                  <div className="flex items-end flex-shrink-0 text-white" style={{ gap: '10px', position: 'relative', left: '-8px' }}>
+                  <div className="flex items-end flex-shrink-0 text-white" style={{ gap: '10px', position: 'relative', left: '-15px' }}>
                     <span className={`w-[33px] text-center leading-tight ${hdrCls('score')}`} onClick={() => toggleSort('score')} style={{ display: 'inline-flex', justifyContent: 'center' }} data-testid="sort-score">
                       Score<SortIcon field="score" />
                     </span>
@@ -3010,7 +3010,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                       Percent<SortIcon field="percent" />
                     </span>
                   </div>
-                  <div className="flex items-end flex-shrink-0" style={{ gap: '10px', marginLeft: '8px' }}>
+                  <div className="flex items-end flex-shrink-0" style={{ gap: '10px', marginLeft: '1px' }}>
                     <div style={{ width: '24px', textAlign: 'center', lineHeight: '1.1' }}><span className="text-[8px] font-bold text-white">Grade<br/>Received</span></div>
                     <div style={{ width: '19px', textAlign: 'center', marginLeft: '6px' }}><span className="text-[8px] font-bold text-white">Copy</span></div>
                     <div style={{ width: '19px' }} />
