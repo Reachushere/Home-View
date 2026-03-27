@@ -10292,9 +10292,11 @@ document.body.removeChild(a);
       const haHeaders0 = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
 
       let lightState = 'unknown';
-      const bodyState = req.body?.state || req.body?.new_state?.state || req.body?.to_state || req.body?.trigger?.to_state?.state || '';
+      const rawToState = req.body?.to_state;
+      const toStateValue = typeof rawToState === 'object' && rawToState !== null ? rawToState.state : rawToState;
+      const bodyState = req.body?.state || req.body?.new_state?.state || toStateValue || req.body?.trigger?.to_state?.state || '';
       const bodyAction = req.body?.action || '';
-      console.log(`[Cat Lights] Body parsing: state="${bodyState}", action="${bodyAction}", trigger=${JSON.stringify(req.body?.trigger || 'none')}`);
+      console.log(`[Cat Lights] Body parsing: state="${bodyState}", action="${bodyAction}", rawToState=${JSON.stringify(rawToState)}, trigger=${JSON.stringify(req.body?.trigger || 'none')}`);
       if (bodyState === 'on' || bodyState === 'off') {
         lightState = bodyState;
         console.log(`[Cat Lights] Using body state directly: ${lightState}`);
