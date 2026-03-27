@@ -2760,7 +2760,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               onClick={() => { const next = !showAssignments; setShowAssignments(next); if (next) setTimeout(() => { const el = assignmentsRef.current; if (el) { const scrollParent = el.closest('.overflow-y-auto'); if (scrollParent) { scrollParent.scrollTo({ top: 0, behavior: 'smooth' }); } else { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } } }, 80); }}
               data-testid="button-toggle-assignments"
             >
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2" style={!isEditingInfo ? { marginLeft: '4px' } : undefined}>
                 <ClipboardList className="h-3.5 w-3.5 text-white/70" />
                 <h3 className="text-[11px] font-medium text-white uppercase">Assignments</h3>
                 <span className="text-[9px] text-white">
