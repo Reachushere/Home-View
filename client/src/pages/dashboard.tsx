@@ -17233,7 +17233,7 @@ export default function Dashboard() {
                                     data-testid={`button-sem-settings-${sem.key}`}
                                   />
                                   <span className="text-[10px] font-bold whitespace-nowrap" style={{ color: (() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); return isPast ? 'rgba(255,255,255,0.5)' : '#ffffff'; })() }}>{sem.label}</span>
-                                  <span className="text-[8px] whitespace-nowrap" style={{ color: (() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); return isPast ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.6)'; })() }}>{sem.dates}</span>
+                                  <span className="text-[8px] whitespace-nowrap px-1.5 py-0.5 rounded border" style={{ color: (() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); return isPast ? 'rgba(255,255,255,0.5)' : '#ffffff'; })(), background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)' }}>{sem.dates}</span>
                                   {isCurrentSem && <span className="text-[7px] font-bold text-white bg-emerald-500/20 px-1 py-0.5 rounded-full border border-white">CURRENT</span>}
                                 </div>
                                 <span className="text-[10px] text-white whitespace-nowrap ml-1">{(() => {
@@ -19121,6 +19121,13 @@ export default function Dashboard() {
                           )}
                           {day.getDay() === 6 && !isToday && (
                             <div className="absolute top-0 left-0 right-0 text-center" style={{ fontSize: '7.5px', fontWeight: 700, letterSpacing: '0.5px', color: '#FFFF00', lineHeight: '1', paddingTop: '2px' }}>NEW SCHOOL WEEK</div>
+                          )}
+                          {!isToday && (() => {
+                            const now = new Date();
+                            const todayIdx = weekDays.findIndex(d => isSameDayET(d, now));
+                            return todayIdx >= 0 && idx < todayIdx && day.getDay() !== 6;
+                          })() && (
+                            <div className="absolute top-0 left-0 right-0 text-center" style={{ fontSize: '7.5px', fontWeight: 700, letterSpacing: '0.5px', color: '#FFFF00', lineHeight: '1', paddingTop: '2px' }}>NEXT WEEK</div>
                           )}
                           <div className="flex items-center gap-1.5">
                             <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? '#fff' : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
