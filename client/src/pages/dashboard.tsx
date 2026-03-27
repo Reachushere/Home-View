@@ -18599,7 +18599,7 @@ export default function Dashboard() {
           <div 
             className="absolute pointer-events-none"
             style={{ 
-              top: '-2px', 
+              top: '-4px', 
               left: '-15px', 
               right: `${-(calendarReduction - 3) - 15 + 6 + 6 + 2}px`, 
               bottom: '-16px', 
