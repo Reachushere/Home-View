@@ -2753,7 +2753,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           </div>
           </div>
 
-          <div ref={assignmentsRef}>
+          <div ref={assignmentsRef} style={{ marginTop: '-4px' }}>
             <div style={{ border: '2px solid rgba(255,255,255,0.2)', borderRadius: '8px', padding: '12px' }}>
             <div
               className="flex items-center justify-between cursor-pointer group"
