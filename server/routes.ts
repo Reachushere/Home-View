@@ -1923,14 +1923,113 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       if (weatherCache.data && now - weatherCache.timestamp < 15 * 60 * 1000) {
         return res.json(weatherCache.data);
       }
-      const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=43.6275&longitude=-79.3962&current=weather_code,temperature_2m,wind_speed_10m,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=America/Toronto&forecast_days=10&past_days=7');
-      const data = await response.json();
-      weatherCache.data = data;
+
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      const headers = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+
+      const ecConditionToWmo: Record<string, number> = {
+        'sunny': 0, 'clear-night': 0, 'clear': 0,
+        'partlycloudy': 2, 'partly-cloudy': 2,
+        'cloudy': 3, 'overcast': 3,
+        'fog': 45,
+        'rainy': 63, 'pouring': 65,
+        'snowy': 73, 'snowy-rainy': 77,
+        'hail': 99,
+        'lightning': 95, 'lightning-rainy': 96,
+        'windy': 2, 'windy-variant': 3,
+        'exceptional': 0,
+      };
+
+      const [stateRes, forecastRes, sunRes] = await Promise.all([
+        fetch(`${haUrl}/api/states/weather.toronto_forecast`, { headers }),
+        fetch(`${haUrl}/api/services/weather/get_forecasts?return_response`, {
+          method: 'POST', headers,
+          body: JSON.stringify({ entity_id: 'weather.toronto_forecast', type: 'daily' }),
+        }),
+        fetch('https://api.open-meteo.com/v1/forecast?latitude=43.6275&longitude=-79.3962&daily=sunrise,sunset&timezone=America/Toronto&forecast_days=10&past_days=7'),
+      ]);
+
+      const stateData = await stateRes.json();
+      const forecastData = await forecastRes.json();
+      const sunData = await sunRes.json();
+
+      const attrs = stateData.attributes || {};
+      const currentCondition = stateData.state || 'cloudy';
+      const currentTemp = attrs.temperature ?? 0;
+      const currentWind = attrs.wind_speed ?? 0;
+
+      const nowToronto = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+      const hour = nowToronto.getHours();
+      const isDay = hour >= 6 && hour < 21;
+
+      const forecasts = forecastData?.service_response?.['weather.toronto_forecast']?.forecast || [];
+
+      const sunTimes = sunData?.daily?.time || [];
+      const sunrises = sunData?.daily?.sunrise || [];
+      const sunsets = sunData?.daily?.sunset || [];
+      const sunMap: Record<string, { sunrise: string; sunset: string }> = {};
+      sunTimes.forEach((d: string, i: number) => {
+        sunMap[d] = { sunrise: sunrises[i], sunset: sunsets[i] };
+      });
+
+      const todayStr = `${nowToronto.getFullYear()}-${String(nowToronto.getMonth() + 1).padStart(2, '0')}-${String(nowToronto.getDate()).padStart(2, '0')}`;
+      const todaySun = sunMap[todayStr];
+
+      const dailyEntries: { date: string; high: number; low: number; weatherCode: number; sunrise?: string; sunset?: string }[] = [];
+
+      for (const fc of forecasts) {
+        const fcDate = fc.datetime ? fc.datetime.substring(0, 10) : '';
+        if (!fcDate) continue;
+        const wmo = ecConditionToWmo[fc.condition] ?? 3;
+        const sun = sunMap[fcDate];
+        dailyEntries.push({
+          date: fcDate,
+          high: fc.temperature != null ? Math.round(fc.temperature) : 0,
+          low: fc.templow != null ? Math.round(fc.templow) : 0,
+          weatherCode: wmo,
+          sunrise: sun?.sunrise,
+          sunset: sun?.sunset,
+        });
+      }
+
+      const result = {
+        current: {
+          weather_code: ecConditionToWmo[currentCondition] ?? 3,
+          temperature_2m: currentTemp,
+          wind_speed_10m: currentWind,
+          is_day: isDay ? 1 : 0,
+        },
+        daily: {
+          time: dailyEntries.map(d => d.date),
+          weather_code: dailyEntries.map(d => d.weatherCode),
+          temperature_2m_max: dailyEntries.map(d => d.high),
+          temperature_2m_min: dailyEntries.map(d => d.low),
+          sunrise: dailyEntries.map(d => d.sunrise || ''),
+          sunset: dailyEntries.map(d => d.sunset || ''),
+        },
+        _source: 'environment_canada_ha',
+      };
+
+      if (todaySun) {
+        (result as any).todaySunrise = todaySun.sunrise;
+        (result as any).todaySunset = todaySun.sunset;
+      }
+
+      weatherCache.data = result;
       weatherCache.timestamp = now;
-      res.json(data);
+      res.json(result);
     } catch (err) {
-      console.error("Error fetching weather:", err);
-      res.status(500).json({ error: "Failed to fetch weather" });
+      console.error("Error fetching weather from HA/EC:", err);
+      try {
+        const fallback = await fetch('https://api.open-meteo.com/v1/forecast?latitude=43.6275&longitude=-79.3962&current=weather_code,temperature_2m,wind_speed_10m,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=America/Toronto&forecast_days=10&past_days=7&models=gem_seamless');
+        const data = await fallback.json();
+        weatherCache.data = data;
+        weatherCache.timestamp = Date.now();
+        res.json(data);
+      } catch (fallbackErr) {
+        console.error("Fallback weather also failed:", fallbackErr);
+        res.status(500).json({ error: "Failed to fetch weather" });
+      }
     }
   });
 
