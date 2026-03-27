@@ -22430,14 +22430,14 @@ export default function Dashboard() {
                           <>
                             <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px', ...(pd.courseCode.toUpperCase().startsWith('CPPA') ? { position: 'relative' as const, top: '2px' } : {}) }}>
                               <span className="text-[8px] font-normal leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>Module Week {selectedWeek}</span>
+                            </div>
+                            <div className="flex items-center gap-[5px]" style={{ position: 'relative' }}>
                               {pd.moduleUnread > 0 && pd.moduleP.percent < 100 && (
-                                <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, position: 'absolute', right: '51px' }}>
+                                <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, position: 'absolute', right: '63px', top: '50%', transform: 'translateY(-50%)' }}>
                                   {pd.moduleUnread}
                                 </div>
                               )}
-                            </div>
-                            <div className="flex items-center gap-[5px]">
-                              <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', flex: 1, marginRight: '51px', marginLeft: '1px', marginTop: '4px' }}>
+                              <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', flex: 1, marginRight: '63px', marginLeft: '1px', marginTop: '4px' }}>
                                 {pd.moduleP.percent > 0 && (
                                   <div className="h-full rounded-full" style={{ width: `${pd.moduleP.percent}%`, backgroundColor: getProgressColor(pd.moduleP.percent) }} />
                                 )}
@@ -22463,14 +22463,14 @@ export default function Dashboard() {
                           <>
                             <div className="flex items-center gap-[3px]" style={{ marginBottom: '2px', ...(pd.courseCode.toUpperCase().startsWith('CPPA') ? { position: 'relative' as const, top: '2px' } : {}) }}>
                               <span className="text-[8px] font-medium leading-none uppercase tracking-wider" style={{ color: '#ffffff', display: 'inline-block', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>Reading Week {selectedWeek}</span>
+                            </div>
+                            <div className="flex items-center gap-[5px]" style={{ position: 'relative' }}>
                               {pd.readingUnread > 0 && pd.readingP.percent < 100 && (
-                                <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, position: 'absolute', right: '51px' }}>
+                                <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ zIndex: 10, position: 'absolute', right: '63px', top: '50%', transform: 'translateY(-50%)' }}>
                                   {pd.readingUnread}
                                 </div>
                               )}
-                            </div>
-                            <div className="flex items-center gap-[5px]">
-                              <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', flex: 1, marginRight: '51px', marginLeft: '1px', marginTop: '4px' }}>
+                              <div className="rounded-full overflow-hidden" style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.22)', flex: 1, marginRight: '63px', marginLeft: '1px', marginTop: '4px' }}>
                                 {pd.readingP.percent > 0 && (
                                   <div className="h-full rounded-full" style={{ width: `${pd.readingP.percent}%`, backgroundColor: getProgressColor(pd.readingP.percent) }} />
                                 )}
