@@ -22306,25 +22306,14 @@ export default function Dashboard() {
               if (!pd || !courseRowRects[idx]) return [];
               const rowTop = courseRowRects[idx].top - upcomingTop - firstRowOffset;
               const rowHeight = courseRowRects[idx].height;
-              const halfHeight = rowHeight / 2;
               return [
-                <div key={`${pd.courseCode}-progress-bg-module`} style={{
+                <div key={`${pd.courseCode}-progress-bg`} style={{
                   position: 'absolute',
                   top: `${rowTop}px`,
                   left: 0,
                   width: `${effectiveDividerPct}%`,
-                  height: `${halfHeight}px`,
-                  background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
-                  zIndex: 1,
-                  boxShadow: 'inset 0 0 0 0.5px rgba(255,255,255,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
-                }} />,
-                <div key={`${pd.courseCode}-progress-bg-reading`} style={{
-                  position: 'absolute',
-                  top: `${rowTop + halfHeight}px`,
-                  left: 0,
-                  width: `${effectiveDividerPct}%`,
-                  height: `${halfHeight}px`,
-                  background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
+                  height: `${rowHeight}px`,
+                  backgroundColor: pd.courseRowColor || '#3a3f4a',
                   zIndex: 1,
                   boxShadow: 'inset 0 0 0 0.5px rgba(255,255,255,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
                 }} />,
@@ -23664,7 +23653,7 @@ export default function Dashboard() {
                     <div
                       key={pd.courseCode}
                       style={{
-                        background: pd.progressBg || 'linear-gradient(180deg, #333 0%, #666 100%)',
+                        backgroundColor: pd.courseRowColor || '#3a3f4a',
                         borderBottom: '0.5px solid rgba(255,255,255,0.2)',
                         boxShadow: 'inset 0 0 0 0.5px rgba(255,255,255,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
                         display: 'flex',
