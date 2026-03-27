@@ -1445,9 +1445,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 </span>
               )}
               {gradeCalc && (
-                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md flex-shrink-0" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }} data-testid="grade-calculator-inline">
+                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md flex-shrink-0" style={{ background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.4)' }} data-testid="grade-calculator-inline">
                   <span className="text-[11px] font-bold text-white" data-testid="text-current-grade">{gradeCalc.currentGrade}</span>
                   <span className="text-[10px] text-white">({gradeCalc.currentPercent.toFixed(1)}%)</span>
+                  <span className="text-[9px] text-white/70" style={{ marginLeft: '2px' }}>{gradeCalc.gradedCount} graded · {gradeCalc.gradedWeight.toFixed(0)}%</span>
                 </div>
               )}
             </div>
@@ -1464,9 +1465,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
         <div className="flex items-center justify-between px-3 py-2 border-b border-white/10 flex-shrink-0">
           <div className="flex items-center gap-2">
             <span className="text-[11px] text-white uppercase font-medium">Course Info</span>
-            {gradeCalc && (
-              <span className="text-[9px] text-white flex items-center" style={{ marginTop: '2px' }}>{gradeCalc.gradedCount} graded · {gradeCalc.gradedWeight.toFixed(0)}%</span>
-            )}
             {syllabusObjectPath && (
               <Button
                 variant="outline"
@@ -1474,16 +1472,16 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 onClick={() => {
                   window.open(`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`, '_blank');
                 }}
-                className="h-6 px-2 text-[10px] text-white border-white/30 hover:bg-white/10 hover:text-white bg-transparent"
+                className="h-5 px-2 text-[10px] text-white border-white/40 hover:bg-white/15 hover:text-white bg-white/10"
                 data-testid="button-view-syllabus"
               >
                 <Paperclip className="w-3 h-3 mr-1" />
                 View Syllabus
               </Button>
             )}
-            <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-md" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}>
-              <span className="text-[9px] text-white">Rank</span>
-              <select className="h-5 text-[10px] bg-transparent border-none text-white rounded px-0.5 outline-none cursor-pointer" style={{ WebkitAppearance: 'none', appearance: 'none', paddingRight: '2px' }} value={courseRank} onChange={(e) => {
+            <span className="text-[9px] text-white">Rank</span>
+            <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-md" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}>
+              <select className="h-4 text-[10px] bg-transparent border-none text-white rounded px-0.5 outline-none cursor-pointer" style={{ WebkitAppearance: 'none', appearance: 'none', paddingRight: '12px' }} value={courseRank} onChange={(e) => {
                 const val = parseInt(e.target.value);
                 onSaveCourseInfo({ courseRank: val });
               }} data-testid="select-course-rank-header">
@@ -1493,6 +1491,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   return <option key={n} value={n} className="bg-gray-800" disabled={taken} style={taken ? { color: '#555' } : {}}>{n}</option>;
                 })}
               </select>
+              <ChevronDown className="w-3 h-3 text-white/60 -ml-4 pointer-events-none" />
             </div>
           </div>
               {!isEditingInfo ? (
