@@ -1451,7 +1451,16 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
         </div>
 
         <div className="flex items-center justify-between px-3 py-2 border-b border-white/10 flex-shrink-0">
-          <span className="text-[11px] text-white uppercase font-medium">Course Info</span>
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] text-white uppercase font-medium">Course Info</span>
+            {gradeCalc && (
+              <div className="flex items-center gap-1.5" data-testid="grade-calculator-inline">
+                <span className="text-[11px] font-bold text-white" data-testid="text-current-grade">{gradeCalc.currentGrade}</span>
+                <span className="text-[10px] text-white/70">({gradeCalc.currentPercent.toFixed(1)}%)</span>
+                <span className="text-[9px] text-white/50">{gradeCalc.gradedCount} graded · {gradeCalc.gradedWeight.toFixed(0)}%</span>
+              </div>
+            )}
+          </div>
               {!isEditingInfo ? (
                 <button
                   onClick={() => setIsEditingInfo(true)}
@@ -1603,18 +1612,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     <input className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1.5 placeholder:text-white/25" value={editInfo.professorEmail} onChange={(e) => setEditInfo({...editInfo, professorEmail: e.target.value})} placeholder="professor@email.com" data-testid="input-edit-email" />
                   </div>
                 </div>
-                <div>
-                  <label className="text-white text-[9px] mb-0.5 block">Zoom Link{editInfo.deliveryMode === 'virtual' && <span className="text-red-400 ml-0.5">*</span>}</label>
-                  <input className={`w-full h-6 text-[10px] bg-white/10 text-white rounded px-1.5 placeholder:text-white/25 ${editInfo.deliveryMode === 'virtual' && !editInfo.zoomLink?.trim() ? 'border border-red-500/70' : 'border border-white/15'}`} value={editInfo.zoomLink} onChange={(e) => setEditInfo({...editInfo, zoomLink: e.target.value})} placeholder={editInfo.deliveryMode === 'virtual' ? "Required — https://zoom.us/..." : "https://zoom.us/..."} data-testid="input-edit-zoom" />
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <label className="text-white text-[9px] mb-0.5 block">Semester</label>
-                    <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={semesterKeyFromTermYear(editInfo.semesterTerm, editInfo.year)} onChange={(e) => { const opt = SEMESTER_OPTIONS.find(o => o.key === e.target.value); if (opt) { setEditInfo({...editInfo, semesterTerm: opt.term, year: opt.year, startDate: opt.start, endDate: opt.end }); } else { setEditInfo({...editInfo, semesterTerm: '', year: '', startDate: '', endDate: '' }); } }} data-testid="select-edit-semester-term">
-                      <option value="" className="bg-gray-800">—</option>
-                      {SEMESTER_OPTIONS.map(o => <option key={o.key} value={o.key} className="bg-gray-800">{o.label}</option>)}
-                    </select>
-                  </div>
+                <div className="grid grid-cols-[auto_1fr] gap-2">
                   <div>
                     <label className="text-white text-[9px] mb-0.5 block">Delivery Mode</label>
                     <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.deliveryMode} onChange={(e) => setEditInfo({...editInfo, deliveryMode: e.target.value})} data-testid="select-edit-delivery">
@@ -1624,6 +1622,17 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                       <option value="in-person" className="bg-gray-800">In-Person</option>
                     </select>
                   </div>
+                  <div>
+                    <label className="text-white text-[9px] mb-0.5 block">Zoom Link{editInfo.deliveryMode === 'virtual' && <span className="text-red-400 ml-0.5">*</span>}</label>
+                    <input className={`w-full h-6 text-[10px] bg-white/10 text-white rounded px-1.5 placeholder:text-white/25 ${editInfo.deliveryMode === 'virtual' && !editInfo.zoomLink?.trim() ? 'border border-red-500/70' : 'border border-white/15'}`} value={editInfo.zoomLink} onChange={(e) => setEditInfo({...editInfo, zoomLink: e.target.value})} placeholder={editInfo.deliveryMode === 'virtual' ? "Required — https://zoom.us/..." : "https://zoom.us/..."} data-testid="input-edit-zoom" />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-white text-[9px] mb-0.5 block">Semester</label>
+                  <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={semesterKeyFromTermYear(editInfo.semesterTerm, editInfo.year)} onChange={(e) => { const opt = SEMESTER_OPTIONS.find(o => o.key === e.target.value); if (opt) { setEditInfo({...editInfo, semesterTerm: opt.term, year: opt.year, startDate: opt.start, endDate: opt.end }); } else { setEditInfo({...editInfo, semesterTerm: '', year: '', startDate: '', endDate: '' }); } }} data-testid="select-edit-semester-term">
+                    <option value="" className="bg-gray-800">—</option>
+                    {SEMESTER_OPTIONS.map(o => <option key={o.key} value={o.key} className="bg-gray-800">{o.label}</option>)}
+                  </select>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
@@ -3090,20 +3099,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
 
           </>)}
           </div>
-        {gradeCalc && (
-            <div className="mt-3" data-testid="grade-calculator-box">
-              <div className="flex items-center gap-2 mb-2">
-                <GraduationCap className="h-4 w-4 text-white" />
-                <span className="text-[11px] font-medium text-white uppercase">Grade Calculator</span>
-                <span className="text-[11px] text-white/80 ml-auto">{gradeCalc.gradedCount} graded · {gradeCalc.gradedWeight.toFixed(2)}% of {(totalWeight || gradeCalc.gradedWeight).toFixed(2)}% weight</span>
-              </div>
-              <div className="text-center p-3 rounded-md" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }}>
-                <div className="text-[11px] font-semibold text-white/80 mb-1">Current Grade</div>
-                <div className="text-2xl font-bold text-white" data-testid="text-current-grade">{gradeCalc.currentGrade}</div>
-                <div className="text-[14px] font-semibold text-white" data-testid="text-current-percent">{gradeCalc.currentPercent.toFixed(2)}%</div>
-              </div>
-            </div>
-          )}
         </div>
 
         <div className="px-4 py-3 border-t border-white/20 flex items-center justify-between flex-shrink-0" style={{ background: 'rgba(255,255,255,0.08)', position: 'relative', zIndex: 10, opacity: expandedTaskId !== null ? 0.35 : 1, pointerEvents: expandedTaskId !== null ? 'none' : 'auto' }}>
