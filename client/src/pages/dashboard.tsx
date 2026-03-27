@@ -890,6 +890,7 @@ export default function Dashboard() {
   const [rescheduleTask, setRescheduleTask] = useState<Task | null>(null);
   const [isTodayExpanded, setIsTodayExpanded] = useState(false);
   const [bookAnimState, setBookAnimState] = useState<{ isOpen: boolean; courseCode: string; title: string; color: string; onDone: () => void } | null>(null);
+  const [bookReaderOverlay, setBookReaderOverlay] = useState<{ url: string; courseCode: string; title: string; color: string } | null>(null);
   const [hwUploadingState, setHwUploadingState] = useState<Record<string, boolean>>({});
   const [calendarHeight, setCalendarHeight] = useState(() => {
     const defaultHeight = window.innerHeight - 45;
@@ -9798,6 +9799,169 @@ export default function Dashboard() {
           title={bookAnimState.title}
           courseCode={bookAnimState.courseCode}
         />
+      )}
+      {bookReaderOverlay && createPortal(
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 999998,
+            backgroundColor: 'rgba(0,0,0,0.88)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            animation: 'bookOverlayFadeIn 0.4s ease forwards',
+          }}
+          data-testid="book-reader-overlay"
+        >
+          <style>{`
+            @keyframes bookOverlayFadeIn {
+              from { opacity: 0; }
+              to { opacity: 1; }
+            }
+            @keyframes bookSlideIn {
+              from { transform: scale(0.85) translateY(30px); opacity: 0; }
+              to { transform: scale(1) translateY(0); opacity: 1; }
+            }
+          `}</style>
+          <div
+            style={{
+              display: 'flex',
+              width: '92vw',
+              height: '88vh',
+              maxWidth: '1800px',
+              maxHeight: '680px',
+              animation: 'bookSlideIn 0.5s ease 0.15s both',
+              filter: 'drop-shadow(0 20px 60px rgba(0,0,0,0.6))',
+            }}
+          >
+            <div style={{
+              width: '32px',
+              flexShrink: 0,
+              background: `linear-gradient(90deg, ${bookReaderOverlay.color} 0%, rgba(0,0,0,0.5) 45%, ${bookReaderOverlay.color} 85%, rgba(0,0,0,0.3) 100%)`,
+              borderRadius: '6px 0 0 6px',
+              boxShadow: 'inset -4px 0 12px rgba(0,0,0,0.4), 4px 0 8px rgba(0,0,0,0.2)',
+              position: 'relative',
+            }}>
+              <div style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%) rotate(-90deg)',
+                color: '#D4AF37',
+                fontSize: '10px',
+                fontWeight: 700,
+                letterSpacing: '2px',
+                textTransform: 'uppercase',
+                whiteSpace: 'nowrap',
+                textShadow: '0 1px 3px rgba(0,0,0,0.6)',
+                opacity: 0.8,
+              }}>
+                {bookReaderOverlay.courseCode}
+              </div>
+            </div>
+
+            <div style={{
+              flex: 1,
+              backgroundColor: '#fef3c7',
+              borderRadius: '0 8px 8px 0',
+              overflow: 'hidden',
+              position: 'relative',
+              boxShadow: '6px 6px 24px rgba(0,0,0,0.4)',
+            }}>
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '36px',
+                background: 'linear-gradient(180deg, rgba(180,140,80,0.15) 0%, rgba(180,140,80,0.05) 100%)',
+                borderBottom: '1px solid rgba(180,140,80,0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '0 12px 0 16px',
+                zIndex: 2,
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, flex: 1 }}>
+                  <span style={{ fontSize: '11px', fontWeight: 700, color: bookReaderOverlay.color, textTransform: 'uppercase', letterSpacing: '1px', flexShrink: 0 }}>
+                    {bookReaderOverlay.courseCode}
+                  </span>
+                  <span style={{ fontSize: '10px', color: '#6b5c3e', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {bookReaderOverlay.title}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+                  <button
+                    onClick={() => { window.open(bookReaderOverlay.url, '_blank'); setBookReaderOverlay(null); }}
+                    style={{
+                      background: 'rgba(0,0,0,0.08)',
+                      border: 'none',
+                      borderRadius: '4px',
+                      padding: '4px 8px',
+                      cursor: 'pointer',
+                      fontSize: '9px',
+                      fontWeight: 600,
+                      color: '#5a4a2e',
+                    }}
+                    data-testid="book-reader-pop-out"
+                  >
+                    Pop Out
+                  </button>
+                  <button
+                    onClick={() => setBookReaderOverlay(null)}
+                    style={{
+                      background: 'rgba(0,0,0,0.08)',
+                      border: 'none',
+                      borderRadius: '4px',
+                      width: '24px',
+                      height: '24px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '14px',
+                      fontWeight: 700,
+                      color: '#5a4a2e',
+                      lineHeight: 1,
+                    }}
+                    data-testid="book-reader-close"
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+
+              <iframe
+                src={bookReaderOverlay.url}
+                name="book-reader-iframe"
+                style={{
+                  position: 'absolute',
+                  top: '36px',
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  width: '100%',
+                  height: 'calc(100% - 36px)',
+                  border: 'none',
+                  backgroundColor: '#fff',
+                }}
+                data-testid="book-reader-iframe"
+              />
+
+              <div style={{
+                position: 'absolute',
+                top: '36px',
+                left: 0,
+                bottom: 0,
+                width: '3px',
+                background: 'linear-gradient(90deg, rgba(0,0,0,0.08) 0%, transparent 100%)',
+                pointerEvents: 'none',
+              }} />
+            </div>
+          </div>
+        </div>,
+        document.body
       )}
       {/* Background photo layer - always shown when set, behind overlay */}
       {colorSettings.backgroundPhoto && (
@@ -19708,7 +19872,17 @@ export default function Dashboard() {
                           const readerUrl = nextModule.objectPath?.startsWith('http')
                             ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(nextModule.objectPath || '')}&name=${encodeURIComponent(nextModule.displayName || nextModule.originalName)}&autoplay=1`
                             : `/pdf-reader/${nextModule.id}?autoplay=1`;
-                          window.open(readerUrl, '_blank');
+                          const fileName = nextModule.displayName || nextModule.originalName || 'Module';
+                          setBookAnimState({
+                            isOpen: true,
+                            courseCode,
+                            title: fileName,
+                            color: courseHexColor,
+                            onDone: () => {
+                              setBookAnimState(null);
+                              setBookReaderOverlay({ url: readerUrl, courseCode, title: fileName, color: courseHexColor });
+                            },
+                          });
                           return;
                         }
                       }
@@ -19722,7 +19896,17 @@ export default function Dashboard() {
                         const readerUrl = targetFile.objectPath?.startsWith('http')
                           ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(targetFile.objectPath || '')}&name=${encodeURIComponent(targetFile.displayName || targetFile.originalName)}&autoplay=1`
                           : `/pdf-reader/${targetFile.id}?autoplay=1`;
-                        window.open(readerUrl, '_blank');
+                        const fileName = targetFile.displayName || targetFile.originalName || fileType;
+                        setBookAnimState({
+                          isOpen: true,
+                          courseCode,
+                          title: fileName,
+                          color: courseHexColor,
+                          onDone: () => {
+                            setBookAnimState(null);
+                            setBookReaderOverlay({ url: readerUrl, courseCode, title: fileName, color: courseHexColor });
+                          },
+                        });
                       } else {
                         toast({ title: `No ${fileType} files found for week ${selectedWeek}`, variant: 'destructive' });
                       }
@@ -19787,7 +19971,7 @@ export default function Dashboard() {
                                 onDone: () => {
                                   setBookAnimState(null);
                                   if (result.fileId) {
-                                    window.open(`/pdf-reader/${result.fileId}?autoplay=1`, '_blank');
+                                    setBookReaderOverlay({ url: `/pdf-reader/${result.fileId}?autoplay=1`, courseCode: codeClean, title: file.name, color: courseHexColor });
                                   }
                                 },
                               });

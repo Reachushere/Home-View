@@ -9152,6 +9152,20 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         } catch {}
       }
 
+      let checkedChunksSet = new Set<number>();
+      if (fileId) {
+        try {
+          const fileForChecked = await storage.getFile(fileId);
+          if (fileForChecked?.checkedChunks) {
+            const parsed = JSON.parse(fileForChecked.checkedChunks);
+            if (Array.isArray(parsed)) checkedChunksSet = new Set(parsed);
+          }
+        } catch {}
+        if (checkedChunksSet.size > 0) {
+          console.log(`[Nest Playback] ${checkedChunksSet.size} chunks already checked — will skip them`);
+        }
+      }
+
       let chunksPlayedSinceLastPrompt = 0;
       const ATTENTION_INTERVAL = 3;
       let lookaheadAudioPath: string | null = null;
@@ -9168,6 +9182,14 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
             console.log(`[Nest Playback] Saved progress on abort: chunk ${i}`);
           }
           break;
+        }
+
+        if (checkedChunksSet.has(i)) {
+          console.log(`[Nest Playback] Skipping chunk ${i + 1}/${chunks.length} (already checked/strikethrough)`);
+          if (fileId) {
+            try { await storage.updateFile(fileId, { lastChunkIndex: i + 1 }); } catch {}
+          }
+          continue;
         }
 
         if (catWashPlaybackState) {

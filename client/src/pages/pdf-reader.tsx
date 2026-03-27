@@ -270,8 +270,18 @@ export default function PDFReaderPage() {
         setIsPlaying(false);
         setIsPaused(false);
         setCurrentChunk(0);
-        const el = document.querySelector(`[data-testid="chunk-row-0"]`);
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setCheckedChunks(new Set());
+        const fileIdMatch = window.location.pathname.match(/\/pdf-reader\/(\d+)/);
+        if (fileIdMatch) {
+          const fid = fileIdMatch[1];
+          fetch(`/api/files/${fid}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ checkedChunks: '[]', lastChunkIndex: 0 }) }).catch(() => {});
+          localStorage.removeItem(`checkedChunks_file_${fid}`);
+          localStorage.removeItem(`tts-progress-${fid}`);
+        }
+        setTimeout(() => {
+          const el = document.querySelector(`[data-testid="chunk-row-0"]`);
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
       }
     };
     window.addEventListener('message', handler);
