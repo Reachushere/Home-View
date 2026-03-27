@@ -51,7 +51,7 @@ import profilePhoto from "@assets/image_1772579486577.png";
 import pdfSearchLogo from "@assets/Adobe61_1772583825907.png";
 import pdfIconPath from "@assets/Adobee_1772801638235.png";
 import zoomCamPath from "@assets/Zoomcam_1773655084814.png";
-import readerIconPath from "@assets/Adobe65_1772615790465.png";
+import readerIconPath from "@assets/Headphones2_1774598197965.png";
 import BookAnimation from "@/components/BookAnimation";
 import dragTabPath from "@assets/drag-tab.svg";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -23714,7 +23714,7 @@ export default function Dashboard() {
                                     <Play className="hover:opacity-80 transition-opacity duration-200" style={{ width: '14px', height: '14px', opacity: pd.moduleP.percent === 100 ? 0.4 : 1, color: '#fff', fill: 'currentColor' }} />
                                   </div>
                                   <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '6px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`float-reader-module-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayModule(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayModule(); }}>
-                                    <Headphones className="hover:opacity-80 transition-opacity duration-200" style={{ width: '14px', height: '14px', opacity: pd.moduleP.percent === 100 ? 0.4 : 1, color: '#fff' }} />
+                                    <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-opacity duration-200" style={{ width: '18px', height: 'auto', display: 'block', opacity: pd.moduleP.percent === 100 ? 0.4 : 1 }} />
                                   </div>
                                 </div>
                               </>
@@ -23754,7 +23754,7 @@ export default function Dashboard() {
                                     <Play className="hover:opacity-80 transition-opacity duration-200" style={{ width: '14px', height: '14px', opacity: pd.readingP.percent === 100 ? 0.4 : 1, color: '#fff', fill: 'currentColor' }} />
                                   </div>
                                   <div className="flex-shrink-0 cursor-pointer" style={{ position: 'absolute', right: '6px', top: '50%', transform: 'translateY(-50%)' }} data-testid={`float-reader-reading-${pd.courseCode.toLowerCase()}`} onClick={(e) => { e.stopPropagation(); pd.handlePlayReading(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); pd.handlePlayReading(); }}>
-                                    <Headphones className="hover:opacity-80 transition-opacity duration-200" style={{ width: '14px', height: '14px', opacity: pd.readingP.percent === 100 ? 0.4 : 1, color: '#fff' }} />
+                                    <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-opacity duration-200" style={{ width: '18px', height: 'auto', display: 'block', opacity: pd.readingP.percent === 100 ? 0.4 : 1 }} />
                                   </div>
                                 </div>
                               </>
