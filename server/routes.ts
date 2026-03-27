@@ -1700,6 +1700,15 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
     res.json(task);
   });
 
+  app.patch("/api/tasks/:id/flag", async (req, res) => {
+    const { flagged } = req.body;
+    const task = await storage.updateTask(Number(req.params.id), { flagged: !!flagged });
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+    res.json(task);
+  });
+
   // ============= SEMESTER SETTINGS ROUTES =============
 
   // GET /api/semesters - Get all semester settings

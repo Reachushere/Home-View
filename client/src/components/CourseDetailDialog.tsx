@@ -35,6 +35,7 @@ import {
   ChevronRight,
   ArrowUp,
   ArrowDown,
+  Flag,
 } from "lucide-react";
 import zoomLogoPath from "@assets/Zoom2_1773776262533.png";
 import wifiLogoPath from "@assets/Wifi_1773656687145.png";
@@ -98,7 +99,7 @@ interface CourseInfo {
 interface CourseDetailDialogProps {
   courseInfo: CourseInfo;
   onClose: () => void;
-  onSaveCourseInfo?: (updates: { professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; classTime2?: string; classEndTime2?: string; zoomLink?: string; semesterTerm?: string; year?: string; startDate?: string; endDate?: string; color?: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string }) => void;
+  onSaveCourseInfo?: (updates: { professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; classTime2?: string; classEndTime2?: string; zoomLink?: string; semesterTerm?: string; year?: string; startDate?: string; endDate?: string; color?: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; semesterKey?: string }) => void;
   onLiveColorChange?: (updates: { color?: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string }) => void;
   onGradeCalculated?: (grade: string, percent: string) => void;
   onDeleteCourse?: () => void;
@@ -200,6 +201,29 @@ function percentToLetterGrade(pct: number): string {
   return 'F';
 }
 
+const SEMESTER_OPTIONS: { key: string; label: string; term: string; year: string; start: string; end: string }[] = [
+  { key: 'ss2025', label: 'Spring/Summer 2025', term: 'spring_summer_full', year: '2025', start: '2025-05-05', end: '2025-08-08' },
+  { key: 'f2025', label: 'Fall 2025', term: 'fall', year: '2025', start: '2025-09-08', end: '2025-12-07' },
+  { key: 'w2026', label: 'Winter 2026', term: 'winter', year: '2026', start: '2026-01-13', end: '2026-04-17' },
+  { key: 'ss2026', label: 'Spring/Summer 2026', term: 'spring_summer_full', year: '2026', start: '2026-05-04', end: '2026-08-07' },
+  { key: 'f2026', label: 'Fall 2026', term: 'fall', year: '2026', start: '2026-09-14', end: '2026-12-07' },
+  { key: 'w2027', label: 'Winter 2027', term: 'winter', year: '2027', start: '2027-01-11', end: '2027-04-16' },
+  { key: 'ss2027', label: 'Spring/Summer 2027', term: 'spring_summer_full', year: '2027', start: '2027-05-03', end: '2027-08-06' },
+  { key: 'f2027', label: 'Fall 2027', term: 'fall', year: '2027', start: '2027-09-13', end: '2027-12-06' },
+  { key: 'w2028', label: 'Winter 2028', term: 'winter', year: '2028', start: '2028-01-10', end: '2028-04-14' },
+  { key: 'ss2028', label: 'Spring/Summer 2028', term: 'spring_summer_full', year: '2028', start: '2028-05-01', end: '2028-08-04' },
+  { key: 'f2028', label: 'Fall 2028', term: 'fall', year: '2028', start: '2028-09-11', end: '2028-12-04' },
+  { key: 'w2029', label: 'Winter 2029', term: 'winter', year: '2029', start: '2029-01-08', end: '2029-04-13' },
+];
+
+function semesterKeyFromTermYear(term?: string, year?: string): string {
+  if (!term || !year) return '';
+  if (term.startsWith('spring_summer')) return `ss${year}`;
+  if (term === 'fall') return `f${year}`;
+  if (term === 'winter') return `w${year}`;
+  return '';
+}
+
 export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLiveColorChange, onGradeCalculated, onDeleteCourse, onOpenEditTask, semesterStart, readingWeekStart, certificateName, onPushUndo, initialEditMode }: CourseDetailDialogProps) {
   const { toast } = useToast();
   const [showAddForm, setShowAddForm] = useState(false);
@@ -274,7 +298,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
       });
   }, [courseInfo.courseCode]);
   const [showWeekMappings, setShowWeekMappings] = useState(false);
-  const [showAssignments, setShowAssignments] = useState(true);
+  const [showAssignments, setShowAssignments] = useState(false);
   const [weekMappingEdits, setWeekMappingEdits] = useState<Record<number, { confirmed: boolean; courseWeekLabel: string; notes: string }>>({});
   const [weekStyleChoice, setWeekStyleChoice] = useState<string | null>(null);
   const [showWeekCalendar, setShowWeekCalendar] = useState(false);
@@ -737,6 +761,15 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     },
   });
 
+  const toggleFlagMutation = useMutation({
+    mutationFn: async ({ id, flagged }: { id: number; flagged: boolean }) => {
+      return apiRequest("PATCH", `/api/tasks/${id}/flag`, { flagged });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+    },
+  });
+
   const handleUploadAssignment = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -1109,6 +1142,12 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             <FolderPlus className="h-[15px] w-[15px]" />
           </button>
         )}
+        <Flag
+          className={`h-[14px] w-[14px] flex-shrink-0 cursor-pointer transition-colors ${task.flagged ? 'text-red-400 fill-red-400' : 'text-white/20 hover:text-red-400'}`}
+          style={{ marginLeft: '8px', marginRight: '4px' }}
+          onClick={(e) => { e.stopPropagation(); toggleFlagMutation.mutate({ id: task.id, flagged: !task.flagged }); }}
+          data-testid={`flag-toggle-${task.id}`}
+        />
         <MessageSquare className={`h-[19px] w-[19px] flex-shrink-0 cursor-pointer hover:opacity-70 transition-opacity ${task.isCompleted ? "text-white/50" : "text-white"}`} style={{ marginLeft: '17px', marginRight: '10px' }} onClick={(e) => { e.stopPropagation(); if (expandedTaskId === task.id) { setExpandedTaskId(null); setEditTaskFields(null); } else { setExpandedTaskId(task.id); const d = task.dueDate ? new Date(task.dueDate) : null; setEditTaskFields({ title: task.title || '', type: task.type || 'other', dueDate: d ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` : '', dueTime: d ? `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` : '', description: task.description || '', gradeWeight: task.gradeWeight?.toString() || '', gradeTotal: task.gradeTotal?.toString() || '', gradeValue: task.gradeValue?.toString() || '', reminder1: task.reminder1 ?? 30, reminder2: task.reminder2 ?? 120, reminder3: task.reminder3 ?? null, reminder4: task.reminder4 ?? null }); } }} data-testid={`button-comments-${task.id}`} />
         <div className="flex-1 min-w-0" style={{ marginLeft: '21px' }}>
           <div
@@ -1470,7 +1509,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         return;
                       }
                       if (onSaveCourseInfo) {
-                        onSaveCourseInfo(editInfo);
+                        const semKey = semesterKeyFromTermYear(editInfo.semesterTerm, editInfo.year);
+                        onSaveCourseInfo({ ...editInfo, semesterKey: semKey || undefined });
                       }
                       if (editInfo.professor?.trim()) {
                         fetch('/api/key-contacts/sync-professor', {
@@ -1567,26 +1607,12 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   <label className="text-white text-[9px] mb-0.5 block">Zoom Link{editInfo.deliveryMode === 'virtual' && <span className="text-red-400 ml-0.5">*</span>}</label>
                   <input className={`w-full h-6 text-[10px] bg-white/10 text-white rounded px-1.5 placeholder:text-white/25 ${editInfo.deliveryMode === 'virtual' && !editInfo.zoomLink?.trim() ? 'border border-red-500/70' : 'border border-white/15'}`} value={editInfo.zoomLink} onChange={(e) => setEditInfo({...editInfo, zoomLink: e.target.value})} placeholder={editInfo.deliveryMode === 'virtual' ? "Required — https://zoom.us/..." : "https://zoom.us/..."} data-testid="input-edit-zoom" />
                 </div>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   <div>
                     <label className="text-white text-[9px] mb-0.5 block">Semester</label>
-                    <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.semesterTerm} onChange={(e) => setEditInfo({...editInfo, semesterTerm: e.target.value})} data-testid="select-edit-semester-term">
+                    <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={semesterKeyFromTermYear(editInfo.semesterTerm, editInfo.year)} onChange={(e) => { const opt = SEMESTER_OPTIONS.find(o => o.key === e.target.value); if (opt) { setEditInfo({...editInfo, semesterTerm: opt.term, year: opt.year, startDate: opt.start, endDate: opt.end }); } else { setEditInfo({...editInfo, semesterTerm: '', year: '', startDate: '', endDate: '' }); } }} data-testid="select-edit-semester-term">
                       <option value="" className="bg-gray-800">—</option>
-                      <option value="fall" className="bg-gray-800">Fall</option>
-                      <option value="winter" className="bg-gray-800">Winter</option>
-                      <option value="spring_summer_full" className="bg-gray-800">Spring/Summer (Full)</option>
-                      <option value="spring_summer_first" className="bg-gray-800">Spring/Summer (1st Half)</option>
-                      <option value="spring_summer_second" className="bg-gray-800">Spring/Summer (2nd Half)</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-white text-[9px] mb-0.5 block">Year</label>
-                    <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.year} onChange={(e) => setEditInfo({...editInfo, year: e.target.value})} data-testid="select-edit-year">
-                      <option value="" className="bg-gray-800">—</option>
-                      <option value="2026" className="bg-gray-800">2026</option>
-                      <option value="2027" className="bg-gray-800">2027</option>
-                      <option value="2028" className="bg-gray-800">2028</option>
-                      <option value="2029" className="bg-gray-800">2029</option>
+                      {SEMESTER_OPTIONS.map(o => <option key={o.key} value={o.key} className="bg-gray-800">{o.label}</option>)}
                     </select>
                   </div>
                   <div>
@@ -3122,7 +3148,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               variant="outline"
               onClick={() => {
                 if (onSaveCourseInfo) {
-                  onSaveCourseInfo(editInfo);
+                  const semKey = semesterKeyFromTermYear(editInfo.semesterTerm, editInfo.year);
+                  onSaveCourseInfo({ ...editInfo, semesterKey: semKey || undefined });
                 }
                 if (editInfo.professor?.trim()) {
                   fetch('/api/key-contacts/sync-professor', {

@@ -369,6 +369,7 @@ export const tasks = pgTable("tasks", {
   excludeFromGpa: boolean("exclude_from_gpa").default(true),
   inviteEmails: text("invite_emails").array(),
   hideFromSummary: boolean("hide_from_summary").default(false),
+  flagged: boolean("flagged").default(false),
 });
 
 // Base schema from drizzle, then override date fields to accept ISO strings

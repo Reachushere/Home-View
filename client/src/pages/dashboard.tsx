@@ -182,6 +182,7 @@ import {
   Moon as MoonIcon,
   Mic,
   MicOff,
+  Flag,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
@@ -2274,7 +2275,7 @@ export default function Dashboard() {
     localStorage.setItem('semesterCourseAssignments', JSON.stringify(assignments));
     saveDegreeToServer('semesterCourseAssignments', assignments);
   };
-  const semesterKeyOrder = ['ss2025', 'f2025', 'w2026', 'ss2026', 'f2026', 'w2027', 'ss2027', 'f2027', 'w2028', 'ss2028', 'f2028'];
+  const semesterKeyOrder = ['ss2025', 'f2025', 'w2026', 'ss2026', 'f2026', 'w2027', 'ss2027', 'f2027', 'w2028', 'ss2028', 'f2028', 'w2029'];
   const addCourseToNextAvailableSemester = (courseCode: string, courseName: string, fullName: string) => {
     const codeNorm = courseCode.toUpperCase().replace(/\s/g, '');
     const allAssigned = Object.values(semesterCourseAssignments).flat();
@@ -8241,6 +8242,15 @@ export default function Dashboard() {
     },
   });
 
+  const flagMutation = useMutation({
+    mutationFn: async ({ id, flagged }: { id: number; flagged: boolean }) => {
+      return apiRequest("PATCH", `/api/tasks/${id}/flag`, { flagged });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+    },
+  });
+
   const hideFromSummaryMutation = useMutation({
     mutationFn: async ({ id, hideFromSummary }: { id: number; hideFromSummary: boolean }) => {
       return apiRequest("PATCH", `/api/tasks/${id}`, { hideFromSummary });
@@ -11544,7 +11554,11 @@ export default function Dashboard() {
             if (ddOnly.getTime() < nowDate.getTime()) return false;
             return true;
           })
-          .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime());
+          .sort((a, b) => {
+            if (a.flagged && !b.flagged) return -1;
+            if (!a.flagged && b.flagged) return 1;
+            return new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime();
+          });
         const overdue = upcoming.length === 0 ? allTasks
           .filter(t => {
             if (!t.dueDate || t.isCompleted) return false;
@@ -11652,6 +11666,7 @@ export default function Dashboard() {
                       data-testid="countdown-next-task-number"
                     >
                       <span data-countdown-bullet={next.id} style={{ color: isDueZero ? '#dc2626' : '#ffffff', fontSize: '14px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span>
+                      {next.flagged && <Flag className="h-[10px] w-[10px] text-red-400 fill-red-400 flex-shrink-0" />}
                       {isDueZero ? (
                         <>
                           <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}>DUE TODAY:</span>
@@ -13177,7 +13192,7 @@ export default function Dashboard() {
               </Button>
               </div>
               {(() => {
-                const semKeyOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028'];
+                const semKeyOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029'];
                 const now = new Date();
                 const currentSemIdx = (() => {
                   if (now >= new Date('2025-05-05') && now <= new Date('2025-08-08')) return semKeyOrder.indexOf('ss2025');
@@ -13186,6 +13201,12 @@ export default function Dashboard() {
                   if (now >= new Date('2026-05-04') && now <= new Date('2026-08-04')) return semKeyOrder.indexOf('ss2026');
                   if (now >= new Date('2026-09-01') && now <= new Date('2026-12-31')) return semKeyOrder.indexOf('f2026');
                   if (now >= new Date('2027-01-01') && now <= new Date('2027-04-30')) return semKeyOrder.indexOf('w2027');
+                  if (now >= new Date('2027-05-01') && now <= new Date('2027-08-31')) return semKeyOrder.indexOf('ss2027');
+                  if (now >= new Date('2027-09-01') && now <= new Date('2027-12-31')) return semKeyOrder.indexOf('f2027');
+                  if (now >= new Date('2028-01-01') && now <= new Date('2028-04-30')) return semKeyOrder.indexOf('w2028');
+                  if (now >= new Date('2028-05-01') && now <= new Date('2028-08-31')) return semKeyOrder.indexOf('ss2028');
+                  if (now >= new Date('2028-09-01') && now <= new Date('2028-12-31')) return semKeyOrder.indexOf('f2028');
+                  if (now >= new Date('2029-01-01') && now <= new Date('2029-04-30')) return semKeyOrder.indexOf('w2029');
                   return -1;
                 })();
                 const relevantSemKeys = currentSemIdx >= 0 ? semKeyOrder.slice(0, currentSemIdx + 1) : [];
@@ -14096,6 +14117,20 @@ export default function Dashboard() {
                     }
                   }
                 }
+              }
+              if ((updates as any).semesterKey) {
+                const targetKey = (updates as any).semesterKey;
+                const codeNorm = courseCode.replace(/\s/g, '').toUpperCase();
+                const updated = { ...semesterCourseAssignments };
+                for (const sk of Object.keys(updated)) {
+                  updated[sk] = (updated[sk] || []).filter(c => c.code.replace(/\s/g, '').toUpperCase() !== codeNorm);
+                }
+                if (!updated[targetKey]) updated[targetKey] = [];
+                const existingEntry = Object.values(semesterCourseAssignments).flat().find(c => c.code.replace(/\s/g, '').toUpperCase() === codeNorm);
+                const courseName = existingEntry?.name || courseCode.replace(/([A-Z]+)(\d+)/, '$1 $2');
+                const fullName = existingEntry?.fullName || updatedCourses[matchIdx >= 0 ? matchIdx : 0]?.name?.split(' - ').slice(1).join(' - ') || '';
+                updated[targetKey].push({ code: courseCode.replace(/\s/g, ''), name: courseName, fullName, period: '' });
+                saveSemesterAssignments(updated);
               }
               const certData = localStorage.getItem('certCourseData');
               const savedData = certData ? JSON.parse(certData) : {};
@@ -15134,6 +15169,14 @@ export default function Dashboard() {
                           {p.charAt(0).toUpperCase() + p.slice(1)}
                         </button>
                       ))}
+                      <button
+                        className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-opacity duration-200 flex items-center gap-2 ${(quickAddData as any).flagged ? 'bg-red-500/20 text-red-300 border border-red-500/50' : 'bg-white/5 text-white/70 border border-white/10 hover:bg-red-500/10 hover:text-red-300'}`}
+                        onClick={() => setQuickAddData(prev => ({ ...prev, flagged: !(prev as any).flagged, priority: !(prev as any).flagged ? 'high' : prev.priority } as any))}
+                        data-testid="quick-add-flag-toggle"
+                      >
+                        <Flag className={`h-4 w-4 ${(quickAddData as any).flagged ? 'fill-red-400 text-red-400' : ''}`} />
+                        {(quickAddData as any).flagged ? 'Flagged as Priority' : 'Flag as Priority'}
+                      </button>
                     </div>
                   )}
 
@@ -15580,6 +15623,7 @@ export default function Dashboard() {
                             eventEndTime: quickAddData.eventEndTime || null,
                             notes: quickAddData.notes || null,
                             projectId: quickAddData.projectId,
+                            flagged: (quickAddData as any).flagged ?? false,
                           });
                           const newTask = await res.json();
                           if (quickAddData.subtasks.length > 0 && newTask?.id) {
@@ -17237,7 +17281,7 @@ export default function Dashboard() {
                   </h2>
                 </div>
                 <span className="text-[11px] font-medium text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
-                  {(() => { const semesterMeta: Record<string, string> = { 'ss2025': 'Spring/Summer 2025', 'f2025': 'Fall 2025', 'w2026': 'Winter 2026', 'ss2026': 'Spring/Summer 2026', 'f2026': 'Fall 2026', 'w2027': 'Winter 2027', 'ss2027': 'Spring/Summer 2027', 'f2027': 'Fall 2027', 'w2028': 'Winter 2028', 'ss2028': 'Spring/Summer 2028', 'f2028': 'Fall 2028' }; return semesterMeta[semSettingsDialogKey] || semSettingsDialogKey; })()}
+                  {(() => { const semesterMeta: Record<string, string> = { 'ss2025': 'Spring/Summer 2025', 'f2025': 'Fall 2025', 'w2026': 'Winter 2026', 'ss2026': 'Spring/Summer 2026', 'f2026': 'Fall 2026', 'w2027': 'Winter 2027', 'ss2027': 'Spring/Summer 2027', 'f2027': 'Fall 2027', 'w2028': 'Winter 2028', 'ss2028': 'Spring/Summer 2028', 'f2028': 'Fall 2028', 'w2029': 'Winter 2029' }; return semesterMeta[semSettingsDialogKey] || semSettingsDialogKey; })()}
                 </span>
               </div>
               <SemesterSettingsFormBody
@@ -19216,6 +19260,11 @@ export default function Dashboard() {
                                   onClick={(e) => e.stopPropagation()}
                                   className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
                                   data-testid={`checkbox-module-static-${task.id}`}
+                                />
+                                <Flag
+                                  className={`h-[9px] w-[9px] flex-shrink-0 cursor-pointer ${task.flagged ? 'text-red-500 fill-red-500' : 'text-black/20 hover:text-red-400'}`}
+                                  onClick={(e) => { e.stopPropagation(); flagMutation.mutate({ id: task.id, flagged: !task.flagged }); }}
+                                  data-testid={`flag-toggle-${task.id}`}
                                 />
                                 <span 
                                   onClick={() => setEditingTask(task)}
@@ -22928,7 +22977,7 @@ export default function Dashboard() {
                           </div>
                           <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'stretch' }}>
-                            <div ref={centerCircleOnGroupBar} style={{ position: 'absolute', left: '82px', top: '50%', transform: 'translateY(-50%)', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 5 }}>
+                            <div ref={centerCircleOnGroupBar} style={{ position: 'absolute', left: '82px', top: '50%', transform: 'translateY(-50%)', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 5, border: task.flagged ? '2px solid #ef4444' : 'none', boxShadow: task.flagged ? '0 0 6px rgba(239,68,68,0.5)' : 'none' }}>
                               <span style={{ fontSize: '6px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.3px', marginTop: '1px', marginBottom: '-1px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
                               <span style={{ fontSize: '8px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textAlign: 'center', display: 'block', marginTop: '1px' }}>{format(new Date(task.dueDate), 'd')}</span>
                             </div>
@@ -23088,7 +23137,7 @@ export default function Dashboard() {
                                     </div>
                                     <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'stretch' }}>
-                                        <div ref={centerCircleOnGroupBar} style={{ position: 'absolute', left: '82px', top: '50%', transform: 'translateY(-50%)', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 5 }}>
+                                        <div ref={centerCircleOnGroupBar} style={{ position: 'absolute', left: '82px', top: '50%', transform: 'translateY(-50%)', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 5, border: task.flagged ? '2px solid #ef4444' : 'none', boxShadow: task.flagged ? '0 0 6px rgba(239,68,68,0.5)' : 'none' }}>
                                           <span style={{ fontSize: '7px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.3px', marginTop: '1px', marginBottom: '-1px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
                                           <span style={{ fontSize: '9px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textAlign: 'center', display: 'block', marginTop: '1px' }}>{format(new Date(task.dueDate), 'd')}</span>
                                         </div>
@@ -23268,7 +23317,7 @@ export default function Dashboard() {
                                     </div>
                                     <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'stretch' }}>
-                                        <div ref={centerCircleOnGroupBar} style={{ position: 'absolute', left: '82px', top: '50%', transform: 'translateY(-50%)', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 5 }}>
+                                        <div ref={centerCircleOnGroupBar} style={{ position: 'absolute', left: '82px', top: '50%', transform: 'translateY(-50%)', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 5, border: task.flagged ? '2px solid #ef4444' : 'none', boxShadow: task.flagged ? '0 0 6px rgba(239,68,68,0.5)' : 'none' }}>
                                           <span style={{ fontSize: '7px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.3px', marginTop: '1px', marginBottom: '-1px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
                                           <span style={{ fontSize: '9px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textAlign: 'center', display: 'block', marginTop: '1px' }}>{format(new Date(task.dueDate), 'd')}</span>
                                         </div>
@@ -23464,7 +23513,7 @@ export default function Dashboard() {
                                     </div>
                                     <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'stretch' }}>
-                                        <div ref={centerCircleOnGroupBar} style={{ position: 'absolute', left: '82px', top: '50%', transform: 'translateY(-50%)', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 5 }}>
+                                        <div ref={centerCircleOnGroupBar} style={{ position: 'absolute', left: '82px', top: '50%', transform: 'translateY(-50%)', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 5, border: task.flagged ? '2px solid #ef4444' : 'none', boxShadow: task.flagged ? '0 0 6px rgba(239,68,68,0.5)' : 'none' }}>
                                           <span style={{ fontSize: '7px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.3px', marginTop: '1px', marginBottom: '-1px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
                                           <span style={{ fontSize: '9px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textAlign: 'center', display: 'block', marginTop: '1px' }}>{format(new Date(task.dueDate), 'd')}</span>
                                         </div>
@@ -23659,7 +23708,7 @@ export default function Dashboard() {
                                     </div>
                                     <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'stretch' }}>
-                                        <div ref={centerCircleOnGroupBar} style={{ position: 'absolute', left: '82px', top: '50%', transform: 'translateY(-50%)', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 5 }}>
+                                        <div ref={centerCircleOnGroupBar} style={{ position: 'absolute', left: '82px', top: '50%', transform: 'translateY(-50%)', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 5, border: task.flagged ? '2px solid #ef4444' : 'none', boxShadow: task.flagged ? '0 0 6px rgba(239,68,68,0.5)' : 'none' }}>
                                           <span style={{ fontSize: '7px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.3px', marginTop: '1px', marginBottom: '-1px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
                                           <span style={{ fontSize: '9px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textAlign: 'center', display: 'block', marginTop: '1px' }}>{format(new Date(task.dueDate), 'd')}</span>
                                         </div>
@@ -27762,6 +27811,7 @@ function TaskForm({
     repeatIntervalUnit: (task?.repeatIntervalUnit as typeof REPEAT_INTERVAL_UNITS[number]) || "weeks",
     repeatEndDate: task?.repeatEndDate ? format(new Date(task.repeatEndDate), "yyyy-MM-dd") : "",
     hideFromSummary: task?.hideFromSummary ?? false,
+    flagged: task?.flagged ?? false,
   });
   const [newAttachment, setNewAttachment] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -27884,6 +27934,7 @@ function TaskForm({
         repeatEndDate: data.repeatEndDate ? new Date(data.repeatEndDate).toISOString() : null,
         startDate: finalStartDate ? finalStartDate.toISOString() : null,
         hideFromSummary: data.hideFromSummary ?? false,
+        flagged: data.flagged ?? false,
       };
       if (task) {
         if (onUndoPush) {
@@ -27972,6 +28023,7 @@ function TaskForm({
         repeatEndDate: data.repeatEndDate ? new Date(data.repeatEndDate).toISOString() : null,
         startDate: finalStartDate ? finalStartDate.toISOString() : null,
         hideFromSummary: data.hideFromSummary ?? false,
+        flagged: data.flagged ?? false,
       };
       if (hasSameTitleSiblings && !isLinkedRecurring) {
         payload.originalTitle = task.title;
@@ -28317,17 +28369,28 @@ function TaskForm({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="priority" className="text-[11px] text-white">Priority</Label>
-              <select
-                value={formData.priority}
-                onChange={(e) => setFormData(prev => ({ ...prev, priority: e.target.value }))}
-                data-testid="select-priority"
-                className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                style={{ color: 'black', fontSize: '11px' }}
-              >
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-              </select>
+              <div className="flex items-center gap-2">
+                <select
+                  value={formData.priority}
+                  onChange={(e) => setFormData(prev => ({ ...prev, priority: e.target.value }))}
+                  data-testid="select-priority"
+                  className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  style={{ color: 'black', fontSize: '11px' }}
+                >
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, flagged: !prev.flagged, priority: !prev.flagged ? 'high' : prev.priority }))}
+                  className={`h-8 w-8 flex items-center justify-center rounded-md border transition-all flex-shrink-0 ${formData.flagged ? 'bg-red-500/20 border-red-500/50 text-red-400' : 'bg-white/10 border-white/20 text-white/40 hover:text-red-400 hover:border-red-400/50'}`}
+                  title={formData.flagged ? 'Remove flag' : 'Flag as priority'}
+                  data-testid="button-flag-task"
+                >
+                  <Flag className={`h-4 w-4 ${formData.flagged ? 'fill-red-400' : ''}`} />
+                </button>
+              </div>
             </div>
             <div>
               <Label className="text-[11px] text-white">Repeat</Label>
