@@ -22513,6 +22513,8 @@ export default function Dashboard() {
                           <span style={{ fontSize: '10px', color: '#000000', flexShrink: 0 }}>•</span>
                           <span className="truncate" style={{ fontSize: '9px', color: '#000000', fontWeight: 400, flex: 1, minWidth: 0 }}>{t.title}</span>
                           <div className="flex-shrink-0 flex items-center justify-end gap-1" style={{ marginLeft: 'auto', width: '130px' }}>
+                            <div style={{ width: '56px', flexShrink: 0 }} />
+                            <span style={{ fontSize: '8px', color: 'transparent', fontWeight: 400, minWidth: '16px', textAlign: 'left' }}>0d</span>
                             <span style={{ fontSize: '9px', color: '#000000', fontWeight: 400, minWidth: '42px', textAlign: 'right' }}>{dueStr}</span>
                           </div>
                         </div>
