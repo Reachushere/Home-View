@@ -102,6 +102,7 @@ const PARTNER_PHONE_ENTITY = "device_tracker.y_phone_app";
 const HA_CLOUD_TTS_ENTITY = "tts.home_assistant_cloud";
 const CAT_LIGHTS_ENTITY = "light.cat_lights";
 const CAT_TV_ENTITY = "media_player.tv_cat_wr";
+const FIRE_STICK_ADB_ENTITY = "media_player.fire_tv_172_24_2_91";
 const CAT_WR_MEDIA_GROUP = "media_player.cat_washroom_media_group";
 const CAT_ECHO_ENTITIES = [
   "media_player.echo_cat_left_am",
@@ -7039,7 +7040,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   });
 
   app.get("/api/cat-wash/test-tv-browser", async (_req, res) => {
-    const entityId = 'media_player.fire_stick_cat_wr';
+    const entityId = FIRE_STICK_ADB_ENTITY;
     const testUrl = `${DEPLOYED_APP_URL}/api/cat-wash/tv-follow`;
     const method = String(_req.query.method || 'all');
     const results: { method: string; success: boolean; error?: string }[] = [];
@@ -8315,29 +8316,17 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
     const tvSetupPromise = (async () => {
       try {
-        console.log(`${logPrefix} ====== TV SETUP START ======`);
-        const haUrl2 = HOME_ASSISTANT_URL.replace(/\/$/, '');
-        const haHeaders2 = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
-        try {
-          const fsResp = await fetch(`${haUrl2}/api/states/media_player.fire_stick_cat_wr`, { headers: haHeaders2 });
-          if (fsResp.ok) {
-            const fsData = await fsResp.json();
-            console.log(`${logPrefix} Fire Stick entity state: "${fsData.state}"`);
-          } else {
-            console.error(`${logPrefix} Fire Stick state check HTTP ${fsResp.status}`);
-          }
-        } catch (e: any) {
-          console.error(`${logPrefix} Fire Stick state check error: ${e.message}`);
-        }
+        console.log(`${logPrefix} ====== TV SETUP START (Fire Stick primary) ======`);
+        catWashTrace('TV', 'SETUP START — Fire Stick primary path');
+        const tvFollowWrapperUrl = `${appUrl}/api/cat-wash/tv-follow?url=${encodeURIComponent(tvFollowUrl)}`;
+        currentTvFollowUrl = tvFollowUrl;
 
-        let samsungAvailable = false;
-        catWashTrace('TV', 'Samsung turn_on retry loop START');
+        catWashTrace('TV', 'Samsung TV turn_on START');
         for (let tvOnAttempt = 1; tvOnAttempt <= 3; tvOnAttempt++) {
           try {
             await haServiceCall('media_player/turn_on', { entity_id: CAT_TV_ENTITY }, `Samsung TV TurnOn attempt ${tvOnAttempt}`);
             console.log(`${logPrefix} Samsung TV turn_on: OK (attempt ${tvOnAttempt})`);
             catWashTrace('TV', `Samsung turn_on OK on attempt ${tvOnAttempt}`);
-            samsungAvailable = true;
             break;
           } catch (e: any) {
             catWashTrace('TV', `Samsung turn_on attempt ${tvOnAttempt}/3 FAILED`, { error: e.message });
@@ -8345,82 +8334,48 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
             if (tvOnAttempt < 3) await new Promise(r => setTimeout(r, 3000));
           }
         }
-        catWashTrace('TV', `Waiting 12s for boot (samsungAvailable=${samsungAvailable})`);
-        console.log(`${logPrefix} Waiting 12s for TV to boot...`);
+
+        catWashTrace('TV', 'Fire Stick turn_on START');
+        for (let fsOnAttempt = 1; fsOnAttempt <= 2; fsOnAttempt++) {
+          try {
+            await haServiceCall('media_player/turn_on', { entity_id: FIRE_STICK_ADB_ENTITY }, `FireStick TurnOn attempt ${fsOnAttempt}`);
+            console.log(`${logPrefix} Fire Stick turn_on: OK (attempt ${fsOnAttempt})`);
+            catWashTrace('TV', `Fire Stick turn_on OK on attempt ${fsOnAttempt}`);
+            break;
+          } catch (e: any) {
+            catWashTrace('TV', `Fire Stick turn_on attempt ${fsOnAttempt}/2 FAILED`, { error: e.message });
+            console.error(`${logPrefix} Fire Stick turn_on attempt ${fsOnAttempt}: ${e.message}`);
+            if (fsOnAttempt < 2) await new Promise(r => setTimeout(r, 3000));
+          }
+        }
+
+        catWashTrace('TV', 'Waiting 12s for TV + Fire Stick to boot');
+        console.log(`${logPrefix} Waiting 12s for TV + Fire Stick to boot...`);
         await new Promise(resolve => setTimeout(resolve, 12000));
 
-        if (!samsungAvailable) {
-          catWashTrace('TV', 'Samsung final attempt after boot wait');
-          console.log(`${logPrefix} Samsung TV still not responding after 3 attempts — trying once more after boot wait`);
-          try {
-            await haServiceCall('media_player/turn_on', { entity_id: CAT_TV_ENTITY }, 'Samsung TV TurnOn final');
-            console.log(`${logPrefix} Samsung TV turn_on final attempt: OK`);
-            catWashTrace('TV', 'Samsung final attempt OK');
-            samsungAvailable = true;
-            await new Promise(r => setTimeout(r, 8000));
-          } catch (e: any) {
-            catWashTrace('TV', 'Samsung final attempt FAILED', { error: e.message });
-            console.error(`${logPrefix} Samsung TV turn_on final attempt failed: ${e.message}`);
-          }
+        try {
+          await haServiceCall('media_player/select_source', { entity_id: CAT_TV_ENTITY, source: 'HDMI' }, 'TV Source HDMI');
+          console.log(`${logPrefix} Samsung TV HDMI input selected`);
+          catWashTrace('TV', 'Samsung HDMI source selected OK');
+        } catch (e: any) {
+          catWashTrace('TV', 'Samsung HDMI select FAILED', { error: e.message });
+          console.error(`${logPrefix} Samsung TV HDMI select: ${e.message}`);
+        }
+        await new Promise(r => setTimeout(r, 3000));
+
+        catWashTrace('TV', 'Opening URL via Fire Stick ADB', { url: tvFollowWrapperUrl });
+        const fsOpened = await openUrlOnFireStick(haUrl, FIRE_STICK_ADB_ENTITY, tvFollowWrapperUrl);
+        catWashTrace('TV', `Fire Stick openUrl result=${fsOpened}`);
+        console.log(`${logPrefix} Fire Stick URL result: success=${fsOpened}`);
+        if (!fsOpened) {
+          await new Promise(r => setTimeout(r, 6000));
+          catWashTrace('TV', 'Fire Stick openUrl RETRY');
+          const fsRetry = await openUrlOnFireStick(haUrl, FIRE_STICK_ADB_ENTITY, tvFollowWrapperUrl);
+          catWashTrace('TV', `Fire Stick openUrl RETRY result=${fsRetry}`);
+          console.log(`${logPrefix} Fire Stick URL retry: success=${fsRetry}`);
         }
 
-        let tvOpened = false;
-        const tvFollowWrapperUrl = `${appUrl}/api/cat-wash/tv-follow?url=${encodeURIComponent(tvFollowUrl)}`;
-        currentTvFollowUrl = tvFollowUrl;
-        if (samsungAvailable) {
-          catWashTrace('TV', 'Samsung play_media retry loop START', { url: tvFollowWrapperUrl });
-          for (let playAttempt = 1; playAttempt <= 2; playAttempt++) {
-            console.log(`${logPrefix} Opening TV follow wrapper on Samsung TV browser via play_media (attempt ${playAttempt})...`);
-            try {
-              await haServiceCall('media_player/play_media', { entity_id: CAT_TV_ENTITY, media_content_id: tvFollowWrapperUrl, media_content_type: 'url' }, `Samsung TV play_media URL attempt ${playAttempt}`);
-              console.log(`${logPrefix} Samsung TV play_media URL (wrapper): OK`);
-              catWashTrace('TV', `Samsung play_media OK on attempt ${playAttempt}`);
-              tvOpened = true;
-              break;
-            } catch (e: any) {
-              catWashTrace('TV', `Samsung play_media attempt ${playAttempt}/2 FAILED`, { error: e.message });
-              console.error(`${logPrefix} Samsung TV play_media URL attempt ${playAttempt} failed: ${e.message}`);
-              if (playAttempt < 2) await new Promise(r => setTimeout(r, 5000));
-            }
-          }
-        }
-
-        if (!tvOpened) {
-          catWashTrace('TV', 'FALLBACK to Fire Stick + Silk', { samsungAvailable });
-          console.log(`${logPrefix} Samsung browser failed — falling back to Fire Stick + Silk...`);
-          for (let fsOnAttempt = 1; fsOnAttempt <= 2; fsOnAttempt++) {
-            try {
-              await haServiceCall('media_player/turn_on', { entity_id: 'media_player.fire_stick_cat_wr' }, `FireStick TurnOn attempt ${fsOnAttempt}`);
-              console.log(`${logPrefix} Fire Stick turn_on: OK (attempt ${fsOnAttempt})`);
-              catWashTrace('TV', `Fire Stick turn_on OK on attempt ${fsOnAttempt}`);
-              break;
-            } catch (e: any) {
-              catWashTrace('TV', `Fire Stick turn_on attempt ${fsOnAttempt}/2 FAILED`, { error: e.message });
-              console.error(`${logPrefix} Fire Stick turn_on attempt ${fsOnAttempt}: ${e.message}`);
-              if (fsOnAttempt < 2) await new Promise(r => setTimeout(r, 3000));
-            }
-          }
-          await new Promise(r => setTimeout(r, 8000));
-          try {
-            await haServiceCall('media_player/select_source', { entity_id: CAT_TV_ENTITY, source: 'HDMI' }, 'TV Source HDMI');
-            console.log(`${logPrefix} Samsung TV HDMI selected`);
-            catWashTrace('TV', 'Samsung HDMI source selected OK');
-          } catch (e: any) {
-            catWashTrace('TV', 'Samsung HDMI select FAILED', { error: e.message });
-            console.error(`${logPrefix} Samsung TV HDMI select: ${e.message}`);
-          }
-          await new Promise(r => setTimeout(r, 3000));
-          const fsOpened = await openUrlOnFireStick(haUrl, 'media_player.fire_stick_cat_wr', tvFollowWrapperUrl);
-          catWashTrace('TV', `Fire Stick openUrl result=${fsOpened}`);
-          console.log(`${logPrefix} Fire Stick URL result: success=${fsOpened}`);
-          if (!fsOpened) {
-            await new Promise(r => setTimeout(r, 6000));
-            const fsRetry = await openUrlOnFireStick(haUrl, 'media_player.fire_stick_cat_wr', tvFollowWrapperUrl);
-            catWashTrace('TV', `Fire Stick openUrl RETRY result=${fsRetry}`);
-            console.log(`${logPrefix} Fire Stick URL retry: success=${fsRetry}`);
-          }
-        }
-        catWashTrace('TV', `SETUP COMPLETE (tvOpened=${tvOpened})`);
+        catWashTrace('TV', `SETUP COMPLETE`);
         console.log(`${logPrefix} ====== TV SETUP COMPLETE ======`);
       } catch (e: any) {
         catWashTrace('TV', `SETUP ERROR`, { error: e.message });
@@ -9557,8 +9512,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
     catWashTrace('TV', `TURN OFF — Fire Stick + Samsung TV (reason=${reason})`);
     await Promise.allSettled([
-      haServiceCallSafe('media_player/turn_off', { entity_id: 'media_player.fire_stick_cat_wr' }, 'Nest Stop TV'),
-      haServiceCallSafe('media_player/turn_off', { entity_id: 'media_player.samsung_tv' }, 'Nest Stop TV'),
+      haServiceCallSafe('media_player/turn_off', { entity_id: FIRE_STICK_ADB_ENTITY }, 'Nest Stop FireStick'),
+      haServiceCallSafe('media_player/turn_off', { entity_id: CAT_TV_ENTITY }, 'Nest Stop Samsung TV'),
     ]);
     console.log(`[Nest Stop] Fire Stick + Samsung TV turn-off sent`);
     catWashTrace('StopWithGoodbye', `EXIT reason=${reason}`);
@@ -10304,7 +10259,7 @@ document.body.removeChild(a);
           console.warn(`[Cat Lights] Failed to stop Echo speakers: ${e.message}`);
         }
         await Promise.allSettled([
-          haServiceCallSafe('media_player/turn_off', { entity_id: 'media_player.fire_stick_cat_wr' }, 'Stop TV FireStick'),
+          haServiceCallSafe('media_player/turn_off', { entity_id: FIRE_STICK_ADB_ENTITY }, 'Stop TV FireStick'),
           haServiceCallSafe('media_player/turn_off', { entity_id: CAT_TV_ENTITY }, 'Stop TV Samsung'),
         ]);
         stopped.push("tv");
@@ -10424,12 +10379,11 @@ document.body.removeChild(a);
 
       const earlyDeviceWakePromise = (async () => {
         const tabletEntity = 'media_player.tablet_cat';
-        const fireStickEntity = 'media_player.fire_stick_cat_wr';
         try {
           await Promise.allSettled([
             haServiceCallSafe('androidtv/adb_command', { entity_id: tabletEntity, command: 'input keyevent KEYCODE_WAKEUP' }, 'Cat Lights Early Tablet Wake'),
-            haServiceCallSafe('androidtv/adb_command', { entity_id: fireStickEntity, command: 'input keyevent KEYCODE_WAKEUP' }, 'Cat Lights Early TV Wake'),
-            haServiceCallSafe('media_player/turn_on', { entity_id: fireStickEntity }, 'Cat Lights Early FireStick On'),
+            haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_WAKEUP' }, 'Cat Lights Early TV Wake'),
+            haServiceCallSafe('media_player/turn_on', { entity_id: FIRE_STICK_ADB_ENTITY }, 'Cat Lights Early FireStick On'),
             haServiceCallSafe('media_player/turn_on', { entity_id: CAT_TV_ENTITY }, 'Cat Lights Early Samsung On'),
           ]);
           console.log(`[Cat Lights] Early device wake: tablet + TV wake commands sent`);
@@ -10672,7 +10626,7 @@ document.body.removeChild(a);
       }
 
       await Promise.allSettled([
-        haServiceCallSafe('media_player/turn_off', { entity_id: 'media_player.fire_stick_cat_wr' }, 'Stop TV FireStick'),
+        haServiceCallSafe('media_player/turn_off', { entity_id: FIRE_STICK_ADB_ENTITY }, 'Stop TV FireStick'),
         haServiceCallSafe('media_player/turn_off', { entity_id: CAT_TV_ENTITY }, 'Stop TV Samsung'),
       ]);
       stopped.push("tv");
