@@ -370,12 +370,13 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
 
   const courseTasks = useMemo(() => {
     const codeUpper = courseInfo.courseCode.toUpperCase().replace(/\s/g, '');
+    const codeNoC = codeUpper.replace(/^C(?=[A-Z]{2,})/, '');
     return allTasks
       .filter((t) => {
         if (t.type === 'class' || t.type === 'module') return false;
         if (!t.courseName) return false;
         const tCode = t.courseName.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '');
-        return tCode === codeUpper;
+        return tCode === codeUpper || tCode === 'C' + codeUpper || tCode === codeNoC;
       })
       .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0) || new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   }, [allTasks, courseInfo.courseCode]);

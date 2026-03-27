@@ -4773,9 +4773,10 @@ export default function Dashboard() {
     if (!selectedCertCourse) return null;
     const { courseCode, courseName, certKey } = selectedCertCourse;
     const fullName = `${courseCode} - ${courseName}`;
+    const codeNorm = courseCode.replace(/\s/g, '');
     const matchedCourse = coursesData.courses.find(c => {
       const cCode = c.name.split(' - ')[0]?.trim().replace(/\s/g, '');
-      return cCode === courseCode.replace(/\s/g, '');
+      return cCode === codeNorm || cCode === 'C' + codeNorm || cCode.replace(/^C(?=[A-Z]{2,})/, '') === codeNorm;
     });
 
     let deliveryMode = '';
