@@ -5066,6 +5066,7 @@ export default function Dashboard() {
 
     const handleMove = (e: MouseEvent | TouchEvent) => {
       if (!resizeRef.current) return;
+      e.preventDefault();
       const { clientY } = getPointerXY(e);
       const rawDelta = clientY - resizeRef.current.startY;
       const delta = (resizeRef.current as any).invertDirection ? -rawDelta : rawDelta;
