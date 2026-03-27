@@ -22470,24 +22470,24 @@ export default function Dashboard() {
                     e.currentTarget.scrollTop += e.deltaY;
                     e.preventDefault();
                   }}>
-                    <span className="text-[8px] font-[785] uppercase tracking-wide" style={{ flexShrink: 0, marginRight: '8px', color: '#000000' }}>Other</span>
-                    {otherProgressTasks.length === 0 && (
-                      <span className="text-[10px] italic" style={{ color: '#5a595e', position: 'absolute', left: 0, right: 0, textAlign: 'center', pointerEvents: 'none' }}>No upcoming items</span>
-                    )}
                     <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                    <span className="text-[8px] font-[785] uppercase tracking-wide" style={{ flexShrink: 0, color: '#000000' }}>Other</span>
+                    {otherProgressTasks.length === 0 && (
+                      <span className="text-[10px] italic" style={{ color: '#5a595e', textAlign: 'center', pointerEvents: 'none' }}>No upcoming items</span>
+                    )}
                     {otherProgressTasks.map(t => {
                       const dueStr = format(new Date(t.dueDate), 'MMM d');
                       return (
                         <div
                           key={t.id}
-                          className="flex items-center gap-1 min-w-0 cursor-pointer hover:brightness-125"
+                          className="flex items-center gap-1.5 min-w-0 cursor-pointer hover:brightness-125"
                           style={{ lineHeight: '1.3', marginBottom: '1px' }}
                           onMouseEnter={() => setHoveredCountdownTaskIdDebounced(t.id)}
                           onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                           onClick={() => setEditingTask(t)}
                         >
-                          <span style={{ fontSize: '9px', color: '#000000', flexShrink: 0 }}>•</span>
-                          <span className="truncate" style={{ fontSize: '8px', color: '#000000', fontWeight: 400, flex: 1, minWidth: 0 }}>{t.title}</span>
+                          <span style={{ fontSize: '10px', color: '#000000', flexShrink: 0 }}>•</span>
+                          <span className="truncate" style={{ fontSize: '9px', color: '#000000', fontWeight: 400, flex: 1, minWidth: 0 }}>{t.title}</span>
                           <span className="flex-shrink-0" style={{ fontSize: '8px', color: '#000000', fontWeight: 400, marginLeft: 'auto' }}>{dueStr}</span>
                         </div>
                       );
