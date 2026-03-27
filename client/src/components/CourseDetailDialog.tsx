@@ -1457,10 +1457,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           <div className="flex items-center gap-2">
             <span className="text-[11px] text-white uppercase font-medium">Course Info</span>
             {gradeCalc && (
-              <div className="flex items-center gap-1.5" data-testid="grade-calculator-inline">
+              <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }} data-testid="grade-calculator-inline">
                 <span className="text-[11px] font-bold text-white" data-testid="text-current-grade">{gradeCalc.currentGrade}</span>
                 <span className="text-[10px] text-white/70">({gradeCalc.currentPercent.toFixed(1)}%)</span>
-                <span className="text-[9px] text-white/50">{gradeCalc.gradedCount} graded · {gradeCalc.gradedWeight.toFixed(0)}%</span>
+                <span className="text-[9px] text-white/50 flex items-center">{gradeCalc.gradedCount} graded · {gradeCalc.gradedWeight.toFixed(0)}%</span>
               </div>
             )}
           </div>
@@ -1630,13 +1630,21 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     <input className={`w-full h-6 text-[10px] bg-white/10 text-white rounded px-1.5 placeholder:text-white/25 ${editInfo.deliveryMode === 'virtual' && !editInfo.zoomLink?.trim() ? 'border border-red-500/70' : 'border border-white/15'}`} value={editInfo.zoomLink} onChange={(e) => setEditInfo({...editInfo, zoomLink: e.target.value})} placeholder={editInfo.deliveryMode === 'virtual' ? "Required — https://zoom.us/..." : "https://zoom.us/..."} data-testid="input-edit-zoom" />
                   </div>
                 </div>
-                <div className="grid grid-cols-[1fr_auto] gap-2">
+                <div className="grid grid-cols-[1fr_auto_auto_auto] gap-2">
                   <div>
                     <label className="text-white text-[9px] mb-0.5 block">Semester</label>
                     <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={semesterKeyFromTermYear(editInfo.semesterTerm, editInfo.year)} onChange={(e) => { const opt = SEMESTER_OPTIONS.find(o => o.key === e.target.value); if (opt) { setEditInfo({...editInfo, semesterTerm: opt.term, year: opt.year, startDate: opt.start, endDate: opt.end }); } else { setEditInfo({...editInfo, semesterTerm: '', year: '', startDate: '', endDate: '' }); } }} data-testid="select-edit-semester-term">
                       <option value="" className="bg-gray-800">—</option>
                       {SEMESTER_OPTIONS.map(o => <option key={o.key} value={o.key} className="bg-gray-800">{o.label}</option>)}
                     </select>
+                  </div>
+                  <div>
+                    <label className="text-white text-[9px] mb-0.5 block">Start</label>
+                    <input type="date" className="w-full h-6 text-[10px] bg-white/10 border border-white/15 rounded px-1" style={{ color: 'white', colorScheme: 'dark' }} value={editInfo.startDate} onChange={(e) => setEditInfo({...editInfo, startDate: e.target.value})} data-testid="input-edit-start-date" />
+                  </div>
+                  <div>
+                    <label className="text-white text-[9px] mb-0.5 block">End</label>
+                    <input type="date" className="w-full h-6 text-[10px] bg-white/10 border border-white/15 rounded px-1" style={{ color: 'white', colorScheme: 'dark' }} value={editInfo.endDate} onChange={(e) => setEditInfo({...editInfo, endDate: e.target.value})} data-testid="input-edit-end-date" />
                   </div>
                   <div>
                     <label className="text-white text-[9px] mb-0.5 block">Rank</label>
@@ -1647,16 +1655,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         return <option key={n} value={n} className="bg-gray-800" disabled={taken} style={taken ? { color: '#555' } : {}}>{n}</option>;
                       })}
                     </select>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <label className="text-white text-[9px] mb-0.5 block">Start Date</label>
-                    <input type="date" className="w-full h-6 text-[10px] bg-white/10 border border-white/15 rounded px-1" style={{ color: 'white', colorScheme: 'dark' }} value={editInfo.startDate} onChange={(e) => setEditInfo({...editInfo, startDate: e.target.value})} data-testid="input-edit-start-date" />
-                  </div>
-                  <div>
-                    <label className="text-white text-[9px] mb-0.5 block">End Date</label>
-                    <input type="date" className="w-full h-6 text-[10px] bg-white/10 border border-white/15 rounded px-1" style={{ color: 'white', colorScheme: 'dark' }} value={editInfo.endDate} onChange={(e) => setEditInfo({...editInfo, endDate: e.target.value})} data-testid="input-edit-end-date" />
                   </div>
                 </div>
                 {editInfo.deliveryMode !== 'online' && (() => {
@@ -2744,7 +2742,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           </div>
           </div>
 
-          <div style={{ padding: '12px 30px' }}>
+          <div style={{ padding: '0px 30px 12px 30px' }}>
             <div style={{ border: '2px solid rgba(255,255,255,0.2)', borderRadius: '8px', padding: '12px' }}>
             <div
               className="flex items-center justify-between cursor-pointer group"
