@@ -301,6 +301,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   }, [courseInfo.courseCode]);
   const [showWeekMappings, setShowWeekMappings] = useState(false);
   const [showAssignments, setShowAssignments] = useState(false);
+  const weekMappingsRef = useRef<HTMLDivElement>(null);
+  const assignmentsRef = useRef<HTMLDivElement>(null);
   const [weekMappingEdits, setWeekMappingEdits] = useState<Record<number, { confirmed: boolean; courseWeekLabel: string; notes: string }>>({});
   const [weekStyleChoice, setWeekStyleChoice] = useState<string | null>(null);
   const [showWeekCalendar, setShowWeekCalendar] = useState(false);
@@ -2300,11 +2302,11 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             </div>
           )}
 
-          <div style={{ padding: '12px 30px' }}>
+          <div ref={weekMappingsRef} style={{ padding: '12px 30px' }}>
             <div style={{ border: '2px solid rgba(255,255,255,0.2)', borderRadius: '8px', padding: '12px' }}>
             <div
               className="flex items-center justify-between cursor-pointer group"
-              onClick={() => setShowWeekMappings(!showWeekMappings)}
+              onClick={() => { const next = !showWeekMappings; setShowWeekMappings(next); if (next) setTimeout(() => weekMappingsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50); }}
               data-testid="button-toggle-week-mappings"
             >
               <div className="flex items-center gap-2">
@@ -2742,11 +2744,11 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           </div>
           </div>
 
-          <div style={{ padding: '0px 30px 12px 30px' }}>
+          <div ref={assignmentsRef} style={{ padding: '0px 30px 12px 30px' }}>
             <div style={{ border: '2px solid rgba(255,255,255,0.2)', borderRadius: '8px', padding: '12px' }}>
             <div
               className="flex items-center justify-between cursor-pointer group"
-              onClick={() => setShowAssignments(!showAssignments)}
+              onClick={() => { const next = !showAssignments; setShowAssignments(next); if (next) setTimeout(() => assignmentsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50); }}
               data-testid="button-toggle-assignments"
             >
               <div className="flex items-center gap-2">
