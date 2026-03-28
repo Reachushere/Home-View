@@ -21,7 +21,8 @@ export async function sendTaskReminder(task: TaskReminder): Promise<{ success: b
       weekday: 'long',
       day: 'numeric',
       month: 'long',
-      year: 'numeric'
+      year: 'numeric',
+      timeZone: 'America/Toronto'
     });
 
     const { data, error } = await resend.emails.send({
@@ -71,7 +72,8 @@ export async function sendDailyDigest(tasks: TaskReminder[]): Promise<{ success:
       const formattedDate = dueDate.toLocaleDateString('en-GB', {
         weekday: 'short',
         day: 'numeric',
-        month: 'short'
+        month: 'short',
+        timeZone: 'America/Toronto'
       });
       const diffMs = dueDate.getTime() - now.getTime();
       const diffHours = Math.round(diffMs / (1000 * 60 * 60));

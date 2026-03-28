@@ -95,8 +95,8 @@ export async function checkReminders() {
   try {
     await loadSentReminders();
     const allTasks = await storage.getTasks({ showCompleted: false });
-    const now = getEasternNow();
-    lastCheckTime = now;
+    const nowReal = new Date();
+    lastCheckTime = nowReal;
     let stateChanged = false;
     announcementsSentThisCycle = 0;
 
@@ -119,7 +119,7 @@ export async function checkReminders() {
 
         if (sentReminders.has(key)) continue;
 
-        if (now >= reminderTime && now < dueDate) {
+        if (nowReal >= reminderTime && nowReal < dueDate) {
           if (announcementsSentThisCycle >= MAX_ANNOUNCEMENTS_PER_CYCLE) {
             console.log(`[Reminder] Rate limit: already sent ${MAX_ANNOUNCEMENTS_PER_CYCLE} announcements this cycle, marking "${task.title}" as sent without announcing`);
             sentReminders.add(key);
@@ -135,7 +135,7 @@ export async function checkReminders() {
             continue;
           }
 
-          console.log(`[Reminder] Triggering reminder for task "${task.title}" (${reminderMinutes} min before due)`);
+          console.log(`[Reminder] Triggering reminder for task "${task.title}" (${reminderMinutes} min before due) | now=${nowReal.toISOString()} dueDate=${dueDate.toISOString()} actualMinLeft=${Math.round((dueDate.getTime() - nowReal.getTime()) / 60000)}`);
 
           const taskReminder: TaskReminder = {
             id: task.id,
@@ -145,9 +145,12 @@ export async function checkReminders() {
             type: task.type,
           };
 
-          const timeLabel = reminderMinutes >= 60 
-            ? `${Math.round(reminderMinutes / 60)} hour${Math.round(reminderMinutes / 60) !== 1 ? 's' : ''}` 
-            : `${reminderMinutes} minutes`;
+          const actualMinutesLeft = Math.max(0, Math.round((dueDate.getTime() - nowReal.getTime()) / (60 * 1000)));
+          const timeLabel = actualMinutesLeft >= 1440
+            ? `${Math.round(actualMinutesLeft / 1440)} day${Math.round(actualMinutesLeft / 1440) !== 1 ? 's' : ''}`
+            : actualMinutesLeft >= 60 
+              ? `${Math.round(actualMinutesLeft / 60)} hour${Math.round(actualMinutesLeft / 60) !== 1 ? 's' : ''}` 
+              : `${actualMinutesLeft} minutes`;
           const voiceMessage = `Reminder: ${task.title}${task.courseName ? `, for ${task.courseName}` : ''}, is due in ${timeLabel}.`;
 
           const isTravelling = getIsTravellingMode();
@@ -198,7 +201,7 @@ export async function checkReminders() {
           lastAnnouncementTime = Date.now();
         }
 
-        if (now > dueDate) {
+        if (nowReal > dueDate) {
           if (!sentReminders.has(key)) {
             sentReminders.add(key);
             stateChanged = true;
