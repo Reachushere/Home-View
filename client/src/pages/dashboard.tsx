@@ -23153,11 +23153,6 @@ export default function Dashboard() {
                             onDrop={(e) => { e.preventDefault(); e.stopPropagation(); setHwDragOverTarget(null); const file = e.dataTransfer.files?.[0]; if (file) item.drop(file); }}
                             style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', position: 'relative', flex: 1, minWidth: 0, background: item.bg, padding: '4px 2px 3px', borderRadius: '6px', overflow: 'hidden', outline: isDragOver ? '2px solid rgba(255,255,255,0.8)' : 'none', outlineOffset: '-2px', transition: 'outline 0.15s ease' }}
                             data-testid={`drop-${item.type}-${pd.courseCode.toLowerCase()}`}>
-                            {item.p.hasFiles && item.unread > 0 && item.p.percent < 100 && (
-                              <div className="bg-[#FF0000] text-white text-[6px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ position: 'absolute', top: '1px', right: '1px', zIndex: 10 }}>
-                                {item.unread}
-                              </div>
-                            )}
                             <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                               <div style={{ position: 'relative', width: circleSize, height: circleSize, marginLeft: '-3px' }}>
                                 <svg width={circleSize} height={circleSize} style={{ transform: 'rotate(-90deg)' }}>
@@ -23170,7 +23165,12 @@ export default function Dashboard() {
                                   {item.p.hasFiles ? `${item.p.percent}%` : 'N/A'}
                                 </span>
                               </div>
-                              <div className="cursor-pointer" style={{ opacity: item.p.percent === 100 ? 0.5 : 1, marginLeft: '4px' }} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }} data-testid={item.testPlay}>
+                              <div className="cursor-pointer" style={{ position: 'relative', opacity: item.p.percent === 100 ? 0.5 : 1, marginLeft: '4px', background: item.dark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)', borderRadius: '6px', padding: '3px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }} data-testid={item.testPlay}>
+                                {item.p.hasFiles && item.unread > 0 && item.p.percent < 100 && (
+                                  <div className="bg-[#FF0000] text-white text-[6px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ position: 'absolute', top: '-5px', right: '-5px', zIndex: 10 }}>
+                                    {item.unread}
+                                  </div>
+                                )}
                                 <img src={item.dark ? hwPlayIconPath : hwPlayIconLightPath} alt="Play" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
                               </div>
                             </div>
@@ -24294,11 +24294,6 @@ export default function Dashboard() {
                                 onDrop={(e) => { e.preventDefault(); e.stopPropagation(); setHwDragOverTarget(null); const file = e.dataTransfer.files?.[0]; if (file) item.drop(file); }}
                                 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', position: 'relative', flex: 1, minWidth: 0, background: item.bg, padding: '5px 3px 4px', borderRadius: '6px', outline: isDragOver ? '2px solid rgba(255,255,255,0.8)' : 'none', outlineOffset: '-2px', transition: 'outline 0.15s ease' }}
                                 data-testid={`float-drop-${item.type}-${pd.courseCode.toLowerCase()}`}>
-                                {item.p.hasFiles && item.unread > 0 && item.p.percent < 100 && (
-                                  <div className="bg-[#FF0000] text-white text-[6px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ position: 'absolute', top: '1px', right: '1px', zIndex: 10 }}>
-                                    {item.unread}
-                                  </div>
-                                )}
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                                   <div style={{ position: 'relative', width: circleSize, height: circleSize, marginLeft: '-3px' }}>
                                     <svg width={circleSize} height={circleSize} style={{ transform: 'rotate(-90deg)' }}>
@@ -24311,7 +24306,12 @@ export default function Dashboard() {
                                       {item.p.hasFiles ? `${item.p.percent}%` : 'N/A'}
                                     </span>
                                   </div>
-                                  <div className="cursor-pointer" style={{ opacity: item.p.percent === 100 ? 0.5 : 1, marginLeft: '4px' }} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }} data-testid={item.testPlay}>
+                                  <div className="cursor-pointer" style={{ position: 'relative', opacity: item.p.percent === 100 ? 0.5 : 1, marginLeft: '4px', background: item.dark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)', borderRadius: '6px', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }} data-testid={item.testPlay}>
+                                    {item.p.hasFiles && item.unread > 0 && item.p.percent < 100 && (
+                                      <div className="bg-[#FF0000] text-white text-[6px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ position: 'absolute', top: '-5px', right: '-5px', zIndex: 10 }}>
+                                        {item.unread}
+                                      </div>
+                                    )}
                                     <img src={item.dark ? hwPlayIconPath : hwPlayIconLightPath} alt="Play" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
                                   </div>
                                 </div>
