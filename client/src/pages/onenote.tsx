@@ -1074,38 +1074,48 @@ export default function OneNotePage() {
               <FileText className="h-4 w-4" style={{ color: '#c586c0' }} />
               New OneNote Page
             </h3>
-            <div className="mb-3">
-              <label className="text-[10px] text-white/40 block mb-1">Notebook</label>
-              <select
-                value={newPageNotebook}
-                onChange={e => {
-                  setNewPageNotebook(e.target.value);
-                  const nb = notebooks.find(n => n.name === e.target.value);
-                  setNewPageSection(nb?.sections[0]?.name || '');
-                }}
-                className="w-full rounded px-3 py-2 text-sm text-white"
-                style={{ background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.15)' }}
-                data-testid="select-page-notebook"
-              >
-                {notebooks.map(nb => (
-                  <option key={nb.name} value={nb.name}>{nb.name}</option>
-                ))}
-              </select>
-            </div>
-            <div className="mb-3">
-              <label className="text-[10px] text-white/40 block mb-1">Section</label>
-              <select
-                value={newPageSection}
-                onChange={e => setNewPageSection(e.target.value)}
-                className="w-full rounded px-3 py-2 text-sm text-white"
-                style={{ background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.15)' }}
-                data-testid="select-page-section"
-              >
-                {(notebooks.find(n => n.name === newPageNotebook)?.sections || []).map(sec => (
-                  <option key={sec.name} value={sec.name}>{sec.name}</option>
-                ))}
-              </select>
-            </div>
+            {notebooks.length === 0 ? (
+              <div className="mb-3 px-3 py-3 rounded text-xs text-yellow-300/80" style={{ background: 'rgba(255,200,0,0.08)', border: '1px solid rgba(255,200,0,0.2)' }}>
+                No OneNote notebooks found. Make sure the Microsoft account has OneNote notebooks and the Notes.Read permission is granted.
+                {notebooksQuery.isLoading && <span className="ml-1 text-white/40">(Loading...)</span>}
+                {notebooksQuery.isError && <span className="ml-1 text-red-400">(Error loading notebooks)</span>}
+              </div>
+            ) : (
+              <>
+                <div className="mb-3">
+                  <label className="text-[10px] text-white/40 block mb-1">Notebook</label>
+                  <select
+                    value={newPageNotebook}
+                    onChange={e => {
+                      setNewPageNotebook(e.target.value);
+                      const nb = notebooks.find(n => n.name === e.target.value);
+                      setNewPageSection(nb?.sections[0]?.name || '');
+                    }}
+                    className="w-full rounded px-3 py-2 text-sm text-white"
+                    style={{ background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.15)' }}
+                    data-testid="select-page-notebook"
+                  >
+                    {notebooks.map(nb => (
+                      <option key={nb.name} value={nb.name}>{nb.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="mb-3">
+                  <label className="text-[10px] text-white/40 block mb-1">Section</label>
+                  <select
+                    value={newPageSection}
+                    onChange={e => setNewPageSection(e.target.value)}
+                    className="w-full rounded px-3 py-2 text-sm text-white"
+                    style={{ background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.15)' }}
+                    data-testid="select-page-section"
+                  >
+                    {(notebooks.find(n => n.name === newPageNotebook)?.sections || []).map(sec => (
+                      <option key={sec.name} value={sec.name}>{sec.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </>
+            )}
             <Input
               value={newPageTitle}
               onChange={e => setNewPageTitle(e.target.value)}

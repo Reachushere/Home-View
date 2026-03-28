@@ -726,15 +726,17 @@ export async function listOneNoteNotebooks(): Promise<{ name: string; path: stri
 
   try {
     const nbRes = await client.api('/me/onenote/notebooks').select('id,displayName').get();
-    for (const nb of (nbRes.value || [])) {
+    const rawNbs = nbRes.value || [];
+    console.log(`[OneNote] Graph API returned ${rawNbs.length} raw notebooks`);
+    for (const nb of rawNbs) {
       try {
         const secRes = await client.api(`/me/onenote/notebooks/${nb.id}/sections`).select('id,displayName').get();
         const sections = (secRes.value || []).map((s: any) => ({ name: s.displayName, id: s.id }));
-        if (sections.length > 0) {
-          notebooks.push({ name: nb.displayName, path: nb.id, sections });
-        }
+        notebooks.push({ name: nb.displayName, path: nb.id, sections });
+        console.log(`[OneNote] Notebook "${nb.displayName}": ${sections.length} sections`);
       } catch (secErr: any) {
         console.error(`[OneNote] Failed to list sections for ${nb.displayName}:`, secErr.message);
+        notebooks.push({ name: nb.displayName, path: nb.id, sections: [] });
       }
     }
     console.log(`[OneNote] Found ${notebooks.length} notebooks via API`);
