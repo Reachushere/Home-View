@@ -23081,7 +23081,7 @@ export default function Dashboard() {
                                     <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke="#ffffff" strokeWidth={strokeWidth} strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
                                   )}
                                 </svg>
-                                <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 800, color: textColor }}>
+                                <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700, color: item.dark ? '#ffffff' : '#000000', fontFamily: "system-ui, -apple-system, 'Segoe UI', sans-serif", letterSpacing: '-0.3px' }}>
                                   {item.p.hasFiles ? `${item.p.percent}%` : 'N/A'}
                                 </span>
                               </div>
@@ -23090,7 +23090,7 @@ export default function Dashboard() {
                               </div>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                              <span style={{ fontSize: '6px', fontWeight: 800, color: textColor, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{item.label}</span>
+                              <span style={{ fontSize: '8px', fontWeight: 800, color: item.dark ? '#ffffff' : '#000000', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{item.label}</span>
                               <div className="cursor-pointer" data-testid={item.testUpload} onClick={(e) => { e.stopPropagation(); item.upload(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.upload(); }}>
                                 <Upload style={{ width: '8px', height: '8px', color: item.dark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)' }} />
                               </div>
@@ -24237,7 +24237,7 @@ export default function Dashboard() {
                                         <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke="#ffffff" strokeWidth={strokeWidth} strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
                                       )}
                                     </svg>
-                                    <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 800, color: textColor }}>
+                                    <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700, color: item.dark ? '#ffffff' : '#000000', fontFamily: "system-ui, -apple-system, 'Segoe UI', sans-serif", letterSpacing: '-0.3px' }}>
                                       {item.p.hasFiles ? `${item.p.percent}%` : 'N/A'}
                                     </span>
                                   </div>
@@ -24246,7 +24246,7 @@ export default function Dashboard() {
                                   </div>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                                  <span style={{ fontSize: '7px', fontWeight: 800, color: textColor, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{item.label}</span>
+                                  <span style={{ fontSize: '9px', fontWeight: 800, color: item.dark ? '#ffffff' : '#000000', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{item.label}</span>
                                   <div className="cursor-pointer" data-testid={item.testUpload} onClick={(e) => { e.stopPropagation(); item.upload(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.upload(); }}>
                                     <Upload style={{ width: '9px', height: '9px', color: item.dark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)' }} />
                                   </div>
