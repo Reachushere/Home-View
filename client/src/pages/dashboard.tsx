@@ -1068,17 +1068,17 @@ export default function Dashboard() {
   const getTodayCellGradient = () => {
     const now = new Date();
     const h = now.getHours() + now.getMinutes() / 60;
-    if (h < 4) return 'linear-gradient(180deg, #1a1a2e 0%, #16213e 100%)';
-    if (h < 6) return 'linear-gradient(180deg, #2c3e6b 0%, #6b8cae 100%)';
-    if (h < 8) return 'linear-gradient(180deg, #7da7c9 0%, #c0a48a 100%)';
-    if (h < 10) return 'linear-gradient(180deg, #89b4cc 0%, #b4cad8 100%)';
-    if (h < 13) return 'linear-gradient(180deg, #7aafc8 0%, #a8c4d4 100%)';
-    if (h < 15) return 'linear-gradient(180deg, #7aafc8 0%, #c2b09a 100%)';
-    if (h < 17) return 'linear-gradient(180deg, #9aadba 0%, #c4977a 100%)';
-    if (h < 19) return 'linear-gradient(180deg, #b08868 0%, #d4956a 50%, #3d4a5e 100%)';
-    if (h < 21) return 'linear-gradient(180deg, #6b5a50 0%, #3a3548 50%, #2a2a3e 100%)';
-    if (h < 23) return 'linear-gradient(180deg, #2a2a3e 0%, #1a1a2e 100%)';
-    return 'linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%)';
+    if (h < 4) return 'linear-gradient(180deg, #0f1b2d 0%, #1a2744 100%)';
+    if (h < 6) return 'linear-gradient(180deg, #1e3252 0%, #4a6e8a 50%, #8a7e6e 100%)';
+    if (h < 8) return 'linear-gradient(180deg, #6a9ab8 0%, #a4bcc8 50%, #c4a082 100%)';
+    if (h < 10) return 'linear-gradient(180deg, #87afc4 0%, #a8c4d6 100%)';
+    if (h < 13) return 'linear-gradient(180deg, #7ba8c0 0%, #9bbdd0 100%)';
+    if (h < 15) return 'linear-gradient(180deg, #7ba8c0 0%, #a4b8c0 50%, #c0a890 100%)';
+    if (h < 17) return 'linear-gradient(180deg, #9aaab4 0%, #bea08a 100%)';
+    if (h < 19) return 'linear-gradient(180deg, #a08870 0%, #c48a68 40%, #5a5060 80%, #3a3450 100%)';
+    if (h < 21) return 'linear-gradient(180deg, #6a5a52 0%, #4a4058 50%, #2a2840 100%)';
+    if (h < 23) return 'linear-gradient(180deg, #2a2840 0%, #1a1e32 100%)';
+    return 'linear-gradient(180deg, #1a1e32 0%, #0f1520 100%)';
   };
   const todayCellBg = getTodayCellGradient();
   const hwGroupBarDragRef = useRef<{ startX: number; startWidth: number } | null>(null);
