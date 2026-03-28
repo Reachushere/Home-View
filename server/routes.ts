@@ -14976,19 +14976,22 @@ document.body.removeChild(a);
       ]);
       
       const allGoogleEventIds = new Set(allEvents.map(e => e.id).filter(Boolean));
+      const protectedTypes = new Set(['class', 'assignment', 'quiz', 'exam', 'essay', 'module', 'reading', 'discussion', 'poll']);
       const tasksToDelete = tasks.filter(t => {
         const hasCalId = t.calendarEventId || t.secondAccountCalendarEventId;
         if (!hasCalId) return false;
         const calIdExists = t.calendarEventId && allGoogleEventIds.has(t.calendarEventId);
         const secIdExists = t.secondAccountCalendarEventId && allGoogleEventIds.has(t.secondAccountCalendarEventId);
         if (calIdExists || secIdExists) return false;
-        if (t.type === 'class') return false;
+        if (protectedTypes.has(t.type)) return false;
+        if (t.gradeWeight != null || t.gradeValue != null) return false;
+        if (t.courseName) return false;
         const taskDate = new Date(t.dueDate);
         if (taskDate < start || taskDate > endOfWeek) return false;
         return true;
       });
       if (tasksToDelete.length > 0) {
-        console.log(`[CalSync] Detected ${tasksToDelete.length} task(s) deleted from calendar, removing from app`);
+        console.log(`[CalSync] Detected ${tasksToDelete.length} task(s) deleted from calendar, removing from app (only non-academic, non-graded tasks)`);
         for (const t of tasksToDelete) {
           try {
             await storage.deleteTask(t.id);
