@@ -2404,7 +2404,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             </div>
           )}
 
-          <div style={{ padding: `12px 12px 12px 12px`, marginTop: isEditingInfo ? 0 : '10px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div style={{ padding: '12px', marginTop: isEditingInfo ? 0 : '10px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <div ref={weekMappingsRef}>
             <div style={{ border: '2px solid rgba(255,255,255,0.2)', borderRadius: '8px', padding: '12px' }}>
             <div
@@ -2844,9 +2844,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               </div>
             )}
           </div>
-          </div>
 
-          <div ref={assignmentsRef} style={{ marginTop: '10px' }}>
+          <div ref={assignmentsRef}>
             <div style={{ border: '2px solid rgba(255,255,255,0.2)', borderRadius: '8px', padding: '12px' }}>
             <div
               className="flex items-center justify-between cursor-pointer group"
@@ -3203,6 +3202,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             )}
 
           </>)}
+          </div>
           </div>
           </div>
           </div>
