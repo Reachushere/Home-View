@@ -22819,7 +22819,7 @@ export default function Dashboard() {
                 >
                   {pd.hasNoData ? (
                     <div className="flex-1 flex items-center justify-center">
-                      <span className="text-[9px] font-bold text-white/60 text-center" style={{ lineHeight: '1.6' }}>N/A</span>
+                      <span className="text-[9px] font-bold text-black/60 text-center" style={{ lineHeight: '1.6' }}>N/A</span>
                     </div>
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '3px 4px', flex: 1 }}>
@@ -22847,13 +22847,13 @@ export default function Dashboard() {
                                   <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke={progressColor} strokeWidth={strokeWidth} strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
                                 )}
                               </svg>
-                              <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '8px', fontWeight: 700, color: '#fff', textShadow: '0 0 3px rgba(0,0,0,0.5)' }}>
+                              <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '8px', fontWeight: 700, color: '#000', textShadow: 'none' }}>
                                 {item.p.hasFiles ? `${item.p.percent}%` : 'N/A'}
                               </span>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                              {item.p.hasFiles && <Paperclip className="h-[6px] w-[6px] text-white/70 flex-shrink-0" />}
-                              <span style={{ fontSize: '6px', fontWeight: 600, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.5px', textShadow: '0 0 2px rgba(0,0,0,0.5)', whiteSpace: 'nowrap' }}>{item.label}</span>
+                              {item.p.hasFiles && <Paperclip className="h-[6px] w-[6px] text-black/70 flex-shrink-0" />}
+                              <span style={{ fontSize: '6px', fontWeight: 600, color: '#000', textTransform: 'uppercase', letterSpacing: '0.5px', textShadow: 'none', whiteSpace: 'nowrap' }}>{item.label}</span>
                             </div>
                             <div style={{ display: 'flex', gap: '3px', alignItems: 'center', marginTop: '-1px' }}>
                               <div className="cursor-pointer" data-testid={item.testPlay} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }}>
@@ -23967,7 +23967,7 @@ export default function Dashboard() {
                     >
                       {pd.hasNoData ? (
                         <div className="flex-1 flex items-center justify-center py-3">
-                          <span className="text-[9px] font-bold text-white/60">N/A</span>
+                          <span className="text-[9px] font-bold text-black/60">N/A</span>
                         </div>
                       ) : (
                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '4px 6px', flex: 1 }}>
@@ -23995,13 +23995,13 @@ export default function Dashboard() {
                                       <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke={progressColor} strokeWidth={strokeWidth} strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
                                     )}
                                   </svg>
-                                  <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700, color: '#fff', textShadow: '0 0 3px rgba(0,0,0,0.5)' }}>
+                                  <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700, color: '#000', textShadow: 'none' }}>
                                     {item.p.hasFiles ? `${item.p.percent}%` : 'N/A'}
                                   </span>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                  {item.p.hasFiles && <Paperclip className="h-[6px] w-[6px] text-white/70 flex-shrink-0" />}
-                                  <span style={{ fontSize: '7px', fontWeight: 600, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.5px', textShadow: '0 0 2px rgba(0,0,0,0.5)', whiteSpace: 'nowrap' }}>{item.label}</span>
+                                  {item.p.hasFiles && <Paperclip className="h-[6px] w-[6px] text-black/70 flex-shrink-0" />}
+                                  <span style={{ fontSize: '7px', fontWeight: 600, color: '#000', textTransform: 'uppercase', letterSpacing: '0.5px', textShadow: 'none', whiteSpace: 'nowrap' }}>{item.label}</span>
                                 </div>
                                 <div style={{ display: 'flex', gap: '3px', alignItems: 'center', marginTop: '-1px' }}>
                                   <div className="cursor-pointer" onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }}>
