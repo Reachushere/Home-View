@@ -683,6 +683,8 @@ export default function Dashboard() {
   const [processingReviewIds, setProcessingReviewIds] = useState<Set<number>>(new Set());
   const [reviewMode, setReviewMode] = useState<'all' | 'individual'>('all');
   const [reviewCheckedIds, setReviewCheckedIds] = useState<Set<number>>(new Set());
+  const [reviewHideFromSummary, setReviewHideFromSummary] = useState<Set<number>>(new Set());
+  const [reviewHideFromTimeline, setReviewHideFromTimeline] = useState<Set<number>>(new Set());
 
   const fetchPendingReview = useCallback(async () => {
     try {
@@ -697,42 +699,54 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    // DISABLED: Morning review auto-popup disconnected for now
-    // const checkMorningReview = async () => {
-    //   const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
-    //   const hour = eastern.getHours();
-    //   if (hour < 9) return;
-    //   const dismissUntil = localStorage.getItem('morning_review_dismiss_until');
-    //   if (dismissUntil && Date.now() < Number(dismissUntil)) return;
-    //   try {
-    //     await fetch('/api/outlook/sync', { method: 'POST' }).catch(() => {});
-    //     await fetch('/api/pending-review/dedup', { method: 'POST' }).catch(() => {});
-    //   } catch {}
-    //   const items = await fetchPendingReview();
-    //   if (items.length > 0) {
-    //     setShowMorningReview(true);
-    //   }
-    // };
-    // checkMorningReview();
-  }, [fetchPendingReview]);
+    const checkMorningReview = async () => {
+      const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+      const hour = eastern.getHours();
+      if (hour < 9) return;
+      const dismissUntil = localStorage.getItem('morning_review_dismiss_until');
+      if (dismissUntil && Date.now() < Number(dismissUntil)) return;
+      const shownToday = localStorage.getItem('morning_review_shown_date');
+      const todayStr = eastern.toISOString().split('T')[0];
+      if (shownToday === todayStr) return;
+      try {
+        const syncRes = await fetch('/api/morning-review/sync-all', { method: 'POST' });
+        if (syncRes.ok) {
+          const data = await syncRes.json();
+          if (data.items && data.items.length > 0) {
+            setMorningReviewItems(data.items);
+            setShowMorningReview(true);
+            localStorage.setItem('morning_review_shown_date', todayStr);
+          }
+        }
+      } catch (e) {
+        console.error('[Review] Morning review sync error:', e);
+      }
+    };
+    checkMorningReview();
+  }, []);
 
   const triggerOutlookSyncAndReview = useCallback(async () => {
     try {
-      await fetch('/api/outlook/sync', { method: 'POST' });
-      await fetch('/api/pending-review/dedup', { method: 'POST' }).catch(() => {});
-      const items = await fetchPendingReview();
-      if (items.length > 0) {
-        setShowMorningReview(true);
+      const syncRes = await fetch('/api/morning-review/sync-all', { method: 'POST' });
+      if (syncRes.ok) {
+        const data = await syncRes.json();
+        if (data.items && data.items.length > 0) {
+          setMorningReviewItems(data.items);
+          setShowMorningReview(true);
+        }
       }
-    } catch (e) { console.error('[Review] Outlook sync + review error:', e); }
-  }, [fetchPendingReview]);
+    } catch (e) { console.error('[Review] Sync + review error:', e); }
+  }, []);
 
   const handleAcceptReview = async (id: number, overrides?: Record<string, any>) => {
     setProcessingReviewIds(prev => new Set(prev).add(id));
     try {
+      const hideFlags: Record<string, boolean> = {};
+      if (reviewHideFromSummary.has(id)) hideFlags.hideFromSummary = true;
+      if (reviewHideFromTimeline.has(id)) hideFlags.hideFromTimeline = true;
       await fetch(`/api/pending-review/${id}/accept`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ overrides }),
+        body: JSON.stringify({ overrides: { ...hideFlags, ...(overrides || {}) } }),
       });
       setMorningReviewItems(prev => {
         const next = prev.filter(i => i.id !== id);
@@ -776,9 +790,11 @@ export default function Dashboard() {
     setShowMorningReview(false);
     setReviewMode('all');
     setReviewCheckedIds(new Set());
+    setReviewHideFromSummary(new Set());
+    setReviewHideFromTimeline(new Set());
   };
 
-  const handleSkipAllForever = async () => {
+  const handleDismissAllPermanently = async () => {
     setMorningReviewLoading(true);
     for (const item of morningReviewItems) {
       await handleRejectReview(item.id);
@@ -787,6 +803,8 @@ export default function Dashboard() {
     setShowMorningReview(false);
     setReviewMode('all');
     setReviewCheckedIds(new Set());
+    setReviewHideFromSummary(new Set());
+    setReviewHideFromTimeline(new Set());
   };
 
   const handleIndividualConfirm = async () => {
@@ -794,14 +812,16 @@ export default function Dashboard() {
     for (const item of morningReviewItems) {
       if (reviewCheckedIds.has(item.id)) {
         await handleAcceptReview(item.id);
-      } else {
-        await handleRejectReview(item.id);
       }
     }
+    const uncheckedItems = morningReviewItems.filter(i => !reviewCheckedIds.has(i.id));
+    setMorningReviewItems(uncheckedItems);
     setMorningReviewLoading(false);
-    setShowMorningReview(false);
+    if (uncheckedItems.length === 0) setShowMorningReview(false);
     setReviewMode('all');
     setReviewCheckedIds(new Set());
+    setReviewHideFromSummary(new Set());
+    setReviewHideFromTimeline(new Set());
   };
 
   const handleIcsFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -10262,12 +10282,12 @@ export default function Dashboard() {
                   <button
                     className="h-8 px-4 text-[11px] font-medium text-white rounded disabled:opacity-40"
                     style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.15)', border: '1px solid rgba(255,255,255,0.2)', fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}
-                    onClick={handleSkipAllForever}
+                    onClick={handleDismissAllPermanently}
                     disabled={morningReviewLoading}
                     data-testid="button-skip-all-forever-review"
                   >
                     {morningReviewLoading ? <Loader2 className="h-3 w-3 mr-1 animate-spin inline" /> : null}
-                    Dismiss All
+                    Dismiss All Permanently
                   </button>
                   <button
                     className="h-8 px-4 text-[11px] font-medium text-white rounded disabled:opacity-40"
@@ -10312,14 +10332,14 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="flex gap-4 h-full">
-                {['outlook_calendar', 'gmail'].map(source => {
+                {['outlook_calendar', 'google_calendar', 'gmail'].filter(source => morningReviewItems.some(i => i.source === source)).map(source => {
                   const items = morningReviewItems.filter(i => i.source === source).sort((a, b) => {
                     const dateA = a.startDate ? new Date(a.startDate).getTime() : a.createdAt ? new Date(a.createdAt).getTime() : 0;
                     const dateB = b.startDate ? new Date(b.startDate).getTime() : b.createdAt ? new Date(b.createdAt).getTime() : 0;
                     return dateA - dateB;
                   });
-                  const label = source === 'outlook_calendar' ? 'Outlook Calendar' : 'Gmail';
-                  const icon = source === 'outlook_calendar' ? <CalendarDays className="h-3 w-3 text-blue-400" /> : <Mail className="h-3 w-3 text-red-400" />;
+                  const label = source === 'outlook_calendar' ? 'Outlook Calendar' : source === 'google_calendar' ? 'Google Calendar' : 'Gmail';
+                  const icon = source === 'outlook_calendar' ? <CalendarDays className="h-3 w-3 text-blue-400" /> : source === 'google_calendar' ? <CalendarDays className="h-3 w-3 text-green-400" /> : <Mail className="h-3 w-3 text-red-400" />;
                   return (
                     <div key={source} className="flex-1 flex flex-col min-w-0" data-testid={`review-group-${source}`}>
                       <div className="flex items-center gap-1.5 pb-1 border-b border-white/15 flex-shrink-0">
@@ -10372,6 +10392,32 @@ export default function Dashboard() {
                                   {item.eventStartTime}
                                 </span>
                               )}
+                              <label className="flex items-center gap-0.5 flex-shrink-0 cursor-pointer" title="Hide from summary row" data-testid={`review-hide-summary-${item.id}`}>
+                                <input
+                                  type="checkbox"
+                                  className="w-3 h-3 accent-amber-500"
+                                  checked={reviewHideFromSummary.has(item.id)}
+                                  onChange={() => setReviewHideFromSummary(prev => {
+                                    const next = new Set(prev);
+                                    if (next.has(item.id)) next.delete(item.id); else next.add(item.id);
+                                    return next;
+                                  })}
+                                />
+                                <span className="text-[8px] text-white/40">No summary</span>
+                              </label>
+                              <label className="flex items-center gap-0.5 flex-shrink-0 cursor-pointer" title="Hide from side timeline" data-testid={`review-hide-timeline-${item.id}`}>
+                                <input
+                                  type="checkbox"
+                                  className="w-3 h-3 accent-amber-500"
+                                  checked={reviewHideFromTimeline.has(item.id)}
+                                  onChange={() => setReviewHideFromTimeline(prev => {
+                                    const next = new Set(prev);
+                                    if (next.has(item.id)) next.delete(item.id); else next.add(item.id);
+                                    return next;
+                                  })}
+                                />
+                                <span className="text-[8px] text-white/40">No timeline</span>
+                              </label>
                             </div>
                             {reviewMode === 'all' && (
                               <div className="flex items-center gap-1 flex-shrink-0">

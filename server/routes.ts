@@ -13,7 +13,7 @@ import { z } from "zod";
 import { LIBERAL_STUDIES_COURSES, OPEN_ELECTIVE_COURSES } from "@shared/electiveCourses";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 import { objectStorageClient } from "./replit_integrations/object_storage/objectStorage";
-import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent, createEventInCalendar, deleteEventFromCalendar, createRecurringClassEvent, findExistingEventBySummary, findAndDeleteDuplicateEvents, createYearlyScholarshipEvent } from "./googleCalendar";
+import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent, createEventInCalendar, deleteEventFromCalendar, createRecurringClassEvent, findExistingEventBySummary, findAndDeleteDuplicateEvents, createYearlyScholarshipEvent, syncGoogleEventsToReview } from "./googleCalendar";
 import { getSecondAccountAuthUrl, exchangeCodeForTokens, isSecondAccountConnected, disconnectSecondAccount, createEventInSecondAccount, createPrepEventInSecondAccount, deleteEventFromSecondAccount, updateEventInSecondAccount, getEventsFromSecondAccount } from "./secondGoogleAccount";
 import { getThirdAccountAuthUrl, exchangeCodeForTokensThird, isThirdAccountConnected, disconnectThirdAccount, getEventsFromThirdAccount, listThirdAccountCalendars, getEventsFromThirdAccountCalendar } from "./thirdGoogleAccount";
 import { textToSpeech, initTTSFallbackStatus } from "./replit_integrations/audio/client";
@@ -17007,6 +17007,7 @@ Return ONLY the JSON object, no markdown formatting.`;
         }
       }
 
+      const overrides = req.body.overrides || {};
       const taskData: any = {
         title: item.title,
         type: item.taskType || 'meeting',
@@ -17019,7 +17020,9 @@ Return ONLY the JSON object, no markdown formatting.`;
         description: item.description || null,
         isCompleted: false,
         isAcknowledged: true,
-        ...(req.body.overrides || {}),
+        hideFromSummary: overrides.hideFromSummary || false,
+        hideFromTimeline: overrides.hideFromTimeline || false,
+        ...overrides,
       };
 
       const task = await storage.createTask(taskData);
@@ -17103,6 +17106,82 @@ Return ONLY the JSON object, no markdown formatting.`;
       res.json(result);
     } catch (error: any) {
       console.error("[Outlook] Sync error:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/google/sync-to-review", async (_req, res) => {
+    try {
+      const result = await syncGoogleEventsToReview();
+      res.json(result);
+    } catch (error: any) {
+      console.error("[Google Calendar] Sync to review error:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  async function dedupPendingReviewItems() {
+    const items = await storage.getPendingReviewItems('pending');
+    const seen = new Map<string, number>();
+    let removed = 0;
+    const normalizeTitle = (t: string) => t.toLowerCase().replace(/\s+/g, ' ').replace(/[^a-z0-9 ]/g, '').trim();
+    for (const item of items) {
+      const normTitle = normalizeTitle(item.title || '');
+      const dateKey = item.startDate ? new Date(item.startDate).toISOString().split('T')[0] : 'nodate';
+      const key = `${normTitle}||${dateKey}`;
+      if (seen.has(key)) {
+        await storage.deletePendingReviewItem(item.id);
+        removed++;
+      } else {
+        seen.set(key, item.id);
+      }
+    }
+    return removed;
+  }
+
+  app.post("/api/morning-review/sync-all", async (_req, res) => {
+    try {
+      let outlookResult = { added: 0, skipped: 0 };
+      let googleResult = { added: 0, skipped: 0 };
+
+      try { outlookResult = await syncOutlookEventsToReview(); } catch (e: any) {
+        console.error("[Morning Review] Outlook sync failed (non-fatal):", e.message);
+      }
+      try { googleResult = await syncGoogleEventsToReview(); } catch (e: any) {
+        console.error("[Morning Review] Google sync failed (non-fatal):", e.message);
+      }
+
+      try { await dedupPendingReviewItems(); } catch {}
+
+      const items = await storage.getPendingReviewItems('pending');
+      const todayStart = new Date(torontoDate().toDateString());
+      const normalizeTitle = (t: string) => t.toLowerCase().replace(/\s+/g, ' ').replace(/[^a-z0-9 ]/g, '').trim();
+      const allTasks = await storage.getTasks();
+      const taskKeys = new Set(allTasks.map(t => {
+        const normT = normalizeTitle(t.title || '');
+        const dateK = t.dueDate ? new Date(t.dueDate).toISOString().split('T')[0] : 'nodate';
+        return `${normT}||${dateK}`;
+      }));
+      const filtered = items.filter(item => {
+        if (item.startDate) {
+          const itemDate = new Date(new Date(item.startDate).toDateString());
+          if (itemDate < todayStart) return false;
+        }
+        const normT = normalizeTitle(item.title || '');
+        const dateK = item.startDate ? new Date(item.startDate).toISOString().split('T')[0] : 'nodate';
+        if (taskKeys.has(`${normT}||${dateK}`)) return false;
+        return true;
+      });
+
+      console.log(`[Morning Review] Sync complete: outlook(+${outlookResult.added}), google(+${googleResult.added}), ${filtered.length} pending items`);
+      res.json({
+        outlook: outlookResult,
+        google: googleResult,
+        pendingCount: filtered.length,
+        items: filtered,
+      });
+    } catch (error: any) {
+      console.error("[Morning Review] Sync-all error:", error);
       res.status(500).json({ error: error.message });
     }
   });
