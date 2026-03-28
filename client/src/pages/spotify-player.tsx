@@ -1877,7 +1877,7 @@ export default function SpotifyPlayerPage() {
             )}
 
             {viewMode === "floor" && (
-              <div className="absolute" style={{ top: 50, bottom: 50, left: 50, right: 50 }}>
+              <div className="absolute" style={{ top: 70, bottom: 70, left: 70, right: 70 }}>
                 <img src={floorplanImg} alt="Apartment floor plan" className="absolute inset-0 w-full h-full object-contain"
                   style={{ filter: "brightness(0.9) contrast(1.1) saturate(0.7) hue-rotate(190deg)", opacity: 0.9 }} />
                 <div className="absolute inset-0" onClick={() => setFloorSpeakerPopup(null)} style={{
