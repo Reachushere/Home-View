@@ -23354,7 +23354,7 @@ export default function Dashboard() {
                 {/* This Week Section - hidden on Fridays since everything shifts to today */}
                 {new Date().getDay() === 5 ? null : (<>
                 <div data-homework-section="thisweek" data-semester-label={hwWeeklyTimeline[0]?.semLabel || ''} style={{ marginTop: '10px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '2px', width: 'fit-content', marginBottom: '0px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '2px', width: 'fit-content', marginBottom: '7px' }}>
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', whiteSpace: 'nowrap', flexShrink: 0 }}>{hwWeeklyTimeline[0]?.label || 'Week'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', flexShrink: 0 }}>({dueTomorrowTasks.length})</span>
                     {/Week\s+\d/i.test(hwWeeklyTimeline[0]?.label || '') && hwWeeklyTimeline[0]?.weekStart && hwWeeklyTimeline[0]?.weekEnd && (
@@ -23544,7 +23544,7 @@ export default function Dashboard() {
                 </>)}
                 {/* Next Week Section */}
                 <div data-homework-section="nextweek" data-semester-label={hwWeeklyTimeline[1]?.semLabel || ''} style={{ marginTop: '10px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '2px', width: 'fit-content', marginBottom: '0px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '2px', width: 'fit-content', marginBottom: '7px' }}>
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', flexShrink: 0 }}>{hwWeeklyTimeline[1]?.label || 'Week'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', flexShrink: 0 }}>({dueNextWeekTasks.length})</span>
                     {/Week\s+\d/i.test(hwWeeklyTimeline[1]?.label || '') && hwWeeklyTimeline[1]?.weekStart && hwWeeklyTimeline[1]?.weekEnd && (
