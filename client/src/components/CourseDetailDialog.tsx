@@ -1464,7 +1464,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
       data-testid="course-detail-overlay"
     >
       <div
-        className="flex flex-col text-white rounded-lg overflow-hidden"
+        className="flex flex-col text-white rounded-lg"
         style={{
           pointerEvents: 'auto',
           width: "960px",
@@ -2005,7 +2005,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                               <span className="text-white/50 text-[8px] w-6 text-right">{midStops[activeGradientStop]?.position}%</span>
                             </div>
                           )}
-                          <div className="relative rounded cursor-crosshair" style={{ height: '92px', touchAction: 'none', overflow: 'visible', margin: '7px', marginBottom: '0px' }} data-testid={`color-area-${activeGradientStop}`}
+                          <div className="relative rounded cursor-crosshair" style={{ height: '92px', touchAction: 'none', overflow: 'visible' }} data-testid={`color-area-${activeGradientStop}`}
                             onPointerDown={(e) => {
                               e.preventDefault();
                               const el = e.currentTarget;

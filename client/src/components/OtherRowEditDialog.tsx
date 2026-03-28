@@ -138,7 +138,7 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave, onPr
       <div className="absolute inset-0 bg-black/40" />
       <div
         ref={dialogRef}
-        className="relative rounded-lg overflow-hidden"
+        className="relative rounded-lg"
         style={{
           width: '420px',
           maxHeight: '520px',
@@ -246,7 +246,7 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave, onPr
               {midStops.length === 0 && <div className="text-white text-[9px] text-left" style={{ marginTop: '7px', marginBottom: '10px' }}>Double-click gradient bar to add a colour stop</div>}
               {midStops.length > 0 && <div style={{ height: '24px' }} />}
               {activeGradientStop != null && (
-                <div className="mt-1 rounded" style={{ border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(0,0,0,0.4)', padding: '6px' }}>
+                <div className="mt-1 rounded" style={{ border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(0,0,0,0.4)', padding: '6px', overflow: 'visible' }}>
                   <div className="flex items-center gap-2 mb-1.5">
                     <div className="w-5 h-5 rounded border border-white/30 shrink-0" style={{ backgroundColor: getActiveColor() }} />
                     <span className="text-white/60 text-[8px] uppercase tracking-wider">{activeGradientStop === 'start' ? 'Start' : activeGradientStop === 'end' ? 'End' : `Stop ${(activeGradientStop as number) + 1}`} Colour</span>
@@ -270,7 +270,7 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave, onPr
                       <span className="text-white/50 text-[8px] w-6 text-right">{midStops[activeGradientStop]?.position}%</span>
                     </div>
                   )}
-                  <div className="relative rounded cursor-crosshair" style={{ height: '92px', touchAction: 'none', overflow: 'visible', margin: '7px', marginBottom: '0px' }} data-testid={`color-area-${activeGradientStop}`}
+                  <div className="relative rounded cursor-crosshair" style={{ height: '92px', touchAction: 'none', overflow: 'visible' }} data-testid={`color-area-${activeGradientStop}`}
                     onPointerDown={(e) => {
                       e.preventDefault();
                       const el = e.currentTarget;
