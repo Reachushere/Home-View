@@ -8257,20 +8257,19 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   }, 15000);
 
   function findNextFileByPriority(allFiles: any[], currentWeekNumber: number, excludeFileId?: number): any | null {
-    for (let weekToCheck = 1; weekToCheck <= currentWeekNumber; weekToCheck++) {
-      const weekFiles = allFiles.filter((f: any) => {
-        if (f.listened) return false;
-        if (excludeFileId && f.id === excludeFileId) return false;
-        const weekMatch = f.folder?.match(/week-(\d+)/i);
-        return weekMatch && parseInt(weekMatch[1], 10) === weekToCheck;
-      });
-      if (weekFiles.length === 0) continue;
-      const ordered = orderFilesByCoursePriority(weekFiles);
-      console.log(`[FileOrder] Found unlistened files in week ${weekToCheck} (checked 1-${currentWeekNumber}): ${ordered.map((f: any) => `${f.originalName} (chunk=${f.lastChunkIndex||0})`).join(' → ')}`);
-      return ordered[0] || null;
+    const weekFiles = allFiles.filter((f: any) => {
+      if (f.listened) return false;
+      if (excludeFileId && f.id === excludeFileId) return false;
+      const weekMatch = f.folder?.match(/week-(\d+)/i);
+      return weekMatch && parseInt(weekMatch[1], 10) === currentWeekNumber;
+    });
+    if (weekFiles.length === 0) {
+      console.log(`[FileOrder] No unlistened files found in week ${currentWeekNumber}`);
+      return null;
     }
-    console.log(`[FileOrder] No unlistened files found in weeks 1-${currentWeekNumber}`);
-    return null;
+    const ordered = orderFilesByCoursePriority(weekFiles);
+    console.log(`[FileOrder] Found unlistened files in week ${currentWeekNumber}: ${ordered.map((f: any) => `${f.originalName} (chunk=${f.lastChunkIndex||0})`).join(' → ')}`);
+    return ordered[0] || null;
   }
 
   function isSpotifyPlayingOnEverywhere(): boolean {
@@ -9879,53 +9878,55 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       return match ? match[1].toUpperCase().replace(/\s/g, '') : 'UNKNOWN';
     };
 
-    for (let w = 1; w <= weekNumber; w++) {
-      const weekPartials = allFiles.filter((f: any) => isPartiallyListened(f) && getFileWeek(f) === w);
-      const allPartialIds = new Set(weekPartials.map((f: any) => f.id));
+    const w = weekNumber;
+    const weekPartials = allFiles.filter((f: any) => isPartiallyListened(f) && getFileWeek(f) === w);
+    const allPartialIds = new Set(weekPartials.map((f: any) => f.id));
 
-      const unlistenedFiles = allFiles.filter((f: any) => {
-        if (f.listened || f.id === excludeFileId) return false;
-        if (allPartialIds.has(f.id)) return false;
-        return getFileWeek(f) === w;
-      });
+    const unlistenedFiles = allFiles.filter((f: any) => {
+      if (f.listened || f.id === excludeFileId) return false;
+      if (allPartialIds.has(f.id)) return false;
+      return getFileWeek(f) === w;
+    });
 
-      const allWeekUnlistened = allFiles.filter((f: any) => !f.listened && f.id !== excludeFileId && getFileWeek(f) === w);
+    const allWeekUnlistened = allFiles.filter((f: any) => !f.listened && f.id !== excludeFileId && getFileWeek(f) === w);
 
-      if (allWeekUnlistened.length === 0 && weekPartials.length === 0) continue;
-
-      const coursesWithUnlistenedModules = new Set<string>();
-      for (const f of allWeekUnlistened) {
-        if (isModuleFile(f)) {
-          coursesWithUnlistenedModules.add(getCourseCodeForFile(f));
-        }
-      }
-
-      const filteredUnlistened = unlistenedFiles.filter(f => {
-        if (isModuleFile(f)) return true;
-        return !coursesWithUnlistenedModules.has(getCourseCodeForFile(f));
-      });
-
-      const filteredPartials = weekPartials.filter(f => {
-        if (isModuleFile(f)) return true;
-        return !coursesWithUnlistenedModules.has(getCourseCodeForFile(f));
-      });
-
-      const orderedUnlistened = [...filteredUnlistened].sort((a, b) => {
-        const aPri = getCoursePriorityForFile(a);
-        const bPri = getCoursePriorityForFile(b);
-        if (aPri !== bPri) return aPri - bPri;
-        const aModule = isModuleFile(a) ? 0 : 1;
-        const bModule = isModuleFile(b) ? 0 : 1;
-        return aModule - bModule;
-      });
-
-      const blockedCourses = coursesWithUnlistenedModules.size > 0 ? Array.from(coursesWithUnlistenedModules).join(', ') : 'none';
-      console.log(`[CatWashFile] week=${w} (checked 1-${weekNumber}), unlistened=${allWeekUnlistened.length}, per-course module blocking (blocked: ${blockedCourses})`);
-
-      const orderedFiles = [...filteredPartials, ...orderedUnlistened];
-      if (orderedFiles.length > 0) return orderedFiles[0];
+    if (allWeekUnlistened.length === 0 && weekPartials.length === 0) {
+      console.log(`[CatWashFile] No unlistened files found in week ${weekNumber}`);
+      return null;
     }
-    console.log(`[CatWashFile] No unlistened files found in weeks 1-${weekNumber}`);
+
+    const coursesWithUnlistenedModules = new Set<string>();
+    for (const f of allWeekUnlistened) {
+      if (isModuleFile(f)) {
+        coursesWithUnlistenedModules.add(getCourseCodeForFile(f));
+      }
+    }
+
+    const filteredUnlistened = unlistenedFiles.filter(f => {
+      if (isModuleFile(f)) return true;
+      return !coursesWithUnlistenedModules.has(getCourseCodeForFile(f));
+    });
+
+    const filteredPartials = weekPartials.filter(f => {
+      if (isModuleFile(f)) return true;
+      return !coursesWithUnlistenedModules.has(getCourseCodeForFile(f));
+    });
+
+    const allCandidates = [...filteredPartials, ...filteredUnlistened];
+    const orderedFiles = allCandidates.sort((a, b) => {
+      const aPri = getCoursePriorityForFile(a);
+      const bPri = getCoursePriorityForFile(b);
+      if (aPri !== bPri) return aPri - bPri;
+      const aModule = isModuleFile(a) ? 0 : 1;
+      const bModule = isModuleFile(b) ? 0 : 1;
+      return aModule - bModule;
+    });
+
+    const blockedCourses = coursesWithUnlistenedModules.size > 0 ? Array.from(coursesWithUnlistenedModules).join(', ') : 'none';
+    console.log(`[CatWashFile] week=${w}, unlistened=${allWeekUnlistened.length}, per-course module blocking (blocked: ${blockedCourses})`);
+
+    if (orderedFiles.length > 0) return orderedFiles[0];
+    console.log(`[CatWashFile] No unlistened files found in week ${weekNumber}`);
     return null;
   }
 
