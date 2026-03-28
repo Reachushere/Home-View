@@ -23400,7 +23400,7 @@ export default function Dashboard() {
                                   <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName}</span>
                                 </div>
                               </div>
-                              {cfp && cfp.moduleP.hasFiles && (
+                              {cfp && cfp.moduleP.hasFiles && (task.type === 'module' || task.type === 'reading') && (
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '2px', paddingTop: '2px' }}>
                                   <span className="text-[11px] text-white font-medium" style={{ marginLeft: '0px', lineHeight: 1 }}>M</span>
                                   <div style={{ width: '17px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(255,255,255,0.15)', overflow: 'hidden' }}>
@@ -23570,7 +23570,7 @@ export default function Dashboard() {
                                               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName}</span>
                                             </div>
                                           </div>
-                                          {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
+                                          {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (task.type === 'module' || task.type === 'reading') && (
                                             <div style={{ display: 'flex', gap: '6px', paddingTop: '2px', flexWrap: 'nowrap' }}>
                                               {cfp.moduleP.hasFiles && (
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0 }}>
@@ -23745,7 +23745,7 @@ export default function Dashboard() {
                                               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName}</span>
                                             </div>
                                           </div>
-                                          {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (
+                                          {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (task.type === 'module' || task.type === 'reading') && (
                                             <div style={{ display: 'flex', gap: '6px', paddingTop: '2px', flexWrap: 'nowrap' }}>
                                               {cfp.moduleP.hasFiles && (
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0 }}>
