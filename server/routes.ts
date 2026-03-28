@@ -8729,17 +8729,11 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       return match ? match[1].toUpperCase().replace(/\s/g, '') : 'UNKNOWN';
     };
 
-    const coursesWithUnlistenedModules = new Set<string>();
-    for (const f of files) {
-      if (isModule(f) && !f.listened) {
-        coursesWithUnlistenedModules.add(getCourseCode(f));
-      }
-    }
+    const hasAnyUnlistenedModule = files.some(f => isModule(f) && !f.listened);
 
     const eligible = files.filter(f => {
       if (isModule(f)) return true;
-      const code = getCourseCode(f);
-      return !coursesWithUnlistenedModules.has(code);
+      return !hasAnyUnlistenedModule;
     });
 
     const withPriority = eligible.map(f => ({
@@ -8753,8 +8747,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       return a.isModule - b.isModule;
     });
 
-    const blockedCourses = coursesWithUnlistenedModules.size > 0 ? Array.from(coursesWithUnlistenedModules).join(', ') : 'none';
-    console.log(`[FileOrder] ${files.length} files, per-course module blocking (blocked: ${blockedCourses}), ${eligible.length} eligible`);
+    console.log(`[FileOrder] ${files.length} files, modulesBlocked=${hasAnyUnlistenedModule}, ${eligible.length} eligible`);
 
     return withPriority.map(w => w.file);
   }
@@ -9895,21 +9888,16 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       return null;
     }
 
-    const coursesWithUnlistenedModules = new Set<string>();
-    for (const f of allWeekUnlistened) {
-      if (isModuleFile(f)) {
-        coursesWithUnlistenedModules.add(getCourseCodeForFile(f));
-      }
-    }
+    const hasAnyUnlistenedModule = allWeekUnlistened.some(f => isModuleFile(f));
 
     const filteredUnlistened = unlistenedFiles.filter(f => {
       if (isModuleFile(f)) return true;
-      return !coursesWithUnlistenedModules.has(getCourseCodeForFile(f));
+      return !hasAnyUnlistenedModule;
     });
 
     const filteredPartials = weekPartials.filter(f => {
       if (isModuleFile(f)) return true;
-      return !coursesWithUnlistenedModules.has(getCourseCodeForFile(f));
+      return !hasAnyUnlistenedModule;
     });
 
     const allCandidates = [...filteredPartials, ...filteredUnlistened];
@@ -9922,8 +9910,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       return aModule - bModule;
     });
 
-    const blockedCourses = coursesWithUnlistenedModules.size > 0 ? Array.from(coursesWithUnlistenedModules).join(', ') : 'none';
-    console.log(`[CatWashFile] week=${w}, unlistened=${allWeekUnlistened.length}, per-course module blocking (blocked: ${blockedCourses})`);
+    console.log(`[CatWashFile] week=${w}, unlistened=${allWeekUnlistened.length}, modulesBlocked=${hasAnyUnlistenedModule}`);
 
     if (orderedFiles.length > 0) return orderedFiles[0];
     console.log(`[CatWashFile] No unlistened files found in week ${weekNumber}`);
