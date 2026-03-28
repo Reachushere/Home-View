@@ -19427,16 +19427,14 @@ export default function Dashboard() {
                       const isDaytime = minutesSinceMidnight >= sunriseMin && minutesSinceMidnight < sunsetMin;
                       const h = now.getHours() + now.getMinutes() / 60;
                       let skyGrad: string;
-                      if (h < 4) skyGrad = 'linear-gradient(180deg, #0f1b2d 0%, #1a2744 100%)';
-                      else if (h < 6) skyGrad = 'linear-gradient(180deg, #1e3252 0%, #4a6e8a 50%, #8a7e6e 100%)';
-                      else if (h < 8) skyGrad = 'linear-gradient(180deg, #87b5cc 0%, #a4bcc8 50%, #c4a082 100%)';
-                      else if (h < 10) skyGrad = 'linear-gradient(180deg, #8bbcd4 0%, #a8c4d6 100%)';
-                      else if (h < 13) skyGrad = 'linear-gradient(180deg, #7ba8c0 0%, #9bbdd0 100%)';
-                      else if (h < 15) skyGrad = 'linear-gradient(180deg, #7ba8c0 0%, #a4b8c0 50%, #c0a890 100%)';
-                      else if (h < 17) skyGrad = 'linear-gradient(180deg, #9aaab4 0%, #bea08a 100%)';
-                      else if (h < 19) skyGrad = 'linear-gradient(180deg, #a08870 0%, #c48a68 40%, #5a5060 80%, #3a3450 100%)';
-                      else if (h < 21) skyGrad = 'linear-gradient(180deg, #6a5a52 0%, #4a4058 50%, #2a2840 100%)';
-                      else skyGrad = 'linear-gradient(180deg, #2a2840 0%, #1a1e32 100%)';
+                      if (h < 5) skyGrad = 'linear-gradient(180deg, #2c3e6b 0%, #1a2744 50%, #0a0f1e 100%)';
+                      else if (h < 7) skyGrad = 'linear-gradient(180deg, #6a9ab8 0%, #a4bcc8 40%, #c4a082 100%)';
+                      else if (h < 10) skyGrad = 'linear-gradient(180deg, #87c5e0 0%, #a8d4e6 50%, #8bbcd4 100%)';
+                      else if (h < 13) skyGrad = 'linear-gradient(180deg, #7bb8d8 0%, #9dd0e8 50%, #7ba8c0 100%)';
+                      else if (h < 16) skyGrad = 'linear-gradient(180deg, #7ba8c0 0%, #c0a890 50%, #d4a06a 100%)';
+                      else if (h < 18) skyGrad = 'linear-gradient(180deg, #c48a68 0%, #d4956a 30%, #8a6858 70%, #4a4058 100%)';
+                      else if (h < 20) skyGrad = 'linear-gradient(180deg, #8a6858 0%, #5a4a60 40%, #2e2844 100%)';
+                      else skyGrad = 'linear-gradient(180deg, #2c3e6b 0%, #1a2744 50%, #0a0f1e 100%)';
                       return { background: skyGrad };
                     })() : { backgroundColor: colorSettings.headerBar }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
