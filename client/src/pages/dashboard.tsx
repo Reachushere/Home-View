@@ -23353,7 +23353,7 @@ export default function Dashboard() {
 
                 {/* This Week Section - hidden on Fridays since everything shifts to today */}
                 {new Date().getDay() === 5 ? null : (<>
-                <div data-homework-section="thisweek" data-semester-label={hwWeeklyTimeline[0]?.semLabel || ''} style={{ marginTop: '10px', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '7px' }}>
+                <div data-homework-section="thisweek" data-semester-label={hwWeeklyTimeline[0]?.semLabel || ''} style={{ marginTop: '25px', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '7px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', width: 'fit-content', marginBottom: '0px' }}>
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', whiteSpace: 'nowrap', flexShrink: 0 }}>{hwWeeklyTimeline[0]?.label || 'Week'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', flexShrink: 0 }}>({dueTomorrowTasks.length})</span>
@@ -23543,7 +23543,7 @@ export default function Dashboard() {
                 </div>
                 </>)}
                 {/* Next Week Section */}
-                <div data-homework-section="nextweek" data-semester-label={hwWeeklyTimeline[1]?.semLabel || ''} style={{ marginTop: '10px', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '7px' }}>
+                <div data-homework-section="nextweek" data-semester-label={hwWeeklyTimeline[1]?.semLabel || ''} style={{ marginTop: '25px', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '7px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', width: 'fit-content', marginBottom: '0px' }}>
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', flexShrink: 0 }}>{hwWeeklyTimeline[1]?.label || 'Week'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', flexShrink: 0 }}>({dueNextWeekTasks.length})</span>
@@ -23717,7 +23717,7 @@ export default function Dashboard() {
                 )}
                 </div>
                 {/* 2 Weeks Section */}
-                <div data-homework-section="twoweeks" data-semester-label={hwWeeklyTimeline[2]?.semLabel || ''} style={{ marginTop: '10px', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '7px' }}>
+                <div data-homework-section="twoweeks" data-semester-label={hwWeeklyTimeline[2]?.semLabel || ''} style={{ marginTop: '25px', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '7px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', width: 'fit-content', marginBottom: '0px' }}>
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', flexShrink: 0 }}>{hwWeeklyTimeline[2]?.label || 'Two weeks'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', flexShrink: 0 }}>({dueTwoWeeksTasks.length})</span>
