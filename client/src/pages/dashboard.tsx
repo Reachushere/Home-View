@@ -706,7 +706,7 @@ export default function Dashboard() {
       if (hour < 9) return;
       const dismissUntil = localStorage.getItem('morning_review_dismiss_until');
       if (dismissUntil && Date.now() < Number(dismissUntil)) return;
-      const todayStr = eastern.toISOString().split('T')[0];
+      const todayStr = `${eastern.getFullYear()}-${String(eastern.getMonth()+1).padStart(2,'0')}-${String(eastern.getDate()).padStart(2,'0')}`;
       const shownToday = localStorage.getItem('morning_review_shown_date');
       if (shownToday === todayStr) return;
       try {
