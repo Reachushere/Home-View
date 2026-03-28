@@ -2079,6 +2079,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               </>
             )}
           </div>
+          <div style={{ height: '10px' }} />
 
           {syllabusData && Object.keys(syllabusItemStates).length > 0 && (
             <div className="mx-3 mb-2 border border-emerald-400/30 rounded-lg overflow-hidden" data-testid="syllabus-review-panel">
@@ -2314,7 +2315,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             </div>
           )}
 
-          <div style={{ padding: `12px 12px 12px 12px`, marginTop: isEditingInfo ? 0 : '-21px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div style={{ padding: `12px 12px 12px 12px`, marginTop: isEditingInfo ? 0 : '-21px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <div ref={weekMappingsRef}>
             <div style={{ border: '2px solid rgba(255,255,255,0.2)', borderRadius: '8px', padding: '12px' }}>
             <div
@@ -2756,7 +2757,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           </div>
           </div>
 
-          <div ref={assignmentsRef} style={{ marginTop: '-10px' }}>
+          <div ref={assignmentsRef} style={{ marginTop: '-21px' }}>
             <div style={{ border: '2px solid rgba(255,255,255,0.2)', borderRadius: '8px', padding: '12px' }}>
             <div
               className="flex items-center justify-between cursor-pointer group"
