@@ -743,22 +743,7 @@ export default function Dashboard() {
     setProcessingReviewIds(prev => { const s = new Set(prev); s.delete(id); return s; });
   };
 
-  const isGradedReviewItem = (item: any): boolean => {
-    const title = item.title || '';
-    return /\[(CPPA|CFNF|CASL|COMM|ENGL|MATH|PSYC|SOCI)\d+/i.test(title) || !!item.courseName;
-  };
-
-  const handleRejectReview = async (id: number, skipConfirm = false) => {
-    if (!skipConfirm) {
-      const item = morningReviewItems.find(i => i.id === id);
-      if (item && isGradedReviewItem(item)) {
-        const courseMatch = (item.title || '').match(/\[([^\]]+)\]/);
-        const courseLabel = courseMatch ? courseMatch[1] : item.courseName || 'a course';
-        if (!window.confirm(`"${item.title}" is linked to ${courseLabel}. Declining will remove it from your assignments. Are you sure?`)) {
-          return;
-        }
-      }
-    }
+  const handleRejectReview = async (id: number) => {
     setProcessingReviewIds(prev => new Set(prev).add(id));
     try {
       await fetch(`/api/pending-review/${id}/reject`, { method: 'POST' });
@@ -793,16 +778,9 @@ export default function Dashboard() {
   };
 
   const handleSkipAllForever = async () => {
-    const gradedItems = morningReviewItems.filter(i => isGradedReviewItem(i));
-    if (gradedItems.length > 0) {
-      const names = gradedItems.map(i => `  - ${i.title}`).join('\n');
-      if (!window.confirm(`${gradedItems.length} graded assignment(s) will be removed:\n${names}\n\nAre you sure you want to decline all?`)) {
-        return;
-      }
-    }
     setMorningReviewLoading(true);
     for (const item of morningReviewItems) {
-      await handleRejectReview(item.id, true);
+      await handleRejectReview(item.id);
     }
     setMorningReviewLoading(false);
     setShowMorningReview(false);
@@ -811,19 +789,12 @@ export default function Dashboard() {
   };
 
   const handleIndividualConfirm = async () => {
-    const uncheckedGraded = morningReviewItems.filter(i => !reviewCheckedIds.has(i.id) && isGradedReviewItem(i));
-    if (uncheckedGraded.length > 0) {
-      const names = uncheckedGraded.map(i => `  - ${i.title}`).join('\n');
-      if (!window.confirm(`${uncheckedGraded.length} unchecked graded assignment(s) will be removed:\n${names}\n\nAre you sure?`)) {
-        return;
-      }
-    }
     setMorningReviewLoading(true);
     for (const item of morningReviewItems) {
       if (reviewCheckedIds.has(item.id)) {
         await handleAcceptReview(item.id);
       } else {
-        await handleRejectReview(item.id, true);
+        await handleRejectReview(item.id);
       }
     }
     setMorningReviewLoading(false);
@@ -10216,6 +10187,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-2">
               <Sun className="text-yellow-400" style={{ width: '15px', height: '15px' }} />
               <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>MORNING REVIEW</h2>
+              <span className="text-[9px] text-white/40 ml-1">Events from your other calendars not yet added here</span>
               <div className="flex ml-3 rounded overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.25)' }} data-testid="review-mode-tabs">
                 <button
                   className={`px-4 py-1 text-[11px] font-medium transition-colors ${reviewMode === 'all' ? 'text-white' : 'text-white/50 hover:text-white/70'}`}
@@ -10255,7 +10227,7 @@ export default function Dashboard() {
                     data-testid="button-skip-all-forever-review"
                   >
                     {morningReviewLoading ? <Loader2 className="h-3 w-3 mr-1 animate-spin inline" /> : null}
-                    Skip All Forever
+                    Dismiss All
                   </button>
                   <button
                     className="h-8 px-4 text-[11px] font-medium text-white rounded disabled:opacity-40"
@@ -10288,7 +10260,7 @@ export default function Dashboard() {
 
           {reviewMode === 'individual' && (
             <div className="px-4 py-1 border-b border-white/5 flex-shrink-0">
-              <span className="text-[8px] text-white/40">Check the items you want to keep. Unchecked items will be permanently skipped.</span>
+              <span className="text-[8px] text-white/40">Check the items you want to add to your calendar. Unchecked items will be skipped (nothing is deleted).</span>
             </div>
           )}
 

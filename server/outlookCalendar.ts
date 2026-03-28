@@ -109,11 +109,18 @@ export async function syncOutlookEventsToReview(): Promise<{ added: number; skip
   let added = 0;
   let skipped = 0;
 
-  const allPending = await storage.getPendingReviewItems('pending');
+  const allReviewItems = await storage.getPendingReviewItems();
   const normalizeTitle = (t: string) => t.toLowerCase().replace(/\s+/g, ' ').replace(/[^a-z0-9 ]/g, '').trim();
-  const existingKeys = new Set(allPending.map(i => {
+  const existingReviewKeys = new Set(allReviewItems.map(i => {
     const normT = normalizeTitle(i.title || '');
     const dateK = i.startDate ? new Date(i.startDate).toISOString().split('T')[0] : 'nodate';
+    return `${normT}||${dateK}`;
+  }));
+
+  const allTasks = await storage.getTasks();
+  const existingTaskKeys = new Set(allTasks.map(t => {
+    const normT = normalizeTitle(t.title || '');
+    const dateK = t.dueDate ? new Date(t.dueDate).toISOString().split('T')[0] : 'nodate';
     return `${normT}||${dateK}`;
   }));
 
@@ -130,11 +137,15 @@ export async function syncOutlookEventsToReview(): Promise<{ added: number; skip
     const normTitle = normalizeTitle(event.subject || 'untitled event');
     const dateKey = startDt.toISOString().split('T')[0];
     const titleDateKey = `${normTitle}||${dateKey}`;
-    if (existingKeys.has(titleDateKey)) {
+    if (existingReviewKeys.has(titleDateKey)) {
       skipped++;
       continue;
     }
-    existingKeys.add(titleDateKey);
+    if (existingTaskKeys.has(titleDateKey)) {
+      skipped++;
+      continue;
+    }
+    existingReviewKeys.add(titleDateKey);
 
     const startTime = event.isAllDay ? null : `${String(startDt.getHours()).padStart(2, '0')}:${String(startDt.getMinutes()).padStart(2, '0')}`;
     const endTime = event.isAllDay ? null : `${String(endDt.getHours()).padStart(2, '0')}:${String(endDt.getMinutes()).padStart(2, '0')}`;

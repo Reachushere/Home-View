@@ -16933,10 +16933,22 @@ Return ONLY the JSON object, no markdown formatting.`;
       const status = (_req.query.status as string) || undefined;
       const items = await storage.getPendingReviewItems(status);
       const todayStart = new Date(torontoDate().toDateString());
+      const normalizeTitle = (t: string) => t.toLowerCase().replace(/\s+/g, ' ').replace(/[^a-z0-9 ]/g, '').trim();
+      const allTasks = await storage.getTasks();
+      const taskKeys = new Set(allTasks.map(t => {
+        const normT = normalizeTitle(t.title || '');
+        const dateK = t.dueDate ? new Date(t.dueDate).toISOString().split('T')[0] : 'nodate';
+        return `${normT}||${dateK}`;
+      }));
       const filtered = items.filter(item => {
-        if (!item.startDate) return true;
-        const itemDate = new Date(new Date(item.startDate).toDateString());
-        return itemDate >= todayStart;
+        if (item.startDate) {
+          const itemDate = new Date(new Date(item.startDate).toDateString());
+          if (itemDate < todayStart) return false;
+        }
+        const normT = normalizeTitle(item.title || '');
+        const dateK = item.startDate ? new Date(item.startDate).toISOString().split('T')[0] : 'nodate';
+        if (taskKeys.has(`${normT}||${dateK}`)) return false;
+        return true;
       });
       res.json(filtered);
     } catch (error: any) {
