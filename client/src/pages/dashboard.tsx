@@ -13280,7 +13280,7 @@ export default function Dashboard() {
         transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out',
         pointerEvents: isTopPillOpen ? 'none' : 'auto',
       }} data-tpo data-tpo-opacity="1" data-testid="timer-bar">
-        <div className="flex flex-row items-center gap-[20px]" style={{ marginTop: '2px' }}>
+        <div className="flex flex-row items-center gap-[25px]" style={{ marginTop: '2px', marginRight: '10px' }}>
           <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle" title={pomodoroRunning ? 'Pause' : 'Play'}>
             {pomodoroRunning ? <Pause className="h-[18px] w-[18px] text-white" strokeWidth={2.5} /> : <Play className="h-[18px] w-[18px] text-white" strokeWidth={2.5} />}
           </button>
