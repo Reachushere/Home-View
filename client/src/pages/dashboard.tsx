@@ -1068,14 +1068,16 @@ export default function Dashboard() {
   const getTodayCellGradient = () => {
     const now = new Date();
     const h = now.getHours() + now.getMinutes() / 60;
-    if (h < 5) return 'linear-gradient(180deg, #1a1a2e 0%, #16213e 100%)';
-    if (h < 7) return 'linear-gradient(180deg, #2a4a7f 0%, #7ba0c9 100%)';
-    if (h < 10) return 'linear-gradient(180deg, #87CEEB 0%, #b8d4e8 100%)';
-    if (h < 13) return 'linear-gradient(180deg, #87CEEB 0%, #a8c8e0 100%)';
-    if (h < 16) return 'linear-gradient(180deg, #87CEEB 0%, #c4a882 100%)';
-    if (h < 18) return 'linear-gradient(180deg, #c4956a 0%, #d4845a 100%)';
-    if (h < 20) return 'linear-gradient(180deg, #c06040 0%, #3d2b56 100%)';
-    if (h < 22) return 'linear-gradient(180deg, #2d2045 0%, #1a1a2e 100%)';
+    if (h < 4) return 'linear-gradient(180deg, #1a1a2e 0%, #16213e 100%)';
+    if (h < 6) return 'linear-gradient(180deg, #2c3e6b 0%, #6b8cae 100%)';
+    if (h < 8) return 'linear-gradient(180deg, #7da7c9 0%, #c0a48a 100%)';
+    if (h < 10) return 'linear-gradient(180deg, #89b4cc 0%, #b4cad8 100%)';
+    if (h < 13) return 'linear-gradient(180deg, #7aafc8 0%, #a8c4d4 100%)';
+    if (h < 15) return 'linear-gradient(180deg, #7aafc8 0%, #c2b09a 100%)';
+    if (h < 17) return 'linear-gradient(180deg, #9aadba 0%, #c4977a 100%)';
+    if (h < 19) return 'linear-gradient(180deg, #b08868 0%, #d4956a 50%, #3d4a5e 100%)';
+    if (h < 21) return 'linear-gradient(180deg, #6b5a50 0%, #3a3548 50%, #2a2a3e 100%)';
+    if (h < 23) return 'linear-gradient(180deg, #2a2a3e 0%, #1a1a2e 100%)';
     return 'linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%)';
   };
   const todayCellBg = getTodayCellGradient();
