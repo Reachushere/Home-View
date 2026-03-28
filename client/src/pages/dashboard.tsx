@@ -19425,7 +19425,7 @@ export default function Dashboard() {
                       if (weatherData?.sunrise) { const sr = new Date(weatherData.sunrise); sunriseMin = sr.getHours() * 60 + sr.getMinutes(); }
                       if (weatherData?.sunset) { const ss = new Date(weatherData.sunset); sunsetMin = ss.getHours() * 60 + ss.getMinutes(); }
                       const isDaytime = minutesSinceMidnight >= sunriseMin && minutesSinceMidnight < sunsetMin;
-                      const h = now.getHours() + now.getMinutes() / 60;
+                      const h = 19;
                       let skyGrad: string;
                       if (h < 5) skyGrad = 'linear-gradient(180deg, #2c3e6b 0%, #1a2744 50%, #0a0f1e 100%)';
                       else if (h < 7) skyGrad = 'linear-gradient(180deg, #6a9ab8 0%, #a4bcc8 40%, #c4a082 100%)';
