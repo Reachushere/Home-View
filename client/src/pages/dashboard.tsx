@@ -5544,7 +5544,18 @@ export default function Dashboard() {
   
   const { data: calendarEvents = [] } = useQuery<CalendarEvent[]>({
     queryKey: ["/api/calendar/events", { weekNumber: selectedWeek }],
-    queryFn: () => fetch(`/api/calendar/events?weekNumber=${selectedWeek}`, { credentials: 'include' }).then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }).catch(() => []),
+    queryFn: async () => {
+      try {
+        const r = await fetch(`/api/calendar/events?weekNumber=${selectedWeek}`, { credentials: 'include' });
+        if (!r.ok) throw new Error(r.statusText);
+        const data = await r.json();
+        if (data && data._deletedTasks) {
+          queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+          return data.events;
+        }
+        return Array.isArray(data) ? data : (data.events || []);
+      } catch { return []; }
+    },
     refetchInterval: 5 * 60 * 1000,
     retry: 2,
     retryDelay: 1000,

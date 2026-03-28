@@ -14873,6 +14873,30 @@ document.body.removeChild(a);
         ...tasks.map(t => t.secondaryCalendarEventId).filter(Boolean),
       ]);
       
+      const allGoogleEventIds = new Set(allEvents.map(e => e.id).filter(Boolean));
+      const tasksToDelete = tasks.filter(t => {
+        const hasCalId = t.calendarEventId || t.secondAccountCalendarEventId;
+        if (!hasCalId) return false;
+        const calIdExists = t.calendarEventId && allGoogleEventIds.has(t.calendarEventId);
+        const secIdExists = t.secondAccountCalendarEventId && allGoogleEventIds.has(t.secondAccountCalendarEventId);
+        if (calIdExists || secIdExists) return false;
+        if (t.type === 'class') return false;
+        const taskDate = new Date(t.dueDate);
+        if (taskDate < start || taskDate > endOfWeek) return false;
+        return true;
+      });
+      if (tasksToDelete.length > 0) {
+        console.log(`[CalSync] Detected ${tasksToDelete.length} task(s) deleted from calendar, removing from app`);
+        for (const t of tasksToDelete) {
+          try {
+            await storage.deleteTask(t.id);
+            console.log(`[CalSync] Deleted task ${t.id} ("${t.title}") - calendar event ${t.calendarEventId} no longer exists`);
+          } catch (err) {
+            console.error(`[CalSync] Failed to delete task ${t.id}:`, err);
+          }
+        }
+      }
+
       // Filter out events that are already synced from this app
       const externalEvents = allEvents.filter(event => event.id && !syncedEventIds.has(event.id));
       
@@ -14926,7 +14950,11 @@ document.body.removeChild(a);
         return true;
       });
 
-      res.json(finalEvents);
+      if (tasksToDelete.length > 0) {
+        res.json({ events: finalEvents, _deletedTasks: tasksToDelete.length });
+      } else {
+        res.json(finalEvents);
+      }
     } catch (error) {
       console.error("Fetch Google Calendar events error:", error);
       res.status(500).json({ error: "Failed to fetch Google Calendar events" });
