@@ -244,6 +244,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   const [commentText, setCommentText] = useState('');
   const [commentLoading, setCommentLoading] = useState(false);
   const [commentSaving, setCommentSaving] = useState(false);
+  const [notesTaskId, setNotesTaskId] = useState<number | null>(null);
+  const [notesText, setNotesText] = useState('');
+  const [notesSaving, setNotesSaving] = useState(false);
   const [dialogPos, setDialogPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const dialogDragRef = useRef<{ dragging: boolean; startX: number; startY: number; origX: number; origY: number }>({ dragging: false, startX: 0, startY: 0, origX: 0, origY: 0 });
 
@@ -1170,8 +1173,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           onClick={(e) => { e.stopPropagation(); toggleFlagMutation.mutate({ id: task.id, flagged: !task.flagged }); }}
           data-testid={`flag-toggle-${task.id}`}
         />
-        <MessageSquare className={`h-[19px] w-[19px] flex-shrink-0 cursor-pointer hover:opacity-70 transition-opacity ${task.isCompleted ? "text-white/50" : "text-white"}`} style={{ marginLeft: '14px', marginRight: '10px' }} onClick={(e) => { e.stopPropagation(); if (expandedTaskId === task.id) { setExpandedTaskId(null); setEditTaskFields(null); } else { setExpandedTaskId(task.id); const d = task.dueDate ? new Date(task.dueDate) : null; setEditTaskFields({ title: task.title || '', type: task.type || 'other', dueDate: d ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` : '', dueTime: d ? `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` : '', description: task.description || '', gradeWeight: task.gradeWeight?.toString() || '', gradeTotal: task.gradeTotal?.toString() || '', gradeValue: task.gradeValue?.toString() || '', reminder1: task.reminder1 ?? 30, reminder2: task.reminder2 ?? 120, reminder3: task.reminder3 ?? null, reminder4: task.reminder4 ?? null, hideFromSummary: task.hideFromSummary ?? false }); } }} data-testid={`button-comments-${task.id}`} />
-        <div className="flex-1 min-w-0" style={{ marginLeft: '21px' }}>
+        <MessageSquare className={`h-[19px] w-[19px] flex-shrink-0 cursor-pointer hover:opacity-70 transition-opacity ${task.notes ? "text-yellow-400" : task.isCompleted ? "text-white/50" : "text-white"}`} style={{ marginLeft: '14px', marginRight: '10px' }} onClick={(e) => { e.stopPropagation(); setNotesTaskId(task.id); setNotesText(task.notes || ''); }} data-testid={`button-comments-${task.id}`} />
+        <Plus className={`h-[14px] w-[14px] flex-shrink-0 cursor-pointer hover:opacity-70 transition-opacity ${task.isCompleted ? "text-white/50" : "text-white"}`} style={{ marginLeft: '4px', marginRight: '4px' }} onClick={(e) => { e.stopPropagation(); if (expandedTaskId === task.id) { setExpandedTaskId(null); setEditTaskFields(null); } else { setExpandedTaskId(task.id); const d = task.dueDate ? new Date(task.dueDate) : null; setEditTaskFields({ title: task.title || '', type: task.type || 'other', dueDate: d ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` : '', dueTime: d ? `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` : '', description: task.description || '', gradeWeight: task.gradeWeight?.toString() || '', gradeTotal: task.gradeTotal?.toString() || '', gradeValue: task.gradeValue?.toString() || '', reminder1: task.reminder1 ?? 30, reminder2: task.reminder2 ?? 120, reminder3: task.reminder3 ?? null, reminder4: task.reminder4 ?? null, hideFromSummary: task.hideFromSummary ?? false }); } }} data-testid={`button-expand-${task.id}`} />
+        <div className="flex-1 min-w-0" style={{ marginLeft: '36px' }}>
           <div
             className={`text-[10px] font-medium truncate flex items-center gap-1 cursor-pointer hover:underline ${task.isCompleted ? "line-through text-white/50" : "text-white"}`}
             onClick={(e) => {
@@ -3089,7 +3093,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   <div className="flex-shrink-0 flex justify-center" style={{ width: '19px', marginLeft: '15px', marginRight: '10px', overflow: 'visible' }}>
                     <span className="text-[8px] font-bold text-white" style={{ whiteSpace: 'nowrap' }}>Comments</span>
                   </div>
-                  <div className={`flex-1 min-w-0 ${hdrCls('title')}`} style={{ marginLeft: isEditingInfo ? '21px' : '21px' }} onClick={() => toggleSort('title')} data-testid="sort-title">Assignments<SortIcon field="title" />
+                  <div className="flex-shrink-0 flex justify-center" style={{ width: '14px', marginLeft: '4px', marginRight: '4px', overflow: 'visible' }}>
+                  </div>
+                  <div className={`flex-1 min-w-0 ${hdrCls('title')}`} style={{ marginLeft: isEditingInfo ? '36px' : '36px' }} onClick={() => toggleSort('title')} data-testid="sort-title">Assignments<SortIcon field="title" />
                   </div>
                   <div className="flex items-end flex-shrink-0 text-white" style={{ gap: '10px', position: 'relative', left: isEditingInfo ? '-24px' : '-15px' }}>
                     <span className={`w-[33px] text-center leading-tight ${hdrCls('score')}`} onClick={() => toggleSort('score')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: isEditingInfo ? '-5px' : '-5px' }} data-testid="sort-score">
@@ -3365,6 +3371,53 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 data-testid="button-confirm-delete-course"
               >
                 Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {notesTaskId !== null && (
+        <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 10020, background: 'rgba(0,0,0,0.5)' }} onClick={() => { setNotesTaskId(null); setNotesText(''); }} data-testid="dialog-notes-overlay">
+          <div className="rounded-lg border border-white/20 p-4 flex flex-col" style={{ width: '400px', maxHeight: '350px', background: 'linear-gradient(180deg, rgba(30,40,60,0.98) 0%, rgba(20,28,45,0.98) 100%)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }} onClick={(e) => e.stopPropagation()} data-testid="dialog-notes">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[11px] font-semibold text-white">Notes</span>
+              <button className="text-white/50 hover:text-white" onClick={() => { setNotesTaskId(null); setNotesText(''); }} data-testid="button-notes-close"><X className="h-4 w-4" /></button>
+            </div>
+            <textarea
+              className="flex-1 w-full rounded border border-white/20 bg-white/5 text-white text-[11px] p-2 resize-none focus:outline-none focus:border-white/40"
+              style={{ minHeight: '180px' }}
+              value={notesText}
+              onChange={(e) => setNotesText(e.target.value)}
+              placeholder="Type your notes here..."
+              data-testid="input-notes-text"
+            />
+            <div className="flex justify-end gap-2 mt-3">
+              <button
+                className="px-4 py-1.5 text-[10px] font-medium text-white/70 rounded border border-white/20 hover:bg-white/10"
+                onClick={() => { setNotesTaskId(null); setNotesText(''); }}
+                data-testid="button-notes-cancel"
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-1.5 text-[10px] font-medium text-white rounded border border-white/20 hover:bg-white/10 disabled:opacity-40"
+                disabled={notesSaving}
+                onClick={async () => {
+                  setNotesSaving(true);
+                  try {
+                    await apiRequest(`/api/tasks/${notesTaskId}`, 'PATCH', { notes: notesText || null });
+                    queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+                    toast({ title: "Notes saved" });
+                    setNotesTaskId(null);
+                    setNotesText('');
+                  } catch (e) { console.error('[Notes] save error:', e); toast({ title: "Error saving notes", variant: "destructive" }); }
+                  setNotesSaving(false);
+                }}
+                data-testid="button-notes-save"
+              >
+                {notesSaving ? <Loader2 className="h-3 w-3 animate-spin inline mr-1" /> : null}
+                Save
               </button>
             </div>
           </div>
