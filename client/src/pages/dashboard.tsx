@@ -473,13 +473,14 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
   return null;
 }
 
-const PrioritySelect = memo(function PrioritySelect({ priorityKey, initialValue, totalInSem, draftRef, courseCode, usedValues, onPriorityChange }: { priorityKey: string; initialValue: number; totalInSem: number; draftRef: React.MutableRefObject<Record<string, number>>; courseCode: string; usedValues: number[]; onPriorityChange: (key: string, val: number) => void }) {
+const PrioritySelect = memo(function PrioritySelect({ priorityKey, initialValue, totalInSem, draftRef, courseCode, usedValues, onPriorityChange, suffix }: { priorityKey: string; initialValue: number; totalInSem: number; draftRef: React.MutableRefObject<Record<string, number>>; courseCode: string; usedValues: number[]; onPriorityChange: (key: string, val: number) => void; suffix?: string }) {
   const [val, setVal] = useState(initialValue);
   useEffect(() => { setVal(initialValue); }, [initialValue]);
+  const hasSuffix = suffix === 'A' || suffix === 'B';
   return (
     <select
       className="text-[11px] font-semibold text-white bg-white/10 rounded px-1 py-0.5 border border-white/20 focus:outline-none focus:border-white/50 cursor-pointer appearance-none text-center"
-      style={{ width: '22px', minWidth: '22px', WebkitAppearance: 'none', MozAppearance: 'none', marginLeft: '5px' }}
+      style={{ width: hasSuffix ? '30px' : '22px', minWidth: hasSuffix ? '30px' : '22px', WebkitAppearance: 'none', MozAppearance: 'none', marginLeft: '5px' }}
       value={val}
       onClick={(e) => e.stopPropagation()}
       onChange={(e) => {
@@ -489,13 +490,13 @@ const PrioritySelect = memo(function PrioritySelect({ priorityKey, initialValue,
         draftRef.current = { ...draftRef.current, [priorityKey]: v };
         onPriorityChange(priorityKey, v);
       }}
-      data-testid={`select-priority-${courseCode}`}
+      data-testid={`select-priority-${courseCode}${hasSuffix ? `-${suffix}` : ''}`}
     >
       <option value={0}>—</option>
       {Array.from({ length: totalInSem }, (_, i) => {
         const n = i + 1;
         const taken = usedValues.includes(n) && val !== n;
-        return <option key={n} value={n} disabled={taken} style={taken ? { color: '#555' } : {}}>{n}</option>;
+        return <option key={n} value={n} disabled={taken} style={taken ? { color: '#555' } : {}}>{hasSuffix ? `${n}${suffix}` : n}</option>;
       })}
     </select>
   );
@@ -696,8 +697,10 @@ export default function Dashboard() {
   useEffect(() => {
     const checkMorningReview = async () => {
       const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
-      const todayKey = `morning_review_shown_${eastern.getFullYear()}-${String(eastern.getMonth()+1).padStart(2,'0')}-${String(eastern.getDate()).padStart(2,'0')}`;
-      if (sessionStorage.getItem(todayKey)) return;
+      const hour = eastern.getHours();
+      if (hour < 9) return;
+      const dismissUntil = localStorage.getItem('morning_review_dismiss_until');
+      if (dismissUntil && Date.now() < Number(dismissUntil)) return;
       try {
         await fetch('/api/outlook/sync', { method: 'POST' }).catch(() => {});
         await fetch('/api/pending-review/dedup', { method: 'POST' }).catch(() => {});
@@ -777,8 +780,11 @@ export default function Dashboard() {
 
   const handleSkipAllForToday = () => {
     const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
-    const todayKey = `morning_review_shown_${eastern.getFullYear()}-${String(eastern.getMonth()+1).padStart(2,'0')}-${String(eastern.getDate()).padStart(2,'0')}`;
-    sessionStorage.setItem(todayKey, '1');
+    const tomorrow9am = new Date(eastern);
+    tomorrow9am.setDate(tomorrow9am.getDate() + 1);
+    tomorrow9am.setHours(9, 0, 0, 0);
+    const offsetMs = eastern.getTime() - Date.now();
+    localStorage.setItem('morning_review_dismiss_until', String(tomorrow9am.getTime() - offsetMs));
     setShowMorningReview(false);
     setReviewMode('all');
     setReviewCheckedIds(new Set());
@@ -2399,7 +2405,13 @@ export default function Dashboard() {
     const now = new Date();
     const activeSem = SEMESTER_COURSE_DEFS.find(s => now >= new Date(s.start) && now <= new Date(s.end));
     if (!activeSem) return;
+    const isSS = activeSem.key.startsWith('ss');
     const allRanked = activeSem.codes.every(code => {
+      if (isSS) {
+        const keyA = `${activeSem.key}:${code}:A`;
+        const keyB = `${activeSem.key}:${code}:B`;
+        return (coursePlayPriority[keyA] && coursePlayPriority[keyA] > 0) || (coursePlayPriority[keyB] && coursePlayPriority[keyB] > 0);
+      }
       const key = `${activeSem.key}:${code}`;
       return coursePlayPriority[key] && coursePlayPriority[key] > 0;
     });
@@ -10161,9 +10173,9 @@ export default function Dashboard() {
                     style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.15)', border: '1px solid rgba(255,255,255,0.2)', fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}
                     onClick={handleSkipAllForToday}
                     disabled={morningReviewLoading}
-                    data-testid="button-skip-all-24h-review"
+                    data-testid="button-dismiss-next-day-review"
                   >
-                    Skip All 24h
+                    Dismiss to Next Day
                   </button>
                   <button
                     className="h-8 px-4 text-[11px] font-medium text-white rounded disabled:opacity-40"
@@ -13994,6 +14006,95 @@ export default function Dashboard() {
               }
               return used;
             })()}
+            isSpringSummer={(() => {
+              const cc = selectedCertCourse!.courseCode.replace(/\s/g, '');
+              for (const sk of semesterKeyOrder) {
+                if (!sk.startsWith('ss')) continue;
+                const courses = semesterCourseAssignments[sk] || [];
+                if (courses.some(c => c.code.replace(/\s/g, '').toUpperCase() === cc.toUpperCase())) return true;
+              }
+              return false;
+            })()}
+            courseSpSuTerm={(() => {
+              const cc = selectedCertCourse!.courseCode.replace(/\s/g, '');
+              const sems = allSemesterSettingsRef.current;
+              if (sems) {
+                for (const sem of sems) {
+                  for (let i = 1; i <= 3; i++) {
+                    const sc = ((sem as any)[`course${i}Code`] || '').replace(/\s/g, '');
+                    if (sc.toUpperCase() === cc.toUpperCase()) {
+                      return ((sem as any)[`course${i}SpringSummerTerm`] || 'full').toLowerCase();
+                    }
+                  }
+                }
+              }
+              return 'full';
+            })()}
+            courseRankA={(() => {
+              const cc = selectedCertCourse!.courseCode.replace(/\s/g, '');
+              for (const sk of semesterKeyOrder) {
+                if (!sk.startsWith('ss')) continue;
+                const pkA = `${sk}:${cc}:A`;
+                if (coursePlayPriority[pkA] && coursePlayPriority[pkA] > 0) return coursePlayPriority[pkA];
+              }
+              return 0;
+            })()}
+            courseRankB={(() => {
+              const cc = selectedCertCourse!.courseCode.replace(/\s/g, '');
+              for (const sk of semesterKeyOrder) {
+                if (!sk.startsWith('ss')) continue;
+                const pkB = `${sk}:${cc}:B`;
+                if (coursePlayPriority[pkB] && coursePlayPriority[pkB] > 0) return coursePlayPriority[pkB];
+              }
+              return 0;
+            })()}
+            usedRanksA={(() => {
+              const cc = selectedCertCourse!.courseCode.replace(/\s/g, '');
+              let semKey = '';
+              for (const sk of semesterKeyOrder) {
+                if (!sk.startsWith('ss')) continue;
+                const courses = semesterCourseAssignments[sk] || [];
+                if (courses.some(c => c.code.replace(/\s/g, '').toUpperCase() === cc.toUpperCase())) { semKey = sk; break; }
+              }
+              if (!semKey) return [];
+              const used: number[] = [];
+              for (const sc of (semesterCourseAssignments[semKey] || [])) {
+                if (sc.code.replace(/\s/g, '').toUpperCase() === cc.toUpperCase()) continue;
+                const v = coursePlayPriority[`${semKey}:${sc.code.replace(/\s/g, '')}:A`];
+                if (v && v > 0) used.push(v);
+              }
+              return used;
+            })()}
+            usedRanksB={(() => {
+              const cc = selectedCertCourse!.courseCode.replace(/\s/g, '');
+              let semKey = '';
+              for (const sk of semesterKeyOrder) {
+                if (!sk.startsWith('ss')) continue;
+                const courses = semesterCourseAssignments[sk] || [];
+                if (courses.some(c => c.code.replace(/\s/g, '').toUpperCase() === cc.toUpperCase())) { semKey = sk; break; }
+              }
+              if (!semKey) return [];
+              const used: number[] = [];
+              for (const sc of (semesterCourseAssignments[semKey] || [])) {
+                if (sc.code.replace(/\s/g, '').toUpperCase() === cc.toUpperCase()) continue;
+                const v = coursePlayPriority[`${semKey}:${sc.code.replace(/\s/g, '')}:B`];
+                if (v && v > 0) used.push(v);
+              }
+              return used;
+            })()}
+            onRankChange={(suffix, val) => {
+              const cc = selectedCertCourse!.courseCode.replace(/\s/g, '');
+              let semKey = '';
+              for (const sk of semesterKeyOrder) {
+                if (!sk.startsWith('ss')) continue;
+                const courses = semesterCourseAssignments[sk] || [];
+                if (courses.some(c => c.code.replace(/\s/g, '').toUpperCase() === cc.toUpperCase())) { semKey = sk; break; }
+              }
+              if (semKey) {
+                const pk = `${semKey}:${cc}:${suffix}`;
+                handlePriorityChange(pk, val);
+              }
+            }}
             onClose={() => {
               startTransition(() => setSelectedCertCourse(null));
               if (isSchoolCoursesDialogOpen) {
@@ -14086,6 +14187,7 @@ export default function Dashboard() {
                       if (updates.taskBgColor !== undefined) payload[`${prefix}TaskBgColor`] = updates.taskBgColor;
                       if ((updates as any).startDate) payload[`${prefix}StartDate`] = new Date((updates as any).startDate + 'T12:00:00').toISOString();
                       if ((updates as any).endDate) payload[`${prefix}EndDate`] = new Date((updates as any).endDate + 'T12:00:00').toISOString();
+                      if ((updates as any).springSummerTerm !== undefined) payload[`${prefix}SpringSummerTerm`] = (updates as any).springSummerTerm;
                       if (updates.semesterTerm && updates.year && !(updates as any).startDate) {
                         const dates = computeSemesterDates(updates.semesterTerm, updates.year);
                         if (dates.startDate) {
@@ -16529,7 +16631,13 @@ export default function Dashboard() {
                   const now = new Date();
                   const activeSem = SEMESTER_COURSE_DEFS.find(s => now >= new Date(s.start) && now <= new Date(s.end));
                   if (!activeSem) return null;
+                  const isSSActive = activeSem.key.startsWith('ss');
                   const unranked = activeSem.codes.filter(code => {
+                    if (isSSActive) {
+                      const kA = `${activeSem.key}:${code}:A`;
+                      const kB = `${activeSem.key}:${code}:B`;
+                      return (!coursePlayPriority[kA] || coursePlayPriority[kA] <= 0) && (!coursePlayPriority[kB] || coursePlayPriority[kB] <= 0);
+                    }
                     const key = `${activeSem.key}:${code}`;
                     return !coursePlayPriority[key] || coursePlayPriority[key] <= 0;
                   });
@@ -17109,8 +17217,40 @@ export default function Dashboard() {
                       } catch {}
                       return isCurrentCourse ? '#22c55e' : '#1e40af';
                     })();
-                    const priorityKey = `${semKey}:${semCourse.code}`;
-                    const currentPriority = draftCoursePlayPriority[priorityKey] ?? 0;
+                    const isSS = semKey.startsWith('ss');
+                    const courseSSterm = (() => {
+                      if (!isSS) return '';
+                      const sems = allSemesterSettingsRef.current;
+                      if (sems) {
+                        const cc = semCourse.code.replace(/\s/g, '');
+                        for (const sem of sems) {
+                          for (let i = 1; i <= 3; i++) {
+                            const sc = ((sem as any)[`course${i}Code`] || '').replace(/\s/g, '');
+                            if (sc.toUpperCase() === cc.toUpperCase()) {
+                              return ((sem as any)[`course${i}SpringSummerTerm`] || 'full').toLowerCase();
+                            }
+                          }
+                        }
+                      }
+                      return 'full';
+                    })();
+                    const ssNeedsA = isSS && (courseSSterm === 'first_half' || courseSSterm === 'full');
+                    const ssNeedsB = isSS && (courseSSterm === 'second_half' || courseSSterm === 'full');
+                    const priorityKeyA = isSS ? `${semKey}:${semCourse.code}:A` : `${semKey}:${semCourse.code}`;
+                    const priorityKeyB = `${semKey}:${semCourse.code}:B`;
+                    const currentPriorityA = draftCoursePlayPriority[priorityKeyA] ?? 0;
+                    const currentPriorityB = draftCoursePlayPriority[priorityKeyB] ?? 0;
+                    const getUsedForSuffix = (sfx: 'A' | 'B' | '') => {
+                      const used: number[] = [];
+                      const semCourses = semesterCourseAssignments[semKey] || [];
+                      for (const sc of semCourses) {
+                        if (sc.code === semCourse.code) continue;
+                        const pk = sfx ? `${semKey}:${sc.code}:${sfx}` : `${semKey}:${sc.code}`;
+                        const v = draftCoursePlayPriority[pk] ?? coursePlayPriority[pk];
+                        if (v && v > 0) used.push(v);
+                      }
+                      return used;
+                    };
 
                     return (
                       <div
@@ -17134,25 +17274,44 @@ export default function Dashboard() {
                         data-testid={`school-course-${semCourse.code}`}
                       >
                         <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: dotColor }} />
-                        <PrioritySelect
-                          priorityKey={priorityKey}
-                          initialValue={currentPriority}
-                          totalInSem={totalInSem}
-                          draftRef={draftCoursePlayPriorityRef}
-                          courseCode={semCourse.code}
-                          usedValues={(() => {
-                            const used: number[] = [];
-                            const semCourses = semesterCourseAssignments[semKey] || [];
-                            for (const sc of semCourses) {
-                              if (sc.code === semCourse.code) continue;
-                              const pk = `${semKey}:${sc.code}`;
-                              const v = draftCoursePlayPriority[pk] ?? coursePlayPriority[pk];
-                              if (v && v > 0) used.push(v);
-                            }
-                            return used;
-                          })()}
-                          onPriorityChange={handlePriorityChange}
-                        />
+                        {isSS ? (
+                          <>
+                            {ssNeedsA && (
+                              <PrioritySelect
+                                priorityKey={priorityKeyA}
+                                initialValue={currentPriorityA}
+                                totalInSem={totalInSem}
+                                draftRef={draftCoursePlayPriorityRef}
+                                courseCode={semCourse.code}
+                                usedValues={getUsedForSuffix('A')}
+                                onPriorityChange={handlePriorityChange}
+                                suffix="A"
+                              />
+                            )}
+                            {ssNeedsB && (
+                              <PrioritySelect
+                                priorityKey={priorityKeyB}
+                                initialValue={currentPriorityB}
+                                totalInSem={totalInSem}
+                                draftRef={draftCoursePlayPriorityRef}
+                                courseCode={semCourse.code}
+                                usedValues={getUsedForSuffix('B')}
+                                onPriorityChange={handlePriorityChange}
+                                suffix="B"
+                              />
+                            )}
+                          </>
+                        ) : (
+                          <PrioritySelect
+                            priorityKey={priorityKeyA}
+                            initialValue={currentPriorityA}
+                            totalInSem={totalInSem}
+                            draftRef={draftCoursePlayPriorityRef}
+                            courseCode={semCourse.code}
+                            usedValues={getUsedForSuffix('')}
+                            onPriorityChange={handlePriorityChange}
+                          />
+                        )}
                         <div
                           className={`flex flex-col items-center cursor-pointer hover:opacity-80 transition-opacity flex-shrink-0 ${!(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) && hasSemStarted(semKey) ? 'aas-unchecked-pulse' : ''}`}
                           style={{ width: '24px', marginTop: '2px', marginLeft: '5px' }}
@@ -17354,8 +17513,17 @@ export default function Dashboard() {
                               </div>
                               <div className="p-1.5 space-y-1 flex-1 overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
                                 {[...sem.courses].sort((a, b) => {
-                                  const pa = draftCoursePlayPriority[`${sem.key}:${a.code}`] ?? coursePlayPriority[`${sem.key}:${a.code}`] ?? 0;
-                                  const pb = draftCoursePlayPriority[`${sem.key}:${b.code}`] ?? coursePlayPriority[`${sem.key}:${b.code}`] ?? 0;
+                                  const isSSSem = sem.key.startsWith('ss');
+                                  const getPri = (code: string) => {
+                                    if (isSSSem) {
+                                      const va = draftCoursePlayPriority[`${sem.key}:${code}:A`] ?? coursePlayPriority[`${sem.key}:${code}:A`] ?? 0;
+                                      const vb = draftCoursePlayPriority[`${sem.key}:${code}:B`] ?? coursePlayPriority[`${sem.key}:${code}:B`] ?? 0;
+                                      return Math.min(va || 999, vb || 999) === 999 ? 0 : Math.min(va || 999, vb || 999);
+                                    }
+                                    return draftCoursePlayPriority[`${sem.key}:${code}`] ?? coursePlayPriority[`${sem.key}:${code}`] ?? 0;
+                                  };
+                                  const pa = getPri(a.code);
+                                  const pb = getPri(b.code);
                                   if (pa === 0 && pb === 0) return 0;
                                   if (pa === 0) return 1;
                                   if (pb === 0) return -1;

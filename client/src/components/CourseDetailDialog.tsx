@@ -100,7 +100,7 @@ interface CourseInfo {
 interface CourseDetailDialogProps {
   courseInfo: CourseInfo;
   onClose: () => void;
-  onSaveCourseInfo?: (updates: { professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; classTime2?: string; classEndTime2?: string; zoomLink?: string; semesterTerm?: string; year?: string; startDate?: string; endDate?: string; color?: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; semesterKey?: string; courseRank?: number }) => void;
+  onSaveCourseInfo?: (updates: { professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; classTime2?: string; classEndTime2?: string; zoomLink?: string; semesterTerm?: string; year?: string; startDate?: string; endDate?: string; color?: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; semesterKey?: string; courseRank?: number; springSummerTerm?: string }) => void;
   onLiveColorChange?: (updates: { color?: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string }) => void;
   onGradeCalculated?: (grade: string, percent: string) => void;
   onDeleteCourse?: () => void;
@@ -112,6 +112,13 @@ interface CourseDetailDialogProps {
   initialEditMode?: boolean;
   courseRank?: number;
   usedRanks?: number[];
+  isSpringSummer?: boolean;
+  courseSpSuTerm?: string;
+  courseRankA?: number;
+  courseRankB?: number;
+  usedRanksA?: number[];
+  usedRanksB?: number[];
+  onRankChange?: (suffix: string, val: number) => void;
 }
 
 interface NewTaskForm {
@@ -227,7 +234,7 @@ function semesterKeyFromTermYear(term?: string, year?: string): string {
   return '';
 }
 
-export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLiveColorChange, onGradeCalculated, onDeleteCourse, onOpenEditTask, semesterStart, readingWeekStart, certificateName, onPushUndo, initialEditMode, courseRank, usedRanks }: CourseDetailDialogProps) {
+export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLiveColorChange, onGradeCalculated, onDeleteCourse, onOpenEditTask, semesterStart, readingWeekStart, certificateName, onPushUndo, initialEditMode, courseRank, usedRanks, isSpringSummer, courseSpSuTerm, courseRankA, courseRankB, usedRanksA, usedRanksB, onRankChange }: CourseDetailDialogProps) {
   const { toast } = useToast();
   const [showAddForm, setShowAddForm] = useState(false);
   const [newTask, setNewTask] = useState<NewTaskForm>(createEmptyTaskForm());
@@ -399,7 +406,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     courseRowColor: courseInfo.courseRowColor || '',
     taskBgColor: courseInfo.taskBgColor || '',
     courseRank: courseRank ?? 0,
+    springSummerTerm: courseSpSuTerm || 'full',
   });
+  const ssTermLocked = isSpringSummer && isEditingInfo && !editInfo.springSummerTerm;
 
   useEffect(() => {
     if (onLiveColorChange && isEditingInfo) {
@@ -1487,20 +1496,63 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 View Syllabus
               </Button>
             )}
-            <span className="text-[9px] text-white">Rank</span>
-            <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-md" style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.4)' }}>
-              <select className="h-4 text-[10px] bg-transparent border-none text-white rounded px-0.5 outline-none cursor-pointer" style={{ WebkitAppearance: 'none', appearance: 'none', paddingRight: '12px' }} value={courseRank} onChange={(e) => {
-                const val = parseInt(e.target.value);
-                onSaveCourseInfo({ courseRank: val });
-              }} data-testid="select-course-rank-header">
-                <option value={0} className="bg-gray-800">—</option>
-                {[1, 2, 3].map(n => {
-                  const taken = (usedRanks || []).includes(n) && courseRank !== n;
-                  return <option key={n} value={n} className="bg-gray-800" disabled={taken} style={taken ? { color: '#555' } : {}}>{n}</option>;
-                })}
-              </select>
-              <ChevronDown className="w-3 h-3 text-white/60 -ml-4 pointer-events-none" />
-            </div>
+            {isSpringSummer ? (
+              <>
+                {(courseSpSuTerm === 'first_half' || courseSpSuTerm === 'full') && (
+                  <>
+                    <span className="text-[9px] text-white">Rank A</span>
+                    <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-md" style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.4)' }}>
+                      <select className="h-4 text-[10px] bg-transparent border-none text-white rounded px-0.5 outline-none cursor-pointer" style={{ WebkitAppearance: 'none', appearance: 'none', paddingRight: '12px' }} value={courseRankA ?? 0} onChange={(e) => {
+                        const val = parseInt(e.target.value);
+                        if (onRankChange) onRankChange('A', val);
+                      }} data-testid="select-course-rank-header-A">
+                        <option value={0} className="bg-gray-800">—</option>
+                        {[1, 2, 3].map(n => {
+                          const taken = (usedRanksA || []).includes(n) && (courseRankA ?? 0) !== n;
+                          return <option key={n} value={n} className="bg-gray-800" disabled={taken} style={taken ? { color: '#555' } : {}}>{n}A</option>;
+                        })}
+                      </select>
+                      <ChevronDown className="w-3 h-3 text-white/60 -ml-4 pointer-events-none" />
+                    </div>
+                  </>
+                )}
+                {(courseSpSuTerm === 'second_half' || courseSpSuTerm === 'full') && (
+                  <>
+                    <span className="text-[9px] text-white">Rank B</span>
+                    <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-md" style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.4)' }}>
+                      <select className="h-4 text-[10px] bg-transparent border-none text-white rounded px-0.5 outline-none cursor-pointer" style={{ WebkitAppearance: 'none', appearance: 'none', paddingRight: '12px' }} value={courseRankB ?? 0} onChange={(e) => {
+                        const val = parseInt(e.target.value);
+                        if (onRankChange) onRankChange('B', val);
+                      }} data-testid="select-course-rank-header-B">
+                        <option value={0} className="bg-gray-800">—</option>
+                        {[1, 2, 3].map(n => {
+                          const taken = (usedRanksB || []).includes(n) && (courseRankB ?? 0) !== n;
+                          return <option key={n} value={n} className="bg-gray-800" disabled={taken} style={taken ? { color: '#555' } : {}}>{n}B</option>;
+                        })}
+                      </select>
+                      <ChevronDown className="w-3 h-3 text-white/60 -ml-4 pointer-events-none" />
+                    </div>
+                  </>
+                )}
+              </>
+            ) : (
+              <>
+                <span className="text-[9px] text-white">Rank</span>
+                <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-md" style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.4)' }}>
+                  <select className="h-4 text-[10px] bg-transparent border-none text-white rounded px-0.5 outline-none cursor-pointer" style={{ WebkitAppearance: 'none', appearance: 'none', paddingRight: '12px' }} value={courseRank} onChange={(e) => {
+                    const val = parseInt(e.target.value);
+                    onSaveCourseInfo?.({ courseRank: val });
+                  }} data-testid="select-course-rank-header">
+                    <option value={0} className="bg-gray-800">—</option>
+                    {[1, 2, 3].map(n => {
+                      const taken = (usedRanks || []).includes(n) && courseRank !== n;
+                      return <option key={n} value={n} className="bg-gray-800" disabled={taken} style={taken ? { color: '#555' } : {}}>{n}</option>;
+                    })}
+                  </select>
+                  <ChevronDown className="w-3 h-3 text-white/60 -ml-4 pointer-events-none" />
+                </div>
+              </>
+            )}
           </div>
               {!isEditingInfo ? (
                 <div className="flex items-center gap-2">
@@ -1560,9 +1612,13 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         toast({ title: "URL is required for virtual courses", variant: "destructive" });
                         return;
                       }
+                      if (isSpringSummer && !editInfo.springSummerTerm) {
+                        toast({ title: "Please select a Spring/Summer term first", variant: "destructive" });
+                        return;
+                      }
                       if (onSaveCourseInfo) {
                         const semKey = semesterKeyFromTermYear(editInfo.semesterTerm, editInfo.year);
-                        onSaveCourseInfo({ ...editInfo, semesterKey: semKey || undefined, courseRank: editInfo.courseRank || undefined });
+                        onSaveCourseInfo({ ...editInfo, semesterKey: semKey || undefined, courseRank: editInfo.courseRank || undefined, springSummerTerm: editInfo.springSummerTerm || undefined });
                       }
                       if (editInfo.professor?.trim()) {
                         fetch('/api/key-contacts/sync-professor', {
@@ -1642,7 +1698,19 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         data-testid="button-delete-syllabus"
                       />
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                {isSpringSummer && (
+                  <div className="mb-2">
+                    <label className="text-white text-[9px] mb-0.5 block font-semibold">Spring/Summer Term <span className="text-red-400">*</span></label>
+                    <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.springSummerTerm} onChange={(e) => setEditInfo({...editInfo, springSummerTerm: e.target.value})} data-testid="select-edit-spsu-term">
+                      <option value="" className="bg-gray-800">-- Select Term First --</option>
+                      <option value="first_half" className="bg-gray-800">Spring (First Half) — May-Jun</option>
+                      <option value="second_half" className="bg-gray-800">Summer (Second Half) — Jun-Aug</option>
+                      <option value="full" className="bg-gray-800">Full Semester — May-Aug</option>
+                    </select>
+                    {!editInfo.springSummerTerm && <p className="text-[8px] text-yellow-400 mt-0.5">You must select a term before editing other details</p>}
+                  </div>
+                )}
+                <div className={`grid grid-cols-2 gap-2 ${isSpringSummer && !editInfo.springSummerTerm ? 'opacity-30 pointer-events-none' : ''}`}>
                   <div>
                     <label className="text-white text-[9px] mb-0.5 block">Professor</label>
                     <input className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1.5 placeholder:text-white/25" value={editInfo.professor} onChange={(e) => setEditInfo({...editInfo, professor: e.target.value})} placeholder="Professor name" data-testid="input-edit-professor" />
@@ -1652,7 +1720,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     <input className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1.5 placeholder:text-white/25" value={editInfo.professorEmail} onChange={(e) => setEditInfo({...editInfo, professorEmail: e.target.value})} placeholder="professor@email.com" data-testid="input-edit-email" />
                   </div>
                 </div>
-                <div className="grid grid-cols-[auto_1fr] gap-2">
+                <div className={`grid grid-cols-[auto_1fr] gap-2 ${isSpringSummer && !editInfo.springSummerTerm ? 'opacity-30 pointer-events-none' : ''}`}>
                   <div>
                     <label className="text-white text-[9px] mb-0.5 block">Delivery Mode</label>
                     <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.deliveryMode} onChange={(e) => setEditInfo({...editInfo, deliveryMode: e.target.value})} data-testid="select-edit-delivery">
@@ -3162,7 +3230,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               onClick={() => {
                 if (onSaveCourseInfo) {
                   const semKey = semesterKeyFromTermYear(editInfo.semesterTerm, editInfo.year);
-                  onSaveCourseInfo({ ...editInfo, semesterKey: semKey || undefined, courseRank: editInfo.courseRank || undefined });
+                  onSaveCourseInfo({ ...editInfo, semesterKey: semKey || undefined, courseRank: editInfo.courseRank || undefined, springSummerTerm: editInfo.springSummerTerm || undefined });
                 }
                 if (editInfo.professor?.trim()) {
                   fetch('/api/key-contacts/sync-professor', {

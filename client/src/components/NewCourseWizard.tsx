@@ -141,7 +141,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, colorSe
     classEndTime: "",
     startDate: "",
     endDate: "",
-    springSummerTerm: "full",
+    springSummerTerm: "",
     zoomLink: "",
     tasks: [],
   });
@@ -171,7 +171,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, colorSe
       case 1: return data.courseCode.trim() !== "" && data.courseName.trim() !== "";
       case 2: return true;
       case 3: return data.courseType !== "";
-      case 4: return true;
+      case 4: return !(data.semesterType === "spring_summer" && !data.springSummerTerm);
       case 5: return true;
       case 6: return true;
       default: return true;
@@ -396,20 +396,23 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, colorSe
 
       {data.semesterType === "spring_summer" && (
         <div>
-          <Label className="text-[9px] text-white/60 mb-1 block">Spring/Summer Term</Label>
+          <Label className="text-[9px] text-white/60 mb-1 block font-semibold">Spring/Summer Term <span className="text-red-400">*</span></Label>
           <select
             value={data.springSummerTerm}
             onChange={(e) => updateField("springSummerTerm", e.target.value)}
-            className="w-full h-8 rounded bg-white/10 border border-white/20 text-white text-[10px] px-2"
+            className={`w-full h-8 rounded bg-white/10 text-white text-[10px] px-2 ${!data.springSummerTerm ? 'border-2 border-yellow-500/60' : 'border border-white/20'}`}
             data-testid="wizard-select-term"
           >
-            <option value="full" className="bg-gray-800">Full Length (May-Aug)</option>
-            <option value="first_half" className="bg-gray-800">First Half (May-Jun)</option>
-            <option value="second_half" className="bg-gray-800">Second Half (Jun-Aug)</option>
+            <option value="" className="bg-gray-800">-- Select Term First --</option>
+            <option value="first_half" className="bg-gray-800">Spring (First Half) — May-Jun</option>
+            <option value="second_half" className="bg-gray-800">Summer (Second Half) — Jun-Aug</option>
+            <option value="full" className="bg-gray-800">Full Semester — May-Aug</option>
           </select>
+          {!data.springSummerTerm && <p className="text-[8px] text-yellow-400 mt-0.5">You must select a term before filling in other details</p>}
         </div>
       )}
 
+      <div className={data.semesterType === "spring_summer" && !data.springSummerTerm ? 'opacity-30 pointer-events-none' : ''}>
       {data.deliveryMode === "virtual" && (
         <>
         <div className="grid grid-cols-4 gap-2">
@@ -501,6 +504,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, colorSe
             data-testid="wizard-input-end-date"
           />
         </div>
+      </div>
       </div>
     </div>
   );
