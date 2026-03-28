@@ -20949,7 +20949,7 @@ export default function Dashboard() {
                       style={{
                         top: `${topPx}px`,
                         left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${gridSizes.dayColumnWidths.slice(0, dayIdx).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) + 2px)`,
-                        width: (() => { const now = new Date(); const currentHourNow = now.getHours(); const taskDay = weekDays[dayIdx]; const isTodayCol = isSameDayET(taskDay, now); const isCurrentHourOverlap = isTodayCol && startHour <= currentHourNow && endHour > currentHourNow && !(currentHourNow >= 21 || currentHourNow < 6); return isCurrentHourOverlap ? `calc((${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 2 - 4px)` : `calc((${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 4px)`; })(),
+                        width: (() => { const now = new Date(); const currentHourNow = now.getHours(); const taskDay = weekDays[dayIdx]; const isTodayCol = isSameDayET(taskDay, now); const taskCoversCurrentHour = startHour <= currentHourNow && (endHour > currentHourNow || (endHour === currentHourNow && endMin > 0)); const isCurrentHourOverlap = isTodayCol && taskCoversCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return isCurrentHourOverlap ? `calc((${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 2 - 4px)` : `calc((${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 4px)`; })(),
                         height: `${heightPx}px`,
                         zIndex: hoveredCountdownTaskId === task.id ? 55 : (selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43)),
                         backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || (task.type === 'other' ? otherRowColors.taskBgColor : '#e5e7eb')),
@@ -22376,21 +22376,18 @@ export default function Dashboard() {
                 style={(() => {
                   const boxEl = document.querySelector('[data-testid="section-coming-up"]') as HTMLElement | null;
                   const boxH = boxEl ? boxEl.offsetHeight : (window.innerHeight - (calendarBorderTop || (calendarTop + 15)) - calendarBottom);
-                  const availH = Math.max(60, boxH - 16);
-                  const idealTotal = semTabs.length * 52 + 23;
-                  const tabScale = Math.min(1, availH / idealTotal);
-                  return { right: '-16px', bottom: '-5px', pointerEvents: 'auto' as const, zIndex: 0, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || hwFloating.detached) ? 'none' : 'block', width: '18px', height: `${Math.min(idealTotal, availH)}px` };
+                  const availH = Math.max(60, boxH - 20);
+                  return { right: '-16px', top: '10px', pointerEvents: 'auto' as const, zIndex: 0, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || hwFloating.detached) ? 'none' : 'block', width: '18px', height: `${availH}px` };
                 })()}
               >
                 {(() => {
                   const boxEl = document.querySelector('[data-testid="section-coming-up"]') as HTMLElement | null;
                   const boxH = boxEl ? boxEl.offsetHeight : (window.innerHeight - (calendarBorderTop || (calendarTop + 15)) - calendarBottom);
-                  const availH = Math.max(60, boxH - 16);
-                  const idealTotal = semTabs.length * 52 + 23;
-                  const tabScale = Math.min(1, availH / idealTotal);
-                  const scaledTabH = Math.floor(87 * tabScale);
-                  const scaledStep = Math.floor(52 * tabScale);
-                  const scaledGap = Math.floor(2 * tabScale);
+                  const availH = Math.max(60, boxH - 20);
+                  const n = semTabs.length;
+                  const overlapRatio = 0.4;
+                  const tabH = availH / (1 + (n - 1) * (1 - overlapRatio));
+                  const stepPx = tabH * (1 - overlapRatio);
                   return semTabs.map((tab, tabIdx) => {
                   const isActive = scrollActiveSem === tab.semLabel;
                   const reversedIdx = semTabs.length - 1 - tabIdx;
@@ -22398,7 +22395,7 @@ export default function Dashboard() {
                     <div
                       key={tab.semLabel}
                       className={`cursor-pointer${isActive && tabBounceEnabled ? ' semester-tab-bounce' : ''}`}
-                      style={{ position: 'absolute', bottom: `${reversedIdx * scaledStep + reversedIdx * scaledGap + 2 + (tabIdx === 0 ? 1 : 0)}px`, width: '18px', height: `${scaledTabH}px`, zIndex: isActive ? 100 : semTabs.length - tabIdx, clipPath: isActive ? 'none' : 'inset(0 0 0 2px)', transition: 'width 0.25s ease, transform 0.25s ease', transform: isActive ? 'translateX(2px)' : 'none' }}
+                      style={{ position: 'absolute', bottom: `${reversedIdx * stepPx}px`, width: '18px', height: `${tabH}px`, zIndex: isActive ? 100 : semTabs.length - tabIdx, clipPath: isActive ? 'none' : 'inset(0 0 0 2px)', transition: 'width 0.25s ease, transform 0.25s ease', transform: isActive ? 'translateX(2px)' : 'none' }}
                       onClick={() => {
                         let idx = -1;
                         if (tab.letter === 'W' && tab.year === '26') {
@@ -22463,7 +22460,7 @@ export default function Dashboard() {
                       data-testid={`semester-tab-${tab.letter.toLowerCase()}${tab.year}`}
                       title={tab.semLabel}
                     >
-                      <svg width="18" height={scaledTabH} viewBox="0 0 16 54" style={{ display: 'block' }}>
+                      <svg width="18" height={tabH} viewBox="0 0 16 54" style={{ display: 'block' }}>
                         <defs><filter id={`tabShadow-${tabIdx}`} x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="0" stdDeviation="0.5" floodColor="black" floodOpacity="0.3" /></filter></defs>
                         <path d={semTabs.indexOf(tab) === 0
                           ? "M0.00 0.00 L0.00 54.00 L3.55 53.98 C3.56,53.98 3.86,52.68 4.88,51.40 C7.21,49.06 12.79,48.74 15.29,45.10 C15.60,44.64 15.83,44.03 16.00,43.29 L16.00 22.62 L16.00 19.38 L16.00 10.71 C15.83,9.98 15.60,9.36 15.29,8.90 C12.79,5.27 7.21,4.94 4.88,2.60 C4.49,2.59 3.55,0.02 3.55,0.02 L0.00 0.00 Z"
