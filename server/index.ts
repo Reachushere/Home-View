@@ -319,6 +319,19 @@ app.use((req, res, next) => {
       setTimeout(runFileMonitor, 10000);
       setInterval(runFileMonitor, 5 * 60 * 1000);
 
+      async function ensureFutureSemesters() {
+        try {
+          const resp = await fetch(`http://localhost:${port}/api/semesters/ensure-future`, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+          const data = await resp.json();
+          if (data.created && data.created.length > 0) {
+            console.log(`[Semesters] Created missing semesters: ${data.created.join(', ')}`);
+          }
+        } catch (e: any) {
+          console.error("[Semesters] Error ensuring future semesters:", e.message);
+        }
+      }
+      setTimeout(ensureFutureSemesters, 5000);
+
       async function ensureOneDrivePlaceholders() {
         try {
           const resp = await fetch(`http://localhost:${port}/api/onedrive/ensure-placeholder-folders`, { method: 'POST', headers: { 'Content-Type': 'application/json' } });

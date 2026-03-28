@@ -1722,6 +1722,37 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
     }
   });
 
+  app.post("/api/semesters/ensure-future", async (_req, res) => {
+    try {
+      const all = await storage.getAllSemesterSettings();
+      const existingNames = new Set(all.map((s: any) => s.semesterName));
+      const requiredSemesters = [
+        { semesterName: 'Spring/Summer 2026', semesterType: 'spring_summer', semesterStartDate: new Date('2026-05-04'), course1Code: 'CECN210', course1Name: 'CECN210 - Understanding Economics', course1SpringSummerTerm: 'full', course2Code: 'CPHL110', course2Name: 'CPHL110 - Philosophy of Religion', course2SpringSummerTerm: 'first_half', course3Code: 'CHIS105', course3Name: 'CHIS105 - Inventing Popular Culture', course3SpringSummerTerm: 'second_half', course1StartDate: new Date('2026-05-04'), course1EndDate: new Date('2026-07-31'), course2StartDate: new Date('2026-05-04'), course2EndDate: new Date('2026-06-20'), course3StartDate: new Date('2026-06-23'), course3EndDate: new Date('2026-08-04') },
+        { semesterName: 'Fall 2026', semesterType: 'fall', semesterStartDate: new Date('2026-09-07'), course1Code: 'CPPA235', course1Name: 'CPPA235 - TBD', course2Code: 'TBD2', course2Name: 'TBD2', course3Code: 'TBD3', course3Name: 'TBD3' },
+        { semesterName: 'Winter 2027', semesterType: 'winter', semesterStartDate: new Date('2027-01-11'), course1Code: 'TBD1', course1Name: 'TBD1', course2Code: 'TBD2', course2Name: 'TBD2', course3Code: 'TBD3', course3Name: 'TBD3' },
+        { semesterName: 'Spring/Summer 2027', semesterType: 'spring_summer', semesterStartDate: new Date('2027-05-03'), course1Code: 'TBD1', course1Name: 'TBD1', course1SpringSummerTerm: 'full', course2Code: 'TBD2', course2Name: 'TBD2', course3Code: 'TBD3', course3Name: 'TBD3' },
+        { semesterName: 'Fall 2027', semesterType: 'fall', semesterStartDate: new Date('2027-09-13'), course1Code: 'TBD1', course1Name: 'TBD1', course2Code: 'TBD2', course2Name: 'TBD2', course3Code: 'TBD3', course3Name: 'TBD3' },
+        { semesterName: 'Winter 2028', semesterType: 'winter', semesterStartDate: new Date('2028-01-10'), course1Code: 'TBD1', course1Name: 'TBD1', course2Code: 'TBD2', course2Name: 'TBD2', course3Code: 'TBD3', course3Name: 'TBD3' },
+        { semesterName: 'Spring/Summer 2028', semesterType: 'spring_summer', semesterStartDate: new Date('2028-05-01'), course1Code: 'TBD1', course1Name: 'TBD1', course1SpringSummerTerm: 'full', course2Code: 'TBD2', course2Name: 'TBD2', course3Code: 'TBD3', course3Name: 'TBD3' },
+        { semesterName: 'Fall 2028', semesterType: 'fall', semesterStartDate: new Date('2028-09-11'), course1Code: 'TBD1', course1Name: 'TBD1', course2Code: 'TBD2', course2Name: 'TBD2', course3Code: 'TBD3', course3Name: 'TBD3' },
+        { semesterName: 'Winter 2029', semesterType: 'winter', semesterStartDate: new Date('2029-01-08'), course1Code: 'TBD1', course1Name: 'TBD1', course2Code: 'TBD2', course2Name: 'TBD2', course3Code: 'TBD3', course3Name: 'TBD3' },
+        { semesterName: 'Spring/Summer 2029', semesterType: 'spring_summer', semesterStartDate: new Date('2029-05-07'), course1Code: 'TBD1', course1Name: 'TBD1', course1SpringSummerTerm: 'full', course2Code: 'TBD2', course2Name: 'TBD2', course3Code: 'TBD3', course3Name: 'TBD3' },
+        { semesterName: 'Fall 2029', semesterType: 'fall', semesterStartDate: new Date('2029-09-10'), course1Code: 'TBD1', course1Name: 'TBD1', course2Code: 'TBD2', course2Name: 'TBD2', course3Code: 'TBD3', course3Name: 'TBD3' },
+      ];
+      const created: string[] = [];
+      for (const sem of requiredSemesters) {
+        if (!existingNames.has(sem.semesterName)) {
+          await storage.createSemesterSettings(sem as any);
+          created.push(sem.semesterName);
+        }
+      }
+      res.json({ ok: true, created, existing: all.length });
+    } catch (err) {
+      console.error("Error ensuring future semesters:", err);
+      res.status(500).json({ error: "Failed to ensure future semesters" });
+    }
+  });
+
   // GET /api/semester - Get active semester settings
   app.get(api.semester.get.path, async (_req, res) => {
     try {
