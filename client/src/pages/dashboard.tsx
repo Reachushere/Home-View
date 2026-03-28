@@ -13217,7 +13217,7 @@ export default function Dashboard() {
               <svg width="68" height="40" viewBox="0 0 68 40">
                 <path d={`M ${cx - r} ${cy} A ${r} ${r} 0 1 1 ${cx + r} ${cy}`} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={sw} strokeLinecap="round" />
                 <path d={`M ${cx - r} ${cy} A ${r} ${r} 0 1 1 ${cx + r} ${cy}`} fill="none" stroke={arcColor} strokeWidth={sw} strokeLinecap="round" strokeDasharray={`${dash} ${circumHalf}`} />
-                <text x={cx} y={cy - 4} textAnchor="middle" fill="#ffffff" fontSize="16" fontWeight="700" fontFamily="system-ui, sans-serif" style={{ fontVariantNumeric: 'tabular-nums' }}>{formatPomodoroTime(pomodoroTime)}</text>
+                <text x={cx} y={cy - 4} textAnchor="middle" fill="#ffffff" fontSize="14" fontWeight="700" fontFamily="system-ui, sans-serif" style={{ fontVariantNumeric: 'tabular-nums' }}>{formatPomodoroTime(pomodoroTime)}</text>
               </svg>
             );
           })()}
