@@ -23353,8 +23353,8 @@ export default function Dashboard() {
 
                 {/* This Week Section - hidden on Fridays since everything shifts to today */}
                 {new Date().getDay() === 5 ? null : (<>
-                <div data-homework-section="thisweek" data-semester-label={hwWeeklyTimeline[0]?.semLabel || ''} style={{ borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '10px', paddingTop: '2px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap' }}>
+                <div data-homework-section="thisweek" data-semester-label={hwWeeklyTimeline[0]?.semLabel || ''} style={{ marginTop: '10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '2px', width: 'fit-content', marginBottom: '0px' }}>
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', whiteSpace: 'nowrap', flexShrink: 0 }}>{hwWeeklyTimeline[0]?.label || 'Week'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', flexShrink: 0 }}>({dueTomorrowTasks.length})</span>
                     {/Week\s+\d/i.test(hwWeeklyTimeline[0]?.label || '') && hwWeeklyTimeline[0]?.weekStart && hwWeeklyTimeline[0]?.weekEnd && (
@@ -23371,11 +23371,10 @@ export default function Dashboard() {
                       </div>
                     )}
                   </div>
-                </div>
                 {dueTomorrowTasks.length === 0 ? (
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks for {hwWeeklyTimeline[0]?.label || 'this week'}</div>
                 ) : (
-                  <div className="flex flex-col gap-0.5">
+                  <div className="flex flex-col gap-0.5" style={{ marginTop: '-18px' }}>
                     {(() => {
                       const today = startOfDayET(new Date());
                       const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
@@ -23543,8 +23542,8 @@ export default function Dashboard() {
                 )}
                 </>)}
                 {/* Next Week Section */}
-                <div data-homework-section="nextweek" data-semester-label={hwWeeklyTimeline[1]?.semLabel || ''} style={{ display: 'flex', flexDirection: 'column', gap: '0px', padding: '5px 0 1px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '10px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap' }}>
+                <div data-homework-section="nextweek" data-semester-label={hwWeeklyTimeline[1]?.semLabel || ''} style={{ marginTop: '10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '2px', width: 'fit-content', marginBottom: '0px' }}>
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', flexShrink: 0 }}>{hwWeeklyTimeline[1]?.label || 'Week'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', flexShrink: 0 }}>({dueNextWeekTasks.length})</span>
                     {/Week\s+\d/i.test(hwWeeklyTimeline[1]?.label || '') && hwWeeklyTimeline[1]?.weekStart && hwWeeklyTimeline[1]?.weekEnd && (
@@ -23561,11 +23560,10 @@ export default function Dashboard() {
                       </div>
                     )}
                   </div>
-                </div>
                 {dueNextWeekTasks.length === 0 ? (
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks for {hwWeeklyTimeline[1]?.label || 'this week'}</div>
                 ) : (
-                  <div className="flex flex-col gap-0.5" style={{ marginTop: '5px' }}>
+                  <div className="flex flex-col gap-0.5" style={{ marginTop: '-18px' }}>
                     {(() => {
                       const today = startOfDayET(new Date());
                       const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
@@ -23717,8 +23715,8 @@ export default function Dashboard() {
                   </div>
                 )}
                 {/* 2 Weeks Section */}
-                <div data-homework-section="twoweeks" data-semester-label={hwWeeklyTimeline[2]?.semLabel || ''} style={{ display: 'flex', flexDirection: 'column', gap: '0px', padding: '5px 0 1px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '10px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap' }}>
+                <div data-homework-section="twoweeks" data-semester-label={hwWeeklyTimeline[2]?.semLabel || ''} style={{ marginTop: '10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '2px', width: 'fit-content', marginBottom: '0px' }}>
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', flexShrink: 0 }}>{hwWeeklyTimeline[2]?.label || 'Two weeks'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', flexShrink: 0 }}>({dueTwoWeeksTasks.length})</span>
                     {/Week\s+\d/i.test(hwWeeklyTimeline[2]?.label || '') && (
@@ -23735,11 +23733,10 @@ export default function Dashboard() {
                       </div>
                     )}
                   </div>
-                </div>
                 {dueTwoWeeksTasks.length === 0 ? (
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks in two weeks</div>
                 ) : (
-                  <div className="flex flex-col gap-0.5" style={{ marginTop: '8px' }}>
+                  <div className="flex flex-col gap-0.5" style={{ marginTop: '-18px' }}>
                     {(() => {
                       const today = startOfDayET(new Date());
                       const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
