@@ -23195,7 +23195,7 @@ export default function Dashboard() {
                             data-testid={`drop-${item.type}-${pd.courseCode.toLowerCase()}`}>
                             <span style={{ position: 'absolute', top: '2px', left: 0, right: 0, textAlign: 'center', fontSize: '8px', fontWeight: 400, color: item.dark ? '#ffffff' : '#000000', letterSpacing: '0.5px', fontFamily: "'Raleway', sans-serif", zIndex: 5 }}>{item.label}</span>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '3px', marginTop: '8px' }}>
-                              <div style={{ position: 'relative', width: circleSize, height: circleSize, marginLeft: '-1px' }}>
+                              <div style={{ position: 'relative', width: circleSize, height: circleSize, marginLeft: '0px' }}>
                                 <svg width={circleSize} height={circleSize} style={{ transform: 'rotate(-90deg)' }}>
                                   <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth={strokeWidth} />
                                   {item.p.hasFiles && item.p.percent > 0 && (
@@ -24334,7 +24334,7 @@ export default function Dashboard() {
                                 data-testid={`float-drop-${item.type}-${pd.courseCode.toLowerCase()}`}>
                                 <span style={{ position: 'absolute', top: '3px', left: 0, right: 0, textAlign: 'center', fontSize: '9px', fontWeight: 400, color: item.dark ? '#ffffff' : '#000000', letterSpacing: '0.5px', fontFamily: "'Raleway', sans-serif", zIndex: 5 }}>{item.label}</span>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '8px' }}>
-                                  <div style={{ position: 'relative', width: circleSize, height: circleSize, marginLeft: '-1px' }}>
+                                  <div style={{ position: 'relative', width: circleSize, height: circleSize, marginLeft: '0px' }}>
                                     <svg width={circleSize} height={circleSize} style={{ transform: 'rotate(-90deg)' }}>
                                       <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth={strokeWidth} />
                                       {item.p.hasFiles && item.p.percent > 0 && (
