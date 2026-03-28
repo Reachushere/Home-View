@@ -13237,18 +13237,50 @@ export default function Dashboard() {
 
       {/* Time - fixed position */}
       <div data-tpo data-tpo-opacity="1" style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 11 + (clockContainerRef.current?.offsetWidth || 110) + 25 + 11 + 4 + 3 - 1 - 2}px`, top: `${8 + d2lTickerHeight}px`, width: '1px', height: '14px', background: 'rgba(255,255,255,0.5)', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out' }} />
-      <div data-tpo data-tpo-opacity="1" style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 9}px`, top: `${7 + d2lTickerHeight}px`, zIndex: 100, display: 'flex', alignItems: 'center', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="digital-clock">
-        <span id="clock-hm" className="text-white" style={{ fontSize: '14px', fontWeight: '700', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
-          {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
-        </span>
-        <span id="clock-seconds" className="text-white" style={{ fontSize: '14px', fontWeight: '700', fontVariantNumeric: 'tabular-nums', lineHeight: '1.25' }}>
-          :{String(currentTime.getSeconds()).padStart(2, '0')}
-        </span>
-        <span id="clock-ampm" className="text-white" style={{ fontSize: '14px', fontWeight: '700', textTransform: 'uppercase', marginLeft: '2px', lineHeight: '1.25' }}>
-          {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
-        </span>
+      <div data-tpo data-tpo-opacity="1" style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 9}px`, top: `${3 + d2lTickerHeight}px`, zIndex: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="digital-clock">
+        {(() => {
+          const sz = 44;
+          const center = sz / 2;
+          const dotR = 1.2;
+          const hourDotDist = 18;
+          const hours = currentTime.getHours();
+          const minutes = currentTime.getMinutes();
+          const seconds = currentTime.getSeconds();
+          const hourAngle = ((hours % 12) + minutes / 60) * 30 - 90;
+          const minuteAngle = (minutes + seconds / 60) * 6 - 90;
+          const secondAngle = seconds * 6 - 90;
+          const hourHandLen = 10;
+          const minuteHandLen = 14;
+          const secondHandLen = 16;
+          const toRad = (deg: number) => (deg * Math.PI) / 180;
+          return (
+            <svg width={sz} height={sz} viewBox={`0 0 ${sz} ${sz}`}>
+              {Array.from({ length: 12 }, (_, i) => {
+                const angle = (i * 30 - 90) * (Math.PI / 180);
+                const x = center + hourDotDist * Math.cos(angle);
+                const y = center + hourDotDist * Math.sin(angle);
+                return <circle key={i} cx={x} cy={y} r={i % 3 === 0 ? dotR + 0.5 : dotR} fill="rgba(255,255,255,0.7)" />;
+              })}
+              <line x1={center} y1={center} x2={center + hourHandLen * Math.cos(toRad(hourAngle))} y2={center + hourHandLen * Math.sin(toRad(hourAngle))} stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
+              <line x1={center} y1={center} x2={center + minuteHandLen * Math.cos(toRad(minuteAngle))} y2={center + minuteHandLen * Math.sin(toRad(minuteAngle))} stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" />
+              <line x1={center} y1={center} x2={center + secondHandLen * Math.cos(toRad(secondAngle))} y2={center + secondHandLen * Math.sin(toRad(secondAngle))} stroke="#ef4444" strokeWidth="0.7" strokeLinecap="round" />
+              <circle cx={center} cy={center} r="1.5" fill="#ffffff" />
+            </svg>
+          );
+        })()}
+        <div style={{ display: 'flex', alignItems: 'center', marginTop: '-2px' }}>
+          <span className="text-white" style={{ fontSize: '9px', fontWeight: '600', fontVariantNumeric: 'tabular-nums', lineHeight: '1' }}>
+            {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
+          </span>
+          <span className="text-white" style={{ fontSize: '9px', fontWeight: '600', fontVariantNumeric: 'tabular-nums', lineHeight: '1' }}>
+            :{String(currentTime.getSeconds()).padStart(2, '0')}
+          </span>
+          <span className="text-white" style={{ fontSize: '8px', fontWeight: '600', textTransform: 'uppercase', marginLeft: '1px', lineHeight: '1' }}>
+            {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
+          </span>
+        </div>
         {profileData.travelTimezone && (
-          <span className="text-[11px] text-orange-400 font-medium ml-1">Travel</span>
+          <span className="text-[8px] text-orange-400 font-medium">Travel</span>
         )}
       </div>
 
