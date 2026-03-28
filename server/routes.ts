@@ -23,7 +23,7 @@ import { parseTickerCommand, extractInlineExpiry } from "./gmailTicker";
 // fetchD2LAnnouncements available in ./gmail but Gmail connector lacks read scope; D2L sync handled by external Apps Script
 import { getSchedulerStatus } from "./reminderScheduler";
 import { fetchTMUCalendarEvents } from "./tmuCalendar";
-import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder, getOneDriveFileContentAsText, getOneDriveItemByPath, createOneDriveTextFile, updateOneDriveFileContent, deleteOneDriveItem } from "./onedrive";
+import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder, getOneDriveFileContentAsText, getOneDriveItemByPath, createOneDriveTextFile, updateOneDriveFileContent, deleteOneDriveItem, resolveSharedNotebookUrl, getSharedNotebookSections, getPagesBySectionId } from "./onedrive";
 import * as spotifyApi from "./spotify";
 
 // Helper function to generate repeated task due dates
@@ -4275,10 +4275,44 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       if (!name || !url) {
         return res.status(400).json({ error: "name and url are required" });
       }
-      const link = await storage.createSharedNotebookLink({ name, url });
+      let notebookId: string | undefined;
+      try {
+        const resolved = await resolveSharedNotebookUrl(url);
+        if (resolved) {
+          notebookId = resolved.notebookId;
+          console.log(`[SharedNotebook] Resolved "${name}" to notebook ID: ${notebookId}`);
+        } else {
+          console.log(`[SharedNotebook] Could not resolve "${name}" URL to a notebook ID — saving as link only`);
+        }
+      } catch (resolveErr: any) {
+        console.log(`[SharedNotebook] Resolution failed for "${name}":`, resolveErr.message);
+      }
+      const link = await storage.createSharedNotebookLink({ name, url, notebookId });
       res.json(link);
     } catch (err: any) {
       res.status(500).json({ error: err.message || "Failed to create shared notebook link" });
+    }
+  });
+
+  app.get("/api/onenote/sections/:sectionId/pages", async (req, res) => {
+    try {
+      const pages = await getPagesBySectionId(req.params.sectionId);
+      res.json(pages);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || "Failed to get pages" });
+    }
+  });
+
+  app.get("/api/shared-notebook-links/:id/sections", async (req, res) => {
+    try {
+      const links = await storage.getSharedNotebookLinks();
+      const link = links.find(l => l.id === parseInt(req.params.id));
+      if (!link) return res.status(404).json({ error: "Link not found" });
+      if (!link.notebookId) return res.json([]);
+      const sections = await getSharedNotebookSections(link.notebookId);
+      res.json(sections);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || "Failed to get sections" });
     }
   });
 

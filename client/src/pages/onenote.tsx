@@ -63,6 +63,7 @@ interface SharedNotebookLink {
   id: number;
   name: string;
   url: string;
+  notebookId: string | null;
   createdAt: string;
 }
 
@@ -98,6 +99,9 @@ export default function OneNotePage() {
   const [isAddingLink, setIsAddingLink] = useState(false);
   const [newLinkName, setNewLinkName] = useState('');
   const [newLinkUrl, setNewLinkUrl] = useState('');
+  const [expandedSharedNotebooks, setExpandedSharedNotebooks] = useState<Set<number>>(new Set());
+  const [sharedSectionsCache, setSharedSectionsCache] = useState<Record<number, { name: string; id: string }[]>>({});
+  const [loadingSharedSections, setLoadingSharedSections] = useState<Set<number>>(new Set());
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const speechRecRef = useRef<any>(null);
@@ -244,6 +248,32 @@ export default function OneNotePage() {
       toast({ title: "Delete failed", description: err.message, variant: "destructive" });
     },
   });
+
+  const toggleSharedNotebook = async (linkId: number) => {
+    const next = new Set(expandedSharedNotebooks);
+    if (next.has(linkId)) {
+      next.delete(linkId);
+      setExpandedSharedNotebooks(next);
+      return;
+    }
+    next.add(linkId);
+    setExpandedSharedNotebooks(next);
+
+    if (sharedSectionsCache[linkId]) return;
+
+    setLoadingSharedSections(prev => new Set(prev).add(linkId));
+    try {
+      const res = await fetch(`/api/shared-notebook-links/${linkId}/sections`);
+      if (!res.ok) throw new Error('Failed to load');
+      const sections = await res.json();
+      if (!Array.isArray(sections)) throw new Error('Invalid response');
+      setSharedSectionsCache(prev => ({ ...prev, [linkId]: sections }));
+    } catch {
+      toast({ title: "Failed to load sections", variant: "destructive" });
+    } finally {
+      setLoadingSharedSections(prev => { const s = new Set(prev); s.delete(linkId); return s; });
+    }
+  };
 
   useEffect(() => {
     if (contentQuery.data && !isDirty) {
@@ -694,35 +724,100 @@ export default function OneNotePage() {
               ) : (
                 <div className="space-y-1.5">
                   {(sharedLinksQuery.data || []).map(link => (
-                    <div
-                      key={link.id}
-                      className="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors hover:bg-white/5"
-                      style={{ background: '#2d2d30', border: '1px solid #3e3e42' }}
-                    >
-                      <div className="h-8 w-8 rounded flex items-center justify-center shrink-0" style={{ background: '#2d6e4a' }}>
-                        <Link2 className="h-4 w-4 text-white" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium text-white truncate">{link.name}</div>
-                        <div className="text-[10px] text-white/30 truncate">{link.url}</div>
-                      </div>
-                      <a
-                        href={link.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="h-7 w-7 flex items-center justify-center rounded text-white/30 hover:text-white hover:bg-white/10 transition-colors shrink-0"
-                        onClick={e => e.stopPropagation()}
-                        data-testid={`link-open-shared-${link.id}`}
+                    <div key={link.id}>
+                      <div
+                        className="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors hover:bg-white/5 cursor-pointer"
+                        style={{ background: '#2d2d30', border: '1px solid #3e3e42' }}
+                        onClick={() => link.notebookId ? toggleSharedNotebook(link.id) : window.open(link.url, '_blank')}
                       >
-                        <ExternalLink className="h-3.5 w-3.5" />
-                      </a>
-                      <button
-                        className="h-7 w-7 flex items-center justify-center rounded text-white/20 hover:text-red-400 hover:bg-white/10 transition-colors shrink-0"
-                        onClick={() => { if (confirm('Remove this shared notebook link?')) deleteSharedLinkMutation.mutate(link.id); }}
-                        data-testid={`button-delete-shared-${link.id}`}
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
+                        <div className="h-8 w-8 rounded flex items-center justify-center shrink-0" style={{ background: link.notebookId ? '#4a2d6e' : '#2d6e4a' }}>
+                          {link.notebookId ? (
+                            <NotebookPen className="h-4 w-4 text-white" />
+                          ) : (
+                            <Link2 className="h-4 w-4 text-white" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-medium text-white truncate">{link.name}</div>
+                          <div className="text-[10px] text-white/30 truncate">
+                            {link.notebookId ? (
+                              <>
+                                {expandedSharedNotebooks.has(link.id) ? '▾' : '▸'}{' '}
+                                {sharedSectionsCache[link.id]?.length ?? '...'} sections
+                              </>
+                            ) : (
+                              link.url
+                            )}
+                          </div>
+                        </div>
+                        <a
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="h-7 w-7 flex items-center justify-center rounded text-white/30 hover:text-white hover:bg-white/10 transition-colors shrink-0"
+                          onClick={e => e.stopPropagation()}
+                          data-testid={`link-open-shared-${link.id}`}
+                        >
+                          <ExternalLink className="h-3.5 w-3.5" />
+                        </a>
+                        <button
+                          className="h-7 w-7 flex items-center justify-center rounded text-white/20 hover:text-red-400 hover:bg-white/10 transition-colors shrink-0"
+                          onClick={e => { e.stopPropagation(); if (confirm('Remove this shared notebook link?')) deleteSharedLinkMutation.mutate(link.id); }}
+                          data-testid={`button-delete-shared-${link.id}`}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                      {expandedSharedNotebooks.has(link.id) && link.notebookId && (
+                        <div className="ml-11 mt-1 space-y-1">
+                          {loadingSharedSections.has(link.id) ? (
+                            <div className="px-4 py-2 text-xs text-white/30">Loading sections...</div>
+                          ) : (sharedSectionsCache[link.id] || []).length === 0 ? (
+                            <div className="px-4 py-2 text-xs text-white/20">No sections found</div>
+                          ) : (
+                            (sharedSectionsCache[link.id] || []).map(section => (
+                              <button
+                                key={section.id}
+                                className="w-full flex items-center gap-2 px-4 py-2 rounded-md text-left transition-colors hover:bg-white/5"
+                                onClick={() => {
+                                  const pages = allPageCards.filter(c => c.notebookName === link.name && c.sectionName === section.name);
+                                  if (pages.length > 0) {
+                                    openPageCard(pages[0]);
+                                  } else {
+                                    toast({ title: `Loading pages from ${section.name}...` });
+                                    (async () => {
+                                      try {
+                                        const res = await fetch(`/api/onenote/sections/${section.id}/pages`);
+                                        const pagesData = await res.json();
+                                        if (pagesData.length > 0) {
+                                          const newCards: PageCard[] = pagesData.map((p: any, i: number) => ({
+                                            notebookName: link.name,
+                                            sectionName: section.name,
+                                            title: p.title || 'Untitled',
+                                            preview: (p.content || '').substring(0, 100) || 'No preview',
+                                            content: p.content || '',
+                                            position: i,
+                                          }));
+                                          setAllPageCards(prev => [...prev, ...newCards]);
+                                          openPageCard(newCards[0]);
+                                        } else {
+                                          toast({ title: "No pages in this section" });
+                                        }
+                                      } catch {
+                                        toast({ title: "Failed to load pages", variant: "destructive" });
+                                      }
+                                    })();
+                                  }
+                                }}
+                                data-testid={`shared-section-${section.id}`}
+                              >
+                                <FileText className="h-3.5 w-3.5 text-white/30 shrink-0" />
+                                <span className="text-xs text-white/70 truncate">{section.name}</span>
+                              </button>
+                            ))
+                          )}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

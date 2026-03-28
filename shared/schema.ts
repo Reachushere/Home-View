@@ -669,6 +669,7 @@ export const sharedNotebookLinks = pgTable("shared_notebook_links", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   url: text("url").notNull(),
+  notebookId: text("notebook_id"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

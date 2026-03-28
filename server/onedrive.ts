@@ -642,6 +642,84 @@ export async function deleteOneNotePage(notebookDisplayName: string, sectionName
   }
 }
 
+export async function resolveSharedNotebookUrl(shareUrl: string): Promise<{ notebookId: string; name: string; sections: { name: string; id: string }[] } | null> {
+  const client = await getOneDriveClient();
+  try {
+    const encodedUrl = Buffer.from(shareUrl).toString('base64')
+      .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    const shareId = `u!${encodedUrl}`;
+
+    const sharedItem = await client.api(`/shares/${shareId}/driveItem`).select('id,name,webUrl,file,folder').get();
+    console.log(`[OneNote] Resolved share URL to driveItem: ${sharedItem.name} (id: ${sharedItem.id})`);
+
+    const nbRes = await client.api('/me/onenote/notebooks').select('id,displayName,links').get();
+    for (const nb of (nbRes.value || [])) {
+      const match = nb.displayName?.toLowerCase() === sharedItem.name?.toLowerCase()?.replace(/\.one$/i, '');
+      if (match) {
+        const secRes = await client.api(`/me/onenote/notebooks/${nb.id}/sections`).select('id,displayName').get();
+        const sections = (secRes.value || []).map((s: any) => ({ name: s.displayName, id: s.id }));
+        return { notebookId: nb.id, name: nb.displayName, sections };
+      }
+    }
+
+    try {
+      const nbFromUrl = await client.api('/me/onenote/notebooks/getNotebookFromWebUrl').post({ webUrl: shareUrl });
+      if (nbFromUrl?.id) {
+        const secRes = await client.api(`/me/onenote/notebooks/${nbFromUrl.id}/sections`).select('id,displayName').get();
+        const sections = (secRes.value || []).map((s: any) => ({ name: s.displayName, id: s.id }));
+        return { notebookId: nbFromUrl.id, name: nbFromUrl.displayName || sharedItem.name, sections };
+      }
+    } catch (urlErr: any) {
+      console.log(`[OneNote] getNotebookFromWebUrl fallback failed:`, urlErr.message);
+    }
+
+    return null;
+  } catch (e: any) {
+    console.error(`[OneNote] Failed to resolve share URL:`, e.message);
+    return null;
+  }
+}
+
+export async function getPagesBySectionId(sectionId: string): Promise<{ title: string; content: string }[]> {
+  const client = await getOneDriveClient();
+  try {
+    const pagesRes = await client.api(`/me/onenote/sections/${sectionId}/pages`).select('id,title').top(50).get();
+    const pages: { title: string; content: string }[] = [];
+    for (const p of (pagesRes.value || [])) {
+      try {
+        const contentRes = await client.api(`/me/onenote/pages/${p.id}/content`).get();
+        let rawHtml: string;
+        if (typeof contentRes === 'string') {
+          rawHtml = contentRes;
+        } else if (contentRes && typeof contentRes.text === 'function') {
+          rawHtml = await contentRes.text();
+        } else {
+          rawHtml = contentRes?.toString?.() || '';
+        }
+        const plainText = rawHtml.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+        pages.push({ title: p.title || 'Untitled', content: plainText });
+      } catch {
+        pages.push({ title: p.title || 'Untitled', content: '' });
+      }
+    }
+    return pages;
+  } catch (e: any) {
+    console.error(`[OneNote] Failed to get pages for section ${sectionId}:`, e.message);
+    return [];
+  }
+}
+
+export async function getSharedNotebookSections(notebookId: string): Promise<{ name: string; id: string }[]> {
+  const client = await getOneDriveClient();
+  try {
+    const secRes = await client.api(`/me/onenote/notebooks/${notebookId}/sections`).select('id,displayName').get();
+    return (secRes.value || []).map((s: any) => ({ name: s.displayName, id: s.id }));
+  } catch (e: any) {
+    console.error(`[OneNote] Failed to get sections for shared notebook ${notebookId}:`, e.message);
+    return [];
+  }
+}
+
 export async function listOneNoteNotebooks(): Promise<{ name: string; path: string; sections: { name: string; id: string }[] }[]> {
   const client = await getOneDriveClient();
   const notebooks: { name: string; path: string; sections: { name: string; id: string }[] }[] = [];
