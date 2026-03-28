@@ -17547,7 +17547,20 @@ export default function Dashboard() {
                                     data-testid={`button-sem-settings-${sem.key}`}
                                   />
                                   <span className="text-[10px] font-bold whitespace-nowrap" style={{ color: '#ffffff', marginRight: '3px' }}>{sem.label}</span>
-                                  <span className="text-[9px] whitespace-nowrap px-1.5 py-0.5 rounded border" style={{ color: '#ffffff', background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)', marginRight: '3px' }}>{sem.dates}</span>
+                                  <span className="text-[9px] whitespace-nowrap px-1.5 py-0.5 rounded border cursor-pointer hover:bg-white/15 transition-colors" style={{ color: '#ffffff', background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)', marginRight: '3px' }} onClick={(e) => { e.stopPropagation(); setSemSettingsDialogKey(sem.key); }} data-testid={`dates-pill-${sem.key}`}>{sem.dates}</span>
+                                  {sem.key.startsWith('ss') && (() => {
+                                    const ss = perSemesterSettings[sem.key];
+                                    if (!ss) return null;
+                                    const fmtD = (d: string) => { if (!d) return '?'; const dt = new Date(d + 'T12:00:00'); return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); };
+                                    const springLabel = (ss.springStartDate || ss.springEndDate) ? `Spring: ${fmtD(ss.springStartDate || '')} – ${fmtD(ss.springEndDate || '')}` : null;
+                                    const summerLabel = (ss.summerStartDate || ss.summerEndDate) ? `Summer: ${fmtD(ss.summerStartDate || '')} – ${fmtD(ss.summerEndDate || '')}` : null;
+                                    if (!springLabel && !summerLabel) return null;
+                                    return (
+                                      <span className="text-[8px] whitespace-nowrap px-1.5 py-0.5 rounded border cursor-pointer hover:bg-white/15 transition-colors" style={{ color: '#ffffff', background: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.15)', marginRight: '3px' }} onClick={(e) => { e.stopPropagation(); setSemSettingsDialogKey(sem.key); }} data-testid={`dates-pill-halves-${sem.key}`}>
+                                        {[springLabel, summerLabel].filter(Boolean).join('  |  ')}
+                                      </span>
+                                    );
+                                  })()}
                                   {isCurrentSem && <span className="text-[7px] font-bold text-white bg-emerald-500/20 px-1 py-0.5 rounded-full border border-white">CURRENT</span>}
                                   {(() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); return isPast ? <span className="text-[9px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded border" style={{ color: '#ffffff', background: colorSettings.headerBar, borderColor: 'rgba(255,255,255,0.2)' }}>COMPLETE</span> : null; })()}
                                 </div>
