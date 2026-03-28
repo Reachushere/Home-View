@@ -22996,7 +22996,7 @@ export default function Dashboard() {
               </div>
             );
           })()}
-          <div style={{ padding: '0 8px', height: courseRowRects.length > 0 ? `${courseRowRects[0].top - (calendarBorderTop || (calendarTop + 15))}px` : '46px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 46, overflow: 'visible', marginBottom: '0px', boxShadow: '0 3px 6px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3)' }}>
+          <div style={{ padding: '0 8px', height: courseRowRects.length > 0 ? `${courseRowRects[0].top - (calendarBorderTop || (calendarTop + 15)) - 1}px` : '45px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 46, overflow: 'visible', marginBottom: '0px', boxShadow: '0 3px 6px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3)' }}>
             <div style={{ position: 'absolute', top: '15px', left: '22px', right: 0, height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)' }} />
             <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: '6px', bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Homework Progress</span>
             <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: `${effectiveDividerPct}%`, bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', paddingLeft: '6px' }}>Most Urgent Assignments</span>
@@ -23757,7 +23757,7 @@ export default function Dashboard() {
                         const dueDates = group.tasks.map(t => ({ date: startOfDayET(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
                           <div key={group.key} data-hw-group-row style={{ display: 'flex', alignItems: 'flex-start', gap: '0px', marginBottom: '2px' }}>
-                            <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch', marginLeft: '10px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2, marginTop: '10px' }} data-testid={`mini-cal-w11-group-${group.key}`}>
+                            <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch', marginLeft: '10px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2, marginTop: '25px' }} data-testid={`mini-cal-w11-group-${group.key}`}>
                               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '2px', width: '100%' }}>
                                 <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: '100%', justifyContent: 'flex-end' }}>
                                   {['Su','Mo','Tu','We','Th','Fr','Sa'].map((dl, dli) => (
