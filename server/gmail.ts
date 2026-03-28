@@ -141,6 +141,59 @@ export async function sendGmail(params: { to: string; subject: string; htmlBody:
   }
 }
 
+export async function sendGmailWithAttachment(params: { to: string; subject: string; htmlBody: string; attachments: Array<{ filename: string; content: Buffer; mimeType: string }> }): Promise<{ success: boolean; error?: string }> {
+  try {
+    const token = await getAccessToken();
+    const boundary = 'boundary_att_' + Date.now();
+    const mimeLines = [
+      `To: ${params.to}`,
+      `Subject: ${params.subject}`,
+      `MIME-Version: 1.0`,
+      `Content-Type: multipart/mixed; boundary="${boundary}"`,
+      '',
+      `--${boundary}`,
+      `Content-Type: text/html; charset="UTF-8"`,
+      '',
+      params.htmlBody,
+    ];
+
+    for (const att of params.attachments) {
+      mimeLines.push('', `--${boundary}`);
+      mimeLines.push(`Content-Type: ${att.mimeType}`);
+      mimeLines.push(`Content-Transfer-Encoding: base64`);
+      mimeLines.push(`Content-Disposition: attachment; filename="${att.filename}"`);
+      mimeLines.push('');
+      mimeLines.push(att.content.toString('base64'));
+    }
+
+    mimeLines.push('', `--${boundary}--`);
+
+    const raw = Buffer.from(mimeLines.join('\r\n')).toString('base64url');
+
+    const resp = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ raw }),
+    });
+
+    if (!resp.ok) {
+      const errBody = await resp.text();
+      console.error('[Gmail] Send with attachment error:', errBody);
+      return { success: false, error: `Gmail API error ${resp.status}: ${errBody}` };
+    }
+
+    const data = await resp.json() as any;
+    console.log('[Gmail] Email with attachment sent, id:', data.id);
+    return { success: true };
+  } catch (err: any) {
+    console.error('[Gmail] Send with attachment error:', err.message);
+    return { success: false, error: err.message };
+  }
+}
+
 export async function fetchD2LAnnouncements(maxResults: number = 20): Promise<D2LAnnouncement[]> {
   try {
     const query = encodeURIComponent(`from:${D2L_SENDER}`);
