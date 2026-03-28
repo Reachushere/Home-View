@@ -1077,8 +1077,7 @@ export default function Dashboard() {
     if (h < 17) return 'linear-gradient(180deg, #8AC3DF 0%, #C0B9BC 100%)';
     if (h < 18) return 'linear-gradient(180deg, #C0B9BC 0%, #ECC47E 100%)';
     if (h < 19) return 'linear-gradient(180deg, #ECC47E 0%, #F9A523 100%)';
-    if (h < 20) return 'linear-gradient(180deg, #F9A523 0%, #89251C 100%)';
-    if (h < 21) return 'linear-gradient(180deg, #89251C 0%, #01294D 100%)';
+    if (h < 20) return 'linear-gradient(180deg, #F9A523 0%, #01294D 100%)';
     return 'linear-gradient(180deg, #01294D 0%, #01294D 100%)';
   };
   const todayCellBg = getTodayCellGradient();
@@ -19458,7 +19457,7 @@ export default function Dashboard() {
                     style={isToday ? (() => {
                       const now = new Date();
                       const minutesSinceMidnight = now.getHours() * 60 + now.getMinutes();
-                      const pct = Math.min(100, Math.max(0, ((19 * 60) / 1440) * 100));
+                      const pct = Math.min(100, Math.max(0, (minutesSinceMidnight / 1440) * 100));
                       let sunriseMin = 7 * 60, sunsetMin = 18 * 60;
                       if (weatherData?.sunrise) { const sr = new Date(weatherData.sunrise); sunriseMin = sr.getHours() * 60 + sr.getMinutes(); }
                       if (weatherData?.sunset) { const ss = new Date(weatherData.sunset); sunsetMin = ss.getHours() * 60 + ss.getMinutes(); }
@@ -19474,7 +19473,6 @@ export default function Dashboard() {
                         { p: 68, c: '#C0B9BC' },
                         { p: 71, c: '#ECC47E' },
                         { p: 74, c: '#F9A523' },
-                        { p: 77, c: '#89251C' },
                         { p: 82, c: '#01294D' },
                         { p: 100, c: '#01294D' },
                       ];
