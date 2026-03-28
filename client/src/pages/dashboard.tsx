@@ -19425,12 +19425,22 @@ export default function Dashboard() {
                       if (weatherData?.sunrise) { const sr = new Date(weatherData.sunrise); sunriseMin = sr.getHours() * 60 + sr.getMinutes(); }
                       if (weatherData?.sunset) { const ss = new Date(weatherData.sunset); sunsetMin = ss.getHours() * 60 + ss.getMinutes(); }
                       const skyStops = [
-                        { p: 0, c: '#0a0f1e' }, { p: 8, c: '#1a2744' }, { p: 15, c: '#2c3e6b' },
-                        { p: 22, c: '#6a9ab8' }, { p: 28, c: '#a4bcc8' }, { p: 32, c: '#c4a082' },
-                        { p: 38, c: '#87c5e0' }, { p: 45, c: '#9dd0e8' }, { p: 55, c: '#7bb8d8' },
-                        { p: 62, c: '#7ba8c0' }, { p: 68, c: '#c0a890' }, { p: 72, c: '#d4a06a' },
-                        { p: 76, c: '#c48a68' }, { p: 82, c: '#8a6858' }, { p: 88, c: '#4a4058' },
-                        { p: 95, c: '#1a2744' }, { p: 100, c: '#0a0f1e' },
+                        { p: 0, c: '#0a0f1e' },
+                        { p: 10, c: '#1a2744' },
+                        { p: 20, c: '#2c3e6b' },
+                        { p: 25, c: '#c4a082' },
+                        { p: 30, c: '#a4bcc8' },
+                        { p: 35, c: '#87c5e0' },
+                        { p: 45, c: '#9dd0e8' },
+                        { p: 55, c: '#7bb8d8' },
+                        { p: 65, c: '#7ba8c0' },
+                        { p: 70, c: '#c0a890' },
+                        { p: 75, c: '#d4a06a' },
+                        { p: 78, c: '#c48a68' },
+                        { p: 82, c: '#8a6858' },
+                        { p: 88, c: '#4a4058' },
+                        { p: 95, c: '#1a2744' },
+                        { p: 100, c: '#0a0f1e' },
                       ];
                       const visibleStops = skyStops.filter(s => s.p <= pct);
                       if (visibleStops.length === 0) visibleStops.push(skyStops[0]);
