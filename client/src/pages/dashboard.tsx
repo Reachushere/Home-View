@@ -26887,12 +26887,13 @@ function SemesterSettingsFormBody({ semKey, existing, onCancel, onSave }: {
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1">
             <Label className="text-[10px] text-white/70">Week 1, Day 1 Date</Label>
-            <Input
+            <input
               type="date"
               value={localW1}
               onChange={(e) => setLocalW1(e.target.value)}
-              className="!text-black !text-[10px] h-8 bg-white border-white/20"
-              style={{ fontSize: '10px', color: 'black' }}
+              onClick={(e) => (e.target as HTMLInputElement).showPicker?.()}
+              className="w-full h-8 px-2 text-[10px] rounded-md bg-white border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
+              style={{ fontSize: '10px', color: 'black', colorScheme: 'light' }}
               data-testid="input-sem-settings-week1"
             />
           </div>
@@ -26962,12 +26963,13 @@ function SemesterSettingsFormBody({ semKey, existing, onCancel, onSave }: {
         <div className="space-y-1">
           <Label className="text-[10px] text-white/70">Reading Week Start Date</Label>
           <div className="flex items-center gap-2">
-            <Input
+            <input
               type="date"
               value={localRw}
               onChange={(e) => setLocalRw(e.target.value)}
-              className="!text-black !text-[10px] h-8 bg-white w-40"
-              style={{ fontSize: '10px', color: 'black' }}
+              onClick={(e) => (e.target as HTMLInputElement).showPicker?.()}
+              className="h-8 px-2 text-[10px] rounded-md bg-white border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400 w-40 cursor-pointer"
+              style={{ fontSize: '10px', color: 'black', colorScheme: 'light' }}
               data-testid="input-sem-settings-reading-week"
             />
             {localRw && (
