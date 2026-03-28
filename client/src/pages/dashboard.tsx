@@ -13218,22 +13218,33 @@ export default function Dashboard() {
         />
       )}
 
-      {/* Timer bar - no box, inline left of time */}
+      {/* Timer bar - controls left of timer */}
       <div style={{
         position: 'fixed',
         right: `${calendarRight - calendarReduction + 9}px`,
         top: `${3 + d2lTickerHeight}px`,
         zIndex: 100,
         display: 'flex',
-        flexDirection: 'column',
+        flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'flex-start',
-        gap: '0px',
+        justifyContent: 'flex-end',
+        gap: '6px',
         paddingRight: '0px',
         opacity: isTopPillOpen ? 0 : 1,
         transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out',
         pointerEvents: isTopPillOpen ? 'none' : 'auto',
       }} data-tpo data-tpo-opacity="1" data-testid="timer-bar">
+        <div className="flex flex-col items-center gap-[4px]" style={{ marginTop: '2px' }}>
+          <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle" title={pomodoroRunning ? 'Pause' : 'Play'}>
+            {pomodoroRunning ? <Pause className="h-[14px] w-[14px] text-white" strokeWidth={2.5} /> : <Play className="h-[14px] w-[14px] text-white" strokeWidth={2.5} />}
+          </button>
+          <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={resetPomodoro} data-testid="button-pomodoro-reset" title="Stop">
+            <Square className="h-[12px] w-[12px] text-white" strokeWidth={2.5} />
+          </button>
+          <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={() => { setPomodoroTime(prev => prev + 60); }} data-testid="button-pomodoro-add-min" title="+1 min" style={{ fontSize: '9px', color: 'white', fontWeight: 600, whiteSpace: 'nowrap', lineHeight: 1 }}>
+            +1m
+          </button>
+        </div>
         <div ref={clockContainerRef} data-testid="pomodoro-timer" style={{ position: 'relative', cursor: 'pointer' }} onClick={togglePomodoro}>
           {(() => {
             const totalSec = pomodoroMode === 'work' ? 25 * 60 : pomodoroMode === 'shortBreak' ? 5 * 60 : 15 * 60;
@@ -13253,17 +13264,6 @@ export default function Dashboard() {
               </svg>
             );
           })()}
-        </div>
-        <div className="flex items-center gap-[20px]" style={{ marginTop: '2px' }}>
-          <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle" title={pomodoroRunning ? 'Pause' : 'Play'}>
-            {pomodoroRunning ? <Pause className="h-[14px] w-[14px] text-white" strokeWidth={2.5} /> : <Play className="h-[14px] w-[14px] text-white" strokeWidth={2.5} />}
-          </button>
-          <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={resetPomodoro} data-testid="button-pomodoro-reset" title="Stop">
-            <Square className="h-[12px] w-[12px] text-white" strokeWidth={2.5} />
-          </button>
-          <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={() => { setPomodoroTime(prev => prev + 60); }} data-testid="button-pomodoro-add-min" title="+1 min" style={{ fontSize: '9px', color: 'white', fontWeight: 600, whiteSpace: 'nowrap', lineHeight: 1 }}>
-            +1m
-          </button>
         </div>
       </div>
 
