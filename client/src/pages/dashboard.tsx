@@ -11649,6 +11649,7 @@ export default function Dashboard() {
       <div className="fixed flex items-start" data-tpo data-tpo-opacity="1" style={{ left: '23px', top: `${8 + d2lTickerHeight}px`, height: '35px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
         <img src={schoolData.schoolLogo || changSchoolLogo} alt={schoolData.schoolName || "The Chang School"} style={{ height: '44px', objectFit: 'contain' }} />
         <div style={{ width: '1.5px', height: '28px', backgroundColor: 'rgba(255,255,255,0.45)', borderRadius: '1px', flexShrink: 0, marginLeft: '10px', marginRight: '10px' }} />
+        <img src={profilePhotoUrl || profilePhoto} alt="Profile" style={{ width: '30px', height: '30px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, marginRight: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} />
         <div className="flex flex-col">
           <span className="text-white font-bold text-[11.5px] leading-tight">Schedule for {profileData.firstName}{profileData.lastName ? ` ${profileData.lastName}` : ''}</span>
           <span className="text-white text-[10px] leading-tight" style={{ fontWeight: 300 }}>{schoolData.schoolName || 'Toronto Metropolitan University'}</span>
@@ -11706,7 +11707,14 @@ export default function Dashboard() {
               data-testid="next-task-countdown"
             >
               <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderRadius: '12px', padding: '3px 26px 3px 68px', minWidth: '395px', border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)', boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)', gap: '8px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>
-                <img src={profilePhotoUrl || profilePhoto} alt="Profile" style={{ width: '43px', height: '43px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, marginLeft: '-46px', marginRight: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} />
+                {/* Clock in countdown pill */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '-46px', marginRight: '10px', flexShrink: 0 }}>
+                  {(() => { const sz = 44; const center = sz / 2; const dotR = 1.2; const hourDotDist = 18; const hours = currentTime.getHours(); const minutes = currentTime.getMinutes(); const seconds = currentTime.getSeconds(); const hourAngle = ((hours % 12) + minutes / 60) * 30 - 90; const minuteAngle = (minutes + seconds / 60) * 6 - 90; const secondAngle = seconds * 6 - 90; const hourHandLen = 10; const minuteHandLen = 14; const secondHandLen = 16; const toRad = (deg: number) => (deg * Math.PI) / 180; return (<svg width={sz} height={sz} viewBox={`0 0 ${sz} ${sz}`}>{Array.from({ length: 12 }, (_, i) => { const angle = (i * 30 - 90) * (Math.PI / 180); const x = center + hourDotDist * Math.cos(angle); const y = center + hourDotDist * Math.sin(angle); return <circle key={i} cx={x} cy={y} r={i % 3 === 0 ? dotR + 0.5 : dotR} fill="rgba(255,255,255,0.7)" />; })}<line x1={center} y1={center} x2={center + hourHandLen * Math.cos(toRad(hourAngle))} y2={center + hourHandLen * Math.sin(toRad(hourAngle))} stroke="#ffffff" strokeWidth="2" strokeLinecap="round" /><line x1={center} y1={center} x2={center + minuteHandLen * Math.cos(toRad(minuteAngle))} y2={center + minuteHandLen * Math.sin(toRad(minuteAngle))} stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" /><line x1={center} y1={center} x2={center + secondHandLen * Math.cos(toRad(secondAngle))} y2={center + secondHandLen * Math.sin(toRad(secondAngle))} stroke="#ef4444" strokeWidth="0.7" strokeLinecap="round" /><circle cx={center} cy={center} r="1.5" fill="#ffffff" /></svg>); })()}
+                  <div style={{ display: 'flex', alignItems: 'center', marginTop: '-2px' }}>
+                    <span className="text-white" style={{ fontSize: '10px', fontWeight: '600', fontVariantNumeric: 'tabular-nums', lineHeight: '1' }}>{new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}</span>
+                    <span className="text-white" style={{ fontSize: '9px', fontWeight: '600', textTransform: 'uppercase', marginLeft: '1px', lineHeight: '1' }}>{new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}</span>
+                  </div>
+                </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginLeft: '2px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap' }} data-testid="countdown-empty-state">
                     <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>All tasks completed</span>
@@ -11766,8 +11774,15 @@ export default function Dashboard() {
             }}
             data-testid="next-task-countdown"
           >
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderRadius: '12px', padding: '3px 26px 3px 68px', minWidth: '395px', border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)', boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)', gap: '8px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}> 
-              <img src={profilePhotoUrl || profilePhoto} alt="Profile" style={{ width: '43px', height: '43px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, marginLeft: '-46px', marginRight: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} />
+            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderRadius: '12px', padding: '3px 26px 3px 68px', minWidth: '395px', border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)', boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)', gap: '8px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>
+              {/* Clock in countdown pill */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '-46px', marginRight: '10px', flexShrink: 0 }}>
+                {(() => { const sz = 44; const center = sz / 2; const dotR = 1.2; const hourDotDist = 18; const hours = currentTime.getHours(); const minutes = currentTime.getMinutes(); const seconds = currentTime.getSeconds(); const hourAngle = ((hours % 12) + minutes / 60) * 30 - 90; const minuteAngle = (minutes + seconds / 60) * 6 - 90; const secondAngle = seconds * 6 - 90; const hourHandLen = 10; const minuteHandLen = 14; const secondHandLen = 16; const toRad = (deg: number) => (deg * Math.PI) / 180; return (<svg width={sz} height={sz} viewBox={`0 0 ${sz} ${sz}`}>{Array.from({ length: 12 }, (_, i) => { const angle = (i * 30 - 90) * (Math.PI / 180); const x = center + hourDotDist * Math.cos(angle); const y = center + hourDotDist * Math.sin(angle); return <circle key={i} cx={x} cy={y} r={i % 3 === 0 ? dotR + 0.5 : dotR} fill="rgba(255,255,255,0.7)" />; })}<line x1={center} y1={center} x2={center + hourHandLen * Math.cos(toRad(hourAngle))} y2={center + hourHandLen * Math.sin(toRad(hourAngle))} stroke="#ffffff" strokeWidth="2" strokeLinecap="round" /><line x1={center} y1={center} x2={center + minuteHandLen * Math.cos(toRad(minuteAngle))} y2={center + minuteHandLen * Math.sin(toRad(minuteAngle))} stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" /><line x1={center} y1={center} x2={center + secondHandLen * Math.cos(toRad(secondAngle))} y2={center + secondHandLen * Math.sin(toRad(secondAngle))} stroke="#ef4444" strokeWidth="0.7" strokeLinecap="round" /><circle cx={center} cy={center} r="1.5" fill="#ffffff" /></svg>); })()}
+                <div style={{ display: 'flex', alignItems: 'center', marginTop: '-2px' }}>
+                  <span className="text-white" style={{ fontSize: '10px', fontWeight: '600', fontVariantNumeric: 'tabular-nums', lineHeight: '1' }}>{new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}</span>
+                  <span className="text-white" style={{ fontSize: '9px', fontWeight: '600', textTransform: 'uppercase', marginLeft: '1px', lineHeight: '1' }}>{new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}</span>
+                </div>
+              </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginLeft: '2px' }}>
                 {(() => {
                   const prepDaysNum = prepDaysText === 'today' ? 0 : prepDaysText === 'now' ? -1 : Number(prepDaysText);
@@ -13235,50 +13250,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Time - fixed position */}
-      <div data-tpo data-tpo-opacity="1" style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 9}px`, top: `${3 + d2lTickerHeight}px`, zIndex: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="digital-clock">
-        {(() => {
-          const sz = 44;
-          const center = sz / 2;
-          const dotR = 1.2;
-          const hourDotDist = 18;
-          const hours = currentTime.getHours();
-          const minutes = currentTime.getMinutes();
-          const seconds = currentTime.getSeconds();
-          const hourAngle = ((hours % 12) + minutes / 60) * 30 - 90;
-          const minuteAngle = (minutes + seconds / 60) * 6 - 90;
-          const secondAngle = seconds * 6 - 90;
-          const hourHandLen = 10;
-          const minuteHandLen = 14;
-          const secondHandLen = 16;
-          const toRad = (deg: number) => (deg * Math.PI) / 180;
-          return (
-            <svg width={sz} height={sz} viewBox={`0 0 ${sz} ${sz}`}>
-              {Array.from({ length: 12 }, (_, i) => {
-                const angle = (i * 30 - 90) * (Math.PI / 180);
-                const x = center + hourDotDist * Math.cos(angle);
-                const y = center + hourDotDist * Math.sin(angle);
-                return <circle key={i} cx={x} cy={y} r={i % 3 === 0 ? dotR + 0.5 : dotR} fill="rgba(255,255,255,0.7)" />;
-              })}
-              <line x1={center} y1={center} x2={center + hourHandLen * Math.cos(toRad(hourAngle))} y2={center + hourHandLen * Math.sin(toRad(hourAngle))} stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
-              <line x1={center} y1={center} x2={center + minuteHandLen * Math.cos(toRad(minuteAngle))} y2={center + minuteHandLen * Math.sin(toRad(minuteAngle))} stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" />
-              <line x1={center} y1={center} x2={center + secondHandLen * Math.cos(toRad(secondAngle))} y2={center + secondHandLen * Math.sin(toRad(secondAngle))} stroke="#ef4444" strokeWidth="0.7" strokeLinecap="round" />
-              <circle cx={center} cy={center} r="1.5" fill="#ffffff" />
-            </svg>
-          );
-        })()}
-        <div style={{ display: 'flex', alignItems: 'center', marginTop: '6px' }}>
-          <span className="text-white" style={{ fontSize: '10px', fontWeight: '600', fontVariantNumeric: 'tabular-nums', lineHeight: '1' }}>
-            {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
-          </span>
-          <span className="text-white" style={{ fontSize: '9px', fontWeight: '600', textTransform: 'uppercase', marginLeft: '1px', lineHeight: '1' }}>
-            {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
-          </span>
-        </div>
-        {profileData.travelTimezone && (
-          <span className="text-[8px] text-orange-400 font-medium">Travel</span>
-        )}
-      </div>
+      {/* Clock removed - now inside countdown pill */}
 
       {/* Settings Panel Popup - Degree Tracking */}
       {isSettingsPanelOpen && (
