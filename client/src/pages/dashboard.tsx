@@ -13267,11 +13267,11 @@ export default function Dashboard() {
             </svg>
           );
         })()}
-        <div style={{ display: 'flex', alignItems: 'center', marginTop: '4px' }}>
-          <span className="text-white" style={{ fontSize: '9px', fontWeight: '600', fontVariantNumeric: 'tabular-nums', lineHeight: '1' }}>
+        <div style={{ display: 'flex', alignItems: 'center', marginTop: '6px' }}>
+          <span className="text-white" style={{ fontSize: '10px', fontWeight: '600', fontVariantNumeric: 'tabular-nums', lineHeight: '1' }}>
             {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
           </span>
-          <span className="text-white" style={{ fontSize: '8px', fontWeight: '600', textTransform: 'uppercase', marginLeft: '1px', lineHeight: '1' }}>
+          <span className="text-white" style={{ fontSize: '9px', fontWeight: '600', textTransform: 'uppercase', marginLeft: '1px', lineHeight: '1' }}>
             {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
           </span>
         </div>
