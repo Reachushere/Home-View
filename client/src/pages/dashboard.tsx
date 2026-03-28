@@ -19426,18 +19426,18 @@ export default function Dashboard() {
                       if (weatherData?.sunset) { const ss = new Date(weatherData.sunset); sunsetMin = ss.getHours() * 60 + ss.getMinutes(); }
                       const isDaytime = minutesSinceMidnight >= sunriseMin && minutesSinceMidnight < sunsetMin;
                       const h = now.getHours() + now.getMinutes() / 60;
-                      let skyLeft: string, skyRight: string;
-                      if (h < 4) { skyLeft = '#0f1b2d'; skyRight = '#1a2744'; }
-                      else if (h < 6) { skyLeft = '#1e3252'; skyRight = '#4a6e8a'; }
-                      else if (h < 8) { skyLeft = '#6a9ab8'; skyRight = '#c4a082'; }
-                      else if (h < 10) { skyLeft = '#87afc4'; skyRight = '#a8c4d6'; }
-                      else if (h < 13) { skyLeft = '#7ba8c0'; skyRight = '#9bbdd0'; }
-                      else if (h < 15) { skyLeft = '#7ba8c0'; skyRight = '#c0a890'; }
-                      else if (h < 17) { skyLeft = '#9aaab4'; skyRight = '#bea08a'; }
-                      else if (h < 19) { skyLeft = '#a08870'; skyRight = '#5a5060'; }
-                      else if (h < 21) { skyLeft = '#6a5a52'; skyRight = '#2a2840'; }
-                      else { skyLeft = '#2a2840'; skyRight = '#1a1e32'; }
-                      return { background: `linear-gradient(to right, ${skyLeft} 0%, ${skyRight} 100%)` };
+                      let skyGrad: string;
+                      if (h < 4) skyGrad = 'linear-gradient(180deg, #0f1b2d 0%, #1a2744 100%)';
+                      else if (h < 6) skyGrad = 'linear-gradient(180deg, #1e3252 0%, #4a6e8a 50%, #8a7e6e 100%)';
+                      else if (h < 8) skyGrad = 'linear-gradient(180deg, #87b5cc 0%, #a4bcc8 50%, #c4a082 100%)';
+                      else if (h < 10) skyGrad = 'linear-gradient(180deg, #8bbcd4 0%, #a8c4d6 100%)';
+                      else if (h < 13) skyGrad = 'linear-gradient(180deg, #7ba8c0 0%, #9bbdd0 100%)';
+                      else if (h < 15) skyGrad = 'linear-gradient(180deg, #7ba8c0 0%, #a4b8c0 50%, #c0a890 100%)';
+                      else if (h < 17) skyGrad = 'linear-gradient(180deg, #9aaab4 0%, #bea08a 100%)';
+                      else if (h < 19) skyGrad = 'linear-gradient(180deg, #a08870 0%, #c48a68 40%, #5a5060 80%, #3a3450 100%)';
+                      else if (h < 21) skyGrad = 'linear-gradient(180deg, #6a5a52 0%, #4a4058 50%, #2a2840 100%)';
+                      else skyGrad = 'linear-gradient(180deg, #2a2840 0%, #1a1e32 100%)';
+                      return { background: skyGrad };
                     })() : { backgroundColor: colorSettings.headerBar }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
