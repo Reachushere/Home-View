@@ -23374,7 +23374,7 @@ export default function Dashboard() {
                 {dueTomorrowTasks.length === 0 ? (
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks for {hwWeeklyTimeline[0]?.label || 'this week'}</div>
                 ) : (
-                  <div className="flex flex-col gap-0.5" style={{ marginTop: '-18px' }}>
+                  <div className="flex flex-col gap-0.5" style={{ marginTop: '-11px' }}>
                     {(() => {
                       const today = startOfDayET(new Date());
                       const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
@@ -23564,7 +23564,7 @@ export default function Dashboard() {
                 {dueNextWeekTasks.length === 0 ? (
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks for {hwWeeklyTimeline[1]?.label || 'this week'}</div>
                 ) : (
-                  <div className="flex flex-col gap-0.5" style={{ marginTop: '-18px' }}>
+                  <div className="flex flex-col gap-0.5" style={{ marginTop: '-11px' }}>
                     {(() => {
                       const today = startOfDayET(new Date());
                       const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
@@ -23718,7 +23718,7 @@ export default function Dashboard() {
                 </div>
                 {/* 2 Weeks Section */}
                 <div data-homework-section="twoweeks" data-semester-label={hwWeeklyTimeline[2]?.semLabel || ''} style={{ marginTop: '10px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '2px', width: 'fit-content', marginBottom: '0px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '2px', width: 'fit-content', marginBottom: '7px' }}>
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', flexShrink: 0 }}>{hwWeeklyTimeline[2]?.label || 'Two weeks'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', flexShrink: 0 }}>({dueTwoWeeksTasks.length})</span>
                     {/Week\s+\d/i.test(hwWeeklyTimeline[2]?.label || '') && (
@@ -23738,7 +23738,7 @@ export default function Dashboard() {
                 {dueTwoWeeksTasks.length === 0 ? (
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks in two weeks</div>
                 ) : (
-                  <div className="flex flex-col gap-0.5" style={{ marginTop: '-18px' }}>
+                  <div className="flex flex-col gap-0.5" style={{ marginTop: '-11px' }}>
                     {(() => {
                       const today = startOfDayET(new Date());
                       const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
