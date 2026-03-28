@@ -23101,7 +23101,7 @@ export default function Dashboard() {
                               </div>
                             )}
                             <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                              <div style={{ position: 'relative', width: circleSize, height: circleSize }}>
+                              <div style={{ position: 'relative', width: circleSize, height: circleSize, marginLeft: '-3px' }}>
                                 <svg width={circleSize} height={circleSize} style={{ transform: 'rotate(-90deg)' }}>
                                   <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth={strokeWidth} />
                                   {item.p.hasFiles && item.p.percent > 0 && (
@@ -24249,7 +24249,7 @@ export default function Dashboard() {
                                   </div>
                                 )}
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                  <div style={{ position: 'relative', width: circleSize, height: circleSize }}>
+                                  <div style={{ position: 'relative', width: circleSize, height: circleSize, marginLeft: '-3px' }}>
                                     <svg width={circleSize} height={circleSize} style={{ transform: 'rotate(-90deg)' }}>
                                       <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth={strokeWidth} />
                                       {item.p.hasFiles && item.p.percent > 0 && (
