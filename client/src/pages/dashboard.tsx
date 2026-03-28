@@ -14065,6 +14065,7 @@ export default function Dashboard() {
             courseInfo={info}
             certificateName={certName}
             initialEditMode={!!selectedCertCourse?.openInEdit}
+            semesterSettings={perSemesterSettings as any}
             courseRank={(() => {
               const cc = selectedCertCourse!.courseCode.replace(/\s/g, '');
               for (const sk of semesterKeyOrder) {

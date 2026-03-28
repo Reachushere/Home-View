@@ -119,6 +119,7 @@ interface CourseDetailDialogProps {
   usedRanksA?: number[];
   usedRanksB?: number[];
   onRankChange?: (suffix: string, val: number) => void;
+  semesterSettings?: Record<string, { week1StartDate?: string; springStartDate?: string; springEndDate?: string; summerStartDate?: string; summerEndDate?: string }>;
 }
 
 interface NewTaskForm {
@@ -234,7 +235,7 @@ function semesterKeyFromTermYear(term?: string, year?: string): string {
   return '';
 }
 
-export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLiveColorChange, onGradeCalculated, onDeleteCourse, onOpenEditTask, semesterStart, readingWeekStart, certificateName, onPushUndo, initialEditMode, courseRank, usedRanks, isSpringSummer, courseSpSuTerm, courseRankA, courseRankB, usedRanksA, usedRanksB, onRankChange }: CourseDetailDialogProps) {
+export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLiveColorChange, onGradeCalculated, onDeleteCourse, onOpenEditTask, semesterStart, readingWeekStart, certificateName, onPushUndo, initialEditMode, courseRank, usedRanks, isSpringSummer, courseSpSuTerm, courseRankA, courseRankB, usedRanksA, usedRanksB, onRankChange, semesterSettings }: CourseDetailDialogProps) {
   const { toast } = useToast();
   const [showAddForm, setShowAddForm] = useState(false);
   const [newTask, setNewTask] = useState<NewTaskForm>(createEmptyTaskForm());
@@ -400,8 +401,34 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     zoomLink: courseInfo.zoomLink || '',
     semesterTerm: courseInfo.semesterTerm || '',
     year: courseInfo.year || '',
-    startDate: courseInfo.startDate || '',
-    endDate: courseInfo.endDate || '',
+    startDate: (() => {
+      if (courseInfo.startDate) return courseInfo.startDate;
+      const semKey = semesterKeyFromTermYear(courseInfo.semesterTerm, courseInfo.year);
+      const ss = semesterSettings?.[semKey];
+      if (ss && semKey.startsWith('ss')) {
+        const ssTerm = courseSpSuTerm || 'full';
+        if (ssTerm === 'first_half' && ss.springStartDate) return ss.springStartDate;
+        if (ssTerm === 'second_half' && ss.summerStartDate) return ss.summerStartDate;
+        if (ssTerm === 'full' && ss.springStartDate) return ss.springStartDate;
+        if (ss.week1StartDate) return ss.week1StartDate;
+      }
+      if (ss?.week1StartDate) return ss.week1StartDate;
+      const opt = SEMESTER_OPTIONS.find(o => o.key === semKey);
+      return opt?.start || '';
+    })(),
+    endDate: (() => {
+      if (courseInfo.endDate) return courseInfo.endDate;
+      const semKey = semesterKeyFromTermYear(courseInfo.semesterTerm, courseInfo.year);
+      const ss = semesterSettings?.[semKey];
+      if (ss && semKey.startsWith('ss')) {
+        const ssTerm = courseSpSuTerm || 'full';
+        if (ssTerm === 'first_half' && ss.springEndDate) return ss.springEndDate;
+        if (ssTerm === 'second_half' && ss.summerEndDate) return ss.summerEndDate;
+        if (ssTerm === 'full' && ss.summerEndDate) return ss.summerEndDate;
+      }
+      const opt = SEMESTER_OPTIONS.find(o => o.key === semKey);
+      return opt?.end || '';
+    })(),
     color: courseInfo.color || '#3b82f6',
     colorEnd: courseInfo.colorEnd || courseInfo.color || '#3b82f6',
     colorStops: courseInfo.colorStops || '',
@@ -1718,7 +1745,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 <div className="grid grid-cols-3 gap-2">
                   <div>
                     <label className="text-white text-[9px] mb-0.5 block font-semibold">Semester <span className="text-red-400">*</span></label>
-                    <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={semesterKeyFromTermYear(editInfo.semesterTerm, editInfo.year)} onChange={(e) => { const opt = SEMESTER_OPTIONS.find(o => o.key === e.target.value); if (opt) { setEditInfo({...editInfo, semesterTerm: opt.term, year: opt.year, startDate: opt.start, endDate: opt.end }); } else { setEditInfo({...editInfo, semesterTerm: '', year: '', startDate: '', endDate: '' }); } }} data-testid="select-edit-semester-term">
+                    <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={semesterKeyFromTermYear(editInfo.semesterTerm, editInfo.year)} onChange={(e) => { const opt = SEMESTER_OPTIONS.find(o => o.key === e.target.value); if (opt) { const ss = semesterSettings?.[opt.key]; let start = opt.start; let end = opt.end; if (ss) { if (ss.week1StartDate) start = ss.week1StartDate; if (opt.key.startsWith('ss') && ss.summerEndDate) end = ss.summerEndDate; else if (opt.key.startsWith('ss') && ss.springEndDate && !ss.summerEndDate) end = ss.springEndDate; } setEditInfo({...editInfo, semesterTerm: opt.term, year: opt.year, startDate: start, endDate: end }); } else { setEditInfo({...editInfo, semesterTerm: '', year: '', startDate: '', endDate: '' }); } }} data-testid="select-edit-semester-term">
                       <option value="" className="bg-gray-800">—</option>
                       {SEMESTER_OPTIONS.map(o => <option key={o.key} value={o.key} className="bg-gray-800">{o.label}</option>)}
                     </select>
@@ -1736,7 +1763,27 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 {isSpringSummer && (
                   <div className="mb-2">
                     <label className="text-white text-[9px] mb-0.5 block font-semibold">Spring/Summer Term <span className="text-red-400">*</span></label>
-                    <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.springSummerTerm} onChange={(e) => setEditInfo({...editInfo, springSummerTerm: e.target.value})} data-testid="select-edit-spsu-term">
+                    <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.springSummerTerm} onChange={(e) => {
+                      const term = e.target.value;
+                      const semKey = semesterKeyFromTermYear(editInfo.semesterTerm, editInfo.year);
+                      const ss = semesterSettings?.[semKey];
+                      let newStart = editInfo.startDate;
+                      let newEnd = editInfo.endDate;
+                      if (ss) {
+                        if (term === 'first_half') {
+                          if (ss.springStartDate) newStart = ss.springStartDate;
+                          if (ss.springEndDate) newEnd = ss.springEndDate;
+                        } else if (term === 'second_half') {
+                          if (ss.summerStartDate) newStart = ss.summerStartDate;
+                          if (ss.summerEndDate) newEnd = ss.summerEndDate;
+                        } else if (term === 'full') {
+                          if (ss.springStartDate) newStart = ss.springStartDate;
+                          else if (ss.week1StartDate) newStart = ss.week1StartDate;
+                          if (ss.summerEndDate) newEnd = ss.summerEndDate;
+                        }
+                      }
+                      setEditInfo({...editInfo, springSummerTerm: term, startDate: newStart, endDate: newEnd });
+                    }} data-testid="select-edit-spsu-term">
                       <option value="" className="bg-gray-800">-- Select Term First --</option>
                       <option value="first_half" className="bg-gray-800">Spring (First Half) — May-Jun</option>
                       <option value="second_half" className="bg-gray-800">Summer (Second Half) — Jun-Aug</option>
