@@ -2068,7 +2068,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1.5 text-[10px] text-white hover:text-white/80 bg-white/10 border border-white/20 rounded px-2 py-1.5"
-                    style={{ maxWidth: '50%' }}
+                    style={{ maxWidth: '50%', marginTop: '10px' }}
                     data-testid="link-zoom"
                   >
                     <img src={zoomLogoPath} alt="Zoom" style={{ width: '38px', height: 'auto', filter: 'brightness(0) invert(1)', flexShrink: 0 }} />
