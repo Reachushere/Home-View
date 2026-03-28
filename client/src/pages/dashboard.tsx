@@ -13222,7 +13222,7 @@ export default function Dashboard() {
             );
           })()}
         </div>
-        <div className="flex items-center gap-[12px]" style={{ marginTop: '-1px' }}>
+        <div className="flex items-center gap-[20px]" style={{ marginTop: '-1px' }}>
           <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle" title={pomodoroRunning ? 'Pause' : 'Play'}>
             {pomodoroRunning ? <Pause className="h-[12px] w-[12px] text-white" strokeWidth={2.5} /> : <Play className="h-[12px] w-[12px] text-white" strokeWidth={2.5} />}
           </button>
