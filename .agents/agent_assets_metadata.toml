@@ -54,3 +54,9 @@ id = "z-cEJKC33j9M-_wc08cBr"
 uri = "file://Self_Hosting_Guide.md"
 type = "text"
 title = "Self-Hosting Guide: Taking Your Dashboard Out of Replit"
+
+[[outputs]]
+id = "m-dA6_c-_x2CulNy-njGK"
+uri = "file://attached_assets/Master_App_Guide.md"
+type = "text"
+title = "Master App Guide — Complete Reference"
