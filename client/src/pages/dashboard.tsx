@@ -473,7 +473,7 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
   return null;
 }
 
-const PrioritySelect = memo(function PrioritySelect({ priorityKey, initialValue, totalInSem, draftRef, courseCode }: { priorityKey: string; initialValue: number; totalInSem: number; draftRef: React.MutableRefObject<Record<string, number>>; courseCode: string }) {
+const PrioritySelect = memo(function PrioritySelect({ priorityKey, initialValue, totalInSem, draftRef, courseCode, usedValues, onPriorityChange }: { priorityKey: string; initialValue: number; totalInSem: number; draftRef: React.MutableRefObject<Record<string, number>>; courseCode: string; usedValues: number[]; onPriorityChange: (key: string, val: number) => void }) {
   const [val, setVal] = useState(initialValue);
   useEffect(() => { setVal(initialValue); }, [initialValue]);
   return (
@@ -487,13 +487,16 @@ const PrioritySelect = memo(function PrioritySelect({ priorityKey, initialValue,
         const v = parseInt(e.target.value, 10);
         setVal(v);
         draftRef.current = { ...draftRef.current, [priorityKey]: v };
+        onPriorityChange(priorityKey, v);
       }}
       data-testid={`select-priority-${courseCode}`}
     >
       <option value={0}>—</option>
-      {Array.from({ length: totalInSem }, (_, i) => (
-        <option key={i + 1} value={i + 1}>{i + 1}</option>
-      ))}
+      {Array.from({ length: totalInSem }, (_, i) => {
+        const n = i + 1;
+        const taken = usedValues.includes(n) && val !== n;
+        return <option key={n} value={n} disabled={taken} style={taken ? { color: '#555' } : {}}>{n}</option>;
+      })}
     </select>
   );
 });
@@ -2316,6 +2319,15 @@ export default function Dashboard() {
       setDraftCoursePlayPriority(val);
     }
   }, []);
+  const handlePriorityChange = useCallback((priorityKey: string, val: number) => {
+    setDraftPriorityBoth(prev => ({ ...prev, [priorityKey]: val }));
+    setCoursePlayPriority(prev => {
+      const updated = { ...prev, [priorityKey]: val };
+      localStorage.setItem('coursePlayPriority', JSON.stringify(updated));
+      fetch('/api/course-play-priority', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updated) }).catch(() => {});
+      return updated;
+    });
+  }, [setDraftPriorityBoth]);
   const [isRemainingCoursesDialogOpen, setIsRemainingCoursesDialogOpen] = useState(false);
   const [pastCourseInfo, setPastCourseInfo] = useState<Record<string, { professor: string; email: string; grade: string; semester: string; credits: string }>>(() => {
     const courseInfoDefaults: Record<string, { professor: string; email: string; grade: string; semester: string; credits: string }> = {
@@ -17128,6 +17140,18 @@ export default function Dashboard() {
                           totalInSem={totalInSem}
                           draftRef={draftCoursePlayPriorityRef}
                           courseCode={semCourse.code}
+                          usedValues={(() => {
+                            const used: number[] = [];
+                            const semCourses = semesterCourseAssignments[semKey] || [];
+                            for (const sc of semCourses) {
+                              if (sc.code === semCourse.code) continue;
+                              const pk = `${semKey}:${sc.code}`;
+                              const v = draftCoursePlayPriority[pk] ?? coursePlayPriority[pk];
+                              if (v && v > 0) used.push(v);
+                            }
+                            return used;
+                          })()}
+                          onPriorityChange={handlePriorityChange}
                         />
                         <div
                           className={`flex flex-col items-center cursor-pointer hover:opacity-80 transition-opacity flex-shrink-0 ${!(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) && hasSemStarted(semKey) ? 'aas-unchecked-pulse' : ''}`}
