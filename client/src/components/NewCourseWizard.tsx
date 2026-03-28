@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -71,6 +71,10 @@ interface WizardData {
   courseType: string;
   color: string;
   colorEnd: string;
+  colorStops: string;
+  borderColor: string;
+  courseRowColor: string;
+  taskBgColor: string;
   semesterType: string;
   deliveryMode: string;
   classDay: string;
@@ -133,6 +137,10 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, colorSe
     courseType: "core",
     color: "#6366F1",
     colorEnd: "#EC4899",
+    colorStops: "",
+    borderColor: "",
+    courseRowColor: "",
+    taskBgColor: "",
     semesterType: existingSemesterType || "winter",
     deliveryMode: "",
     classDay: "",
@@ -145,6 +153,9 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, colorSe
     zoomLink: "",
     tasks: [],
   });
+
+  const [wizardActiveGradientStop, setWizardActiveGradientStop] = useState<'start' | 'end' | number | null>(null);
+  const wizardGradBarRef = useRef<HTMLDivElement>(null);
 
   const updateField = <K extends keyof WizardData>(field: K, value: WizardData[K]) => {
     setData(prev => ({ ...prev, [field]: value }));
@@ -249,53 +260,194 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, colorSe
           data-testid="wizard-input-course-name"
         />
       </div>
-      <div>
-        <Label className="text-[10px] text-white/70 mb-1.5 block">Course Gradient Colors</Label>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <div className="flex flex-col items-center gap-1">
-              <span className="text-[8px] text-white/40 uppercase tracking-wider">Start</span>
-              <div className="relative">
-                <div
-                  className="w-8 h-8 rounded-lg border-2 border-white/60 cursor-pointer"
-                  style={{ backgroundColor: data.color }}
-                  onClick={() => document.getElementById("wizard-color-input")?.click()}
-                  data-testid="wizard-color-preview"
-                />
-                <input
-                  id="wizard-color-input"
-                  type="color"
-                  value={data.color}
-                  onChange={(e) => updateField("color", e.target.value)}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  data-testid="wizard-color-picker"
-                />
+      {(() => {
+        const hexToHue = (c: string) => { const r = parseInt(c.slice(1,3),16)/255, g = parseInt(c.slice(3,5),16)/255, b = parseInt(c.slice(5,7),16)/255; const max = Math.max(r,g,b), min = Math.min(r,g,b); if (max===min) return 0; let h = 0; if (max===r) h = ((g-b)/(max-min))%6; else if (max===g) h = (b-r)/(max-min)+2; else h = (r-g)/(max-min)+4; h = Math.round(h*60); return h<0?h+360:h; };
+        const hueToHex = (hue: number) => `#${[0,8,4].map(n => { const k = (n + hue/30) % 12; const c2 = 0.5 - 0.5 * Math.max(Math.min(k-3, 9-k, 1), -1); return Math.round(255 * Math.max(0, Math.min(1, c2))).toString(16).padStart(2,'0'); }).join('')}`;
+        const hexToSvPos = (hex: string) => { const r = parseInt(hex.slice(1,3),16)/255, g = parseInt(hex.slice(3,5),16)/255, b = parseInt(hex.slice(5,7),16)/255; const max = Math.max(r,g,b), min = Math.min(r,g,b); const v = max; const s = max === 0 ? 0 : (max - min) / max; return { x: s, y: 1 - v }; };
+        const svToHex = (hue: number, sx: number, sy: number) => { const s = sx, v = 1 - sy; const c = v * s, x2 = c * (1 - Math.abs((hue / 60) % 2 - 1)), m = v - c; let r1 = 0, g1 = 0, b1 = 0; if (hue < 60) { r1 = c; g1 = x2; } else if (hue < 120) { r1 = x2; g1 = c; } else if (hue < 180) { g1 = c; b1 = x2; } else if (hue < 240) { g1 = x2; b1 = c; } else if (hue < 300) { r1 = x2; b1 = c; } else { r1 = c; b1 = x2; } const f = (ch: number) => Math.round(255 * Math.max(0, Math.min(1, ch + m))).toString(16).padStart(2, '0'); return `#${f(r1)}${f(g1)}${f(b1)}`; };
+        const midStops: Array<{position: number; color: string}> = (() => { try { return data.colorStops ? JSON.parse(data.colorStops) : []; } catch { return []; } })();
+        const allStops = [{ position: 0, color: data.color }, ...midStops, { position: 100, color: data.colorEnd }].sort((a, b) => a.position - b.position);
+        const gradientCss = `linear-gradient(to right, ${allStops.map(s => `${s.color} ${s.position}%`).join(', ')})`;
+        const getActiveColor = (): string => {
+          if (wizardActiveGradientStop === 'start') return data.color;
+          if (wizardActiveGradientStop === 'end') return data.colorEnd;
+          if (typeof wizardActiveGradientStop === 'number' && midStops[wizardActiveGradientStop]) return midStops[wizardActiveGradientStop].color;
+          return '#000000';
+        };
+        const setActiveColor = (hex: string) => {
+          if (wizardActiveGradientStop === 'start') updateField('color', hex);
+          else if (wizardActiveGradientStop === 'end') updateField('colorEnd', hex);
+          else if (typeof wizardActiveGradientStop === 'number') {
+            const updated = [...midStops];
+            updated[wizardActiveGradientStop] = { ...updated[wizardActiveGradientStop], color: hex };
+            updateField('colorStops', JSON.stringify(updated));
+          }
+        };
+        return (
+        <div>
+          <div className="flex items-start gap-3">
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="flex items-center justify-between mb-1">
+                <Label className="text-[10px] text-white/70">Label Gradient</Label>
+                <button className="text-white hover:text-white/80 text-[8px] flex items-center gap-0.5" onClick={() => {
+                  const revMid = midStops.map(s => ({ position: 100 - s.position, color: s.color })).reverse();
+                  setData(prev => ({...prev, color: prev.colorEnd, colorEnd: prev.color, colorStops: revMid.length ? JSON.stringify(revMid) : ''}));
+                }} data-testid="wizard-button-reverse-gradient"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 4h14M11 1l3 3-3 3M15 12H1M5 9l-3 3 3 3"/></svg><span>Reverse</span></button>
               </div>
+              <div ref={wizardGradBarRef} className="rounded" style={{ border: '1px solid rgba(255,255,255,0.15)', padding: '1px', background: 'rgba(0,0,0,0.2)', cursor: 'copy' }}
+                onDoubleClick={(e) => {
+                  const bar = wizardGradBarRef.current;
+                  if (!bar) return;
+                  const rect = bar.getBoundingClientRect();
+                  const pct = Math.round(Math.max(5, Math.min(95, ((e.clientX - rect.left - 3) / (rect.width - 6)) * 100)));
+                  const leftStop = allStops.filter(s => s.position <= pct).pop()!;
+                  const rightStop = allStops.find(s => s.position >= pct)!;
+                  const t = rightStop.position === leftStop.position ? 0 : (pct - leftStop.position) / (rightStop.position - leftStop.position);
+                  const lR = parseInt(leftStop.color.slice(1,3),16), lG = parseInt(leftStop.color.slice(3,5),16), lB = parseInt(leftStop.color.slice(5,7),16);
+                  const rR = parseInt(rightStop.color.slice(1,3),16), rG = parseInt(rightStop.color.slice(3,5),16), rB = parseInt(rightStop.color.slice(5,7),16);
+                  const mR = Math.round(lR + (rR-lR)*t), mG = Math.round(lG + (rG-lG)*t), mB = Math.round(lB + (rB-lB)*t);
+                  const newColor = `#${mR.toString(16).padStart(2,'0')}${mG.toString(16).padStart(2,'0')}${mB.toString(16).padStart(2,'0')}`;
+                  const newMid = [...midStops, { position: pct, color: newColor }].sort((a, b) => a.position - b.position);
+                  const newIdx = newMid.findIndex(s => s.position === pct && s.color === newColor);
+                  updateField('colorStops', JSON.stringify(newMid));
+                  setWizardActiveGradientStop(newIdx);
+                }}>
+                <div style={{ height: '18px', borderRadius: '3px', background: gradientCss }} data-testid="wizard-gradient-preview-bar" />
+              </div>
+              <div className="relative" style={{ height: '16px', marginTop: '1px' }}>
+                <div style={{ position: 'absolute', left: '0px', top: 0, cursor: 'pointer', zIndex: 10 }} onClick={() => setWizardActiveGradientStop(wizardActiveGradientStop === 'start' ? null : 'start')} data-testid="wizard-gradient-stop-start">
+                  <svg width="12" height="12" viewBox="0 0 12 12"><polygon points="6,0 12,10 0,10" fill={data.color} stroke={wizardActiveGradientStop === 'start' ? '#ffffff' : 'rgba(255,255,255,0.4)'} strokeWidth={wizardActiveGradientStop === 'start' ? '2' : '1'}/></svg>
+                </div>
+                {midStops.map((stop, idx) => (
+                  <div key={idx} style={{ position: 'absolute', left: `calc(${stop.position}% - 6px)`, top: 0, cursor: 'pointer', touchAction: 'none', zIndex: wizardActiveGradientStop === idx ? 20 : 5 }}
+                    onClick={() => setWizardActiveGradientStop(wizardActiveGradientStop === idx ? null : idx)}
+                    onPointerDown={(e) => {
+                      e.preventDefault(); e.stopPropagation();
+                      const el = e.currentTarget as HTMLElement;
+                      el.setPointerCapture(e.pointerId);
+                      const bar = wizardGradBarRef.current;
+                      if (!bar) return;
+                      const barRect = bar.getBoundingClientRect();
+                      const barW = barRect.width;
+                      const onMove = (ev: PointerEvent) => {
+                        const pct = Math.round(Math.max(1, Math.min(99, ((ev.clientX - barRect.left) / barW) * 100)));
+                        const updated = [...midStops];
+                        updated[idx] = { ...updated[idx], position: pct };
+                        setData(prev => ({...prev, colorStops: JSON.stringify(updated.sort((a, b) => a.position - b.position))}));
+                      };
+                      const onUp = () => { el.releasePointerCapture(e.pointerId); window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); };
+                      window.addEventListener('pointermove', onMove);
+                      window.addEventListener('pointerup', onUp);
+                    }}
+                    data-testid={`wizard-gradient-stop-mid-${idx}`}>
+                    <svg width="12" height="12" viewBox="0 0 12 12"><polygon points="6,0 11,6 6,12 1,6" fill={stop.color} stroke={wizardActiveGradientStop === idx ? '#ffffff' : 'rgba(255,255,255,0.5)'} strokeWidth={wizardActiveGradientStop === idx ? '2' : '1'}/></svg>
+                  </div>
+                ))}
+                <div style={{ position: 'absolute', right: '0px', top: 0, cursor: 'pointer', zIndex: 10 }} onClick={() => setWizardActiveGradientStop(wizardActiveGradientStop === 'end' ? null : 'end')} data-testid="wizard-gradient-stop-end">
+                  <svg width="12" height="12" viewBox="0 0 12 12"><polygon points="6,0 12,10 0,10" fill={data.colorEnd} stroke={wizardActiveGradientStop === 'end' ? '#ffffff' : 'rgba(255,255,255,0.4)'} strokeWidth={wizardActiveGradientStop === 'end' ? '2' : '1'}/></svg>
+                </div>
+              </div>
+              {midStops.length === 0 && <div className="text-white/50 text-[9px] mt-1">Double-click gradient bar to add a colour stop</div>}
+              {midStops.length > 0 && <div className="text-white/40 text-[8px]" style={{ marginTop: '4px' }}>Double-click bar to add · drag to move</div>}
+              {wizardActiveGradientStop != null && (
+                <div className="mt-1.5 rounded" style={{ border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(0,0,0,0.4)', padding: '6px' }}>
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <div className="w-5 h-5 rounded border border-white/30 shrink-0" style={{ backgroundColor: getActiveColor() }} />
+                    <span className="text-white/60 text-[8px] uppercase tracking-wider">{wizardActiveGradientStop === 'start' ? 'Start' : wizardActiveGradientStop === 'end' ? 'End' : `Stop ${(wizardActiveGradientStop as number) + 1}`} Colour</span>
+                    {typeof wizardActiveGradientStop === 'number' && (
+                      <button className="text-red-400/70 hover:text-red-400 text-[8px] ml-auto mr-1" onClick={() => {
+                        const updated = midStops.filter((_, i) => i !== wizardActiveGradientStop);
+                        updateField('colorStops', updated.length ? JSON.stringify(updated) : '');
+                        setWizardActiveGradientStop(null);
+                      }} data-testid="wizard-button-delete-stop"><Trash2 className="w-3 h-3" /></button>
+                    )}
+                    <button className={`${typeof wizardActiveGradientStop === 'number' ? '' : 'ml-auto '}text-white/40 hover:text-white`} onClick={() => setWizardActiveGradientStop(null)} data-testid="wizard-button-close-color-picker"><X className="w-3 h-3" /></button>
+                  </div>
+                  {typeof wizardActiveGradientStop === 'number' && (
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className="text-white/50 text-[8px]">Position</span>
+                      <input type="range" min={1} max={99} value={midStops[wizardActiveGradientStop]?.position || 50} onChange={(e) => {
+                        const updated = [...midStops];
+                        updated[wizardActiveGradientStop as number] = { ...updated[wizardActiveGradientStop as number], position: parseInt(e.target.value) };
+                        updateField('colorStops', JSON.stringify(updated.sort((a, b) => a.position - b.position)));
+                      }} className="flex-1" style={{ height: '6px', accentColor: getActiveColor() }} data-testid="wizard-slider-stop-position" />
+                      <span className="text-white/50 text-[8px] w-6 text-right">{midStops[wizardActiveGradientStop]?.position}%</span>
+                    </div>
+                  )}
+                  <div className="relative rounded cursor-crosshair" style={{ height: '92px', touchAction: 'none' }} data-testid={`wizard-color-area-${wizardActiveGradientStop}`}
+                    onPointerDown={(e) => {
+                      e.preventDefault();
+                      const el = e.currentTarget;
+                      el.setPointerCapture(e.pointerId);
+                      const rect = el.getBoundingClientRect();
+                      const hue = hexToHue(getActiveColor());
+                      const update = (ev: PointerEvent) => {
+                        const x = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
+                        const y = Math.max(0, Math.min(1, (ev.clientY - rect.top) / rect.height));
+                        setActiveColor(svToHex(hue, x, y));
+                      };
+                      update(e.nativeEvent);
+                      const onMove = (ev: PointerEvent) => update(ev);
+                      const onUp = () => { el.releasePointerCapture(e.pointerId); window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); };
+                      window.addEventListener('pointermove', onMove);
+                      window.addEventListener('pointerup', onUp);
+                    }}>
+                    <div style={{ position: 'absolute', inset: 0, borderRadius: '3px', background: `linear-gradient(to right, white, hsl(${hexToHue(getActiveColor())}, 100%, 50%))` }} />
+                    <div style={{ position: 'absolute', inset: 0, borderRadius: '3px', background: 'linear-gradient(to bottom, transparent, black)' }} />
+                    {(() => { const pos = hexToSvPos(getActiveColor()); return <div style={{ position: 'absolute', left: `${pos.x * 100}%`, top: `${pos.y * 100}%`, transform: 'translate(-50%, -50%)', width: '14px', height: '14px', borderRadius: '50%', border: '2px solid white', boxShadow: '0 0 3px rgba(0,0,0,0.5), inset 0 0 1px rgba(0,0,0,0.3)', pointerEvents: 'none', backgroundColor: getActiveColor() }} />; })()}
+                  </div>
+                  <div className="relative mt-1.5 rounded cursor-pointer" style={{ height: '14px', touchAction: 'none' }} data-testid={`wizard-hue-slider-${wizardActiveGradientStop}`}
+                    onClick={(e) => { const rect = e.currentTarget.getBoundingClientRect(); const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)); setActiveColor(hueToHex(Math.round(x * 360))); }}
+                    onPointerDown={(e) => {
+                      e.preventDefault();
+                      const el = e.currentTarget;
+                      el.setPointerCapture(e.pointerId);
+                      const rect = el.getBoundingClientRect();
+                      const update = (ev: PointerEvent) => { const x = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width)); setActiveColor(hueToHex(Math.round(x * 360))); };
+                      update(e.nativeEvent);
+                      const onMove = (ev: PointerEvent) => update(ev);
+                      const onUp = () => { el.releasePointerCapture(e.pointerId); window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); };
+                      window.addEventListener('pointermove', onMove);
+                      window.addEventListener('pointerup', onUp);
+                    }}>
+                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)', borderRadius: '3px' }} />
+                    <div style={{ position: 'absolute', top: '-1px', left: `${(hexToHue(getActiveColor()) / 360) * 100}%`, transform: 'translateX(-50%)', width: '4px', height: '16px', background: 'white', borderRadius: '2px', boxShadow: '0 0 3px rgba(0,0,0,0.5)', border: '1px solid rgba(0,0,0,0.3)', pointerEvents: 'none' }} />
+                  </div>
+                  <div className="flex items-center gap-2 mt-1.5">
+                    <input type="color" value={getActiveColor()} onChange={(e) => setActiveColor(e.target.value)} className="w-5 h-5 rounded border border-white/30 cursor-pointer shrink-0" style={{ padding: 0, background: 'transparent', WebkitAppearance: 'none', appearance: 'none' }} data-testid={`wizard-input-color-${wizardActiveGradientStop}`} />
+                    <input type="text" value={getActiveColor().toUpperCase()} onChange={(e) => { let v = e.target.value; if (!v.startsWith('#')) v = '#' + v; if (/^#[0-9A-Fa-f]{6}$/.test(v)) setActiveColor(v); }} className="flex-1 bg-white border border-gray-300 rounded text-black text-[9px] px-1.5 py-0.5 font-mono" style={{ minWidth: 0 }} data-testid={`wizard-input-hex-${wizardActiveGradientStop}`} />
+                  </div>
+                </div>
+              )}
             </div>
-            <div className="rounded-full" style={{ width: '10px', height: '5px', background: `linear-gradient(to right, ${data.color}, ${data.colorEnd})` }} />
-            <div className="flex flex-col items-center gap-1">
-              <span className="text-[8px] text-white/40 uppercase tracking-wider">End</span>
-              <div className="relative">
-                <div
-                  className="w-8 h-8 rounded-lg border-2 border-white/60 cursor-pointer"
-                  style={{ backgroundColor: data.colorEnd }}
-                  onClick={() => document.getElementById("wizard-color-end-input")?.click()}
-                  data-testid="wizard-color-end-preview"
-                />
-                <input
-                  id="wizard-color-end-input"
-                  type="color"
-                  value={data.colorEnd}
-                  onChange={(e) => updateField("colorEnd", e.target.value)}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  data-testid="wizard-color-end-picker"
-                />
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '8px' }}>
+              <label className="text-white/70 text-[9px] mb-1">Border</label>
+              <div className="relative" style={{ width: '20px', height: '20px' }}>
+                <div className="absolute inset-0 rounded-sm border border-white/30" style={{ backgroundColor: data.borderColor || data.color }} />
+                <input type="color" value={data.borderColor || data.color} onChange={(e) => updateField('borderColor', e.target.value)} className="absolute inset-0 opacity-0 cursor-pointer" style={{ width: '20px', height: '20px' }} data-testid="wizard-input-border-color" />
               </div>
+              <input type="text" value={data.borderColor ? data.borderColor.toUpperCase() : 'Auto'} onChange={e => { let v = e.target.value; if (v === '' || v === 'Auto') { updateField('borderColor', ''); return; } if (!v.startsWith('#')) v = '#' + v; updateField('borderColor', v); }} className="bg-white border border-gray-300 rounded text-black text-[8px] px-1 py-0.5 font-mono mt-1 text-center focus:outline-none" style={{ width: '50px' }} data-testid="wizard-input-border-color-hex" />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '8px' }}>
+              <label className="text-white/70 text-[9px] mb-1">Row BG</label>
+              <div className="relative" style={{ width: '20px', height: '20px' }}>
+                <div className="absolute inset-0 rounded-sm border border-white/30" style={{ backgroundColor: data.courseRowColor || 'transparent' }} />
+                <input type="color" value={data.courseRowColor || '#1a1a2e'} onChange={(e) => updateField('courseRowColor', e.target.value)} className="absolute inset-0 opacity-0 cursor-pointer" style={{ width: '20px', height: '20px' }} data-testid="wizard-input-row-color" />
+              </div>
+              <input type="text" value={data.courseRowColor ? data.courseRowColor.toUpperCase() : 'Auto'} onChange={e => { let v = e.target.value; if (v === '' || v === 'Auto') { updateField('courseRowColor', ''); return; } if (!v.startsWith('#')) v = '#' + v; updateField('courseRowColor', v); }} className="bg-white border border-gray-300 rounded text-black text-[8px] px-1 py-0.5 font-mono mt-1 text-center focus:outline-none" style={{ width: '50px' }} data-testid="wizard-input-row-color-hex" />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '8px' }}>
+              <label className="text-white/70 text-[9px] mb-1">Task BG</label>
+              <div className="relative" style={{ width: '20px', height: '20px' }}>
+                <div className="absolute inset-0 rounded-sm border border-white/30" style={{ backgroundColor: data.taskBgColor || 'transparent' }} />
+                <input type="color" value={data.taskBgColor || '#1a1a2e'} onChange={(e) => updateField('taskBgColor', e.target.value)} className="absolute inset-0 opacity-0 cursor-pointer" style={{ width: '20px', height: '20px' }} data-testid="wizard-input-task-color" />
+              </div>
+              <input type="text" value={data.taskBgColor ? data.taskBgColor.toUpperCase() : 'Auto'} onChange={e => { let v = e.target.value; if (v === '' || v === 'Auto') { updateField('taskBgColor', ''); return; } if (!v.startsWith('#')) v = '#' + v; updateField('taskBgColor', v); }} className="bg-white border border-gray-300 rounded text-black text-[8px] px-1 py-0.5 font-mono mt-1 text-center focus:outline-none" style={{ width: '50px' }} data-testid="wizard-input-task-color-hex" />
             </div>
           </div>
-          <span className="text-[10px] text-white/50">{data.color} → {data.colorEnd}</span>
         </div>
-      </div>
+        );
+      })()}
     </div>
   );
 
@@ -684,7 +836,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, colorSe
       <div className="space-y-2">
         <div className="bg-white/5 border border-white/10 rounded-lg p-3">
           <div className="flex items-center gap-2 mb-2">
-            <div className="w-5 h-3 rounded-full" style={{ background: `linear-gradient(to right, ${data.color}, ${data.colorEnd})` }} />
+            <div className="w-5 h-3 rounded-full" style={{ background: (() => { const ms: Array<{position:number;color:string}> = (() => { try { return data.colorStops ? JSON.parse(data.colorStops) : []; } catch { return []; } })(); const stops = [{position:0,color:data.color},...ms,{position:100,color:data.colorEnd}].sort((a,b)=>a.position-b.position); return `linear-gradient(to right, ${stops.map(s=>`${s.color} ${s.position}%`).join(', ')})`; })() }} />
             <span className="text-[11px] font-medium text-white">{data.courseCode} - {data.courseName}</span>
           </div>
           <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[9px]">

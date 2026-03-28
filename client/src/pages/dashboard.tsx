@@ -904,11 +904,13 @@ export default function Dashboard() {
   const [bookReaderOverlay, setBookReaderOverlay] = useState<{ url: string; courseCode: string; title: string; color: string } | null>(null);
   const [hwUploadingState, setHwUploadingState] = useState<Record<string, boolean>>({});
   const [hwDragOverTarget, setHwDragOverTarget] = useState<string | null>(null);
+  const semesterSettingsRef = useRef<any>(null);
   const doHwUpload = useCallback(async (file: File, uploadType: 'module' | 'reading', courseCode: string, courseName: string, week: number, courseHexColor: string) => {
     const stateKey = `${courseCode}-${week}-${uploadType}`;
     setHwUploadingState(prev => ({ ...prev, [stateKey]: true }));
     try {
-      const wd = getWeekDates(week, new Date(semesterSettings?.semesterStartDate || Date.now()), semesterSettings?.readingWeekStart);
+      const ss = semesterSettingsRef.current;
+      const wd = getWeekDates(week, new Date(ss?.semesterStartDate || Date.now()), ss?.readingWeekStart);
       const ws = new Date(wd.start);
       const we = new Date(wd.end);
       const mos = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -953,7 +955,7 @@ export default function Dashboard() {
     } finally {
       setHwUploadingState(prev => ({ ...prev, [stateKey]: false }));
     }
-  }, [semesterSettings?.semesterStartDate, semesterSettings?.readingWeekStart]);
+  }, []);
   const [calendarHeight, setCalendarHeight] = useState(() => {
     const defaultHeight = window.innerHeight - 45;
     const minHeight = 200;
@@ -5715,6 +5717,7 @@ export default function Dashboard() {
     retry: 2,
     retryDelay: 1000,
   });
+  useEffect(() => { semesterSettingsRef.current = semesterSettings ?? null; }, [semesterSettings]);
 
   const { data: allSemesterSettings } = useQuery<any[]>({
     queryKey: ["/api/semesters"],

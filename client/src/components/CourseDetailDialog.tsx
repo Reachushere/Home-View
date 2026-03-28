@@ -1960,11 +1960,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                               const el = e.currentTarget;
                               el.setPointerCapture(e.pointerId);
                               const rect = el.getBoundingClientRect();
-                              const pad = 6;
                               const hue = hexToHue(getActiveColor());
                               const update = (ev: PointerEvent) => {
-                                const x = Math.max(0, Math.min(1, (ev.clientX - rect.left - pad) / (rect.width - pad * 2)));
-                                const y = Math.max(0, Math.min(1, (ev.clientY - rect.top - pad) / (rect.height - pad * 2)));
+                                const x = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
+                                const y = Math.max(0, Math.min(1, (ev.clientY - rect.top) / rect.height));
                                 setActiveColor(svToHex(hue, x, y));
                               };
                               update(e.nativeEvent);
@@ -1973,12 +1972,12 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                               window.addEventListener('pointermove', onMove);
                               window.addEventListener('pointerup', onUp);
                             }}>
-                            <div style={{ position: 'absolute', top: '6px', left: '6px', right: '6px', bottom: '6px', borderRadius: '3px', background: `linear-gradient(to right, white, hsl(${hexToHue(getActiveColor())}, 100%, 50%))` }} />
-                            <div style={{ position: 'absolute', top: '6px', left: '6px', right: '6px', bottom: '6px', borderRadius: '3px', background: 'linear-gradient(to bottom, transparent, black)' }} />
+                            <div style={{ position: 'absolute', inset: 0, borderRadius: '3px', background: `linear-gradient(to right, white, hsl(${hexToHue(getActiveColor())}, 100%, 50%))` }} />
+                            <div style={{ position: 'absolute', inset: 0, borderRadius: '3px', background: 'linear-gradient(to bottom, transparent, black)' }} />
                             {(() => {
                               const pos = hexToSvPos(getActiveColor());
                               return (
-                                <div style={{ position: 'absolute', left: `calc(6px + ${pos.x} * (100% - 12px))`, top: `calc(6px + ${pos.y} * (100% - 12px))`, transform: 'translate(-50%, -50%)', width: '12px', height: '12px', borderRadius: '50%', border: '2px solid white', boxShadow: '0 0 3px rgba(0,0,0,0.5), inset 0 0 1px rgba(0,0,0,0.3)', pointerEvents: 'none', backgroundColor: getActiveColor() }} />
+                                <div style={{ position: 'absolute', left: `${pos.x * 100}%`, top: `${pos.y * 100}%`, transform: 'translate(-50%, -50%)', width: '14px', height: '14px', borderRadius: '50%', border: '2px solid white', boxShadow: '0 0 3px rgba(0,0,0,0.5), inset 0 0 1px rgba(0,0,0,0.3)', pointerEvents: 'none', backgroundColor: getActiveColor() }} />
                               );
                             })()}
                           </div>
