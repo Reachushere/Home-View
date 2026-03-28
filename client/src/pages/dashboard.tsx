@@ -13280,14 +13280,14 @@ export default function Dashboard() {
         transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out',
         pointerEvents: isTopPillOpen ? 'none' : 'auto',
       }} data-tpo data-tpo-opacity="1" data-testid="timer-bar">
-        <div className="flex flex-row items-center gap-[4px]" style={{ marginTop: '2px' }}>
+        <div className="flex flex-row items-center gap-[12px]" style={{ marginTop: '2px' }}>
           <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle" title={pomodoroRunning ? 'Pause' : 'Play'}>
-            {pomodoroRunning ? <Pause className="h-[14px] w-[14px] text-white" strokeWidth={2.5} /> : <Play className="h-[14px] w-[14px] text-white" strokeWidth={2.5} />}
+            {pomodoroRunning ? <Pause className="h-[18px] w-[18px] text-white" strokeWidth={2.5} /> : <Play className="h-[18px] w-[18px] text-white" strokeWidth={2.5} />}
           </button>
           <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={resetPomodoro} data-testid="button-pomodoro-reset" title="Stop">
-            <Square className="h-[12px] w-[12px] text-white" strokeWidth={2.5} />
+            <Square className="h-[16px] w-[16px] text-white" strokeWidth={2.5} />
           </button>
-          <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={() => { setPomodoroTime(prev => prev + 60); }} data-testid="button-pomodoro-add-min" title="+1 min" style={{ fontSize: '9px', color: 'white', fontWeight: 600, whiteSpace: 'nowrap', lineHeight: 1 }}>
+          <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={() => { setPomodoroTime(prev => prev + 60); }} data-testid="button-pomodoro-add-min" title="+1 min" style={{ fontSize: '13px', color: 'white', fontWeight: 600, whiteSpace: 'nowrap', lineHeight: 1 }}>
             +1m
           </button>
         </div>
@@ -13296,17 +13296,17 @@ export default function Dashboard() {
             const totalSec = pomodoroMode === 'work' ? 25 * 60 : pomodoroMode === 'shortBreak' ? 5 * 60 : 15 * 60;
             const elapsed = totalSec - pomodoroTime;
             const frac = totalSec > 0 ? elapsed / totalSec : 0;
-            const r = 31, cx = 37, cy = 37, sw = 5;
+            const r = 35, cx = 41, cy = 41, sw = 5;
             const startAng = Math.PI, endAng = 2 * Math.PI;
             const arcLen = endAng - startAng;
             const circumHalf = r * arcLen;
             const dash = frac * circumHalf;
             const arcColor = pomodoroMode === 'work' ? '#e74c8b' : pomodoroMode === 'shortBreak' ? '#22c55e' : '#3b82f6';
             return (
-              <svg width="74" height="43" viewBox="0 0 74 43">
+              <svg width="82" height="47" viewBox="0 0 82 47">
                 <path d={`M ${cx - r} ${cy} A ${r} ${r} 0 1 1 ${cx + r} ${cy}`} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={sw} strokeLinecap="round" />
                 <path d={`M ${cx - r} ${cy} A ${r} ${r} 0 1 1 ${cx + r} ${cy}`} fill="none" stroke={arcColor} strokeWidth={sw} strokeLinecap="round" strokeDasharray={`${dash} ${circumHalf}`} />
-                <text x={cx} y={cy - 1} textAnchor="middle" fill="#ffffff" fontSize="14" fontWeight="700" fontFamily="system-ui, sans-serif" style={{ fontVariantNumeric: 'tabular-nums' }}>{formatPomodoroTime(pomodoroTime)}</text>
+                <text x={cx} y={cy - 1} textAnchor="middle" fill="#ffffff" fontSize="18" fontWeight="700" fontFamily="system-ui, sans-serif" style={{ fontVariantNumeric: 'tabular-nums' }}>{formatPomodoroTime(pomodoroTime)}</text>
               </svg>
             );
           })()}
