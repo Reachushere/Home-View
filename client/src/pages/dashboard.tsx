@@ -14236,7 +14236,22 @@ export default function Dashboard() {
                 setEditingTask(task);
               }, 150);
             }}
-            semesterStart={semStart || new Date()}
+            semesterStart={(() => {
+              const cc = selectedCertCourse!.courseCode.replace(/\s/g, '').toUpperCase();
+              const semStartDatesForDialog: Record<string, string> = {
+                'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12',
+                'ss2026': '2026-05-04', 'f2026': '2026-09-07', 'w2027': '2027-01-11',
+                'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10', 'ss2028': '2028-05-01', 'f2028': '2028-09-11', 'w2029': '2029-01-08',
+              };
+              for (const sk of semesterKeyOrder) {
+                const courses = semesterCourseAssignments[sk] || [];
+                if (courses.some(c => c.code.replace(/\s/g, '').toUpperCase() === cc)) {
+                  const dateStr = semStartDatesForDialog[sk];
+                  if (dateStr) return new Date(dateStr + 'T00:00:00');
+                }
+              }
+              return semStart || new Date();
+            })()}
             readingWeekStart={readingWeekStart}
             onPushUndo={(action) => pushUndo(action as UndoAction)}
           />
