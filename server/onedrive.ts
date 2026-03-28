@@ -724,24 +724,24 @@ export async function listOneNoteNotebooks(): Promise<{ name: string; path: stri
   const client = await getOneDriveClient();
   const notebooks: { name: string; path: string; sections: { name: string; id: string }[] }[] = [];
 
-  try {
-    const nbRes = await client.api('/me/onenote/notebooks').select('id,displayName').get();
-    const rawNbs = nbRes.value || [];
-    console.log(`[OneNote] Graph API returned ${rawNbs.length} raw notebooks`);
-    for (const nb of rawNbs) {
-      try {
-        const secRes = await client.api(`/me/onenote/notebooks/${nb.id}/sections`).select('id,displayName').get();
-        const sections = (secRes.value || []).map((s: any) => ({ name: s.displayName, id: s.id }));
-        notebooks.push({ name: nb.displayName, path: nb.id, sections });
-        console.log(`[OneNote] Notebook "${nb.displayName}": ${sections.length} sections`);
-      } catch (secErr: any) {
-        console.error(`[OneNote] Failed to list sections for ${nb.displayName}:`, secErr.message);
-        notebooks.push({ name: nb.displayName, path: nb.id, sections: [] });
+  const knownPaths = [
+    { name: "Bryn's Notebook", path: "/Documents/Bryn's Notebook" },
+    { name: "Notebook", path: "/School/1. TMU/Notebook" },
+  ];
+
+  for (const nb of knownPaths) {
+    try {
+      const res = await client.api(`/me/drive/root:${encodeURI(nb.path)}:/children`).get();
+      const sections = (res.value || [])
+        .filter((item: any) => item.name.endsWith('.one'))
+        .map((item: any) => ({ name: item.name.replace(/\.one$/i, ''), id: item.id }));
+
+      if (sections.length > 0) {
+        notebooks.push({ name: nb.name, path: nb.path, sections });
       }
+    } catch (e: any) {
+      console.error(`[OneNote] Failed to list sections for ${nb.name}:`, e.message);
     }
-    console.log(`[OneNote] Found ${notebooks.length} notebooks via API`);
-  } catch (e: any) {
-    console.error(`[OneNote] Failed to list notebooks via API:`, e.message);
   }
 
   return notebooks;
