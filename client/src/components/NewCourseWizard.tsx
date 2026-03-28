@@ -81,6 +81,7 @@ interface WizardData {
   classDay2: string;
   classTime: string;
   classEndTime: string;
+  classTimezone: string;
   startDate: string;
   endDate: string;
   springSummerTerm: string;
@@ -147,6 +148,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, colorSe
     classDay2: "",
     classTime: "",
     classEndTime: "",
+    classTimezone: "America/Toronto",
     startDate: "",
     endDate: "",
     springSummerTerm: "",
@@ -616,6 +618,30 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, colorSe
           </div>
         </div>
         <div>
+          <Label className="text-[9px] text-white/60 mb-1 block">Timezone</Label>
+          <select
+            value={data.classTimezone}
+            onChange={(e) => updateField("classTimezone", e.target.value)}
+            className="w-full h-8 rounded-md bg-white/10 border border-white/20 text-white text-[10px] px-2"
+            data-testid="wizard-select-timezone"
+          >
+            <option value="America/Toronto" className="bg-gray-800">Eastern (Toronto)</option>
+            <option value="America/New_York" className="bg-gray-800">Eastern (New York)</option>
+            <option value="America/Chicago" className="bg-gray-800">Central (Chicago)</option>
+            <option value="America/Denver" className="bg-gray-800">Mountain (Denver)</option>
+            <option value="America/Los_Angeles" className="bg-gray-800">Pacific (Los Angeles)</option>
+            <option value="America/Vancouver" className="bg-gray-800">Pacific (Vancouver)</option>
+            <option value="America/Edmonton" className="bg-gray-800">Mountain (Edmonton)</option>
+            <option value="America/Winnipeg" className="bg-gray-800">Central (Winnipeg)</option>
+            <option value="America/Halifax" className="bg-gray-800">Atlantic (Halifax)</option>
+            <option value="America/St_Johns" className="bg-gray-800">Newfoundland (St. John's)</option>
+            <option value="Europe/London" className="bg-gray-800">GMT (London)</option>
+            <option value="Europe/Paris" className="bg-gray-800">CET (Paris)</option>
+            <option value="Asia/Tokyo" className="bg-gray-800">JST (Tokyo)</option>
+            <option value="UTC" className="bg-gray-800">UTC</option>
+          </select>
+        </div>
+        <div>
           <Label className="text-[9px] text-white/60 mb-1 block">Zoom Link</Label>
           <Input
             value={data.zoomLink}
@@ -857,6 +883,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, colorSe
             {data.endDate && <div><span className="text-white/40">End Date:</span> <span className="text-white/80">{data.endDate}</span></div>}
             {data.classDay && <div><span className="text-white/40">Class Day:</span> <span className="text-white/80">{data.classDay.charAt(0).toUpperCase() + data.classDay.slice(1)}{data.classDay2 ? `, ${data.classDay2.charAt(0).toUpperCase() + data.classDay2.slice(1)}` : ''}</span></div>}
             {data.classTime && <div><span className="text-white/40">Class Time:</span> <span className="text-white/80">{data.classTime}{data.classEndTime ? ` – ${data.classEndTime}` : ''}</span></div>}
+            {data.classTimezone && data.classTimezone !== 'America/Toronto' && <div><span className="text-white/40">Timezone:</span> <span className="text-white/80">{data.classTimezone}</span></div>}
           </div>
         </div>
 

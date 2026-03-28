@@ -640,6 +640,7 @@ export default function Dashboard() {
     dueDate: "",
     dueDateHour: "18",
     dueDateMinute: "00",
+    timezone: "America/Toronto",
     prepDays: 0,
     priority: "medium",
     description: "",
@@ -12946,7 +12947,7 @@ export default function Dashboard() {
           </Button>
 
           {/* Quick Add Button */}
-          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', prepDays: 0, priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder2: DEFAULT_REMINDER_2, reminder3: null, reminder4: null, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' }); setIsQuickAddOpen(true); }); }}>+ Add Task</Button>
+          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder2: DEFAULT_REMINDER_2, reminder3: null, reminder4: null, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' }); setIsQuickAddOpen(true); }); }}>+ Add Task</Button>
 
         </div>
       </div>
@@ -15236,7 +15237,7 @@ export default function Dashboard() {
                     onClick={() => {
                       setIsAddChooserOpen(false);
                       setQuickAddStep(0);
-                      setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', prepDays: 0, priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder2: DEFAULT_REMINDER_2, reminder3: null, reminder4: null, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' });
+                      setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder2: DEFAULT_REMINDER_2, reminder3: null, reminder4: null, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' });
                       setIsQuickAddOpen(true);
                     }}
                     data-testid="button-chooser-add-task"
@@ -15476,6 +15477,30 @@ export default function Dashboard() {
                           {['00', '15', '30', '45'].map(m => (
                             <option key={m} value={m} style={{ color: 'white', backgroundColor: '#1e293b' }}>{m}</option>
                           ))}
+                        </select>
+                      </div>
+                      <div className="flex gap-2 items-center">
+                        <span className="text-white/50 text-[11px]">Timezone:</span>
+                        <select
+                          value={quickAddData.timezone}
+                          onChange={(e) => { const v = e.target.value; startTransition(() => setQuickAddData(p => ({ ...p, timezone: v }))); }}
+                          className="flex-1 bg-white/10 border border-white/15 rounded-lg px-2 py-2 text-white text-[11px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
+                          data-testid="quick-add-timezone"
+                        >
+                          <option value="America/Toronto" style={{ color: 'white', backgroundColor: '#1e293b' }}>Eastern (Toronto)</option>
+                          <option value="America/New_York" style={{ color: 'white', backgroundColor: '#1e293b' }}>Eastern (New York)</option>
+                          <option value="America/Chicago" style={{ color: 'white', backgroundColor: '#1e293b' }}>Central (Chicago)</option>
+                          <option value="America/Denver" style={{ color: 'white', backgroundColor: '#1e293b' }}>Mountain (Denver)</option>
+                          <option value="America/Los_Angeles" style={{ color: 'white', backgroundColor: '#1e293b' }}>Pacific (Los Angeles)</option>
+                          <option value="America/Vancouver" style={{ color: 'white', backgroundColor: '#1e293b' }}>Pacific (Vancouver)</option>
+                          <option value="America/Edmonton" style={{ color: 'white', backgroundColor: '#1e293b' }}>Mountain (Edmonton)</option>
+                          <option value="America/Winnipeg" style={{ color: 'white', backgroundColor: '#1e293b' }}>Central (Winnipeg)</option>
+                          <option value="America/Halifax" style={{ color: 'white', backgroundColor: '#1e293b' }}>Atlantic (Halifax)</option>
+                          <option value="America/St_Johns" style={{ color: 'white', backgroundColor: '#1e293b' }}>Newfoundland (St. John's)</option>
+                          <option value="Europe/London" style={{ color: 'white', backgroundColor: '#1e293b' }}>GMT (London)</option>
+                          <option value="Europe/Paris" style={{ color: 'white', backgroundColor: '#1e293b' }}>CET (Paris)</option>
+                          <option value="Asia/Tokyo" style={{ color: 'white', backgroundColor: '#1e293b' }}>JST (Tokyo)</option>
+                          <option value="UTC" style={{ color: 'white', backgroundColor: '#1e293b' }}>UTC</option>
                         </select>
                       </div>
                       <div className="border-t border-white/10 pt-3 mt-1">

@@ -15626,57 +15626,6 @@ Return ONLY the JSON object, no markdown formatting.`;
     }
   });
 
-  app.post("/api/send-session-plan-email", async (_req, res) => {
-    try {
-      const { sendGmail } = await import("./gmail");
-      const result = await sendGmail({
-        to: "Bryn.kai-hendricks@outlook.com",
-        subject: "Session Plan: A/B Priority Ranking System for Spring/Summer Semesters",
-        htmlBody: `<div style="font-family:'Segoe UI',Arial,sans-serif;font-size:14px;line-height:1.7;color:#333;max-width:700px;margin:0 auto;">
-<h2 style="color:#1a1a2e;border-bottom:3px solid #0f3460;padding-bottom:8px;">Session Plan: A/B Priority Ranking System</h2>
-<p><strong>Objective:</strong> Implement A/B priority ranking system for Spring/Summer semesters</p>
-<hr style="border:none;border-top:1px solid #ddd;margin:20px 0;">
-<h3 style="color:#16213e;">T001: Update PrioritySelect to support A/B suffixes</h3>
-<p><strong>Blocked By:</strong> None</p>
-<ul>
-<li>Modify PrioritySelect to accept <code>suffix</code> ('A', 'B', or '') and display "1A", "2A" etc.</li>
-<li>For non-SS semesters, keep current behavior (plain 1, 2, 3)</li>
-<li>For SS: spring-only courses show A options, summer-only show B, full courses get TWO dropdowns</li>
-<li>A and B pools are independent (1A and 1B can coexist)</li>
-<li>Priority key format: <code>ss2026:CECN210:A</code>, <code>ss2026:CECN210:B</code></li>
-</ul>
-<p><strong>Files:</strong> <code>client/src/pages/dashboard.tsx</code></p>
-<hr style="border:none;border-top:1px solid #ddd;margin:20px 0;">
-<h3 style="color:#16213e;">T002: Lock CourseDetailDialog until term is set for SS semesters</h3>
-<p><strong>Blocked By:</strong> T001</p>
-<ul>
-<li>When semester is spring_summer, disable all edit fields until springSummerTerm is selected</li>
-<li>Show term selector prominently: "Spring (First Half)", "Summer (Second Half)", "Full Semester"</li>
-<li>Priority dropdown in dialog should show A/B options matching the term</li>
-</ul>
-<p><strong>Files:</strong> <code>client/src/components/CourseDetailDialog.tsx</code></p>
-<hr style="border:none;border-top:1px solid #ddd;margin:20px 0;">
-<h3 style="color:#16213e;">T003: Update server-side priority lookup for A/B</h3>
-<p><strong>Blocked By:</strong> None</p>
-<ul>
-<li><code>getCoursePriorityForFile</code> must check <code>:A</code> or <code>:B</code> suffix based on whether we're in spring or summer half</li>
-<li>Determine spring vs summer half from semester dates (midpoint of semester)</li>
-<li>Update <code>findNextFileByPriority</code>, <code>findNextCatWashFile</code> to use correct A/B context</li>
-<li>OneDrive sync: handle <code>Week N - Spring</code> and <code>Week N - Summer</code> folder naming</li>
-</ul>
-<p><strong>Files:</strong> <code>server/routes.ts</code></p>
-<hr style="border:none;border-top:1px solid #ddd;margin:20px 0;">
-<h3 style="color:#16213e;">T004: Test and verify</h3>
-<p><strong>Blocked By:</strong> T001, T002, T003</p>
-<ul><li>Restart, verify API returns correct file with A/B priorities</li></ul>
-</div>`,
-      });
-      res.json(result);
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
   // Seed database with sample tasks
   await seedDatabase();
 

@@ -398,6 +398,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     classEndTime: courseInfo.classEndTime || '',
     classTime2: courseInfo.classTime2 || '',
     classEndTime2: courseInfo.classEndTime2 || '',
+    classTimezone: (courseInfo as any).classTimezone || 'America/Toronto',
     zoomLink: courseInfo.zoomLink || '',
     semesterTerm: courseInfo.semesterTerm || '',
     year: courseInfo.year || '',
@@ -1201,7 +1202,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           data-testid={`flag-toggle-${task.id}`}
         />
         <MessageSquare className={`h-[19px] w-[19px] flex-shrink-0 cursor-pointer hover:opacity-70 transition-opacity ${task.notes ? "text-yellow-400" : task.isCompleted ? "text-white/50" : "text-white"}`} style={{ marginLeft: '14px', marginRight: '10px' }} onClick={(e) => { e.stopPropagation(); setNotesTaskId(task.id); setNotesText(task.notes || ''); }} data-testid={`button-comments-${task.id}`} />
-        <Plus className={`h-[14px] w-[14px] flex-shrink-0 cursor-pointer hover:opacity-70 transition-opacity ${task.isCompleted ? "text-white/50" : "text-white"}`} style={{ marginLeft: '4px', marginRight: '4px' }} onClick={(e) => { e.stopPropagation(); if (expandedTaskId === task.id) { setExpandedTaskId(null); setEditTaskFields(null); } else { setExpandedTaskId(task.id); const d = task.dueDate ? new Date(task.dueDate) : null; setEditTaskFields({ title: task.title || '', type: task.type || 'other', dueDate: d ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` : '', dueTime: d ? `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` : '', description: task.description || '', gradeWeight: task.gradeWeight?.toString() || '', gradeTotal: task.gradeTotal?.toString() || '', gradeValue: task.gradeValue?.toString() || '', reminder1: task.reminder1 ?? 30, reminder2: task.reminder2 ?? 120, reminder3: task.reminder3 ?? null, reminder4: task.reminder4 ?? null, hideFromSummary: task.hideFromSummary ?? false }); } }} data-testid={`button-expand-${task.id}`} />
+        <Plus className={`h-[14px] w-[14px] flex-shrink-0 cursor-pointer hover:opacity-70 transition-opacity ${task.isCompleted ? "text-white/50" : "text-white"}`} style={{ marginLeft: '4px', marginRight: '4px' }} onClick={(e) => { e.stopPropagation(); if (expandedTaskId === task.id) { setExpandedTaskId(null); setEditTaskFields(null); } else { setExpandedTaskId(task.id); const d = task.dueDate ? new Date(task.dueDate) : null; setEditTaskFields({ title: task.title || '', type: task.type || 'other', dueDate: d ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` : '', dueTime: d ? `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` : '', timezone: (task as any).timezone || 'America/Toronto', description: task.description || '', gradeWeight: task.gradeWeight?.toString() || '', gradeTotal: task.gradeTotal?.toString() || '', gradeValue: task.gradeValue?.toString() || '', reminder1: task.reminder1 ?? 30, reminder2: task.reminder2 ?? 120, reminder3: task.reminder3 ?? null, reminder4: task.reminder4 ?? null, hideFromSummary: task.hideFromSummary ?? false }); } }} data-testid={`button-expand-${task.id}`} />
         <div className="flex-1 min-w-0" style={{ marginLeft: '36px' }}>
           <div
             className={`text-[10px] font-medium truncate flex items-center gap-1 cursor-pointer hover:underline ${task.isCompleted ? "line-through text-white/50" : "text-white"}`}
@@ -1219,6 +1220,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   type: task.type || 'other',
                   dueDate: d ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` : '',
                   dueTime: d ? `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` : '',
+                  timezone: (task as any).timezone || 'America/Toronto',
                   description: task.description || '',
                   gradeWeight: task.gradeWeight?.toString() || '',
                   gradeTotal: task.gradeTotal?.toString() || '',
@@ -1324,6 +1326,25 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               <Label className="text-[9px] text-white mb-0.5 block">Due Time</Label>
               <Input type="time" value={editTaskFields.dueTime} onChange={(e) => setEditTaskFields({ ...editTaskFields, dueTime: e.target.value })} className="h-7 !text-[10px] text-white bg-white/10 border-white/15" style={{ colorScheme: 'dark' }} data-testid={`input-inline-time-${task.id}`} />
             </div>
+          </div>
+          <div>
+            <Label className="text-[9px] text-white mb-0.5 block">Timezone</Label>
+            <select value={editTaskFields.timezone || 'America/Toronto'} onChange={(e) => setEditTaskFields({ ...editTaskFields, timezone: e.target.value })} className="w-full h-7 rounded bg-white/10 border border-white/15 text-white text-[10px] px-1.5" data-testid={`select-inline-timezone-${task.id}`}>
+              <option value="America/Toronto" className="bg-gray-800">Eastern (Toronto)</option>
+              <option value="America/New_York" className="bg-gray-800">Eastern (New York)</option>
+              <option value="America/Chicago" className="bg-gray-800">Central (Chicago)</option>
+              <option value="America/Denver" className="bg-gray-800">Mountain (Denver)</option>
+              <option value="America/Los_Angeles" className="bg-gray-800">Pacific (Los Angeles)</option>
+              <option value="America/Vancouver" className="bg-gray-800">Pacific (Vancouver)</option>
+              <option value="America/Edmonton" className="bg-gray-800">Mountain (Edmonton)</option>
+              <option value="America/Winnipeg" className="bg-gray-800">Central (Winnipeg)</option>
+              <option value="America/Halifax" className="bg-gray-800">Atlantic (Halifax)</option>
+              <option value="America/St_Johns" className="bg-gray-800">Newfoundland (St. John's)</option>
+              <option value="Europe/London" className="bg-gray-800">GMT (London)</option>
+              <option value="Europe/Paris" className="bg-gray-800">CET (Paris)</option>
+              <option value="Asia/Tokyo" className="bg-gray-800">JST (Tokyo)</option>
+              <option value="UTC" className="bg-gray-800">UTC</option>
+            </select>
           </div>
           <div>
             <Label className="text-[9px] text-white mb-0.5 block">Description</Label>
@@ -1850,6 +1871,25 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                           </div>
                         </div>
                       )}
+                      <div>
+                        <label className="text-white text-[9px] mb-0.5 block">Timezone</label>
+                        <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.classTimezone} onChange={(e) => setEditInfo({...editInfo, classTimezone: e.target.value})} data-testid="select-edit-class-timezone">
+                          <option value="America/Toronto" className="bg-gray-800">Eastern (Toronto)</option>
+                          <option value="America/New_York" className="bg-gray-800">Eastern (New York)</option>
+                          <option value="America/Chicago" className="bg-gray-800">Central (Chicago)</option>
+                          <option value="America/Denver" className="bg-gray-800">Mountain (Denver)</option>
+                          <option value="America/Los_Angeles" className="bg-gray-800">Pacific (Los Angeles)</option>
+                          <option value="America/Vancouver" className="bg-gray-800">Pacific (Vancouver)</option>
+                          <option value="America/Edmonton" className="bg-gray-800">Mountain (Edmonton)</option>
+                          <option value="America/Winnipeg" className="bg-gray-800">Central (Winnipeg)</option>
+                          <option value="America/Halifax" className="bg-gray-800">Atlantic (Halifax)</option>
+                          <option value="America/St_Johns" className="bg-gray-800">Newfoundland (St. John's)</option>
+                          <option value="Europe/London" className="bg-gray-800">GMT (London)</option>
+                          <option value="Europe/Paris" className="bg-gray-800">CET (Paris)</option>
+                          <option value="Asia/Tokyo" className="bg-gray-800">JST (Tokyo)</option>
+                          <option value="UTC" className="bg-gray-800">UTC</option>
+                        </select>
+                      </div>
                     </div>
                   );
                 })()}
