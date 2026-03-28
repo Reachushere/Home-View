@@ -17129,6 +17129,79 @@ Return ONLY the JSON object, no markdown formatting.`;
     }
   });
 
+  app.post("/api/pending-review/accept-batch", async (req, res) => {
+    try {
+      const { ids, overrides } = req.body;
+      if (!Array.isArray(ids) || ids.length === 0) return res.status(400).json({ error: "ids array required" });
+      const results: any[] = [];
+      for (const id of ids) {
+        const item = (await storage.getPendingReviewItems()).find(i => i.id === id);
+        if (!item) continue;
+        const rawData = item.rawData ? JSON.parse(item.rawData) : {};
+        let weekNumber = 1;
+        if (rawData.weekNumber) {
+          weekNumber = rawData.weekNumber;
+        } else {
+          const semesterSettings = await storage.getActiveSemesterSettings();
+          if (semesterSettings?.semesterStartDate) {
+            const { getWeekNumber } = await import('../shared/schema');
+            weekNumber = getWeekNumber(
+              new Date(),
+              new Date(semesterSettings.semesterStartDate),
+              semesterSettings.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : null
+            );
+          }
+        }
+        const mergedOverrides = overrides || {};
+        const taskData: any = {
+          title: item.title,
+          type: item.taskType || 'meeting',
+          courseName: item.courseName || null,
+          dueDate: item.startDate || new Date(),
+          eventStartTime: item.eventStartTime || null,
+          eventEndTime: item.eventEndTime || null,
+          weekNumber,
+          priority: rawData.priority || 'medium',
+          description: item.description || null,
+          isCompleted: false,
+          isAcknowledged: true,
+          hideFromSummary: mergedOverrides.hideFromSummary || false,
+          hideFromTimeline: mergedOverrides.hideFromTimeline || false,
+          ...mergedOverrides,
+        };
+        const task = await storage.createTask(taskData);
+        try {
+          const event = await createCalendarEvent({ id: task.id, title: task.title, description: task.description, dueDate: task.dueDate, courseName: task.courseName });
+          if (event?.id) await storage.updateTask(task.id, { calendarEventId: event.id, calendarProvider: 'google' });
+        } catch (calErr: any) {
+          console.log(`[Review] Calendar sync failed for batch item (non-fatal): ${calErr.message}`);
+        }
+        await storage.updatePendingReviewItem(id, { status: 'accepted' });
+        results.push({ id, taskId: task.id });
+      }
+      console.log(`[Review] Batch accepted ${results.length}/${ids.length} items`);
+      res.json({ success: true, results });
+    } catch (error: any) {
+      console.error("[Review] Error batch accepting:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/pending-review/reject-batch", async (req, res) => {
+    try {
+      const { ids } = req.body;
+      if (!Array.isArray(ids) || ids.length === 0) return res.status(400).json({ error: "ids array required" });
+      for (const id of ids) {
+        await storage.updatePendingReviewItem(id, { status: 'rejected' });
+      }
+      console.log(`[Review] Batch rejected ${ids.length} items`);
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("[Review] Error batch rejecting:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   app.delete("/api/pending-review/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);

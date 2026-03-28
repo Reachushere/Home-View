@@ -739,37 +739,63 @@ export default function Dashboard() {
     } catch (e) { console.error('[Review] Sync + review error:', e); }
   }, []);
 
+  const getRecurringGroupIds = useCallback((id: number): number[] => {
+    const item = morningReviewItems.find(i => i.id === id);
+    if (!item) return [id];
+    const normalizeTitle = (t: string) => t.toLowerCase().replace(/\s+/g, ' ').replace(/[^a-z0-9 ]/g, '').trim();
+    const normTitle = normalizeTitle(item.title || '');
+    return morningReviewItems.filter(i => normalizeTitle(i.title || '') === normTitle && i.source === item.source).map(i => i.id);
+  }, [morningReviewItems]);
+
   const handleAcceptReview = async (id: number, overrides?: Record<string, any>) => {
-    setProcessingReviewIds(prev => new Set(prev).add(id));
+    const groupIds = getRecurringGroupIds(id);
+    const allIds = groupIds.length > 1 ? groupIds : [id];
+    for (const gid of allIds) setProcessingReviewIds(prev => new Set(prev).add(gid));
     try {
       const hideFlags: Record<string, boolean> = {};
       if (reviewHideFromSummary.has(id)) hideFlags.hideFromSummary = true;
       if (reviewHideFromTimeline.has(id)) hideFlags.hideFromTimeline = true;
-      await fetch(`/api/pending-review/${id}/accept`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ overrides: { ...hideFlags, ...(overrides || {}) } }),
-      });
+      if (allIds.length > 1) {
+        await fetch('/api/pending-review/accept-batch', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ids: allIds, overrides: { ...hideFlags, ...(overrides || {}) } }),
+        });
+      } else {
+        await fetch(`/api/pending-review/${id}/accept`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ overrides: { ...hideFlags, ...(overrides || {}) } }),
+        });
+      }
       setMorningReviewItems(prev => {
-        const next = prev.filter(i => i.id !== id);
+        const next = prev.filter(i => !allIds.includes(i.id));
         if (next.length === 0) setTimeout(() => setShowMorningReview(false), 400);
         return next;
       });
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
     } catch (e) { console.error('[Review] accept error:', e); }
-    setProcessingReviewIds(prev => { const s = new Set(prev); s.delete(id); return s; });
+    for (const gid of allIds) setProcessingReviewIds(prev => { const s = new Set(prev); s.delete(gid); return s; });
   };
 
   const handleRejectReview = async (id: number) => {
-    setProcessingReviewIds(prev => new Set(prev).add(id));
+    const groupIds = getRecurringGroupIds(id);
+    const allIds = groupIds.length > 1 ? groupIds : [id];
+    for (const gid of allIds) setProcessingReviewIds(prev => new Set(prev).add(gid));
     try {
-      await fetch(`/api/pending-review/${id}/reject`, { method: 'POST' });
+      if (allIds.length > 1) {
+        await fetch('/api/pending-review/reject-batch', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ids: allIds }),
+        });
+      } else {
+        await fetch(`/api/pending-review/${id}/reject`, { method: 'POST' });
+      }
       setMorningReviewItems(prev => {
-        const next = prev.filter(i => i.id !== id);
+        const next = prev.filter(i => !allIds.includes(i.id));
         if (next.length === 0) setTimeout(() => setShowMorningReview(false), 400);
         return next;
       });
     } catch (e) { console.error('[Review] reject error:', e); }
-    setProcessingReviewIds(prev => { const s = new Set(prev); s.delete(id); return s; });
+    for (const gid of allIds) setProcessingReviewIds(prev => { const s = new Set(prev); s.delete(gid); return s; });
   };
 
   const handleAcceptAll = async () => {
@@ -10305,16 +10331,24 @@ export default function Dashboard() {
                 </>
               ) : (
                 <>
-                  <span className="text-[10px] text-white/50">{reviewCheckedIds.size} selected</span>
                   <button
                     className="h-8 px-4 text-[11px] font-medium text-white rounded disabled:opacity-40"
                     style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.15)', border: '1px solid rgba(255,255,255,0.2)', fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}
-                    onClick={handleIndividualConfirm}
-                    disabled={morningReviewLoading || reviewCheckedIds.size === 0}
-                    data-testid="button-confirm-individual-review"
+                    onClick={handleSkipAllForToday}
+                    disabled={morningReviewLoading}
+                    data-testid="button-dismiss-next-day-individual"
                   >
-                    {morningReviewLoading ? <Loader2 className="h-3 w-3 mr-1 animate-spin inline" /> : <Check className="h-3 w-3 mr-1 inline" />}
-                    Confirm
+                    Dismiss to Next Day
+                  </button>
+                  <button
+                    className="h-8 px-4 text-[11px] font-medium text-white rounded disabled:opacity-40"
+                    style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.15)', border: '1px solid rgba(255,255,255,0.2)', fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}
+                    onClick={handleDismissAllPermanently}
+                    disabled={morningReviewLoading}
+                    data-testid="button-decline-remaining-individual"
+                  >
+                    {morningReviewLoading ? <Loader2 className="h-3 w-3 mr-1 animate-spin inline" /> : null}
+                    Decline All Remaining
                   </button>
                 </>
               )}
@@ -10323,7 +10357,7 @@ export default function Dashboard() {
 
           {reviewMode === 'individual' && (
             <div className="px-4 py-1 border-b border-white/5 flex-shrink-0">
-              <span className="text-[8px] text-white/40">Check the items you want to add to your calendar. Unchecked items will be skipped (nothing is deleted).</span>
+              <span className="text-[8px] text-white/40">Accept or decline each item individually. Recurring events are grouped — accepting adds all occurrences.</span>
             </div>
           )}
 
@@ -10336,18 +10370,32 @@ export default function Dashboard() {
             ) : (
               <div className="flex gap-4 h-full">
                 {['outlook_calendar', 'google_calendar', 'gmail'].filter(source => morningReviewItems.some(i => i.source === source)).map(source => {
-                  const items = morningReviewItems.filter(i => i.source === source).sort((a, b) => {
+                  const allSourceItems = morningReviewItems.filter(i => i.source === source).sort((a, b) => {
                     const dateA = a.startDate ? new Date(a.startDate).getTime() : a.createdAt ? new Date(a.createdAt).getTime() : 0;
                     const dateB = b.startDate ? new Date(b.startDate).getTime() : b.createdAt ? new Date(b.createdAt).getTime() : 0;
                     return dateA - dateB;
                   });
+                  const normalizeTitle = (t: string) => t.toLowerCase().replace(/\s+/g, ' ').replace(/[^a-z0-9 ]/g, '').trim();
+                  const seenTitles = new Map<string, { item: any; count: number }>();
+                  for (const item of allSourceItems) {
+                    const normT = normalizeTitle(item.title || '');
+                    if (!seenTitles.has(normT)) {
+                      seenTitles.set(normT, { item, count: 1 });
+                    } else {
+                      seenTitles.get(normT)!.count++;
+                    }
+                  }
+                  const items = reviewMode === 'individual'
+                    ? Array.from(seenTitles.values()).map(v => ({ ...v.item, _recurringCount: v.count }))
+                    : allSourceItems;
                   const label = source === 'outlook_calendar' ? 'Outlook Calendar' : source === 'google_calendar' ? 'Google Calendar' : 'Gmail';
                   const icon = source === 'outlook_calendar' ? <CalendarDays className="h-3 w-3 text-blue-400" /> : source === 'google_calendar' ? <CalendarDays className="h-3 w-3 text-green-400" /> : <Mail className="h-3 w-3 text-red-400" />;
+                  const totalCount = allSourceItems.length;
                   return (
                     <div key={source} className="flex-1 flex flex-col min-w-0" data-testid={`review-group-${source}`}>
                       <div className="flex items-center gap-1.5 pb-1 border-b border-white/15 flex-shrink-0">
                         {icon}
-                        <span className="text-[10px] font-semibold uppercase tracking-wider text-white">{label} ({items.length})</span>
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-white">{label} ({totalCount})</span>
                       </div>
                       <div className="flex-1 overflow-y-auto mt-1" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.2) transparent' }}>
                         {items.length === 0 ? (
@@ -10359,32 +10407,15 @@ export default function Dashboard() {
                             style={{ backgroundColor: idx % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent', paddingTop: '5px', paddingBottom: '5px', marginBottom: '0px' }}
                             data-testid={`review-item-${item.id}`}
                           >
-                            <div
-                              className={`w-6 h-6 rounded border flex items-center justify-center flex-shrink-0 transition-colors ${
-                                reviewMode === 'all'
-                                  ? 'border-white/10 bg-white/5 cursor-default'
-                                  : reviewCheckedIds.has(item.id)
-                                    ? 'border-green-500 bg-green-500/30 cursor-pointer'
-                                    : 'border-white/50 bg-white/10 hover:border-white/70 cursor-pointer'
-                              }`}
-                              onClick={() => {
-                                if (reviewMode === 'individual') {
-                                  setReviewCheckedIds(prev => {
-                                    const next = new Set(prev);
-                                    if (next.has(item.id)) next.delete(item.id);
-                                    else next.add(item.id);
-                                    return next;
-                                  });
-                                }
-                              }}
-                              data-testid={`review-checkbox-${item.id}`}
-                            >
-                              {reviewMode === 'individual' && reviewCheckedIds.has(item.id) && (
-                                <Check className="h-4 w-4 text-green-400" />
-                              )}
-                            </div>
                             <div className="flex-1 min-w-0 flex items-center gap-2">
-                              <span className="text-[13px] font-medium truncate flex-1" style={{ lineHeight: '1.3' }}>{item.title}</span>
+                              <span className="text-[13px] font-medium truncate flex-1" style={{ lineHeight: '1.3' }}>
+                                {item.title}
+                                {item._recurringCount > 1 && (
+                                  <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                                    {item._recurringCount}x recurring
+                                  </span>
+                                )}
+                              </span>
                               {item.startDate && (
                                 <span className="text-[12px] text-white flex-shrink-0">
                                   {new Date(item.startDate).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
@@ -10422,39 +10453,26 @@ export default function Dashboard() {
                                 <span className="text-[8px] text-white/40">No timeline</span>
                               </label>
                             </div>
-                            {reviewMode === 'all' && (
-                              <div className="flex items-center gap-1 flex-shrink-0">
-                                <button
-                                  className="w-11 h-11 flex items-center justify-center rounded-full border border-green-500/40 text-green-400 hover:bg-green-500/25 disabled:opacity-40"
-                                  disabled={processingReviewIds.has(item.id)}
-                                  onClick={() => handleAcceptReview(item.id)}
-                                  data-testid={`button-accept-review-${item.id}`}
-                                  title="Accept"
-                                >
-                                  {processingReviewIds.has(item.id) ? <Loader2 className="h-5 w-5 animate-spin" /> : <Check className="h-5 w-5" />}
-                                </button>
-                                <button
-                                  className="w-11 h-11 flex items-center justify-center rounded-full border border-red-500/40 text-red-400 hover:bg-red-500/25 disabled:opacity-40 ml-[10px]"
-                                  disabled={processingReviewIds.has(item.id)}
-                                  onClick={() => handleRejectReview(item.id)}
-                                  data-testid={`button-reject-review-${item.id}`}
-                                  title="Skip"
-                                >
-                                  <X className="h-5 w-5" />
-                                </button>
-                              </div>
-                            )}
-                            {reviewMode === 'individual' && reviewCheckedIds.has(item.id) && (
+                            <div className="flex items-center gap-1 flex-shrink-0">
                               <button
-                                className="w-11 h-11 flex items-center justify-center rounded-full border border-red-500/40 text-red-400 hover:bg-red-500/25 disabled:opacity-40 flex-shrink-0"
+                                className="w-11 h-11 flex items-center justify-center rounded-full border border-green-500/40 text-green-400 hover:bg-green-500/25 disabled:opacity-40"
+                                disabled={processingReviewIds.has(item.id)}
+                                onClick={() => handleAcceptReview(item.id)}
+                                data-testid={`button-accept-review-${item.id}`}
+                                title={item._recurringCount > 1 ? `Accept all ${item._recurringCount} occurrences` : 'Accept'}
+                              >
+                                {processingReviewIds.has(item.id) ? <Loader2 className="h-5 w-5 animate-spin" /> : <Check className="h-5 w-5" />}
+                              </button>
+                              <button
+                                className="w-11 h-11 flex items-center justify-center rounded-full border border-red-500/40 text-red-400 hover:bg-red-500/25 disabled:opacity-40 ml-[10px]"
                                 disabled={processingReviewIds.has(item.id)}
                                 onClick={() => handleRejectReview(item.id)}
-                                data-testid={`button-dismiss-review-${item.id}`}
-                                title="Dismiss"
+                                data-testid={`button-reject-review-${item.id}`}
+                                title={item._recurringCount > 1 ? `Decline all ${item._recurringCount} occurrences` : 'Decline'}
                               >
                                 <X className="h-5 w-5" />
                               </button>
-                            )}
+                            </div>
                           </div>
                         ))}
                       </div>
