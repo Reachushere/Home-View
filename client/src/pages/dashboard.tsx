@@ -23094,7 +23094,7 @@ export default function Dashboard() {
                   left: 0,
                   width: `${effectiveDividerPct}%`,
                   height: `${lastBottom - firstTop}px`,
-                  background: '#000000',
+                  background: '#ffffff',
                   zIndex: 39,
                   borderRadius: '6px',
                 }} />
