@@ -11692,7 +11692,7 @@ export default function Dashboard() {
               data-tpo data-tpo-opacity="1"
               style={{
                 position: 'fixed',
-                top: `${25 + d2lTickerHeight}px`,
+                top: `${23 + d2lTickerHeight}px`,
                 zIndex: 101,
                 opacity: isTopPillOpen ? 0 : 1,
                 transition: 'opacity 0.4s ease-in-out',
@@ -11710,7 +11710,7 @@ export default function Dashboard() {
                 {/* Clock in countdown pill */}
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '-46px', marginRight: '10px', flexShrink: 0 }}>
                   {(() => { const sz = 48; const center = sz / 2; const dotR = 1.3; const hourDotDist = 20; const hours = currentTime.getHours(); const minutes = currentTime.getMinutes(); const seconds = currentTime.getSeconds(); const hourAngle = ((hours % 12) + minutes / 60) * 30 - 90; const minuteAngle = (minutes + seconds / 60) * 6 - 90; const secondAngle = seconds * 6 - 90; const hourHandLen = 11; const minuteHandLen = 15; const secondHandLen = 17; const toRad = (deg: number) => (deg * Math.PI) / 180; return (<svg width={sz} height={sz} viewBox={`0 0 ${sz} ${sz}`}>{Array.from({ length: 12 }, (_, i) => { const angle = (i * 30 - 90) * (Math.PI / 180); const x = center + hourDotDist * Math.cos(angle); const y = center + hourDotDist * Math.sin(angle); return <circle key={i} cx={x} cy={y} r={i % 3 === 0 ? dotR + 0.5 : dotR} fill="rgba(255,255,255,0.7)" />; })}<line x1={center} y1={center} x2={center + hourHandLen * Math.cos(toRad(hourAngle))} y2={center + hourHandLen * Math.sin(toRad(hourAngle))} stroke="#ffffff" strokeWidth="2" strokeLinecap="round" /><line x1={center} y1={center} x2={center + minuteHandLen * Math.cos(toRad(minuteAngle))} y2={center + minuteHandLen * Math.sin(toRad(minuteAngle))} stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" /><line x1={center} y1={center} x2={center + secondHandLen * Math.cos(toRad(secondAngle))} y2={center + secondHandLen * Math.sin(toRad(secondAngle))} stroke="#ef4444" strokeWidth="0.7" strokeLinecap="round" /><circle cx={center} cy={center} r="1.5" fill="#ffffff" /></svg>); })()}
-                  <div style={{ display: 'flex', alignItems: 'center', marginTop: '-2px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', marginTop: '0px' }}>
                     <span className="text-white" style={{ fontSize: '10px', fontWeight: '600', fontVariantNumeric: 'tabular-nums', lineHeight: '1' }}>{new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}</span>
                     <span className="text-white" style={{ fontSize: '9px', fontWeight: '600', textTransform: 'uppercase', marginLeft: '1px', lineHeight: '1' }}>{new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}</span>
                   </div>
@@ -11760,7 +11760,7 @@ export default function Dashboard() {
             data-tpo data-tpo-opacity="1"
             style={{
               position: 'fixed',
-              top: `${25 + d2lTickerHeight}px`,
+              top: `${23 + d2lTickerHeight}px`,
               zIndex: 40,
               opacity: isTopPillOpen ? 0 : 1,
               transition: 'opacity 0.4s ease-in-out',
