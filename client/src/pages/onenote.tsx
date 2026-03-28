@@ -82,6 +82,10 @@ export default function OneNotePage() {
   const [isChecklistCreating, setIsChecklistCreating] = useState(false);
   const [checklistItems, setChecklistItems] = useState<string[]>(['']);
   const [checklistName, setChecklistName] = useState('');
+  const [isCreatingPage, setIsCreatingPage] = useState(false);
+  const [newPageTitle, setNewPageTitle] = useState('');
+  const [newPageNotebook, setNewPageNotebook] = useState('');
+  const [newPageSection, setNewPageSection] = useState('');
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const speechRecRef = useRef<any>(null);
@@ -170,6 +174,29 @@ export default function OneNotePage() {
     },
   });
 
+  const createPageMutation = useMutation({
+    mutationFn: async ({ notebook, section, title, content }: { notebook: string; section: string; title: string; content: string }) => {
+      const res = await apiRequest('POST', '/api/onenote/pages', { notebook, section, title, content });
+      return res.json();
+    },
+    onSuccess: (_data, vars) => {
+      setAllPageCards(prev => [{
+        notebookName: vars.notebook,
+        sectionName: vars.section,
+        title: vars.title,
+        preview: vars.content.substring(0, 100) || 'No additional text',
+        content: vars.content,
+        position: 0,
+      }, ...prev]);
+      setIsCreatingPage(false);
+      setNewPageTitle('');
+      toast({ title: "Page created in OneNote" });
+    },
+    onError: (err: any) => {
+      toast({ title: "Create failed", description: err.message, variant: "destructive" });
+    },
+  });
+
   useEffect(() => {
     if (contentQuery.data && !isDirty) {
       setEditorContent(contentQuery.data.content);
@@ -208,7 +235,7 @@ export default function OneNotePage() {
     for (const nb of notebooks) {
       for (const sec of nb.sections) {
         try {
-          const params = new URLSearchParams({ notebook: nb.path, section: sec.name });
+          const params = new URLSearchParams({ notebook: nb.path, section: sec.name, notebookName: nb.name });
           const res = await fetch(`/api/onenote/pages?${params}`);
           if (res.ok) {
             const pages: OneNotePage[] = await res.json();
@@ -477,7 +504,7 @@ export default function OneNotePage() {
 
         {/* Top tab pills */}
         {bottomTab === 'notebooks' && (
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <button
               className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${topTab === 'recent' ? 'text-white' : 'text-white/50 hover:text-white/70'}`}
               style={{ background: topTab === 'recent' ? '#4a2d6e' : 'rgba(255,255,255,0.08)', border: topTab === 'recent' ? '1px solid #7b4daa' : '1px solid rgba(255,255,255,0.1)' }}
@@ -493,6 +520,20 @@ export default function OneNotePage() {
               data-testid="tab-notebook-list"
             >
               Notebook list
+            </button>
+            <button
+              className="ml-auto px-3 py-1.5 rounded-full text-xs font-medium text-white flex items-center gap-1"
+              style={{ background: '#7b2d8e', border: '1px solid #9b4dae' }}
+              onClick={() => {
+                if (notebooks.length > 0) {
+                  setNewPageNotebook(notebooks[0].name);
+                  setNewPageSection(notebooks[0].sections[0]?.name || '');
+                }
+                setIsCreatingPage(true);
+              }}
+              data-testid="button-new-onenote-page"
+            >
+              <Plus className="h-3 w-3" /> New Page
             </button>
           </div>
         )}
@@ -766,6 +807,74 @@ export default function OneNotePage() {
               <Button size="sm" className="text-white" onClick={handleCreateChecklist} disabled={createMutation.isPending} style={{ background: '#7b2d8e' }} data-testid="button-confirm-checklist">
                 {createMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <CheckSquare className="h-3 w-3 mr-1" />}
                 Create
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isCreatingPage && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setIsCreatingPage(false)}>
+          <div className="rounded-xl p-5 w-full max-w-sm" style={{ background: '#2d2d30', border: '1px solid #3e3e42' }} onClick={e => e.stopPropagation()}>
+            <h3 className="text-sm font-semibold mb-3 text-white flex items-center gap-2">
+              <FileText className="h-4 w-4" style={{ color: '#c586c0' }} />
+              New OneNote Page
+            </h3>
+            <div className="mb-3">
+              <label className="text-[10px] text-white/40 block mb-1">Notebook</label>
+              <select
+                value={newPageNotebook}
+                onChange={e => {
+                  setNewPageNotebook(e.target.value);
+                  const nb = notebooks.find(n => n.name === e.target.value);
+                  setNewPageSection(nb?.sections[0]?.name || '');
+                }}
+                className="w-full rounded px-3 py-2 text-sm text-white"
+                style={{ background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.15)' }}
+                data-testid="select-page-notebook"
+              >
+                {notebooks.map(nb => (
+                  <option key={nb.name} value={nb.name}>{nb.name}</option>
+                ))}
+              </select>
+            </div>
+            <div className="mb-3">
+              <label className="text-[10px] text-white/40 block mb-1">Section</label>
+              <select
+                value={newPageSection}
+                onChange={e => setNewPageSection(e.target.value)}
+                className="w-full rounded px-3 py-2 text-sm text-white"
+                style={{ background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.15)' }}
+                data-testid="select-page-section"
+              >
+                {(notebooks.find(n => n.name === newPageNotebook)?.sections || []).map(sec => (
+                  <option key={sec.name} value={sec.name}>{sec.name}</option>
+                ))}
+              </select>
+            </div>
+            <Input
+              value={newPageTitle}
+              onChange={e => setNewPageTitle(e.target.value)}
+              placeholder="Page title"
+              className="bg-white/5 border-white/15 text-white placeholder:text-white/30 mb-3 text-sm"
+              autoFocus
+              data-testid="input-page-title"
+              onKeyDown={e => {
+                if (e.key === 'Enter' && newPageTitle.trim() && newPageNotebook && newPageSection) {
+                  createPageMutation.mutate({ notebook: newPageNotebook, section: newPageSection, title: newPageTitle.trim(), content: '' });
+                }
+              }}
+            />
+            <div className="flex gap-2 justify-end">
+              <Button variant="ghost" size="sm" onClick={() => { setIsCreatingPage(false); setNewPageTitle(''); }} className="text-white/60 text-xs" data-testid="button-cancel-create-page">Cancel</Button>
+              <Button size="sm" disabled={!newPageTitle.trim() || !newPageNotebook || !newPageSection || createPageMutation.isPending}
+                onClick={() => createPageMutation.mutate({ notebook: newPageNotebook, section: newPageSection, title: newPageTitle.trim(), content: '' })}
+                className="text-xs text-white"
+                style={{ background: '#7b2d8e' }}
+                data-testid="button-confirm-create-page"
+              >
+                {createPageMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Plus className="h-3 w-3 mr-1" />}
+                Create in OneNote
               </Button>
             </div>
           </div>

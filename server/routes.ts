@@ -4201,8 +4201,17 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     try {
       const notebookPath = req.query.notebook as string;
       const section = req.query.section as string;
-      if (!notebookPath || !section) {
-        return res.status(400).json({ error: "notebook and section query params required" });
+      const notebookName = req.query.notebookName as string;
+      if (!section) {
+        return res.status(400).json({ error: "section query param required" });
+      }
+      if (notebookName) {
+        const { getOneNotePagesViaApi } = await import("./onedrive");
+        const pages = await getOneNotePagesViaApi(notebookName, section);
+        return res.json(pages);
+      }
+      if (!notebookPath) {
+        return res.status(400).json({ error: "notebook or notebookName query param required" });
       }
       const { getOneNotePages } = await import("./onedrive");
       const pages = await getOneNotePages(notebookPath, section + '.one');
@@ -4210,6 +4219,25 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     } catch (err: any) {
       console.error("Error getting OneNote pages:", err);
       res.status(500).json({ error: err.message || "Failed to get pages" });
+    }
+  });
+
+  app.post("/api/onenote/pages", async (req, res) => {
+    try {
+      const { notebook, section, title, content } = req.body;
+      if (!notebook || !section || !title) {
+        return res.status(400).json({ error: "notebook, section, and title are required" });
+      }
+      const { createOneNotePage } = await import("./onedrive");
+      const page = await createOneNotePage(notebook, section, title, content || '');
+      if (page) {
+        res.json({ success: true, page });
+      } else {
+        res.status(500).json({ error: "Failed to create page" });
+      }
+    } catch (err: any) {
+      console.error("Error creating OneNote page:", err);
+      res.status(500).json({ error: err.message || "Failed to create page" });
     }
   });
 

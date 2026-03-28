@@ -507,6 +507,101 @@ export async function getOneNotePages(notebookPath: string, sectionFileName: str
   return pages;
 }
 
+export async function getOneNotePagesViaApi(notebookDisplayName: string, sectionName: string): Promise<OneNotePage[]> {
+  const client = await getOneDriveClient();
+
+  try {
+    const nbRes = await client.api('/me/onenote/notebooks').select('id,displayName').get();
+    const nb = (nbRes.value || []).find((n: any) => n.displayName === notebookDisplayName);
+    if (!nb) {
+      console.log(`[OneNote API] Notebook "${notebookDisplayName}" not found`);
+      return [];
+    }
+
+    const secRes = await client.api(`/me/onenote/notebooks/${nb.id}/sections`).select('id,displayName').get();
+    const sec = (secRes.value || []).find((s: any) => s.displayName === sectionName);
+    if (!sec) {
+      console.log(`[OneNote API] Section "${sectionName}" not found in "${notebookDisplayName}"`);
+      return [];
+    }
+
+    const pagesRes = await client.api(`/me/onenote/sections/${sec.id}/pages`)
+      .select('id,title,createdDateTime,lastModifiedDateTime')
+      .orderby('createdDateTime desc')
+      .top(200)
+      .get();
+
+    const pages: OneNotePage[] = [];
+    for (const p of (pagesRes.value || [])) {
+      let content = '';
+      try {
+        const contentRes = await client.api(`/me/onenote/pages/${p.id}/content`).get();
+        const html = typeof contentRes === 'string' ? contentRes : await contentRes.text?.() || '';
+        content = html
+          .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+          .replace(/<[^>]+>/g, ' ')
+          .replace(/&nbsp;/g, ' ')
+          .replace(/&amp;/g, '&')
+          .replace(/&lt;/g, '<')
+          .replace(/&gt;/g, '>')
+          .replace(/&#\d+;/g, '')
+          .replace(/\s+/g, ' ')
+          .trim();
+      } catch (e: any) {
+        console.log(`[OneNote API] Could not fetch content for "${p.title}": ${e.message}`);
+      }
+      pages.push({
+        title: p.title || 'Untitled Page',
+        content,
+        position: pages.length,
+      });
+    }
+
+    console.log(`[OneNote API] Found ${pages.length} pages in ${notebookDisplayName}/${sectionName}`);
+    return pages;
+  } catch (err: any) {
+    console.error(`[OneNote API] Error listing pages:`, err.message || err);
+    return [];
+  }
+}
+
+export async function createOneNotePage(notebookDisplayName: string, sectionName: string, title: string, content: string): Promise<{ id: string; title: string } | null> {
+  const client = await getOneDriveClient();
+
+  try {
+    const nbRes = await client.api('/me/onenote/notebooks').select('id,displayName').get();
+    const nb = (nbRes.value || []).find((n: any) => n.displayName === notebookDisplayName);
+    if (!nb) {
+      throw new Error(`Notebook "${notebookDisplayName}" not found`);
+    }
+
+    const secRes = await client.api(`/me/onenote/notebooks/${nb.id}/sections`).select('id,displayName').get();
+    const sec = (secRes.value || []).find((s: any) => s.displayName === sectionName);
+    if (!sec) {
+      throw new Error(`Section "${sectionName}" not found in "${notebookDisplayName}"`);
+    }
+
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head><title>${title.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</title></head>
+<body>
+${content.split('\n').map(line => `<p>${line.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>`).join('\n')}
+</body>
+</html>`;
+
+    const page = await client.api(`/me/onenote/sections/${sec.id}/pages`)
+      .header('Content-Type', 'text/html')
+      .post(htmlContent);
+
+    console.log(`[OneNote API] Created page "${title}" in ${notebookDisplayName}/${sectionName}`);
+    return { id: page.id, title: page.title || title };
+  } catch (err: any) {
+    console.error(`[OneNote API] Error creating page:`, err.message || err);
+    throw err;
+  }
+}
+
 export async function deleteOneNotePage(notebookDisplayName: string, sectionName: string, pageTitle: string): Promise<boolean> {
   const client = await getOneDriveClient();
 

@@ -1169,7 +1169,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           onClick={(e) => { e.stopPropagation(); toggleFlagMutation.mutate({ id: task.id, flagged: !task.flagged }); }}
           data-testid={`flag-toggle-${task.id}`}
         />
-        <MessageSquare className={`h-[19px] w-[19px] flex-shrink-0 cursor-pointer hover:opacity-70 transition-opacity ${task.isCompleted ? "text-white/50" : "text-white"}`} style={{ marginLeft: '17px', marginRight: '10px' }} onClick={(e) => { e.stopPropagation(); if (expandedTaskId === task.id) { setExpandedTaskId(null); setEditTaskFields(null); } else { setExpandedTaskId(task.id); const d = task.dueDate ? new Date(task.dueDate) : null; setEditTaskFields({ title: task.title || '', type: task.type || 'other', dueDate: d ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` : '', dueTime: d ? `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` : '', description: task.description || '', gradeWeight: task.gradeWeight?.toString() || '', gradeTotal: task.gradeTotal?.toString() || '', gradeValue: task.gradeValue?.toString() || '', reminder1: task.reminder1 ?? 30, reminder2: task.reminder2 ?? 120, reminder3: task.reminder3 ?? null, reminder4: task.reminder4 ?? null }); } }} data-testid={`button-comments-${task.id}`} />
+        <MessageSquare className={`h-[19px] w-[19px] flex-shrink-0 cursor-pointer hover:opacity-70 transition-opacity ${task.isCompleted ? "text-white/50" : "text-white"}`} style={{ marginLeft: '17px', marginRight: '10px' }} onClick={(e) => { e.stopPropagation(); if (expandedTaskId === task.id) { setExpandedTaskId(null); setEditTaskFields(null); } else { setExpandedTaskId(task.id); const d = task.dueDate ? new Date(task.dueDate) : null; setEditTaskFields({ title: task.title || '', type: task.type || 'other', dueDate: d ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` : '', dueTime: d ? `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` : '', description: task.description || '', gradeWeight: task.gradeWeight?.toString() || '', gradeTotal: task.gradeTotal?.toString() || '', gradeValue: task.gradeValue?.toString() || '', reminder1: task.reminder1 ?? 30, reminder2: task.reminder2 ?? 120, reminder3: task.reminder3 ?? null, reminder4: task.reminder4 ?? null, hideFromSummary: task.hideFromSummary ?? false }); } }} data-testid={`button-comments-${task.id}`} />
         <div className="flex-1 min-w-0" style={{ marginLeft: '21px' }}>
           <div
             className={`text-[10px] font-medium truncate flex items-center gap-1 cursor-pointer hover:underline ${task.isCompleted ? "line-through text-white/50" : "text-white"}`}
@@ -1339,6 +1339,17 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               </select>
             </div>
           </div>
+          <div className="flex items-center gap-2 pt-1">
+            <label className="flex items-center gap-2 cursor-pointer" data-testid={`toggle-hide-summary-${task.id}`}>
+              <input
+                type="checkbox"
+                checked={editTaskFields.hideFromSummary}
+                onChange={(e) => setEditTaskFields({ ...editTaskFields, hideFromSummary: e.target.checked })}
+                className="w-3.5 h-3.5 rounded accent-red-500"
+              />
+              <span className="text-[10px] text-white/70">Hide from summary rows & homework box</span>
+            </label>
+          </div>
           <div className="flex items-center justify-end gap-3 pt-2">
             <Button size="sm" variant="ghost" onClick={() => { setExpandedTaskId(null); setEditTaskFields(null); }} className="h-9 px-4 text-[13px] font-semibold text-white hover:text-white hover:bg-white/10 border border-white/20" data-testid={`button-inline-cancel-${task.id}`}>Cancel</Button>
             <Button
@@ -1368,6 +1379,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 if (editTaskFields.reminder2 !== (task.reminder2 ?? null)) updates.reminder2 = editTaskFields.reminder2;
                 if (editTaskFields.reminder3 !== (task.reminder3 ?? null)) updates.reminder3 = editTaskFields.reminder3;
                 if (editTaskFields.reminder4 !== (task.reminder4 ?? null)) updates.reminder4 = editTaskFields.reminder4;
+                if (editTaskFields.hideFromSummary !== (task.hideFromSummary ?? false)) updates.hideFromSummary = editTaskFields.hideFromSummary;
                 if (Object.keys(updates).length > 0) {
                   updateTaskMutation.mutate({ id: task.id, data: updates, _task: task });
                 }
