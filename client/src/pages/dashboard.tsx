@@ -19534,7 +19534,7 @@ export default function Dashboard() {
                           )}
                           <div className="flex items-center gap-1.5">
                             <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? '#fff' : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
-                            <div style={{ fontSize: isToday ? '25px' : '24px', fontWeight: isToday ? 600 : 700, color: isToday ? '#FFFF00' : '#fff' }}>{dayNum}</div>
+                            <div style={{ fontSize: isToday ? '25px' : '24px', fontWeight: isToday ? 600 : 700, color: isToday ? '#000000' : '#fff' }}>{dayNum}</div>
                           </div>
                         </>
                       );
