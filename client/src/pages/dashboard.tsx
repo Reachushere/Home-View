@@ -19424,18 +19424,22 @@ export default function Dashboard() {
                       let sunriseMin = 7 * 60, sunsetMin = 18 * 60;
                       if (weatherData?.sunrise) { const sr = new Date(weatherData.sunrise); sunriseMin = sr.getHours() * 60 + sr.getMinutes(); }
                       if (weatherData?.sunset) { const ss = new Date(weatherData.sunset); sunsetMin = ss.getHours() * 60 + ss.getMinutes(); }
-                      const isDaytime = minutesSinceMidnight >= sunriseMin && minutesSinceMidnight < sunsetMin;
-                      const h = 19;
-                      let skyGrad: string;
-                      if (h < 5) skyGrad = 'linear-gradient(180deg, #2c3e6b 0%, #1a2744 50%, #0a0f1e 100%)';
-                      else if (h < 7) skyGrad = 'linear-gradient(180deg, #6a9ab8 0%, #a4bcc8 40%, #c4a082 100%)';
-                      else if (h < 10) skyGrad = 'linear-gradient(180deg, #87c5e0 0%, #a8d4e6 50%, #8bbcd4 100%)';
-                      else if (h < 13) skyGrad = 'linear-gradient(180deg, #7bb8d8 0%, #9dd0e8 50%, #7ba8c0 100%)';
-                      else if (h < 16) skyGrad = 'linear-gradient(180deg, #7ba8c0 0%, #c0a890 50%, #d4a06a 100%)';
-                      else if (h < 18) skyGrad = 'linear-gradient(180deg, #c48a68 0%, #d4956a 30%, #8a6858 70%, #4a4058 100%)';
-                      else if (h < 20) skyGrad = 'linear-gradient(180deg, #8a6858 0%, #5a4a60 40%, #2e2844 100%)';
-                      else skyGrad = 'linear-gradient(180deg, #2c3e6b 0%, #1a2744 50%, #0a0f1e 100%)';
-                      return { background: skyGrad };
+                      const skyStops = [
+                        { p: 0, c: '#0a0f1e' }, { p: 8, c: '#1a2744' }, { p: 15, c: '#2c3e6b' },
+                        { p: 22, c: '#6a9ab8' }, { p: 28, c: '#a4bcc8' }, { p: 32, c: '#c4a082' },
+                        { p: 38, c: '#87c5e0' }, { p: 45, c: '#9dd0e8' }, { p: 55, c: '#7bb8d8' },
+                        { p: 62, c: '#7ba8c0' }, { p: 68, c: '#c0a890' }, { p: 72, c: '#d4a06a' },
+                        { p: 76, c: '#c48a68' }, { p: 82, c: '#8a6858' }, { p: 88, c: '#4a4058' },
+                        { p: 95, c: '#1a2744' }, { p: 100, c: '#0a0f1e' },
+                      ];
+                      const visibleStops = skyStops.filter(s => s.p <= pct);
+                      if (visibleStops.length === 0) visibleStops.push(skyStops[0]);
+                      const lastVisible = visibleStops[visibleStops.length - 1];
+                      const scaledStops = visibleStops.map(s => `${s.c} ${pct > 0 ? (s.p / pct * pct).toFixed(1) : 0}%`);
+                      scaledStops.push(`${lastVisible.c} ${pct}%`);
+                      scaledStops.push(`${colorSettings.headerBar} ${pct}%`);
+                      scaledStops.push(`${colorSettings.headerBar} 100%`);
+                      return { background: `linear-gradient(to right, ${scaledStops.join(', ')})` };
                     })() : { backgroundColor: colorSettings.headerBar }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
