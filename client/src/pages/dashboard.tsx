@@ -697,22 +697,23 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    const checkMorningReview = async () => {
-      const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
-      const hour = eastern.getHours();
-      if (hour < 9) return;
-      const dismissUntil = localStorage.getItem('morning_review_dismiss_until');
-      if (dismissUntil && Date.now() < Number(dismissUntil)) return;
-      try {
-        await fetch('/api/outlook/sync', { method: 'POST' }).catch(() => {});
-        await fetch('/api/pending-review/dedup', { method: 'POST' }).catch(() => {});
-      } catch {}
-      const items = await fetchPendingReview();
-      if (items.length > 0) {
-        setShowMorningReview(true);
-      }
-    };
-    checkMorningReview();
+    // DISABLED: Morning review auto-popup disconnected for now
+    // const checkMorningReview = async () => {
+    //   const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+    //   const hour = eastern.getHours();
+    //   if (hour < 9) return;
+    //   const dismissUntil = localStorage.getItem('morning_review_dismiss_until');
+    //   if (dismissUntil && Date.now() < Number(dismissUntil)) return;
+    //   try {
+    //     await fetch('/api/outlook/sync', { method: 'POST' }).catch(() => {});
+    //     await fetch('/api/pending-review/dedup', { method: 'POST' }).catch(() => {});
+    //   } catch {}
+    //   const items = await fetchPendingReview();
+    //   if (items.length > 0) {
+    //     setShowMorningReview(true);
+    //   }
+    // };
+    // checkMorningReview();
   }, [fetchPendingReview]);
 
   const triggerOutlookSyncAndReview = useCallback(async () => {
