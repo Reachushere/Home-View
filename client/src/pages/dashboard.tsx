@@ -22754,11 +22754,11 @@ export default function Dashboard() {
                         ) : (tab.letter === 'W' && tab.year === '28') ? (
                           <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">F 2026</text>
                         ) : (tab.letter === 'W' && tab.year === '26') ? (
-                          <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">Wk 10</text>
+                          <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">{`Wk ${selectedWeek}`}</text>
                         ) : (tab.letter === 'S' && tab.year === '26') ? (
-                          <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">Wk 11</text>
+                          <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">{`Wk ${selectedWeek + 1}`}</text>
                         ) : (tab.letter === 'F' && tab.year === '26') ? (
-                          <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">Wk 12</text>
+                          <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">{`Wk ${selectedWeek + 2}`}</text>
                         ) : (tab.letter === 'W' && tab.year === '27') ? (
                           <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">May 26</text>
                         ) : (tab.letter === 'S' && tab.year === '27') ? (
