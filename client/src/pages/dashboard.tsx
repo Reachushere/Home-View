@@ -3781,7 +3781,7 @@ export default function Dashboard() {
   
   // Dynamic course colors based on coursesData
   const dynamicCourseColors = useMemo(() => {
-    const colors: Record<string, { bg: string; border: string; text: string; dot: string; prepBg: string; prepBorder: string; prepText: string; hex: string; hexEnd?: string }> = {};
+    const colors: Record<string, { bg: string; mid: string; border: string; text: string; dot: string; prepBg: string; prepBorder: string; prepText: string; hex: string; hexEnd?: string }> = {};
     
     coursesData.courses.forEach(course => {
       if (!course.name) return;
@@ -3792,10 +3792,14 @@ export default function Dashboard() {
       const rgb = hexToRgb(displayHex);
       const endRgb = hexEnd ? hexToRgb(hexEnd) : rgb;
       
+      const midR = Math.round((rgb.r + endRgb.r) / 2);
+      const midG = Math.round((rgb.g + endRgb.g) / 2);
+      const midB = Math.round((rgb.b + endRgb.b) / 2);
       colors[courseCode] = {
         hex,
         hexEnd,
         bg: `rgb(${Math.round(endRgb.r + (255 - endRgb.r) * 0.55)}, ${Math.round(endRgb.g + (255 - endRgb.g) * 0.55)}, ${Math.round(endRgb.b + (255 - endRgb.b) * 0.55)})`,
+        mid: `rgb(${midR}, ${midG}, ${midB})`,
         border: displayHex,
         text: displayHex,
         dot: displayHex,
@@ -5233,6 +5237,15 @@ export default function Dashboard() {
     setIsResizingHomework(true);
     resizingHomeworkRef.current = { startX: clientX, startReduction: calendarReduction };
   }, [calendarReduction]);
+
+  const handleCombinedResizeStart = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    const { clientX, clientY } = getPointerXY(e);
+    setIsResizing(true);
+    setIsResizingHomework(true);
+    resizeRef.current = { startY: clientY, startHeight: calendarHeight, _undoHeight: calendarHeight };
+    resizingHomeworkRef.current = { startX: clientX, startReduction: calendarReduction };
+  }, [calendarHeight, calendarReduction]);
 
   const calendarHeightRef = useRef(calendarHeight);
   calendarHeightRef.current = calendarHeight;
@@ -19409,19 +19422,7 @@ export default function Dashboard() {
             </div>
           )}
           <div className="flex-1 min-h-0 relative" style={{ overflow: 'visible' }}>
-            <div
-              style={{ position: 'absolute', left: '9px', top: '-30px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
-              data-testid="calendar-top-resize-handle"
-            >
-              <span className="text-[10.5px] font-medium leading-tight whitespace-nowrap" style={{ position: 'absolute', left: '205px', top: '1px', color: 'rgba(255,255,255,0.85)' }}>{selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? `Week ${selectedWeek}` : ''}{(() => { const variants = courseWeekVariants[selectedWeek]; if (variants && variants.length > 0) { const diffLabels = [...new Set(variants.map(v => v.label))].filter(l => { const n = String(l).replace(/^week\s*/i, '').trim(); return n !== String(selectedWeek); }); if (diffLabels.length === 0) return null; return <span className="text-[9px] font-normal ml-1" style={{ color: 'rgba(255,255,255,0.6)' }}>({diffLabels.map((label, i) => { const lStr = String(label); const prefix = /^week\s/i.test(lStr) ? '' : 'Wk '; return <span key={i}>{i > 0 ? ', ' : ''}{variants.find(v => v.label === label)?.courseCode}: {prefix}{lStr}</span>; })})</span>; } return null; })()}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek && selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? <span className="text-[10px] font-normal ml-1" style={{ color: 'rgba(255,255,255,0.5)' }}>(current)</span> : null; })()}</span>
-              <div style={{ width: '191px', height: '14px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
-                <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 60, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 60, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▲</span></div>
-                <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
-                <div className="cursor-grab active:cursor-grabbing select-none" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={handleTopResizeStart} onTouchStart={handleTopResizeStart}><span style={{ fontSize: '13px', lineHeight: '1', color: '#000', letterSpacing: '-1px', writingMode: 'vertical-lr' }}>⋮⋮</span></div>
-                <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
-                <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.max(200, prev - 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.max(200, prev - 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▼</span></div>
-              </div>
-            </div>
+            <span className="text-[10.5px] font-medium leading-tight whitespace-nowrap" style={{ position: 'absolute', left: '9px', top: '-16px', zIndex: 50, color: 'rgba(255,255,255,0.85)' }}>{selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? `Week ${selectedWeek}` : ''}{(() => { const variants = courseWeekVariants[selectedWeek]; if (variants && variants.length > 0) { const diffLabels = [...new Set(variants.map(v => v.label))].filter(l => { const n = String(l).replace(/^week\s*/i, '').trim(); return n !== String(selectedWeek); }); if (diffLabels.length === 0) return null; return <span className="text-[9px] font-normal ml-1" style={{ color: 'rgba(255,255,255,0.6)' }}>({diffLabels.map((label, i) => { const lStr = String(label); const prefix = /^week\s/i.test(lStr) ? '' : 'Wk '; return <span key={i}>{i > 0 ? ', ' : ''}{variants.find(v => v.label === label)?.courseCode}: {prefix}{lStr}</span>; })})</span>; } return null; })()}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek && selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? <span className="text-[10px] font-normal ml-1" style={{ color: 'rgba(255,255,255,0.5)' }}>(current)</span> : null; })()}</span>
           <div ref={calendarBorderRef} className="shadow-lg border border-white flex flex-col relative" style={{ background: '#faf8f5', borderRadius: '8px', overflow: 'hidden', height: 'calc(100%)', width: 'calc(100%)', marginLeft: '1px', marginTop: '-2px' }}>
             {/* Progress/Saturday divider line - grey separator on left border of Saturday column */}
             <div className="absolute top-0 bottom-0 w-[3px] z-50 pointer-events-none overflow-hidden" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 1px)`, backgroundColor: '#888888' }}>
@@ -20668,9 +20669,9 @@ export default function Dashboard() {
                           <div
                             className={`group flex items-center gap-1 text-[8px] px-1 py-0.5 truncate rounded border w-full min-w-0 cursor-pointer ${
                               ""
-                            } ${task.isCompleted ? "text-gray-400" : "text-black"}`}
+                            } ${task.isCompleted ? "text-gray-400" : "text-white"}`}
                             style={{
-                              backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || (task.type === 'other' ? otherRowColors.taskBgColor : '#dbeafe')),
+                              backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.mid || colors?.bg || (task.type === 'other' ? otherRowColors.taskBgColor : '#dbeafe')),
                               borderColor: task.isCompleted ? '#d1d5db' : (colors?.hex || (task.type === 'other' ? otherRowColors.borderColor : '#60a5fa')),
                               borderWidth: '1.5px'
                             }}
@@ -20693,7 +20694,7 @@ export default function Dashboard() {
                                 checked={task.isCompleted || false}
                                 onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
                                 onClick={(e) => e.stopPropagation()}
-                                className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                className="h-3 w-3 shrink-0 border-white data-[state=checked]:bg-white data-[state=checked]:border-white"
                                 data-testid={`checkbox-allday-${task.id}`}
                               />
                             )}
@@ -20705,7 +20706,7 @@ export default function Dashboard() {
                             </span>
                             {task.referenceLink && (
                               <a href={task.referenceLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={task.referenceLink} data-testid={`link-icon-allday-${task.id}`}>
-                                <ExternalLink className="h-2.5 w-2.5 text-black/60 hover:text-black" />
+                                <ExternalLink className="h-2.5 w-2.5 text-white/60 hover:text-white" />
                               </a>
                             )}
                             {adPdfUrl && (
@@ -21365,33 +21366,6 @@ export default function Dashboard() {
             </div>
           </div>
           </div>
-          </div>
-          {/* Calendar Width Resize Handle — top-right side, outside overflow:clip */}
-          <div
-            className="z-50"
-            style={{ position: 'absolute', right: '-17px', top: '31px', width: '16px', height: '181px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto' }}
-            data-testid="resize-handle-calendar-right"
-          >
-            <div style={{ width: '16px', height: '181px', borderRadius: '0 6px 6px 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderLeft: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
-              <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => { const v = Math.max(0, prev - 2); localStorage.setItem('calendarReduction', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => { const v = Math.max(0, prev - 2); localStorage.setItem('calendarReduction', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▶</span></div>
-              <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
-              <div className="cursor-grab active:cursor-grabbing select-none" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={handleWidthResizeStart} onTouchStart={handleWidthResizeStart}><span style={{ fontSize: '13px', lineHeight: '1', color: '#000' }}>⋮⋮</span></div>
-              <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
-              <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => { const v = prev + 2; localStorage.setItem('calendarReduction', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => { const v = prev + 2; localStorage.setItem('calendarReduction', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>◀</span></div>
-            </div>
-          </div>
-          {/* Calendar Height Resize Handle — bottom-center, fully outside overflow:clip */}
-          <div
-            style={{ position: 'absolute', left: '50%', bottom: '-12px', transform: 'translateX(-50%)', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60, pointerEvents: 'auto' }}
-            data-testid="calendar-height-resize-handle"
-          >
-            <div style={{ width: '191px', height: '14px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
-              <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 60, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 60, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▼</span></div>
-              <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
-              <div className="cursor-grab active:cursor-grabbing select-none" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={handleResizeStart} onTouchStart={handleResizeStart}><span style={{ fontSize: '13px', lineHeight: '1', color: '#000', letterSpacing: '-1px', writingMode: 'vertical-lr' }}>⋮⋮</span></div>
-              <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
-              <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.max(200, prev - 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.max(200, prev - 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▲</span></div>
-            </div>
           </div>
           {/* Set Default checkbox — below calendar */}
           <button
@@ -22670,16 +22644,20 @@ export default function Dashboard() {
               <Minimize2 className="h-2.5 w-2.5 text-white" />
             </button>
           )}
-          {/* Homework Width Resize Handle — outside left side, near bottom */}
+          {/* Joint Resize Handle — controls both calendar+homework width and calendar height */}
           {!hwFloating.detached && <div
             className="absolute z-[60]"
-            style={{ left: '-16px', bottom: '19px', width: '15px', height: '181px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto' }}
+            style={{ left: '-16px', top: '50%', transform: 'translateY(-50%)', width: '15px', height: '181px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto' }}
             data-testid="resize-handle-homework"
           >
             <div style={{ width: '15px', height: '181px', borderRadius: '6px 0 0 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderRight: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
               <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => { const v = prev + 2; localStorage.setItem('calendarReduction', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => { const v = prev + 2; localStorage.setItem('calendarReduction', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>◀</span></div>
               <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
-              <div className="cursor-grab active:cursor-grabbing select-none" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={handleWidthResizeStart} onTouchStart={handleWidthResizeStart}><span style={{ fontSize: '13px', lineHeight: '1', color: '#000' }}>⋮⋮</span></div>
+              <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 60, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 60, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▼</span></div>
+              <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
+              <div className="cursor-grab active:cursor-grabbing select-none" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={handleCombinedResizeStart} onTouchStart={handleCombinedResizeStart}><span style={{ fontSize: '13px', lineHeight: '1', color: '#000' }}>⋮⋮</span></div>
+              <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
+              <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.max(200, prev - 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.max(200, prev - 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▲</span></div>
               <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
               <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => { const v = Math.max(0, prev - 2); localStorage.setItem('calendarReduction', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => { const v = Math.max(0, prev - 2); localStorage.setItem('calendarReduction', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▶</span></div>
             </div>
