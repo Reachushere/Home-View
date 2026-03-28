@@ -17353,7 +17353,14 @@ export default function Dashboard() {
                                 })()}</span>
                               </div>
                               <div className="p-1.5 space-y-1 flex-1 overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
-                                {sem.courses.map(c => renderCourseRow(c, sem.key, sem.courses.length))}
+                                {[...sem.courses].sort((a, b) => {
+                                  const pa = draftCoursePlayPriority[`${sem.key}:${a.code}`] ?? coursePlayPriority[`${sem.key}:${a.code}`] ?? 0;
+                                  const pb = draftCoursePlayPriority[`${sem.key}:${b.code}`] ?? coursePlayPriority[`${sem.key}:${b.code}`] ?? 0;
+                                  if (pa === 0 && pb === 0) return 0;
+                                  if (pa === 0) return 1;
+                                  if (pb === 0) return -1;
+                                  return pa - pb;
+                                }).map(c => renderCourseRow(c, sem.key, sem.courses.length))}
                                 {sem.courses.length === 0 && <div className="text-[9px] text-white/40 text-center py-3">No courses yet</div>}
                               </div>
                             </div>
