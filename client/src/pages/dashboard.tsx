@@ -52,6 +52,7 @@ import pdfSearchLogo from "@assets/Adobe61_1772583825907.png";
 import pdfIconPath from "@assets/Adobee_1772801638235.png";
 import zoomCamPath from "@assets/Zoomcam_1773655084814.png";
 import readerIconPath from "@assets/Headphones2_1774598197965.png";
+import hwPlayIconPath from "@assets/Headphones2_1774667878315.png";
 import BookAnimation from "@/components/BookAnimation";
 import dragTabPath from "@assets/drag-tab.svg";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -902,6 +903,57 @@ export default function Dashboard() {
   const [bookAnimState, setBookAnimState] = useState<{ isOpen: boolean; courseCode: string; title: string; color: string; onDone: () => void } | null>(null);
   const [bookReaderOverlay, setBookReaderOverlay] = useState<{ url: string; courseCode: string; title: string; color: string } | null>(null);
   const [hwUploadingState, setHwUploadingState] = useState<Record<string, boolean>>({});
+  const [hwDragOverTarget, setHwDragOverTarget] = useState<string | null>(null);
+  const doHwUpload = useCallback(async (file: File, uploadType: 'module' | 'reading', courseCode: string, courseName: string, week: number, courseHexColor: string) => {
+    const stateKey = `${courseCode}-${week}-${uploadType}`;
+    setHwUploadingState(prev => ({ ...prev, [stateKey]: true }));
+    try {
+      const wd = getWeekDates(week, new Date(semesterSettings?.semesterStartDate || Date.now()), semesterSettings?.readingWeekStart);
+      const ws = new Date(wd.start);
+      const we = new Date(wd.end);
+      const mos = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const s1 = `${mos[ws.getMonth()]} ${ws.getDate()}`;
+      const s2 = ws.getMonth() === we.getMonth() ? `${we.getDate()}` : `${mos[we.getMonth()]} ${we.getDate()}`;
+      const dr = `${s1}-${s2}`;
+      const codeClean = courseCode.replace(/\s/g, '');
+      const resp = await fetch('/api/course-week-upload', {
+        method: 'POST',
+        headers: {
+          'Content-Type': file.type || 'application/pdf',
+          'x-course-code': codeClean,
+          'x-course-name': courseName.split(' - ').slice(1).join(' - ') || '',
+          'x-week-num': String(week),
+          'x-upload-type': uploadType,
+          'x-week-date-range': dr,
+          'x-file-name': file.name,
+        },
+        body: file,
+      });
+      const result = await resp.json();
+      if (resp.ok && result.success) {
+        toast({ title: `${uploadType === 'module' ? 'Module' : 'Reading'} uploaded`, description: `${file.name} saved and queued for TTS` });
+        queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+        setBookAnimState({
+          isOpen: true,
+          courseCode: codeClean,
+          title: file.name,
+          color: courseHexColor,
+          onDone: () => {
+            setBookAnimState(null);
+            if (result.fileId) {
+              setBookReaderOverlay({ url: `/pdf-reader/${result.fileId}?autoplay=1`, courseCode: codeClean, title: file.name, color: courseHexColor });
+            }
+          },
+        });
+      } else {
+        toast({ title: 'Upload failed', description: result.error || 'Unknown error', variant: 'destructive' });
+      }
+    } catch (err: any) {
+      toast({ title: 'Upload error', description: err.message, variant: 'destructive' });
+    } finally {
+      setHwUploadingState(prev => ({ ...prev, [stateKey]: false }));
+    }
+  }, [semesterSettings?.semesterStartDate, semesterSettings?.readingWeekStart]);
   const [calendarHeight, setCalendarHeight] = useState(() => {
     const defaultHeight = window.innerHeight - 45;
     const minHeight = 200;
@@ -1122,6 +1174,7 @@ export default function Dashboard() {
     handlePlayModule: () => void;
     handlePlayReading: () => void;
     handleUpload: (type: 'module' | 'reading') => void;
+    handleFileDrop: (type: 'module' | 'reading', file: File) => void;
   }>>([]);
   const [courseProgressTick, setCourseProgressTick] = useState(0);
   const [completedFiles, setCompletedFiles] = useState<Set<string>>(() => {
@@ -20314,56 +20367,12 @@ export default function Dashboard() {
                         input.onchange = async (ev) => {
                           const file = (ev.target as HTMLInputElement).files?.[0];
                           if (!file) return;
-                          const stateKey = `${courseCode}-${selectedWeek}-${uploadType}`;
-                          setHwUploadingState(prev => ({ ...prev, [stateKey]: true }));
-                          try {
-                            const wd = getWeekDates(selectedWeek, new Date(semesterSettings?.semesterStartDate || Date.now()), semesterSettings?.readingWeekStart);
-                            const ws = new Date(wd.start);
-                            const we = new Date(wd.end);
-                            const mos = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-                            const s1 = `${mos[ws.getMonth()]} ${ws.getDate()}`;
-                            const s2 = ws.getMonth() === we.getMonth() ? `${we.getDate()}` : `${mos[we.getMonth()]} ${we.getDate()}`;
-                            const dr = `${s1}-${s2}`;
-                            const codeClean = courseCode.replace(/\s/g, '');
-                            const resp = await fetch('/api/course-week-upload', {
-                              method: 'POST',
-                              headers: {
-                                'Content-Type': file.type || 'application/pdf',
-                                'x-course-code': codeClean,
-                                'x-course-name': course?.name?.split(' - ').slice(1).join(' - ') || '',
-                                'x-week-num': String(selectedWeek),
-                                'x-upload-type': uploadType,
-                                'x-week-date-range': dr,
-                                'x-file-name': file.name,
-                              },
-                              body: file,
-                            });
-                            const result = await resp.json();
-                            if (resp.ok && result.success) {
-                              toast({ title: `${uploadType === 'module' ? 'Module' : 'Reading'} uploaded`, description: `${file.name} saved and queued for TTS` });
-                              queryClient.invalidateQueries({ queryKey: ['/api/files'] });
-                              setBookAnimState({
-                                isOpen: true,
-                                courseCode: codeClean,
-                                title: file.name,
-                                color: courseHexColor,
-                                onDone: () => {
-                                  setBookAnimState(null);
-                                  if (result.fileId) {
-                                    setBookReaderOverlay({ url: `/pdf-reader/${result.fileId}?autoplay=1`, courseCode: codeClean, title: file.name, color: courseHexColor });
-                                  }
-                                },
-                              });
-                            } else {
-                              toast({ title: 'Upload failed', description: result.error || 'Unknown error', variant: 'destructive' });
-                            }
-                          } catch (err: any) {
-                            toast({ title: 'Upload error', description: err.message, variant: 'destructive' });
-                          } finally {
-                            setHwUploadingState(prev => ({ ...prev, [stateKey]: false }));
-                          }
+                          await doHwUpload(file, uploadType, courseCode, course?.name || '', selectedWeek, courseHexColor);
                         };
                         input.click();
+                      },
+                      handleFileDrop: (uploadType: 'module' | 'reading', file: File) => {
+                        doHwUpload(file, uploadType, courseCode, course?.name || '', selectedWeek, courseHexColor);
                       },
                     };
                     return null;
@@ -23039,8 +23048,8 @@ export default function Dashboard() {
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, borderRadius: '6px', overflow: 'hidden' }}>
                       {(() => { const cGrad = getCourseGradientColors(pd.courseCode); return [
-                        { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), testPlay: `play-module-${pd.courseCode.toLowerCase()}`, testUpload: `upload-module-${pd.courseCode.toLowerCase()}`, bg: cGrad.start, dark: true },
-                        { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, bg: cGrad.end, dark: false },
+                        { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `play-module-${pd.courseCode.toLowerCase()}`, testUpload: `upload-module-${pd.courseCode.toLowerCase()}`, bg: cGrad.start, dark: true },
+                        { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, bg: cGrad.end, dark: false },
                       ]; })().map(item => {
                         const circleSize = 40;
                         const strokeWidth = 3.5;
@@ -23049,8 +23058,16 @@ export default function Dashboard() {
                         const offset = circumference - (item.p.percent / 100) * circumference;
                         const isModule = item.type === 'module';
                         const textColor = item.dark ? '#fff' : '#000';
+                        const dragKey = `${pd.courseCode}-${item.type}`;
+                        const isDragOver = hwDragOverTarget === dragKey;
                         return (
-                          <div key={item.type} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', position: 'relative', flex: 1, minWidth: 0, background: item.bg, padding: '4px 2px 3px' }}>
+                          <div key={item.type}
+                            onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); e.dataTransfer.dropEffect = 'copy'; setHwDragOverTarget(dragKey); }}
+                            onDragEnter={(e) => { e.preventDefault(); e.stopPropagation(); setHwDragOverTarget(dragKey); }}
+                            onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); if (hwDragOverTarget === dragKey) setHwDragOverTarget(null); }}
+                            onDrop={(e) => { e.preventDefault(); e.stopPropagation(); setHwDragOverTarget(null); const file = e.dataTransfer.files?.[0]; if (file) item.drop(file); }}
+                            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', position: 'relative', flex: 1, minWidth: 0, background: item.bg, padding: '4px 2px 3px', outline: isDragOver ? '2px solid rgba(255,255,255,0.8)' : 'none', outlineOffset: '-2px', transition: 'outline 0.15s ease' }}
+                            data-testid={`drop-${item.type}-${pd.courseCode.toLowerCase()}`}>
                             {item.p.hasFiles && item.unread > 0 && item.p.percent < 100 && (
                               <div className="bg-[#FF0000] text-white text-[6px] font-bold rounded-full min-w-[10px] h-[10px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ position: 'absolute', top: '1px', right: '1px', zIndex: 10 }}>
                                 {item.unread}
@@ -23068,11 +23085,8 @@ export default function Dashboard() {
                                   {item.p.hasFiles ? `${item.p.percent}%` : 'N/A'}
                                 </span>
                               </div>
-                              <div className="cursor-pointer" style={{ position: 'relative', opacity: item.p.percent === 100 ? 0.5 : 1 }} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }} data-testid={item.testPlay}>
-                                <Headphones style={{ width: '20px', height: '20px', color: item.dark ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.7)' }} />
-                                <div style={{ position: 'absolute', bottom: '-2px', right: '-4px', width: '12px', height: '12px', borderRadius: '3px', background: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                  <Play style={{ width: '7px', height: '7px', color: '#fff', fill: '#fff', marginLeft: '1px' }} />
-                                </div>
+                              <div className="cursor-pointer" style={{ opacity: item.p.percent === 100 ? 0.5 : 1 }} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }} data-testid={item.testPlay}>
+                                <img src={hwPlayIconPath} alt="Play" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
                               </div>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
@@ -24190,8 +24204,8 @@ export default function Dashboard() {
                       ) : (
                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, borderRadius: '6px', overflow: 'hidden' }}>
                           {(() => { const cGrad = getCourseGradientColors(pd.courseCode); return [
-                            { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), testPlay: `float-play-module-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-module-${pd.courseCode.toLowerCase()}`, bg: cGrad.start, dark: true },
-                            { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), testPlay: `float-play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-reading-${pd.courseCode.toLowerCase()}`, bg: cGrad.end, dark: false },
+                            { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `float-play-module-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-module-${pd.courseCode.toLowerCase()}`, bg: cGrad.start, dark: true },
+                            { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `float-play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-reading-${pd.courseCode.toLowerCase()}`, bg: cGrad.end, dark: false },
                           ]; })().map(item => {
                             const circleSize = 44;
                             const strokeWidth = 3.5;
@@ -24200,8 +24214,16 @@ export default function Dashboard() {
                             const offset = circumference - (item.p.percent / 100) * circumference;
                             const isModule = item.type === 'module';
                             const textColor = item.dark ? '#fff' : '#000';
+                            const dragKey = `float-${pd.courseCode}-${item.type}`;
+                            const isDragOver = hwDragOverTarget === dragKey;
                             return (
-                              <div key={item.type} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', position: 'relative', flex: 1, minWidth: 0, background: item.bg, padding: '5px 3px 4px' }}>
+                              <div key={item.type}
+                                onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); e.dataTransfer.dropEffect = 'copy'; setHwDragOverTarget(dragKey); }}
+                                onDragEnter={(e) => { e.preventDefault(); e.stopPropagation(); setHwDragOverTarget(dragKey); }}
+                                onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); if (hwDragOverTarget === dragKey) setHwDragOverTarget(null); }}
+                                onDrop={(e) => { e.preventDefault(); e.stopPropagation(); setHwDragOverTarget(null); const file = e.dataTransfer.files?.[0]; if (file) item.drop(file); }}
+                                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', position: 'relative', flex: 1, minWidth: 0, background: item.bg, padding: '5px 3px 4px', outline: isDragOver ? '2px solid rgba(255,255,255,0.8)' : 'none', outlineOffset: '-2px', transition: 'outline 0.15s ease' }}
+                                data-testid={`float-drop-${item.type}-${pd.courseCode.toLowerCase()}`}>
                                 {item.p.hasFiles && item.unread > 0 && item.p.percent < 100 && (
                                   <div className="bg-[#FF0000] text-white text-[6px] font-bold rounded-full min-w-[10px] h-[10px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ position: 'absolute', top: '1px', right: '1px', zIndex: 10 }}>
                                     {item.unread}
@@ -24219,11 +24241,8 @@ export default function Dashboard() {
                                       {item.p.hasFiles ? `${item.p.percent}%` : 'N/A'}
                                     </span>
                                   </div>
-                                  <div className="cursor-pointer" style={{ position: 'relative', opacity: item.p.percent === 100 ? 0.5 : 1 }} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }} data-testid={item.testPlay}>
-                                    <Headphones style={{ width: '22px', height: '22px', color: item.dark ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.7)' }} />
-                                    <div style={{ position: 'absolute', bottom: '-2px', right: '-4px', width: '13px', height: '13px', borderRadius: '3px', background: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                      <Play style={{ width: '8px', height: '8px', color: '#fff', fill: '#fff', marginLeft: '1px' }} />
-                                    </div>
+                                  <div className="cursor-pointer" style={{ opacity: item.p.percent === 100 ? 0.5 : 1 }} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }} data-testid={item.testPlay}>
+                                    <img src={hwPlayIconPath} alt="Play" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
                                   </div>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>

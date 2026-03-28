@@ -2145,18 +2145,26 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   })()}
                 </div>
                 {courseInfo.zoomLink && (
-                  <a
-                    href={courseInfo.zoomLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 text-[10px] text-white hover:text-white/80 bg-white/10 border border-white/20 rounded px-2 py-1.5"
-                    style={{ maxWidth: '50%', marginTop: '10px' }}
-                    data-testid="link-zoom"
-                  >
-                    <img src={zoomLogoPath} alt="Zoom" style={{ width: '38px', height: 'auto', filter: 'brightness(0) invert(1)', flexShrink: 0 }} />
-                    <span className="truncate">{courseInfo.zoomLink}</span>
-                    <ExternalLink className="h-2.5 w-2.5 ml-auto flex-shrink-0" />
-                  </a>
+                  <div className="flex items-center gap-1.5" style={{ maxWidth: '55%', marginTop: '10px' }}>
+                    <a
+                      href={courseInfo.zoomLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-[10px] text-white hover:text-white/80 bg-white/10 border border-white/20 rounded px-2 py-1.5 flex-1 min-w-0"
+                      data-testid="link-zoom"
+                    >
+                      <img src={zoomLogoPath} alt="Zoom" style={{ width: '38px', height: 'auto', filter: 'brightness(0) invert(1)', flexShrink: 0 }} />
+                      <span className="truncate">{courseInfo.zoomLink}</span>
+                      <ExternalLink className="h-2.5 w-2.5 ml-auto flex-shrink-0" />
+                    </a>
+                    <button
+                      className="flex items-center justify-center h-7 w-7 rounded bg-white/10 border border-white/20 hover:bg-white/20 transition-colors flex-shrink-0"
+                      onClick={() => { navigator.clipboard.writeText(courseInfo.zoomLink || ''); toast({ title: 'Copied!', description: 'Zoom link copied to clipboard' }); }}
+                      data-testid="button-copy-zoom-link"
+                    >
+                      <Copy className="h-3 w-3 text-white" />
+                    </button>
+                  </div>
                 )}
               </>
             )}
