@@ -23089,7 +23089,7 @@ export default function Dashboard() {
                                 </span>
                               </div>
                               <div className="cursor-pointer" style={{ opacity: item.p.percent === 100 ? 0.5 : 1 }} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }} data-testid={item.testPlay}>
-                                <img src={hwPlayIconPath} alt="Play" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
+                                <img src={hwPlayIconPath} alt="Play" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
                               </div>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
@@ -24245,7 +24245,7 @@ export default function Dashboard() {
                                     </span>
                                   </div>
                                   <div className="cursor-pointer" style={{ opacity: item.p.percent === 100 ? 0.5 : 1 }} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }} data-testid={item.testPlay}>
-                                    <img src={hwPlayIconPath} alt="Play" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+                                    <img src={hwPlayIconPath} alt="Play" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
                                   </div>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
