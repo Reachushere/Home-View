@@ -11720,7 +11720,7 @@ export default function Dashboard() {
               data-testid="next-task-countdown"
             >
               <div style={{ position: 'relative', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                <div style={{ position: 'absolute', left: '17px', top: '50%', transform: 'rotate(-90deg) translateX(-50%)', transformOrigin: '0 0', display: 'flex', alignItems: 'center', gap: '1px', whiteSpace: 'nowrap', paddingLeft: '5px' }}>
+                <div style={{ position: 'absolute', left: '5px', top: '50%', transform: 'rotate(-90deg) translateX(-50%)', transformOrigin: '0 0', display: 'flex', alignItems: 'center', gap: '1px', whiteSpace: 'nowrap', paddingLeft: '5px' }}>
                   <span className="text-white" style={{ fontSize: '10px', fontWeight: '400', fontVariantNumeric: 'tabular-nums', lineHeight: '1', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>{new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}</span>
                   <span className="text-white" style={{ fontSize: '9px', fontWeight: '400', textTransform: 'uppercase', marginLeft: '1px', lineHeight: '1', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>{new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}</span>
                 </div>
@@ -11790,7 +11790,7 @@ export default function Dashboard() {
             data-testid="next-task-countdown"
           >
             <div style={{ position: 'relative', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-              <div style={{ position: 'absolute', left: '17px', top: '50%', transform: 'rotate(-90deg) translateX(-50%)', transformOrigin: '0 0', display: 'flex', alignItems: 'center', gap: '1px', whiteSpace: 'nowrap', paddingLeft: '5px' }}>
+              <div style={{ position: 'absolute', left: '5px', top: '50%', transform: 'rotate(-90deg) translateX(-50%)', transformOrigin: '0 0', display: 'flex', alignItems: 'center', gap: '1px', whiteSpace: 'nowrap', paddingLeft: '5px' }}>
                 <span className="text-white" style={{ fontSize: '10px', fontWeight: '400', fontVariantNumeric: 'tabular-nums', lineHeight: '1', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>{new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}</span>
                 <span className="text-white" style={{ fontSize: '9px', fontWeight: '400', textTransform: 'uppercase', marginLeft: '1px', lineHeight: '1', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>{new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}</span>
               </div>
