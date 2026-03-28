@@ -270,7 +270,7 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave, onPr
                       <span className="text-white/50 text-[8px] w-6 text-right">{midStops[activeGradientStop]?.position}%</span>
                     </div>
                   )}
-                  <div className="relative rounded cursor-crosshair" style={{ height: '92px', touchAction: 'none' }} data-testid={`color-area-${activeGradientStop}`}
+                  <div className="relative rounded cursor-crosshair" style={{ height: '92px', touchAction: 'none', overflow: 'visible', margin: '7px', marginBottom: '0px' }} data-testid={`color-area-${activeGradientStop}`}
                     onPointerDown={(e) => {
                       e.preventDefault();
                       const el = e.currentTarget;

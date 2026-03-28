@@ -23081,6 +23081,26 @@ export default function Dashboard() {
                 </div>,
               ];
             });
+            const hwBlackBg = (() => {
+              const validRects = courseRowRects.filter((_, i) => courseProgressDataRef.current[i]);
+              if (validRects.length === 0) return null;
+              const firstTop = validRects[0].top - upcomingTop - firstRowOffset;
+              const lastRect = validRects[validRects.length - 1];
+              const lastBottom = lastRect.top + lastRect.height - upcomingTop - firstRowOffset;
+              return (
+                <div key="hw-black-bg" style={{
+                  position: 'absolute',
+                  top: `${firstTop}px`,
+                  left: 0,
+                  width: `${effectiveDividerPct}%`,
+                  height: `${lastBottom - firstTop}px`,
+                  background: '#000000',
+                  zIndex: 39,
+                  borderRadius: '6px',
+                }} />
+              );
+            })();
+
             const courseRows = courseProgressDataRef.current.map((pd, idx) => {
               if (!pd || !courseRowRects[idx]) return null;
               const rowTop = courseRowRects[idx].top;
@@ -23186,7 +23206,7 @@ export default function Dashboard() {
 
             );
 
-            const rows = [...rightBgs, ...courseRows];
+            const rows = [hwBlackBg, ...rightBgs, ...courseRows];
 
             const knownCourseCodes = ['CPPA122', 'CFNF400', 'CASL101', 'CECN210', 'CPHL110', 'CHIS105', 'CPPA235'];
             const otherProgressTasks = (allTasks || []).filter(t => {
