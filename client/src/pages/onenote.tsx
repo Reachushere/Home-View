@@ -1,25 +1,24 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
 import {
-  ArrowLeft,
   Loader2,
   Home,
-  FileText,
   StickyNote,
   Plus,
   Save,
   X,
   BookOpen,
   ChevronRight,
+  ChevronDown,
   Trash2,
   NotebookPen,
   Link2,
   ExternalLink,
-  Globe,
+  FileText,
+  FolderOpen,
 } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 
@@ -40,35 +39,33 @@ interface SharedNotebookLink {
   createdAt: string;
 }
 
+interface NotebookSection {
+  name: string;
+  id: string;
+}
+
+interface NotebookInfo {
+  name: string;
+  path: string;
+  sections: NotebookSection[];
+}
+
+interface PageInfo {
+  title: string;
+  content: string;
+}
+
 type SidebarTab = "notebooks" | "quicknotes";
-type MainView = "embed" | "quicknote-editor" | "welcome";
+type MainView = "notebook-content" | "quicknote-editor" | "welcome";
 
-function convertToEmbedUrl(url: string): string {
-  if (url.includes('onedrive.live.com/embed')) return url;
-  if (url.includes('onenote.com')) return url;
-  if (url.includes('iframe') && url.includes('src=')) {
-    const match = url.match(/src="([^"]+)"/);
-    if (match) return match[1];
+function getOneNoteOnlineUrl(url: string): string {
+  const residMatch = url.match(/[?&]resid=([^&]+)/i);
+  if (residMatch) {
+    const resid = decodeURIComponent(residMatch[1]);
+    const authkeyMatch = url.match(/[?&]authkey=([^&]+)/i);
+    const authkey = authkeyMatch ? `&authkey=${decodeURIComponent(authkeyMatch[1])}` : '';
+    return `https://onedrive.live.com/edit?resid=${resid}${authkey}&ithint=onenote`;
   }
-
-  if (url.includes('onedrive.live.com') && (url.includes('ithint=onenote') || url.includes('/:o:/'))) {
-    const residMatch = url.match(/[?&]resid=([^&]+)/i);
-    if (residMatch) {
-      const resid = decodeURIComponent(residMatch[1]);
-      const authkeyMatch = url.match(/[?&]authkey=([^&]+)/i);
-      const authkey = authkeyMatch ? decodeURIComponent(authkeyMatch[1]) : '';
-      return `https://onedrive.live.com/embed?resid=${resid}&authkey=${authkey}&em=2&wdbipreview=true`;
-    }
-  }
-
-  if (url.includes('1drv.ms') || url.includes('onedrive.live.com')) {
-    const encoded = btoa(url)
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/, '');
-    return `https://onedrive.live.com/embed?resid=u!${encoded}&authkey=&em=2`;
-  }
-
   return url;
 }
 
@@ -76,17 +73,24 @@ export default function OneNotePage() {
   const { toast } = useToast();
   const [sidebarTab, setSidebarTab] = useState<SidebarTab>("notebooks");
   const [mainView, setMainView] = useState<MainView>("welcome");
-  const [selectedLink, setSelectedLink] = useState<SharedNotebookLink | null>(null);
+  const [selectedNotebook, setSelectedNotebook] = useState<NotebookInfo | null>(null);
+  const [selectedSection, setSelectedSection] = useState<NotebookSection | null>(null);
+  const [selectedPage, setSelectedPage] = useState<PageInfo | null>(null);
+  const [expandedNotebooks, setExpandedNotebooks] = useState<Set<string>>(new Set());
   const [selectedQuickNote, setSelectedQuickNote] = useState<QuickNoteFile | null>(null);
   const [editorContent, setEditorContent] = useState('');
   const [isDirty, setIsDirty] = useState(false);
+  const [isCreatingNote, setIsCreatingNote] = useState(false);
+  const [newNoteName, setNewNoteName] = useState('');
   const [isAddingLink, setIsAddingLink] = useState(false);
   const [newLinkName, setNewLinkName] = useState('');
   const [newLinkUrl, setNewLinkUrl] = useState('');
-  const [isCreatingNote, setIsCreatingNote] = useState(false);
-  const [newNoteName, setNewNoteName] = useState('');
-  const [embedError, setEmbedError] = useState(false);
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const notebooksQuery = useQuery<NotebookInfo[]>({
+    queryKey: ["/api/onenote/notebooks"],
+    staleTime: 120000,
+  });
 
   const sharedLinksQuery = useQuery<SharedNotebookLink[]>({
     queryKey: ["/api/shared-notebook-links"],
@@ -96,6 +100,13 @@ export default function OneNotePage() {
   const filesQuery = useQuery<QuickNoteFile[]>({
     queryKey: ["/api/quicknotes/files"],
     staleTime: 15000,
+  });
+
+  const pagesQuery = useQuery<PageInfo[]>({
+    queryKey: ["/api/onenote/sections", selectedSection?.id, "pages"],
+    queryFn: () => fetch(`/api/onenote/sections/${selectedSection!.id}/pages`, { credentials: 'include' }).then(r => r.json()),
+    enabled: !!selectedSection,
+    staleTime: 60000,
   });
 
   const contentQuery = useQuery<{ content: string }>({
@@ -155,30 +166,15 @@ export default function OneNotePage() {
 
   const addSharedLinkMutation = useMutation({
     mutationFn: async ({ name, url }: { name: string; url: string }) => {
-      let finalUrl = url;
-      if (url.includes('1drv.ms') || (url.includes('onedrive.live.com') && !url.includes('/embed'))) {
-        try {
-          const resolveRes = await apiRequest('POST', '/api/onenote/resolve-share-link', { url });
-          const resolved = await resolveRes.json();
-          if (resolved.embedUrl) finalUrl = resolved.embedUrl;
-        } catch (e) {
-          console.warn('Could not resolve share link, using original:', e);
-        }
-      }
-      const res = await apiRequest('POST', '/api/shared-notebook-links', { name, url: finalUrl });
+      const res = await apiRequest('POST', '/api/shared-notebook-links', { name, url });
       return res.json();
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/shared-notebook-links"] });
       setIsAddingLink(false);
       setNewLinkName('');
       setNewLinkUrl('');
       toast({ title: "Notebook link added" });
-      if (data?.id) {
-        setSelectedLink(data);
-        setMainView('embed');
-        setEmbedError(false);
-      }
     },
     onError: (err: any) => {
       toast({ title: "Failed to add link", description: err.message, variant: "destructive" });
@@ -192,10 +188,6 @@ export default function OneNotePage() {
     },
     onSuccess: (_data, deletedId) => {
       queryClient.invalidateQueries({ queryKey: ["/api/shared-notebook-links"] });
-      if (selectedLink?.id === deletedId) {
-        setSelectedLink(null);
-        setMainView('welcome');
-      }
       toast({ title: "Notebook link removed" });
     },
     onError: (err: any) => {
@@ -208,13 +200,6 @@ export default function OneNotePage() {
       setEditorContent(contentQuery.data.content);
     }
   }, [contentQuery.data, isDirty]);
-
-  useEffect(() => {
-    if (sharedLinksQuery.data && sharedLinksQuery.data.length > 0 && mainView === 'welcome' && !selectedLink) {
-      setSelectedLink(sharedLinksQuery.data[0]);
-      setMainView('embed');
-    }
-  }, [sharedLinksQuery.data]);
 
   const handleEditorChange = useCallback((value: string) => {
     setEditorContent(value);
@@ -234,23 +219,40 @@ export default function OneNotePage() {
     }
   }
 
-  function selectNotebook(link: SharedNotebookLink) {
+  function toggleNotebook(nb: NotebookInfo) {
+    setExpandedNotebooks(prev => {
+      const next = new Set(prev);
+      if (next.has(nb.name)) {
+        next.delete(nb.name);
+      } else {
+        next.add(nb.name);
+      }
+      return next;
+    });
+  }
+
+  function selectSection(nb: NotebookInfo, section: NotebookSection) {
     if (isDirty && selectedQuickNote) saveNow();
-    setSelectedLink(link);
+    setSelectedNotebook(nb);
+    setSelectedSection(section);
+    setSelectedPage(null);
     setSelectedQuickNote(null);
-    setMainView('embed');
-    setEmbedError(false);
+    setMainView('notebook-content');
   }
 
   function selectQuickNote(file: QuickNoteFile) {
     if (isDirty && selectedQuickNote) saveNow();
     setSelectedQuickNote(file);
-    setSelectedLink(null);
+    setSelectedNotebook(null);
+    setSelectedSection(null);
+    setSelectedPage(null);
     setMainView('quicknote-editor');
   }
 
+  const notebooks = notebooksQuery.data || [];
   const sharedLinks = sharedLinksQuery.data || [];
   const quickNoteFiles = filesQuery.data || [];
+  const pages = pagesQuery.data || [];
 
   return (
     <div className="h-screen flex" style={{ background: '#1a1a1a', color: '#e0e0e0' }}>
@@ -297,7 +299,61 @@ export default function OneNotePage() {
           {sidebarTab === 'notebooks' && (
             <div>
               <div className="flex items-center justify-between mb-2 px-1">
-                <span className="text-[10px] text-white/30 uppercase tracking-wider font-medium">Shared Notebooks</span>
+                <span className="text-[10px] text-white/30 uppercase tracking-wider font-medium">My Notebooks</span>
+              </div>
+
+              {notebooksQuery.isLoading ? (
+                <div className="flex items-center justify-center py-6">
+                  <Loader2 className="h-4 w-4 animate-spin text-white/20" />
+                </div>
+              ) : notebooks.length === 0 ? (
+                <div className="text-center py-4 px-2">
+                  <BookOpen className="h-5 w-5 mx-auto mb-2 text-white/15" />
+                  <p className="text-[11px] text-white/25">No notebooks found</p>
+                </div>
+              ) : (
+                <div className="space-y-0.5 mb-3">
+                  {notebooks.map(nb => (
+                    <div key={nb.name}>
+                      <button
+                        className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-left transition-colors hover:bg-white/5"
+                        onClick={() => toggleNotebook(nb)}
+                        data-testid={`notebook-${nb.name}`}
+                      >
+                        {expandedNotebooks.has(nb.name) ? (
+                          <ChevronDown className="h-3 w-3 text-white/30 shrink-0" />
+                        ) : (
+                          <ChevronRight className="h-3 w-3 text-white/30 shrink-0" />
+                        )}
+                        <div className="h-6 w-6 rounded flex items-center justify-center shrink-0" style={{ background: '#7b2d8e' }}>
+                          <BookOpen className="h-3 w-3 text-white/80" />
+                        </div>
+                        <span className="text-xs font-medium text-white/70 truncate">{nb.name}</span>
+                      </button>
+                      {expandedNotebooks.has(nb.name) && nb.sections.length > 0 && (
+                        <div className="ml-5 mt-0.5 space-y-0.5">
+                          {nb.sections.map(sec => (
+                            <button
+                              key={sec.id}
+                              className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-left transition-colors ${
+                                selectedSection?.id === sec.id ? 'bg-white/10' : 'hover:bg-white/5'
+                              }`}
+                              onClick={() => selectSection(nb, sec)}
+                              data-testid={`section-${sec.id}`}
+                            >
+                              <FolderOpen className="h-3 w-3 text-white/30 shrink-0" />
+                              <span className="text-[11px] text-white/60 truncate">{sec.name}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex items-center justify-between mb-2 px-1 mt-4">
+                <span className="text-[10px] text-white/30 uppercase tracking-wider font-medium">Shared Links</span>
                 <button
                   className="h-5 w-5 rounded flex items-center justify-center text-white/30 hover:text-white hover:bg-white/10 transition-colors"
                   onClick={() => setIsAddingLink(true)}
@@ -360,39 +416,23 @@ export default function OneNotePage() {
                 </div>
               )}
 
-              {sharedLinksQuery.isLoading ? (
-                <div className="flex items-center justify-center py-6">
-                  <Loader2 className="h-4 w-4 animate-spin text-white/20" />
-                </div>
-              ) : sharedLinks.length === 0 && !isAddingLink ? (
-                <div className="text-center py-6 px-2">
-                  <Link2 className="h-5 w-5 mx-auto mb-2 text-white/15" />
-                  <p className="text-[11px] text-white/25">No notebooks yet</p>
-                  <p className="text-[10px] text-white/15 mt-1">Click + to add a OneDrive sharing link</p>
-                </div>
-              ) : (
+              {sharedLinks.length > 0 && (
                 <div className="space-y-0.5">
                   {sharedLinks.map(link => (
                     <div
                       key={link.id}
-                      className={`group flex items-center gap-2.5 px-2.5 py-2 rounded-md cursor-pointer transition-colors ${
-                        selectedLink?.id === link.id && mainView === 'embed'
-                          ? 'bg-white/10'
-                          : 'hover:bg-white/5'
-                      }`}
-                      onClick={() => selectNotebook(link)}
-                      data-testid={`notebook-link-${link.id}`}
+                      className="group flex items-center gap-2.5 px-2.5 py-2 rounded-md transition-colors hover:bg-white/5"
+                      data-testid={`shared-link-${link.id}`}
                     >
-                      <div className="h-7 w-7 rounded flex items-center justify-center shrink-0" style={{ background: selectedLink?.id === link.id ? '#7b2d8e' : '#3e3e42' }}>
-                        <BookOpen className="h-3.5 w-3.5 text-white/70" />
+                      <div className="h-6 w-6 rounded flex items-center justify-center shrink-0" style={{ background: '#3e3e42' }}>
+                        <Link2 className="h-3 w-3 text-white/50" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="text-xs font-medium text-white/80 truncate">{link.name}</div>
-                        <div className="text-[10px] text-white/25 truncate">{link.url.substring(0, 40)}...</div>
+                        <div className="text-[11px] text-white/60 truncate">{link.name}</div>
                       </div>
                       <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                         <a
-                          href={link.url}
+                          href={getOneNoteOnlineUrl(link.url)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="h-5 w-5 flex items-center justify-center rounded text-white/25 hover:text-white hover:bg-white/10"
@@ -515,80 +555,55 @@ export default function OneNotePage() {
       </div>
 
       <div className="flex-1 flex flex-col h-full min-w-0">
-        {mainView === 'embed' && selectedLink && (
+        {mainView === 'notebook-content' && selectedNotebook && selectedSection && (
           <>
             <div className="h-10 flex items-center px-4 gap-3 shrink-0" style={{ background: '#2d2d30', borderBottom: '1px solid #3e3e42' }}>
               <BookOpen className="h-3.5 w-3.5" style={{ color: '#7b2d8e' }} />
-              <span className="text-xs font-medium text-white/80 truncate">{selectedLink.name}</span>
+              <span className="text-xs font-medium text-white/80 truncate">
+                {selectedNotebook.name} &rsaquo; {selectedSection.name}
+              </span>
               <div className="flex-1" />
-              <a
-                href={selectedLink.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded text-[10px] text-white/40 hover:text-white hover:bg-white/10 transition-colors"
-                data-testid="button-open-in-browser"
-              >
-                <ExternalLink className="h-3 w-3" />
-                Open in browser
-              </a>
+              <span className="text-[10px] text-white/25">
+                {pages.length} page{pages.length !== 1 ? 's' : ''}
+              </span>
             </div>
-            <div className="flex-1 relative">
-              {!embedError ? (
-                <>
-                  <iframe
-                    key={selectedLink.id}
-                    src={convertToEmbedUrl(selectedLink.url)}
-                    className="w-full h-full border-0"
-                    style={{ background: '#fff' }}
-                    allow="fullscreen"
-                    sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
-                    onError={() => setEmbedError(true)}
-                    onLoad={(e) => {
-                      try {
-                        const iframe = e.target as HTMLIFrameElement;
-                        if (iframe.contentDocument?.title === '' && iframe.contentDocument?.body?.innerHTML === '') {
-                          setEmbedError(true);
-                        }
-                      } catch (_) {}
-                    }}
-                    data-testid="iframe-notebook"
-                  />
-                  {selectedLink.url.includes('ithint=onenote') || selectedLink.url.includes('/:o:/') ? (
-                    <div className="absolute bottom-3 right-3 z-10">
-                      <a
-                        href={selectedLink.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] text-white/70 hover:text-white transition-colors"
-                        style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
-                        data-testid="button-open-onenote-browser"
-                      >
-                        <ExternalLink className="h-3 w-3" />
-                        Open in OneNote Online
-                      </a>
-                    </div>
-                  ) : null}
-                </>
+            <div className="flex-1 overflow-y-auto">
+              {pagesQuery.isLoading ? (
+                <div className="flex items-center justify-center py-16">
+                  <Loader2 className="h-5 w-5 animate-spin text-white/30" />
+                </div>
+              ) : pages.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full gap-3">
+                  <FileText className="h-10 w-10 text-white/10" />
+                  <p className="text-sm text-white/30">No pages in this section</p>
+                </div>
               ) : (
-                <div className="flex flex-col items-center justify-center h-full gap-4 px-8">
-                  <Globe className="h-12 w-12 text-white/15" />
-                  <div className="text-center">
-                    <p className="text-sm text-white/50 mb-1">This notebook can't be embedded directly</p>
-                    <p className="text-xs text-white/25 max-w-md">
-                      OneNote notebooks typically need to be opened in OneNote Online. Click below to view it in your browser.
-                    </p>
-                  </div>
-                  <a
-                    href={selectedLink.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-white font-medium transition-colors hover:brightness-110"
-                    style={{ background: '#7b2d8e' }}
-                    data-testid="button-open-fallback"
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                    Open in OneNote Online
-                  </a>
+                <div className="max-w-3xl mx-auto px-8 py-6 space-y-4">
+                  {pages.map((page, idx) => (
+                    <div
+                      key={idx}
+                      className={`rounded-lg p-4 transition-colors cursor-pointer ${
+                        selectedPage === page ? 'ring-1 ring-purple-500/40' : 'hover:bg-white/5'
+                      }`}
+                      style={{ background: selectedPage === page ? '#2d2d30' : '#252526', border: '1px solid #3e3e42' }}
+                      onClick={() => setSelectedPage(selectedPage === page ? null : page)}
+                      data-testid={`page-card-${idx}`}
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <FileText className="h-3.5 w-3.5 text-purple-400/60 shrink-0" />
+                        <h3 className="text-sm font-medium text-white/80">{page.title}</h3>
+                      </div>
+                      {selectedPage === page ? (
+                        <div className="text-xs text-white/60 leading-relaxed whitespace-pre-wrap mt-3 pl-5">
+                          {page.content || <span className="text-white/25 italic">Empty page</span>}
+                        </div>
+                      ) : (
+                        <p className="text-[11px] text-white/30 truncate pl-5">
+                          {page.content ? page.content.substring(0, 120) + (page.content.length > 120 ? '...' : '') : 'Empty page'}
+                        </p>
+                      )}
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
@@ -639,18 +654,26 @@ export default function OneNotePage() {
             <div className="text-center">
               <h2 className="text-base font-semibold text-white/70 mb-1" data-testid="text-welcome-title">OneNote</h2>
               <p className="text-xs text-white/30 max-w-sm">
-                Add a notebook by clicking the + button in the sidebar. Paste a OneDrive sharing link to embed your OneNote notebook right here.
+                Browse your OneNote notebooks and sections from the sidebar, or switch to Quick Notes to edit text files stored in OneDrive.
               </p>
             </div>
-            <button
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs text-white font-medium transition-colors hover:brightness-110"
-              style={{ background: '#7b2d8e' }}
-              onClick={() => { setSidebarTab('notebooks'); setIsAddingLink(true); }}
-              data-testid="button-add-first-notebook"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              Add Notebook Link
-            </button>
+            {notebooks.length > 0 && (
+              <button
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs text-white font-medium transition-colors hover:brightness-110"
+                style={{ background: '#7b2d8e' }}
+                onClick={() => {
+                  const first = notebooks[0];
+                  setExpandedNotebooks(new Set([first.name]));
+                  if (first.sections.length > 0) {
+                    selectSection(first, first.sections[0]);
+                  }
+                }}
+                data-testid="button-open-first-notebook"
+              >
+                <BookOpen className="h-3.5 w-3.5" />
+                Open {notebooks[0]?.name}
+              </button>
+            )}
           </div>
         )}
       </div>
