@@ -2262,6 +2262,9 @@ export default function Dashboard() {
       { code: 'CPHL110', name: 'CPHL 110', fullName: 'Philosophy of Religion', period: 'May 5 – Jun 16' },
       { code: 'CHIS105', name: 'CHIS 105', fullName: 'Inventing Popular Culture', period: 'Jun 23 – Aug 4' },
     ],
+    'f2026': [
+      { code: 'CPPA235', name: 'CPPA 235', fullName: 'Theories of the State', period: '' },
+    ],
   };
   const [semesterCourseAssignments, setSemesterCourseAssignments] = useState<Record<string, SemCourse[]>>(() => {
     const saved = localStorage.getItem('semesterCourseAssignments');
@@ -14250,6 +14253,7 @@ export default function Dashboard() {
                   if (dateStr) return new Date(dateStr + 'T00:00:00');
                 }
               }
+              if (info.startDate) return new Date(info.startDate + 'T00:00:00');
               return semStart || new Date();
             })()}
             readingWeekStart={readingWeekStart}

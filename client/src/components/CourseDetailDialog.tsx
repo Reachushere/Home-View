@@ -343,6 +343,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
         const codeClean = courseInfo.courseCode.replace(/\s/g, '');
         const namePart = courseInfo.fullName || courseInfo.courseName || '';
 
+        const semYear = semesterStart ? new Date(semesterStart).getFullYear().toString() : '';
+        const semMonth = semesterStart ? new Date(semesterStart).getMonth() : 0;
+        const semTypeHeader = semMonth >= 8 ? 'fall' : semMonth >= 4 ? 'spring_summer' : 'winter';
+
         const resp = await fetch('/api/course-week-upload', {
           method: 'POST',
           headers: {
@@ -353,6 +357,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             'x-upload-type': uploadType,
             'x-week-date-range': dateRange,
             'x-file-name': file.name,
+            'x-semester-year': semYear,
+            'x-semester-type': semTypeHeader,
           },
           body: file,
         });

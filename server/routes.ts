@@ -13369,10 +13369,20 @@ document.body.removeChild(a);
         return res.status(400).json({ error: 'Empty file' });
       }
 
-      const semesterSettings = await storage.getSemesterSchedule();
-      const semType = getSemesterTypeFolder(semesterSettings?.semesterType);
-      const startDate = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date();
-      const year = startDate.getFullYear();
+      const clientYear = (req.headers['x-semester-year'] as string || '').trim();
+      const clientSemType = (req.headers['x-semester-type'] as string || '').trim();
+
+      let year: number;
+      let semType: string;
+      if (clientYear && clientSemType) {
+        year = parseInt(clientYear, 10);
+        semType = getSemesterTypeFolder(clientSemType);
+      } else {
+        const semesterSettings = await storage.getSemesterSchedule();
+        semType = getSemesterTypeFolder(semesterSettings?.semesterType);
+        const startDate = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date();
+        year = startDate.getFullYear();
+      }
 
       const codeClean = courseCode.replace(/\s/g, '');
       const courseFolderName = courseName ? `${codeClean} - ${courseName}` : codeClean;
