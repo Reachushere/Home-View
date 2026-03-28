@@ -20,6 +20,7 @@ export interface IStorage {
   getActiveSemesterSettings(): Promise<SemesterSettings | undefined>;
   getAllSemesterSettings(): Promise<SemesterSettings[]>;
   createSemesterSettings(settings: InsertSemesterSettings): Promise<SemesterSettings>;
+  createSemesterSettingsInactive(settings: InsertSemesterSettings): Promise<SemesterSettings>;
   updateSemesterSettings(id: number, updates: Partial<SemesterSettings>): Promise<SemesterSettings>;
   getSecondGoogleAccount(): Promise<SecondGoogleAccount | undefined>;
   saveSecondGoogleAccount(account: InsertSecondGoogleAccount): Promise<SecondGoogleAccount>;
@@ -285,6 +286,14 @@ export class DatabaseStorage implements IStorage {
     const [newSettings] = await db.insert(semesterSettings).values({
       ...settings,
       isActive: true,
+    }).returning();
+    return newSettings;
+  }
+
+  async createSemesterSettingsInactive(settings: InsertSemesterSettings): Promise<SemesterSettings> {
+    const [newSettings] = await db.insert(semesterSettings).values({
+      ...settings,
+      isActive: false,
     }).returning();
     return newSettings;
   }

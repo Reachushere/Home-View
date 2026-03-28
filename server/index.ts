@@ -321,10 +321,31 @@ app.use((req, res, next) => {
 
       async function ensureFutureSemesters() {
         try {
-          const resp = await fetch(`http://localhost:${port}/api/semesters/ensure-future`, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
-          const data = await resp.json();
-          if (data.created && data.created.length > 0) {
-            console.log(`[Semesters] Created missing semesters: ${data.created.join(', ')}`);
+          const { storage } = await import("./storage");
+          const all = await storage.getAllSemesterSettings();
+          const existingNames = new Set(all.map((s: any) => s.semesterName));
+          const requiredSemesters = [
+            { semesterName: 'Spring/Summer 2026', semesterType: 'spring_summer', semesterStartDate: new Date('2026-05-04'), semesterEndDate: new Date('2026-08-07'), course1Code: 'CECN210', course1Name: 'CECN210 - Understanding Economics', course1SpringSummerTerm: 'full', course2Code: 'CPHL110', course2Name: 'CPHL110 - Philosophy of Religion', course2SpringSummerTerm: 'first_half', course3Code: 'CHIS105', course3Name: 'CHIS105 - Inventing Popular Culture', course3SpringSummerTerm: 'second_half', course1StartDate: new Date('2026-05-04'), course1EndDate: new Date('2026-07-31'), course2StartDate: new Date('2026-05-04'), course2EndDate: new Date('2026-06-20'), course3StartDate: new Date('2026-06-23'), course3EndDate: new Date('2026-08-04') },
+            { semesterName: 'Fall 2026', semesterType: 'fall', semesterStartDate: new Date('2026-09-07'), semesterEndDate: new Date('2026-12-11'), course1Code: 'CPPA235', course1Name: 'CPPA235 - TBD', course2Code: 'TBD2', course2Name: 'TBD2', course3Code: 'TBD3', course3Name: 'TBD3' },
+            { semesterName: 'Winter 2027', semesterType: 'winter', semesterStartDate: new Date('2027-01-11'), semesterEndDate: new Date('2027-04-16'), course1Code: 'TBD1', course1Name: 'TBD1', course2Code: 'TBD2', course2Name: 'TBD2', course3Code: 'TBD3', course3Name: 'TBD3' },
+            { semesterName: 'Spring/Summer 2027', semesterType: 'spring_summer', semesterStartDate: new Date('2027-05-03'), semesterEndDate: new Date('2027-08-06'), course1Code: 'TBD1', course1Name: 'TBD1', course1SpringSummerTerm: 'full', course2Code: 'TBD2', course2Name: 'TBD2', course3Code: 'TBD3', course3Name: 'TBD3' },
+            { semesterName: 'Fall 2027', semesterType: 'fall', semesterStartDate: new Date('2027-09-13'), semesterEndDate: new Date('2027-12-17'), course1Code: 'TBD1', course1Name: 'TBD1', course2Code: 'TBD2', course2Name: 'TBD2', course3Code: 'TBD3', course3Name: 'TBD3' },
+            { semesterName: 'Winter 2028', semesterType: 'winter', semesterStartDate: new Date('2028-01-10'), semesterEndDate: new Date('2028-04-14'), course1Code: 'TBD1', course1Name: 'TBD1', course2Code: 'TBD2', course2Name: 'TBD2', course3Code: 'TBD3', course3Name: 'TBD3' },
+            { semesterName: 'Spring/Summer 2028', semesterType: 'spring_summer', semesterStartDate: new Date('2028-05-01'), semesterEndDate: new Date('2028-08-04'), course1Code: 'TBD1', course1Name: 'TBD1', course1SpringSummerTerm: 'full', course2Code: 'TBD2', course2Name: 'TBD2', course3Code: 'TBD3', course3Name: 'TBD3' },
+            { semesterName: 'Fall 2028', semesterType: 'fall', semesterStartDate: new Date('2028-09-11'), semesterEndDate: new Date('2028-12-15'), course1Code: 'TBD1', course1Name: 'TBD1', course2Code: 'TBD2', course2Name: 'TBD2', course3Code: 'TBD3', course3Name: 'TBD3' },
+            { semesterName: 'Winter 2029', semesterType: 'winter', semesterStartDate: new Date('2029-01-08'), semesterEndDate: new Date('2029-04-13'), course1Code: 'TBD1', course1Name: 'TBD1', course2Code: 'TBD2', course2Name: 'TBD2', course3Code: 'TBD3', course3Name: 'TBD3' },
+            { semesterName: 'Spring/Summer 2029', semesterType: 'spring_summer', semesterStartDate: new Date('2029-05-07'), semesterEndDate: new Date('2029-08-10'), course1Code: 'TBD1', course1Name: 'TBD1', course1SpringSummerTerm: 'full', course2Code: 'TBD2', course2Name: 'TBD2', course3Code: 'TBD3', course3Name: 'TBD3' },
+            { semesterName: 'Fall 2029', semesterType: 'fall', semesterStartDate: new Date('2029-09-10'), semesterEndDate: new Date('2029-12-14'), course1Code: 'TBD1', course1Name: 'TBD1', course2Code: 'TBD2', course2Name: 'TBD2', course3Code: 'TBD3', course3Name: 'TBD3' },
+          ];
+          const created: string[] = [];
+          for (const sem of requiredSemesters) {
+            if (!existingNames.has(sem.semesterName)) {
+              await storage.createSemesterSettingsInactive(sem as any);
+              created.push(sem.semesterName);
+            }
+          }
+          if (created.length > 0) {
+            console.log(`[Semesters] Created missing semesters: ${created.join(', ')}`);
           }
         } catch (e: any) {
           console.error("[Semesters] Error ensuring future semesters:", e.message);
