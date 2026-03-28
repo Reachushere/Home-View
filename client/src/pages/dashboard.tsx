@@ -1068,17 +1068,18 @@ export default function Dashboard() {
   const getTodayCellGradient = () => {
     const now = new Date();
     const h = now.getHours() + now.getMinutes() / 60;
-    if (h < 4) return 'linear-gradient(180deg, #0f1b2d 0%, #1a2744 100%)';
-    if (h < 6) return 'linear-gradient(180deg, #1e3252 0%, #4a6e8a 50%, #8a7e6e 100%)';
-    if (h < 8) return 'linear-gradient(180deg, #6a9ab8 0%, #a4bcc8 50%, #c4a082 100%)';
-    if (h < 10) return 'linear-gradient(180deg, #87afc4 0%, #a8c4d6 100%)';
-    if (h < 13) return 'linear-gradient(180deg, #7ba8c0 0%, #9bbdd0 100%)';
-    if (h < 15) return 'linear-gradient(180deg, #7ba8c0 0%, #a4b8c0 50%, #c0a890 100%)';
-    if (h < 17) return 'linear-gradient(180deg, #9aaab4 0%, #bea08a 100%)';
-    if (h < 19) return 'linear-gradient(180deg, #a08870 0%, #c48a68 40%, #5a5060 80%, #3a3450 100%)';
-    if (h < 21) return 'linear-gradient(180deg, #6a5a52 0%, #4a4058 50%, #2a2840 100%)';
-    if (h < 23) return 'linear-gradient(180deg, #2a2840 0%, #1a1e32 100%)';
-    return 'linear-gradient(180deg, #1a1e32 0%, #0f1520 100%)';
+    if (h < 5) return 'linear-gradient(180deg, #01294D 0%, #01294D 100%)';
+    if (h < 6) return 'linear-gradient(180deg, #01294D 0%, #C97355 100%)';
+    if (h < 7) return 'linear-gradient(180deg, #C97355 0%, #D6A276 100%)';
+    if (h < 8) return 'linear-gradient(180deg, #D6A276 0%, #EDC261 100%)';
+    if (h < 9) return 'linear-gradient(180deg, #EDC261 0%, #8AC3DF 100%)';
+    if (h < 16) return 'linear-gradient(180deg, #8AC3DF 0%, #8AC3DF 100%)';
+    if (h < 17) return 'linear-gradient(180deg, #8AC3DF 0%, #C0B9BC 100%)';
+    if (h < 18) return 'linear-gradient(180deg, #C0B9BC 0%, #ECC47E 100%)';
+    if (h < 19) return 'linear-gradient(180deg, #ECC47E 0%, #F9A523 100%)';
+    if (h < 20) return 'linear-gradient(180deg, #F9A523 0%, #89251C 100%)';
+    if (h < 21) return 'linear-gradient(180deg, #89251C 0%, #01294D 100%)';
+    return 'linear-gradient(180deg, #01294D 0%, #01294D 100%)';
   };
   const todayCellBg = getTodayCellGradient();
   const hwGroupBarDragRef = useRef<{ startX: number; startWidth: number } | null>(null);
@@ -19425,25 +19426,20 @@ export default function Dashboard() {
                       if (weatherData?.sunrise) { const sr = new Date(weatherData.sunrise); sunriseMin = sr.getHours() * 60 + sr.getMinutes(); }
                       if (weatherData?.sunset) { const ss = new Date(weatherData.sunset); sunsetMin = ss.getHours() * 60 + ss.getMinutes(); }
                       const skyStops = [
-                        { p: 0, c: '#0a0f1e' },
-                        { p: 10, c: '#1a2744' },
-                        { p: 20, c: '#2c3e6b' },
-                        { p: 23, c: '#e8a050' },
-                        { p: 25, c: '#d46a40' },
-                        { p: 27, c: '#e8a050' },
-                        { p: 30, c: '#a4bcc8' },
-                        { p: 35, c: '#87c5e0' },
-                        { p: 45, c: '#9dd0e8' },
-                        { p: 55, c: '#7bb8d8' },
-                        { p: 65, c: '#7ba8c0' },
-                        { p: 70, c: '#e8a050' },
-                        { p: 73, c: '#d46a40' },
-                        { p: 76, c: '#c44828' },
-                        { p: 78, c: '#8a4838' },
-                        { p: 82, c: '#8a6858' },
-                        { p: 88, c: '#4a4058' },
-                        { p: 95, c: '#1a2744' },
-                        { p: 100, c: '#0a0f1e' },
+                        { p: 0, c: '#01294D' },
+                        { p: 20, c: '#01294D' },
+                        { p: 24, c: '#C97355' },
+                        { p: 27, c: '#D6A276' },
+                        { p: 30, c: '#EDC261' },
+                        { p: 35, c: '#8AC3DF' },
+                        { p: 50, c: '#8AC3DF' },
+                        { p: 65, c: '#8AC3DF' },
+                        { p: 68, c: '#C0B9BC' },
+                        { p: 71, c: '#ECC47E' },
+                        { p: 74, c: '#F9A523' },
+                        { p: 77, c: '#89251C' },
+                        { p: 82, c: '#01294D' },
+                        { p: 100, c: '#01294D' },
                       ];
                       const visibleStops = skyStops.filter(s => s.p <= pct);
                       if (visibleStops.length === 0) visibleStops.push(skyStops[0]);
