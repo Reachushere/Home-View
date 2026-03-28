@@ -2304,6 +2304,16 @@ export default function Dashboard() {
   const [perSemesterSettings, setPerSemesterSettings] = useState<Record<string, { week1StartDate: string; semesterType: string; numberOfWeeks: number; timezone: string; readingWeekDate: string; isTravelling: boolean; travelTimezone: string; travelStartDate: string; travelEndDate: string }>>(() => {
     try { const s = localStorage.getItem('perSemesterSettings'); return s ? JSON.parse(s) : {}; } catch { return {}; }
   });
+  useEffect(() => {
+    for (const [semKey, data] of Object.entries(perSemesterSettings)) {
+      if (semKey.startsWith('ss')) {
+        const d = data as any;
+        if (d.springStartDate || d.springEndDate || d.summerStartDate || d.summerEndDate) {
+          apiRequest("POST", "/api/semester-halves", { semKey, springStartDate: d.springStartDate || '', springEndDate: d.springEndDate || '', summerStartDate: d.summerStartDate || '', summerEndDate: d.summerEndDate || '' }).catch(() => {});
+        }
+      }
+    }
+  }, []);
   const coursesScrollRef = useRef<HTMLDivElement>(null);
   const [coursesScrolled, setCoursesScrolled] = useState(false);
 
@@ -17664,6 +17674,9 @@ export default function Dashboard() {
                     if (data.readingWeekDate) { apiRequest("PATCH", "/api/semester", { readingWeekStart: new Date(data.readingWeekDate).toISOString() }); }
                     else { apiRequest("PATCH", "/api/semester", { readingWeekStart: null }); }
                   }
+                  if (semKey.startsWith('ss') && (data.springStartDate || data.springEndDate || data.summerStartDate || data.summerEndDate)) {
+                    apiRequest("POST", "/api/semester-halves", { semKey, springStartDate: data.springStartDate, springEndDate: data.springEndDate, summerStartDate: data.summerStartDate, summerEndDate: data.summerEndDate });
+                  }
                   setSemSettingsDialogKey(null);
                 }}
               />
@@ -26866,9 +26879,9 @@ function TravelDateTimePicker({ label, value, onChange, testId }: { label: strin
 
 function SemesterSettingsFormBody({ semKey, existing, onCancel, onSave }: {
   semKey: string;
-  existing: Partial<{ week1StartDate: string; semesterType: string; numberOfWeeks: number; timezone: string; readingWeekDate: string; isTravelling: boolean; travelTimezone: string; travelStartDate: string; travelEndDate: string }>;
+  existing: Partial<{ week1StartDate: string; semesterType: string; numberOfWeeks: number; timezone: string; readingWeekDate: string; isTravelling: boolean; travelTimezone: string; travelStartDate: string; travelEndDate: string; springStartDate: string; springEndDate: string; summerStartDate: string; summerEndDate: string }>;
   onCancel: () => void;
-  onSave: (data: { week1StartDate: string; semesterType: string; numberOfWeeks: number; timezone: string; readingWeekDate: string; isTravelling: boolean; travelTimezone: string; travelStartDate: string; travelEndDate: string }) => void;
+  onSave: (data: { week1StartDate: string; semesterType: string; numberOfWeeks: number; timezone: string; readingWeekDate: string; isTravelling: boolean; travelTimezone: string; travelStartDate: string; travelEndDate: string; springStartDate: string; springEndDate: string; summerStartDate: string; summerEndDate: string }) => void;
 }) {
   const defaultType = semKey.startsWith('ss') ? 'spring_summer' : semKey.startsWith('f') ? 'fall' : 'winter';
   const [localW1, setLocalW1] = useState(existing.week1StartDate || '');
@@ -26880,6 +26893,11 @@ function SemesterSettingsFormBody({ semKey, existing, onCancel, onSave }: {
   const [localTravelTz, setLocalTravelTz] = useState(existing.travelTimezone || '');
   const [localTravelStart, setLocalTravelStart] = useState(existing.travelStartDate || '');
   const [localTravelEnd, setLocalTravelEnd] = useState(existing.travelEndDate || '');
+  const [springStart, setSpringStart] = useState(existing.springStartDate || '');
+  const [springEnd, setSpringEnd] = useState(existing.springEndDate || '');
+  const [summerStart, setSummerStart] = useState(existing.summerStartDate || '');
+  const [summerEnd, setSummerEnd] = useState(existing.summerEndDate || '');
+  const isSSType = localType === 'spring_summer';
 
   return (
     <>
@@ -26960,6 +26978,66 @@ function SemesterSettingsFormBody({ semKey, existing, onCancel, onSave }: {
             </select>
           </div>
         </div>
+        {isSSType && (
+          <div className="space-y-2 p-2.5 rounded-md border border-white/15 bg-white/5">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label className="text-[10px] font-semibold text-white/90">Spring Half</Label>
+                <div className="space-y-1">
+                  <Label className="text-[9px] text-white/60">Start Date</Label>
+                  <input
+                    type="date"
+                    value={springStart}
+                    onChange={(e) => setSpringStart(e.target.value)}
+                    onClick={(e) => (e.target as HTMLInputElement).showPicker?.()}
+                    className="w-full h-7 px-2 text-[10px] rounded-md bg-white border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
+                    style={{ fontSize: '10px', color: 'black', colorScheme: 'light' }}
+                    data-testid="input-sem-spring-start"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-[9px] text-white/60">End Date</Label>
+                  <input
+                    type="date"
+                    value={springEnd}
+                    onChange={(e) => setSpringEnd(e.target.value)}
+                    onClick={(e) => (e.target as HTMLInputElement).showPicker?.()}
+                    className="w-full h-7 px-2 text-[10px] rounded-md bg-white border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
+                    style={{ fontSize: '10px', color: 'black', colorScheme: 'light' }}
+                    data-testid="input-sem-spring-end"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] font-semibold text-white/90">Summer Half</Label>
+                <div className="space-y-1">
+                  <Label className="text-[9px] text-white/60">Start Date</Label>
+                  <input
+                    type="date"
+                    value={summerStart}
+                    onChange={(e) => setSummerStart(e.target.value)}
+                    onClick={(e) => (e.target as HTMLInputElement).showPicker?.()}
+                    className="w-full h-7 px-2 text-[10px] rounded-md bg-white border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
+                    style={{ fontSize: '10px', color: 'black', colorScheme: 'light' }}
+                    data-testid="input-sem-summer-start"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-[9px] text-white/60">End Date</Label>
+                  <input
+                    type="date"
+                    value={summerEnd}
+                    onChange={(e) => setSummerEnd(e.target.value)}
+                    onClick={(e) => (e.target as HTMLInputElement).showPicker?.()}
+                    className="w-full h-7 px-2 text-[10px] rounded-md bg-white border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
+                    style={{ fontSize: '10px', color: 'black', colorScheme: 'light' }}
+                    data-testid="input-sem-summer-end"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="space-y-1">
           <Label className="text-[10px] text-white/70">Reading Week Start Date</Label>
           <div className="flex items-center gap-2">
@@ -27025,7 +27103,7 @@ function SemesterSettingsFormBody({ semKey, existing, onCancel, onSave }: {
         <div className="flex gap-2">
           <Button variant="outline" className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 px-6" style={{ fontSize: '12px', minWidth: '100px' }} onClick={onCancel} data-testid="button-cancel-sem-settings">Cancel</Button>
           <Button variant="outline" className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8 px-6" style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '12px', minWidth: '100px' }} onClick={() => {
-            onSave({ week1StartDate: localW1, semesterType: localType, numberOfWeeks: localWeeks, timezone: localTz, readingWeekDate: localRw, isTravelling: localTravel, travelTimezone: localTravelTz, travelStartDate: localTravelStart, travelEndDate: localTravelEnd });
+            onSave({ week1StartDate: localW1, semesterType: localType, numberOfWeeks: localWeeks, timezone: localTz, readingWeekDate: localRw, isTravelling: localTravel, travelTimezone: localTravelTz, travelStartDate: localTravelStart, travelEndDate: localTravelEnd, springStartDate: springStart, springEndDate: springEnd, summerStartDate: summerStart, summerEndDate: summerEnd });
           }} data-testid="button-save-sem-settings">Save</Button>
         </div>
       </div>

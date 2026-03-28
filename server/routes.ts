@@ -7846,9 +7846,36 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   const LIBERAL_CODES = new Set(LIBERAL_STUDIES_COURSES.map(c => c.code.replace(/\s/g, '')));
   const OPEN_ELECTIVE_CODES = new Set(OPEN_ELECTIVE_COURSES.map(c => c.code.replace(/\s/g, '')));
 
+  const semesterHalvesStore: Record<string, { springStartDate?: string; springEndDate?: string; summerStartDate?: string; summerEndDate?: string }> = {};
+
+  app.post("/api/semester-halves", (req, res) => {
+    const { semKey, springStartDate, springEndDate, summerStartDate, summerEndDate } = req.body;
+    if (!semKey) return res.status(400).json({ error: "semKey required" });
+    semesterHalvesStore[semKey] = { springStartDate, springEndDate, summerStartDate, summerEndDate };
+    res.json({ ok: true });
+  });
+
+  app.get("/api/semester-halves", (_req, res) => {
+    res.json(semesterHalvesStore);
+  });
+
   function isInSpringSummerHalfA(): boolean {
     const { toZonedTime } = require('date-fns-tz');
     const now = toZonedTime(new Date(), 'America/Toronto');
+
+    for (const [key, halves] of Object.entries(semesterHalvesStore)) {
+      if (halves.springStartDate && halves.springEndDate) {
+        const springStart = new Date(halves.springStartDate);
+        const springEnd = new Date(halves.springEndDate + 'T23:59:59');
+        if (now >= springStart && now <= springEnd) return true;
+      }
+      if (halves.summerStartDate && halves.summerEndDate) {
+        const summerStart = new Date(halves.summerStartDate);
+        const summerEnd = new Date(halves.summerEndDate + 'T23:59:59');
+        if (now >= summerStart && now <= summerEnd) return false;
+      }
+    }
+
     const ssDefs = [
       { key: 'ss2025', start: '2025-05-05', mid: '2025-06-20' },
       { key: 'ss2026', start: '2026-05-04', mid: '2026-06-19' },
