@@ -17537,8 +17537,8 @@ export default function Dashboard() {
                                 }
                               }}
                             >
-                              <div className="px-2 py-1.5 border-b flex items-center justify-between flex-shrink-0" style={{ background: isCurrentSem ? 'rgba(10,15,30,0.85)' : (() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); return isPast ? 'rgba(160,160,160,0.35)' : 'transparent'; })(), borderColor: isCurrentSem ? '#ffffff' : (() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); return isPast ? 'rgba(150,150,150,0.5)' : 'rgba(255,255,255,0.3)'; })(), ...(isCurrentSem ? { boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)' } : {}), position: 'relative' }}>
-                                
+                              <div className="border-b flex-shrink-0" style={{ background: isCurrentSem ? 'rgba(10,15,30,0.85)' : (() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); return isPast ? 'rgba(160,160,160,0.35)' : 'transparent'; })(), borderColor: isCurrentSem ? '#ffffff' : (() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); return isPast ? 'rgba(150,150,150,0.5)' : 'rgba(255,255,255,0.3)'; })(), ...(isCurrentSem ? { boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)' } : {}), position: 'relative' }}>
+                                <div className="px-2 py-1.5 flex items-center justify-between">
                                 <div className="flex items-center gap-1.5 flex-wrap">
                                   <Settings
                                     className="text-white/50 hover:text-white cursor-pointer transition-colors flex-shrink-0"
@@ -17584,6 +17584,29 @@ export default function Dashboard() {
                                   const gpaLetter = avg >= 4.17 ? 'A+' : avg >= 3.84 ? 'A' : avg >= 3.5 ? 'A-' : avg >= 3.17 ? 'B+' : avg >= 2.84 ? 'B' : avg >= 2.5 ? 'B-' : avg >= 2.17 ? 'C+' : avg >= 1.84 ? 'C' : avg >= 1.34 ? 'C-' : avg >= 0.5 ? 'D' : 'F';
                                   return `GPA: ${avg.toFixed(2)} (${gpaLetter})`;
                                 })()}</span>
+                              </div>
+                                {(() => {
+                                  const semEndDates: Record<string, string> = {
+                                    'ss2025': '2025-08-08', 'f2025': '2025-12-12', 'w2026': '2026-04-17',
+                                    'ss2026': '2026-08-07', 'f2026': '2026-12-11', 'w2027': '2027-04-16',
+                                    'ss2027': '2027-08-06', 'f2027': '2027-12-17', 'w2028': '2028-04-14',
+                                    'ss2028': '2028-08-04', 'f2028': '2028-12-15', 'w2029': '2029-04-13',
+                                  };
+                                  const startStr = semStartDates[sem.key];
+                                  const endStr = semEndDates[sem.key];
+                                  if (!startStr || !endStr) return null;
+                                  const startMs = new Date(startStr + 'T00:00:00').getTime();
+                                  const endMs = new Date(endStr + 'T23:59:59').getTime();
+                                  const nowMs = Date.now();
+                                  const totalMs = endMs - startMs;
+                                  const elapsedMs = Math.max(0, Math.min(nowMs - startMs, totalMs));
+                                  const pct = totalMs > 0 ? (elapsedMs / totalMs) * 100 : 0;
+                                  return (
+                                    <div style={{ height: '5px', margin: '0 6px 4px 6px', borderRadius: '3px', border: '1px solid rgba(255,255,255,0.35)', overflow: 'hidden', background: 'transparent' }}>
+                                      {pct > 0 && <div style={{ width: `${pct}%`, height: '100%', background: '#22c55e', borderRadius: '2px' }} />}
+                                    </div>
+                                  );
+                                })()}
                               </div>
                               <div className="p-1.5 space-y-1 flex-1 overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
                                 {[...sem.courses].sort((a, b) => {
