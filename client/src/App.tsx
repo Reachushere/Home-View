@@ -164,6 +164,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
+        <ConnectionBanner />
         <AccessGate>
           <Toaster />
           <Router />
