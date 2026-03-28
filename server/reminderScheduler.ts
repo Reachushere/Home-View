@@ -99,6 +99,7 @@ export async function checkReminders() {
     lastCheckTime = nowReal;
     let stateChanged = false;
     announcementsSentThisCycle = 0;
+    const echoAnnouncedTaskIds = new Set<number>();
 
     for (const task of allTasks) {
       if (task.isCompleted || !task.dueDate) continue;
@@ -159,10 +160,13 @@ export async function checkReminders() {
             sendTaskReminder(taskReminder),
             sendHaTaskReminder(taskReminder),
           ];
-          if (digestSentToday) {
+          if (echoAnnouncedTaskIds.has(task.id)) {
+            console.log(`[Reminder] Skipping duplicate Echo announcement for "${task.title}" (already announced this cycle for a different reminder slot)`);
+          } else if (digestSentToday) {
             console.log(`[Reminder] Skipping individual Echo announcement for "${task.title}" (daily digest already announced today)`);
           } else if (!isTravelling) {
             notifications.push(sendEchoVoiceAnnouncement(voiceMessage));
+            echoAnnouncedTaskIds.add(task.id);
           } else {
             console.log(`[Reminder] Skipping Echo announcement for "${task.title}" (travelling mode)`);
           }
