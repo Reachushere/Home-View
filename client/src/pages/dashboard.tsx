@@ -19446,8 +19446,8 @@ export default function Dashboard() {
                       const lastVisible = visibleStops[visibleStops.length - 1];
                       const scaledStops = visibleStops.map(s => `${s.c} ${pct > 0 ? (s.p / pct * pct).toFixed(1) : 0}%`);
                       scaledStops.push(`${lastVisible.c} ${pct}%`);
-                      scaledStops.push(`${colorSettings.headerBar} ${pct}%`);
-                      scaledStops.push(`${colorSettings.headerBar} 100%`);
+                      scaledStops.push(`#d0d0d0 ${pct}%`);
+                      scaledStops.push(`#d0d0d0 100%`);
                       return { background: `linear-gradient(to right, ${scaledStops.join(', ')})` };
                     })() : { backgroundColor: colorSettings.headerBar }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
