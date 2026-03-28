@@ -23144,7 +23144,7 @@ export default function Dashboard() {
                               </div>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                              <span style={{ fontSize: '8px', fontWeight: 800, color: item.dark ? '#ffffff' : '#000000', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{item.label}</span>
+                              <span style={{ fontSize: '8px', fontWeight: 800, color: item.dark ? '#ffffff' : '#000000', textTransform: 'uppercase', letterSpacing: '0.5px', fontFamily: "'Raleway', sans-serif" }}>{item.label}</span>
                             </div>
                           </div>
                         );
@@ -24285,7 +24285,7 @@ export default function Dashboard() {
                                   </div>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                                  <span style={{ fontSize: '9px', fontWeight: 800, color: item.dark ? '#ffffff' : '#000000', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{item.label}</span>
+                                  <span style={{ fontSize: '9px', fontWeight: 800, color: item.dark ? '#ffffff' : '#000000', textTransform: 'uppercase', letterSpacing: '0.5px', fontFamily: "'Raleway', sans-serif" }}>{item.label}</span>
                                 </div>
                               </div>
                             );
