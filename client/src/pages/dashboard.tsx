@@ -23074,7 +23074,7 @@ export default function Dashboard() {
                                   {item.p.hasFiles ? `${item.p.percent}%` : 'N/A'}
                                 </span>
                               </div>
-                              <div className="cursor-pointer" style={{ opacity: item.p.percent === 100 ? 0.5 : 1 }} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }} data-testid={item.testPlay}>
+                              <div className="cursor-pointer" style={{ opacity: item.p.percent === 100 ? 0.5 : 1, marginLeft: '4px' }} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }} data-testid={item.testPlay}>
                                 <img src={item.dark ? hwPlayIconPath : hwPlayIconLightPath} alt="Play" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
                               </div>
                             </div>
@@ -24222,7 +24222,7 @@ export default function Dashboard() {
                                       {item.p.hasFiles ? `${item.p.percent}%` : 'N/A'}
                                     </span>
                                   </div>
-                                  <div className="cursor-pointer" style={{ opacity: item.p.percent === 100 ? 0.5 : 1 }} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }} data-testid={item.testPlay}>
+                                  <div className="cursor-pointer" style={{ opacity: item.p.percent === 100 ? 0.5 : 1, marginLeft: '4px' }} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }} data-testid={item.testPlay}>
                                     <img src={item.dark ? hwPlayIconPath : hwPlayIconLightPath} alt="Play" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
                                   </div>
                                 </div>
