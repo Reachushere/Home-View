@@ -22669,7 +22669,7 @@ export default function Dashboard() {
           {/* Date navigation tab above glass box */}
           <div
             className="absolute z-[60]"
-            style={{ top: '-30px', left: 'calc(50% + 30px)', transform: 'translateX(-50%)', height: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.2s ease' }}
+            style={{ top: '-30px', left: 'calc(50% + 55px)', transform: 'translateX(-50%)', height: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.2s ease' }}
             data-testid="date-nav-tab"
           >
             <div style={{ width: '191px', height: '15px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)', padding: '0 6px', gap: '10px' }}>
