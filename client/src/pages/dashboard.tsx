@@ -13207,27 +13207,27 @@ export default function Dashboard() {
             const totalSec = pomodoroMode === 'work' ? 25 * 60 : pomodoroMode === 'shortBreak' ? 5 * 60 : 15 * 60;
             const elapsed = totalSec - pomodoroTime;
             const frac = totalSec > 0 ? elapsed / totalSec : 0;
-            const r = 28, cx = 34, cy = 34, sw = 5;
+            const r = 31, cx = 37, cy = 37, sw = 5;
             const startAng = Math.PI, endAng = 2 * Math.PI;
             const arcLen = endAng - startAng;
             const circumHalf = r * arcLen;
             const dash = frac * circumHalf;
             const arcColor = pomodoroMode === 'work' ? '#e74c8b' : pomodoroMode === 'shortBreak' ? '#22c55e' : '#3b82f6';
             return (
-              <svg width="68" height="40" viewBox="0 0 68 40">
+              <svg width="74" height="43" viewBox="0 0 74 43">
                 <path d={`M ${cx - r} ${cy} A ${r} ${r} 0 1 1 ${cx + r} ${cy}`} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={sw} strokeLinecap="round" />
                 <path d={`M ${cx - r} ${cy} A ${r} ${r} 0 1 1 ${cx + r} ${cy}`} fill="none" stroke={arcColor} strokeWidth={sw} strokeLinecap="round" strokeDasharray={`${dash} ${circumHalf}`} />
-                <text x={cx} y={cy - 4} textAnchor="middle" fill="#ffffff" fontSize="14" fontWeight="700" fontFamily="system-ui, sans-serif" style={{ fontVariantNumeric: 'tabular-nums' }}>{formatPomodoroTime(pomodoroTime)}</text>
+                <text x={cx} y={cy - 1} textAnchor="middle" fill="#ffffff" fontSize="14" fontWeight="700" fontFamily="system-ui, sans-serif" style={{ fontVariantNumeric: 'tabular-nums' }}>{formatPomodoroTime(pomodoroTime)}</text>
               </svg>
             );
           })()}
         </div>
-        <div className="flex items-center gap-[20px]" style={{ marginTop: '-1px' }}>
+        <div className="flex items-center gap-[20px]" style={{ marginTop: '2px' }}>
           <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle" title={pomodoroRunning ? 'Pause' : 'Play'}>
-            {pomodoroRunning ? <Pause className="h-[13px] w-[13px] text-white" strokeWidth={2.5} /> : <Play className="h-[13px] w-[13px] text-white" strokeWidth={2.5} />}
+            {pomodoroRunning ? <Pause className="h-[14px] w-[14px] text-white" strokeWidth={2.5} /> : <Play className="h-[14px] w-[14px] text-white" strokeWidth={2.5} />}
           </button>
           <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={resetPomodoro} data-testid="button-pomodoro-reset" title="Stop">
-            <Square className="h-[11px] w-[11px] text-white" strokeWidth={2.5} />
+            <Square className="h-[12px] w-[12px] text-white" strokeWidth={2.5} />
           </button>
           <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={() => { setPomodoroTime(prev => prev + 60); }} data-testid="button-pomodoro-add-min" title="+1 min" style={{ fontSize: '9px', color: 'white', fontWeight: 600, whiteSpace: 'nowrap', lineHeight: 1 }}>
             +1m
