@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AccessGate } from "@/components/access-gate";
+import { WifiOff } from "lucide-react";
 
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
@@ -67,6 +68,66 @@ function useAutoFullscreen() {
       window.removeEventListener('focus', handler);
     };
   }, [shouldFullscreen, requested, requestFullscreen]);
+}
+
+function ConnectionBanner() {
+  const [offline, setOffline] = useState(false);
+  const [downSeconds, setDownSeconds] = useState(0);
+  const failedAt = useRef<number | null>(null);
+  const checkInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+  const tickInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    const check = async () => {
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 5000);
+        const resp = await fetch("/api/health", { signal: controller.signal });
+        clearTimeout(timer);
+        if (resp.ok) {
+          if (failedAt.current) {
+            failedAt.current = null;
+            setOffline(false);
+            setDownSeconds(0);
+          }
+          return;
+        }
+        throw new Error("not ok");
+      } catch {
+        if (!failedAt.current) failedAt.current = Date.now();
+        setOffline(true);
+      }
+    };
+    check();
+    checkInterval.current = setInterval(check, 10000);
+    tickInterval.current = setInterval(() => {
+      if (failedAt.current) setDownSeconds(Math.round((Date.now() - failedAt.current) / 1000));
+    }, 1000);
+    return () => {
+      if (checkInterval.current) clearInterval(checkInterval.current);
+      if (tickInterval.current) clearInterval(tickInterval.current);
+    };
+  }, []);
+
+  if (!offline) return null;
+
+  const mins = Math.floor(downSeconds / 60);
+  const secs = downSeconds % 60;
+  const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+
+  return (
+    <div data-testid="connection-lost-banner" style={{
+      position: "fixed", top: 0, left: 0, right: 0, zIndex: 99999,
+      background: "linear-gradient(90deg, #dc2626, #b91c1c)",
+      color: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
+      gap: 8, padding: "6px 16px", fontSize: 13, fontWeight: 600,
+      boxShadow: "0 2px 12px rgba(220,38,38,0.5)",
+      animation: "pulse 2s ease-in-out infinite",
+    }}>
+      <WifiOff style={{ width: 16, height: 16 }} />
+      <span>Dashboard server unreachable — down for {timeStr}</span>
+    </div>
+  );
 }
 
 function Router() {

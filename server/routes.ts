@@ -7553,15 +7553,76 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   }
 
   const HA_HEALTH_CHECK_INTERVAL_MS = 60 * 1000;
+  const HA_HEARTBEAT_INTERVAL_MS = 30 * 1000;
   let haHealthInterval: ReturnType<typeof setInterval> | null = null;
+  let haHeartbeatInterval: ReturnType<typeof setInterval> | null = null;
 
-  setTimeout(() => {
-    checkHAConnectivity().then(ok => {
-      console.log(`[HA Health] Initial check: ${ok ? 'connected' : 'disconnected'}`);
-    });
+  async function sendHAHeartbeat() {
+    try {
+      const uptimeSeconds = Math.round((Date.now() - SERVER_START_TIME) / 1000);
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      await fetch(`${haUrl}/api/states/sensor.study_dashboard_heartbeat`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          state: "online",
+          attributes: {
+            friendly_name: "Study Dashboard Heartbeat",
+            device_class: "connectivity",
+            uptime_seconds: uptimeSeconds,
+            last_heartbeat: new Date().toISOString(),
+            ha_connected: haHealth.connected,
+            consecutive_ha_failures: haHealth.consecutiveFailures,
+          },
+        }),
+      });
+    } catch (e: any) {
+      console.warn(`[Heartbeat] Failed to send heartbeat to HA: ${e.message}`);
+    }
+  }
+
+  async function sendStartupNotification() {
+    try {
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      const startTime = new Date().toLocaleString("en-US", { timeZone: "America/Toronto", hour: "numeric", minute: "2-digit", hour12: true });
+      await fetch(`${haUrl}/api/services/persistent_notification/create`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: "Study Dashboard Online",
+          message: `Dashboard started at ${startTime}. Monitoring and automations are active.`,
+          notification_id: "study_dashboard_startup",
+        }),
+      });
+      console.log(`[Startup] Sent startup notification to HA`);
+      await fetch(`${haUrl}/api/services/notify/mobile_app_iphone_10`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: "Study Dashboard Online",
+          message: `Dashboard started at ${startTime}`,
+          data: { push: { sound: "default" } },
+        }),
+      });
+      console.log(`[Startup] Sent startup push notification`);
+    } catch (e: any) {
+      console.warn(`[Startup] Failed to send startup notification: ${e.message}`);
+    }
+  }
+
+  setTimeout(async () => {
+    const ok = await checkHAConnectivity();
+    console.log(`[HA Health] Initial check: ${ok ? 'connected' : 'disconnected'}`);
+    if (ok) {
+      await sendStartupNotification();
+      await sendHAHeartbeat();
+    }
     haHealthInterval = setInterval(() => {
       checkHAConnectivity();
     }, HA_HEALTH_CHECK_INTERVAL_MS);
+    haHeartbeatInterval = setInterval(() => {
+      sendHAHeartbeat();
+    }, HA_HEARTBEAT_INTERVAL_MS);
   }, 10000);
 
   app.get("/api/health", async (_req, res) => {
@@ -7583,6 +7644,10 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           processing: haQueueProcessing,
           oldest: haCommandQueue.length > 0 ? new Date(haCommandQueue[0].queuedAt).toISOString() : null,
         },
+      },
+      heartbeat: {
+        interval_seconds: HA_HEARTBEAT_INTERVAL_MS / 1000,
+        sensor: "sensor.study_dashboard_heartbeat",
       },
       timestamp: new Date().toISOString(),
     });
