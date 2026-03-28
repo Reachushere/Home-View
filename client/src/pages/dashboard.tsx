@@ -14610,7 +14610,35 @@ export default function Dashboard() {
         </div>
       )}
       
-      {/* Navigation Arrows with week dates - now handled in right-side tab on glass box */}
+      {/* Navigation Arrows with week dates + Month toggle - bottom aligned */}
+      {!isSettingsPanelOpen && !isSchoolCoursesDialogOpen && (
+      <div className="fixed z-50 flex items-end justify-end gap-2" data-tpo data-tpo-opacity="1" style={{ top: `${calendarTop - 26}px`, right: '14px', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
+        <div className="flex items-center gap-1">
+          
+          <div 
+            className="cursor-pointer hover:bg-white/20 rounded flex items-center justify-center"
+            style={{ marginLeft: '2px', padding: '4px 6px', minWidth: '28px', minHeight: '28px' }}
+            onClick={() => { const newWeek = selectedWeek - 1; startTransition(() => setSelectedWeek(newWeek)); if (newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }}
+            data-testid="button-pill-prev-week"
+            data-date-nav
+          >
+            <ChevronLeft style={{ width: '20px', height: '20px' }} className="text-white" strokeWidth={2.5} />
+          </div>
+          <span className="text-[12px] text-white whitespace-nowrap font-medium leading-tight" data-testid="text-week-dates">
+            {format(weekStartDate, 'EEE, MMMM d')} – {format(weekEndDate, 'EEE, MMMM d')}
+          </span>
+          <div 
+            className="cursor-pointer hover:bg-white/20 rounded flex items-center justify-center"
+            style={{ marginLeft: '2px', padding: '4px 6px', minWidth: '28px', minHeight: '28px' }}
+            onClick={() => { const newWeek = selectedWeek + 1; startTransition(() => setSelectedWeek(newWeek)); if (newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }}
+            data-testid="button-pill-next-week"
+            data-date-nav
+          >
+            <ChevronRight style={{ width: '20px', height: '20px' }} className="text-white" strokeWidth={2.5} />
+          </div>
+        </div>
+      </div>
+      )}
       
       {/* Voice Input Floating Button */}
       <div className="fixed z-[9999]" style={{ bottom: '43px', left: '5px' }}>
@@ -22701,22 +22729,6 @@ export default function Dashboard() {
               <div className="cursor-grab active:cursor-grabbing select-none" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={handleCombinedResizeStart} onTouchStart={handleCombinedResizeStart}><span style={{ fontSize: '13px', lineHeight: '1', color: '#000' }}>⋮⋮</span></div>
               <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
               <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => { const v = Math.max(0, prev - 2); localStorage.setItem('calendarReduction', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => { const v = Math.max(0, prev - 2); localStorage.setItem('calendarReduction', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▶</span></div>
-            </div>
-          </div>}
-          {/* Right-side date navigation tab */}
-          {!hwFloating.detached && <div
-            className="absolute z-[60]"
-            style={{ right: '-18px', top: '50%', transform: 'translateY(-50%)', width: '17px', height: '181px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto' }}
-            data-testid="date-nav-tab"
-          >
-            <div style={{ width: '17px', height: '181px', borderRadius: '0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderLeft: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
-              <div className="cursor-pointer hover:bg-white/20" data-date-nav style={{ flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '30px', pointerEvents: 'auto' }} onClick={() => { const newWeek = selectedWeek - 1; startTransition(() => setSelectedWeek(newWeek)); if (newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }} data-testid="button-pill-prev-week"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▲</span></div>
-              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', overflow: 'hidden' }}>
-                <span data-testid="text-week-dates" style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)', fontSize: '8px', fontWeight: 500, color: '#000', whiteSpace: 'nowrap', lineHeight: 1, letterSpacing: '0.3px' }}>
-                  {format(weekStartDate, 'MMM d')} – {format(weekEndDate, 'MMM d')}
-                </span>
-              </div>
-              <div className="cursor-pointer hover:bg-white/20" data-date-nav style={{ flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '30px', pointerEvents: 'auto' }} onClick={() => { const newWeek = selectedWeek + 1; startTransition(() => setSelectedWeek(newWeek)); if (newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }} data-testid="button-pill-next-week"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▼</span></div>
             </div>
           </div>}
           {(() => {
