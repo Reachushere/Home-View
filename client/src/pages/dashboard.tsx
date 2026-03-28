@@ -17387,18 +17387,19 @@ export default function Dashboard() {
                     const courseSSterm = (() => {
                       if (!isSS) return '';
                       const sems = allSemesterSettingsRef.current;
-                      if (sems) {
-                        const cc = semCourse.code.replace(/\s/g, '');
-                        for (const sem of sems) {
-                          for (let i = 1; i <= 3; i++) {
-                            const sc = ((sem as any)[`course${i}Code`] || '').replace(/\s/g, '');
-                            if (sc.toUpperCase() === cc.toUpperCase()) {
-                              return ((sem as any)[`course${i}SpringSummerTerm`] || 'full').toLowerCase();
-                            }
+                      if (!sems || sems.length === 0) return 'unknown';
+                      const cc = semCourse.code.replace(/\s/g, '');
+                      for (const sem of sems) {
+                        if ((sem as any).semesterType !== 'spring_summer') continue;
+                        for (let i = 1; i <= 3; i++) {
+                          const sc = ((sem as any)[`course${i}Code`] || '').replace(/\s/g, '');
+                          if (sc.toUpperCase() === cc.toUpperCase()) {
+                            const term = ((sem as any)[`course${i}SpringSummerTerm`] || '').toLowerCase();
+                            return term || 'unknown';
                           }
                         }
                       }
-                      return 'full';
+                      return 'unknown';
                     })();
                     const ssNeedsA = isSS && (courseSSterm === 'first_half' || courseSSterm === 'full');
                     const ssNeedsB = isSS && (courseSSterm === 'second_half' || courseSSterm === 'full');
@@ -17440,7 +17441,7 @@ export default function Dashboard() {
                         data-testid={`school-course-${semCourse.code}`}
                       >
                         <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: dotColor }} />
-                        {isSS ? (
+                        {isSS && (ssNeedsA || ssNeedsB) ? (
                           <div style={{ display: 'flex', alignItems: 'center', width: '70px', minWidth: '70px', flexShrink: 0 }}>
                             {ssNeedsA && (
                               <PrioritySelect
@@ -17469,7 +17470,7 @@ export default function Dashboard() {
                           </div>
                         ) : (
                           <PrioritySelect
-                            priorityKey={priorityKeyA}
+                            priorityKey={isSS ? priorityKeyA : `${semKey}:${semCourse.code}`}
                             initialValue={currentPriorityA}
                             totalInSem={totalInSem}
                             draftRef={draftCoursePlayPriorityRef}

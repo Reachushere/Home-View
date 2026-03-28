@@ -1504,22 +1504,15 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               >
                 {courseInfo.courseCode} — {courseInfo.courseName}
               </h2>
-              {gradeCalc && (
-                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md flex-shrink-0" style={{ background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.4)' }} data-testid="grade-calculator-inline">
-                  <span className="text-[11px] font-bold text-white" data-testid="text-current-grade">{gradeCalc.currentGrade}</span>
-                  <span className="text-[10px] text-white">({gradeCalc.currentPercent.toFixed(1)}%)</span>
-                  <span className="text-[9px] text-white/70" style={{ marginLeft: '2px' }}>{gradeCalc.gradedCount} graded · {gradeCalc.gradedWeight.toFixed(0)}%</span>
-                </div>
-              )}
             </div>
           </div>
-          <div className="flex items-center gap-2 text-[9px] text-white flex-shrink-0">
-            {courseInfo.deliveryMode === "virtual" ? (
-              <span className="flex items-center gap-0.5"><img src={zoomLogoPath} alt="Zoom" style={{ width: '38px', height: 'auto', filter: 'brightness(0) invert(1)' }} /> Virtual</span>
-            ) : courseInfo.deliveryMode === "online" ? (
-              <span className="flex items-center gap-0.5"><img src={wifiLogoPath} alt="Online" style={{ width: '14px', height: 'auto' }} /> Online</span>
-            ) : null}
-          </div>
+          {gradeCalc && (
+            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md flex-shrink-0" style={{ background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.4)' }} data-testid="grade-calculator-inline">
+              <span className="text-[11px] font-bold text-white" data-testid="text-current-grade">{gradeCalc.currentGrade}</span>
+              <span className="text-[10px] text-white">({gradeCalc.currentPercent.toFixed(1)}%)</span>
+              <span className="text-[9px] text-white/70" style={{ marginLeft: '2px' }}>{gradeCalc.gradedCount} graded · {gradeCalc.gradedWeight.toFixed(0)}%</span>
+            </div>
+          )}
         </div>
 
         <div className="flex items-center justify-between px-3 py-2 border-b border-white/10 flex-shrink-0">
