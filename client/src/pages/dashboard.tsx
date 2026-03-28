@@ -23338,9 +23338,22 @@ export default function Dashboard() {
                 {/* This Week Section - hidden on Fridays since everything shifts to today */}
                 {new Date().getDay() === 5 ? null : (<>
                 <div data-homework-section="thisweek" data-semester-label={hwWeeklyTimeline[0]?.semLabel || ''} style={{ borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '3px', paddingTop: '2px' }}>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-                    <span className="text-[12px] font-semibold" style={{ color: '#ffffff', whiteSpace: 'nowrap' }}>{hwWeeklyTimeline[0]?.label || 'Week'}</span>
-                    <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)' }}>({dueTomorrowTasks.length})</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap' }}>
+                    <span className="text-[12px] font-semibold" style={{ color: '#ffffff', whiteSpace: 'nowrap', flexShrink: 0 }}>{hwWeeklyTimeline[0]?.label || 'Week'}</span>
+                    <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', flexShrink: 0 }}>({dueTomorrowTasks.length})</span>
+                    {/Week\s+\d/i.test(hwWeeklyTimeline[0]?.label || '') && hwWeeklyTimeline[0]?.weekStart && hwWeeklyTimeline[0]?.weekEnd && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0, marginLeft: '2px' }}>
+                        <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                          <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(hwWeeklyTimeline[0].weekStart, 'MMM').toUpperCase()}</div>
+                          <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(hwWeeklyTimeline[0].weekStart, 'd')}</div>
+                        </div>
+                        <span style={{ fontSize: '6px', color: 'white', lineHeight: 1 }}>&#9654;</span>
+                        <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                          <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(hwWeeklyTimeline[0].weekEnd, 'MMM').toUpperCase()}</div>
+                          <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(hwWeeklyTimeline[0].weekEnd, 'd')}</div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
                 {dueTomorrowTasks.length === 0 ? (
@@ -23381,19 +23394,6 @@ export default function Dashboard() {
                         return (
                           <div key={group.key} data-hw-group-row style={{ display: 'flex', alignItems: 'flex-start', gap: '0px', marginBottom: '2px' }}>
                             <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', alignSelf: 'stretch', marginLeft: '2px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2 }} data-testid={`mini-cal-w10-group-${group.key}`}>
-                              {/Week\s+\d/i.test(hwWeeklyTimeline[0]?.label || '') && hwWeeklyTimeline[0]?.weekStart && hwWeeklyTimeline[0]?.weekEnd && (
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0, justifyContent: 'center', marginBottom: '4px' }}>
-                                <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                                  <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(hwWeeklyTimeline[0].weekStart, 'MMM').toUpperCase()}</div>
-                                  <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(hwWeeklyTimeline[0].weekStart, 'd')}</div>
-                                </div>
-                                <span style={{ fontSize: '6px', color: 'white', lineHeight: 1 }}>&#9654;</span>
-                                <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                                  <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(hwWeeklyTimeline[0].weekEnd, 'MMM').toUpperCase()}</div>
-                                  <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(hwWeeklyTimeline[0].weekEnd, 'd')}</div>
-                                </div>
-                              </div>
-                              )}
                               {!/Week\s+\d/i.test(hwWeeklyTimeline[0]?.label || '') && (
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 {hwWeeklyTimeline[0]?.sublabel || 'This week'}
@@ -23443,7 +23443,7 @@ export default function Dashboard() {
                                 const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                                 const isLastTask = taskIdx === group.tasks.length - 1;
                                 return (
-                                  <div key={task.id} className="" style={{ position: 'relative', overflow: 'visible', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: taskIdx % 2 === 0 ? '#051729' : 'transparent', marginLeft: '-8px', marginRight: '-7px', paddingLeft: '8px', paddingRight: '7px' }}
+                                  <div key={task.id} className="" style={{ position: 'relative', overflow: 'visible', borderBottom: isLastTask ? 'none' : '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: taskIdx % 2 === 0 ? '#051729' : 'transparent' }}
                                     onMouseEnter={() => setHoveredCountdownTaskIdDebounced(task.id)}
                                     onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                                     ref={(rowEl) => {
@@ -23465,13 +23465,13 @@ export default function Dashboard() {
                                     <div data-swipe-reschedule data-testid={`swipe-reschedule-${task.id}`} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0px', background: '#3b82f6', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0', cursor: 'pointer' }}>
                                       <span className="text-white text-[9px] font-bold">Reschedule</span>
                                     </div>
-                                    <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
+                                    <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'stretch' }}>
                                         <div ref={centerCircleOnGroupBar} style={{ position: 'absolute', left: '82px', top: '50%', transform: 'translateY(-50%)', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 5, border: task.flagged ? '2px solid #ef4444' : 'none', boxShadow: task.flagged ? '0 0 6px rgba(239,68,68,0.5)' : 'none' }}>
                                           <span style={{ fontSize: '7px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.3px', marginTop: '1px', marginBottom: '-1px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
                                           <span style={{ fontSize: '9px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textAlign: 'center', display: 'block', marginTop: '1px' }}>{format(new Date(task.dueDate), 'd')}</span>
                                         </div>
-                                        <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '20px' }}>
+                                        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '20px' }}>
                                           <div>
                                             <button
                                               className="text-[10px] truncate hover:underline cursor-pointer leading-none w-full"
@@ -23509,7 +23509,7 @@ export default function Dashboard() {
                                             </div>
                                           )}
                                         </div>
-                                        <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px', marginLeft: '-3px', position: 'relative', left: '-14px' }}>
+                                        <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', gap: '1px', marginLeft: '-3px', position: 'relative', left: '-25px' }}>
                                           <span className="text-[8px]" style={{ color: '#ffffff', lineHeight: 1, letterSpacing: '0.3px' }}>Due In</span>
                                           <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
 
@@ -23520,8 +23520,7 @@ export default function Dashboard() {
                                   </div>
                                 );
                               })}
-                            </div>
-                          </div>
+                            </div></div>
                           </div>
                         );
                       });
@@ -23531,9 +23530,22 @@ export default function Dashboard() {
                 </>)}
                 {/* Next Week Section */}
                 <div data-homework-section="nextweek" data-semester-label={hwWeeklyTimeline[1]?.semLabel || ''} style={{ display: 'flex', flexDirection: 'column', gap: '0px', padding: '5px 0 1px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '3px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[1]?.label || 'Week'}</span>
-                    <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px' }}>({dueNextWeekTasks.length})</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap' }}>
+                    <span className="text-[12px] font-semibold" style={{ color: '#ffffff', flexShrink: 0 }}>{hwWeeklyTimeline[1]?.label || 'Week'}</span>
+                    <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', flexShrink: 0 }}>({dueNextWeekTasks.length})</span>
+                    {/Week\s+\d/i.test(hwWeeklyTimeline[1]?.label || '') && hwWeeklyTimeline[1]?.weekStart && hwWeeklyTimeline[1]?.weekEnd && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0, marginLeft: '2px' }}>
+                        <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                          <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(hwWeeklyTimeline[1].weekStart, 'MMM').toUpperCase()}</div>
+                          <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(hwWeeklyTimeline[1].weekStart, 'd')}</div>
+                        </div>
+                        <span style={{ fontSize: '6px', color: 'white', lineHeight: 1 }}>&#9654;</span>
+                        <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                          <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(hwWeeklyTimeline[1].weekEnd, 'MMM').toUpperCase()}</div>
+                          <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(hwWeeklyTimeline[1].weekEnd, 'd')}</div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
                 {dueNextWeekTasks.length === 0 ? (
@@ -23559,19 +23571,6 @@ export default function Dashboard() {
                         return (
                           <div key={group.key} data-hw-group-row style={{ display: 'flex', alignItems: 'flex-start', gap: '0px', marginBottom: '2px' }}>
                             <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', alignSelf: 'stretch', marginLeft: '2px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2 }} data-testid={`mini-cal-w11-group-${group.key}`}>
-                              {/Week\s+\d/i.test(hwWeeklyTimeline[1]?.label || '') && (
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0, justifyContent: 'center', marginBottom: '4px' }}>
-                                <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                                  <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(nextSaturday, 'MMM').toUpperCase()}</div>
-                                  <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(nextSaturday, 'd')}</div>
-                                </div>
-                                <span style={{ fontSize: '6px', color: 'white', lineHeight: 1 }}>&#9654;</span>
-                                <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                                  <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(nextWeekEnd, 'MMM').toUpperCase()}</div>
-                                  <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(nextWeekEnd, 'd')}</div>
-                                </div>
-                              </div>
-                              )}
                               {!/Week\s+\d/i.test(hwWeeklyTimeline[1]?.label || '') && (
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 {hwWeeklyTimeline[1]?.sublabel || 'Next week'}
@@ -23710,9 +23709,22 @@ export default function Dashboard() {
                 )}
                 {/* 2 Weeks Section */}
                 <div data-homework-section="twoweeks" data-semester-label={hwWeeklyTimeline[2]?.semLabel || ''} style={{ display: 'flex', flexDirection: 'column', gap: '0px', padding: '5px 0 1px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: '3px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{hwWeeklyTimeline[2]?.label || 'Two weeks'}</span>
-                    <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px' }}>({dueTwoWeeksTasks.length})</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap' }}>
+                    <span className="text-[12px] font-semibold" style={{ color: '#ffffff', flexShrink: 0 }}>{hwWeeklyTimeline[2]?.label || 'Two weeks'}</span>
+                    <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', flexShrink: 0 }}>({dueTwoWeeksTasks.length})</span>
+                    {/Week\s+\d/i.test(hwWeeklyTimeline[2]?.label || '') && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0, marginLeft: '2px' }}>
+                        <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                          <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(twoWeeksStart, 'MMM').toUpperCase()}</div>
+                          <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(twoWeeksStart, 'd')}</div>
+                        </div>
+                        <span style={{ fontSize: '6px', color: 'white', lineHeight: 1 }}>&#9654;</span>
+                        <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                          <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(threeWeeksEnd, 'MMM').toUpperCase()}</div>
+                          <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(threeWeeksEnd, 'd')}</div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
                 {dueTwoWeeksTasks.length === 0 ? (
@@ -23756,19 +23768,6 @@ export default function Dashboard() {
                         return (
                           <div key={group.key} data-hw-group-row style={{ display: 'flex', alignItems: 'flex-start', gap: '0px', marginBottom: '2px' }}>
                             <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', alignSelf: 'stretch', marginLeft: '2px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2 }} data-testid={`mini-cal-2w-group-${group.key}`}>
-                              {/Week\s+\d/i.test(hwWeeklyTimeline[2]?.label || '') && (
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0, justifyContent: 'center', marginBottom: '4px' }}>
-                                <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                                  <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(twoWeeksStart, 'MMM').toUpperCase()}</div>
-                                  <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(twoWeeksStart, 'd')}</div>
-                                </div>
-                                <span style={{ fontSize: '6px', color: 'white', lineHeight: 1 }}>&#9654;</span>
-                                <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                                  <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(threeWeeksEnd, 'MMM').toUpperCase()}</div>
-                                  <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(threeWeeksEnd, 'd')}</div>
-                                </div>
-                              </div>
-                              )}
                               {!/Week\s+\d/i.test(hwWeeklyTimeline[2]?.label || '') && (
                               <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                                 {hwWeeklyTimeline[2]?.sublabel || 'Two weeks'}
