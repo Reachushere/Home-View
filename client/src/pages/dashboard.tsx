@@ -23157,7 +23157,7 @@ export default function Dashboard() {
                             data-testid={`drop-${item.type}-${pd.courseCode.toLowerCase()}`}>
                             <span style={{ position: 'absolute', top: '2px', left: '4px', fontSize: '8px', fontWeight: 400, color: item.dark ? '#ffffff' : '#000000', letterSpacing: '0.5px', fontFamily: "'Raleway', sans-serif", zIndex: 5 }}>{item.label}</span>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '3px', marginTop: '8px' }}>
-                              <div style={{ position: 'relative', width: circleSize, height: circleSize, marginLeft: '-3px' }}>
+                              <div style={{ position: 'relative', width: circleSize, height: circleSize, marginLeft: '-2px' }}>
                                 <svg width={circleSize} height={circleSize} style={{ transform: 'rotate(-90deg)' }}>
                                   <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth={strokeWidth} />
                                   {item.p.hasFiles && item.p.percent > 0 && (
@@ -23168,7 +23168,7 @@ export default function Dashboard() {
                                   {item.p.hasFiles ? `${item.p.percent}%` : 'N/A'}
                                 </span>
                               </div>
-                              <div className="cursor-pointer" style={{ position: 'relative', opacity: item.p.percent === 100 ? 0.5 : 1, marginLeft: '4px', background: item.dark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)', borderRadius: '6px', padding: '3px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }} data-testid={item.testPlay}>
+                              <div className="cursor-pointer" style={{ position: 'relative', opacity: item.p.percent === 100 ? 0.5 : 1, marginLeft: '2px', background: item.dark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)', borderRadius: '6px', padding: '3px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }} data-testid={item.testPlay}>
                                 {item.p.hasFiles && item.unread > 0 && item.p.percent < 100 && (
                                   <div className="bg-[#FF0000] text-white text-[6px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ position: 'absolute', top: '-5px', right: '-5px', zIndex: 10 }}>
                                     {item.unread}
@@ -24296,7 +24296,7 @@ export default function Dashboard() {
                                 data-testid={`float-drop-${item.type}-${pd.courseCode.toLowerCase()}`}>
                                 <span style={{ position: 'absolute', top: '3px', left: '5px', fontSize: '9px', fontWeight: 400, color: item.dark ? '#ffffff' : '#000000', letterSpacing: '0.5px', fontFamily: "'Raleway', sans-serif", zIndex: 5 }}>{item.label}</span>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '8px' }}>
-                                  <div style={{ position: 'relative', width: circleSize, height: circleSize, marginLeft: '-3px' }}>
+                                  <div style={{ position: 'relative', width: circleSize, height: circleSize, marginLeft: '-2px' }}>
                                     <svg width={circleSize} height={circleSize} style={{ transform: 'rotate(-90deg)' }}>
                                       <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth={strokeWidth} />
                                       {item.p.hasFiles && item.p.percent > 0 && (
@@ -24307,7 +24307,7 @@ export default function Dashboard() {
                                       {item.p.hasFiles ? `${item.p.percent}%` : 'N/A'}
                                     </span>
                                   </div>
-                                  <div className="cursor-pointer" style={{ position: 'relative', opacity: item.p.percent === 100 ? 0.5 : 1, marginLeft: '4px', background: item.dark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)', borderRadius: '6px', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }} data-testid={item.testPlay}>
+                                  <div className="cursor-pointer" style={{ position: 'relative', opacity: item.p.percent === 100 ? 0.5 : 1, marginLeft: '2px', background: item.dark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)', borderRadius: '6px', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }} data-testid={item.testPlay}>
                                     {item.p.hasFiles && item.unread > 0 && item.p.percent < 100 && (
                                       <div className="bg-[#FF0000] text-white text-[6px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ position: 'absolute', top: '-5px', right: '-5px', zIndex: 10 }}>
                                         {item.unread}
