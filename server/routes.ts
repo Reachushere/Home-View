@@ -4260,6 +4260,37 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
+  app.get("/api/shared-notebook-links", async (req, res) => {
+    try {
+      const links = await storage.getSharedNotebookLinks();
+      res.json(links);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || "Failed to get shared notebook links" });
+    }
+  });
+
+  app.post("/api/shared-notebook-links", async (req, res) => {
+    try {
+      const { name, url } = req.body;
+      if (!name || !url) {
+        return res.status(400).json({ error: "name and url are required" });
+      }
+      const link = await storage.createSharedNotebookLink({ name, url });
+      res.json(link);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || "Failed to create shared notebook link" });
+    }
+  });
+
+  app.delete("/api/shared-notebook-links/:id", async (req, res) => {
+    try {
+      await storage.deleteSharedNotebookLink(parseInt(req.params.id));
+      res.json({ success: true });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || "Failed to delete shared notebook link" });
+    }
+  });
+
   app.post("/api/onedrive/ensure-semester-folders", async (req, res) => {
     try {
       const { semesterId } = req.body;

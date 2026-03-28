@@ -24,6 +24,8 @@ import {
   CheckSquare,
   Mic,
   Filter,
+  Link2,
+  ExternalLink,
 } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 
@@ -57,6 +59,13 @@ interface PageCard {
   position: number;
 }
 
+interface SharedNotebookLink {
+  id: number;
+  name: string;
+  url: string;
+  createdAt: string;
+}
+
 type TopTab = "recent" | "notebooks";
 type BottomTab = "notebooks" | "stickynotes" | "search";
 type View = "grid" | "page" | "quicknote-editor";
@@ -86,6 +95,9 @@ export default function OneNotePage() {
   const [newPageTitle, setNewPageTitle] = useState('');
   const [newPageNotebook, setNewPageNotebook] = useState('');
   const [newPageSection, setNewPageSection] = useState('');
+  const [isAddingLink, setIsAddingLink] = useState(false);
+  const [newLinkName, setNewLinkName] = useState('');
+  const [newLinkUrl, setNewLinkUrl] = useState('');
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const speechRecRef = useRef<any>(null);
@@ -99,6 +111,11 @@ export default function OneNotePage() {
   const filesQuery = useQuery<QuickNoteFile[]>({
     queryKey: ["/api/quicknotes/files"],
     staleTime: 15000,
+  });
+
+  const sharedLinksQuery = useQuery<SharedNotebookLink[]>({
+    queryKey: ["/api/shared-notebook-links"],
+    staleTime: 60000,
   });
 
   const contentQuery = useQuery<{ content: string }>({
@@ -194,6 +211,37 @@ export default function OneNotePage() {
     },
     onError: (err: any) => {
       toast({ title: "Create failed", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const addSharedLinkMutation = useMutation({
+    mutationFn: async ({ name, url }: { name: string; url: string }) => {
+      const res = await apiRequest('POST', '/api/shared-notebook-links', { name, url });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/shared-notebook-links"] });
+      setIsAddingLink(false);
+      setNewLinkName('');
+      setNewLinkUrl('');
+      toast({ title: "Shared notebook link added" });
+    },
+    onError: (err: any) => {
+      toast({ title: "Failed to add link", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const deleteSharedLinkMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await apiRequest('DELETE', `/api/shared-notebook-links/${id}`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/shared-notebook-links"] });
+      toast({ title: "Shared notebook link removed" });
+    },
+    onError: (err: any) => {
+      toast({ title: "Delete failed", description: err.message, variant: "destructive" });
     },
   });
 
@@ -552,24 +600,135 @@ export default function OneNotePage() {
           />
         )}
         {bottomTab === 'notebooks' && topTab === 'notebooks' && (
-          <NotebookListView
-            notebooks={notebooks}
-            isLoading={notebooksQuery.isLoading}
-            expandedNotebooks={expandedNotebooks}
-            onToggleNotebook={(name) => {
-              setExpandedNotebooks(prev => {
-                const next = new Set(prev);
-                if (next.has(name)) next.delete(name);
-                else next.add(name);
-                return next;
-              });
-            }}
-            allCards={allPageCards}
-            onOpenCard={openPageCard}
-            onDeleteCard={(card) => deletePageMutation.mutate(card)}
-            deletingCard={deletePageMutation.isPending ? deletePageMutation.variables : null}
-            truncatePath={truncatePath}
-          />
+          <>
+            <NotebookListView
+              notebooks={notebooks}
+              isLoading={notebooksQuery.isLoading}
+              expandedNotebooks={expandedNotebooks}
+              onToggleNotebook={(name) => {
+                setExpandedNotebooks(prev => {
+                  const next = new Set(prev);
+                  if (next.has(name)) next.delete(name);
+                  else next.add(name);
+                  return next;
+                });
+              }}
+              allCards={allPageCards}
+              onOpenCard={openPageCard}
+              onDeleteCard={(card) => deletePageMutation.mutate(card)}
+              deletingCard={deletePageMutation.isPending ? deletePageMutation.variables : null}
+              truncatePath={truncatePath}
+            />
+
+            <div className="mt-6">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Link2 className="h-4 w-4 text-white/40" />
+                  <h2 className="text-sm font-medium text-white/60">Shared Notebooks</h2>
+                </div>
+                <button
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs text-white/60 hover:text-white transition-colors"
+                  style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }}
+                  onClick={() => setIsAddingLink(true)}
+                  data-testid="button-add-shared-link"
+                >
+                  <Plus className="h-3 w-3" />
+                  Add Link
+                </button>
+              </div>
+
+              {isAddingLink && (
+                <div className="rounded-lg p-4 mb-3 space-y-3" style={{ background: '#2d2d30', border: '1px solid #3e3e42' }}>
+                  <input
+                    type="text"
+                    value={newLinkName}
+                    onChange={e => setNewLinkName(e.target.value)}
+                    placeholder="Notebook name (e.g. Study Group Notes)"
+                    className="w-full h-9 px-3 text-sm rounded-md text-white placeholder:text-white/25 focus:outline-none"
+                    style={{ background: '#1e1e1e', border: '1px solid #3e3e42' }}
+                    autoFocus
+                    data-testid="input-link-name"
+                  />
+                  <input
+                    type="url"
+                    value={newLinkUrl}
+                    onChange={e => setNewLinkUrl(e.target.value)}
+                    placeholder="Paste shared OneNote link..."
+                    className="w-full h-9 px-3 text-sm rounded-md text-white placeholder:text-white/25 focus:outline-none"
+                    style={{ background: '#1e1e1e', border: '1px solid #3e3e42' }}
+                    data-testid="input-link-url"
+                  />
+                  <div className="flex gap-2 justify-end">
+                    <button
+                      className="px-3 py-1.5 rounded-md text-xs text-white/50 hover:text-white transition-colors"
+                      onClick={() => { setIsAddingLink(false); setNewLinkName(''); setNewLinkUrl(''); }}
+                      data-testid="button-cancel-link"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="px-3 py-1.5 rounded-md text-xs text-white font-medium transition-colors"
+                      style={{ background: '#7b2d8e' }}
+                      onClick={() => {
+                        if (!newLinkName.trim() || !newLinkUrl.trim()) {
+                          toast({ title: "Enter a name and URL" });
+                          return;
+                        }
+                        addSharedLinkMutation.mutate({ name: newLinkName.trim(), url: newLinkUrl.trim() });
+                      }}
+                      disabled={addSharedLinkMutation.isPending}
+                      data-testid="button-save-link"
+                    >
+                      {addSharedLinkMutation.isPending ? 'Saving...' : 'Add'}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {(sharedLinksQuery.data || []).length === 0 && !isAddingLink ? (
+                <div className="text-center py-6 text-white/20">
+                  <Link2 className="h-6 w-6 mx-auto mb-2 opacity-30" />
+                  <p className="text-xs">No shared notebooks yet</p>
+                  <p className="text-[10px] text-white/15 mt-1">Paste a OneNote share link to add one</p>
+                </div>
+              ) : (
+                <div className="space-y-1.5">
+                  {(sharedLinksQuery.data || []).map(link => (
+                    <div
+                      key={link.id}
+                      className="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors hover:bg-white/5"
+                      style={{ background: '#2d2d30', border: '1px solid #3e3e42' }}
+                    >
+                      <div className="h-8 w-8 rounded flex items-center justify-center shrink-0" style={{ background: '#2d6e4a' }}>
+                        <Link2 className="h-4 w-4 text-white" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-white truncate">{link.name}</div>
+                        <div className="text-[10px] text-white/30 truncate">{link.url}</div>
+                      </div>
+                      <a
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="h-7 w-7 flex items-center justify-center rounded text-white/30 hover:text-white hover:bg-white/10 transition-colors shrink-0"
+                        onClick={e => e.stopPropagation()}
+                        data-testid={`link-open-shared-${link.id}`}
+                      >
+                        <ExternalLink className="h-3.5 w-3.5" />
+                      </a>
+                      <button
+                        className="h-7 w-7 flex items-center justify-center rounded text-white/20 hover:text-red-400 hover:bg-white/10 transition-colors shrink-0"
+                        onClick={() => { if (confirm('Remove this shared notebook link?')) deleteSharedLinkMutation.mutate(link.id); }}
+                        data-testid={`button-delete-shared-${link.id}`}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </>
         )}
         {bottomTab === 'stickynotes' && (
           <StickyNotesView

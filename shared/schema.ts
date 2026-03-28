@@ -665,5 +665,16 @@ export const insertPendingReviewItemSchema = createInsertSchema(pendingReviewIte
 export type PendingReviewItem = typeof pendingReviewItems.$inferSelect;
 export type InsertPendingReviewItem = z.infer<typeof insertPendingReviewItemSchema>;
 
+export const sharedNotebookLinks = pgTable("shared_notebook_links", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  url: text("url").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertSharedNotebookLinkSchema = createInsertSchema(sharedNotebookLinks).omit({ id: true, createdAt: true });
+export type SharedNotebookLink = typeof sharedNotebookLinks.$inferSelect;
+export type InsertSharedNotebookLink = z.infer<typeof insertSharedNotebookLinkSchema>;
+
 // Export chat models for AI integrations
 export * from "./models/chat";
