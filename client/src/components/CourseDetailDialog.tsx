@@ -1437,6 +1437,11 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           }}
         >
           <div className="flex items-center gap-2 min-w-0">
+            {courseInfo.courseType && (
+              <span className="text-[9px] text-white px-1.5 rounded-md border border-white/30 bg-white/10 flex-shrink-0 flex items-center" style={{ alignSelf: 'stretch' }}>
+                {courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Elective" : "Liberal Studies"}
+              </span>
+            )}
             <GraduationCap className="text-white flex-shrink-0" style={{ width: '15px', height: '15px' }} />
             <div className="min-w-0 flex items-center gap-2">
               <h2
@@ -1446,11 +1451,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               >
                 {courseInfo.courseCode} — {courseInfo.courseName}
               </h2>
-              {courseInfo.courseType && (
-                <span className="text-[9px] text-white px-1.5 rounded-md border border-white/30 bg-white/10 flex-shrink-0 flex items-center" style={{ alignSelf: 'stretch' }}>
-                  {courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Elective" : "Liberal Studies"}
-                </span>
-              )}
               {gradeCalc && (
                 <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md flex-shrink-0" style={{ background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.4)' }} data-testid="grade-calculator-inline">
                   <span className="text-[11px] font-bold text-white" data-testid="text-current-grade">{gradeCalc.currentGrade}</span>
