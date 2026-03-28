@@ -17338,6 +17338,34 @@ Return ONLY the JSON object, no markdown formatting.`;
     return removed;
   }
 
+  let morningReviewLastShownDate: string | null = null;
+
+  (async () => {
+    try {
+      const result = await pool.query("SELECT value FROM degree_tracking_data WHERE key = 'morning_review_last_shown'");
+      if (result.rows.length > 0) morningReviewLastShownDate = result.rows[0].value;
+    } catch (_) {}
+  })();
+
+  app.get("/api/morning-review/last-shown", (_req, res) => {
+    res.json({ date: morningReviewLastShownDate });
+  });
+
+  app.post("/api/morning-review/last-shown", async (req, res) => {
+    const { date } = req.body;
+    if (date && typeof date === 'string') {
+      morningReviewLastShownDate = date;
+      try {
+        await pool.query(
+          `INSERT INTO degree_tracking_data (key, value) VALUES ('morning_review_last_shown', $1)
+           ON CONFLICT (key) DO UPDATE SET value = $1`,
+          [date]
+        );
+      } catch (_) {}
+    }
+    res.json({ ok: true, date: morningReviewLastShownDate });
+  });
+
   app.post("/api/morning-review/sync-all", async (_req, res) => {
     try {
       let outlookResult = { added: 0, skipped: 0 };

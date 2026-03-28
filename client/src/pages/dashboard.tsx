@@ -706,9 +706,19 @@ export default function Dashboard() {
       if (hour < 9) return;
       const dismissUntil = localStorage.getItem('morning_review_dismiss_until');
       if (dismissUntil && Date.now() < Number(dismissUntil)) return;
-      const shownToday = localStorage.getItem('morning_review_shown_date');
       const todayStr = eastern.toISOString().split('T')[0];
+      const shownToday = localStorage.getItem('morning_review_shown_date');
       if (shownToday === todayStr) return;
+      try {
+        const lastShownRes = await fetch('/api/morning-review/last-shown');
+        if (lastShownRes.ok) {
+          const lastShownData = await lastShownRes.json();
+          if (lastShownData.date === todayStr) {
+            localStorage.setItem('morning_review_shown_date', todayStr);
+            return;
+          }
+        }
+      } catch (_) {}
       try {
         const syncRes = await fetch('/api/morning-review/sync-all', { method: 'POST' });
         if (syncRes.ok) {
@@ -717,6 +727,11 @@ export default function Dashboard() {
             setMorningReviewItems(data.items);
             setShowMorningReview(true);
             localStorage.setItem('morning_review_shown_date', todayStr);
+            fetch('/api/morning-review/last-shown', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ date: todayStr }),
+            }).catch(() => {});
           }
         }
       } catch (e) {
