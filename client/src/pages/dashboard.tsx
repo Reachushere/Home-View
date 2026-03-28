@@ -19420,7 +19420,7 @@ export default function Dashboard() {
                     style={isToday ? (() => {
                       const now = new Date();
                       const minutesSinceMidnight = now.getHours() * 60 + now.getMinutes();
-                      const pct = Math.min(100, Math.max(0, (minutesSinceMidnight / 1440) * 100));
+                      const pct = Math.min(100, Math.max(0, ((19 * 60) / 1440) * 100));
                       let sunriseMin = 7 * 60, sunsetMin = 18 * 60;
                       if (weatherData?.sunrise) { const sr = new Date(weatherData.sunrise); sunriseMin = sr.getHours() * 60 + sr.getMinutes(); }
                       if (weatherData?.sunset) { const ss = new Date(weatherData.sunset); sunsetMin = ss.getHours() * 60 + ss.getMinutes(); }
