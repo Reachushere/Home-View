@@ -19423,8 +19423,18 @@ export default function Dashboard() {
                 return (
                   <div 
                     key={idx} 
-                    className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isToday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}${weatherAlerts.length > 0 ? " weather-alert-border-pulse" : ""}`}
-                    style={{ backgroundColor: isToday ? undefined : colorSettings.headerBar, animationDelay: isToday ? `-${Date.now() % 7000}ms` : undefined }}
+                    className={`border-l border-border flex flex-col items-center justify-center h-full relative${weatherAlerts.length > 0 ? " weather-alert-border-pulse" : ""}`}
+                    style={isToday ? (() => {
+                      const now = new Date();
+                      const minutesSinceMidnight = now.getHours() * 60 + now.getMinutes();
+                      const pct = Math.min(100, Math.max(0, (minutesSinceMidnight / 1440) * 100));
+                      let sunriseMin = 7 * 60, sunsetMin = 18 * 60;
+                      if (weatherData?.sunrise) { const sr = new Date(weatherData.sunrise); sunriseMin = sr.getHours() * 60 + sr.getMinutes(); }
+                      if (weatherData?.sunset) { const ss = new Date(weatherData.sunset); sunsetMin = ss.getHours() * 60 + ss.getMinutes(); }
+                      const isDaytime = minutesSinceMidnight >= sunriseMin && minutesSinceMidnight < sunsetMin;
+                      const restColor = isDaytime ? '#c8a800' : colorSettings.headerBar;
+                      return { background: `linear-gradient(to right, #3a8bbf 0%, #164a72 ${pct}%, ${restColor} ${pct}%, ${restColor} 100%)` };
+                    })() : { backgroundColor: colorSettings.headerBar }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {!isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && (
