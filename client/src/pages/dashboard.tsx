@@ -25481,7 +25481,9 @@ export default function Dashboard() {
                     }}
                     onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 0 8px rgba(255,255,255,0.8), 0 0 16px rgba(255,255,255,0.6), 0 0 24px rgba(255,255,255,0.5)'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)'; }}
-                    onClick={() => {
+                    onPointerDown={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
                       const form = document.querySelector('[data-edit-task-form]') as HTMLFormElement;
                       if (form) form.requestSubmit();
                     }}
