@@ -716,3 +716,109 @@ export async function createYearlyScholarshipEvent(info: {
     return null;
   }
 }
+
+export async function syncGoogleEventsToReview(): Promise<{ added: number; skipped: number }> {
+  const { storage } = await import('./storage');
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const end = new Date(start.getTime() + 60 * 24 * 60 * 60 * 1000);
+
+  let primaryEvents: any[] = [];
+  try {
+    primaryEvents = await listEvents(start, end);
+  } catch (err) {
+    console.error('[Google Calendar Review] Failed to fetch primary events:', err);
+  }
+
+  let secondEvents: any[] = [];
+  try {
+    const { isSecondAccountConnected, getEventsFromSecondAccount } = await import('./secondGoogleAccount');
+    const status = await isSecondAccountConnected();
+    if (status.connected) {
+      secondEvents = await getEventsFromSecondAccount(start, end);
+    }
+  } catch (err) {
+    console.error('[Google Calendar Review] Failed to fetch second account events:', err);
+  }
+
+  const allEvents = [...primaryEvents, ...secondEvents];
+  let added = 0;
+  let skipped = 0;
+
+  const allReviewItems = await storage.getPendingReviewItems();
+  const normalizeTitle = (t: string) => t.toLowerCase().replace(/\s+/g, ' ').replace(/[^a-z0-9 ]/g, '').trim();
+  const existingReviewKeys = new Set(allReviewItems.map(i => {
+    const normT = normalizeTitle(i.title || '');
+    const dateK = i.startDate ? new Date(i.startDate).toISOString().split('T')[0] : 'nodate';
+    return `${normT}||${dateK}`;
+  }));
+
+  const allTasks = await storage.getTasks();
+  const existingTaskKeys = new Set(allTasks.map(t => {
+    const normT = normalizeTitle(t.title || '');
+    const dateK = t.dueDate ? new Date(t.dueDate).toISOString().split('T')[0] : 'nodate';
+    return `${normT}||${dateK}`;
+  }));
+
+  const syncedEventIds = new Set([
+    ...allTasks.map(t => t.calendarEventId).filter(Boolean),
+    ...allTasks.map(t => t.secondAccountCalendarEventId).filter(Boolean),
+    ...allTasks.map(t => t.secondAccountPrepEventId).filter(Boolean),
+    ...allTasks.map(t => t.prepCalendarEventId).filter(Boolean),
+    ...allTasks.map(t => t.secondaryCalendarEventId).filter(Boolean),
+  ]);
+
+  for (const event of allEvents) {
+    if (!event.id || syncedEventIds.has(event.id)) {
+      skipped++;
+      continue;
+    }
+
+    const existing = await storage.getPendingReviewItemByExternalId(event.id, 'google_calendar');
+    if (existing) {
+      skipped++;
+      continue;
+    }
+
+    const isAllDay = !event.start?.dateTime;
+    const startStr = event.start?.dateTime || event.start?.date;
+    const endStr = event.end?.dateTime || event.end?.date;
+    if (!startStr) { skipped++; continue; }
+
+    const startDt = new Date(startStr);
+    const endDt = endStr ? new Date(endStr) : startDt;
+
+    const normTitle = normalizeTitle(event.summary || 'untitled event');
+    const dateKey = startDt.toISOString().split('T')[0];
+    const titleDateKey = `${normTitle}||${dateKey}`;
+    if (existingReviewKeys.has(titleDateKey) || existingTaskKeys.has(titleDateKey)) {
+      skipped++;
+      continue;
+    }
+    existingReviewKeys.add(titleDateKey);
+
+    const startTime = isAllDay ? null : `${String(startDt.getHours()).padStart(2, '0')}:${String(startDt.getMinutes()).padStart(2, '0')}`;
+    const endTime = isAllDay ? null : `${String(endDt.getHours()).padStart(2, '0')}:${String(endDt.getMinutes()).padStart(2, '0')}`;
+
+    await storage.createPendingReviewItem({
+      source: 'google_calendar',
+      sourceEmail: event.organizer?.email || null,
+      externalId: event.id,
+      title: event.summary || 'Untitled Event',
+      description: event.description || null,
+      startDate: startDt,
+      endDate: endDt,
+      eventStartTime: startTime,
+      eventEndTime: endTime,
+      location: event.location || null,
+      rawData: JSON.stringify(event),
+      status: 'pending',
+      courseName: null,
+      taskType: 'meeting',
+    });
+    added++;
+  }
+
+  console.log(`[Google Calendar Review] Synced: ${added} added, ${skipped} skipped`);
+  return { added, skipped };
+}
