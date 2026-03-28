@@ -20086,7 +20086,10 @@ export default function Dashboard() {
                           }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())[0];
                           if (!nextTask) return null;
                           const daysUntil = differenceInCalendarDays(new Date(nextTask.dueDate), new Date());
-                          const badgeBg = getCourseGradientColors(cCode2).start;
+                          const badgeGrad = getCourseGradientColors(cCode2);
+                          const badgeStartRgb = hexToRgb(badgeGrad.start);
+                          const badgeEndRgb = hexToRgb(badgeGrad.end);
+                          const badgeBg = `rgb(${Math.round((badgeStartRgb.r + badgeEndRgb.r) / 2)}, ${Math.round((badgeStartRgb.g + badgeEndRgb.g) / 2)}, ${Math.round((badgeStartRgb.b + badgeEndRgb.b) / 2)})`;
                           return (
                             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '15px', backgroundColor: badgeBg, zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'visible' }}>
                               <span style={{ fontSize: '9px', color: '#ffffff', whiteSpace: 'nowrap', fontWeight: 500, lineHeight: '15px' }}>Next Task Due In: <span style={{ color: '#ffffff', fontWeight: 700, fontSize: '9px' }}>{daysUntil}d</span></span>
@@ -20669,9 +20672,9 @@ export default function Dashboard() {
                           <div
                             className={`group flex items-center gap-1 text-[8px] px-1 py-0.5 truncate rounded border w-full min-w-0 cursor-pointer ${
                               ""
-                            } ${task.isCompleted ? "text-gray-400" : "text-white"}`}
+                            } ${task.isCompleted ? "text-gray-400" : "text-black"}`}
                             style={{
-                              backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.mid || colors?.bg || (task.type === 'other' ? otherRowColors.taskBgColor : '#dbeafe')),
+                              backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || (task.type === 'other' ? otherRowColors.taskBgColor : '#dbeafe')),
                               borderColor: task.isCompleted ? '#d1d5db' : (colors?.hex || (task.type === 'other' ? otherRowColors.borderColor : '#60a5fa')),
                               borderWidth: '1.5px'
                             }}
@@ -20694,7 +20697,7 @@ export default function Dashboard() {
                                 checked={task.isCompleted || false}
                                 onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
                                 onClick={(e) => e.stopPropagation()}
-                                className="h-3 w-3 shrink-0 border-white data-[state=checked]:bg-white data-[state=checked]:border-white"
+                                className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
                                 data-testid={`checkbox-allday-${task.id}`}
                               />
                             )}
@@ -20706,7 +20709,7 @@ export default function Dashboard() {
                             </span>
                             {task.referenceLink && (
                               <a href={task.referenceLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={task.referenceLink} data-testid={`link-icon-allday-${task.id}`}>
-                                <ExternalLink className="h-2.5 w-2.5 text-white/60 hover:text-white" />
+                                <ExternalLink className="h-2.5 w-2.5 text-black/60 hover:text-black" />
                               </a>
                             )}
                             {adPdfUrl && (
