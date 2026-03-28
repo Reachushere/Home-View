@@ -1613,6 +1613,19 @@ export default function Dashboard() {
   const [isCreatingFolder, setIsCreatingFolder] = useState(false);
   const [editingFolderId, setEditingFolderId] = useState<string | null>(null);
   const [editingFolderName, setEditingFolderName] = useState('');
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      if (document.body.style.pointerEvents === 'none') {
+        const hasOpenDialog = document.querySelector('[data-state="open"][role="dialog"]');
+        if (!hasOpenDialog) {
+          document.body.style.pointerEvents = '';
+        }
+      }
+    });
+    observer.observe(document.body, { attributes: true, attributeFilter: ['style'] });
+    return () => observer.disconnect();
+  }, []);
+
   // Honeycomb navigation state
   const [modulesHoneycombOpen, setModulesHoneycombOpen] = useState<string | null>('modules');
   const [decorativeHoneycombHover, setDecorativeHoneycombHover] = useState<'left' | 'middle' | 'right' | null>(null);
@@ -17972,6 +17985,7 @@ export default function Dashboard() {
             if (!open) {
               setColorSettings(originalColorSettings);
               setBlinkSettings(originalBlinkSettings);
+              setTimeout(() => { document.body.style.pointerEvents = ''; }, 100);
             }
             setIsSettingsDialogOpen(open);
           }}>
@@ -18865,6 +18879,7 @@ export default function Dashboard() {
                       setColorSettings(originalColorSettings);
                       setBlinkSettings(originalBlinkSettings);
                       setIsSettingsDialogOpen(false);
+                      setTimeout(() => { document.body.style.pointerEvents = ''; }, 100);
                     }}
                     data-testid="button-cancel-settings"
                   >
@@ -18891,6 +18906,7 @@ export default function Dashboard() {
                       setOriginalBlinkSettings({...blinkSettings});
                       toast({ title: "Settings saved", description: "Your settings have been applied." });
                       setIsSettingsDialogOpen(false);
+                      setTimeout(() => { document.body.style.pointerEvents = ''; }, 100);
                     }}
                     data-testid="button-save-settings"
                   >
