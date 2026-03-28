@@ -8192,16 +8192,20 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   }, 15000);
 
   function findNextFileByPriority(allFiles: any[], currentWeekNumber: number, excludeFileId?: number): any | null {
-    const weekFiles = allFiles.filter((f: any) => {
-      if (f.listened) return false;
-      if (excludeFileId && f.id === excludeFileId) return false;
-      const weekMatch = f.folder?.match(/week-(\d+)/i);
-      return weekMatch && parseInt(weekMatch[1], 10) === currentWeekNumber;
-    });
-    if (weekFiles.length === 0) return null;
-    const ordered = orderFilesByCoursePriority(weekFiles);
-    console.log(`[FileOrder] Priority order: ${ordered.map((f: any) => `${f.originalName} (chunk=${f.lastChunkIndex||0})`).join(' → ')}`);
-    return ordered[0] || null;
+    for (let weekToCheck = 1; weekToCheck <= currentWeekNumber; weekToCheck++) {
+      const weekFiles = allFiles.filter((f: any) => {
+        if (f.listened) return false;
+        if (excludeFileId && f.id === excludeFileId) return false;
+        const weekMatch = f.folder?.match(/week-(\d+)/i);
+        return weekMatch && parseInt(weekMatch[1], 10) === weekToCheck;
+      });
+      if (weekFiles.length === 0) continue;
+      const ordered = orderFilesByCoursePriority(weekFiles);
+      console.log(`[FileOrder] Found unlistened files in week ${weekToCheck} (checked 1-${currentWeekNumber}): ${ordered.map((f: any) => `${f.originalName} (chunk=${f.lastChunkIndex||0})`).join(' → ')}`);
+      return ordered[0] || null;
+    }
+    console.log(`[FileOrder] No unlistened files found in weeks 1-${currentWeekNumber}`);
+    return null;
   }
 
   function isSpotifyPlayingOnEverywhere(): boolean {
@@ -9109,21 +9113,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
           const currentWeekNumber = getWeekNumber(torontoDate(), semStart, rwStart);
 
-          const unlistenedFiles = allFiles.filter((f: any) => {
-            if (f.listened || f.id === fileId) return false;
-            const weekMatch = f.folder?.match(/week-(\d+)/i);
-            if (weekMatch) return parseInt(weekMatch[1], 10) === currentWeekNumber;
-            return false;
-          });
-
-          const isModule = (f: any) => f.folder?.toLowerCase().includes('module') || f.originalName?.toLowerCase().includes('module');
-          const isCPPA = (f: any) => f.folder?.toLowerCase().includes('cppa') || f.originalName?.toLowerCase().includes('cppa');
-          const cppaModules = unlistenedFiles.filter((f: any) => isCPPA(f) && isModule(f));
-          const otherFiles = unlistenedFiles.filter((f: any) => !(isCPPA(f) && isModule(f)));
-          const orderedFiles = [...cppaModules, ...otherFiles];
-
-          if (orderedFiles.length > 0) {
-            const nextFile = orderedFiles[0];
+          const nextFile = findNextFileByPriority(allFiles, currentWeekNumber, fileId);
+          if (nextFile) {
             console.log(`[Nest Playback] Skipping to next file: ${nextFile.displayName || nextFile.originalName} (id=${nextFile.id})`);
             const nextText = await extractFileText(nextFile);
             if (nextText) {
@@ -9157,7 +9148,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
             }
             console.log(`[Nest Playback] Next file also has no extractable text, stopping`);
           } else {
-            console.log(`[Nest Playback] No more unlistened files for week ${currentWeekNumber}`);
+            console.log(`[Nest Playback] No more unlistened files for weeks 1-${currentWeekNumber}`);
           }
         } catch (e: any) {
           console.error(`[Nest Playback] Error finding next file: ${e.message}`);
@@ -9751,31 +9742,16 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
       currentWeekNumber = getWeekNumber(torontoDate(), semStart, rwStart);
       
-      // Filter for unlistened files from current week
-      const unlistenedFiles = allFiles.filter(f => {
-        if (f.listened) return false;
-        
-        // Extract week number from folder name (e.g., "week-4-cppa122-module")
-        const weekMatch = f.folder?.match(/week-(\d+)/i);
-        if (weekMatch) {
-          const fileWeek = parseInt(weekMatch[1], 10);
-          return fileWeek === currentWeekNumber;
-        }
-        return false;
-      });
+      const nextFile = findNextFileByPriority(allFiles, currentWeekNumber);
       
-      const orderedFiles = orderFilesByCoursePriority(unlistenedFiles);
-      
-      if (orderedFiles.length === 0) {
+      if (!nextFile) {
         return res.json({ 
-          message: `All modules and readings for week ${currentWeekNumber} have been listened to!`, 
+          message: `All modules and readings for weeks 1-${currentWeekNumber} have been listened to!`, 
           nextFile: null,
           allComplete: true,
           currentWeek: currentWeekNumber
         });
       }
-      
-      const nextFile = orderedFiles[0];
       
       // Check if we have progress for this file
       const progressKey = `file-${nextFile.id}`;
@@ -9808,10 +9784,6 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   async function findNextCatWashFile(storageRef: any, weekNumber: number, excludeFileId?: number) {
     const allFiles = await storageRef.getFiles();
     const isModuleFile = (f: any) => f.folder?.toLowerCase().includes('module');
-    const getCourseCode = (f: any) => {
-      const match = f.folder?.match(/week-\d+-([a-z]+\d+)/i);
-      return match ? match[1].toLowerCase() : '';
-    };
 
     const isPartiallyListened = (f: any) => {
       if (f.listened || f.id === excludeFileId) return false;
@@ -9835,19 +9807,6 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       return weekMatch ? parseInt(weekMatch[1], 10) : -1;
     };
 
-    const currentWeekPartials = allFiles.filter((f: any) => isPartiallyListened(f) && getFileWeek(f) === weekNumber);
-    const otherWeekPartials = allFiles.filter((f: any) => isPartiallyListened(f) && getFileWeek(f) !== weekNumber);
-
-    const allPartialIds = new Set([...currentWeekPartials, ...otherWeekPartials].map((f: any) => f.id));
-
-    const unlistenedFiles = allFiles.filter((f: any) => {
-      if (f.listened || f.id === excludeFileId) return false;
-      if (allPartialIds.has(f.id)) return false;
-      return getFileWeek(f) === weekNumber;
-    });
-
-    const allWeekUnlistened = allFiles.filter((f: any) => !f.listened && f.id !== excludeFileId && getFileWeek(f) === weekNumber);
-
     const getCourseCodeForFile = (f: any): string => {
       const folder = (f.folder || '').toLowerCase();
       const name = (f.originalName || '').toLowerCase();
@@ -9855,37 +9814,54 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       return match ? match[1].toUpperCase().replace(/\s/g, '') : 'UNKNOWN';
     };
 
-    const coursesWithUnlistenedModules = new Set<string>();
-    for (const f of allWeekUnlistened) {
-      if (isModuleFile(f)) {
-        coursesWithUnlistenedModules.add(getCourseCodeForFile(f));
+    for (let w = 1; w <= weekNumber; w++) {
+      const weekPartials = allFiles.filter((f: any) => isPartiallyListened(f) && getFileWeek(f) === w);
+      const allPartialIds = new Set(weekPartials.map((f: any) => f.id));
+
+      const unlistenedFiles = allFiles.filter((f: any) => {
+        if (f.listened || f.id === excludeFileId) return false;
+        if (allPartialIds.has(f.id)) return false;
+        return getFileWeek(f) === w;
+      });
+
+      const allWeekUnlistened = allFiles.filter((f: any) => !f.listened && f.id !== excludeFileId && getFileWeek(f) === w);
+
+      if (allWeekUnlistened.length === 0 && weekPartials.length === 0) continue;
+
+      const coursesWithUnlistenedModules = new Set<string>();
+      for (const f of allWeekUnlistened) {
+        if (isModuleFile(f)) {
+          coursesWithUnlistenedModules.add(getCourseCodeForFile(f));
+        }
       }
+
+      const filteredUnlistened = unlistenedFiles.filter(f => {
+        if (isModuleFile(f)) return true;
+        return !coursesWithUnlistenedModules.has(getCourseCodeForFile(f));
+      });
+
+      const filteredPartials = weekPartials.filter(f => {
+        if (isModuleFile(f)) return true;
+        return !coursesWithUnlistenedModules.has(getCourseCodeForFile(f));
+      });
+
+      const orderedUnlistened = [...filteredUnlistened].sort((a, b) => {
+        const aPri = getCoursePriorityForFile(a);
+        const bPri = getCoursePriorityForFile(b);
+        if (aPri !== bPri) return aPri - bPri;
+        const aModule = isModuleFile(a) ? 0 : 1;
+        const bModule = isModuleFile(b) ? 0 : 1;
+        return aModule - bModule;
+      });
+
+      const blockedCourses = coursesWithUnlistenedModules.size > 0 ? Array.from(coursesWithUnlistenedModules).join(', ') : 'none';
+      console.log(`[CatWashFile] week=${w} (checked 1-${weekNumber}), unlistened=${allWeekUnlistened.length}, per-course module blocking (blocked: ${blockedCourses})`);
+
+      const orderedFiles = [...filteredPartials, ...orderedUnlistened];
+      if (orderedFiles.length > 0) return orderedFiles[0];
     }
-
-    const filteredUnlistened = unlistenedFiles.filter(f => {
-      if (isModuleFile(f)) return true;
-      return !coursesWithUnlistenedModules.has(getCourseCodeForFile(f));
-    });
-
-    const filteredPartials = currentWeekPartials.filter(f => {
-      if (isModuleFile(f)) return true;
-      return !coursesWithUnlistenedModules.has(getCourseCodeForFile(f));
-    });
-
-    const orderedUnlistened = [...filteredUnlistened].sort((a, b) => {
-      const aPri = getCoursePriorityForFile(a);
-      const bPri = getCoursePriorityForFile(b);
-      if (aPri !== bPri) return aPri - bPri;
-      const aModule = isModuleFile(a) ? 0 : 1;
-      const bModule = isModuleFile(b) ? 0 : 1;
-      return aModule - bModule;
-    });
-
-    const blockedCourses = coursesWithUnlistenedModules.size > 0 ? Array.from(coursesWithUnlistenedModules).join(', ') : 'none';
-    console.log(`[CatWashFile] week=${weekNumber}, unlistened=${allWeekUnlistened.length}, per-course module blocking (blocked: ${blockedCourses})`);
-
-    const orderedFiles = [...filteredPartials, ...orderedUnlistened];
-    return orderedFiles.length > 0 ? orderedFiles[0] : null;
+    console.log(`[CatWashFile] No unlistened files found in weeks 1-${weekNumber}`);
+    return null;
   }
 
   async function extractAndChunkPdf(file: any): Promise<{ textContent: string; chunks: string[] } | null> {
@@ -10334,8 +10310,10 @@ document.body.removeChild(a);
       let nextFile = findNextFileByPriority(allFilesBefore, currentWeekNumber);
 
       if (!nextFile) {
-        console.log(`[Shower Button] No cached files found — syncing OneDrive first`);
-        await syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Shower Button]');
+        console.log(`[Shower Button] No cached files found — syncing OneDrive for weeks 1-${currentWeekNumber}`);
+        for (let w = 1; w <= currentWeekNumber; w++) {
+          await syncOneDriveFilesForWeek(semesterSettings, w, '[Shower Button]');
+        }
         const allFilesAfter = await storage.getFiles();
         nextFile = findNextFileByPriority(allFilesAfter, currentWeekNumber);
       } else {
@@ -10344,9 +10322,9 @@ document.body.removeChild(a);
       }
 
       if (!nextFile) {
-        console.log(`[Shower Button] No unlistened files for week ${currentWeekNumber} — playing CHUM FM`);
+        console.log(`[Shower Button] No unlistened files for weeks 1-${currentWeekNumber} — playing CHUM FM`);
         await playChumFmRadio(haUrl);
-        return res.json({ action: "radio", reason: `All week ${currentWeekNumber} readings complete — playing CHUM FM 104.5` });
+        return res.json({ action: "radio", reason: `All weeks 1-${currentWeekNumber} readings complete — playing CHUM FM 104.5` });
       }
 
       const fileName = nextFile.displayName || nextFile.originalName || 'Unknown file';
@@ -10666,8 +10644,10 @@ document.body.removeChild(a);
       let nextFile = findNextFileByPriority(allFilesBefore, currentWeekNumber);
 
       if (!nextFile) {
-        console.log(`[Cat Lights] No cached files found — syncing OneDrive first`);
-        await syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Lights]');
+        console.log(`[Cat Lights] No cached files found — syncing OneDrive for weeks 1-${currentWeekNumber}`);
+        for (let w = 1; w <= currentWeekNumber; w++) {
+          await syncOneDriveFilesForWeek(semesterSettings, w, '[Cat Lights]');
+        }
         const allFilesAfter = await storage.getFiles();
         nextFile = findNextFileByPriority(allFilesAfter, currentWeekNumber);
       } else {
@@ -10690,7 +10670,7 @@ document.body.removeChild(a);
       } catch {}
 
       if (!nextFile) {
-        console.log(`[Cat Lights] No unlistened files for week ${currentWeekNumber} — playing CHUM FM on Echo speakers`);
+        console.log(`[Cat Lights] No unlistened files for weeks 1-${currentWeekNumber} — playing CHUM FM on Echo speakers`);
         catLightsPromptPending = false;
         await playChumFmRadio(haUrl);
         return;
