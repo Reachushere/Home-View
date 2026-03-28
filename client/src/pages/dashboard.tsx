@@ -17131,7 +17131,7 @@ export default function Dashboard() {
                         />
                         <div
                           className={`flex flex-col items-center cursor-pointer hover:opacity-80 transition-opacity flex-shrink-0 ${!(aasSentStatus[semCourse.code] || aasSentStatus[semCourse.code.replace(/^([A-Z]+)(\d)/, '$1 $2')]) && hasSemStarted(semKey) ? 'aas-unchecked-pulse' : ''}`}
-                          style={{ width: '24px', marginTop: '2px', marginLeft: '8px' }}
+                          style={{ width: '24px', marginTop: '2px', marginLeft: '5px' }}
                           data-testid={`aas-status-${semCourse.code}`}
                           onClick={(e) => { e.stopPropagation(); toggleAasSent(semCourse.code); }}
                         >
@@ -17142,12 +17142,12 @@ export default function Dashboard() {
                         </div>
                         <button
                           className="flex-shrink-0 text-white/40 hover:text-yellow-300 transition-colors p-0.5"
-                          style={{ marginLeft: '3px' }}
+                          style={{ marginLeft: '0px' }}
                           title="Course comments"
                           onClick={(e) => { e.stopPropagation(); setDashboardCommentTarget(dashboardCommentTarget?.type === 'course' && dashboardCommentTarget?.id === semCourse.code ? null : { type: 'course', id: semCourse.code, label: `${displayName}${subtitle ? ' - ' + subtitle : ''}` }); }}
                           data-testid={`button-comment-course-${semCourse.code}`}
                         >
-                          <MessageSquare className="w-3 h-3" strokeWidth={2.5} />
+                          <MessageSquare className="w-3.5 h-3.5" strokeWidth={2.5} />
                         </button>
                         <div className="flex-shrink-0" style={{ width: '33px', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', paddingLeft: '0px', marginLeft: '5px' }}>
                         {(() => {
