@@ -23058,7 +23058,7 @@ export default function Dashboard() {
                             style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', position: 'relative', flex: 1, minWidth: 0, background: item.bg, padding: '4px 2px 3px', borderRadius: '6px', overflow: 'hidden', outline: isDragOver ? '2px solid rgba(255,255,255,0.8)' : 'none', outlineOffset: '-2px', transition: 'outline 0.15s ease' }}
                             data-testid={`drop-${item.type}-${pd.courseCode.toLowerCase()}`}>
                             {item.p.hasFiles && item.unread > 0 && item.p.percent < 100 && (
-                              <div className="bg-[#FF0000] text-white text-[6px] font-bold rounded-full min-w-[10px] h-[10px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ position: 'absolute', top: '1px', right: '1px', zIndex: 10 }}>
+                              <div className="bg-[#FF0000] text-white text-[6px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ position: 'absolute', top: '1px', right: '1px', zIndex: 10 }}>
                                 {item.unread}
                               </div>
                             )}
@@ -24206,7 +24206,7 @@ export default function Dashboard() {
                                 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', position: 'relative', flex: 1, minWidth: 0, background: item.bg, padding: '5px 3px 4px', borderRadius: '6px', outline: isDragOver ? '2px solid rgba(255,255,255,0.8)' : 'none', outlineOffset: '-2px', transition: 'outline 0.15s ease' }}
                                 data-testid={`float-drop-${item.type}-${pd.courseCode.toLowerCase()}`}>
                                 {item.p.hasFiles && item.unread > 0 && item.p.percent < 100 && (
-                                  <div className="bg-[#FF0000] text-white text-[6px] font-bold rounded-full min-w-[10px] h-[10px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ position: 'absolute', top: '1px', right: '1px', zIndex: 10 }}>
+                                  <div className="bg-[#FF0000] text-white text-[6px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ position: 'absolute', top: '1px', right: '1px', zIndex: 10 }}>
                                     {item.unread}
                                   </div>
                                 )}
