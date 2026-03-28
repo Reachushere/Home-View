@@ -13267,7 +13267,7 @@ export default function Dashboard() {
             </svg>
           );
         })()}
-        <div style={{ display: 'flex', alignItems: 'center', marginTop: '-2px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', marginTop: '1px' }}>
           <span className="text-white" style={{ fontSize: '9px', fontWeight: '600', fontVariantNumeric: 'tabular-nums', lineHeight: '1' }}>
             {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
           </span>
