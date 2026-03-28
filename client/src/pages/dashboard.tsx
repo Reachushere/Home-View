@@ -21429,7 +21429,7 @@ export default function Dashboard() {
           </div>
           </div>
           <div
-            style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', bottom: '-13px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
+            style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', bottom: '-12px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
             data-testid="calendar-bottom-resize-handle"
           >
             <div style={{ width: '191px', height: '14px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
