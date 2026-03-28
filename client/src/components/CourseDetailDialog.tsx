@@ -409,6 +409,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     springSummerTerm: courseSpSuTerm || 'full',
   });
   const ssTermLocked = isSpringSummer && isEditingInfo && !editInfo.springSummerTerm;
+  const editFieldsLocked = isEditingInfo && (!editInfo.semesterTerm || (isSpringSummer && !editInfo.springSummerTerm));
 
   useEffect(() => {
     if (onLiveColorChange && isEditingInfo) {
@@ -1710,6 +1711,24 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         data-testid="button-delete-syllabus"
                       />
                 </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <div>
+                    <label className="text-white text-[9px] mb-0.5 block font-semibold">Semester <span className="text-red-400">*</span></label>
+                    <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={semesterKeyFromTermYear(editInfo.semesterTerm, editInfo.year)} onChange={(e) => { const opt = SEMESTER_OPTIONS.find(o => o.key === e.target.value); if (opt) { setEditInfo({...editInfo, semesterTerm: opt.term, year: opt.year, startDate: opt.start, endDate: opt.end }); } else { setEditInfo({...editInfo, semesterTerm: '', year: '', startDate: '', endDate: '' }); } }} data-testid="select-edit-semester-term">
+                      <option value="" className="bg-gray-800">—</option>
+                      {SEMESTER_OPTIONS.map(o => <option key={o.key} value={o.key} className="bg-gray-800">{o.label}</option>)}
+                    </select>
+                    {!editInfo.semesterTerm && <p className="text-[8px] text-yellow-400 mt-0.5">Select a semester first</p>}
+                  </div>
+                  <div className={!editInfo.semesterTerm ? 'opacity-30 pointer-events-none' : ''}>
+                    <label className="text-white text-[9px] mb-0.5 block">Start</label>
+                    <input type="date" className="w-full h-6 text-[10px] bg-white/10 border border-white/15 rounded px-1" style={{ color: 'white', colorScheme: 'dark' }} value={editInfo.startDate} onChange={(e) => setEditInfo({...editInfo, startDate: e.target.value})} data-testid="input-edit-start-date" />
+                  </div>
+                  <div className={!editInfo.semesterTerm ? 'opacity-30 pointer-events-none' : ''}>
+                    <label className="text-white text-[9px] mb-0.5 block">End</label>
+                    <input type="date" className="w-full h-6 text-[10px] bg-white/10 border border-white/15 rounded px-1" style={{ color: 'white', colorScheme: 'dark' }} value={editInfo.endDate} onChange={(e) => setEditInfo({...editInfo, endDate: e.target.value})} data-testid="input-edit-end-date" />
+                  </div>
+                </div>
                 {isSpringSummer && (
                   <div className="mb-2">
                     <label className="text-white text-[9px] mb-0.5 block font-semibold">Spring/Summer Term <span className="text-red-400">*</span></label>
@@ -1722,7 +1741,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     {!editInfo.springSummerTerm && <p className="text-[8px] text-yellow-400 mt-0.5">You must select a term before editing other details</p>}
                   </div>
                 )}
-                <div className={`grid grid-cols-2 gap-2 ${isSpringSummer && !editInfo.springSummerTerm ? 'opacity-30 pointer-events-none' : ''}`}>
+                <div className={`grid grid-cols-2 gap-2 ${editFieldsLocked ? 'opacity-30 pointer-events-none' : ''}`}>
                   <div>
                     <label className="text-white text-[9px] mb-0.5 block">Professor</label>
                     <input className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1.5 placeholder:text-white/25" value={editInfo.professor} onChange={(e) => setEditInfo({...editInfo, professor: e.target.value})} placeholder="Professor name" data-testid="input-edit-professor" />
@@ -1732,7 +1751,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     <input className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1.5 placeholder:text-white/25" value={editInfo.professorEmail} onChange={(e) => setEditInfo({...editInfo, professorEmail: e.target.value})} placeholder="professor@email.com" data-testid="input-edit-email" />
                   </div>
                 </div>
-                <div className={`grid grid-cols-[auto_1fr] gap-2 ${isSpringSummer && !editInfo.springSummerTerm ? 'opacity-30 pointer-events-none' : ''}`}>
+                <div className={`grid grid-cols-[auto_1fr] gap-2 ${editFieldsLocked ? 'opacity-30 pointer-events-none' : ''}`}>
                   <div>
                     <label className="text-white text-[9px] mb-0.5 block">Delivery Mode</label>
                     <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.deliveryMode} onChange={(e) => setEditInfo({...editInfo, deliveryMode: e.target.value})} data-testid="select-edit-delivery">
@@ -1747,24 +1766,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     <input className={`w-full h-6 text-[10px] bg-white/10 text-white rounded px-1.5 placeholder:text-white/25 ${editInfo.deliveryMode === 'virtual' && !editInfo.zoomLink?.trim() ? 'border border-red-500/70' : 'border border-white/15'}`} value={editInfo.zoomLink} onChange={(e) => setEditInfo({...editInfo, zoomLink: e.target.value})} placeholder={editInfo.deliveryMode === 'virtual' ? "Required — https://zoom.us/..." : "https://zoom.us/..."} data-testid="input-edit-zoom" />
                   </div>
                 </div>
-                <div className="grid grid-cols-3 gap-2">
-                  <div>
-                    <label className="text-white text-[9px] mb-0.5 block">Semester</label>
-                    <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={semesterKeyFromTermYear(editInfo.semesterTerm, editInfo.year)} onChange={(e) => { const opt = SEMESTER_OPTIONS.find(o => o.key === e.target.value); if (opt) { setEditInfo({...editInfo, semesterTerm: opt.term, year: opt.year, startDate: opt.start, endDate: opt.end }); } else { setEditInfo({...editInfo, semesterTerm: '', year: '', startDate: '', endDate: '' }); } }} data-testid="select-edit-semester-term">
-                      <option value="" className="bg-gray-800">—</option>
-                      {SEMESTER_OPTIONS.map(o => <option key={o.key} value={o.key} className="bg-gray-800">{o.label}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-white text-[9px] mb-0.5 block">Start</label>
-                    <input type="date" className="w-full h-6 text-[10px] bg-white/10 border border-white/15 rounded px-1" style={{ color: 'white', colorScheme: 'dark' }} value={editInfo.startDate} onChange={(e) => setEditInfo({...editInfo, startDate: e.target.value})} data-testid="input-edit-start-date" />
-                  </div>
-                  <div>
-                    <label className="text-white text-[9px] mb-0.5 block">End</label>
-                    <input type="date" className="w-full h-6 text-[10px] bg-white/10 border border-white/15 rounded px-1" style={{ color: 'white', colorScheme: 'dark' }} value={editInfo.endDate} onChange={(e) => setEditInfo({...editInfo, endDate: e.target.value})} data-testid="input-edit-end-date" />
-                  </div>
-                </div>
-                {editInfo.deliveryMode !== 'online' && (() => {
+                {editInfo.deliveryMode !== 'online' && !editFieldsLocked && (() => {
                   const isSpSu = editInfo.semesterTerm?.startsWith('spring_summer');
                   return (
                     <div className="space-y-2">
@@ -1807,7 +1809,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     </div>
                   );
                 })()}
-                <div>
+                <div className={editFieldsLocked ? 'opacity-30 pointer-events-none' : ''}>
                   <label className="text-white text-[9px] mb-0.5 block">Certificate Type</label>
                   <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={certificateType} onChange={(e) => updateCertificateType(e.target.value)} data-testid="select-edit-certificate-type-detail">
                     <option value="" className="bg-gray-800">-- Select --</option>
@@ -1818,7 +1820,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     ))}
                   </select>
                 </div>
-                <div className="flex items-end justify-between">
+                <div className={`flex items-end justify-between ${editFieldsLocked ? 'opacity-30 pointer-events-none' : ''}`}>
                   {(() => {
                     const midStops: Array<{ position: number; color: string }> = editInfo.colorStops ? (() => { try { return JSON.parse(editInfo.colorStops); } catch { return []; } })() : [];
                     const allStops = [
