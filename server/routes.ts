@@ -4186,6 +4186,67 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
+  app.post("/api/onenote/resolve-share-link", async (req, res) => {
+    try {
+      const { url } = req.body;
+      if (!url) return res.status(400).json({ error: "URL is required" });
+
+      const https = await import("https");
+      const http = await import("http");
+
+      const resolveRedirects = (targetUrl: string, maxRedirects = 10): Promise<string> => {
+        return new Promise((resolve, reject) => {
+          if (maxRedirects <= 0) return resolve(targetUrl);
+          const mod = targetUrl.startsWith("https") ? https : http;
+          const req = mod.get(targetUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } }, (response) => {
+            if (response.statusCode && response.statusCode >= 300 && response.statusCode < 400 && response.headers.location) {
+              resolveRedirects(response.headers.location, maxRedirects - 1).then(resolve).catch(reject);
+            } else {
+              resolve(targetUrl);
+            }
+            response.resume();
+          });
+          req.on("error", reject);
+          req.end();
+        });
+      };
+
+      const resolvedUrl = await resolveRedirects(url);
+
+      if (resolvedUrl.match(/onenote\.com/i)) {
+        return res.json({ embedUrl: resolvedUrl, type: "onenote" });
+      }
+
+      if (resolvedUrl.includes('ithint=onenote') || resolvedUrl.includes('/:o:/')) {
+        const residMatch = resolvedUrl.match(/[?&]resid=([^&]+)/i);
+        if (residMatch) {
+          const resid = decodeURIComponent(residMatch[1]);
+          const authkeyMatch = resolvedUrl.match(/[?&]authkey=([^&]+)/i);
+          const authkey = authkeyMatch ? decodeURIComponent(authkeyMatch[1]) : '';
+          const embedUrl = `https://onedrive.live.com/embed?resid=${resid}&authkey=${authkey}&em=2&wdbipreview=true`;
+          return res.json({ embedUrl, resolvedUrl, type: "onenote" });
+        }
+        return res.json({ embedUrl: resolvedUrl, type: "onenote" });
+      }
+
+      const oneDriveMatch = resolvedUrl.match(/onedrive\.live\.com.*[?&]id=([^&]+)/i);
+      if (oneDriveMatch) {
+        const resid = decodeURIComponent(oneDriveMatch[1]);
+        const cidMatch = resolvedUrl.match(/[?&]cid=([^&]+)/i);
+        const authkeyMatch = resolvedUrl.match(/[?&]authkey=([^&]+)/i);
+        const cid = cidMatch ? decodeURIComponent(cidMatch[1]) : '';
+        const authkey = authkeyMatch ? decodeURIComponent(authkeyMatch[1]) : '';
+        const embedUrl = `https://onedrive.live.com/embed?cid=${cid}&resid=${resid}&authkey=${authkey}&em=2`;
+        return res.json({ embedUrl, type: "onedrive" });
+      }
+
+      return res.json({ embedUrl: resolvedUrl, type: "unknown" });
+    } catch (err: any) {
+      console.error("Error resolving share link:", err);
+      res.status(500).json({ error: err.message || "Failed to resolve share link" });
+    }
+  });
+
   app.get("/api/onenote/notebooks", async (req, res) => {
     try {
       const { listOneNoteNotebooks } = await import("./onedrive");

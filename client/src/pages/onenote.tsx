@@ -45,17 +45,28 @@ type MainView = "embed" | "quicknote-editor" | "welcome";
 
 function convertToEmbedUrl(url: string): string {
   if (url.includes('onedrive.live.com/embed')) return url;
+  if (url.includes('onenote.com')) return url;
   if (url.includes('iframe') && url.includes('src=')) {
     const match = url.match(/src="([^"]+)"/);
     if (match) return match[1];
   }
 
-  if (url.includes('1drv.ms') || url.includes('onedrive.live.com') || url.includes('sharepoint.com')) {
+  if (url.includes('onedrive.live.com') && (url.includes('ithint=onenote') || url.includes('/:o:/'))) {
+    const residMatch = url.match(/[?&]resid=([^&]+)/i);
+    if (residMatch) {
+      const resid = decodeURIComponent(residMatch[1]);
+      const authkeyMatch = url.match(/[?&]authkey=([^&]+)/i);
+      const authkey = authkeyMatch ? decodeURIComponent(authkeyMatch[1]) : '';
+      return `https://onedrive.live.com/embed?resid=${resid}&authkey=${authkey}&em=2&wdbipreview=true`;
+    }
+  }
+
+  if (url.includes('1drv.ms') || url.includes('onedrive.live.com')) {
     const encoded = btoa(url)
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
       .replace(/=+$/, '');
-    return `https://api.onedrive.com/v1.0/shares/u!${encoded}/root/embed`;
+    return `https://onedrive.live.com/embed?resid=u!${encoded}&authkey=&em=2`;
   }
 
   return url;
@@ -144,7 +155,17 @@ export default function OneNotePage() {
 
   const addSharedLinkMutation = useMutation({
     mutationFn: async ({ name, url }: { name: string; url: string }) => {
-      const res = await apiRequest('POST', '/api/shared-notebook-links', { name, url });
+      let finalUrl = url;
+      if (url.includes('1drv.ms') || (url.includes('onedrive.live.com') && !url.includes('/embed'))) {
+        try {
+          const resolveRes = await apiRequest('POST', '/api/onenote/resolve-share-link', { url });
+          const resolved = await resolveRes.json();
+          if (resolved.embedUrl) finalUrl = resolved.embedUrl;
+        } catch (e) {
+          console.warn('Could not resolve share link, using original:', e);
+        }
+      }
+      const res = await apiRequest('POST', '/api/shared-notebook-links', { name, url: finalUrl });
       return res.json();
     },
     onSuccess: (data) => {
@@ -513,23 +534,48 @@ export default function OneNotePage() {
             </div>
             <div className="flex-1 relative">
               {!embedError ? (
-                <iframe
-                  key={selectedLink.id}
-                  src={convertToEmbedUrl(selectedLink.url)}
-                  className="w-full h-full border-0"
-                  style={{ background: '#fff' }}
-                  allow="fullscreen"
-                  sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
-                  onError={() => setEmbedError(true)}
-                  data-testid="iframe-notebook"
-                />
+                <>
+                  <iframe
+                    key={selectedLink.id}
+                    src={convertToEmbedUrl(selectedLink.url)}
+                    className="w-full h-full border-0"
+                    style={{ background: '#fff' }}
+                    allow="fullscreen"
+                    sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
+                    onError={() => setEmbedError(true)}
+                    onLoad={(e) => {
+                      try {
+                        const iframe = e.target as HTMLIFrameElement;
+                        if (iframe.contentDocument?.title === '' && iframe.contentDocument?.body?.innerHTML === '') {
+                          setEmbedError(true);
+                        }
+                      } catch (_) {}
+                    }}
+                    data-testid="iframe-notebook"
+                  />
+                  {selectedLink.url.includes('ithint=onenote') || selectedLink.url.includes('/:o:/') ? (
+                    <div className="absolute bottom-3 right-3 z-10">
+                      <a
+                        href={selectedLink.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] text-white/70 hover:text-white transition-colors"
+                        style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
+                        data-testid="button-open-onenote-browser"
+                      >
+                        <ExternalLink className="h-3 w-3" />
+                        Open in OneNote Online
+                      </a>
+                    </div>
+                  ) : null}
+                </>
               ) : (
                 <div className="flex flex-col items-center justify-center h-full gap-4 px-8">
                   <Globe className="h-12 w-12 text-white/15" />
                   <div className="text-center">
                     <p className="text-sm text-white/50 mb-1">This notebook can't be embedded directly</p>
                     <p className="text-xs text-white/25 max-w-md">
-                      Some OneDrive links don't allow iframe embedding. You can open it directly in your browser instead.
+                      OneNote notebooks typically need to be opened in OneNote Online. Click below to view it in your browser.
                     </p>
                   </div>
                   <a
@@ -541,7 +587,7 @@ export default function OneNotePage() {
                     data-testid="button-open-fallback"
                   >
                     <ExternalLink className="h-4 w-4" />
-                    Open in Browser
+                    Open in OneNote Online
                   </a>
                 </div>
               )}
