@@ -13189,7 +13189,7 @@ export default function Dashboard() {
       {/* Timer bar - no box, inline left of time */}
       <div style={{
         position: 'fixed',
-        right: `${calendarRight - calendarReduction + 4 + (clockContainerRef.current?.offsetWidth || 110) + 33 + 5 + 8 + 5 + 5 + 3 + 11 + 4 + 3 - 1 + 2 - 35}px`,
+        right: `${calendarRight - calendarReduction + 4 + (clockContainerRef.current?.offsetWidth || 110) + 33 + 5 + 8 + 5 + 5 + 3 + 11 + 4 + 3 - 1 + 2 - 35 - 30}px`,
         top: `${7 + d2lTickerHeight - 5}px`,
         zIndex: 100,
         display: 'flex',
@@ -13224,10 +13224,10 @@ export default function Dashboard() {
         </div>
         <div className="flex items-center gap-[20px]" style={{ marginTop: '-1px' }}>
           <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle" title={pomodoroRunning ? 'Pause' : 'Play'}>
-            {pomodoroRunning ? <Pause className="h-[12px] w-[12px] text-white" strokeWidth={2.5} /> : <Play className="h-[12px] w-[12px] text-white" strokeWidth={2.5} />}
+            {pomodoroRunning ? <Pause className="h-[13px] w-[13px] text-white" strokeWidth={2.5} /> : <Play className="h-[13px] w-[13px] text-white" strokeWidth={2.5} />}
           </button>
           <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={resetPomodoro} data-testid="button-pomodoro-reset" title="Stop">
-            <Square className="h-[10px] w-[10px] text-white" strokeWidth={2.5} />
+            <Square className="h-[11px] w-[11px] text-white" strokeWidth={2.5} />
           </button>
           <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={() => { setPomodoroTime(prev => prev + 60); }} data-testid="button-pomodoro-add-min" title="+1 min" style={{ fontSize: '9px', color: 'white', fontWeight: 600, whiteSpace: 'nowrap', lineHeight: 1 }}>
             +1m
