@@ -19425,8 +19425,19 @@ export default function Dashboard() {
                       if (weatherData?.sunrise) { const sr = new Date(weatherData.sunrise); sunriseMin = sr.getHours() * 60 + sr.getMinutes(); }
                       if (weatherData?.sunset) { const ss = new Date(weatherData.sunset); sunsetMin = ss.getHours() * 60 + ss.getMinutes(); }
                       const isDaytime = minutesSinceMidnight >= sunriseMin && minutesSinceMidnight < sunsetMin;
-                      const restColor = isDaytime ? '#c8a800' : colorSettings.headerBar;
-                      return { background: `linear-gradient(to right, #3a8bbf 0%, #164a72 ${pct}%, ${restColor} ${pct}%, ${restColor} 100%)` };
+                      const h = now.getHours() + now.getMinutes() / 60;
+                      let skyLeft: string, skyRight: string;
+                      if (h < 4) { skyLeft = '#0f1b2d'; skyRight = '#1a2744'; }
+                      else if (h < 6) { skyLeft = '#1e3252'; skyRight = '#4a6e8a'; }
+                      else if (h < 8) { skyLeft = '#6a9ab8'; skyRight = '#c4a082'; }
+                      else if (h < 10) { skyLeft = '#87afc4'; skyRight = '#a8c4d6'; }
+                      else if (h < 13) { skyLeft = '#7ba8c0'; skyRight = '#9bbdd0'; }
+                      else if (h < 15) { skyLeft = '#7ba8c0'; skyRight = '#c0a890'; }
+                      else if (h < 17) { skyLeft = '#9aaab4'; skyRight = '#bea08a'; }
+                      else if (h < 19) { skyLeft = '#a08870'; skyRight = '#5a5060'; }
+                      else if (h < 21) { skyLeft = '#6a5a52'; skyRight = '#2a2840'; }
+                      else { skyLeft = '#2a2840'; skyRight = '#1a1e32'; }
+                      return { background: `linear-gradient(to right, ${skyLeft} 0%, ${skyRight} 100%)` };
                     })() : { backgroundColor: colorSettings.headerBar }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
