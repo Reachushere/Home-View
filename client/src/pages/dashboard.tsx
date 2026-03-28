@@ -1068,8 +1068,8 @@ export default function Dashboard() {
   const getTodayCellGradient = () => {
     const now = new Date();
     const h = now.getHours() + now.getMinutes() / 60;
-    if (h < 5) return 'linear-gradient(180deg, #01294D 0%, #01294D 100%)';
-    if (h < 6) return 'linear-gradient(180deg, #01294D 0%, #C97355 100%)';
+    if (h < 5) return 'linear-gradient(180deg, #00182B 0%, #00182B 100%)';
+    if (h < 6) return 'linear-gradient(180deg, #00182B 0%, #C97355 100%)';
     if (h < 7) return 'linear-gradient(180deg, #C97355 0%, #D6A276 100%)';
     if (h < 8) return 'linear-gradient(180deg, #D6A276 0%, #EDC261 100%)';
     if (h < 9) return 'linear-gradient(180deg, #EDC261 0%, #8AC3DF 100%)';
@@ -1077,8 +1077,8 @@ export default function Dashboard() {
     if (h < 17) return 'linear-gradient(180deg, #8AC3DF 0%, #C0B9BC 100%)';
     if (h < 18) return 'linear-gradient(180deg, #C0B9BC 0%, #ECC47E 100%)';
     if (h < 19) return 'linear-gradient(180deg, #ECC47E 0%, #F9A523 100%)';
-    if (h < 20) return 'linear-gradient(180deg, #F9A523 0%, #01294D 100%)';
-    return 'linear-gradient(180deg, #01294D 0%, #01294D 100%)';
+    if (h < 20) return 'linear-gradient(180deg, #F9A523 0%, #00182B 100%)';
+    return 'linear-gradient(180deg, #00182B 0%, #00182B 100%)';
   };
   const todayCellBg = getTodayCellGradient();
   const hwGroupBarDragRef = useRef<{ startX: number; startWidth: number } | null>(null);
@@ -19495,8 +19495,8 @@ export default function Dashboard() {
                       const lastVisible = visibleStops[visibleStops.length - 1];
                       const scaledStops = visibleStops.map(s => `${s.c} ${pct > 0 ? (s.p / pct * pct).toFixed(1) : 0}%`);
                       scaledStops.push(`${lastVisible.c} ${pct}%`);
-                      scaledStops.push(`#d0d0d0 ${pct}%`);
-                      scaledStops.push(`#d0d0d0 100%`);
+                      scaledStops.push(`#ffffff ${pct}%`);
+                      scaledStops.push(`#ffffff 100%`);
                       return { background: `linear-gradient(to right, ${scaledStops.join(', ')})` };
                     })() : { backgroundColor: colorSettings.headerBar }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
