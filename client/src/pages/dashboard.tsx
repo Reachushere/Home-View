@@ -53,6 +53,7 @@ import pdfIconPath from "@assets/Adobee_1772801638235.png";
 import zoomCamPath from "@assets/Zoomcam_1773655084814.png";
 import readerIconPath from "@assets/Headphones2_1774598197965.png";
 import hwPlayIconPath from "@assets/Headphones2_1774667878315.png";
+import hwPlayIconLightPath from "@assets/Headphone3_1774670459512.png";
 import BookAnimation from "@/components/BookAnimation";
 import dragTabPath from "@assets/drag-tab.svg";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -23113,7 +23114,7 @@ export default function Dashboard() {
                                 </span>
                               </div>
                               <div className="cursor-pointer" style={{ opacity: item.p.percent === 100 ? 0.5 : 1 }} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }} data-testid={item.testPlay}>
-                                <img src={hwPlayIconPath} alt="Play" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
+                                <img src={item.dark ? hwPlayIconPath : hwPlayIconLightPath} alt="Play" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
                               </div>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
@@ -24261,7 +24262,7 @@ export default function Dashboard() {
                                     </span>
                                   </div>
                                   <div className="cursor-pointer" style={{ opacity: item.p.percent === 100 ? 0.5 : 1 }} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }} data-testid={item.testPlay}>
-                                    <img src={hwPlayIconPath} alt="Play" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
+                                    <img src={item.dark ? hwPlayIconPath : hwPlayIconLightPath} alt="Play" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
                                   </div>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
