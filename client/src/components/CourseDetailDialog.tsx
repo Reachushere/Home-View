@@ -1606,7 +1606,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     data-testid="button-edit-course-info"
                   >
                     Edit
-                    <Pencil className="w-4 h-4" style={{ color: courseInfo.color || '#3b82f6' }} />
+                    <Pencil className="w-4 h-4" style={{ color: courseInfo.colorEnd || courseInfo.color || '#3b82f6' }} />
                   </button>
                 </div>
               ) : (
