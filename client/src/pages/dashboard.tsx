@@ -13236,7 +13236,6 @@ export default function Dashboard() {
       </div>
 
       {/* Time - fixed position */}
-      <div data-tpo data-tpo-opacity="1" style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 11 + (clockContainerRef.current?.offsetWidth || 110) + 25 + 11 + 4 + 3 - 1 - 2}px`, top: `${8 + d2lTickerHeight}px`, width: '1px', height: '14px', background: 'rgba(255,255,255,0.5)', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out' }} />
       <div data-tpo data-tpo-opacity="1" style={{ position: 'fixed', right: `${calendarRight - calendarReduction + 9}px`, top: `${3 + d2lTickerHeight}px`, zIndex: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }} data-testid="digital-clock">
         {(() => {
           const sz = 44;
