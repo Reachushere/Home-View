@@ -3378,32 +3378,35 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
       )}
 
       {notesTaskId !== null && (
-        <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 10020, background: 'rgba(0,0,0,0.5)' }} onClick={() => { setNotesTaskId(null); setNotesText(''); }} data-testid="dialog-notes-overlay">
-          <div className="rounded-lg border border-white/20 p-4 flex flex-col" style={{ width: '400px', maxHeight: '350px', background: 'linear-gradient(180deg, rgba(30,40,60,0.98) 0%, rgba(20,28,45,0.98) 100%)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }} onClick={(e) => e.stopPropagation()} data-testid="dialog-notes">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-[11px] font-semibold text-white">Notes</span>
-              <button className="text-white/50 hover:text-white" onClick={() => { setNotesTaskId(null); setNotesText(''); }} data-testid="button-notes-close"><X className="h-4 w-4" /></button>
+        <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 10020, background: 'rgba(0,0,0,0.6)', pointerEvents: 'auto' }} onPointerDown={(e) => { if (e.target === e.currentTarget) { e.preventDefault(); e.stopPropagation(); setNotesTaskId(null); setNotesText(''); }}} data-testid="dialog-notes-overlay">
+          <div className="rounded-xl border border-white/20 p-5 flex flex-col shadow-2xl" style={{ width: '420px', maxHeight: '380px', background: 'linear-gradient(180deg, rgba(30,40,60,0.99) 0%, rgba(20,28,45,0.99) 100%)', boxShadow: '0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.08)' }} onPointerDown={(e) => e.stopPropagation()} data-testid="dialog-notes">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-[13px] font-semibold text-white tracking-wide">Notes</span>
+              <button className="text-white/50 hover:text-white p-1 rounded hover:bg-white/10 transition-colors" onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); setNotesTaskId(null); setNotesText(''); }} data-testid="button-notes-close"><X className="h-4 w-4" /></button>
             </div>
             <textarea
-              className="flex-1 w-full rounded border border-white/20 bg-white/5 text-white text-[11px] p-2 resize-none focus:outline-none focus:border-white/40"
-              style={{ minHeight: '180px' }}
+              className="flex-1 w-full rounded-lg border border-white/20 bg-white/5 text-white text-[12px] p-3 resize-none focus:outline-none focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-colors"
+              style={{ minHeight: '200px' }}
               value={notesText}
               onChange={(e) => setNotesText(e.target.value)}
               placeholder="Type your notes here..."
+              autoFocus
               data-testid="input-notes-text"
             />
-            <div className="flex justify-end gap-2 mt-3">
+            <div className="flex justify-end gap-2 mt-4">
               <button
-                className="px-4 py-1.5 text-[10px] font-medium text-white/70 rounded border border-white/20 hover:bg-white/10"
-                onClick={() => { setNotesTaskId(null); setNotesText(''); }}
+                className="px-5 py-2 text-[11px] font-medium text-white/70 rounded-lg border border-white/20 hover:bg-white/10 hover:text-white transition-colors"
+                onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); setNotesTaskId(null); setNotesText(''); }}
                 data-testid="button-notes-cancel"
               >
                 Cancel
               </button>
               <button
-                className="px-4 py-1.5 text-[10px] font-medium text-white rounded border border-white/20 hover:bg-white/10 disabled:opacity-40"
+                className="px-5 py-2 text-[11px] font-medium text-white rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-40 transition-colors"
                 disabled={notesSaving}
-                onClick={async () => {
+                onPointerDown={async (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
                   setNotesSaving(true);
                   try {
                     await apiRequest(`/api/tasks/${notesTaskId}`, 'PATCH', { notes: notesText || null });
@@ -3411,7 +3414,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     toast({ title: "Notes saved" });
                     setNotesTaskId(null);
                     setNotesText('');
-                  } catch (e) { console.error('[Notes] save error:', e); toast({ title: "Error saving notes", variant: "destructive" }); }
+                  } catch (err) { console.error('[Notes] save error:', err); toast({ title: "Error saving notes", variant: "destructive" }); }
                   setNotesSaving(false);
                 }}
                 data-testid="button-notes-save"
