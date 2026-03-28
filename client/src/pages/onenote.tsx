@@ -152,6 +152,24 @@ export default function OneNotePage() {
     },
   });
 
+  const deletePageMutation = useMutation({
+    mutationFn: async (card: PageCard) => {
+      const res = await apiRequest('DELETE', '/api/onenote/page', {
+        notebook: card.notebookName,
+        section: card.sectionName,
+        title: card.title,
+      });
+      return res.json();
+    },
+    onSuccess: (_data, card) => {
+      setAllPageCards(prev => prev.filter(c => !(c.notebookName === card.notebookName && c.sectionName === card.sectionName && c.title === card.title)));
+      toast({ title: "Page deleted from OneNote" });
+    },
+    onError: (err: any) => {
+      toast({ title: "Delete failed", description: err.message, variant: "destructive" });
+    },
+  });
+
   useEffect(() => {
     if (contentQuery.data && !isDirty) {
       setEditorContent(contentQuery.data.content);
@@ -487,6 +505,8 @@ export default function OneNotePage() {
             cards={filteredCards}
             isLoading={notebooksQuery.isLoading || loadingPages}
             onOpenCard={openPageCard}
+            onDeleteCard={(card) => deletePageMutation.mutate(card)}
+            deletingCard={deletePageMutation.isPending ? deletePageMutation.variables : null}
             truncatePath={truncatePath}
           />
         )}
@@ -505,6 +525,8 @@ export default function OneNotePage() {
             }}
             allCards={allPageCards}
             onOpenCard={openPageCard}
+            onDeleteCard={(card) => deletePageMutation.mutate(card)}
+            deletingCard={deletePageMutation.isPending ? deletePageMutation.variables : null}
             truncatePath={truncatePath}
           />
         )}
@@ -523,6 +545,8 @@ export default function OneNotePage() {
             cards={filteredCards}
             quickNotes={quickNoteFiles}
             onOpenCard={openPageCard}
+            onDeleteCard={(card) => deletePageMutation.mutate(card)}
+            deletingCard={deletePageMutation.isPending ? deletePageMutation.variables : null}
             onOpenNote={openQuickNote}
             truncatePath={truncatePath}
           />
@@ -751,10 +775,12 @@ export default function OneNotePage() {
   );
 }
 
-function RecentPagesGrid({ cards, isLoading, onOpenCard, truncatePath }: {
+function RecentPagesGrid({ cards, isLoading, onOpenCard, onDeleteCard, deletingCard, truncatePath }: {
   cards: PageCard[];
   isLoading: boolean;
   onOpenCard: (c: PageCard) => void;
+  onDeleteCard: (c: PageCard) => void;
+  deletingCard: PageCard | null | undefined;
   truncatePath: (nb: string, sec: string) => string;
 }) {
   if (isLoading) {
@@ -778,53 +804,157 @@ function RecentPagesGrid({ cards, isLoading, onOpenCard, truncatePath }: {
   return (
     <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
       {cards.map((card, i) => (
-        <PageCardComponent key={`${card.title}-${i}`} card={card} onClick={() => onOpenCard(card)} truncatePath={truncatePath} index={i} />
+        <PageCardComponent key={`${card.title}-${i}`} card={card} onClick={() => onOpenCard(card)} onDelete={() => onDeleteCard(card)} isDeleting={deletingCard?.title === card.title && deletingCard?.sectionName === card.sectionName && deletingCard?.notebookName === card.notebookName} truncatePath={truncatePath} index={i} />
       ))}
     </div>
   );
 }
 
-function PageCardComponent({ card, onClick, truncatePath, index }: {
+function PageCardComponent({ card, onClick, onDelete, isDeleting, truncatePath, index }: {
   card: PageCard;
   onClick: () => void;
+  onDelete?: () => void;
+  isDeleting?: boolean;
   truncatePath: (nb: string, sec: string) => string;
   index: number;
 }) {
+  const [swipeX, setSwipeX] = useState(0);
+  const [swiping, setSwiping] = useState(false);
+  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const swipeXRef = useRef(0);
+  const cleanupRef = useRef<(() => void) | null>(null);
+  const deleteThreshold = -80;
+
+  useEffect(() => () => { cleanupRef.current?.(); }, []);
+
+  const updateSwipeX = (val: number) => { swipeXRef.current = val; setSwipeX(val); };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY, time: Date.now() };
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStartRef.current) return;
+    const dx = e.touches[0].clientX - touchStartRef.current.x;
+    const dy = e.touches[0].clientY - touchStartRef.current.y;
+    if (Math.abs(dy) > Math.abs(dx) && !swiping) return;
+    if (dx < -10) {
+      setSwiping(true);
+      updateSwipeX(Math.max(dx, -120));
+      e.preventDefault();
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (swipeXRef.current < deleteThreshold) {
+      updateSwipeX(-120);
+    } else {
+      updateSwipeX(0);
+      setSwiping(false);
+    }
+    touchStartRef.current = null;
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    cleanupRef.current?.();
+    touchStartRef.current = { x: e.clientX, y: e.clientY, time: Date.now() };
+    const handleMouseMove = (ev: MouseEvent) => {
+      if (!touchStartRef.current) return;
+      const dx = ev.clientX - touchStartRef.current.x;
+      if (dx < -10) {
+        setSwiping(true);
+        updateSwipeX(Math.max(dx, -120));
+      }
+    };
+    const handleMouseUp = () => {
+      if (swipeXRef.current < deleteThreshold) {
+        updateSwipeX(-120);
+      } else {
+        updateSwipeX(0);
+        setSwiping(false);
+      }
+      touchStartRef.current = null;
+      cleanup();
+    };
+    const cleanup = () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      cleanupRef.current = null;
+    };
+    cleanupRef.current = cleanup;
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  };
+
   return (
-    <button
-      className="text-left rounded-lg p-3 transition-colors hover:brightness-110 flex flex-col justify-between"
-      style={{ background: '#2d2d30', border: '1px solid #3e3e42', minHeight: '140px' }}
-      onClick={onClick}
-      data-testid={`page-card-${index}`}
-    >
-      <div>
-        <div className="text-[10px] text-white/35 mb-1.5 truncate">
-          {truncatePath(card.notebookName, card.sectionName)}
+    <div ref={cardRef} className="relative overflow-hidden rounded-lg" style={{ minHeight: '140px' }} data-testid={`page-card-${index}`}>
+      <div
+        className="absolute inset-0 flex items-center justify-end pr-4 rounded-lg"
+        style={{ background: '#dc2626' }}
+      >
+        <button
+          className="flex flex-col items-center gap-1 text-white"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (onDelete && !isDeleting) onDelete();
+          }}
+          data-testid={`button-delete-page-${index}`}
+        >
+          {isDeleting ? (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          ) : (
+            <Trash2 className="h-5 w-5" />
+          )}
+          <span className="text-[10px] font-medium">Delete</span>
+        </button>
+      </div>
+      <div
+        className="relative text-left rounded-lg p-3 flex flex-col justify-between cursor-pointer"
+        style={{
+          background: '#2d2d30',
+          border: '1px solid #3e3e42',
+          minHeight: '140px',
+          transform: `translateX(${swipeX}px)`,
+          transition: swiping ? 'none' : 'transform 0.3s ease',
+        }}
+        onClick={() => { if (!swiping && swipeX === 0) onClick(); else { updateSwipeX(0); setSwiping(false); } }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onMouseDown={handleMouseDown}
+      >
+        <div>
+          <div className="text-[10px] text-white/35 mb-1.5 truncate">
+            {truncatePath(card.notebookName, card.sectionName)}
+          </div>
+          <div className="text-sm font-semibold text-white mb-1 line-clamp-2">
+            {card.title || 'Untitled Page'}
+          </div>
+          <div className="text-xs text-white/40 line-clamp-2">
+            {card.preview || 'No additional text'}
+          </div>
         </div>
-        <div className="text-sm font-semibold text-white mb-1 line-clamp-2">
-          {card.title || 'Untitled Page'}
-        </div>
-        <div className="text-xs text-white/40 line-clamp-2">
-          {card.preview || 'No additional text'}
+        <div className="flex items-center justify-between mt-3">
+          <FileText className="h-4 w-4" style={{ color: '#7b2d8e' }} />
+          <span className="text-[10px] text-white/25">
+            {new Date().toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' })}
+          </span>
         </div>
       </div>
-      <div className="flex items-center justify-between mt-3">
-        <FileText className="h-4 w-4" style={{ color: '#7b2d8e' }} />
-        <span className="text-[10px] text-white/25">
-          {new Date().toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' })}
-        </span>
-      </div>
-    </button>
+    </div>
   );
 }
 
-function NotebookListView({ notebooks, isLoading, expandedNotebooks, onToggleNotebook, allCards, onOpenCard, truncatePath }: {
+function NotebookListView({ notebooks, isLoading, expandedNotebooks, onToggleNotebook, allCards, onOpenCard, onDeleteCard, deletingCard, truncatePath }: {
   notebooks: OneNoteNotebook[];
   isLoading: boolean;
   expandedNotebooks: Set<string>;
   onToggleNotebook: (name: string) => void;
   allCards: PageCard[];
   onOpenCard: (c: PageCard) => void;
+  onDeleteCard: (c: PageCard) => void;
+  deletingCard: PageCard | null | undefined;
   truncatePath: (nb: string, sec: string) => string;
 }) {
   if (isLoading) {
@@ -872,16 +1002,15 @@ function NotebookListView({ notebooks, isLoading, expandedNotebooks, onToggleNot
                     {sectionCards.length > 0 && (
                       <div className="grid gap-2 ml-5" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}>
                         {sectionCards.map((card, i) => (
-                          <button
+                          <PageCardComponent
                             key={`${card.title}-${i}`}
-                            className="text-left rounded-md p-2.5 hover:bg-white/5 transition-colors"
-                            style={{ background: '#252527', border: '1px solid #3e3e42' }}
+                            card={card}
                             onClick={() => onOpenCard(card)}
-                            data-testid={`section-page-${i}`}
-                          >
-                            <div className="text-xs font-medium text-white/80 truncate">{card.title || 'Untitled Page'}</div>
-                            <div className="text-[10px] text-white/30 mt-0.5 truncate">{card.preview || 'No additional text'}</div>
-                          </button>
+                            onDelete={() => onDeleteCard(card)}
+                            isDeleting={deletingCard?.title === card.title && deletingCard?.sectionName === card.sectionName && deletingCard?.notebookName === card.notebookName}
+                            truncatePath={truncatePath}
+                            index={i}
+                          />
                         ))}
                       </div>
                     )}
@@ -957,12 +1086,14 @@ function StickyNotesView({ files, isLoading, onOpenNote, onStartCreate }: {
   );
 }
 
-function SearchView({ searchQuery, onSearchChange, cards, quickNotes, onOpenCard, onOpenNote, truncatePath }: {
+function SearchView({ searchQuery, onSearchChange, cards, quickNotes, onOpenCard, onDeleteCard, deletingCard, onOpenNote, truncatePath }: {
   searchQuery: string;
   onSearchChange: (q: string) => void;
   cards: PageCard[];
   quickNotes: QuickNoteFile[];
   onOpenCard: (c: PageCard) => void;
+  onDeleteCard: (c: PageCard) => void;
+  deletingCard: PageCard | null | undefined;
   onOpenNote: (f: QuickNoteFile) => void;
   truncatePath: (nb: string, sec: string) => string;
 }) {
@@ -1003,7 +1134,7 @@ function SearchView({ searchQuery, onSearchChange, cards, quickNotes, onOpenCard
               <h3 className="text-xs font-medium text-white/40 mb-2">Notebook Pages ({cards.length})</h3>
               <div className="grid gap-2" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
                 {cards.map((card, i) => (
-                  <PageCardComponent key={`${card.title}-${i}`} card={card} onClick={() => onOpenCard(card)} truncatePath={truncatePath} index={i} />
+                  <PageCardComponent key={`${card.title}-${i}`} card={card} onClick={() => onOpenCard(card)} onDelete={() => onDeleteCard(card)} isDeleting={deletingCard?.title === card.title && deletingCard?.sectionName === card.sectionName && deletingCard?.notebookName === card.notebookName} truncatePath={truncatePath} index={i} />
                 ))}
               </div>
             </div>

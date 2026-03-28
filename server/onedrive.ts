@@ -507,6 +507,46 @@ export async function getOneNotePages(notebookPath: string, sectionFileName: str
   return pages;
 }
 
+export async function deleteOneNotePage(notebookDisplayName: string, sectionName: string, pageTitle: string): Promise<boolean> {
+  const client = await getOneDriveClient();
+
+  try {
+    const nbRes = await client.api('/me/onenote/notebooks').select('id,displayName').get();
+    const nb = (nbRes.value || []).find((n: any) =>
+      n.displayName === notebookDisplayName
+    );
+    if (!nb) {
+      console.error(`[OneNote] Notebook "${notebookDisplayName}" not found in OneNote API`);
+      return false;
+    }
+
+    const secRes = await client.api(`/me/onenote/notebooks/${nb.id}/sections`).select('id,displayName').get();
+    const sec = (secRes.value || []).find((s: any) =>
+      s.displayName === sectionName
+    );
+    if (!sec) {
+      console.error(`[OneNote] Section "${sectionName}" not found in notebook "${notebookDisplayName}"`);
+      return false;
+    }
+
+    const pagesRes = await client.api(`/me/onenote/sections/${sec.id}/pages`).select('id,title').top(100).get();
+    const page = (pagesRes.value || []).find((p: any) =>
+      p.title === pageTitle
+    );
+    if (!page) {
+      console.error(`[OneNote] Page "${pageTitle}" not found in section "${sectionName}"`);
+      return false;
+    }
+
+    await client.api(`/me/onenote/pages/${page.id}`).delete();
+    console.log(`[OneNote] Deleted page "${pageTitle}" from ${notebookDisplayName}/${sectionName}`);
+    return true;
+  } catch (err: any) {
+    console.error(`[OneNote] Delete page error:`, err.message || err);
+    throw err;
+  }
+}
+
 export async function listOneNoteNotebooks(): Promise<{ name: string; path: string; sections: { name: string; id: string }[] }[]> {
   const client = await getOneDriveClient();
   const notebooks: { name: string; path: string; sections: { name: string; id: string }[] }[] = [];

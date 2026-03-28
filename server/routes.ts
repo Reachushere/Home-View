@@ -4213,6 +4213,25 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
+  app.delete("/api/onenote/page", async (req, res) => {
+    try {
+      const { notebook, section, title } = req.body;
+      if (!notebook || !section || !title) {
+        return res.status(400).json({ error: "notebook, section, and title are required" });
+      }
+      const { deleteOneNotePage } = await import("./onedrive");
+      const deleted = await deleteOneNotePage(notebook, section, title);
+      if (deleted) {
+        res.json({ success: true });
+      } else {
+        res.status(404).json({ error: "Page not found in OneNote" });
+      }
+    } catch (err: any) {
+      console.error("Error deleting OneNote page:", err);
+      res.status(500).json({ error: err.message || "Failed to delete page" });
+    }
+  });
+
   app.post("/api/onedrive/ensure-semester-folders", async (req, res) => {
     try {
       const { semesterId } = req.body;
