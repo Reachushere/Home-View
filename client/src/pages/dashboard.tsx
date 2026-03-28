@@ -23540,6 +23540,7 @@ export default function Dashboard() {
                     })()}
                   </div>
                 )}
+                </div>
                 </>)}
                 {/* Next Week Section */}
                 <div data-homework-section="nextweek" data-semester-label={hwWeeklyTimeline[1]?.semLabel || ''} style={{ marginTop: '10px' }}>
@@ -23714,6 +23715,7 @@ export default function Dashboard() {
                     })()}
                   </div>
                 )}
+                </div>
                 {/* 2 Weeks Section */}
                 <div data-homework-section="twoweeks" data-semester-label={hwWeeklyTimeline[2]?.semLabel || ''} style={{ marginTop: '10px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '2px', width: 'fit-content', marginBottom: '0px' }}>
@@ -23882,6 +23884,7 @@ export default function Dashboard() {
                     })()}
                   </div>
                 )}
+                </div>
                 {/* Beyond Section (Week 12+) */}
                 <div data-homework-section="threeweeks" />
                 {(() => {
