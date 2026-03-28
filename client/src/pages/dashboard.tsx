@@ -13189,8 +13189,8 @@ export default function Dashboard() {
       {/* Timer bar - no box, inline left of time */}
       <div style={{
         position: 'fixed',
-        right: `${calendarRight - calendarReduction + 4 + (clockContainerRef.current?.offsetWidth || 110) + 33 + 5 + 8 + 5 + 5 + 3 + 11 + 4 + 3 - 1 + 2 - 35 - 30 + 50}px`,
-        top: `${7 + d2lTickerHeight - 5 - 2}px`,
+        right: `${calendarRight - calendarReduction + 4 + (clockContainerRef.current?.offsetWidth || 110) + 33 + 5 + 8 + 5 + 5 + 3 + 11 + 4 + 3 - 1 + 2 - 35 - 30 + 50 + 50}px`,
+        top: `${7 + d2lTickerHeight - 5 - 2 - 1}px`,
         zIndex: 100,
         display: 'flex',
         flexDirection: 'column',
