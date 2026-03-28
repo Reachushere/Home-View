@@ -11770,6 +11770,19 @@ export default function Dashboard() {
           }
         }
         const isPrepZeroDays = nextPrep && (nextPrep.prepDaysLeft === 0 || nextPrep.prepDaysLeft < 0);
+        const flaggedSoon = upcoming
+          .filter(t => t.flagged && t.id !== next.id && (!nextPrep || t.id !== nextPrep.id))
+          .filter(t => {
+            const dd = new Date(t.dueDate!);
+            const ddOnly = new Date(dd.getFullYear(), dd.getMonth(), dd.getDate());
+            const dDiff = Math.round((ddOnly.getTime() - nowDate.getTime()) / (1000 * 60 * 60 * 24));
+            return dDiff >= 0 && dDiff <= 3;
+          })
+          .map(t => {
+            const dd = new Date(t.dueDate!);
+            const ddOnly = new Date(dd.getFullYear(), dd.getMonth(), dd.getDate());
+            return { ...t, flagDiffDays: Math.round((ddOnly.getTime() - nowDate.getTime()) / (1000 * 60 * 60 * 24)) };
+          });
         return (
           <div
             className="font-raleway"
@@ -11815,8 +11828,11 @@ export default function Dashboard() {
                       onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                       data-testid="countdown-next-task-number"
                     >
-                      <span data-countdown-bullet={next.id} style={{ color: isDueZero ? '#dc2626' : '#ffffff', fontSize: '14px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span>
-                      {next.flagged && <Flag className="h-[10px] w-[10px] text-red-400 fill-red-400 flex-shrink-0" />}
+                      {next.flagged ? (
+                        <Flag className="h-[10px] w-[10px] text-red-400 fill-red-400 flex-shrink-0" />
+                      ) : (
+                        <span data-countdown-bullet={next.id} style={{ color: isDueZero ? '#dc2626' : '#ffffff', fontSize: '14px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span>
+                      )}
                       {isDueZero ? (
                         <>
                           <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}>DUE TODAY:</span>
@@ -11860,7 +11876,11 @@ export default function Dashboard() {
                       onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                       data-testid="countdown-next-task-number-after"
                     >
-                      <span data-countdown-bullet={next.id} style={{ color: isDueZero2 ? '#dc2626' : '#ffffff', fontSize: '14px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span>
+                      {next.flagged ? (
+                        <Flag className="h-[10px] w-[10px] text-red-400 fill-red-400 flex-shrink-0" />
+                      ) : (
+                        <span data-countdown-bullet={next.id} style={{ color: isDueZero2 ? '#dc2626' : '#ffffff', fontSize: '14px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span>
+                      )}
                       {isDueZero2 ? (
                         <>
                           <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}>DUE TODAY:</span>
@@ -11877,6 +11897,30 @@ export default function Dashboard() {
                     </div>
                   );
                 })()}
+                {flaggedSoon.map(ft => (
+                  <div
+                    key={`flag-${ft.id}`}
+                    style={{ display: 'flex', alignItems: 'center', gap: '4px', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                    onMouseEnter={() => setHoveredCountdownTaskIdDebounced(ft.id)}
+                    onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
+                    data-testid={`countdown-flagged-${ft.id}`}
+                  >
+                    <Flag className="h-[10px] w-[10px] text-red-400 fill-red-400 flex-shrink-0" />
+                    {ft.flagDiffDays === 0 ? (
+                      <>
+                        <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}>DUE TODAY:</span>
+                        <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: ft.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{ft.title}</span>
+                      </>
+                    ) : (
+                      <>
+                        <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span>
+                        <span data-countdown-badge style={{ backgroundColor: ft.flagDiffDays >= 3 ? 'rgb(0, 180, 0)' : ft.flagDiffDays === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{ft.flagDiffDays}</span>
+                        <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{ft.flagDiffDays === 1 ? 'day,' : 'days,'}</span>
+                        <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have </span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: ft.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{ft.title}.</span>
+                      </>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
             </div>
