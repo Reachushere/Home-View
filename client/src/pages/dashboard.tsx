@@ -52,8 +52,6 @@ import pdfSearchLogo from "@assets/Adobe61_1772583825907.png";
 import pdfIconPath from "@assets/Adobee_1772801638235.png";
 import zoomCamPath from "@assets/Zoomcam_1773655084814.png";
 import readerIconPath from "@assets/Headphones2_1774598197965.png";
-import hwPlayIconPath from "@assets/Headphones2_1774667878315.png";
-import hwPlayIconLightPath from "@assets/Headphone3_1774670459512.png";
 import BookAnimation from "@/components/BookAnimation";
 import dragTabPath from "@assets/drag-tab.svg";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -743,7 +741,22 @@ export default function Dashboard() {
     setProcessingReviewIds(prev => { const s = new Set(prev); s.delete(id); return s; });
   };
 
-  const handleRejectReview = async (id: number) => {
+  const isGradedReviewItem = (item: any): boolean => {
+    const title = item.title || '';
+    return /\[(CPPA|CFNF|CASL|COMM|ENGL|MATH|PSYC|SOCI)\d+/i.test(title) || !!item.courseName;
+  };
+
+  const handleRejectReview = async (id: number, skipConfirm = false) => {
+    if (!skipConfirm) {
+      const item = morningReviewItems.find(i => i.id === id);
+      if (item && isGradedReviewItem(item)) {
+        const courseMatch = (item.title || '').match(/\[([^\]]+)\]/);
+        const courseLabel = courseMatch ? courseMatch[1] : item.courseName || 'a course';
+        if (!window.confirm(`"${item.title}" is linked to ${courseLabel}. Declining will remove it from your assignments. Are you sure?`)) {
+          return;
+        }
+      }
+    }
     setProcessingReviewIds(prev => new Set(prev).add(id));
     try {
       await fetch(`/api/pending-review/${id}/reject`, { method: 'POST' });
@@ -778,9 +791,16 @@ export default function Dashboard() {
   };
 
   const handleSkipAllForever = async () => {
+    const gradedItems = morningReviewItems.filter(i => isGradedReviewItem(i));
+    if (gradedItems.length > 0) {
+      const names = gradedItems.map(i => `  - ${i.title}`).join('\n');
+      if (!window.confirm(`${gradedItems.length} graded assignment(s) will be removed:\n${names}\n\nAre you sure you want to decline all?`)) {
+        return;
+      }
+    }
     setMorningReviewLoading(true);
     for (const item of morningReviewItems) {
-      await handleRejectReview(item.id);
+      await handleRejectReview(item.id, true);
     }
     setMorningReviewLoading(false);
     setShowMorningReview(false);
@@ -789,12 +809,19 @@ export default function Dashboard() {
   };
 
   const handleIndividualConfirm = async () => {
+    const uncheckedGraded = morningReviewItems.filter(i => !reviewCheckedIds.has(i.id) && isGradedReviewItem(i));
+    if (uncheckedGraded.length > 0) {
+      const names = uncheckedGraded.map(i => `  - ${i.title}`).join('\n');
+      if (!window.confirm(`${uncheckedGraded.length} unchecked graded assignment(s) will be removed:\n${names}\n\nAre you sure?`)) {
+        return;
+      }
+    }
     setMorningReviewLoading(true);
     for (const item of morningReviewItems) {
       if (reviewCheckedIds.has(item.id)) {
         await handleAcceptReview(item.id);
       } else {
-        await handleRejectReview(item.id);
+        await handleRejectReview(item.id, true);
       }
     }
     setMorningReviewLoading(false);
@@ -875,59 +902,6 @@ export default function Dashboard() {
   const [bookAnimState, setBookAnimState] = useState<{ isOpen: boolean; courseCode: string; title: string; color: string; onDone: () => void } | null>(null);
   const [bookReaderOverlay, setBookReaderOverlay] = useState<{ url: string; courseCode: string; title: string; color: string } | null>(null);
   const [hwUploadingState, setHwUploadingState] = useState<Record<string, boolean>>({});
-  const [hwDragOverTarget, setHwDragOverTarget] = useState<string | null>(null);
-  const semesterSettingsRef = useRef<any>(null);
-  const doHwUpload = useCallback(async (file: File, uploadType: 'module' | 'reading', courseCode: string, courseName: string, week: number, courseHexColor: string) => {
-    const stateKey = `${courseCode}-${week}-${uploadType}`;
-    setHwUploadingState(prev => ({ ...prev, [stateKey]: true }));
-    try {
-      const ss = semesterSettingsRef.current;
-      const wd = getWeekDates(week, new Date(ss?.semesterStartDate || Date.now()), ss?.readingWeekStart);
-      const ws = new Date(wd.start);
-      const we = new Date(wd.end);
-      const mos = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      const s1 = `${mos[ws.getMonth()]} ${ws.getDate()}`;
-      const s2 = ws.getMonth() === we.getMonth() ? `${we.getDate()}` : `${mos[we.getMonth()]} ${we.getDate()}`;
-      const dr = `${s1}-${s2}`;
-      const codeClean = courseCode.replace(/\s/g, '');
-      const resp = await fetch('/api/course-week-upload', {
-        method: 'POST',
-        headers: {
-          'Content-Type': file.type || 'application/pdf',
-          'x-course-code': codeClean,
-          'x-course-name': courseName.split(' - ').slice(1).join(' - ') || '',
-          'x-week-num': String(week),
-          'x-upload-type': uploadType,
-          'x-week-date-range': dr,
-          'x-file-name': file.name,
-        },
-        body: file,
-      });
-      const result = await resp.json();
-      if (resp.ok && result.success) {
-        toast({ title: `${uploadType === 'module' ? 'Module' : 'Reading'} uploaded`, description: `${file.name} saved and queued for TTS` });
-        queryClient.invalidateQueries({ queryKey: ['/api/files'] });
-        setBookAnimState({
-          isOpen: true,
-          courseCode: codeClean,
-          title: file.name,
-          color: courseHexColor,
-          onDone: () => {
-            setBookAnimState(null);
-            if (result.fileId) {
-              setBookReaderOverlay({ url: `/pdf-reader/${result.fileId}?autoplay=1`, courseCode: codeClean, title: file.name, color: courseHexColor });
-            }
-          },
-        });
-      } else {
-        toast({ title: 'Upload failed', description: result.error || 'Unknown error', variant: 'destructive' });
-      }
-    } catch (err: any) {
-      toast({ title: 'Upload error', description: err.message, variant: 'destructive' });
-    } finally {
-      setHwUploadingState(prev => ({ ...prev, [stateKey]: false }));
-    }
-  }, []);
   const [calendarHeight, setCalendarHeight] = useState(() => {
     const defaultHeight = window.innerHeight - 45;
     const minHeight = 200;
@@ -1148,7 +1122,6 @@ export default function Dashboard() {
     handlePlayModule: () => void;
     handlePlayReading: () => void;
     handleUpload: (type: 'module' | 'reading') => void;
-    handleFileDrop: (type: 'module' | 'reading', file: File) => void;
   }>>([]);
   const [courseProgressTick, setCourseProgressTick] = useState(0);
   const [completedFiles, setCompletedFiles] = useState<Set<string>>(() => {
@@ -1640,19 +1613,6 @@ export default function Dashboard() {
   const [isCreatingFolder, setIsCreatingFolder] = useState(false);
   const [editingFolderId, setEditingFolderId] = useState<string | null>(null);
   const [editingFolderName, setEditingFolderName] = useState('');
-  useEffect(() => {
-    const observer = new MutationObserver(() => {
-      if (document.body.style.pointerEvents === 'none') {
-        const hasOpenDialog = document.querySelector('[data-state="open"][role="dialog"]');
-        if (!hasOpenDialog) {
-          document.body.style.pointerEvents = '';
-        }
-      }
-    });
-    observer.observe(document.body, { attributes: true, attributeFilter: ['style'] });
-    return () => observer.disconnect();
-  }, []);
-
   // Honeycomb navigation state
   const [modulesHoneycombOpen, setModulesHoneycombOpen] = useState<string | null>('modules');
   const [decorativeHoneycombHover, setDecorativeHoneycombHover] = useState<'left' | 'middle' | 'right' | null>(null);
@@ -5689,7 +5649,6 @@ export default function Dashboard() {
     retry: 2,
     retryDelay: 1000,
   });
-  useEffect(() => { semesterSettingsRef.current = semesterSettings ?? null; }, [semesterSettings]);
 
   const { data: allSemesterSettings } = useQuery<any[]>({
     queryKey: ["/api/semesters"],
@@ -10187,7 +10146,6 @@ export default function Dashboard() {
             <div className="flex items-center gap-2">
               <Sun className="text-yellow-400" style={{ width: '15px', height: '15px' }} />
               <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>MORNING REVIEW</h2>
-              <span className="text-[9px] text-white/40 ml-1">Events from your other calendars not yet added here</span>
               <div className="flex ml-3 rounded overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.25)' }} data-testid="review-mode-tabs">
                 <button
                   className={`px-4 py-1 text-[11px] font-medium transition-colors ${reviewMode === 'all' ? 'text-white' : 'text-white/50 hover:text-white/70'}`}
@@ -10227,7 +10185,7 @@ export default function Dashboard() {
                     data-testid="button-skip-all-forever-review"
                   >
                     {morningReviewLoading ? <Loader2 className="h-3 w-3 mr-1 animate-spin inline" /> : null}
-                    Dismiss All
+                    Skip All Forever
                   </button>
                   <button
                     className="h-8 px-4 text-[11px] font-medium text-white rounded disabled:opacity-40"
@@ -10260,7 +10218,7 @@ export default function Dashboard() {
 
           {reviewMode === 'individual' && (
             <div className="px-4 py-1 border-b border-white/5 flex-shrink-0">
-              <span className="text-[8px] text-white/40">Check the items you want to add to your calendar. Unchecked items will be skipped (nothing is deleted).</span>
+              <span className="text-[8px] text-white/40">Check the items you want to keep. Unchecked items will be permanently skipped.</span>
             </div>
           )}
 
@@ -13174,35 +13132,21 @@ export default function Dashboard() {
         transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out',
         pointerEvents: isTopPillOpen ? 'none' : 'auto',
       }} data-tpo data-tpo-opacity="1" data-testid="timer-bar">
-        <div ref={clockContainerRef} data-testid="pomodoro-timer" style={{ position: 'relative', cursor: 'pointer' }} onClick={togglePomodoro}>
-          {(() => {
-            const totalSec = pomodoroMode === 'work' ? 25 * 60 : pomodoroMode === 'shortBreak' ? 5 * 60 : 15 * 60;
-            const elapsed = totalSec - pomodoroTime;
-            const frac = totalSec > 0 ? elapsed / totalSec : 0;
-            const r = 28, cx = 34, cy = 34, sw = 5;
-            const startAng = Math.PI, endAng = 2 * Math.PI;
-            const arcLen = endAng - startAng;
-            const circumHalf = r * arcLen;
-            const dash = frac * circumHalf;
-            const arcColor = pomodoroMode === 'work' ? '#e74c8b' : pomodoroMode === 'shortBreak' ? '#22c55e' : '#3b82f6';
-            return (
-              <svg width="68" height="40" viewBox="0 0 68 40">
-                <path d={`M ${cx - r} ${cy} A ${r} ${r} 0 1 1 ${cx + r} ${cy}`} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={sw} strokeLinecap="round" />
-                <path d={`M ${cx - r} ${cy} A ${r} ${r} 0 1 1 ${cx + r} ${cy}`} fill="none" stroke={arcColor} strokeWidth={sw} strokeLinecap="round" strokeDasharray={`${dash} ${circumHalf}`} />
-                <text x={cx} y={cy - 4} textAnchor="middle" fill="#ffffff" fontSize="14" fontWeight="700" fontFamily="system-ui, sans-serif" style={{ fontVariantNumeric: 'tabular-nums' }}>{formatPomodoroTime(pomodoroTime)}</text>
-              </svg>
-            );
-          })()}
+        <div ref={clockContainerRef} className={`flex ${
+          pomodoroMode === "work" ? (pomodoroStarted ? "" : "text-white") : 
+          pomodoroMode === "shortBreak" ? "text-green-300" : "text-blue-300"
+        }`} style={{ alignItems: 'center', ...(pomodoroMode === "work" && pomodoroStarted ? { color: 'rgb(255, 0, 0)' } : {}) }} data-testid="pomodoro-timer">
+          <span style={{ fontSize: '14px', fontWeight: 700, fontVariantNumeric: 'tabular-nums', minWidth: '50px', display: 'inline-block', lineHeight: '1.25', color: '#FFFF00', marginRight: '8px' }}>{formatPomodoroTime(pomodoroTime)}</span>
         </div>
-        <div className="flex items-center gap-[6px]" style={{ marginLeft: '-4px' }}>
-          <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle" title={pomodoroRunning ? 'Pause' : 'Play'}>
-            {pomodoroRunning ? <Pause className="h-[12px] w-[12px] text-white" strokeWidth={2.5} /> : <Play className="h-[12px] w-[12px] text-white" strokeWidth={2.5} />}
+        <div className="flex items-center gap-[22px]">
+          <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
+            {pomodoroRunning ? <Pause className="h-[14px] w-[14px] text-white" strokeWidth={2.5} /> : <Play className="h-[14px] w-[14px] text-white" strokeWidth={2.5} />}
           </button>
-          <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={resetPomodoro} data-testid="button-pomodoro-reset" title="Stop">
-            <Square className="h-[10px] w-[10px] text-white" strokeWidth={2.5} />
+          <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={resetPomodoro} data-testid="button-pomodoro-reset">
+            <RotateCcw className="h-[14px] w-[14px] text-white" strokeWidth={2.5} />
           </button>
-          <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={() => { setPomodoroTime(prev => prev + 60); }} data-testid="button-pomodoro-add-min" title="+1 min" style={{ fontSize: '9px', color: 'white', fontWeight: 600, whiteSpace: 'nowrap', lineHeight: 1 }}>
-            +1m
+          <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={skipPomodoro} data-testid="button-pomodoro-skip">
+            <SkipForward className="h-[14px] w-[14px] text-white" strokeWidth={2.5} />
           </button>
         </div>
       </div>
@@ -17388,6 +17332,17 @@ export default function Dashboard() {
                         >
                           <MessageSquare className="w-3.5 h-3.5" strokeWidth={2.5} />
                         </button>
+                        <div className="flex-shrink-0" style={{ width: '33px', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', paddingLeft: '0px', marginLeft: '5px' }}>
+                        {(() => {
+                          const cc = semCourse.code.replace(/\s/g, '');
+                          let dm = courseDeliveryModes[cc] || '';
+                          if (!dm) {
+                            try { const cd = localStorage.getItem('certCourseData'); if (cd) { const sd = JSON.parse(cd); dm = sd[cc]?.deliveryMode || sd[semCourse.code]?.deliveryMode || ''; } } catch {}
+                          }
+                          return dm === 'virtual' ? <img src={zoomLogoPath} alt="Zoom" style={{ width: '33px', height: 'auto', filter: 'brightness(0) invert(1)', opacity: 0.9 }} />
+                            : dm === 'online' ? <img src={wifiLogoPath} alt="Online" style={{ width: '13px', height: 'auto', opacity: 0.9 }} /> : null;
+                        })()}
+                        </div>
                         <span className="text-[10px] truncate min-w-0 flex-1 cursor-pointer hover:underline" style={{ marginLeft: '5px' }} onClick={(e) => { e.stopPropagation(); const certKey = pastEntry?.certKey || semCourse.code; startTransition(() => setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey })); }} data-testid={`course-name-click-${semCourse.code}`}><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
                         <div className="flex items-center gap-1 flex-shrink-0" style={{ marginRight: '-3px' }}>
                           {(() => {
@@ -18017,7 +17972,6 @@ export default function Dashboard() {
             if (!open) {
               setColorSettings(originalColorSettings);
               setBlinkSettings(originalBlinkSettings);
-              setTimeout(() => { document.body.style.pointerEvents = ''; }, 100);
             }
             setIsSettingsDialogOpen(open);
           }}>
@@ -18911,7 +18865,6 @@ export default function Dashboard() {
                       setColorSettings(originalColorSettings);
                       setBlinkSettings(originalBlinkSettings);
                       setIsSettingsDialogOpen(false);
-                      setTimeout(() => { document.body.style.pointerEvents = ''; }, 100);
                     }}
                     data-testid="button-cancel-settings"
                   >
@@ -18938,7 +18891,6 @@ export default function Dashboard() {
                       setOriginalBlinkSettings({...blinkSettings});
                       toast({ title: "Settings saved", description: "Your settings have been applied." });
                       setIsSettingsDialogOpen(false);
-                      setTimeout(() => { document.body.style.pointerEvents = ''; }, 100);
                     }}
                     data-testid="button-save-settings"
                   >
@@ -19399,18 +19351,8 @@ export default function Dashboard() {
                 return (
                   <div 
                     key={idx} 
-                    className={`border-l border-border flex flex-col items-center justify-center h-full relative${weatherAlerts.length > 0 ? " weather-alert-border-pulse" : ""}`}
-                    style={isToday ? (() => {
-                      const now = new Date();
-                      const minutesSinceMidnight = now.getHours() * 60 + now.getMinutes();
-                      const pct = Math.min(100, Math.max(0, (minutesSinceMidnight / 1440) * 100));
-                      let sunriseMin = 7 * 60, sunsetMin = 18 * 60;
-                      if (weatherData?.sunrise) { const sr = new Date(weatherData.sunrise); sunriseMin = sr.getHours() * 60 + sr.getMinutes(); }
-                      if (weatherData?.sunset) { const ss = new Date(weatherData.sunset); sunsetMin = ss.getHours() * 60 + ss.getMinutes(); }
-                      const isDaytime = minutesSinceMidnight >= sunriseMin && minutesSinceMidnight < sunsetMin;
-                      const restColor = isDaytime ? '#c8a800' : colorSettings.headerBar;
-                      return { background: `linear-gradient(to right, #3a8bbf 0%, #164a72 ${pct}%, ${restColor} ${pct}%, ${restColor} 100%)` };
-                    })() : { backgroundColor: colorSettings.headerBar }}
+                    className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isToday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}${weatherAlerts.length > 0 ? " weather-alert-border-pulse" : ""}`}
+                    style={{ backgroundColor: isToday ? undefined : colorSettings.headerBar, animationDelay: isToday ? `-${Date.now() % 7000}ms` : undefined }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {!isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && (
@@ -20356,12 +20298,56 @@ export default function Dashboard() {
                         input.onchange = async (ev) => {
                           const file = (ev.target as HTMLInputElement).files?.[0];
                           if (!file) return;
-                          await doHwUpload(file, uploadType, courseCode, course?.name || '', selectedWeek, courseHexColor);
+                          const stateKey = `${courseCode}-${selectedWeek}-${uploadType}`;
+                          setHwUploadingState(prev => ({ ...prev, [stateKey]: true }));
+                          try {
+                            const wd = getWeekDates(selectedWeek, new Date(semesterSettings?.semesterStartDate || Date.now()), semesterSettings?.readingWeekStart);
+                            const ws = new Date(wd.start);
+                            const we = new Date(wd.end);
+                            const mos = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                            const s1 = `${mos[ws.getMonth()]} ${ws.getDate()}`;
+                            const s2 = ws.getMonth() === we.getMonth() ? `${we.getDate()}` : `${mos[we.getMonth()]} ${we.getDate()}`;
+                            const dr = `${s1}-${s2}`;
+                            const codeClean = courseCode.replace(/\s/g, '');
+                            const resp = await fetch('/api/course-week-upload', {
+                              method: 'POST',
+                              headers: {
+                                'Content-Type': file.type || 'application/pdf',
+                                'x-course-code': codeClean,
+                                'x-course-name': course?.name?.split(' - ').slice(1).join(' - ') || '',
+                                'x-week-num': String(selectedWeek),
+                                'x-upload-type': uploadType,
+                                'x-week-date-range': dr,
+                                'x-file-name': file.name,
+                              },
+                              body: file,
+                            });
+                            const result = await resp.json();
+                            if (resp.ok && result.success) {
+                              toast({ title: `${uploadType === 'module' ? 'Module' : 'Reading'} uploaded`, description: `${file.name} saved and queued for TTS` });
+                              queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                              setBookAnimState({
+                                isOpen: true,
+                                courseCode: codeClean,
+                                title: file.name,
+                                color: courseHexColor,
+                                onDone: () => {
+                                  setBookAnimState(null);
+                                  if (result.fileId) {
+                                    setBookReaderOverlay({ url: `/pdf-reader/${result.fileId}?autoplay=1`, courseCode: codeClean, title: file.name, color: courseHexColor });
+                                  }
+                                },
+                              });
+                            } else {
+                              toast({ title: 'Upload failed', description: result.error || 'Unknown error', variant: 'destructive' });
+                            }
+                          } catch (err: any) {
+                            toast({ title: 'Upload error', description: err.message, variant: 'destructive' });
+                          } finally {
+                            setHwUploadingState(prev => ({ ...prev, [stateKey]: false }));
+                          }
                         };
                         input.click();
-                      },
-                      handleFileDrop: (uploadType: 'module' | 'reading', file: File) => {
-                        doHwUpload(file, uploadType, courseCode, course?.name || '', selectedWeek, courseHexColor);
                       },
                     };
                     return null;
@@ -22715,11 +22701,11 @@ export default function Dashboard() {
                         ) : (tab.letter === 'W' && tab.year === '28') ? (
                           <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">F 2026</text>
                         ) : (tab.letter === 'W' && tab.year === '26') ? (
-                          <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">{`Wk ${selectedWeek}`}</text>
+                          <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">Wk 10</text>
                         ) : (tab.letter === 'S' && tab.year === '26') ? (
-                          <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">{`Wk ${selectedWeek + 1}`}</text>
+                          <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">Wk 11</text>
                         ) : (tab.letter === 'F' && tab.year === '26') ? (
-                          <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">{`Wk ${selectedWeek + 2}`}</text>
+                          <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">Wk 12</text>
                         ) : (tab.letter === 'W' && tab.year === '27') ? (
                           <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">May 26</text>
                         ) : (tab.letter === 'S' && tab.year === '27') ? (
@@ -22865,6 +22851,16 @@ export default function Dashboard() {
               const rowTop = courseRowRects[idx].top - upcomingTop - firstRowOffset;
               const rowHeight = courseRowRects[idx].height;
               return [
+                <div key={`${pd.courseCode}-progress-bg`} style={{
+                  position: 'absolute',
+                  top: `${rowTop}px`,
+                  left: 0,
+                  width: `${effectiveDividerPct}%`,
+                  height: `${rowHeight}px`,
+                  backgroundColor: pd.courseRowColor || '#3a3f4a',
+                  zIndex: 1,
+                  boxShadow: 'inset 0 0 0 0.5px rgba(255,255,255,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
+                }} />,
                 <div key={`${pd.courseCode}-right-fill-ext`} style={{
                   position: 'absolute',
                   top: `${rowTop}px`,
@@ -23025,51 +23021,46 @@ export default function Dashboard() {
                       <span className="text-[9px] font-bold text-black/60 text-center" style={{ lineHeight: '1.6' }}>N/A</span>
                     </div>
                   ) : (
-                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, borderRadius: '6px', overflow: 'hidden' }}>
-                      {(() => { const cGrad = getCourseGradientColors(pd.courseCode); return [
-                        { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `play-module-${pd.courseCode.toLowerCase()}`, testUpload: `upload-module-${pd.courseCode.toLowerCase()}`, bg: cGrad.start, dark: true },
-                        { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, bg: cGrad.end, dark: false },
-                      ]; })().map(item => {
-                        const circleSize = 40;
+                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '3px 4px', flex: 1 }}>
+                      {[
+                        { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), testPlay: `play-module-${pd.courseCode.toLowerCase()}`, testUpload: `upload-module-${pd.courseCode.toLowerCase()}`, iconColor: 'text-blue-300/60 hover:text-blue-300' },
+                        { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, iconColor: 'text-purple-300/60 hover:text-purple-300' },
+                      ].map(item => {
+                        const circleSize = 38;
                         const strokeWidth = 3.5;
                         const radius = (circleSize - strokeWidth) / 2;
                         const circumference = 2 * Math.PI * radius;
                         const offset = circumference - (item.p.percent / 100) * circumference;
-                        const isModule = item.type === 'module';
-                        const textColor = item.dark ? '#fff' : '#000';
-                        const dragKey = `${pd.courseCode}-${item.type}`;
-                        const isDragOver = hwDragOverTarget === dragKey;
+                        const progressColor = item.p.percent === 100 ? '#22c55e' : item.p.percent > 0 ? '#38bdf8' : 'rgba(255,255,255,0.3)';
                         return (
-                          <div key={item.type}
-                            onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); e.dataTransfer.dropEffect = 'copy'; setHwDragOverTarget(dragKey); }}
-                            onDragEnter={(e) => { e.preventDefault(); e.stopPropagation(); setHwDragOverTarget(dragKey); }}
-                            onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); if (hwDragOverTarget === dragKey) setHwDragOverTarget(null); }}
-                            onDrop={(e) => { e.preventDefault(); e.stopPropagation(); setHwDragOverTarget(null); const file = e.dataTransfer.files?.[0]; if (file) item.drop(file); }}
-                            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', position: 'relative', flex: 1, minWidth: 0, background: item.bg, padding: '4px 2px 3px', borderRadius: '6px', overflow: 'hidden', outline: isDragOver ? '2px solid rgba(255,255,255,0.8)' : 'none', outlineOffset: '-2px', transition: 'outline 0.15s ease' }}
-                            data-testid={`drop-${item.type}-${pd.courseCode.toLowerCase()}`}>
+                          <div key={item.type} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px', position: 'relative', flex: 1, minWidth: 0 }}>
                             {item.p.hasFiles && item.unread > 0 && item.p.percent < 100 && (
-                              <div className="bg-[#FF0000] text-white text-[6px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ position: 'absolute', top: '1px', right: '1px', zIndex: 10 }}>
+                              <div className="bg-[#FF0000] text-white text-[6px] font-bold rounded-full min-w-[10px] h-[10px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ position: 'absolute', top: '-2px', right: '2px', zIndex: 10 }}>
                                 {item.unread}
                               </div>
                             )}
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                              <div style={{ position: 'relative', width: circleSize, height: circleSize, marginLeft: '-3px' }}>
-                                <svg width={circleSize} height={circleSize} style={{ transform: 'rotate(-90deg)' }}>
-                                  <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth={strokeWidth} />
-                                  {item.p.hasFiles && item.p.percent > 0 && (
-                                    <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke="#ffffff" strokeWidth={strokeWidth} strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
-                                  )}
-                                </svg>
-                                <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700, color: item.dark ? '#ffffff' : '#000000', fontFamily: "system-ui, -apple-system, 'Segoe UI', sans-serif", letterSpacing: '-0.3px' }}>
-                                  {item.p.hasFiles ? `${item.p.percent}%` : 'N/A'}
-                                </span>
-                              </div>
-                              <div className="cursor-pointer" style={{ opacity: item.p.percent === 100 ? 0.5 : 1, marginLeft: '4px' }} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }} data-testid={item.testPlay}>
-                                <img src={item.dark ? hwPlayIconPath : hwPlayIconLightPath} alt="Play" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
-                              </div>
+                            <div style={{ position: 'relative', width: circleSize, height: circleSize, cursor: 'pointer' }} onClick={item.play} onTouchEnd={(e) => { e.preventDefault(); item.play(); }} data-testid={item.testPlay}>
+                              <svg width={circleSize} height={circleSize} style={{ transform: 'rotate(-90deg)' }}>
+                                <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={strokeWidth} />
+                                {item.p.hasFiles && item.p.percent > 0 && (
+                                  <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke={progressColor} strokeWidth={strokeWidth} strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
+                                )}
+                              </svg>
+                              <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '8px', fontWeight: 700, color: '#000', textShadow: 'none' }}>
+                                {item.p.hasFiles ? `${item.p.percent}%` : 'N/A'}
+                              </span>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                              <span style={{ fontSize: '8px', fontWeight: 800, color: item.dark ? '#ffffff' : '#000000', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{item.label}</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                              {item.p.hasFiles && <Paperclip className="h-[6px] w-[6px] text-black/70 flex-shrink-0" />}
+                              <span style={{ fontSize: '6px', fontWeight: 600, color: '#000', textTransform: 'uppercase', letterSpacing: '0.5px', textShadow: 'none', whiteSpace: 'nowrap' }}>{item.label}</span>
+                            </div>
+                            <div style={{ display: 'flex', gap: '3px', alignItems: 'center', marginTop: '-1px' }}>
+                              <div className="cursor-pointer" data-testid={item.testPlay} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }}>
+                                <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-opacity duration-200" style={{ width: '14px', height: 'auto', display: 'block', opacity: item.p.percent === 100 ? 0.4 : 1 }} />
+                              </div>
+                              <div className="cursor-pointer" data-testid={item.testUpload} onClick={(e) => { e.stopPropagation(); item.upload(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.upload(); }}>
+                                <Upload className={`h-[10px] w-[10px] ${item.iconColor} transition-colors`} />
+                              </div>
                             </div>
                           </div>
                         );
@@ -24178,51 +24169,46 @@ export default function Dashboard() {
                           <span className="text-[9px] font-bold text-black/60">N/A</span>
                         </div>
                       ) : (
-                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, borderRadius: '6px', overflow: 'hidden' }}>
-                          {(() => { const cGrad = getCourseGradientColors(pd.courseCode); return [
-                            { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `float-play-module-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-module-${pd.courseCode.toLowerCase()}`, bg: cGrad.start, dark: true },
-                            { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `float-play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-reading-${pd.courseCode.toLowerCase()}`, bg: cGrad.end, dark: false },
-                          ]; })().map(item => {
-                            const circleSize = 44;
+                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '4px 6px', flex: 1 }}>
+                          {[
+                            { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), testPlay: `float-play-module-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-module-${pd.courseCode.toLowerCase()}`, iconColor: 'text-blue-300/60 hover:text-blue-300' },
+                            { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), testPlay: `float-play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-reading-${pd.courseCode.toLowerCase()}`, iconColor: 'text-purple-300/60 hover:text-purple-300' },
+                          ].map(item => {
+                            const circleSize = 42;
                             const strokeWidth = 3.5;
                             const radius = (circleSize - strokeWidth) / 2;
                             const circumference = 2 * Math.PI * radius;
                             const offset = circumference - (item.p.percent / 100) * circumference;
-                            const isModule = item.type === 'module';
-                            const textColor = item.dark ? '#fff' : '#000';
-                            const dragKey = `float-${pd.courseCode}-${item.type}`;
-                            const isDragOver = hwDragOverTarget === dragKey;
+                            const progressColor = item.p.percent === 100 ? '#22c55e' : item.p.percent > 0 ? '#38bdf8' : 'rgba(255,255,255,0.3)';
                             return (
-                              <div key={item.type}
-                                onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); e.dataTransfer.dropEffect = 'copy'; setHwDragOverTarget(dragKey); }}
-                                onDragEnter={(e) => { e.preventDefault(); e.stopPropagation(); setHwDragOverTarget(dragKey); }}
-                                onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); if (hwDragOverTarget === dragKey) setHwDragOverTarget(null); }}
-                                onDrop={(e) => { e.preventDefault(); e.stopPropagation(); setHwDragOverTarget(null); const file = e.dataTransfer.files?.[0]; if (file) item.drop(file); }}
-                                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', position: 'relative', flex: 1, minWidth: 0, background: item.bg, padding: '5px 3px 4px', borderRadius: '6px', outline: isDragOver ? '2px solid rgba(255,255,255,0.8)' : 'none', outlineOffset: '-2px', transition: 'outline 0.15s ease' }}
-                                data-testid={`float-drop-${item.type}-${pd.courseCode.toLowerCase()}`}>
+                              <div key={item.type} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px', position: 'relative', flex: 1, minWidth: 0 }}>
                                 {item.p.hasFiles && item.unread > 0 && item.p.percent < 100 && (
-                                  <div className="bg-[#FF0000] text-white text-[6px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ position: 'absolute', top: '1px', right: '1px', zIndex: 10 }}>
+                                  <div className="bg-[#FF0000] text-white text-[6px] font-bold rounded-full min-w-[10px] h-[10px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ position: 'absolute', top: '-2px', right: '2px', zIndex: 10 }}>
                                     {item.unread}
                                   </div>
                                 )}
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                  <div style={{ position: 'relative', width: circleSize, height: circleSize, marginLeft: '-3px' }}>
-                                    <svg width={circleSize} height={circleSize} style={{ transform: 'rotate(-90deg)' }}>
-                                      <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth={strokeWidth} />
-                                      {item.p.hasFiles && item.p.percent > 0 && (
-                                        <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke="#ffffff" strokeWidth={strokeWidth} strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
-                                      )}
-                                    </svg>
-                                    <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700, color: item.dark ? '#ffffff' : '#000000', fontFamily: "system-ui, -apple-system, 'Segoe UI', sans-serif", letterSpacing: '-0.3px' }}>
-                                      {item.p.hasFiles ? `${item.p.percent}%` : 'N/A'}
-                                    </span>
-                                  </div>
-                                  <div className="cursor-pointer" style={{ opacity: item.p.percent === 100 ? 0.5 : 1, marginLeft: '4px' }} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }} data-testid={item.testPlay}>
-                                    <img src={item.dark ? hwPlayIconPath : hwPlayIconLightPath} alt="Play" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
-                                  </div>
+                                <div style={{ position: 'relative', width: circleSize, height: circleSize, cursor: 'pointer' }} onClick={item.play} onTouchEnd={(e) => { e.preventDefault(); item.play(); }} data-testid={item.testPlay}>
+                                  <svg width={circleSize} height={circleSize} style={{ transform: 'rotate(-90deg)' }}>
+                                    <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={strokeWidth} />
+                                    {item.p.hasFiles && item.p.percent > 0 && (
+                                      <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke={progressColor} strokeWidth={strokeWidth} strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
+                                    )}
+                                  </svg>
+                                  <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700, color: '#000', textShadow: 'none' }}>
+                                    {item.p.hasFiles ? `${item.p.percent}%` : 'N/A'}
+                                  </span>
                                 </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                                  <span style={{ fontSize: '9px', fontWeight: 800, color: item.dark ? '#ffffff' : '#000000', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{item.label}</span>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                  {item.p.hasFiles && <Paperclip className="h-[6px] w-[6px] text-black/70 flex-shrink-0" />}
+                                  <span style={{ fontSize: '7px', fontWeight: 600, color: '#000', textTransform: 'uppercase', letterSpacing: '0.5px', textShadow: 'none', whiteSpace: 'nowrap' }}>{item.label}</span>
+                                </div>
+                                <div style={{ display: 'flex', gap: '3px', alignItems: 'center', marginTop: '-1px' }}>
+                                  <div className="cursor-pointer" onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }}>
+                                    <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-opacity duration-200" style={{ width: '14px', height: 'auto', display: 'block', opacity: item.p.percent === 100 ? 0.4 : 1 }} />
+                                  </div>
+                                  <div className="cursor-pointer" data-testid={item.testUpload} onClick={(e) => { e.stopPropagation(); item.upload(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.upload(); }}>
+                                    <Upload className={`h-[10px] w-[10px] ${item.iconColor} transition-colors`} />
+                                  </div>
                                 </div>
                               </div>
                             );
