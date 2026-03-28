@@ -23104,9 +23104,6 @@ export default function Dashboard() {
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                               <span style={{ fontSize: '8px', fontWeight: 800, color: item.dark ? '#ffffff' : '#000000', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{item.label}</span>
-                              <div className="cursor-pointer" data-testid={item.testUpload} onClick={(e) => { e.stopPropagation(); item.upload(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.upload(); }}>
-                                <Upload style={{ width: '8px', height: '8px', color: item.dark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)' }} />
-                              </div>
                             </div>
                           </div>
                         );
@@ -24255,9 +24252,6 @@ export default function Dashboard() {
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                                   <span style={{ fontSize: '9px', fontWeight: 800, color: item.dark ? '#ffffff' : '#000000', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{item.label}</span>
-                                  <div className="cursor-pointer" data-testid={item.testUpload} onClick={(e) => { e.stopPropagation(); item.upload(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.upload(); }}>
-                                    <Upload style={{ width: '9px', height: '9px', color: item.dark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)' }} />
-                                  </div>
                                 </div>
                               </div>
                             );
