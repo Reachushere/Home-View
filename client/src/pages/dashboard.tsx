@@ -22669,15 +22669,15 @@ export default function Dashboard() {
           {/* Date navigation tab above glass box */}
           <div
             className="absolute z-[60]"
-            style={{ top: '-16px', left: '50%', transform: 'translateX(-50%)', height: '17px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.2s ease' }}
+            style={{ top: '-26px', left: '50%', transform: 'translateX(-50%)', height: '27px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.2s ease' }}
             data-testid="date-nav-tab"
           >
-            <div style={{ height: '17px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', padding: '0 4px', gap: '2px' }}>
-              <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 3px', height: '100%', pointerEvents: 'auto' }} onClick={() => { const newWeek = selectedWeek - 1; startTransition(() => setSelectedWeek(newWeek)); if (newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }} data-testid="button-pill-prev-week"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>◀</span></div>
-              <span data-testid="text-week-dates" style={{ fontSize: '8px', fontWeight: 500, color: '#000', whiteSpace: 'nowrap', lineHeight: 1, letterSpacing: '0.3px', padding: '0 2px' }}>
-                {format(weekStartDate, 'MMM d')} – {format(weekEndDate, 'MMM d')}
+            <div style={{ height: '27px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', padding: '0 8px', gap: '4px' }}>
+              <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px', height: '100%', pointerEvents: 'auto' }} onClick={() => { const newWeek = selectedWeek - 1; startTransition(() => setSelectedWeek(newWeek)); if (newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }} data-testid="button-pill-prev-week"><span style={{ fontSize: '10px', lineHeight: '1', color: '#000' }}>◀</span></div>
+              <span data-testid="text-week-dates" style={{ fontSize: '11px', fontWeight: 500, color: '#000', whiteSpace: 'nowrap', lineHeight: 1, letterSpacing: '0.3px', padding: '0 2px' }}>
+                {format(weekStartDate, 'EEE, MMM d')} – {format(weekEndDate, 'EEE, MMM d')}
               </span>
-              <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 3px', height: '100%', pointerEvents: 'auto' }} onClick={() => { const newWeek = selectedWeek + 1; startTransition(() => setSelectedWeek(newWeek)); if (newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }} data-testid="button-pill-next-week"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▶</span></div>
+              <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px', height: '100%', pointerEvents: 'auto' }} onClick={() => { const newWeek = selectedWeek + 1; startTransition(() => setSelectedWeek(newWeek)); if (newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }} data-testid="button-pill-next-week"><span style={{ fontSize: '10px', lineHeight: '1', color: '#000' }}>▶</span></div>
             </div>
           </div>
           {!hwFloating.detached ? (
