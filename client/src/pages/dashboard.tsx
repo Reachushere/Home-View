@@ -13189,13 +13189,14 @@ export default function Dashboard() {
       {/* Timer bar - no box, inline left of time */}
       <div style={{
         position: 'fixed',
-        right: `${calendarRight - calendarReduction + 4 + (clockContainerRef.current?.offsetWidth || 110) + 33 + 5 + 8 + 5 + 5 + 3 + 11 + 4 + 3 - 1 + 2}px`,
-        top: `${7 + d2lTickerHeight}px`,
+        right: `${calendarRight - calendarReduction + 4 + (clockContainerRef.current?.offsetWidth || 110) + 33 + 5 + 8 + 5 + 5 + 3 + 11 + 4 + 3 - 1 + 2 - 35}px`,
+        top: `${7 + d2lTickerHeight - 5}px`,
         zIndex: 100,
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'flex-end',
-        gap: '7px',
+        justifyContent: 'flex-start',
+        gap: '0px',
         paddingRight: '0px',
         opacity: isTopPillOpen ? 0 : 1,
         transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out',
@@ -13221,7 +13222,7 @@ export default function Dashboard() {
             );
           })()}
         </div>
-        <div className="flex items-center gap-[6px]" style={{ marginLeft: '-4px' }}>
+        <div className="flex items-center gap-[6px]" style={{ marginTop: '-6px' }}>
           <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle" title={pomodoroRunning ? 'Pause' : 'Play'}>
             {pomodoroRunning ? <Pause className="h-[12px] w-[12px] text-white" strokeWidth={2.5} /> : <Play className="h-[12px] w-[12px] text-white" strokeWidth={2.5} />}
           </button>
