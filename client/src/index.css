@@ -306,14 +306,14 @@ button[role="combobox"] > span {
 }
 
 @keyframes top-pill-container-nudge {
-  0%, 70% { transform: translateY(-67px); }
-  74% { transform: translateY(-61px); }
-  78% { transform: translateY(-67px); }
-  82% { transform: translateY(-62px); }
-  86% { transform: translateY(-67px); }
-  90% { transform: translateY(-63px); }
-  94% { transform: translateY(-67px); }
-  100% { transform: translateY(-67px); }
+  0%, 70% { transform: translateY(-68px); }
+  74% { transform: translateY(-62px); }
+  78% { transform: translateY(-68px); }
+  82% { transform: translateY(-63px); }
+  86% { transform: translateY(-68px); }
+  90% { transform: translateY(-64px); }
+  94% { transform: translateY(-68px); }
+  100% { transform: translateY(-68px); }
 }
 
 
