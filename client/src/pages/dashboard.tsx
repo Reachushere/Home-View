@@ -4835,12 +4835,22 @@ export default function Dashboard() {
           const courseEndDate = (sem as any)[`${prefix}EndDate`];
           const semStart = courseStartDate || (sem as any).semesterStartDate;
           if (courseStartDate) {
-            const sd = new Date(courseStartDate);
-            startDate = `${sd.getFullYear()}-${(sd.getMonth()+1).toString().padStart(2,'0')}-${sd.getDate().toString().padStart(2,'0')}`;
+            const sdStr = typeof courseStartDate === 'string' && courseStartDate.includes('T') ? courseStartDate.split('T')[0] : '';
+            if (sdStr) {
+              startDate = sdStr;
+            } else {
+              const sd = new Date(courseStartDate);
+              startDate = `${sd.getFullYear()}-${(sd.getMonth()+1).toString().padStart(2,'0')}-${sd.getDate().toString().padStart(2,'0')}`;
+            }
           }
           if (courseEndDate) {
-            const ed = new Date(courseEndDate);
-            endDate = `${ed.getFullYear()}-${(ed.getMonth()+1).toString().padStart(2,'0')}-${ed.getDate().toString().padStart(2,'0')}`;
+            const edStr = typeof courseEndDate === 'string' && courseEndDate.includes('T') ? courseEndDate.split('T')[0] : '';
+            if (edStr) {
+              endDate = edStr;
+            } else {
+              const ed = new Date(courseEndDate);
+              endDate = `${ed.getFullYear()}-${(ed.getMonth()+1).toString().padStart(2,'0')}-${ed.getDate().toString().padStart(2,'0')}`;
+            }
           }
           if (semStart) {
             year = new Date(semStart).getFullYear().toString();
@@ -14051,13 +14061,13 @@ export default function Dashboard() {
                       if ((updates as any).borderColor !== undefined) payload[`${prefix}BorderColor`] = (updates as any).borderColor;
                       if (updates.courseRowColor !== undefined) payload[`${prefix}CourseRowColor`] = updates.courseRowColor;
                       if (updates.taskBgColor !== undefined) payload[`${prefix}TaskBgColor`] = updates.taskBgColor;
-                      if ((updates as any).startDate) payload[`${prefix}StartDate`] = new Date((updates as any).startDate).toISOString();
-                      if ((updates as any).endDate) payload[`${prefix}EndDate`] = new Date((updates as any).endDate).toISOString();
+                      if ((updates as any).startDate) payload[`${prefix}StartDate`] = new Date((updates as any).startDate + 'T12:00:00').toISOString();
+                      if ((updates as any).endDate) payload[`${prefix}EndDate`] = new Date((updates as any).endDate + 'T12:00:00').toISOString();
                       if (updates.semesterTerm && updates.year && !(updates as any).startDate) {
                         const dates = computeSemesterDates(updates.semesterTerm, updates.year);
                         if (dates.startDate) {
-                          payload[`${prefix}StartDate`] = new Date(dates.startDate).toISOString();
-                          payload[`${prefix}EndDate`] = new Date(dates.endDate).toISOString();
+                          payload[`${prefix}StartDate`] = new Date(dates.startDate + 'T12:00:00').toISOString();
+                          payload[`${prefix}EndDate`] = new Date(dates.endDate + 'T12:00:00').toISOString();
                           if (dates.springSummerTerm) payload[`${prefix}SpringSummerTerm`] = dates.springSummerTerm;
                         }
                       }

@@ -1614,19 +1614,17 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         {isParsingSyllabus ? 'Parsing...' : 'Add Syllabus'}
                       </div>
                     </label>
-                    {syllabusObjectPath && (
-                      <Paperclip
-                        className="h-3.5 w-3.5 text-white cursor-pointer hover:opacity-70 transition-opacity"
-                        onClick={() => {
-                          window.open(`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`, '_blank');
-                        }}
-                        data-testid="button-view-syllabus-edit"
-                      />
-                    )}
-                    {syllabusObjectPath && (
-                      <Trash2
-                        className="h-3.5 w-3.5 text-white cursor-pointer hover:opacity-70 transition-opacity"
+                    <Paperclip
+                      className={`h-3.5 w-3.5 ${syllabusObjectPath ? 'text-white/40' : 'text-white'} ${syllabusObjectPath ? 'cursor-pointer hover:opacity-70' : ''} transition-opacity`}
+                      onClick={() => {
+                        if (syllabusObjectPath) window.open(`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`, '_blank');
+                      }}
+                      data-testid="button-view-syllabus-edit"
+                    />
+                    <Trash2
+                      className={`h-3.5 w-3.5 ${syllabusObjectPath ? 'text-white cursor-pointer hover:opacity-70' : 'text-white/40'} transition-opacity`}
                         onClick={async () => {
+                          if (!syllabusObjectPath) return;
                           setSyllabusObjectPath('');
                           try {
                             await fetch('/api/syllabus/paths', {
@@ -1643,7 +1641,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         }}
                         data-testid="button-delete-syllabus"
                       />
-                    )}
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
