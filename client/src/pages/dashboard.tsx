@@ -23021,45 +23021,48 @@ export default function Dashboard() {
                       <span className="text-[9px] font-bold text-black/60 text-center" style={{ lineHeight: '1.6' }}>N/A</span>
                     </div>
                   ) : (
-                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '3px 4px', flex: 1 }}>
-                      {[
-                        { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), testPlay: `play-module-${pd.courseCode.toLowerCase()}`, testUpload: `upload-module-${pd.courseCode.toLowerCase()}`, iconColor: 'text-blue-300/60 hover:text-blue-300' },
-                        { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, iconColor: 'text-purple-300/60 hover:text-purple-300' },
-                      ].map(item => {
-                        const circleSize = 38;
+                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, borderRadius: '6px', overflow: 'hidden' }}>
+                      {(() => { const cGrad = getCourseGradientColors(pd.courseCode); return [
+                        { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), testPlay: `play-module-${pd.courseCode.toLowerCase()}`, testUpload: `upload-module-${pd.courseCode.toLowerCase()}`, bg: cGrad.start, dark: true },
+                        { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, bg: cGrad.end, dark: false },
+                      ]; })().map(item => {
+                        const circleSize = 40;
                         const strokeWidth = 3.5;
                         const radius = (circleSize - strokeWidth) / 2;
                         const circumference = 2 * Math.PI * radius;
                         const offset = circumference - (item.p.percent / 100) * circumference;
-                        const progressColor = item.p.percent === 100 ? '#22c55e' : item.p.percent > 0 ? '#38bdf8' : 'rgba(255,255,255,0.3)';
+                        const isModule = item.type === 'module';
+                        const textColor = item.dark ? '#fff' : '#000';
                         return (
-                          <div key={item.type} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px', position: 'relative', flex: 1, minWidth: 0 }}>
+                          <div key={item.type} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', position: 'relative', flex: 1, minWidth: 0, background: item.bg, padding: '4px 2px 3px' }}>
                             {item.p.hasFiles && item.unread > 0 && item.p.percent < 100 && (
-                              <div className="bg-[#FF0000] text-white text-[6px] font-bold rounded-full min-w-[10px] h-[10px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ position: 'absolute', top: '-2px', right: '2px', zIndex: 10 }}>
+                              <div className="bg-[#FF0000] text-white text-[6px] font-bold rounded-full min-w-[10px] h-[10px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ position: 'absolute', top: '1px', right: '1px', zIndex: 10 }}>
                                 {item.unread}
                               </div>
                             )}
-                            <div style={{ position: 'relative', width: circleSize, height: circleSize, cursor: 'pointer' }} onClick={item.play} onTouchEnd={(e) => { e.preventDefault(); item.play(); }} data-testid={item.testPlay}>
-                              <svg width={circleSize} height={circleSize} style={{ transform: 'rotate(-90deg)' }}>
-                                <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={strokeWidth} />
-                                {item.p.hasFiles && item.p.percent > 0 && (
-                                  <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke={progressColor} strokeWidth={strokeWidth} strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
-                                )}
-                              </svg>
-                              <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '8px', fontWeight: 700, color: '#000', textShadow: 'none' }}>
-                                {item.p.hasFiles ? `${item.p.percent}%` : 'N/A'}
-                              </span>
-                            </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                              {item.p.hasFiles && <Paperclip className="h-[6px] w-[6px] text-black/70 flex-shrink-0" />}
-                              <span style={{ fontSize: '6px', fontWeight: 600, color: '#000', textTransform: 'uppercase', letterSpacing: '0.5px', textShadow: 'none', whiteSpace: 'nowrap' }}>{item.label}</span>
-                            </div>
-                            <div style={{ display: 'flex', gap: '3px', alignItems: 'center', marginTop: '-1px' }}>
-                              <div className="cursor-pointer" data-testid={item.testPlay} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }}>
-                                <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-opacity duration-200" style={{ width: '14px', height: 'auto', display: 'block', opacity: item.p.percent === 100 ? 0.4 : 1 }} />
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                              <div style={{ position: 'relative', width: circleSize, height: circleSize }}>
+                                <svg width={circleSize} height={circleSize} style={{ transform: 'rotate(-90deg)' }}>
+                                  <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth={strokeWidth} />
+                                  {item.p.hasFiles && item.p.percent > 0 && (
+                                    <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke="#ffffff" strokeWidth={strokeWidth} strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
+                                  )}
+                                </svg>
+                                <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 800, color: textColor }}>
+                                  {item.p.hasFiles ? `${item.p.percent}%` : 'N/A'}
+                                </span>
                               </div>
+                              <div className="cursor-pointer" style={{ position: 'relative', opacity: item.p.percent === 100 ? 0.5 : 1 }} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }} data-testid={item.testPlay}>
+                                <Headphones style={{ width: '20px', height: '20px', color: item.dark ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.7)' }} />
+                                <div style={{ position: 'absolute', bottom: '-2px', right: '-4px', width: '12px', height: '12px', borderRadius: '3px', background: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                  <Play style={{ width: '7px', height: '7px', color: '#fff', fill: '#fff', marginLeft: '1px' }} />
+                                </div>
+                              </div>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                              <span style={{ fontSize: '6px', fontWeight: 800, color: textColor, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{item.label}</span>
                               <div className="cursor-pointer" data-testid={item.testUpload} onClick={(e) => { e.stopPropagation(); item.upload(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.upload(); }}>
-                                <Upload className={`h-[10px] w-[10px] ${item.iconColor} transition-colors`} />
+                                <Upload style={{ width: '8px', height: '8px', color: item.dark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)' }} />
                               </div>
                             </div>
                           </div>
@@ -24169,45 +24172,48 @@ export default function Dashboard() {
                           <span className="text-[9px] font-bold text-black/60">N/A</span>
                         </div>
                       ) : (
-                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '4px 6px', flex: 1 }}>
-                          {[
-                            { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), testPlay: `float-play-module-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-module-${pd.courseCode.toLowerCase()}`, iconColor: 'text-blue-300/60 hover:text-blue-300' },
-                            { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), testPlay: `float-play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-reading-${pd.courseCode.toLowerCase()}`, iconColor: 'text-purple-300/60 hover:text-purple-300' },
-                          ].map(item => {
-                            const circleSize = 42;
+                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, borderRadius: '6px', overflow: 'hidden' }}>
+                          {(() => { const cGrad = getCourseGradientColors(pd.courseCode); return [
+                            { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), testPlay: `float-play-module-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-module-${pd.courseCode.toLowerCase()}`, bg: cGrad.start, dark: true },
+                            { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), testPlay: `float-play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-reading-${pd.courseCode.toLowerCase()}`, bg: cGrad.end, dark: false },
+                          ]; })().map(item => {
+                            const circleSize = 44;
                             const strokeWidth = 3.5;
                             const radius = (circleSize - strokeWidth) / 2;
                             const circumference = 2 * Math.PI * radius;
                             const offset = circumference - (item.p.percent / 100) * circumference;
-                            const progressColor = item.p.percent === 100 ? '#22c55e' : item.p.percent > 0 ? '#38bdf8' : 'rgba(255,255,255,0.3)';
+                            const isModule = item.type === 'module';
+                            const textColor = item.dark ? '#fff' : '#000';
                             return (
-                              <div key={item.type} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px', position: 'relative', flex: 1, minWidth: 0 }}>
+                              <div key={item.type} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', position: 'relative', flex: 1, minWidth: 0, background: item.bg, padding: '5px 3px 4px' }}>
                                 {item.p.hasFiles && item.unread > 0 && item.p.percent < 100 && (
-                                  <div className="bg-[#FF0000] text-white text-[6px] font-bold rounded-full min-w-[10px] h-[10px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ position: 'absolute', top: '-2px', right: '2px', zIndex: 10 }}>
+                                  <div className="bg-[#FF0000] text-white text-[6px] font-bold rounded-full min-w-[10px] h-[10px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ position: 'absolute', top: '1px', right: '1px', zIndex: 10 }}>
                                     {item.unread}
                                   </div>
                                 )}
-                                <div style={{ position: 'relative', width: circleSize, height: circleSize, cursor: 'pointer' }} onClick={item.play} onTouchEnd={(e) => { e.preventDefault(); item.play(); }} data-testid={item.testPlay}>
-                                  <svg width={circleSize} height={circleSize} style={{ transform: 'rotate(-90deg)' }}>
-                                    <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={strokeWidth} />
-                                    {item.p.hasFiles && item.p.percent > 0 && (
-                                      <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke={progressColor} strokeWidth={strokeWidth} strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
-                                    )}
-                                  </svg>
-                                  <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700, color: '#000', textShadow: 'none' }}>
-                                    {item.p.hasFiles ? `${item.p.percent}%` : 'N/A'}
-                                  </span>
-                                </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                  {item.p.hasFiles && <Paperclip className="h-[6px] w-[6px] text-black/70 flex-shrink-0" />}
-                                  <span style={{ fontSize: '7px', fontWeight: 600, color: '#000', textTransform: 'uppercase', letterSpacing: '0.5px', textShadow: 'none', whiteSpace: 'nowrap' }}>{item.label}</span>
-                                </div>
-                                <div style={{ display: 'flex', gap: '3px', alignItems: 'center', marginTop: '-1px' }}>
-                                  <div className="cursor-pointer" onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }}>
-                                    <img src={readerIconPath} alt="Reader" className="hover:opacity-80 transition-opacity duration-200" style={{ width: '14px', height: 'auto', display: 'block', opacity: item.p.percent === 100 ? 0.4 : 1 }} />
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                  <div style={{ position: 'relative', width: circleSize, height: circleSize }}>
+                                    <svg width={circleSize} height={circleSize} style={{ transform: 'rotate(-90deg)' }}>
+                                      <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth={strokeWidth} />
+                                      {item.p.hasFiles && item.p.percent > 0 && (
+                                        <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke="#ffffff" strokeWidth={strokeWidth} strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
+                                      )}
+                                    </svg>
+                                    <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 800, color: textColor }}>
+                                      {item.p.hasFiles ? `${item.p.percent}%` : 'N/A'}
+                                    </span>
                                   </div>
+                                  <div className="cursor-pointer" style={{ position: 'relative', opacity: item.p.percent === 100 ? 0.5 : 1 }} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }} data-testid={item.testPlay}>
+                                    <Headphones style={{ width: '22px', height: '22px', color: item.dark ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.7)' }} />
+                                    <div style={{ position: 'absolute', bottom: '-2px', right: '-4px', width: '13px', height: '13px', borderRadius: '3px', background: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                      <Play style={{ width: '8px', height: '8px', color: '#fff', fill: '#fff', marginLeft: '1px' }} />
+                                    </div>
+                                  </div>
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                                  <span style={{ fontSize: '7px', fontWeight: 800, color: textColor, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{item.label}</span>
                                   <div className="cursor-pointer" data-testid={item.testUpload} onClick={(e) => { e.stopPropagation(); item.upload(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.upload(); }}>
-                                    <Upload className={`h-[10px] w-[10px] ${item.iconColor} transition-colors`} />
+                                    <Upload style={{ width: '9px', height: '9px', color: item.dark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)' }} />
                                   </div>
                                 </div>
                               </div>
