@@ -17,6 +17,7 @@ import OneDrivePage from "@/pages/onedrive";
 import SpotifyPlayerPage from "@/pages/spotify-player";
 import OneNotePage from "@/pages/onenote";
 import MobileNotesPage from "@/pages/mobile-notes";
+import CodeCheckerPage from "@/pages/code-checker";
 import TickerPage from "@/pages/ticker";
 
 function useAutoFullscreen() {
@@ -144,6 +145,7 @@ function Router() {
       <Route path="/spotify" component={SpotifyPlayerPage} />
       <Route path="/onenote" component={OneNotePage} />
       <Route path="/mobile/notes" component={MobileNotesPage} />
+      <Route path="/code-checker" component={CodeCheckerPage} />
       <Route component={NotFound} />
     </Switch>
   );

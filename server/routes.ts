@@ -17224,6 +17224,114 @@ Return ONLY the JSON object, no markdown formatting.`;
     }
   });
 
+  app.post("/api/code-checker/analyze", async (req, res) => {
+    try {
+      const { code, language } = req.body;
+      if (!code || !language) return res.status(400).json({ error: "code and language required" });
+
+      const OpenAI = (await import("openai")).default;
+      const openai = new OpenAI({
+        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+      });
+
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content: `You are a helpful code reviewer for a beginner programmer. Analyze the provided ${language} code and:
+1. List any syntax errors, bugs, or logical issues you find
+2. For each issue, explain WHAT is wrong and HOW to fix it in simple terms
+3. If the code is correct, say so and suggest any improvements
+4. Show the corrected version of the code if there are errors
+Keep your tone friendly and educational. Format your response clearly with numbered points.`
+          },
+          { role: "user", content: code }
+        ],
+        max_tokens: 2000,
+      });
+
+      const analysis = completion.choices[0]?.message?.content || "No analysis generated";
+      res.json({ analysis });
+    } catch (error: any) {
+      console.error("[CodeChecker] Analysis error:", error);
+      res.status(500).json({ error: error.message || "Analysis failed" });
+    }
+  });
+
+  app.post("/api/code-checker/email", async (req, res) => {
+    try {
+      const { code, language, analysis } = req.body;
+      if (!analysis) return res.status(400).json({ error: "analysis required" });
+
+      const { getGmailAccessToken } = await import("./gmail");
+      const accessToken = await getGmailAccessToken();
+
+      const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
+      const xReplitToken = process.env.REPL_IDENTITY
+        ? 'repl ' + process.env.REPL_IDENTITY
+        : process.env.WEB_REPL_RENEWAL
+        ? 'depl ' + process.env.WEB_REPL_RENEWAL
+        : null;
+
+      let outlookEmail = "";
+      if (xReplitToken && hostname) {
+        const outlookRes = await fetch(
+          'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=outlook',
+          { headers: { 'Accept': 'application/json', 'X-Replit-Token': xReplitToken } }
+        );
+        const outlookData = await outlookRes.json();
+        const outlookConn = outlookData.items?.[0];
+        const outlookToken = outlookConn?.settings?.access_token;
+        if (outlookToken) {
+          const profileRes = await fetch('https://graph.microsoft.com/v1.0/me', {
+            headers: { 'Authorization': 'Bearer ' + outlookToken }
+          });
+          const profile = await profileRes.json();
+          outlookEmail = profile.mail || profile.userPrincipalName || "";
+        }
+      }
+
+      if (!outlookEmail) return res.status(500).json({ error: "Could not get Outlook email" });
+
+      const subject = `Code Review: ${language} - ${new Date().toLocaleDateString()}`;
+      const emailBody = `CODE REVIEW RESULTS\n${"=".repeat(40)}\nLanguage: ${language}\nDate: ${new Date().toLocaleString()}\n\n${"─".repeat(40)}\nYOUR CODE:\n${"─".repeat(40)}\n${code}\n\n${"─".repeat(40)}\nANALYSIS:\n${"─".repeat(40)}\n${analysis}`;
+
+      const boundary = 'boundary_' + Date.now();
+      const rawEmail = [
+        `Content-Type: text/plain; charset="UTF-8"`,
+        'MIME-Version: 1.0',
+        `To: ${outlookEmail}`,
+        'From: homeworkbryn@gmail.com',
+        `Subject: ${subject}`,
+        '',
+        emailBody,
+      ].join('\r\n');
+
+      const encodedMessage = Buffer.from(rawEmail)
+        .toString('base64')
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+
+      const sendRes = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ raw: encodedMessage })
+      });
+
+      const sendResult = await sendRes.json();
+      if (sendResult.error) throw new Error(JSON.stringify(sendResult.error));
+
+      console.log(`[CodeChecker] Email sent to ${outlookEmail}, ID: ${sendResult.id}`);
+      res.json({ success: true, messageId: sendResult.id, sentTo: outlookEmail });
+    } catch (error: any) {
+      console.error("[CodeChecker] Email error:", error);
+      res.status(500).json({ error: error.message || "Email failed" });
+    }
+  });
+
   return httpServer;
 }
 
