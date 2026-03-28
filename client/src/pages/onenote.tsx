@@ -563,6 +563,14 @@ export default function OneNotePage() {
                 {selectedNotebook.name} &rsaquo; {selectedSection.name}
               </span>
               <div className="flex-1" />
+              <button
+                className="flex items-center gap-1.5 px-2 py-1 rounded text-[10px] text-purple-300/70 hover:text-purple-300 hover:bg-white/5 transition-colors"
+                onClick={() => window.open('https://www.onenote.com/notebooks', '_blank')}
+                data-testid="button-open-onenote"
+              >
+                <ExternalLink className="h-3 w-3" />
+                Open in OneNote
+              </button>
               <span className="text-[10px] text-white/25">
                 {pages.length} page{pages.length !== 1 ? 's' : ''}
               </span>
@@ -575,7 +583,15 @@ export default function OneNotePage() {
               ) : pages.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full gap-3">
                   <FileText className="h-10 w-10 text-white/10" />
-                  <p className="text-sm text-white/30">No pages in this section</p>
+                  <p className="text-sm text-white/30">No pages available</p>
+                  <button
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs text-purple-300/80 hover:text-purple-200 bg-white/5 hover:bg-white/10 transition-colors"
+                    onClick={() => window.open('https://www.onenote.com/notebooks', '_blank')}
+                    data-testid="button-open-onenote-empty"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    View in OneNote Online
+                  </button>
                 </div>
               ) : (
                 <div className="max-w-3xl mx-auto px-8 py-6 space-y-4">

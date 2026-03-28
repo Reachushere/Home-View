@@ -724,6 +724,23 @@ export async function listOneNoteNotebooks(): Promise<{ name: string; path: stri
   const client = await getOneDriveClient();
   const notebooks: { name: string; path: string; sections: { name: string; id: string }[] }[] = [];
 
+  try {
+    const nbRes = await client.api('/me/onenote/notebooks').select('id,displayName,createdDateTime').orderby('createdDateTime desc').get();
+    for (const nb of (nbRes.value || [])) {
+      try {
+        const secRes = await client.api(`/me/onenote/notebooks/${nb.id}/sections`).select('id,displayName').get();
+        const sections = (secRes.value || []).map((s: any) => ({ name: s.displayName, id: s.id }));
+        notebooks.push({ name: nb.displayName, path: nb.id, sections });
+      } catch (secErr: any) {
+        console.error(`[OneNote] Failed to list sections for ${nb.displayName}:`, secErr.message);
+        notebooks.push({ name: nb.displayName, path: nb.id, sections: [] });
+      }
+    }
+    if (notebooks.length > 0) return notebooks;
+  } catch (e: any) {
+    console.log(`[OneNote] Graph OneNote API unavailable (${e.code || e.message}), falling back to OneDrive file scan`);
+  }
+
   const knownPaths = [
     { name: "Bryn's Notebook", path: "/Documents/Bryn's Notebook" },
     { name: "Notebook", path: "/School/1. TMU/Notebook" },
