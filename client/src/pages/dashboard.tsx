@@ -17349,7 +17349,7 @@ export default function Dashboard() {
                       >
                         <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: dotColor }} />
                         {isSS ? (
-                          <>
+                          <div style={{ display: 'flex', alignItems: 'center', width: '70px', minWidth: '70px', flexShrink: 0 }}>
                             {ssNeedsA && (
                               <PrioritySelect
                                 priorityKey={priorityKeyA}
@@ -17374,7 +17374,7 @@ export default function Dashboard() {
                                 suffix="B"
                               />
                             )}
-                          </>
+                          </div>
                         ) : (
                           <PrioritySelect
                             priorityKey={priorityKeyA}
