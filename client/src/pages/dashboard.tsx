@@ -1065,6 +1065,20 @@ export default function Dashboard() {
       }
     }).catch(() => {});
   }, []);
+  const getTodayCellGradient = () => {
+    const now = new Date();
+    const h = now.getHours() + now.getMinutes() / 60;
+    if (h < 5) return 'linear-gradient(180deg, #1a1a2e 0%, #16213e 100%)';
+    if (h < 7) return 'linear-gradient(180deg, #2a4a7f 0%, #7ba0c9 100%)';
+    if (h < 10) return 'linear-gradient(180deg, #87CEEB 0%, #b8d4e8 100%)';
+    if (h < 13) return 'linear-gradient(180deg, #87CEEB 0%, #a8c8e0 100%)';
+    if (h < 16) return 'linear-gradient(180deg, #87CEEB 0%, #c4a882 100%)';
+    if (h < 18) return 'linear-gradient(180deg, #c4956a 0%, #d4845a 100%)';
+    if (h < 20) return 'linear-gradient(180deg, #c06040 0%, #3d2b56 100%)';
+    if (h < 22) return 'linear-gradient(180deg, #2d2045 0%, #1a1a2e 100%)';
+    return 'linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%)';
+  };
+  const todayCellBg = getTodayCellGradient();
   const hwGroupBarDragRef = useRef<{ startX: number; startWidth: number } | null>(null);
   const hwTimelineDividerRef = useRef<HTMLDivElement>(null);
   const [hwTimelinePos, setHwTimelinePos] = useState<{ top: number; left: number } | null>(null);
@@ -23244,7 +23258,7 @@ export default function Dashboard() {
                                     flex: 1, minWidth: 0, height: '11px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
                                     display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                                     color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
-                                    backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.15)',
+                                    background: isToday ? todayCellBg : isDue ? dueColor : 'rgba(255,255,255,0.15)',
                                     border: isDue && !isToday ? `1px solid ${dueColor}` : 'none',
                                   }} data-testid={`mini-cal-today-${format(d, 'yyyy-MM-dd')}`}>
                                     {d.getDate()}
@@ -23415,7 +23429,7 @@ export default function Dashboard() {
                                             flex: 1, minWidth: 0, height: '11px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
-                                            backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.15)',
+                                            background: isToday ? todayCellBg : isDue ? dueColor : 'rgba(255,255,255,0.15)',
                                             border: isDue && !isToday ? `1px solid ${dueColor}` : 'none',
                                           }} data-testid={`mini-cal-w10-date-${format(d, 'yyyy-MM-dd')}`}>
                                             {d.getDate()}
@@ -23590,7 +23604,7 @@ export default function Dashboard() {
                                             flex: 1, minWidth: 0, height: '11px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
-                                            backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.15)',
+                                            background: isToday ? todayCellBg : isDue ? dueColor : 'rgba(255,255,255,0.15)',
                                             border: isDue && !isToday ? `1px solid ${dueColor}` : 'none',
                                           }} data-testid={`mini-cal-w11-date-${format(d, 'yyyy-MM-dd')}`}>
                                             {d.getDate()}
@@ -23782,7 +23796,7 @@ export default function Dashboard() {
                                             flex: 1, minWidth: 0, height: '11px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
-                                            backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.15)',
+                                            background: isToday ? todayCellBg : isDue ? dueColor : 'rgba(255,255,255,0.15)',
                                             border: isDue && !isToday ? `1px solid ${dueColor}` : 'none',
                                           }} data-testid={`mini-cal-date-${format(d, 'yyyy-MM-dd')}`}>
                                             {d.getDate()}
@@ -23977,7 +23991,7 @@ export default function Dashboard() {
                                             flex: 1, minWidth: 0, height: '11px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
-                                            backgroundColor: isToday ? '#ef4444' : isDue ? dueColor : 'rgba(255,255,255,0.15)',
+                                            background: isToday ? todayCellBg : isDue ? dueColor : 'rgba(255,255,255,0.15)',
                                             border: isDue && !isToday ? `1px solid ${dueColor}` : 'none',
                                           }} data-testid={`mini-cal-date-${format(d, 'yyyy-MM-dd')}`}>
                                             {d.getDate()}
