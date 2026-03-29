@@ -23434,12 +23434,28 @@ export default function Dashboard() {
           </div>}
           {(() => {
             const currentYear = 2026;
+            const now = new Date();
+            const semDates = {
+              w2026End: new Date(2026, 3, 10),
+              ss2026Start: new Date(2026, 4, 4), ss2026End: new Date(2026, 7, 7),
+              f2026Start: new Date(2026, 8, 8), f2026End: new Date(2026, 11, 11),
+              w2027Start: new Date(2027, 0, 11),
+            };
             const semTabs: Array<{ id: string; label: string; semLabel: string; scrollTarget: string }> = [];
             semTabs.push({ id: 'wk-current', label: `Wk ${selectedWeek}`, semLabel: hwWeeklyTimeline[0]?.semLabel || 'Winter 2026', scrollTarget: 'thisweek' });
             semTabs.push({ id: 'wk-next', label: `Wk ${selectedWeek + 1}`, semLabel: hwWeeklyTimeline[1]?.semLabel || 'Winter 2026', scrollTarget: 'nextweek' });
             semTabs.push({ id: 'wk-third', label: `Wk ${selectedWeek + 2}`, semLabel: hwWeeklyTimeline[2]?.semLabel || 'Winter 2026', scrollTarget: 'twoweeks' });
-            for (let w = 1; w <= 3; w++) {
-              semTabs.push({ id: `ss26-wk${w}`, label: `SS Wk ${w}`, semLabel: 'Spring/Summer 2026', scrollTarget: w === 1 ? 'sem-ss2026' : `sem-ss2026-wk${w}` });
+            if (now < semDates.ss2026Start) {
+              semTabs.push({ id: 'april-gap', label: 'April', semLabel: 'Winter 2026', scrollTarget: 'threeweeks' });
+            }
+            if (now < semDates.f2026Start) {
+              const ssMaxWk = now >= semDates.ss2026Start ? 4 : 4;
+              for (let w = 1; w <= ssMaxWk; w++) {
+                semTabs.push({ id: `ss26-wk${w}`, label: `SS Wk ${w}`, semLabel: 'Spring/Summer 2026', scrollTarget: w === 1 ? 'sem-ss2026' : `sem-ss2026-wk${w}` });
+              }
+            }
+            if (now >= semDates.ss2026End && now < semDates.f2026Start) {
+              semTabs.push({ id: 'aug-sept-gap', label: 'Aug-Sept', semLabel: 'Spring/Summer 2026', scrollTarget: 'sem-ss2026' });
             }
             semTabs.push({ id: 'f-2026', label: 'F 2026', semLabel: 'Fall 2026', scrollTarget: 'sem-f2026' });
             for (let y = currentYear + 1; y <= 2029; y++) {
@@ -23453,14 +23469,14 @@ export default function Dashboard() {
                 style={(() => {
                   const boxEl = document.querySelector('[data-testid="section-coming-up"]') as HTMLElement | null;
                   const boxH = boxEl ? boxEl.offsetHeight : (window.innerHeight - (calendarBorderTop || (calendarTop + 15)) - calendarBottom);
-                  const availH = Math.max(60, boxH - 20);
-                  return { right: '-16px', top: '10px', pointerEvents: 'auto' as const, zIndex: 0, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || hwFloating.detached) ? 'none' : 'block', width: '18px', height: `${availH}px` };
+                  const availH = Math.max(60, boxH + 10);
+                  return { right: '-16px', top: '-5px', pointerEvents: 'auto' as const, zIndex: 0, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || hwFloating.detached) ? 'none' : 'block', width: '18px', height: `${availH}px` };
                 })()}
               >
                 {(() => {
                   const boxEl = document.querySelector('[data-testid="section-coming-up"]') as HTMLElement | null;
                   const boxH = boxEl ? boxEl.offsetHeight : (window.innerHeight - (calendarBorderTop || (calendarTop + 15)) - calendarBottom);
-                  const availH = Math.max(60, boxH - 20);
+                  const availH = Math.max(60, boxH + 10);
                   const n = semTabs.length;
                   const overlapRatio = 0.4;
                   const tabH = availH / (1 + (n - 1) * (1 - overlapRatio));
@@ -23469,6 +23485,7 @@ export default function Dashboard() {
                   const isActive = (() => {
                     if (tab.id === 'wk-current') return !hwVisibleSemLabel || hwVisibleSemLabel === tab.semLabel;
                     if (tab.id === 'wk-next' || tab.id === 'wk-third') return false;
+                    if (tab.id === 'april-gap' || tab.id === 'aug-sept-gap') return false;
                     if (tab.id.startsWith('ss26-wk')) return tab.id === 'ss26-wk1' && scrollActiveSem === tab.semLabel;
                     return scrollActiveSem === tab.semLabel;
                   })();
