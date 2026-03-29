@@ -3326,15 +3326,17 @@ export default function Dashboard() {
         }
         setIsResizingHomework(false);
         resizingHomeworkRef.current = null;
-        localStorage.setItem('calendarReduction', String(calendarReduction));
+        const curRed = calendarReductionRef.current;
+        localStorage.setItem('calendarReduction', String(curRed));
         const sw = window.screen.width, sh = window.screen.height, pr = window.devicePixelRatio || 1;
-        localStorage.setItem(`calendarReduction_device_${sw}x${sh}@${pr}`, String(calendarReduction));
+        localStorage.setItem(`calendarReduction_device_${sw}x${sh}@${pr}`, String(curRed));
       } else if (isResizingHomework) {
         setIsResizingHomework(false);
         resizingHomeworkRef.current = null;
-        localStorage.setItem('calendarReduction', String(calendarReduction));
+        const curRed2 = calendarReductionRef.current;
+        localStorage.setItem('calendarReduction', String(curRed2));
         const sw = window.screen.width, sh = window.screen.height, pr = window.devicePixelRatio || 1;
-        localStorage.setItem(`calendarReduction_device_${sw}x${sh}@${pr}`, String(calendarReduction));
+        localStorage.setItem(`calendarReduction_device_${sw}x${sh}@${pr}`, String(curRed2));
       }
       if (columnResizing?.isResizing || rowResizing?.isResizing) {
         setTimeout(() => {
