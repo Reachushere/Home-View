@@ -17863,6 +17863,7 @@ Keep your tone friendly and educational. Format your response clearly with numbe
           headers: { Authorization: `Bearer ${accessToken}` },
         });
         const listData = await listResp.json() as any;
+        if (listData.error) { console.log("[Email] Gmail search error:", listData.error.message || JSON.stringify(listData.error)); }
         if (!listData.messages) return [];
         const emails: any[] = [];
         for (const msg of listData.messages.slice(0, 50)) {
@@ -17895,6 +17896,7 @@ Keep your tone friendly and educational. Format your response clearly with numbe
           headers: { Authorization: `Bearer ${accessToken}` },
         });
         const listData = await listResp.json() as any;
+        if (listData.error) { console.log("[Email] Gmail2 search error:", listData.error.message || JSON.stringify(listData.error)); }
         if (!listData.messages) return [];
         const emails: any[] = [];
         for (const msg of listData.messages.slice(0, 50)) {
@@ -17912,10 +17914,14 @@ Keep your tone friendly and educational. Format your response clearly with numbe
       const searchOutlook = async () => {
         const client = await getOutlookClient();
         const filters: string[] = [];
-        if (searchTerm) filters.push(`contains(subject,'${searchTerm.replace(/'/g, "''")}') or contains(from/emailAddress/address,'${searchTerm.replace(/'/g, "''")}')`);
         if (dateFrom) filters.push(`receivedDateTime ge ${dateFrom}T00:00:00Z`);
         if (dateTo) filters.push(`receivedDateTime le ${dateTo}T23:59:59Z`);
-        let url = '/me/messages?$top=50&$select=id,subject,from,receivedDateTime,bodyPreview&$orderby=receivedDateTime desc';
+        let url = '/me/messages?$top=50&$select=id,subject,from,receivedDateTime,bodyPreview';
+        if (searchTerm) {
+          url += `&$search="${encodeURIComponent(searchTerm)}"`;
+        } else {
+          url += '&$orderby=receivedDateTime desc';
+        }
         if (filters.length > 0) url += `&$filter=${encodeURIComponent(filters.join(' and '))}`;
         const resp = await client.api(url).get();
         return (resp.value || []).map((m: any) => ({ id: m.id, subject: m.subject || '(no subject)', from: m.from?.emailAddress?.address || '', date: m.receivedDateTime || '', account: 'outlook', snippet: (m.bodyPreview || '').substring(0, 100) }));
