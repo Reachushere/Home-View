@@ -23363,16 +23363,16 @@ export default function Dashboard() {
             </div>
           </div>}
           {(() => {
-            const allSemDefs: Array<{ letter: string; year: string; semLabel: string; endDate: Date }> = [];
-            for (let y = 2026; y <= 2029; y++) {
-              allSemDefs.push({ letter: 'W', year: String(y).slice(2), semLabel: 'Winter ' + y, endDate: new Date(y, 3, 17) });
-              if (y < 2029) {
-                allSemDefs.push({ letter: 'S', year: String(y).slice(2), semLabel: 'Spring/Summer ' + y, endDate: new Date(y, 7, 4) });
-                allSemDefs.push({ letter: 'F', year: String(y).slice(2), semLabel: 'Fall ' + y, endDate: new Date(y, 11, 7) });
-              }
+            const currentYear = 2026;
+            const semTabs: Array<{ id: string; label: string; semLabel: string; scrollTarget: string }> = [];
+            semTabs.push({ id: 'wk-current', label: `Wk ${selectedWeek}`, semLabel: hwWeeklyTimeline[0]?.semLabel || 'Winter 2026', scrollTarget: 'thisweek' });
+            semTabs.push({ id: 'wk-next', label: `Wk ${selectedWeek + 1}`, semLabel: hwWeeklyTimeline[1]?.semLabel || 'Winter 2026', scrollTarget: 'nextweek' });
+            semTabs.push({ id: 'wk-third', label: `Wk ${selectedWeek + 2}`, semLabel: hwWeeklyTimeline[2]?.semLabel || 'Winter 2026', scrollTarget: 'twoweeks' });
+            semTabs.push({ id: 'ss-2026', label: 'SS 2026', semLabel: 'Spring/Summer 2026', scrollTarget: 'sem-ss2026' });
+            semTabs.push({ id: 'f-2026', label: 'F 2026', semLabel: 'Fall 2026', scrollTarget: 'sem-f2026' });
+            for (let y = currentYear + 1; y <= 2029; y++) {
+              semTabs.push({ id: `year-${y}`, label: String(y), semLabel: `Winter ${y}`, scrollTarget: `sem-w${y}` });
             }
-            const todayDate = new Date();
-            const semTabs = allSemDefs.filter(s => s.endDate >= todayDate);
             const currentSemLabel = hwWeeklyTimeline[0]?.semLabel || null;
             const scrollActiveSem = hwVisibleSemLabel || currentSemLabel;
             return (
@@ -23394,115 +23394,64 @@ export default function Dashboard() {
                   const tabH = availH / (1 + (n - 1) * (1 - overlapRatio));
                   const stepPx = tabH * (1 - overlapRatio);
                   return semTabs.map((tab, tabIdx) => {
-                  const isActive = scrollActiveSem === tab.semLabel;
+                  const isActive = (() => {
+                    if (tab.id === 'wk-current') return !hwVisibleSemLabel || hwVisibleSemLabel === tab.semLabel;
+                    if (tab.id === 'wk-next') return false;
+                    if (tab.id === 'wk-third') return false;
+                    return scrollActiveSem === tab.semLabel;
+                  })();
                   const reversedIdx = semTabs.length - 1 - tabIdx;
                   return (
                     <div
-                      key={tab.semLabel}
+                      key={tab.id}
                       className={`cursor-pointer${isActive && tabBounceEnabled ? ' semester-tab-bounce' : ''}`}
                       style={{ position: 'absolute', bottom: `${reversedIdx * stepPx}px`, width: '18px', height: `${tabH}px`, zIndex: isActive ? 100 : semTabs.length - tabIdx, clipPath: isActive ? 'none' : 'inset(0 0 0 2px)', transition: 'width 0.25s ease, transform 0.25s ease', transform: isActive ? 'translateX(2px)' : 'none' }}
                       onClick={() => {
-                        let idx = -1;
-                        if (tab.letter === 'W' && tab.year === '26') {
-                          idx = hwWeeklyTimeline.findIndex(w => w.semLabel === 'Winter 2026' && w.weekNum === 10);
-                        } else if (tab.letter === 'S' && tab.year === '26') {
-                          idx = hwWeeklyTimeline.findIndex(w => w.semLabel === 'Winter 2026' && w.weekNum === 11);
-                        } else if (tab.letter === 'F' && tab.year === '26') {
-                          idx = hwWeeklyTimeline.findIndex(w => w.semLabel === 'Winter 2026' && w.weekNum === 12);
-                        } else if (tab.letter === 'W' && tab.year === '27') {
-                          idx = hwWeeklyTimeline.findIndex(w => w.weekStart.getMonth() === 4 && w.weekStart.getFullYear() === 2026);
-                        } else if (tab.letter === 'S' && tab.year === '27') {
-                          idx = hwWeeklyTimeline.findIndex(w => w.weekStart.getMonth() === 5 && w.weekStart.getFullYear() === 2026);
-                        } else if (tab.letter === 'F' && tab.year === '27') {
-                          idx = hwWeeklyTimeline.findIndex(w => w.weekStart.getMonth() === 6 && w.weekStart.getFullYear() === 2026);
-                        } else if (tab.letter === 'W' && tab.year === '28') {
-                          idx = hwWeeklyTimeline.findIndex(w => w.semLabel === 'Fall 2026' && w.weekNum === 1);
-                        } else if (tab.letter === 'S' && tab.year === '28') {
-                          idx = hwWeeklyTimeline.findIndex(w => w.semLabel === 'Winter 2027' && w.weekNum === 1);
-                        } else if (tab.letter === 'F' && tab.year === '28') {
-                          idx = hwWeeklyTimeline.findIndex(w => w.semLabel === 'Winter 2028' && w.weekNum === 1);
-                        } else {
-                          idx = hwWeeklyTimeline.findIndex(w => w.semLabel === 'Winter 2029' && w.weekNum === 1);
-                        }
-                        if (idx < 0) idx = hwWeeklyTimeline.length - 1;
-                        const targetWeek = hwWeeklyTimeline[idx];
-                        if (targetWeek && targetWeek.weekNum) {
-                          setSelectedWeek(targetWeek.weekNum);
-                        }
                         if (homeworkScrollRef.current) {
                           const scrollContainer = homeworkScrollRef.current;
-                          if (idx < 4) {
-                            const sectionIds = ['thisweek', 'nextweek', 'twoweeks', 'threeweeks'];
-                            const el = scrollContainer.querySelector(`[data-homework-section="${sectionIds[idx]}"]`);
+                          const weekSections: Record<string, string> = { thisweek: 'thisweek', nextweek: 'nextweek', twoweeks: 'twoweeks' };
+                          if (weekSections[tab.scrollTarget]) {
+                            const el = scrollContainer.querySelector(`[data-homework-section="${weekSections[tab.scrollTarget]}"]`);
                             if (el) {
                               const elTop = (el as HTMLElement).offsetTop - scrollContainer.offsetTop;
                               scrollContainer.scrollTo({ top: elTop - 4, behavior: 'smooth' });
                             }
                           } else {
-                            const targetWeekISO = hwWeeklyTimeline[idx]?.weekStart?.toISOString();
-                            if (targetWeekISO) {
-                              const allSemLabels = scrollContainer.querySelectorAll('[data-semester-label]');
-                              let targetEl: Element | null = null;
-                              for (const el of allSemLabels) {
-                                const key = el.getAttribute('data-semester-label');
-                                if (key && hwWeeklyTimeline[idx]?.semLabel && key === hwWeeklyTimeline[idx].semLabel) {
-                                  targetEl = el;
-                                  break;
-                                }
-                              }
-                              if (!targetEl) {
-                                const threeWeeksEl = scrollContainer.querySelector('[data-homework-section="threeweeks"]');
-                                targetEl = threeWeeksEl;
-                              }
-                              if (targetEl) {
-                                const elTop = (targetEl as HTMLElement).offsetTop - scrollContainer.offsetTop;
-                                scrollContainer.scrollTo({ top: elTop - 4, behavior: 'smooth' });
-                              }
+                            const semLabelTarget = tab.semLabel;
+                            const allSemLabels = scrollContainer.querySelectorAll('[data-semester-label]');
+                            let targetEl: Element | null = null;
+                            for (const el of allSemLabels) {
+                              const key = el.getAttribute('data-semester-label');
+                              if (key === semLabelTarget) { targetEl = el; break; }
+                            }
+                            if (!targetEl) {
+                              const threeWeeksEl = scrollContainer.querySelector('[data-homework-section="threeweeks"]');
+                              targetEl = threeWeeksEl;
+                            }
+                            if (targetEl) {
+                              const elTop = (targetEl as HTMLElement).offsetTop - scrollContainer.offsetTop;
+                              scrollContainer.scrollTo({ top: elTop - 4, behavior: 'smooth' });
                             }
                           }
                         }
                       }}
-                      data-testid={`semester-tab-${tab.letter.toLowerCase()}${tab.year}`}
+                      data-testid={`semester-tab-${tab.id}`}
                       title={tab.semLabel}
                     >
                       <svg width="18" height={tabH} viewBox="0 0 16 54" style={{ display: 'block' }}>
                         <defs><filter id={`tabShadow-${tabIdx}`} x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="0" stdDeviation="0.5" floodColor="black" floodOpacity="0.3" /></filter></defs>
-                        <path d={semTabs.indexOf(tab) === 0
+                        <path d={tabIdx === 0
                           ? "M0.00 0.00 L0.00 54.00 L3.55 53.98 C3.56,53.98 3.86,52.68 4.88,51.40 C7.21,49.06 12.79,48.74 15.29,45.10 C15.60,44.64 15.83,44.03 16.00,43.29 L16.00 22.62 L16.00 19.38 L16.00 10.71 C15.83,9.98 15.60,9.36 15.29,8.90 C12.79,5.27 7.21,4.94 4.88,2.60 C4.49,2.59 3.55,0.02 3.55,0.02 L0.00 0.00 Z"
                           : "M0.00 54.00 L0.00 4.53 L3.55 4.50 C3.56,4.50 3.86,3.06 4.88,1.65 C5.48,0.99 6.28,0.47 7.20,0.00 C9.86,1.37 13.43,2.33 15.29,5.33 C15.60,5.84 15.83,6.52 16.00,7.33 L16.00 16.95 L16.00 20.53 L16.00 42.13 C15.83,42.94 15.60,43.63 15.29,44.14 C12.79,48.17 7.21,48.53 4.88,51.12 C4.49,51.13 3.55,53.98 3.55,53.98 L0.00 54.00 Z"
                         } fill={isActive ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.3)'} stroke={isActive ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.7)'} strokeWidth={isActive ? '1.5' : '1.2'} />
                         {(() => {
-                          const tFs = '8';
+                          const tFs = '7';
                           const tFw = isActive ? '450' : '350';
-                          const tFs2 = '7';
-                          const isTopTab = semTabs.indexOf(tab) === 0;
+                          const isTopTab = tabIdx === 0;
                           const tFill = isTopTab ? colorSettings.mainBackground : 'rgba(255,255,255,0.75)';
-                          return semTabs.indexOf(tab) === semTabs.length - 1 ? (
-                          <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">2029</text>
-                        ) : (tab.letter === 'F' && tab.year === '28') ? (
-                          <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">2028</text>
-                        ) : (tab.letter === 'S' && tab.year === '28') ? (
-                          <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">2027</text>
-                        ) : (tab.letter === 'W' && tab.year === '28') ? (
-                          <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">F 2026</text>
-                        ) : (tab.letter === 'W' && tab.year === '26') ? (
-                          <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">{`Wk ${selectedWeek}`}</text>
-                        ) : (tab.letter === 'S' && tab.year === '26') ? (
-                          <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">{`Wk ${selectedWeek + 1}`}</text>
-                        ) : (tab.letter === 'F' && tab.year === '26') ? (
-                          <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">{`Wk ${selectedWeek + 2}`}</text>
-                        ) : (tab.letter === 'W' && tab.year === '27') ? (
-                          <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">May 26</text>
-                        ) : (tab.letter === 'S' && tab.year === '27') ? (
-                          <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">Jun 26</text>
-                        ) : (tab.letter === 'F' && tab.year === '27') ? (
-                          <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">Jul 26</text>
-                        ) : (
-                          <>
-                            <text x="10" y={semTabs.indexOf(tab) === 0 ? 24 : 22} textAnchor="middle" fill={tFill} fontSize={tFs2} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`}>{tab.letter}</text>
-                            <text x="10" y={semTabs.indexOf(tab) === 0 ? 36 : 34} textAnchor="middle" fill={tFill} fontSize={tFs2} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`}>{tab.year}</text>
-                          </>
-                        );
+                          return (
+                            <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">{tab.label}</text>
+                          );
                         })()}
                       </svg>
                     </div>
