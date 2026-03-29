@@ -23518,7 +23518,7 @@ export default function Dashboard() {
                   const n = semTabs.length;
                   const overlapRatio = 0.4;
                   const rawTabH = usableH / (1 + (n - 1) * (1 - overlapRatio));
-                  const tabH = rawTabH - 4;
+                  const tabH = rawTabH - 6;
                   const stepPx = rawTabH * (1 - overlapRatio);
                   return semTabs.map((tab, tabIdx) => {
                   const isActive = (() => {
