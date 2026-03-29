@@ -23515,8 +23515,9 @@ export default function Dashboard() {
                   const availH = Math.max(60, boxH + 30 - 15);
                   const n = semTabs.length;
                   const overlapRatio = 0.4;
-                  const tabH = availH / (1 + (n - 1) * (1 - overlapRatio));
-                  const stepPx = tabH * (1 - overlapRatio);
+                  const rawTabH = availH / (1 + (n - 1) * (1 - overlapRatio));
+                  const tabH = rawTabH - 3;
+                  const stepPx = rawTabH * (1 - overlapRatio);
                   return semTabs.map((tab, tabIdx) => {
                   const isActive = (() => {
                     if (tab.id === 'wk-current') return !hwVisibleSemLabel || hwVisibleSemLabel === tab.semLabel;
