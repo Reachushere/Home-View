@@ -24838,6 +24838,17 @@ export default function Dashboard() {
                               </div>
                             ) : null;
                           })()}
+                          {groupIdx === 0 && tlEntry.semLabel && (() => {
+                            const prevSem = hwWeeklyTimeline[2]?.semLabel;
+                            const showSemSep = !prevSem || prevSem !== tlEntry.semLabel;
+                            return showSemSep ? (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', margin: '4px 0 4px 0', padding: '0 4px' }}>
+                                <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent)' }} />
+                                <span className="text-[9px] font-semibold tracking-wide" style={{ color: 'rgba(255,255,255,0.55)', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>{tlEntry.semLabel}</span>
+                                <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent)' }} />
+                              </div>
+                            ) : null;
+                          })()}
                           {groupIdx > 0 && (() => {
                             const prevEntry = beyondTimeline[tlIdx - 1];
                             const showYearSep = prevEntry && tlEntry.weekStart.getFullYear() !== prevEntry.weekStart.getFullYear();
@@ -24846,6 +24857,17 @@ export default function Dashboard() {
                                 <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)' }} />
                                 <span className="text-[10px] font-bold tracking-widest" style={{ color: 'rgba(255,255,255,0.7)', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>{tlEntry.weekStart.getFullYear()}</span>
                                 <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)' }} />
+                              </div>
+                            ) : null;
+                          })()}
+                          {groupIdx > 0 && tlEntry.semLabel && (() => {
+                            const prevEntry = beyondTimeline[tlIdx - 1];
+                            const showSemSep = prevEntry && prevEntry.semLabel !== tlEntry.semLabel;
+                            return showSemSep ? (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', margin: '4px 0 4px 0', padding: '0 4px' }}>
+                                <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent)' }} />
+                                <span className="text-[9px] font-semibold tracking-wide" style={{ color: 'rgba(255,255,255,0.55)', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>{tlEntry.semLabel}</span>
+                                <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent)' }} />
                               </div>
                             ) : null;
                           })()}
