@@ -4639,6 +4639,8 @@ export default function Dashboard() {
     });
   };
 
+  const shortTermLabel = (val: string) => val.replace(/^20/, '');
+
   const TermDropdown = ({ id, code, isPrevCompleted }: { id: string; code: string; isPrevCompleted?: boolean }) => {
     const val = getEffectiveTerm(id, code);
     return (
@@ -4647,14 +4649,15 @@ export default function Dashboard() {
           value={val}
           onChange={(e) => setTermOverride(id, e.target.value)}
           className="no-dim text-[7px]"
-          style={{ background: 'transparent', border: 'none', outline: 'none', textAlign: 'center', cursor: 'pointer', padding: 0, width: '100%', appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none' as any, color: '#000000' }}
+          style={{ background: 'transparent', border: 'none', outline: 'none', textAlign: 'center', cursor: 'pointer', padding: '0 6px 0 0', width: '100%', appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none' as any, color: '#000000' }}
           data-testid={`term-select-${id}`}
         >
           <option value="">—</option>
           {termLabelOptions.map(opt => (
-            <option key={opt} value={opt}>{opt}</option>
+            <option key={opt} value={opt}>{shortTermLabel(opt)}</option>
           ))}
         </select>
+        <div style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', fontSize: '6px', lineHeight: 1, color: '#666' }}>▼</div>
         {isPrevCompleted && (
           <div style={{ position: 'absolute', top: '50%', left: '2px', right: '2px', height: '1.5px', backgroundColor: '#cc0000', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
         )}
