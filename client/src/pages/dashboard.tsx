@@ -13654,8 +13654,7 @@ export default function Dashboard() {
                   });
                 }
 
-                const allGpaVals: number[] = [];
-                for (const semKey of relevantSemKeys) {
+                const getGpaValsForSem = (semKey: string) => {
                   const courses = semAllCourses[semKey] || [];
                   const vals: number[] = [];
                   for (const c of courses) {
@@ -13688,9 +13687,24 @@ export default function Dashboard() {
                     else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); if (!isNaN(p)) vals.push(pToGpa(p)); }
                     else if (electiveGrade?.grade && electiveGrade.grade.trim() && letterToGpa[electiveGrade.grade] !== undefined) { vals.push(letterToGpa[electiveGrade.grade]); }
                   }
-                  for (const v of vals) allGpaVals.push(v);
+                  return vals;
+                };
+
+                const prevSemKeys = currentSemIdx > 0 ? relevantSemKeys.slice(0, currentSemIdx) : [];
+                const currentSemKey = currentSemIdx >= 0 ? relevantSemKeys[currentSemIdx] : null;
+
+                const prevGpaVals: number[] = [];
+                for (const semKey of prevSemKeys) {
+                  for (const v of getGpaValsForSem(semKey)) prevGpaVals.push(v);
                 }
-                const avgGpa = allGpaVals.length > 0 ? allGpaVals.reduce((a, b) => a + b, 0) / allGpaVals.length : null;
+                const prevGpa = prevGpaVals.length > 0 ? prevGpaVals.reduce((a, b) => a + b, 0) / prevGpaVals.length : null;
+
+                const allGpaVals: number[] = [...prevGpaVals];
+                if (currentSemKey) {
+                  for (const v of getGpaValsForSem(currentSemKey)) allGpaVals.push(v);
+                }
+                const runningGpa = allGpaVals.length > 0 ? allGpaVals.reduce((a, b) => a + b, 0) / allGpaVals.length : null;
+
                 const gpaToLetter = (gpa: number): string => {
                   if (gpa >= 4.17) return 'A+';
                   if (gpa >= 3.84) return 'A';
@@ -13707,13 +13721,20 @@ export default function Dashboard() {
                 return (
                   <div className="rounded-md flex items-center justify-center gap-1.5 px-3" style={{ backgroundColor: '#ffffff', height: '36px', boxSizing: 'border-box', opacity: 1 }} data-testid="l1-gpa-box">
                     <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#555' }}>GPA</span>
-                    {avgGpa !== null ? (
+                    {prevGpa !== null ? (
                       <>
-                        <span className="font-bold text-[14px] leading-none" style={{ color: '#000' }}>{avgGpa.toFixed(2)}</span>
-                        <span className="text-[10px] font-bold leading-none" style={{ color: '#333' }}>({gpaToLetter(avgGpa)})</span>
+                        <span className="font-bold text-[14px] leading-none" style={{ color: '#000' }}>{prevGpa.toFixed(2)}</span>
+                        <span className="text-[10px] font-bold leading-none" style={{ color: '#333' }}>({gpaToLetter(prevGpa)})</span>
                       </>
                     ) : (
                       <span className="text-[10px]" style={{ color: '#aaa' }}>—</span>
+                    )}
+                    {runningGpa !== null && (
+                      <>
+                        <span style={{ color: '#ccc', fontSize: '16px', fontWeight: 300 }}>|</span>
+                        <span className="font-bold text-[14px] leading-none" style={{ color: '#000' }}>{runningGpa.toFixed(2)}</span>
+                        <span className="text-[10px] font-bold leading-none" style={{ color: '#333' }}>({gpaToLetter(runningGpa)})</span>
+                      </>
                     )}
                   </div>
                 );
