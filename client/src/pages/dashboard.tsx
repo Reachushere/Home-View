@@ -23519,7 +23519,7 @@ export default function Dashboard() {
                   const overlapRatio = 0.4;
                   const rawTabH = usableH / (1 + (n - 1) * (1 - overlapRatio));
                   const tabH = rawTabH - 4;
-                  const stepPx = (rawTabH - 4) * (1 - overlapRatio);
+                  const stepPx = rawTabH * (1 - overlapRatio);
                   return semTabs.map((tab, tabIdx) => {
                   const isActive = (() => {
                     if (tab.id === 'wk-current') return !hwVisibleSemLabel || hwVisibleSemLabel === tab.semLabel;
