@@ -23482,16 +23482,16 @@ export default function Dashboard() {
             semTabs.push({ id: 'wk-next', label: `Wk ${selectedWeek + 1}`, semLabel: hwWeeklyTimeline[1]?.semLabel || 'Winter 2026', scrollTarget: 'nextweek' });
             semTabs.push({ id: 'wk-third', label: `Wk ${selectedWeek + 2}`, semLabel: hwWeeklyTimeline[2]?.semLabel || 'Winter 2026', scrollTarget: 'twoweeks' });
             if (now < semDates.ss2026Start) {
-              semTabs.push({ id: 'april-gap', label: 'April', semLabel: 'Winter 2026', scrollTarget: 'threeweeks' });
+              semTabs.push({ id: 'april-gap', label: 'APRIL', semLabel: 'Winter 2026', scrollTarget: 'threeweeks' });
             }
             if (now < semDates.f2026Start) {
-              const ssMaxWk = now >= semDates.ss2026Start ? 5 : 5;
+              const ssMaxWk = now >= semDates.ss2026Start ? 6 : 6;
               for (let w = 1; w <= ssMaxWk; w++) {
                 semTabs.push({ id: `ss26-wk${w}`, label: `SS Wk ${w}`, semLabel: 'Spring/Summer 2026', scrollTarget: w === 1 ? 'sem-ss2026' : `sem-ss2026-wk${w}` });
               }
             }
             if (now >= semDates.ss2026End && now < semDates.f2026Start) {
-              semTabs.push({ id: 'aug-sept-gap', label: 'Aug-Sept', semLabel: 'Spring/Summer 2026', scrollTarget: 'sem-ss2026' });
+              semTabs.push({ id: 'aug-sept-gap', label: 'AUG-SEPT', semLabel: 'Spring/Summer 2026', scrollTarget: 'sem-ss2026' });
             }
             semTabs.push({ id: 'f-2026', label: 'F 2026', semLabel: 'Fall 2026', scrollTarget: 'sem-f2026' });
             for (let y = currentYear + 1; y <= 2029; y++) {
