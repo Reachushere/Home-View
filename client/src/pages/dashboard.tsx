@@ -1275,6 +1275,7 @@ export default function Dashboard() {
   const [emailWizardCategory, setEmailWizardCategory] = useState<string>('skip');
   const [emailWizardAction, setEmailWizardAction] = useState<string>('delete');
   const [emailWizardFolder, setEmailWizardFolder] = useState('');
+  const [emailWizardInboxOnly, setEmailWizardInboxOnly] = useState(false);
   const [emailWizardResults, setEmailWizardResults] = useState<any[]>([]);
   const [emailWizardFolders, setEmailWizardFolders] = useState<any[]>([]);
   const [emailWizardSearching, setEmailWizardSearching] = useState(false);
@@ -16706,7 +16707,7 @@ export default function Dashboard() {
             return (
             <>
           <Dialog open={isEmailWizardOpen} onOpenChange={(open) => { if (!open) { setIsEmailWizardOpen(false); } }}>
-            <DialogContent className="max-w-[520px] max-h-[80vh] overflow-y-auto text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', zIndex: 10003 }}>
+            <DialogContent className="max-w-[520px] max-h-[80vh] overflow-y-auto overflow-x-hidden text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', zIndex: 10003 }}>
               <DialogTitle className="sr-only">Email Management</DialogTitle>
               <div className="flex items-center justify-between px-4 py-2 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                 <div className="flex items-center gap-2">
@@ -16918,20 +16919,45 @@ export default function Dashboard() {
                     </div>
                   </div>
                 ) : emailWizardStep === 1 ? (
-                  <div className="space-y-3">
+                  <div className="space-y-2" style={{ overflow: 'hidden' }}>
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] text-white/60">{emailWizardResults.length} email{emailWizardResults.length !== 1 ? 's' : ''} found</span>
-                      <div className="flex items-center gap-2">
-                        <button className="text-[10px] text-white/50 hover:text-white" data-testid="button-email-select-all" onClick={() => setEmailWizardSelected(new Set(emailWizardResults.map(e => e.id)))}>Select All</button>
-                        <button className="text-[10px] text-white/50 hover:text-white" data-testid="button-email-select-none" onClick={() => setEmailWizardSelected(new Set())}>Select None</button>
+                      <span className="text-[10px] text-white/60">{(() => { const filtered = emailWizardResults.filter((e: any) => !(emailWizardInboxOnly && e.folder && e.folder !== 'inbox' && e.folder !== 'INBOX')); return `${filtered.length} email${filtered.length !== 1 ? 's' : ''} found`; })()}</span>
+                      <div className="flex items-center gap-1.5">
+                        <button className="text-[9px] px-1.5 py-0.5 rounded hover:bg-white/10" style={{ background: emailWizardInboxOnly ? 'rgba(66,133,244,0.3)' : 'rgba(255,255,255,0.05)', border: `1px solid ${emailWizardInboxOnly ? 'rgba(66,133,244,0.5)' : 'rgba(255,255,255,0.15)'}` }} data-testid="button-email-inbox-filter" onClick={() => setEmailWizardInboxOnly(!emailWizardInboxOnly)}>{emailWizardInboxOnly ? 'Inbox Only' : 'All Folders'}</button>
                         <button className="text-[10px] text-white/50 hover:text-white" data-testid="button-email-wizard-back" onClick={() => setEmailWizardStep(0)}>← Back</button>
                       </div>
                     </div>
-                    {emailWizardResults.length === 0 ? (
+                    <div className="flex items-center gap-2">
+                      <button className="text-[10px] text-white/50 hover:text-white" data-testid="button-email-select-all" onClick={() => { const filtered = emailWizardResults.filter((e: any) => !(emailWizardInboxOnly && e.folder && e.folder !== 'inbox' && e.folder !== 'INBOX')); setEmailWizardSelected(new Set(filtered.map(e => e.id))); }}>Select All</button>
+                      <button className="text-[10px] text-white/50 hover:text-white" data-testid="button-email-select-none" onClick={() => setEmailWizardSelected(new Set())}>Select None</button>
+                      {emailWizardSelected.size > 0 && (
+                        <Button
+                          size="sm"
+                          className="text-[9px] h-5 px-2 ml-auto"
+                          style={{ background: 'rgba(220,38,38,0.3)', border: '1px solid rgba(220,38,38,0.5)' }}
+                          disabled={emailWizardProcessing}
+                          data-testid="button-email-quick-delete"
+                          onClick={async () => {
+                            const selectedEmails = emailWizardResults.filter(e => emailWizardSelected.has(e.id));
+                            if (!confirm(`Delete ${selectedEmails.length} email${selectedEmails.length !== 1 ? 's' : ''}?`)) return;
+                            setEmailWizardProcessing(true);
+                            try {
+                              const resp = await fetch('/api/email/delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ emails: selectedEmails }) });
+                              const data = await resp.json();
+                              setEmailWizardDone({ deleted: data.deleted || 0, moved: 0 });
+                            } catch { toast({ title: "Delete failed", variant: "destructive" }); }
+                            setEmailWizardProcessing(false);
+                          }}
+                        >
+                          {emailWizardProcessing ? '...' : `Delete ${emailWizardSelected.size}`}
+                        </Button>
+                      )}
+                    </div>
+                    {emailWizardResults.filter((e: any) => !(emailWizardInboxOnly && e.folder && e.folder !== 'inbox' && e.folder !== 'INBOX')).length === 0 ? (
                       <div className="text-center py-6 text-white/40">No emails found matching your search.</div>
                     ) : (
-                      <div className="space-y-1 max-h-[40vh] overflow-y-auto">
-                        {emailWizardResults.map((email: any) => (
+                      <div className="space-y-1 max-h-[40vh] overflow-y-auto overflow-x-hidden">
+                        {emailWizardResults.filter((e: any) => !(emailWizardInboxOnly && e.folder && e.folder !== 'inbox' && e.folder !== 'INBOX')).map((email: any) => (
                           <label key={email.id} className="flex items-start gap-2 px-2 py-1.5 rounded cursor-pointer hover:bg-white/5" data-testid={`email-result-${email.id}`}>
                             <input
                               type="checkbox"
@@ -16945,7 +16971,7 @@ export default function Dashboard() {
                             />
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-1.5">
-                                <span className="text-[9px] px-1 py-0.5 rounded" style={{ background: email.account === 'gmail' ? 'rgba(234,67,53,0.2)' : email.account === 'gmail2' ? 'rgba(251,188,4,0.2)' : 'rgba(0,120,212,0.2)', border: `1px solid ${email.account === 'gmail' ? 'rgba(234,67,53,0.4)' : email.account === 'gmail2' ? 'rgba(251,188,4,0.4)' : 'rgba(0,120,212,0.4)'}` }}>
+                                <span className="text-[9px] px-1 py-0.5 rounded flex-shrink-0" style={{ background: email.account === 'gmail' ? 'rgba(234,67,53,0.2)' : email.account === 'gmail2' ? 'rgba(251,188,4,0.2)' : 'rgba(0,120,212,0.2)', border: `1px solid ${email.account === 'gmail' ? 'rgba(234,67,53,0.4)' : email.account === 'gmail2' ? 'rgba(251,188,4,0.4)' : 'rgba(0,120,212,0.4)'}` }}>
                                   {email.account === 'gmail' ? 'Gmail' : email.account === 'gmail2' ? 'Gmail 2' : 'Outlook'}
                                 </span>
                                 <span className="text-[10px] text-white/90 truncate font-medium">{email.subject}</span>
@@ -26412,8 +26438,8 @@ export default function Dashboard() {
                   </span>
                 )}
                 <Button
-                  variant="ghost"
-                  className="text-[9px] h-5 px-1.5 ml-auto text-white/50 hover:text-white hover:bg-white/10"
+                  variant="outline"
+                  className="text-[9px] h-5 px-2 ml-auto text-orange-300 border-orange-400/40 hover:bg-orange-500/15 hover:text-orange-200"
                   disabled={dupSearching}
                   data-testid="button-find-duplicates"
                   onClick={async () => {

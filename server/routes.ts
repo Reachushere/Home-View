@@ -17873,7 +17873,7 @@ Keep your tone friendly and educational. Format your response clearly with numbe
             });
             const detail = await detailResp.json() as any;
             const hdrs = detail.payload?.headers || [];
-            emails.push({ id: msg.id, subject: hdrs.find((h: any) => h.name === 'Subject')?.value || '(no subject)', from: hdrs.find((h: any) => h.name === 'From')?.value || '', date: hdrs.find((h: any) => h.name === 'Date')?.value || '', account: 'gmail', snippet: detail.snippet || '' });
+            emails.push({ id: msg.id, subject: hdrs.find((h: any) => h.name === 'Subject')?.value || '(no subject)', from: hdrs.find((h: any) => h.name === 'From')?.value || '', date: hdrs.find((h: any) => h.name === 'Date')?.value || '', account: 'gmail', snippet: detail.snippet || '', folder: (detail.labelIds || []).includes('INBOX') ? 'INBOX' : 'other' });
           } catch { /* skip */ }
         }
         return emails;
@@ -17906,7 +17906,7 @@ Keep your tone friendly and educational. Format your response clearly with numbe
             });
             const detail = await detailResp.json() as any;
             const hdrs = detail.payload?.headers || [];
-            emails.push({ id: msg.id, subject: hdrs.find((h: any) => h.name === 'Subject')?.value || '(no subject)', from: hdrs.find((h: any) => h.name === 'From')?.value || '', date: hdrs.find((h: any) => h.name === 'Date')?.value || '', account: 'gmail2', snippet: detail.snippet || '' });
+            emails.push({ id: msg.id, subject: hdrs.find((h: any) => h.name === 'Subject')?.value || '(no subject)', from: hdrs.find((h: any) => h.name === 'From')?.value || '', date: hdrs.find((h: any) => h.name === 'Date')?.value || '', account: 'gmail2', snippet: detail.snippet || '', folder: (detail.labelIds || []).includes('INBOX') ? 'INBOX' : 'other' });
           } catch { /* skip */ }
         }
         return emails;
@@ -17916,7 +17916,7 @@ Keep your tone friendly and educational. Format your response clearly with numbe
         const filters: string[] = [];
         if (dateFrom) filters.push(`receivedDateTime ge ${dateFrom}T00:00:00Z`);
         if (dateTo) filters.push(`receivedDateTime le ${dateTo}T23:59:59Z`);
-        let url = '/me/messages?$top=50&$select=id,subject,from,receivedDateTime,bodyPreview';
+        let url = '/me/messages?$top=50&$select=id,subject,from,receivedDateTime,bodyPreview,parentFolderId';
         if (searchTerm) {
           url += `&$search="${encodeURIComponent(searchTerm)}"`;
         } else {
@@ -17924,7 +17924,7 @@ Keep your tone friendly and educational. Format your response clearly with numbe
         }
         if (filters.length > 0) url += `&$filter=${encodeURIComponent(filters.join(' and '))}`;
         const resp = await client.api(url).get();
-        return (resp.value || []).map((m: any) => ({ id: m.id, subject: m.subject || '(no subject)', from: m.from?.emailAddress?.address || '', date: m.receivedDateTime || '', account: 'outlook', snippet: (m.bodyPreview || '').substring(0, 100) }));
+        return (resp.value || []).map((m: any) => ({ id: m.id, subject: m.subject || '(no subject)', from: m.from?.emailAddress?.address || '', date: m.receivedDateTime || '', account: 'outlook', snippet: (m.bodyPreview || '').substring(0, 100), folder: (m.parentFolderId || '').toLowerCase().includes('inbox') ? 'INBOX' : 'other' }));
       };
       if (account === 'gmail' || account === 'all') { try { results.push(...await searchGmail()); } catch (e: any) { console.error("[Email] Gmail search error:", e.message); } }
       if (account === 'gmail2' || account === 'all') { try { results.push(...await searchGmail2()); } catch (e: any) { console.error("[Email] Gmail2 search error:", e.message); } }
@@ -17952,7 +17952,7 @@ Keep your tone friendly and educational. Format your response clearly with numbe
             deleted++;
           } else if (email.account === 'outlook') {
             const client = await getOutlookClient();
-            await client.api(`/me/messages/${email.id}`).delete();
+            await client.api(`/me/messages/${email.id}/move`).post({ destinationId: 'deleteditems' });
             deleted++;
           }
         } catch { failed++; }
