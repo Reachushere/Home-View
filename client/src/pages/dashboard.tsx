@@ -24151,8 +24151,8 @@ export default function Dashboard() {
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', whiteSpace: 'nowrap', flexShrink: 0 }}>{hwWeeklyTimeline[0]?.label || 'Week'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', flexShrink: 0 }}>({dueTomorrowTasks.length})</span>
                     {/Week\s+\d/i.test(hwWeeklyTimeline[0]?.label || '') && hwWeeklyTimeline[0]?.weekStart && hwWeeklyTimeline[0]?.weekEnd && (
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, marginLeft: '2px' }}>
-                        <span style={{ fontSize: '7px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', lineHeight: '8px', textAlign: 'center', whiteSpace: 'nowrap' }}>{(() => { const sm = format(hwWeeklyTimeline[0].weekStart, 'MMM').toUpperCase(); const em = format(hwWeeklyTimeline[0].weekEnd, 'MMM').toUpperCase(); return sm === em ? sm : `${sm}-${em}`; })()}</span>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', flexShrink: 0, marginLeft: '2px', width: '34px' }}>
+                        <span style={{ fontSize: '7px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', lineHeight: '8px', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden' }}>{(() => { const sm = format(hwWeeklyTimeline[0].weekStart, 'MMM').toUpperCase(); const em = format(hwWeeklyTimeline[0].weekEnd, 'MMM').toUpperCase(); return sm === em ? sm : `${sm}-${em}`; })()}</span>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                           <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                             <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(hwWeeklyTimeline[0].weekStart, 'MMM').toUpperCase()}</div>
@@ -24344,8 +24344,8 @@ export default function Dashboard() {
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', flexShrink: 0 }}>{hwWeeklyTimeline[1]?.label || 'Week'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', flexShrink: 0 }}>({dueNextWeekTasks.length})</span>
                     {/Week\s+\d/i.test(hwWeeklyTimeline[1]?.label || '') && hwWeeklyTimeline[1]?.weekStart && hwWeeklyTimeline[1]?.weekEnd && (
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', flexShrink: 0, marginLeft: '2px' }}>
-                        <span style={{ fontSize: '7px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', lineHeight: '8px', textAlign: 'right', whiteSpace: 'nowrap' }}>{(() => { const sm = format(hwWeeklyTimeline[1].weekStart, 'MMM').toUpperCase(); const em = format(hwWeeklyTimeline[1].weekEnd, 'MMM').toUpperCase(); return sm === em ? sm : `${sm}-${em}`; })()}</span>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', flexShrink: 0, marginLeft: '2px', width: '34px' }}>
+                        <span style={{ fontSize: '7px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', lineHeight: '8px', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden' }}>{(() => { const sm = format(hwWeeklyTimeline[1].weekStart, 'MMM').toUpperCase(); const em = format(hwWeeklyTimeline[1].weekEnd, 'MMM').toUpperCase(); return sm === em ? sm : `${sm}-${em}`; })()}</span>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                           <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                             <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(hwWeeklyTimeline[1].weekStart, 'MMM').toUpperCase()}</div>
@@ -24521,8 +24521,8 @@ export default function Dashboard() {
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', flexShrink: 0 }}>{hwWeeklyTimeline[2]?.label || 'Two weeks'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', flexShrink: 0 }}>({dueTwoWeeksTasks.length})</span>
                     {/Week\s+\d/i.test(hwWeeklyTimeline[2]?.label || '') && (
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', flexShrink: 0, marginLeft: '2px' }}>
-                        <span style={{ fontSize: '7px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', lineHeight: '8px', textAlign: 'right', whiteSpace: 'nowrap' }}>{(() => { const sm = format(twoWeeksStart, 'MMM').toUpperCase(); const em = format(threeWeeksEnd, 'MMM').toUpperCase(); return sm === em ? sm : `${sm}-${em}`; })()}</span>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', flexShrink: 0, marginLeft: '2px', width: '34px' }}>
+                        <span style={{ fontSize: '7px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', lineHeight: '8px', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden' }}>{(() => { const sm = format(twoWeeksStart, 'MMM').toUpperCase(); const em = format(threeWeeksEnd, 'MMM').toUpperCase(); return sm === em ? sm : `${sm}-${em}`; })()}</span>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                           <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                             <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(twoWeeksStart, 'MMM').toUpperCase()}</div>
