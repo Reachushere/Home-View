@@ -20287,7 +20287,7 @@ export default function Dashboard() {
                           )}
                           {day.getDay() === 6 && !isToday && (
                             <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '1px' }}>
-                              <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#86efac', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`NEW SCHOOL WEEK - WEEK ${selectedWeek + 1}`}</span>
+                              <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`NEW SCHOOL WEEK - WEEK ${selectedWeek + 1}`}</span>
                             </div>
                           )}
                           {!isToday && (() => {
@@ -20296,7 +20296,7 @@ export default function Dashboard() {
                             return todayIdx >= 0 && idx < todayIdx && day.getDay() !== 6;
                           })() && (
                             <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '1px' }}>
-                              <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#86efac', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`WEEK ${selectedWeek + 1}`}</span>
+                              <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`WEEK ${selectedWeek + 1}`}</span>
                             </div>
                           )}
                           {!isToday && (() => {
