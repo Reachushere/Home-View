@@ -3984,6 +3984,11 @@ export default function Dashboard() {
     return merged;
   });
 
+  const [courseTermOverrides, setCourseTermOverrides] = useState<Record<string, string>>(() => {
+    const saved = localStorage.getItem('courseTermOverrides');
+    return saved ? JSON.parse(saved) : {};
+  });
+
   const [openElectives, setOpenElectives] = useState<Record<string, string>>(() => {
     const electiveDefaults: Record<string, string> = {
       'LIBERAL': 'CGCM 738 Photoshopped! The Art of Image Retouching',
@@ -4359,6 +4364,13 @@ export default function Dashboard() {
             return merged;
           });
         }
+        if (data.courseTermOverrides) {
+          setCourseTermOverrides(prev => {
+            const merged = { ...prev, ...data.courseTermOverrides };
+            localStorage.setItem('courseTermOverrides', JSON.stringify(merged));
+            return merged;
+          });
+        }
         if (data.otherRowColors) {
           setOtherRowColors(prev => {
             const merged = { ...prev, ...data.otherRowColors };
@@ -4606,6 +4618,44 @@ export default function Dashboard() {
       }
     }
     return '';
+  };
+
+  const termLabelOptions = Object.values(semKeyToTermLabel);
+
+  const getEffectiveTerm = (courseId: string, courseCode: string): string => {
+    return courseTermOverrides[courseId] || getCourseTerm(courseCode);
+  };
+
+  const setTermOverride = (courseId: string, value: string) => {
+    setCourseTermOverrides(prev => {
+      const updated = { ...prev, [courseId]: value };
+      localStorage.setItem('courseTermOverrides', JSON.stringify(updated));
+      saveDegreeToServer('courseTermOverrides', updated);
+      return updated;
+    });
+  };
+
+  const TermDropdown = ({ id, code, isPrevCompleted }: { id: string; code: string; isPrevCompleted?: boolean }) => {
+    const val = getEffectiveTerm(id, code);
+    return (
+      <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <select
+          value={val}
+          onChange={(e) => setTermOverride(id, e.target.value)}
+          className="no-dim text-[7px]"
+          style={{ background: 'transparent', border: 'none', outline: 'none', textAlign: 'center', cursor: 'pointer', padding: 0, width: '100%', appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none' as any, color: '#000000' }}
+          data-testid={`term-select-${id}`}
+        >
+          <option value="">—</option>
+          {termLabelOptions.map(opt => (
+            <option key={opt} value={opt}>{opt}</option>
+          ))}
+        </select>
+        {isPrevCompleted && (
+          <div style={{ position: 'absolute', top: '50%', left: '2px', right: '2px', height: '1.5px', backgroundColor: '#cc0000', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+        )}
+      </div>
+    );
   };
 
   const l1ToL2Map: Record<string, string> = {
