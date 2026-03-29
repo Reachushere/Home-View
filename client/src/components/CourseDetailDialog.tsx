@@ -1697,7 +1697,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 </div>
               )}
         </div>
-        <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(255,255,255,0.2) transparent" }}>
+        <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(255,255,255,0.2) transparent", touchAction: activeGradientStop != null ? 'none' : 'auto' }}>
           <div className="p-3 space-y-2">
             {isEditingInfo ? (
               <div className="space-y-2 text-[10px]">
