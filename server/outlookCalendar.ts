@@ -38,7 +38,7 @@ async function getOutlookAccessToken() {
   return accessToken;
 }
 
-async function getOutlookClient() {
+export async function getOutlookClient() {
   const accessToken = await getOutlookAccessToken();
   return Client.initWithMiddleware({
     authProvider: {

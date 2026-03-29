@@ -13,12 +13,12 @@ import { z } from "zod";
 import { LIBERAL_STUDIES_COURSES, OPEN_ELECTIVE_COURSES } from "@shared/electiveCourses";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 import { objectStorageClient } from "./replit_integrations/object_storage/objectStorage";
-import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent, createEventInCalendar, deleteEventFromCalendar, createRecurringClassEvent, findExistingEventBySummary, findAndDeleteDuplicateEvents, createYearlyScholarshipEvent, syncGoogleEventsToReview } from "./googleCalendar";
+import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent, createEventInCalendar, deleteEventFromCalendar, createRecurringClassEvent, findExistingEventBySummary, findAndDeleteDuplicateEvents, createYearlyScholarshipEvent, syncGoogleEventsToReview, getGoogleCalendarClient } from "./googleCalendar";
 import { getSecondAccountAuthUrl, exchangeCodeForTokens, isSecondAccountConnected, disconnectSecondAccount, createEventInSecondAccount, createPrepEventInSecondAccount, deleteEventFromSecondAccount, updateEventInSecondAccount, getEventsFromSecondAccount } from "./secondGoogleAccount";
 import { getThirdAccountAuthUrl, exchangeCodeForTokensThird, isThirdAccountConnected, disconnectThirdAccount, getEventsFromThirdAccount, listThirdAccountCalendars, getEventsFromThirdAccountCalendar } from "./thirdGoogleAccount";
 import { textToSpeech, initTTSFallbackStatus } from "./replit_integrations/audio/client";
 import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, sendTestHaPush, sendHaTaskReminder, sendEchoVoiceAnnouncement, sendCalendarInvite, type TaskReminder } from "./email";
-import { syncOutlookEventsToReview, fetchOutlookCalendarEvents, findOrCreateMailFolder, createMailRule, moveExistingEmailsToFolder, moveAllEmailsFromFolder, deleteMailRulesByName, getMailFolderId, moveEmailsNotFromDomains } from "./outlookCalendar";
+import { syncOutlookEventsToReview, fetchOutlookCalendarEvents, findOrCreateMailFolder, createMailRule, moveExistingEmailsToFolder, moveAllEmailsFromFolder, deleteMailRulesByName, getMailFolderId, moveEmailsNotFromDomains, getOutlookClient } from "./outlookCalendar";
 import { parseTickerCommand, extractInlineExpiry } from "./gmailTicker";
 // fetchD2LAnnouncements available in ./gmail but Gmail connector lacks read scope; D2L sync handled by external Apps Script
 import { getSchedulerStatus } from "./reminderScheduler";
@@ -5462,6 +5462,209 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     } catch (err) {
       console.error("Error syncing task to calendar:", err);
       res.status(500).json({ message: 'Failed to sync task to Google Calendar', error: String(err) });
+    }
+  });
+
+  app.post("/api/tasks/:id/find-calendar-duplicates", async (req, res) => {
+    try {
+      const task = await storage.getTask(Number(req.params.id));
+      if (!task) return res.status(404).json({ message: 'Task not found' });
+
+      const title = (task.title || '').trim();
+      if (!title) return res.json({ duplicates: [] });
+
+      const normalizeTitle = (t: string) => t.toLowerCase().replace(/\s+/g, ' ').trim();
+      const normTitle = normalizeTitle(title);
+
+      const taskDueDate = task.dueDate ? new Date(task.dueDate) : null;
+      const taskStartTime = task.eventStartTime || null;
+      const taskEndTime = task.eventEndTime || null;
+
+      const ownEventIds = new Set([
+        task.calendarEventId,
+        task.prepCalendarEventId,
+        task.secondaryCalendarEventId,
+        task.secondAccountCalendarEventId,
+        task.secondAccountPrepEventId,
+      ].filter(Boolean));
+
+      const timeMin = new Date(Date.now() - 180 * 86400000).toISOString();
+      const timeMax = new Date(Date.now() + 365 * 86400000).toISOString();
+
+      interface DuplicateEvent {
+        id: string;
+        calendarId: string;
+        calendarName: string;
+        account: string;
+        title: string;
+        start: string;
+        end: string;
+        isExactTime: boolean;
+        isRecurring: boolean;
+      }
+
+      const duplicates: DuplicateEvent[] = [];
+      const delay = (ms: number) => new Promise(r => setTimeout(r, ms));
+
+      try {
+        const calendar = await getGoogleCalendarClient();
+        const searchResp = await calendar.events.list({
+          calendarId: 'primary',
+          timeMin,
+          timeMax,
+          singleEvents: false,
+          maxResults: 2500,
+          q: title.split(' ').slice(0, 4).join(' '),
+        });
+        for (const evt of (searchResp.data.items || [])) {
+          if (!evt.id || ownEventIds.has(evt.id)) continue;
+          if (normalizeTitle(evt.summary || '') !== normTitle) continue;
+          const evtStart = evt.start?.dateTime || evt.start?.date || '';
+          const evtEnd = evt.end?.dateTime || evt.end?.date || '';
+          let isExactTime = false;
+          if (taskDueDate && evtStart) {
+            const evtDate = new Date(evtStart);
+            const sameDate = evtDate.toISOString().split('T')[0] === taskDueDate.toISOString().split('T')[0];
+            const evtStartTime = evt.start?.dateTime ? `${String(evtDate.getHours()).padStart(2,'0')}:${String(evtDate.getMinutes()).padStart(2,'0')}` : null;
+            isExactTime = sameDate && (!taskStartTime || taskStartTime === evtStartTime);
+          }
+          duplicates.push({
+            id: evt.id,
+            calendarId: 'primary',
+            calendarName: 'Primary Google',
+            account: 'primary',
+            title: evt.summary || '',
+            start: evtStart,
+            end: evtEnd,
+            isExactTime,
+            isRecurring: !!(evt.recurrence && evt.recurrence.length > 0),
+          });
+        }
+      } catch (e: any) {
+        console.log('[Find Duplicates] Primary Google error:', e.message);
+      }
+
+      try {
+        const { isSecondAccountConnected: isConn, getSecondAccountCalendarClient: getSecCal } = await import('./secondGoogleAccount');
+        const status = await isConn();
+        if (status.connected) {
+          await delay(200);
+          const secondCal = await getSecCal();
+          const searchResp = await secondCal.events.list({
+            calendarId: 'primary',
+            timeMin,
+            timeMax,
+            singleEvents: false,
+            maxResults: 2500,
+            q: title.split(' ').slice(0, 4).join(' '),
+          });
+          for (const evt of (searchResp.data.items || [])) {
+            if (!evt.id || ownEventIds.has(evt.id)) continue;
+            if (normalizeTitle(evt.summary || '') !== normTitle) continue;
+            const evtStart = evt.start?.dateTime || evt.start?.date || '';
+            const evtEnd = evt.end?.dateTime || evt.end?.date || '';
+            let isExactTime = false;
+            if (taskDueDate && evtStart) {
+              const evtDate = new Date(evtStart);
+              const sameDate = evtDate.toISOString().split('T')[0] === taskDueDate.toISOString().split('T')[0];
+              const evtStartTime = evt.start?.dateTime ? `${String(evtDate.getHours()).padStart(2,'0')}:${String(evtDate.getMinutes()).padStart(2,'0')}` : null;
+              isExactTime = sameDate && (!taskStartTime || taskStartTime === evtStartTime);
+            }
+            duplicates.push({
+              id: evt.id,
+              calendarId: 'primary',
+              calendarName: 'Second Google',
+              account: 'second',
+              title: evt.summary || '',
+              start: evtStart,
+              end: evtEnd,
+              isExactTime,
+              isRecurring: !!(evt.recurrence && evt.recurrence.length > 0),
+            });
+          }
+        }
+      } catch (e: any) {
+        console.log('[Find Duplicates] Second Google error:', e.message);
+      }
+
+      try {
+        const outlookEvents = await fetchOutlookCalendarEvents(365);
+        for (const evt of outlookEvents) {
+          if (normalizeTitle(evt.subject || '') !== normTitle) continue;
+          const evtStart = evt.start?.dateTime || '';
+          const evtEnd = evt.end?.dateTime || '';
+          let isExactTime = false;
+          if (taskDueDate && evtStart) {
+            const evtDate = new Date(evtStart);
+            const sameDate = evtDate.toISOString().split('T')[0] === taskDueDate.toISOString().split('T')[0];
+            const evtStartTime = `${String(evtDate.getHours()).padStart(2,'0')}:${String(evtDate.getMinutes()).padStart(2,'0')}`;
+            isExactTime = sameDate && (!taskStartTime || taskStartTime === evtStartTime);
+          }
+          duplicates.push({
+            id: evt.id,
+            calendarId: 'outlook',
+            calendarName: 'Outlook',
+            account: 'outlook',
+            title: evt.subject || '',
+            start: evtStart,
+            end: evtEnd,
+            isExactTime,
+            isRecurring: false,
+          });
+        }
+      } catch (e: any) {
+        console.log('[Find Duplicates] Outlook error:', e.message);
+      }
+
+      console.log(`[Find Duplicates] Task "${title}": found ${duplicates.length} duplicates across calendars`);
+      res.json({ duplicates });
+    } catch (err: any) {
+      console.error('[Find Duplicates] Error:', err);
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+  app.post("/api/tasks/:id/delete-calendar-duplicates", async (req, res) => {
+    try {
+      const { eventIds } = req.body;
+      if (!Array.isArray(eventIds) || eventIds.length === 0) {
+        return res.status(400).json({ message: 'No event IDs provided' });
+      }
+
+      const results: { id: string; success: boolean; error?: string }[] = [];
+      const delay = (ms: number) => new Promise(r => setTimeout(r, ms));
+
+      for (const item of eventIds) {
+        const { id, account } = item;
+        try {
+          if (account === 'primary') {
+            const calendar = await getGoogleCalendarClient();
+            await calendar.events.delete({ calendarId: 'primary', eventId: id });
+            results.push({ id, success: true });
+          } else if (account === 'second') {
+            const { getSecondAccountCalendarClient: getSecCal } = await import('./secondGoogleAccount');
+            const secondCal = await getSecCal();
+            await secondCal.events.delete({ calendarId: 'primary', eventId: id });
+            results.push({ id, success: true });
+          } else if (account === 'outlook') {
+            const { getOutlookClient } = await import('./outlookCalendar');
+            const client = await getOutlookClient();
+            await client.api(`/me/events/${id}`).delete();
+            results.push({ id, success: true });
+          }
+        } catch (e: any) {
+          results.push({ id, success: false, error: e.message });
+        }
+        await delay(200);
+      }
+
+      const deleted = results.filter(r => r.success).length;
+      const failed = results.filter(r => !r.success).length;
+      console.log(`[Delete Duplicates] Deleted ${deleted}, failed ${failed}`);
+      res.json({ results, deleted, failed });
+    } catch (err: any) {
+      console.error('[Delete Duplicates] Error:', err);
+      res.status(500).json({ message: err.message });
     }
   });
 
