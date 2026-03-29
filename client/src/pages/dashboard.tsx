@@ -1256,6 +1256,38 @@ export default function Dashboard() {
   const [isScholarshipsOpen, setIsScholarshipsOpen] = useState(false);
   const [isKeyContactsOpen, setIsKeyContactsOpen] = useState(false);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+  const [dupSearching, setDupSearching] = useState(false);
+  const [dupResults, setDupResults] = useState<any[] | null>(null);
+  const [dupDeleting, setDupDeleting] = useState(false);
+  const [dupDiffTimeEvents, setDupDiffTimeEvents] = useState<any[]>([]);
+  const [dupShowDiffTime, setDupShowDiffTime] = useState(false);
+  const [isEmailWizardOpen, setIsEmailWizardOpen] = useState(false);
+  const [emailWizardStep, setEmailWizardStep] = useState(0);
+  const [emailWizardAccount, setEmailWizardAccount] = useState<string>('all');
+  const [emailWizardSearchTerm, setEmailWizardSearchTerm] = useState('');
+  const [emailWizardDateFilter, setEmailWizardDateFilter] = useState<string>('all');
+  const [emailWizardDateFrom, setEmailWizardDateFrom] = useState('');
+  const [emailWizardDateTo, setEmailWizardDateTo] = useState('');
+  const [emailWizardCategory, setEmailWizardCategory] = useState<string>('skip');
+  const [emailWizardAction, setEmailWizardAction] = useState<string>('delete');
+  const [emailWizardFolder, setEmailWizardFolder] = useState('');
+  const [emailWizardResults, setEmailWizardResults] = useState<any[]>([]);
+  const [emailWizardFolders, setEmailWizardFolders] = useState<any[]>([]);
+  const [emailWizardSearching, setEmailWizardSearching] = useState(false);
+  const [emailWizardProcessing, setEmailWizardProcessing] = useState(false);
+  const [emailWizardDone, setEmailWizardDone] = useState<{deleted: number; moved: number} | null>(null);
+  const [emailWizardSelected, setEmailWizardSelected] = useState<Set<string>>(new Set());
+  const [emailSavedSearches, setEmailSavedSearches] = useState<any[]>([]);
+  const [emailSaveName, setEmailSaveName] = useState('');
+  const [emailShowSaveInput, setEmailShowSaveInput] = useState(false);
+  useEffect(() => {
+    if (isEmailWizardOpen) {
+      fetch('/api/email/saved-searches', { credentials: 'include' })
+        .then(r => r.json())
+        .then(d => setEmailSavedSearches(d.searches || []))
+        .catch(() => {});
+    }
+  }, [isEmailWizardOpen]);
   const [feedbackText, setFeedbackText] = useState('');
   const [feedbackSending, setFeedbackSending] = useState(false);
   const [showRemainingList, setShowRemainingList] = useState(false);
@@ -12313,6 +12345,34 @@ export default function Dashboard() {
             </Button>
           </div>
 
+          {/* Email Management Button */}
+          <div className="pill-button-hover" style={{ 
+            marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+            border: '1.5px solid rgba(255,255,255,0.35)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
+              style={{ background: 'transparent' }}
+              data-testid="button-email-wizard"
+              title="Email Management"
+              onClick={() => {
+                triggerButtonGlow('emailwizard');
+                setIsEmailWizardOpen(true);
+                setEmailWizardStep(0);
+                setEmailWizardResults([]);
+                setEmailWizardDone(null);
+                setEmailWizardSelected(new Set());
+              }}
+            >
+              <Mail className="text-white" style={{ height: '22px', width: '22px' }} />
+            </Button>
+          </div>
+
           {/* Feedback Button */}
           <div className="pill-button-hover" style={{ 
             marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
@@ -16518,6 +16578,337 @@ export default function Dashboard() {
 
             return (
             <>
+          <Dialog open={isEmailWizardOpen} onOpenChange={(open) => { if (!open) { setIsEmailWizardOpen(false); } }}>
+            <DialogContent className="max-w-[520px] max-h-[80vh] overflow-y-auto text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', zIndex: 10003 }}>
+              <DialogTitle className="sr-only">Email Management</DialogTitle>
+              <div className="flex items-center justify-between px-4 py-2 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+                <div className="flex items-center gap-2">
+                  <Mail className="text-white" style={{ width: '14px', height: '14px' }} />
+                  <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>EMAIL MANAGEMENT</h2>
+                </div>
+                <button onClick={() => setIsEmailWizardOpen(false)} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-email-wizard"><X className="h-4 w-4" /></button>
+              </div>
+              <div className="p-4 space-y-3">
+                {emailWizardDone ? (
+                  <div className="text-center space-y-3 py-4">
+                    <div className="text-green-400 text-sm font-medium">Done!</div>
+                    <div className="text-white/70 text-[11px]">
+                      {emailWizardDone.deleted > 0 && <span>Deleted {emailWizardDone.deleted} email{emailWizardDone.deleted !== 1 ? 's' : ''}. </span>}
+                      {emailWizardDone.moved > 0 && <span>Moved {emailWizardDone.moved} email{emailWizardDone.moved !== 1 ? 's' : ''}. </span>}
+                    </div>
+                    <Button className="text-[11px] h-7 px-3" style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)' }} onClick={() => { setEmailWizardDone(null); setEmailWizardStep(0); setEmailWizardResults([]); setEmailWizardSelected(new Set()); }} data-testid="button-email-wizard-restart">Start New Search</Button>
+                  </div>
+                ) : emailWizardStep === 0 ? (
+                  <div className="space-y-3">
+                    {emailSavedSearches.length > 0 && (
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] text-white/60 uppercase tracking-wider">Saved Searches</label>
+                        <div className="flex flex-wrap gap-1.5">
+                          {emailSavedSearches.map((s: any) => (
+                            <div key={s.id} className="flex items-center gap-1 px-2 py-1 rounded" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}>
+                              <button
+                                className="text-[10px] text-white/80 hover:text-white"
+                                data-testid={`button-load-saved-search-${s.id}`}
+                                onClick={() => {
+                                  setEmailWizardAccount(s.account || 'all');
+                                  setEmailWizardSearchTerm(s.searchTerm || '');
+                                  setEmailWizardDateFilter(s.dateFilter || 'all');
+                                  setEmailWizardDateFrom(s.dateFrom || '');
+                                  setEmailWizardDateTo(s.dateTo || '');
+                                  setEmailWizardCategory(s.category || 'skip');
+                                  setEmailWizardAction(s.action || 'delete');
+                                  setEmailWizardFolder(s.folderId || '');
+                                }}
+                              >{s.name}</button>
+                              <button
+                                className="text-white/30 hover:text-red-400 ml-1"
+                                data-testid={`button-delete-saved-search-${s.id}`}
+                                onClick={async () => {
+                                  await fetch(`/api/email/saved-searches/${s.id}`, { method: 'DELETE', credentials: 'include' });
+                                  setEmailSavedSearches(prev => prev.filter(p => p.id !== s.id));
+                                }}
+                              ><X className="h-2.5 w-2.5" /></button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] text-white/60 uppercase tracking-wider">Account</label>
+                      <select
+                        value={emailWizardAccount}
+                        onChange={(e) => setEmailWizardAccount(e.target.value)}
+                        className="w-full h-8 bg-black/40 border border-white/30 rounded px-2 text-[11px]"
+                        data-testid="select-email-wizard-account"
+                      >
+                        <option value="all">All Accounts</option>
+                        <option value="gmail">Gmail (homeworkbryn@gmail.com)</option>
+                        <option value="outlook">Outlook (bryn.kai-hendricks@outlook.com)</option>
+                      </select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] text-white/60 uppercase tracking-wider">Search Term</label>
+                      <input
+                        value={emailWizardSearchTerm}
+                        onChange={(e) => setEmailWizardSearchTerm(e.target.value)}
+                        placeholder="e.g. newsletter, promotions, unsubscribe..."
+                        className="w-full h-8 bg-black/40 border border-white/30 rounded px-2 text-[11px] placeholder:text-white/30"
+                        data-testid="input-email-wizard-search"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] text-white/60 uppercase tracking-wider">Date Range</label>
+                      <select
+                        value={emailWizardDateFilter}
+                        onChange={(e) => setEmailWizardDateFilter(e.target.value)}
+                        className="w-full h-8 bg-black/40 border border-white/30 rounded px-2 text-[11px]"
+                        data-testid="select-email-wizard-date"
+                      >
+                        <option value="all">All Time</option>
+                        <option value="7d">Last 7 Days</option>
+                        <option value="30d">Last 30 Days</option>
+                        <option value="90d">Last 90 Days</option>
+                        <option value="custom">Custom Range</option>
+                      </select>
+                      {emailWizardDateFilter === 'custom' && (
+                        <div className="flex gap-2 mt-1.5">
+                          <input type="date" value={emailWizardDateFrom} onChange={(e) => setEmailWizardDateFrom(e.target.value)} className="flex-1 h-7 bg-black/40 border border-white/30 rounded px-2 text-[10px]" data-testid="input-email-wizard-date-from" />
+                          <input type="date" value={emailWizardDateTo} onChange={(e) => setEmailWizardDateTo(e.target.value)} className="flex-1 h-7 bg-black/40 border border-white/30 rounded px-2 text-[10px]" data-testid="input-email-wizard-date-to" />
+                        </div>
+                      )}
+                    </div>
+                    {(emailWizardAccount === 'gmail' || emailWizardAccount === 'all') && (
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] text-white/60 uppercase tracking-wider">Gmail Category</label>
+                        <select
+                          value={emailWizardCategory}
+                          onChange={(e) => setEmailWizardCategory(e.target.value)}
+                          className="w-full h-8 bg-black/40 border border-white/30 rounded px-2 text-[11px]"
+                          data-testid="select-email-wizard-category"
+                        >
+                          <option value="skip">Any Category</option>
+                          <option value="promotions">Promotions</option>
+                          <option value="social">Social</option>
+                          <option value="updates">Updates</option>
+                          <option value="forums">Forums</option>
+                          <option value="spam">Spam</option>
+                          <option value="trash">Trash</option>
+                        </select>
+                      </div>
+                    )}
+                    <div className="flex gap-2 pt-1">
+                      <Button
+                        className="flex-1 h-8 text-[11px]"
+                        style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.08) 100%)', border: '1px solid rgba(255,255,255,0.3)' }}
+                        disabled={emailWizardSearching || (!emailWizardSearchTerm.trim() && emailWizardCategory === 'skip')}
+                        data-testid="button-email-wizard-search"
+                        onClick={async () => {
+                          setEmailWizardSearching(true);
+                          setEmailWizardResults([]);
+                          setEmailWizardSelected(new Set());
+                          let dateFrom = emailWizardDateFrom;
+                          let dateTo = emailWizardDateTo;
+                          if (emailWizardDateFilter !== 'custom') {
+                            const now = new Date();
+                            dateTo = '';
+                            if (emailWizardDateFilter === '7d') dateFrom = new Date(now.getTime() - 7 * 86400000).toISOString().split('T')[0];
+                            else if (emailWizardDateFilter === '30d') dateFrom = new Date(now.getTime() - 30 * 86400000).toISOString().split('T')[0];
+                            else if (emailWizardDateFilter === '90d') dateFrom = new Date(now.getTime() - 90 * 86400000).toISOString().split('T')[0];
+                            else dateFrom = '';
+                          }
+                          try {
+                            const resp = await fetch('/api/email/search', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              credentials: 'include',
+                              body: JSON.stringify({ account: emailWizardAccount, searchTerm: emailWizardSearchTerm, dateFrom, dateTo, category: emailWizardCategory }),
+                            });
+                            const data = await resp.json();
+                            setEmailWizardResults(data.results || []);
+                            setEmailWizardStep(1);
+                          } catch { toast({ title: "Search failed", variant: "destructive" }); }
+                          setEmailWizardSearching(false);
+                        }}
+                      >
+                        {emailWizardSearching ? 'Searching...' : 'Search Emails'}
+                      </Button>
+                      {!emailShowSaveInput ? (
+                        <Button
+                          variant="outline"
+                          className="h-8 text-[11px] px-3 border-white/30 hover:bg-white/10"
+                          data-testid="button-show-save-search"
+                          onClick={() => setEmailShowSaveInput(true)}
+                          disabled={!emailWizardSearchTerm.trim() && emailWizardCategory === 'skip'}
+                        >Save</Button>
+                      ) : (
+                        <div className="flex gap-1">
+                          <input
+                            value={emailSaveName}
+                            onChange={(e) => setEmailSaveName(e.target.value)}
+                            placeholder="Search name..."
+                            className="w-28 h-8 bg-black/40 border border-white/30 rounded px-2 text-[10px] placeholder:text-white/30"
+                            data-testid="input-save-search-name"
+                            autoFocus
+                            onKeyDown={(e) => {
+                              if (e.key === 'Escape') { setEmailShowSaveInput(false); setEmailSaveName(''); }
+                            }}
+                          />
+                          <Button
+                            className="h-8 px-2 text-[10px]"
+                            style={{ background: 'rgba(52,168,83,0.3)', border: '1px solid rgba(52,168,83,0.5)' }}
+                            disabled={!emailSaveName.trim()}
+                            data-testid="button-confirm-save-search"
+                            onClick={async () => {
+                              try {
+                                await fetch('/api/email/saved-searches', {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  credentials: 'include',
+                                  body: JSON.stringify({
+                                    name: emailSaveName.trim(),
+                                    account: emailWizardAccount,
+                                    searchTerm: emailWizardSearchTerm,
+                                    dateFilter: emailWizardDateFilter,
+                                    dateFrom: emailWizardDateFrom,
+                                    dateTo: emailWizardDateTo,
+                                    category: emailWizardCategory,
+                                    action: emailWizardAction,
+                                  }),
+                                });
+                                toast({ title: "Search saved!" });
+                                setEmailShowSaveInput(false);
+                                setEmailSaveName('');
+                                fetch('/api/email/saved-searches', { credentials: 'include' })
+                                  .then(r => r.json())
+                                  .then(d => setEmailSavedSearches(d.searches || []))
+                                  .catch(() => {});
+                              } catch { toast({ title: "Failed to save", variant: "destructive" }); }
+                            }}
+                          >Save</Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : emailWizardStep === 1 ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] text-white/60">{emailWizardResults.length} email{emailWizardResults.length !== 1 ? 's' : ''} found</span>
+                      <div className="flex items-center gap-2">
+                        <button className="text-[10px] text-white/50 hover:text-white" data-testid="button-email-select-all" onClick={() => setEmailWizardSelected(new Set(emailWizardResults.map(e => e.id)))}>Select All</button>
+                        <button className="text-[10px] text-white/50 hover:text-white" data-testid="button-email-select-none" onClick={() => setEmailWizardSelected(new Set())}>Select None</button>
+                        <button className="text-[10px] text-white/50 hover:text-white" data-testid="button-email-wizard-back" onClick={() => setEmailWizardStep(0)}>← Back</button>
+                      </div>
+                    </div>
+                    {emailWizardResults.length === 0 ? (
+                      <div className="text-center py-6 text-white/40">No emails found matching your search.</div>
+                    ) : (
+                      <div className="space-y-1 max-h-[40vh] overflow-y-auto">
+                        {emailWizardResults.map((email: any) => (
+                          <label key={email.id} className="flex items-start gap-2 px-2 py-1.5 rounded cursor-pointer hover:bg-white/5" data-testid={`email-result-${email.id}`}>
+                            <input
+                              type="checkbox"
+                              className="mt-0.5 h-3.5 w-3.5"
+                              checked={emailWizardSelected.has(email.id)}
+                              onChange={(e) => {
+                                const next = new Set(emailWizardSelected);
+                                e.target.checked ? next.add(email.id) : next.delete(email.id);
+                                setEmailWizardSelected(next);
+                              }}
+                            />
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-[9px] px-1 py-0.5 rounded" style={{ background: email.account === 'gmail' ? 'rgba(234,67,53,0.2)' : 'rgba(0,120,212,0.2)', border: `1px solid ${email.account === 'gmail' ? 'rgba(234,67,53,0.4)' : 'rgba(0,120,212,0.4)'}` }}>
+                                  {email.account === 'gmail' ? 'Gmail' : 'Outlook'}
+                                </span>
+                                <span className="text-[10px] text-white/90 truncate font-medium">{email.subject}</span>
+                              </div>
+                              <div className="text-[9px] text-white/40 truncate mt-0.5">{email.from} · {new Date(email.date).toLocaleDateString()}</div>
+                              {email.snippet && <div className="text-[9px] text-white/30 truncate mt-0.5">{email.snippet}</div>}
+                            </div>
+                          </label>
+                        ))}
+                      </div>
+                    )}
+                    {emailWizardSelected.size > 0 && (
+                      <div className="space-y-2 pt-1 border-t border-white/10">
+                        <div className="flex items-center gap-2">
+                          <label className="text-[10px] text-white/60">Action:</label>
+                          <select
+                            value={emailWizardAction}
+                            onChange={(e) => setEmailWizardAction(e.target.value)}
+                            className="h-7 bg-black/40 border border-white/30 rounded px-2 text-[10px]"
+                            data-testid="select-email-wizard-action"
+                          >
+                            <option value="delete">Delete (Trash)</option>
+                            <option value="move">Move to Folder</option>
+                          </select>
+                        </div>
+                        {emailWizardAction === 'move' && (
+                          <select
+                            value={emailWizardFolder}
+                            onChange={(e) => setEmailWizardFolder(e.target.value)}
+                            className="w-full h-7 bg-black/40 border border-white/30 rounded px-2 text-[10px]"
+                            data-testid="select-email-wizard-folder"
+                            onFocus={() => {
+                              if (emailWizardFolders.length === 0) {
+                                const acct = emailWizardResults.find(e => emailWizardSelected.has(e.id))?.account || 'all';
+                                fetch(`/api/email/folders?account=${acct}`, { credentials: 'include' })
+                                  .then(r => r.json())
+                                  .then(d => setEmailWizardFolders(d.folders || []))
+                                  .catch(() => {});
+                              }
+                            }}
+                          >
+                            <option value="">{emailWizardFolders.length === 0 ? 'Click to load folders...' : 'Select folder...'}</option>
+                            {emailWizardFolders.map((f: any) => (
+                              <option key={f.id} value={`${f.account}:${f.id}`}>{f.name} ({f.account})</option>
+                            ))}
+                          </select>
+                        )}
+                        <Button
+                          className="w-full h-8 text-[11px]"
+                          style={{ background: emailWizardAction === 'delete' ? 'rgba(220,38,38,0.3)' : 'rgba(52,168,83,0.3)', border: `1px solid ${emailWizardAction === 'delete' ? 'rgba(220,38,38,0.5)' : 'rgba(52,168,83,0.5)'}` }}
+                          disabled={emailWizardProcessing || (emailWizardAction === 'move' && !emailWizardFolder)}
+                          data-testid="button-email-wizard-execute"
+                          onClick={async () => {
+                            const selectedEmails = emailWizardResults.filter(e => emailWizardSelected.has(e.id));
+                            if (!confirm(`${emailWizardAction === 'delete' ? 'Delete' : 'Move'} ${selectedEmails.length} email${selectedEmails.length !== 1 ? 's' : ''}?`)) return;
+                            setEmailWizardProcessing(true);
+                            try {
+                              if (emailWizardAction === 'delete') {
+                                const resp = await fetch('/api/email/delete', {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  credentials: 'include',
+                                  body: JSON.stringify({ emails: selectedEmails }),
+                                });
+                                const data = await resp.json();
+                                setEmailWizardDone({ deleted: data.deleted || 0, moved: 0 });
+                              } else {
+                                const [folderAccount, folderId] = emailWizardFolder.split(':');
+                                const resp = await fetch('/api/email/move', {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  credentials: 'include',
+                                  body: JSON.stringify({ emails: selectedEmails, folderId, folderAccount }),
+                                });
+                                const data = await resp.json();
+                                setEmailWizardDone({ deleted: 0, moved: data.moved || 0 });
+                              }
+                            } catch { toast({ title: "Operation failed", variant: "destructive" }); }
+                            setEmailWizardProcessing(false);
+                          }}
+                        >
+                          {emailWizardProcessing ? 'Processing...' : `${emailWizardAction === 'delete' ? 'Delete' : 'Move'} ${emailWizardSelected.size} Email${emailWizardSelected.size !== 1 ? 's' : ''}`}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                ) : null}
+              </div>
+            </DialogContent>
+          </Dialog>
+
           <Dialog open={isFeedbackOpen} onOpenChange={setIsFeedbackOpen}>
             <DialogContent className="max-w-[320px] text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_textarea]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '45%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', zIndex: 10003 }}>
               <DialogTitle className="sr-only">Send Feedback</DialogTitle>
@@ -25759,7 +26150,7 @@ export default function Dashboard() {
         </Dialog>
 
         {/* Edit Dialog */}
-        <Dialog open={!!editingTask} onOpenChange={(open) => { if (!open) { const active = document.activeElement; if (active && (active.tagName === 'SELECT' || active.tagName === 'INPUT' || active.closest('[data-radix-popper-content-wrapper]'))) return; setEditingTask(null); } }} modal={false}>
+        <Dialog open={!!editingTask} onOpenChange={(open) => { if (!open) { const active = document.activeElement; if (active && (active.tagName === 'SELECT' || active.tagName === 'INPUT' || active.closest('[data-radix-popper-content-wrapper]'))) return; setEditingTask(null); setDupResults(null); setDupDiffTimeEvents([]); setDupShowDiffTime(false); setDupSearching(false); setDupDeleting(false); setEmailWizardSelected(new Set()); } }} modal={false}>
           <DialogContent onInteractOutside={(e) => e.preventDefault()} onPointerDownOutside={(e) => e.preventDefault()} onFocusOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => { const active = document.activeElement; if (active && (active.tagName === 'SELECT' || active.tagName === 'INPUT')) { e.preventDefault(); return; } }} className="max-w-[95vw] sm:max-w-[900px] max-h-[90vh] overflow-y-auto text-white [&_label]:text-white [&_label]:font-normal [&_input]:font-normal [&_select]:font-normal [&_option]:font-normal [&>button[class*='absolute']]:hidden" style={{ zIndex: 10004, background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.25)' }}>
             <DialogHeader className="flex flex-row items-center justify-between px-4 py-3 -mx-6 -mt-6 rounded-t-lg border-b border-white/40" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
               <div className="flex items-center gap-2">
@@ -25840,6 +26231,189 @@ export default function Dashboard() {
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
+              </div>
+            )}
+            {editingTask && (
+              <div className="flex flex-wrap items-center gap-1.5 px-1 -mt-1 mb-1">
+                {editingTask.calendarEventId && (
+                  <span className="text-[9px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(66,133,244,0.2)', border: '1px solid rgba(66,133,244,0.4)', color: 'rgba(66,133,244,0.9)' }} data-testid="badge-calendar-primary">
+                    Primary Google
+                  </span>
+                )}
+                {editingTask.secondAccountCalendarEventId && (
+                  <span className="text-[9px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(234,67,53,0.2)', border: '1px solid rgba(234,67,53,0.4)', color: 'rgba(234,67,53,0.9)' }} data-testid="badge-calendar-second">
+                    Second Google
+                  </span>
+                )}
+                {editingTask.secondaryCalendarEventId && (
+                  <span className="text-[9px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(251,188,4,0.2)', border: '1px solid rgba(251,188,4,0.4)', color: 'rgba(251,188,4,0.9)' }} data-testid="badge-calendar-secondary">
+                    Secondary Cal
+                  </span>
+                )}
+                {editingTask.prepCalendarEventId && (
+                  <span className="text-[9px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(52,168,83,0.2)', border: '1px solid rgba(52,168,83,0.4)', color: 'rgba(52,168,83,0.9)' }} data-testid="badge-calendar-prep">
+                    Prep Event
+                  </span>
+                )}
+                {!editingTask.calendarEventId && !editingTask.secondAccountCalendarEventId && !editingTask.secondaryCalendarEventId && (
+                  <span className="text-[9px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.4)' }} data-testid="badge-calendar-none">
+                    Not synced
+                  </span>
+                )}
+                <Button
+                  variant="ghost"
+                  className="text-[9px] h-5 px-1.5 ml-auto text-white/50 hover:text-white hover:bg-white/10"
+                  disabled={dupSearching}
+                  data-testid="button-find-duplicates"
+                  onClick={async () => {
+                    setDupSearching(true);
+                    setDupResults(null);
+                    setDupDiffTimeEvents([]);
+                    setDupShowDiffTime(false);
+                    try {
+                      const resp = await fetch(`/api/tasks/${editingTask.id}/find-calendar-duplicates`, { method: 'POST', credentials: 'include' });
+                      const data = await resp.json();
+                      const exact = (data.duplicates || []).filter((d: any) => d.isExactTime);
+                      const diffTime = (data.duplicates || []).filter((d: any) => !d.isExactTime);
+                      setDupResults(exact);
+                      setDupDiffTimeEvents(diffTime);
+                    } catch { setDupResults([]); }
+                    setDupSearching(false);
+                  }}
+                >
+                  {dupSearching ? 'Searching...' : 'Find Duplicates'}
+                </Button>
+              </div>
+            )}
+            {dupResults !== null && editingTask && (
+              <div className="px-1 mb-2">
+                {dupResults.length === 0 && dupDiffTimeEvents.length === 0 && (
+                  <p className="text-[10px] text-green-400">No duplicates found across calendars.</p>
+                )}
+                {dupResults.length > 0 && (
+                  <div className="space-y-1">
+                    <p className="text-[10px] text-orange-400">{dupResults.length} exact duplicate{dupResults.length !== 1 ? 's' : ''} found (same title & time):</p>
+                    {dupResults.map((d: any, i: number) => (
+                      <div key={i} className="text-[9px] flex items-center gap-1.5 px-1.5 py-1 rounded" style={{ background: 'rgba(255,165,0,0.1)', border: '1px solid rgba(255,165,0,0.2)' }}>
+                        <span className="text-white/70">{d.calendarName}</span>
+                        <span className="text-white/40">|</span>
+                        <span className="text-white/50">{new Date(d.start).toLocaleDateString()}</span>
+                        {d.isRecurring && <span className="text-yellow-400">(recurring)</span>}
+                      </div>
+                    ))}
+                    <Button
+                      variant="outline"
+                      className="text-[10px] h-6 px-2 border-red-500/40 text-red-400 hover:bg-red-500/20 hover:text-red-300 mt-1"
+                      disabled={dupDeleting}
+                      data-testid="button-delete-exact-duplicates"
+                      onClick={async () => {
+                        if (!confirm(`Delete ${dupResults.length} exact duplicate${dupResults.length !== 1 ? 's' : ''} from calendars?`)) return;
+                        setDupDeleting(true);
+                        try {
+                          const resp = await fetch(`/api/tasks/${editingTask.id}/delete-calendar-duplicates`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include',
+                            body: JSON.stringify({ eventIds: dupResults.map((d: any) => ({ id: d.id, account: d.account })) }),
+                          });
+                          const data = await resp.json();
+                          setDupResults([]);
+                          alert(`Deleted ${data.deleted} duplicate${data.deleted !== 1 ? 's' : ''}${data.failed > 0 ? `, ${data.failed} failed` : ''}`);
+                        } catch { alert('Failed to delete duplicates'); }
+                        setDupDeleting(false);
+                      }}
+                    >
+                      {dupDeleting ? 'Deleting...' : `Delete ${dupResults.length} Exact Duplicate${dupResults.length !== 1 ? 's' : ''}`}
+                    </Button>
+                  </div>
+                )}
+                {dupDiffTimeEvents.length > 0 && !dupShowDiffTime && (
+                  <Button
+                    variant="ghost"
+                    className="text-[10px] h-6 px-2 text-yellow-400/70 hover:text-yellow-300 mt-1"
+                    data-testid="button-show-diff-time"
+                    onClick={() => setDupShowDiffTime(true)}
+                  >
+                    {dupDiffTimeEvents.length} same-title event{dupDiffTimeEvents.length !== 1 ? 's' : ''} at different times — show?
+                  </Button>
+                )}
+                {dupShowDiffTime && dupDiffTimeEvents.length > 0 && (
+                  <div className="space-y-1 mt-1">
+                    <p className="text-[10px] text-yellow-400">Same title, different times:</p>
+                    {dupDiffTimeEvents.map((d: any, i: number) => (
+                      <div key={i} className="text-[9px] flex items-center gap-1.5 px-1.5 py-1 rounded" style={{ background: 'rgba(255,255,0,0.05)', border: '1px solid rgba(255,255,0,0.15)' }}>
+                        <input
+                          type="checkbox"
+                          className="h-3 w-3"
+                          data-testid={`checkbox-diff-dup-${i}`}
+                          checked={emailWizardSelected.has(d.id)}
+                          onChange={(e) => {
+                            const next = new Set(emailWizardSelected);
+                            e.target.checked ? next.add(d.id) : next.delete(d.id);
+                            setEmailWizardSelected(next);
+                          }}
+                        />
+                        <span className="text-white/70">{d.calendarName}</span>
+                        <span className="text-white/40">|</span>
+                        <span className="text-white/50">{new Date(d.start).toLocaleString()}</span>
+                        {d.isRecurring && <span className="text-yellow-400">(recurring series)</span>}
+                      </div>
+                    ))}
+                    <div className="flex gap-2 mt-1">
+                      <Button
+                        variant="outline"
+                        className="text-[10px] h-6 px-2 border-red-500/40 text-red-400 hover:bg-red-500/20 hover:text-red-300"
+                        disabled={emailWizardSelected.size === 0 || dupDeleting}
+                        data-testid="button-delete-selected-diff"
+                        onClick={async () => {
+                          const selected = dupDiffTimeEvents.filter((d: any) => emailWizardSelected.has(d.id));
+                          if (!confirm(`Delete ${selected.length} selected event${selected.length !== 1 ? 's' : ''}?`)) return;
+                          setDupDeleting(true);
+                          try {
+                            const resp = await fetch(`/api/tasks/${editingTask.id}/delete-calendar-duplicates`, {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              credentials: 'include',
+                              body: JSON.stringify({ eventIds: selected.map((d: any) => ({ id: d.id, account: d.account })) }),
+                            });
+                            const data = await resp.json();
+                            setDupDiffTimeEvents(prev => prev.filter((d: any) => !emailWizardSelected.has(d.id)));
+                            setEmailWizardSelected(new Set());
+                            alert(`Deleted ${data.deleted}${data.failed > 0 ? `, ${data.failed} failed` : ''}`);
+                          } catch { alert('Failed to delete'); }
+                          setDupDeleting(false);
+                        }}
+                      >
+                        {dupDeleting ? 'Deleting...' : `Delete Selected (${emailWizardSelected.size})`}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="text-[10px] h-6 px-2 border-red-500/40 text-red-400 hover:bg-red-500/20 hover:text-red-300"
+                        disabled={dupDeleting}
+                        data-testid="button-delete-all-diff"
+                        onClick={async () => {
+                          if (!confirm(`Delete ALL ${dupDiffTimeEvents.length} event${dupDiffTimeEvents.length !== 1 ? 's' : ''} with this title at different times?`)) return;
+                          setDupDeleting(true);
+                          try {
+                            const resp = await fetch(`/api/tasks/${editingTask.id}/delete-calendar-duplicates`, {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              credentials: 'include',
+                              body: JSON.stringify({ eventIds: dupDiffTimeEvents.map((d: any) => ({ id: d.id, account: d.account })) }),
+                            });
+                            const data = await resp.json();
+                            setDupDiffTimeEvents([]);
+                            setEmailWizardSelected(new Set());
+                            alert(`Deleted ${data.deleted}${data.failed > 0 ? `, ${data.failed} failed` : ''}`);
+                          } catch { alert('Failed to delete'); }
+                          setDupDeleting(false);
+                        }}
+                      >
+                        {dupDeleting ? 'Deleting...' : 'Delete All'}
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
             {editingTask && (

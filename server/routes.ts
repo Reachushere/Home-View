@@ -17841,6 +17841,145 @@ Keep your tone friendly and educational. Format your response clearly with numbe
     }
   });
 
+  app.post("/api/email/search", async (req, res) => {
+    try {
+      const { account, searchTerm, dateFrom, dateTo, category } = req.body;
+      const results: any[] = [];
+      const searchGmail = async () => {
+        const { getGmailAccessToken } = await import("./gmail");
+        const accessToken = await getGmailAccessToken();
+        let query = searchTerm || "";
+        if (dateFrom) query += ` after:${dateFrom}`;
+        if (dateTo) query += ` before:${dateTo}`;
+        if (category && category !== 'skip') {
+          if (category === 'promotions') query += ' category:promotions';
+          else if (category === 'social') query += ' category:social';
+          else if (category === 'updates') query += ' category:updates';
+          else if (category === 'forums') query += ' category:forums';
+          else if (category === 'spam') query += ' in:spam';
+          else if (category === 'trash') query += ' in:trash';
+        }
+        const listResp = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages?q=${encodeURIComponent(query.trim())}&maxResults=50`, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+        const listData = await listResp.json() as any;
+        if (!listData.messages) return [];
+        const emails: any[] = [];
+        for (const msg of listData.messages.slice(0, 50)) {
+          try {
+            const detailResp = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${msg.id}?format=metadata&metadataHeaders=Subject&metadataHeaders=From&metadataHeaders=Date`, {
+              headers: { Authorization: `Bearer ${accessToken}` },
+            });
+            const detail = await detailResp.json() as any;
+            const hdrs = detail.payload?.headers || [];
+            emails.push({ id: msg.id, subject: hdrs.find((h: any) => h.name === 'Subject')?.value || '(no subject)', from: hdrs.find((h: any) => h.name === 'From')?.value || '', date: hdrs.find((h: any) => h.name === 'Date')?.value || '', account: 'gmail', snippet: detail.snippet || '' });
+          } catch { /* skip */ }
+        }
+        return emails;
+      };
+      const searchOutlook = async () => {
+        const client = await getOutlookClient();
+        const filters: string[] = [];
+        if (searchTerm) filters.push(`contains(subject,'${searchTerm.replace(/'/g, "''")}') or contains(from/emailAddress/address,'${searchTerm.replace(/'/g, "''")}')`);
+        if (dateFrom) filters.push(`receivedDateTime ge ${dateFrom}T00:00:00Z`);
+        if (dateTo) filters.push(`receivedDateTime le ${dateTo}T23:59:59Z`);
+        let url = '/me/messages?$top=50&$select=id,subject,from,receivedDateTime,bodyPreview&$orderby=receivedDateTime desc';
+        if (filters.length > 0) url += `&$filter=${encodeURIComponent(filters.join(' and '))}`;
+        const resp = await client.api(url).get();
+        return (resp.value || []).map((m: any) => ({ id: m.id, subject: m.subject || '(no subject)', from: m.from?.emailAddress?.address || '', date: m.receivedDateTime || '', account: 'outlook', snippet: (m.bodyPreview || '').substring(0, 100) }));
+      };
+      if (account === 'gmail' || account === 'all') { try { results.push(...await searchGmail()); } catch (e: any) { console.error("[Email] Gmail search error:", e.message); } }
+      if (account === 'outlook' || account === 'all') { try { results.push(...await searchOutlook()); } catch (e: any) { console.error("[Email] Outlook search error:", e.message); } }
+      results.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      res.json({ results });
+    } catch (error: any) { console.error("[Email] Search error:", error); res.status(500).json({ error: error.message }); }
+  });
+
+  app.post("/api/email/delete", async (req, res) => {
+    try {
+      const { emails } = req.body;
+      let deleted = 0, failed = 0;
+      for (const email of emails) {
+        try {
+          if (email.account === 'gmail') {
+            const { getGmailAccessToken } = await import("./gmail");
+            const accessToken = await getGmailAccessToken();
+            await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${email.id}/trash`, { method: 'POST', headers: { Authorization: `Bearer ${accessToken}` } });
+            deleted++;
+          } else if (email.account === 'outlook') {
+            const client = await getOutlookClient();
+            await client.api(`/me/messages/${email.id}`).delete();
+            deleted++;
+          }
+        } catch { failed++; }
+      }
+      res.json({ deleted, failed });
+    } catch (error: any) { res.status(500).json({ error: error.message }); }
+  });
+
+  app.get("/api/email/folders", async (req, res) => {
+    try {
+      const account = req.query.account as string;
+      const folders: any[] = [];
+      if (account === 'gmail' || account === 'all') {
+        try {
+          const { getGmailAccessToken } = await import("./gmail");
+          const accessToken = await getGmailAccessToken();
+          const resp = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/labels`, { headers: { Authorization: `Bearer ${accessToken}` } });
+          const data = await resp.json() as any;
+          for (const label of (data.labels || [])) {
+            if (label.type === 'user' || ['INBOX', 'SPAM', 'TRASH', 'STARRED', 'IMPORTANT'].includes(label.id)) folders.push({ id: label.id, name: label.name, account: 'gmail' });
+          }
+        } catch (e: any) { console.error("[Email] Gmail labels error:", e.message); }
+      }
+      if (account === 'outlook' || account === 'all') {
+        try {
+          const client = await getOutlookClient();
+          const resp = await client.api('/me/mailFolders?$top=50').get();
+          for (const f of (resp.value || [])) folders.push({ id: f.id, name: f.displayName, account: 'outlook' });
+        } catch (e: any) { console.error("[Email] Outlook folders error:", e.message); }
+      }
+      res.json({ folders });
+    } catch (error: any) { res.status(500).json({ error: error.message }); }
+  });
+
+  app.post("/api/email/move", async (req, res) => {
+    try {
+      const { emails, folderId, folderAccount } = req.body;
+      let moved = 0, failed = 0;
+      for (const email of emails) {
+        try {
+          if (email.account === 'gmail' && folderAccount === 'gmail') {
+            const { getGmailAccessToken } = await import("./gmail");
+            const accessToken = await getGmailAccessToken();
+            await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${email.id}/modify`, { method: 'POST', headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ addLabelIds: [folderId], removeLabelIds: ['INBOX'] }) });
+            moved++;
+          } else if (email.account === 'outlook' && folderAccount === 'outlook') {
+            const client = await getOutlookClient();
+            await client.api(`/me/messages/${email.id}/move`).post({ destinationId: folderId });
+            moved++;
+          }
+        } catch { failed++; }
+      }
+      res.json({ moved, failed });
+    } catch (error: any) { res.status(500).json({ error: error.message }); }
+  });
+
+  app.get("/api/email/saved-searches", async (_req, res) => {
+    try { const searches = await storage.getSavedEmailSearches(); res.json({ searches }); }
+    catch (error: any) { res.status(500).json({ error: error.message }); }
+  });
+
+  app.post("/api/email/saved-searches", async (req, res) => {
+    try { const search = await storage.createSavedEmailSearch(req.body); res.json(search); }
+    catch (error: any) { res.status(500).json({ error: error.message }); }
+  });
+
+  app.delete("/api/email/saved-searches/:id", async (req, res) => {
+    try { await storage.deleteSavedEmailSearch(parseInt(req.params.id)); res.json({ success: true }); }
+    catch (error: any) { res.status(500).json({ error: error.message }); }
+  });
+
   return httpServer;
 }
 

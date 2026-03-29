@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { tasks, files, semesterSettings, secondGoogleAccount, thirdGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, accessTokens, shiftSchedule, semesterChecklist, courseWeekMappings, scholarships, keyContacts, announcements, entityComments, pendingReviewItems, sharedNotebookLinks, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type ThirdGoogleAccount, type InsertThirdGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, type AccessToken, type InsertAccessToken, type ShiftScheduleEntry, type InsertShiftScheduleEntry, type SemesterChecklistItem, type InsertSemesterChecklistItem, type CourseWeekMapping, type InsertCourseWeekMapping, type Scholarship, type InsertScholarship, type KeyContact, type InsertKeyContact, type Announcement, type InsertAnnouncement, type EntityComment, type PendingReviewItem, type InsertPendingReviewItem, type SharedNotebookLink, type InsertSharedNotebookLink, getWeekNumber } from "@shared/schema";
+import { tasks, files, semesterSettings, secondGoogleAccount, thirdGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, accessTokens, shiftSchedule, semesterChecklist, courseWeekMappings, scholarships, keyContacts, announcements, entityComments, pendingReviewItems, sharedNotebookLinks, savedEmailSearches, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type ThirdGoogleAccount, type InsertThirdGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, type AccessToken, type InsertAccessToken, type ShiftScheduleEntry, type InsertShiftScheduleEntry, type SemesterChecklistItem, type InsertSemesterChecklistItem, type CourseWeekMapping, type InsertCourseWeekMapping, type Scholarship, type InsertScholarship, type KeyContact, type InsertKeyContact, type Announcement, type InsertAnnouncement, type EntityComment, type PendingReviewItem, type InsertPendingReviewItem, type SharedNotebookLink, type InsertSharedNotebookLink, type SavedEmailSearch, type InsertSavedEmailSearch, getWeekNumber } from "@shared/schema";
 import { eq, and, gte, lte, desc, or, isNull } from "drizzle-orm";
 
 export interface IStorage {
@@ -108,6 +108,9 @@ export interface IStorage {
   getSharedNotebookLinks(): Promise<SharedNotebookLink[]>;
   createSharedNotebookLink(link: InsertSharedNotebookLink): Promise<SharedNotebookLink>;
   deleteSharedNotebookLink(id: number): Promise<void>;
+  getSavedEmailSearches(): Promise<SavedEmailSearch[]>;
+  createSavedEmailSearch(data: InsertSavedEmailSearch): Promise<SavedEmailSearch>;
+  deleteSavedEmailSearch(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -839,6 +842,19 @@ export class DatabaseStorage implements IStorage {
 
   async deleteSharedNotebookLink(id: number): Promise<void> {
     await db.delete(sharedNotebookLinks).where(eq(sharedNotebookLinks.id, id));
+  }
+
+  async getSavedEmailSearches(): Promise<SavedEmailSearch[]> {
+    return await db.select().from(savedEmailSearches).orderBy(desc(savedEmailSearches.createdAt));
+  }
+
+  async createSavedEmailSearch(data: InsertSavedEmailSearch): Promise<SavedEmailSearch> {
+    const [created] = await db.insert(savedEmailSearches).values(data).returning();
+    return created;
+  }
+
+  async deleteSavedEmailSearch(id: number): Promise<void> {
+    await db.delete(savedEmailSearches).where(eq(savedEmailSearches.id, id));
   }
 }
 

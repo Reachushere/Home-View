@@ -677,5 +677,24 @@ export const insertSharedNotebookLinkSchema = createInsertSchema(sharedNotebookL
 export type SharedNotebookLink = typeof sharedNotebookLinks.$inferSelect;
 export type InsertSharedNotebookLink = z.infer<typeof insertSharedNotebookLinkSchema>;
 
+export const savedEmailSearches = pgTable("saved_email_searches", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  account: text("account").notNull().default('all'),
+  searchTerm: text("search_term"),
+  dateFilter: text("date_filter").default('all'),
+  dateFrom: text("date_from"),
+  dateTo: text("date_to"),
+  category: text("category").default('skip'),
+  action: text("action").default('delete'),
+  folderId: text("folder_id"),
+  folderAccount: text("folder_account"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertSavedEmailSearchSchema = createInsertSchema(savedEmailSearches).omit({ id: true, createdAt: true });
+export type SavedEmailSearch = typeof savedEmailSearches.$inferSelect;
+export type InsertSavedEmailSearch = z.infer<typeof insertSavedEmailSearchSchema>;
+
 // Export chat models for AI integrations
 export * from "./models/chat";
