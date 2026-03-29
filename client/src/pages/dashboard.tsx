@@ -24177,8 +24177,8 @@ export default function Dashboard() {
                                 >
                                   {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title; })() : task.title}
                                 </button>
-                                <div className="text-[9px] text-white" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '2px', whiteSpace: 'nowrap' }}>
-                                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName}</span>
+                                <div className="text-[9px]" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '2px', whiteSpace: 'nowrap', color: getCourseGradientColors(taskCourseCode).start }}>
+                                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName.replace(/^\[|\]$/g, '')}</span>
                                 </div>
                               </div>
                               {cfp && cfp.moduleP.hasFiles && (task.type === 'module' || task.type === 'reading') && (
@@ -24353,8 +24353,8 @@ export default function Dashboard() {
                                             >
                                               {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title; })() : task.title}
                                             </button>
-                                            <div className="text-[9px] text-white" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '2px', whiteSpace: 'nowrap' }}>
-                                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName}</span>
+                                            <div className="text-[9px]" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '2px', whiteSpace: 'nowrap', color: getCourseGradientColors(taskCourseCode).start }}>
+                                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName.replace(/^\[|\]$/g, '')}</span>
                                             </div>
                                           </div>
                                           {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (task.type === 'module' || task.type === 'reading') && (
@@ -24533,8 +24533,8 @@ export default function Dashboard() {
                                             >
                                               {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title; })() : task.title}
                                             </button>
-                                            <div className="text-[9px] text-white" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '4px', whiteSpace: 'nowrap', overflow: 'hidden' }}>
-                                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName}</span>
+                                            <div className="text-[9px]" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '4px', whiteSpace: 'nowrap', overflow: 'hidden', color: getCourseGradientColors(taskCourseCode).start }}>
+                                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName.replace(/^\[|\]$/g, '')}</span>
                                             </div>
                                           </div>
                                           {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (task.type === 'module' || task.type === 'reading') && (
@@ -24729,8 +24729,8 @@ export default function Dashboard() {
                                             >
                                               {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title; })() : task.title}
                                             </button>
-                                            <div className="text-[9px] text-white" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '4px', whiteSpace: 'nowrap', overflow: 'hidden' }}>
-                                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{task.courseName?.split(' - ').slice(1).join(' - ') || task.courseName?.split(' - ')[0] || ''}</span>
+                                            <div className="text-[9px]" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '4px', whiteSpace: 'nowrap', overflow: 'hidden', color: getCourseGradientColors(taskCourseCode).start }}>
+                                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{(task.courseName?.split(' - ').slice(1).join(' - ') || task.courseName?.split(' - ')[0] || '').replace(/^\[|\]$/g, '')}</span>
                                             </div>
                                           </div>
                                         </div>
@@ -24927,8 +24927,8 @@ export default function Dashboard() {
                                             >
                                               {(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title; })() : task.title}
                                             </button>
-                                            <div className="text-[9px] text-white" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '4px', whiteSpace: 'nowrap', overflow: 'hidden' }}>
-                                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName}</span>
+                                            <div className="text-[9px]" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '4px', whiteSpace: 'nowrap', overflow: 'hidden', color: getCourseGradientColors(taskCourseCode).start }}>
+                                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName.replace(/^\[|\]$/g, '')}</span>
                                             </div>
                                           </div>
                                         </div>
