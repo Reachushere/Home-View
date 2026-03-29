@@ -24018,12 +24018,12 @@ export default function Dashboard() {
           <div className="flex-1 flex flex-col" style={{ paddingLeft: '0px', paddingRight: '0px', marginTop: (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
             if (courseRowRects.length > 0) {
-              const firstOffset = 0;
+              const headerH = courseRowRects[0].top - upcomingTop - 1;
               const lastRect = courseRowRects[courseRowRects.length - 1];
               if (lastRect) {
-                const lastBottom = lastRect.top + lastRect.height - upcomingTop - firstOffset;
+                const lastBottom = lastRect.top + lastRect.height - upcomingTop;
                 const otherRowH = gridSizes.otherRowHeight || 57;
-                return `${lastBottom + otherRowH + 2 - 49}px`;
+                return `${lastBottom + otherRowH - headerH}px`;
               }
             }
             return '12px';
