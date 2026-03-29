@@ -5371,7 +5371,7 @@ export default function Dashboard() {
       const { clientY } = getPointerXY(e);
       const rawDelta = clientY - resizeRef.current.startY;
       const delta = (resizeRef.current as any).invertDirection ? -rawDelta : rawDelta;
-      const newHeight = Math.max(200, Math.min(window.innerHeight - 88, resizeRef.current.startHeight + delta));
+      const newHeight = Math.max(200, Math.min(window.innerHeight - 84, resizeRef.current.startHeight + delta));
       lastHeight = newHeight;
       setCalendarHeight(newHeight);
     };
@@ -5388,6 +5388,13 @@ export default function Dashboard() {
       const sw = window.screen.width, sh = window.screen.height, pr = window.devicePixelRatio || 1;
       localStorage.setItem(`calendarHeight_device_${sw}x${sh}@${pr}`, String(lastHeight));
       setIsResizing(false);
+      setIsResizingHomework(false);
+      if (resizingHomeworkRef.current) {
+        const curReduction = calendarReductionRef.current;
+        localStorage.setItem('calendarReduction', String(curReduction));
+        localStorage.setItem(`calendarReduction_device_${sw}x${sh}@${pr}`, String(curReduction));
+        resizingHomeworkRef.current = null;
+      }
       resizeRef.current = null;
     };
 
@@ -20080,7 +20087,7 @@ export default function Dashboard() {
               data-testid="calendar-top-resize-handle"
             >
               <div style={{ width: '191px', height: '14px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
-                <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 88, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 88, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▲</span></div>
+                <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 84, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 84, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▲</span></div>
                 <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
                 <div className="cursor-grab active:cursor-grabbing select-none" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={handleTopResizeStart} onTouchStart={handleTopResizeStart}><span style={{ fontSize: '13px', lineHeight: '1', color: '#000', letterSpacing: '-1px', writingMode: 'vertical-lr' }}>⋮⋮</span></div>
                 <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
@@ -22058,7 +22065,7 @@ export default function Dashboard() {
             data-testid="calendar-bottom-resize-handle"
           >
             <div style={{ width: '191px', height: '14px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
-              <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 88, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 88, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▼</span></div>
+              <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 84, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 84, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▼</span></div>
               <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
               <div className="cursor-grab active:cursor-grabbing select-none" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={handleResizeStart} onTouchStart={handleResizeStart}><span style={{ fontSize: '13px', lineHeight: '1', color: '#000', letterSpacing: '-1px', writingMode: 'vertical-lr' }}>⋮⋮</span></div>
               <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
@@ -24090,15 +24097,18 @@ export default function Dashboard() {
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', whiteSpace: 'nowrap', flexShrink: 0 }}>{hwWeeklyTimeline[0]?.label || 'Week'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', flexShrink: 0 }}>({dueTomorrowTasks.length})</span>
                     {/Week\s+\d/i.test(hwWeeklyTimeline[0]?.label || '') && hwWeeklyTimeline[0]?.weekStart && hwWeeklyTimeline[0]?.weekEnd && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0, marginLeft: '2px' }}>
-                        <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                          <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(hwWeeklyTimeline[0].weekStart, 'MMM').toUpperCase()}</div>
-                          <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(hwWeeklyTimeline[0].weekStart, 'd')}</div>
-                        </div>
-                        <span style={{ fontSize: '6px', color: 'white', lineHeight: 1 }}>&#9654;</span>
-                        <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                          <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(hwWeeklyTimeline[0].weekEnd, 'MMM').toUpperCase()}</div>
-                          <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(hwWeeklyTimeline[0].weekEnd, 'd')}</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', flexShrink: 0, marginLeft: '2px' }}>
+                        <span style={{ fontSize: '7px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', lineHeight: '8px', textAlign: 'right', whiteSpace: 'nowrap' }}>{(() => { const sm = format(hwWeeklyTimeline[0].weekStart, 'MMM').toUpperCase(); const em = format(hwWeeklyTimeline[0].weekEnd, 'MMM').toUpperCase(); return sm === em ? sm : `${sm}-${em}`; })()}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                          <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                            <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(hwWeeklyTimeline[0].weekStart, 'MMM').toUpperCase()}</div>
+                            <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(hwWeeklyTimeline[0].weekStart, 'd')}</div>
+                          </div>
+                          <span style={{ fontSize: '6px', color: 'white', lineHeight: 1 }}>&#9654;</span>
+                          <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                            <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(hwWeeklyTimeline[0].weekEnd, 'MMM').toUpperCase()}</div>
+                            <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(hwWeeklyTimeline[0].weekEnd, 'd')}</div>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -24280,15 +24290,18 @@ export default function Dashboard() {
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', flexShrink: 0 }}>{hwWeeklyTimeline[1]?.label || 'Week'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', flexShrink: 0 }}>({dueNextWeekTasks.length})</span>
                     {/Week\s+\d/i.test(hwWeeklyTimeline[1]?.label || '') && hwWeeklyTimeline[1]?.weekStart && hwWeeklyTimeline[1]?.weekEnd && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0, marginLeft: '2px' }}>
-                        <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                          <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(hwWeeklyTimeline[1].weekStart, 'MMM').toUpperCase()}</div>
-                          <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(hwWeeklyTimeline[1].weekStart, 'd')}</div>
-                        </div>
-                        <span style={{ fontSize: '6px', color: 'white', lineHeight: 1 }}>&#9654;</span>
-                        <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                          <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(hwWeeklyTimeline[1].weekEnd, 'MMM').toUpperCase()}</div>
-                          <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(hwWeeklyTimeline[1].weekEnd, 'd')}</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', flexShrink: 0, marginLeft: '2px' }}>
+                        <span style={{ fontSize: '7px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', lineHeight: '8px', textAlign: 'right', whiteSpace: 'nowrap' }}>{(() => { const sm = format(hwWeeklyTimeline[1].weekStart, 'MMM').toUpperCase(); const em = format(hwWeeklyTimeline[1].weekEnd, 'MMM').toUpperCase(); return sm === em ? sm : `${sm}-${em}`; })()}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                          <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                            <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(hwWeeklyTimeline[1].weekStart, 'MMM').toUpperCase()}</div>
+                            <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(hwWeeklyTimeline[1].weekStart, 'd')}</div>
+                          </div>
+                          <span style={{ fontSize: '6px', color: 'white', lineHeight: 1 }}>&#9654;</span>
+                          <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                            <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(hwWeeklyTimeline[1].weekEnd, 'MMM').toUpperCase()}</div>
+                            <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(hwWeeklyTimeline[1].weekEnd, 'd')}</div>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -24454,15 +24467,18 @@ export default function Dashboard() {
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', flexShrink: 0 }}>{hwWeeklyTimeline[2]?.label || 'Two weeks'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', flexShrink: 0 }}>({dueTwoWeeksTasks.length})</span>
                     {/Week\s+\d/i.test(hwWeeklyTimeline[2]?.label || '') && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0, marginLeft: '2px' }}>
-                        <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                          <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(twoWeeksStart, 'MMM').toUpperCase()}</div>
-                          <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(twoWeeksStart, 'd')}</div>
-                        </div>
-                        <span style={{ fontSize: '6px', color: 'white', lineHeight: 1 }}>&#9654;</span>
-                        <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                          <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(threeWeeksEnd, 'MMM').toUpperCase()}</div>
-                          <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(threeWeeksEnd, 'd')}</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', flexShrink: 0, marginLeft: '2px' }}>
+                        <span style={{ fontSize: '7px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', lineHeight: '8px', textAlign: 'right', whiteSpace: 'nowrap' }}>{(() => { const sm = format(twoWeeksStart, 'MMM').toUpperCase(); const em = format(threeWeeksEnd, 'MMM').toUpperCase(); return sm === em ? sm : `${sm}-${em}`; })()}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                          <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                            <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(twoWeeksStart, 'MMM').toUpperCase()}</div>
+                            <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(twoWeeksStart, 'd')}</div>
+                          </div>
+                          <span style={{ fontSize: '6px', color: 'white', lineHeight: 1 }}>&#9654;</span>
+                          <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                            <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(threeWeeksEnd, 'MMM').toUpperCase()}</div>
+                            <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(threeWeeksEnd, 'd')}</div>
+                          </div>
                         </div>
                       </div>
                     )}
