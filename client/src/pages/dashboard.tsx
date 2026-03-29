@@ -23547,8 +23547,8 @@ export default function Dashboard() {
                 {(() => {
                   const boxEl = document.querySelector('[data-testid="section-coming-up"]') as HTMLElement | null;
                   const boxH = boxEl ? boxEl.offsetHeight : (window.innerHeight - (calendarBorderTop || (calendarTop + 15)) - calendarBottom);
-                  const topInset = 9;
-                  const bottomInset = 1;
+                  const topInset = 14;
+                  const bottomInset = 6;
                   const usableH = Math.max(60, boxH + 30 - 15) - topInset - bottomInset;
                   const n = semTabs.length;
                   const overlapRatio = 0;
