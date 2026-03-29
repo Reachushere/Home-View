@@ -13497,7 +13497,7 @@ export default function Dashboard() {
       }} data-tpo data-tpo-opacity="1" data-testid="timer-bar">
         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end', gap: '6px' }}>
           <div className="flex flex-col items-center" style={{ marginBottom: '4px' }}>
-            <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.7)', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase', lineHeight: 1, marginBottom: '3px', marginTop: '-12px' }}>Pomodoro Timer</span>
+            <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.7)', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase', lineHeight: 1, marginBottom: '3px', marginTop: '-19px' }}>Pomodoro Timer</span>
             <div className="flex flex-row items-center gap-[16px]">
             <div className="flex items-center gap-[4px]">
               <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={() => { setPomodoroTime(prev => Math.max(60, prev - 60)); }} data-testid="button-pomodoro-sub-min" title="-1 min" style={{ fontSize: '11px', color: 'white', fontWeight: 600, whiteSpace: 'nowrap', lineHeight: 1 }}>
@@ -23475,7 +23475,7 @@ export default function Dashboard() {
                   const boxEl = document.querySelector('[data-testid="section-coming-up"]') as HTMLElement | null;
                   const boxH = boxEl ? boxEl.offsetHeight : (window.innerHeight - (calendarBorderTop || (calendarTop + 15)) - calendarBottom);
                   const availH = Math.max(60, boxH + 30);
-                  return { right: '-16px', top: '-15px', pointerEvents: 'auto' as const, zIndex: 0, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || hwFloating.detached) ? 'none' : 'block', width: '18px', height: `${availH}px` };
+                  return { right: '-16px', top: '-20px', pointerEvents: 'auto' as const, zIndex: 0, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || hwFloating.detached) ? 'none' : 'block', width: '18px', height: `${availH}px` };
                 })()}
               >
                 {(() => {
@@ -24174,7 +24174,7 @@ export default function Dashboard() {
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', flexShrink: 0 }}>({dueTomorrowTasks.length})</span>
                     {/Week\s+\d/i.test(hwWeeklyTimeline[0]?.label || '') && hwWeeklyTimeline[0]?.weekStart && hwWeeklyTimeline[0]?.weekEnd && (
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', flexShrink: 0, marginLeft: '2px', width: '34px' }}>
-                        <span style={{ fontSize: '7px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', lineHeight: '8px', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden' }}>{(() => { const sm = format(hwWeeklyTimeline[0].weekStart, 'MMM').toUpperCase(); const em = format(hwWeeklyTimeline[0].weekEnd, 'MMM').toUpperCase(); return sm === em ? sm : `${sm}-${em}`; })()}</span>
+                        <span style={{ fontSize: '7px', fontWeight: 600, color: '#ffffff', lineHeight: '8px', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden' }}>{(() => { const sm = format(hwWeeklyTimeline[0].weekStart, 'MMM').toUpperCase(); const em = format(hwWeeklyTimeline[0].weekEnd, 'MMM').toUpperCase(); return sm === em ? sm : `${sm}-${em}`; })()}</span>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                           <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                             <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(hwWeeklyTimeline[0].weekStart, 'MMM').toUpperCase()}</div>
@@ -24367,7 +24367,7 @@ export default function Dashboard() {
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', flexShrink: 0 }}>({dueNextWeekTasks.length})</span>
                     {/Week\s+\d/i.test(hwWeeklyTimeline[1]?.label || '') && hwWeeklyTimeline[1]?.weekStart && hwWeeklyTimeline[1]?.weekEnd && (
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', flexShrink: 0, marginLeft: '2px', width: '34px' }}>
-                        <span style={{ fontSize: '7px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', lineHeight: '8px', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden' }}>{(() => { const sm = format(hwWeeklyTimeline[1].weekStart, 'MMM').toUpperCase(); const em = format(hwWeeklyTimeline[1].weekEnd, 'MMM').toUpperCase(); return sm === em ? sm : `${sm}-${em}`; })()}</span>
+                        <span style={{ fontSize: '7px', fontWeight: 600, color: '#ffffff', lineHeight: '8px', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden' }}>{(() => { const sm = format(hwWeeklyTimeline[1].weekStart, 'MMM').toUpperCase(); const em = format(hwWeeklyTimeline[1].weekEnd, 'MMM').toUpperCase(); return sm === em ? sm : `${sm}-${em}`; })()}</span>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                           <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                             <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(hwWeeklyTimeline[1].weekStart, 'MMM').toUpperCase()}</div>
@@ -24544,7 +24544,7 @@ export default function Dashboard() {
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', flexShrink: 0 }}>({dueTwoWeeksTasks.length})</span>
                     {/Week\s+\d/i.test(hwWeeklyTimeline[2]?.label || '') && (
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', flexShrink: 0, marginLeft: '2px', width: '34px' }}>
-                        <span style={{ fontSize: '7px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', lineHeight: '8px', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden' }}>{(() => { const sm = format(twoWeeksStart, 'MMM').toUpperCase(); const em = format(threeWeeksEnd, 'MMM').toUpperCase(); return sm === em ? sm : `${sm}-${em}`; })()}</span>
+                        <span style={{ fontSize: '7px', fontWeight: 600, color: '#ffffff', lineHeight: '8px', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden' }}>{(() => { const sm = format(twoWeeksStart, 'MMM').toUpperCase(); const em = format(threeWeeksEnd, 'MMM').toUpperCase(); return sm === em ? sm : `${sm}-${em}`; })()}</span>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                           <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                             <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(twoWeeksStart, 'MMM').toUpperCase()}</div>
