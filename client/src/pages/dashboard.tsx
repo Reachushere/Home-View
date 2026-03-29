@@ -20176,12 +20176,11 @@ export default function Dashboard() {
             {/* Progress/Saturday divider line - grey separator on left border of Saturday column */}
             <div className="absolute top-0 bottom-0 w-[3px] z-50 pointer-events-none overflow-hidden" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 1px)`, backgroundColor: '#888888' }}>
             </div>
-            {/* Red separator on left border of today column */}
+            {/* Red separator on left border of today column - only show when there are next-week columns to the left */}
             {(() => {
               const now = new Date();
-              if (now.getDay() === 0) return null;
               const todayIdx = weekDays.findIndex(d => isSameDayET(d, now));
-              if (todayIdx < 0) return null;
+              if (todayIdx <= 0) return null;
               const totalDayW = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0);
               const beforeW = gridSizes.dayColumnWidths.slice(0, todayIdx).reduce((a: number, b: number) => a + b, 0);
               const todayW = gridSizes.dayColumnWidths[todayIdx] || 0;
