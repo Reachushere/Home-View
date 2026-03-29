@@ -4594,6 +4594,20 @@ export default function Dashboard() {
     return null;
   };
 
+  const semKeyToTermLabel: Record<string, string> = {
+    'ss2025': '2025-SS', 'f2025': '2025-F', 'w2026': '2026-W', 'ss2026': '2026-SS', 'f2026': '2026-F',
+    'w2027': '2027-W', 'ss2027': '2027-SS', 'f2027': '2027-F', 'w2028': '2028-W', 'ss2028': '2028-SS', 'f2028': '2028-F', 'w2029': '2029-W',
+  };
+  const getCourseTerm = (courseCode: string): string => {
+    const codeNorm = courseCode.toUpperCase().replace(/\s/g, '');
+    for (const [semKey, courses] of Object.entries(semesterCourseAssignments)) {
+      if (courses.some(c => c.code.toUpperCase().replace(/\s/g, '') === codeNorm)) {
+        return semKeyToTermLabel[semKey] || '';
+      }
+    }
+    return '';
+  };
+
   const l1ToL2Map: Record<string, string> = {
     'L1_PPA120': 'L2_PPA120', 'L1_PPA121': 'L2_PPA121',
     'L1_PPA122': 'L2_PPA122', 'L1_PPA124': 'L2_PPA124',
@@ -13647,6 +13661,7 @@ export default function Dashboard() {
                     <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Title</div>
                     <div className="px-1 py-0.5 border-l border-black text-[9px] font-bold text-center" style={{ width: '54px', minWidth: '54px' }}>Grade</div>
                     <div className="px-1 py-0.5 border-l border-black text-[9px] font-bold text-center" style={{ width: '38px', minWidth: '38px' }}>Status</div>
+                    <div className="px-1 py-0.5 border-l border-black text-[9px] font-bold text-center" style={{ width: '40px', minWidth: '40px' }}>Term</div>
                     <div className="px-1 py-0.5 border-l border-black text-[9px] font-bold text-center" style={{ width: '30px', minWidth: '30px' }}>Edit</div>
                   </div>
                 </div>
@@ -13668,6 +13683,7 @@ export default function Dashboard() {
                       {renderGradeInput(c.id)}
                     </div>
                     <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}>{renderTriStateToggle(c.id)}</div>
+                    <div className="no-dim border-l border-black flex items-center justify-center text-[7px] text-gray-500" style={{ width: '40px', minWidth: '40px' }} data-testid={`term-${c.id}`}>{getCourseTerm(c.code)}</div>
                     <div className="no-dim border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick(c.id)} data-testid={`pencil-cert-${c.id}`}>
                       <Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" />
                     </div>
@@ -13696,6 +13712,7 @@ export default function Dashboard() {
                       {renderGradeInput(c.id)}
                     </div>
                     <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}>{renderTriStateToggle(c.id)}</div>
+                    <div className="no-dim border-l border-black flex items-center justify-center text-[7px] text-gray-500" style={{ width: '40px', minWidth: '40px' }} data-testid={`term-${c.id}`}>{getCourseTerm(c.code)}</div>
                     <div className="no-dim border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick(c.id)} data-testid={`pencil-cert-${c.id}`}>
                       <Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" />
                     </div>
@@ -13723,6 +13740,7 @@ export default function Dashboard() {
                     {renderGradeInput('LIBERAL')}
                   </div>
                   <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}>{renderTriStateToggle("LIBERAL")}</div>
+                  <div className="no-dim border-l border-black flex items-center justify-center text-[7px] text-gray-500" style={{ width: '40px', minWidth: '40px' }} data-testid="term-LIBERAL">{getCourseTerm(getElectiveCode(openElectives['LIBERAL'] || ''))}</div>
                   <div className="no-dim border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick('LIBERAL')} data-testid="pencil-cert-LIBERAL">
                     <Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" />
                   </div>
@@ -13749,6 +13767,7 @@ export default function Dashboard() {
                       {renderGradeInput(cid)}
                     </div>
                     <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}>{renderTriStateToggle(cid)}</div>
+                    <div className="no-dim border-l border-black flex items-center justify-center text-[7px] text-gray-500" style={{ width: '40px', minWidth: '40px' }} data-testid={`term-${cid}`}>{getCourseTerm(getElectiveCode(openElectives[cid] || ''))}</div>
                     <div className="no-dim border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}>
                       <Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" />
                     </div>
@@ -13780,6 +13799,7 @@ export default function Dashboard() {
                     <div className="flex-1 px-1 py-0.5 text-[9px] font-bold">Title</div>
                     <div className="px-1 py-0.5 border-l border-black text-[9px] font-bold text-center" style={{ width: '54px', minWidth: '54px' }}>Grade</div>
                     <div className="px-1 py-0.5 border-l border-black text-[9px] font-bold text-center" style={{ width: '38px', minWidth: '38px' }}>Status</div>
+                    <div className="px-1 py-0.5 border-l border-black text-[9px] font-bold text-center" style={{ width: '40px', minWidth: '40px' }}>Term</div>
                     <div className="px-1 py-0.5 border-l border-black text-[9px] font-bold text-center" style={{ width: '30px', minWidth: '30px' }}>Edit</div>
                   </div>
                 </div>
@@ -13796,6 +13816,7 @@ export default function Dashboard() {
                     {renderGradeInput('L2_PPA211')}
                   </div>
                   <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}>{renderTriStateToggle("L2_PPA211")}</div>
+                  <div className="no-dim border-l border-black flex items-center justify-center text-[7px] text-gray-500" style={{ width: '40px', minWidth: '40px' }} data-testid="term-L2_PPA211">{getCourseTerm('CPPA 211')}</div>
                   <div className="no-dim border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick('L2_PPA211')} data-testid="pencil-cert-L2_PPA211">
                     <Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" />
                   </div>
@@ -13824,6 +13845,7 @@ export default function Dashboard() {
                       {renderGradeInput(c.id)}
                     </div>
                     <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}>{renderTriStateToggle(c.id)}</div>
+                    <div className="no-dim border-l border-black flex items-center justify-center text-[7px] text-gray-500" style={{ width: '40px', minWidth: '40px' }} data-testid={`term-${c.id}`}>{getCourseTerm(c.code)}</div>
                     <div className="no-dim border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick(c.id)} data-testid={`pencil-cert-${c.id}`}>
                       <Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" />
                     </div>
@@ -13851,6 +13873,7 @@ export default function Dashboard() {
                     {renderGradeInput('L2_LIBERAL')}
                   </div>
                   <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}>{renderTriStateToggle("L2_LIBERAL")}</div>
+                  <div className="no-dim border-l border-black flex items-center justify-center text-[7px] text-gray-500" style={{ width: '40px', minWidth: '40px' }} data-testid="term-L2_LIBERAL">{getCourseTerm(getElectiveCode(openElectives['L2_LIBERAL'] || ''))}</div>
                   <div className="no-dim border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick('L2_LIBERAL')} data-testid="pencil-cert-L2_LIBERAL2"><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" /></div>
                 </div>
                 </div>
@@ -13878,6 +13901,7 @@ export default function Dashboard() {
                       {renderGradeInput(ecn.id)}
                     </div>
                     <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}>{renderTriStateToggle(ecn.id)}</div>
+                    <div className="no-dim border-l border-black flex items-center justify-center text-[7px] text-gray-500" style={{ width: '40px', minWidth: '40px' }} data-testid={`term-${ecn.id}`}>{getCourseTerm(ecn.code)}</div>
                     <div className="no-dim border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick(ecn.id)} data-testid={`pencil-cert-${ecn.id}`}><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" /></div>
                   </div>
                   );
@@ -13904,6 +13928,7 @@ export default function Dashboard() {
                       {renderGradeInput(cid)}
                     </div>
                     <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}>{renderTriStateToggle(cid)}</div>
+                    <div className="no-dim border-l border-black flex items-center justify-center text-[7px] text-gray-500" style={{ width: '40px', minWidth: '40px' }} data-testid={`term-${cid}`}>{getCourseTerm(getElectiveCode(openElectives[cid] || ''))}</div>
                     <div className="no-dim border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-l2-open-${cid}`}><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" /></div>
                   </div>
                 ))}
@@ -13936,6 +13961,7 @@ export default function Dashboard() {
                     <col />
                     <col style={{ width: '54px' }} />
                     <col style={{ width: '38px' }} />
+                    <col style={{ width: '40px' }} />
                     <col style={{ width: '30px' }} />
                   </colgroup>
                   <thead className="sticky top-0 z-10">
@@ -13945,12 +13971,13 @@ export default function Dashboard() {
                       <th className="px-1 py-0.5 text-[9px] font-bold text-left">Title</th>
                       <th className="px-1 py-0.5 border-l border-black text-[9px] font-bold text-center">Grade</th>
                       <th className="px-1 py-0.5 border-l border-black text-[9px] font-bold text-center">Status</th>
+                      <th className="px-1 py-0.5 border-l border-black text-[9px] font-bold text-center">Term</th>
                       <th className="px-1 py-0.5 border-l border-black text-[9px] font-bold text-center">Edit</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr className="border-b border-black" style={isSectionAllGreen(0, 'L3') ? { opacity: 0.45 } : undefined}>
-                      <td colSpan={6} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Required Professional Courses <span className="font-bold" style={sectionRemaining(0, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(0, 'L3')}/{certSections.L3[0].required} remaining)</span></td>
+                      <td colSpan={7} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Required Professional Courses <span className="font-bold" style={sectionRemaining(0, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(0, 'L3')}/{certSections.L3[0].required} remaining)</span></td>
                     </tr>
                     <tr className={`border-b border-black ${courseRowClass('L3_PPA333')} ${isSectionAllGreen(0, 'L3') ? 'section-dim-tr' : ''}`} style={{ backgroundColor: courseRowBg('L3_PPA333') }}>
                       <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]">Prof-Req'd</td>
@@ -13962,6 +13989,7 @@ export default function Dashboard() {
                         </div>
                       </td>
                       <td className="no-dim border-l border-black text-center align-middle">{renderTriStateToggle("L3_PPA333")}</td>
+                      <td className="no-dim border-l border-black text-center align-middle text-[7px] text-gray-500" data-testid="term-L3_PPA333">{getCourseTerm('CPPA 333')}</td>
                       <td className="no-dim border-l border-black cursor-pointer hover:bg-gray-100 text-center align-middle" onClick={() => handleCertCourseClick('L3_PPA333')} data-testid="pencil-cert-L3_PPA333"><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900 inline-block" /></td>
                     </tr>
                     <tr className={`border-b border-black ${courseRowClass('L3_PRACTICUM1')} ${isSectionAllGreen(0, 'L3') ? 'section-dim-tr' : ''}`} style={{ backgroundColor: courseRowBg('L3_PRACTICUM1') }}>
@@ -13974,10 +14002,11 @@ export default function Dashboard() {
                         </div>
                       </td>
                       <td className="no-dim border-l border-black text-center align-middle">{renderTriStateToggle("L3_PRACTICUM1")}</td>
+                      <td className="no-dim border-l border-black text-center align-middle text-[7px] text-gray-500" data-testid="term-L3_PRACTICUM1">{getCourseTerm('CPPA 51 A/B')}</td>
                       <td className="no-dim border-l border-black cursor-pointer hover:bg-gray-100 text-center align-middle" onClick={() => handleCertCourseClick('L3_PRACTICUM1')} data-testid="pencil-cert-L3_PRACTICUM1"><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900 inline-block" /></td>
                     </tr>
                     <tr className="border-b border-black" style={isSectionAllGreen(1, 'L3') ? { opacity: 0.45 } : undefined}>
-                      <td colSpan={6} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Required Professional Courses: <span style={sectionRemaining(1, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select <span className="underline">eight</span> courses from the list below</span> <span className="font-bold" style={sectionRemaining(1, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(1, 'L3')}/{certSections.L3[1].required} remaining)</span></td>
+                      <td colSpan={7} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Required Professional Courses: <span style={sectionRemaining(1, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select <span className="underline">eight</span> courses from the list below</span> <span className="font-bold" style={sectionRemaining(1, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(1, 'L3')}/{certSections.L3[1].required} remaining)</span></td>
                     </tr>
                     {[
                       { code: 'CPPA 235', title: 'Theories of the State', id: 'L3_PPA235' },
@@ -14009,11 +14038,12 @@ export default function Dashboard() {
                           </div>
                         </td>
                         {idx === 0 && <td rowSpan={14} className="no-dim border-l border-black p-0 align-top"><div className="flex flex-col w-full">{['L3_PPA235','L3_PPA301','L3_PPA303','L3_PPA319','L3_PPA335','L3_PPA401','L3_PPA402','L3_PPA403','L3_PPA404','L3_PPA411','L3_PPA414','L3_PPA425','L3_PPA490','L3_PPA501'].map((cid, i) => (<div key={cid} className={`h-6 w-full flex items-center justify-center ${i < 13 ? 'border-b border-black' : ''}`}>{renderTriStateToggle(cid)}</div>))}</div></td>}
+                        {idx === 0 && <td rowSpan={14} className="no-dim border-l border-black p-0 align-top"><div className="flex flex-col w-full">{[{cid:'L3_PPA235',code:'CPPA 235'},{cid:'L3_PPA301',code:'CPPA 301'},{cid:'L3_PPA303',code:'CPPA 303'},{cid:'L3_PPA319',code:'CPPA 319'},{cid:'L3_PPA335',code:'CPPA 335'},{cid:'L3_PPA401',code:'CPPA 401'},{cid:'L3_PPA402',code:'CPPA 402'},{cid:'L3_PPA403',code:'CPPA 403'},{cid:'L3_PPA404',code:'CPPA 404'},{cid:'L3_PPA411',code:'CPPA 411'},{cid:'L3_PPA414',code:'CPPA 414'},{cid:'L3_PPA425',code:'CPPA 425'},{cid:'L3_PPA490',code:'CPPA 490'},{cid:'L3_PPA501',code:'CPPA 501'}].map((c, i) => (<div key={c.cid} className={`h-6 w-full flex items-center justify-center text-[7px] text-gray-500 ${i < 13 ? 'border-b border-black' : ''}`} data-testid={`term-${c.cid}`}>{getCourseTerm(c.code)}</div>))}</div></td>}
                         {idx === 0 && <td rowSpan={14} className="no-dim border-l border-black p-0 align-top"><div className="flex flex-col w-full">{['L3_PPA235','L3_PPA301','L3_PPA303','L3_PPA319','L3_PPA335','L3_PPA401','L3_PPA402','L3_PPA403','L3_PPA404','L3_PPA411','L3_PPA414','L3_PPA425','L3_PPA490','L3_PPA501'].map((cid, i) => (<div key={cid} className={`h-6 w-full flex items-center justify-center cursor-pointer hover:bg-gray-100 ${i < 13 ? 'border-b border-black' : ''}`} onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" /></div>))}</div></td>}
                       </tr>
                     ))}
                     <tr className="border-b border-black" style={isSectionAllGreen(2, 'L3') ? { opacity: 0.45 } : undefined}>
-                      <td colSpan={6} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Required Professional Courses: <span style={sectionRemaining(2, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select <span className="underline">two</span> courses from the list below</span> <span className="font-bold" style={sectionRemaining(2, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(2, 'L3')}/{certSections.L3[2].required} remaining)</span></td>
+                      <td colSpan={7} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Required Professional Courses: <span style={sectionRemaining(2, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select <span className="underline">two</span> courses from the list below</span> <span className="font-bold" style={sectionRemaining(2, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(2, 'L3')}/{certSections.L3[2].required} remaining)</span></td>
                     </tr>
                 {['L3_POG1','L3_POG2'].map((cid, i) => (
                     <tr key={cid} className={`border-b border-black ${courseRowClass(cid)} ${isSectionAllGreen(2, 'L3') ? 'section-dim-tr' : ''}`} style={{ backgroundColor: courseRowBg(cid) }} data-testid={`cert-course-${cid}`}>
@@ -14034,11 +14064,12 @@ export default function Dashboard() {
                         {renderGradeInput(cid)}
                       </td>
                       <td className="no-dim border-l border-black text-center align-middle">{renderTriStateToggle(cid)}</td>
+                      <td className="no-dim border-l border-black text-center align-middle text-[7px] text-gray-500" data-testid={`term-${cid}`}>{getCourseTerm(getElectiveCode(openElectives[cid] || ''))}</td>
                       <td className="no-dim border-l border-black cursor-pointer hover:bg-gray-100 text-center align-middle" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900 inline-block" /></td>
                     </tr>
                 ))}
                     <tr className="border-b border-black" style={isSectionAllGreen(3, 'L3') ? { opacity: 0.45 } : undefined}>
-                      <td colSpan={6} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Liberal Studies Electives: <span style={sectionRemaining(3, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>1 Table A + 3 Table B</span> <span className="font-bold" style={sectionRemaining(3, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(3, 'L3')}/{certSections.L3[3].required} remaining)</span></td>
+                      <td colSpan={7} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Liberal Studies Electives: <span style={sectionRemaining(3, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>1 Table A + 3 Table B</span> <span className="font-bold" style={sectionRemaining(3, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(3, 'L3')}/{certSections.L3[3].required} remaining)</span></td>
                     </tr>
                 {['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'].map((cid, i) => (
                     <tr key={cid} className={`border-b border-black ${courseRowClass(cid)} ${isSectionAllGreen(3, 'L3') ? 'section-dim-tr' : ''}`} style={{ backgroundColor: courseRowBg(cid) }}>
@@ -14059,11 +14090,12 @@ export default function Dashboard() {
                         {renderGradeInput(cid)}
                       </td>
                       <td className="no-dim border-l border-black text-center align-middle">{renderTriStateToggle(cid)}</td>
+                      <td className="no-dim border-l border-black text-center align-middle text-[7px] text-gray-500" data-testid={`term-l3-liberal-${cid}`}>{getCourseTerm(getElectiveCode(openElectives[cid] || ''))}</td>
                       <td className="no-dim border-l border-black cursor-pointer hover:bg-gray-100 text-center align-middle" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900 inline-block" /></td>
                     </tr>
                 ))}
                     <tr className="border-b border-black" style={isSectionAllGreen(4, 'L3') ? { opacity: 0.45 } : undefined}>
-                      <td colSpan={6} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Professionally Related Electives: <span style={sectionRemaining(4, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select seven from PR table I</span> <span className="font-bold" style={sectionRemaining(4, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(4, 'L3')}/{certSections.L3[4].required} remaining)</span></td>
+                      <td colSpan={7} className="px-1 py-0.5 text-[9px]" style={{ backgroundColor: '#000000', color: '#ffffff' }}>Professionally Related Electives: <span style={sectionRemaining(4, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>Select seven from PR table I</span> <span className="font-bold" style={sectionRemaining(4, 'L3') === 0 ? { textDecoration: 'line-through', color: '#888' } : undefined}>({sectionRemaining(4, 'L3')}/{certSections.L3[4].required} remaining)</span></td>
                     </tr>
                 {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'].map((cid, i) => (
                     <tr key={cid} className={`border-b border-black ${courseRowClass(cid)} ${isSectionAllGreen(4, 'L3') ? 'section-dim-tr' : ''}`} style={{ backgroundColor: courseRowBg(cid) }}>
@@ -14084,6 +14116,7 @@ export default function Dashboard() {
                         {renderGradeInput(cid)}
                       </td>
                       <td className="no-dim border-l border-black text-center align-middle">{renderTriStateToggle(cid)}</td>
+                      <td className="no-dim border-l border-black text-center align-middle text-[7px] text-gray-500" data-testid={`term-l3-open-${cid}`}>{getCourseTerm(getElectiveCode(openElectives[cid] || ''))}</td>
                       <td className="no-dim border-l border-black cursor-pointer hover:bg-gray-100 text-center align-middle" onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}><Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900 inline-block" /></td>
                     </tr>
                 ))}
