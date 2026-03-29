@@ -20297,7 +20297,7 @@ export default function Dashboard() {
                       scaledStops.push(`#ffffff ${pct}%`);
                       scaledStops.push(`#ffffff 100%`);
                       return { background: `linear-gradient(to right, ${scaledStops.join(', ')})` };
-                    })() : { backgroundColor: day.getDay() === 6 ? '#1a6b3a' : colorSettings.headerBar }}
+                    })() : { backgroundColor: colorSettings.headerBar }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {!isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && (
@@ -20324,7 +20324,7 @@ export default function Dashboard() {
                           )}
                           {day.getDay() === 6 && !isToday && (
                             <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '1px' }}>
-                              <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`New School Week - Week ${selectedWeek + 1}`}</span>
+                              <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#4ade80', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`New School Week - Week ${selectedWeek + 1}`}</span>
                             </div>
                           )}
                           {!isToday && (() => {
