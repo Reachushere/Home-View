@@ -994,12 +994,12 @@ export default function Dashboard() {
   const [calendarHeight, setCalendarHeight] = useState(() => {
     const defaultHeight = window.innerHeight - 45;
     const minHeight = 200;
-    const maxHeight = window.innerHeight - 60;
+    const maxHeight = window.innerHeight - 100;
     const screenWidth = window.screen.width;
     const screenHeight = window.screen.height;
     const pixelRatio = window.devicePixelRatio || 1;
     const deviceId = `device_${screenWidth}x${screenHeight}@${pixelRatio}`;
-    const resetKey = 'calendarHeight_reset_v14';
+    const resetKey = 'calendarHeight_reset_v15';
     if (!localStorage.getItem(resetKey)) {
       localStorage.removeItem('calendarHeight');
       localStorage.removeItem(`calendarHeight_${deviceId}`);
@@ -1197,7 +1197,7 @@ export default function Dashboard() {
     });
   };
   const [calendarReductionUserSet, setCalendarReductionUserSetRaw] = useState(() => {
-    const resetKey = 'calendarHeight_reset_v14';
+    const resetKey = 'calendarHeight_reset_v15';
     if (!localStorage.getItem(resetKey)) return false;
     return !!localStorage.getItem('calendarReduction');
   });
@@ -5357,7 +5357,7 @@ export default function Dashboard() {
       const { clientY } = getPointerXY(e);
       const rawDelta = clientY - resizeRef.current.startY;
       const delta = (resizeRef.current as any).invertDirection ? -rawDelta : rawDelta;
-      const newHeight = Math.max(200, Math.min(window.innerHeight - 60, resizeRef.current.startHeight + delta));
+      const newHeight = Math.max(200, Math.min(window.innerHeight - 100, resizeRef.current.startHeight + delta));
       lastHeight = newHeight;
       setCalendarHeight(newHeight);
     };
@@ -20038,7 +20038,7 @@ export default function Dashboard() {
               data-testid="calendar-top-resize-handle"
             >
               <div style={{ width: '191px', height: '14px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
-                <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 60, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 60, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▲</span></div>
+                <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 100, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 100, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▲</span></div>
                 <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
                 <div className="cursor-grab active:cursor-grabbing select-none" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={handleTopResizeStart} onTouchStart={handleTopResizeStart}><span style={{ fontSize: '13px', lineHeight: '1', color: '#000', letterSpacing: '-1px', writingMode: 'vertical-lr' }}>⋮⋮</span></div>
                 <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
@@ -21997,7 +21997,7 @@ export default function Dashboard() {
             data-testid="calendar-bottom-resize-handle"
           >
             <div style={{ width: '191px', height: '14px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
-              <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 60, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 60, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▼</span></div>
+              <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 100, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 100, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▼</span></div>
               <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
               <div className="cursor-grab active:cursor-grabbing select-none" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={handleResizeStart} onTouchStart={handleResizeStart}><span style={{ fontSize: '13px', lineHeight: '1', color: '#000', letterSpacing: '-1px', writingMode: 'vertical-lr' }}>⋮⋮</span></div>
               <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
