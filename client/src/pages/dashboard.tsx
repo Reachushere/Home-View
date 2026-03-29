@@ -20280,14 +20280,14 @@ export default function Dashboard() {
                         <>
                           {isToday && (
                             <div className="absolute top-0 left-0 right-0 text-center z-20" style={{ padding: '0' }} data-testid="today-full-date">
-                              <span style={{ display: 'block', fontSize: '9px', fontWeight: 700, color: '#ffffff', backgroundColor: colorSettings.headerBar, lineHeight: '11px', letterSpacing: '0.3px', padding: '0 4px' }}>
+                              <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 700, color: '#ffffff', backgroundColor: colorSettings.headerBar, lineHeight: '11px', letterSpacing: '0.3px', padding: '0 4px' }}>
                                 {format(day, 'EEEE, MMMM d')}
                               </span>
                             </div>
                           )}
                           {day.getDay() === 6 && !isToday && (
                             <div className="absolute top-0 left-0 right-0 text-center z-20" style={{ padding: '0' }}>
-                              <span style={{ display: 'block', fontSize: '8.5px', fontWeight: 700, color: '#86efac', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`NEW SCHOOL WEEK - WEEK ${selectedWeek + 1}`}</span>
+                              <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 700, color: '#86efac', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`NEW SCHOOL WEEK - WEEK ${selectedWeek + 1}`}</span>
                             </div>
                           )}
                           {!isToday && (() => {
@@ -20296,7 +20296,7 @@ export default function Dashboard() {
                             return todayIdx >= 0 && idx < todayIdx && day.getDay() !== 6;
                           })() && (
                             <div className="absolute top-0 left-0 right-0 text-center z-20" style={{ padding: '0' }}>
-                              <span style={{ display: 'block', fontSize: '8.5px', fontWeight: 700, color: '#86efac', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`WEEK ${selectedWeek + 1}`}</span>
+                              <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 700, color: '#86efac', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`WEEK ${selectedWeek + 1}`}</span>
                             </div>
                           )}
                           {!isToday && (() => {
@@ -20305,7 +20305,7 @@ export default function Dashboard() {
                             return todayIdx >= 0 && idx > todayIdx && day.getDay() !== 6;
                           })() && (
                             <div className="absolute top-0 left-0 right-0 text-center z-20" style={{ padding: '0' }}>
-                              <span style={{ display: 'block', fontSize: '8.5px', fontWeight: 700, color: 'rgba(255,255,255,0.6)', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`WEEK ${selectedWeek}`}</span>
+                              <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 700, color: 'rgba(255,255,255,0.6)', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`WEEK ${selectedWeek}`}</span>
                             </div>
                           )}
                           <div className="flex items-center gap-1.5" style={{ marginTop: '4px' }}>
@@ -23518,7 +23518,7 @@ export default function Dashboard() {
                   const n = semTabs.length;
                   const overlapRatio = 0.4;
                   const rawTabH = usableH / (1 + (n - 1) * (1 - overlapRatio));
-                  const tabH = rawTabH - 2;
+                  const tabH = rawTabH;
                   const stepPx = rawTabH * (1 - overlapRatio);
                   return semTabs.map((tab, tabIdx) => {
                   const isActive = (() => {
@@ -23533,7 +23533,7 @@ export default function Dashboard() {
                     <div
                       key={tab.id}
                       className={`cursor-pointer${isActive && tabBounceEnabled ? ' semester-tab-bounce' : ''}`}
-                      style={{ position: 'absolute', bottom: `${bottomInset + reversedIdx * stepPx}px`, width: '21px', height: `${tabH}px`, overflow: 'hidden', zIndex: isActive ? 100 : semTabs.length - tabIdx, clipPath: isActive ? 'none' : 'inset(0 0 0 2px)', transition: 'width 0.25s ease, transform 0.25s ease', transform: isActive ? 'translateX(2px)' : 'none' }}
+                      style={{ position: 'absolute', bottom: `${bottomInset + reversedIdx * stepPx}px`, width: '21px', height: `${tabH}px`, overflow: 'hidden', zIndex: isActive ? 100 : semTabs.length - tabIdx, clipPath: isActive ? `inset(0 0 2px 0)` : 'inset(0 0 2px 2px)', transition: 'width 0.25s ease, transform 0.25s ease', transform: isActive ? 'translateX(1px)' : 'translateX(-1px)' }}
                       onClick={() => {
                         if (homeworkScrollRef.current) {
                           const scrollContainer = homeworkScrollRef.current;
