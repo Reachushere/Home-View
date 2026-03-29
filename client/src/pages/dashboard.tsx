@@ -23474,14 +23474,14 @@ export default function Dashboard() {
                 style={(() => {
                   const boxEl = document.querySelector('[data-testid="section-coming-up"]') as HTMLElement | null;
                   const boxH = boxEl ? boxEl.offsetHeight : (window.innerHeight - (calendarBorderTop || (calendarTop + 15)) - calendarBottom);
-                  const availH = Math.max(60, boxH + 10);
-                  return { right: '-16px', top: '-5px', pointerEvents: 'auto' as const, zIndex: 0, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || hwFloating.detached) ? 'none' : 'block', width: '18px', height: `${availH}px` };
+                  const availH = Math.max(60, boxH + 30);
+                  return { right: '-16px', top: '-15px', pointerEvents: 'auto' as const, zIndex: 0, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || hwFloating.detached) ? 'none' : 'block', width: '18px', height: `${availH}px` };
                 })()}
               >
                 {(() => {
                   const boxEl = document.querySelector('[data-testid="section-coming-up"]') as HTMLElement | null;
                   const boxH = boxEl ? boxEl.offsetHeight : (window.innerHeight - (calendarBorderTop || (calendarTop + 15)) - calendarBottom);
-                  const availH = Math.max(60, boxH + 10);
+                  const availH = Math.max(60, boxH + 30);
                   const n = semTabs.length;
                   const overlapRatio = 0.4;
                   const tabH = availH / (1 + (n - 1) * (1 - overlapRatio));
