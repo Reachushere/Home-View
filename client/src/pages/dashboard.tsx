@@ -20179,6 +20179,7 @@ export default function Dashboard() {
             {/* Red separator on left border of today column */}
             {(() => {
               const now = new Date();
+              if (now.getDay() === 0) return null;
               const todayIdx = weekDays.findIndex(d => isSameDayET(d, now));
               if (todayIdx < 0) return null;
               const totalDayW = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0);
