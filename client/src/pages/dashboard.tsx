@@ -23307,7 +23307,7 @@ export default function Dashboard() {
             zIndex: 35,
             overflow: 'visible',
             right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1}px`,
-            width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1 - 5 - 2 - 1}px`,
+            width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1 - 5 - 2 - 1 - 3}px`,
             top: `${(calendarBorderTop || (calendarTop + 15)) - 1}px`,
             height: `${window.innerHeight - (calendarBorderTop || (calendarTop + 15)) + 1 - calendarBottom}px`,
             background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
@@ -23377,7 +23377,9 @@ export default function Dashboard() {
             semTabs.push({ id: 'wk-current', label: `Wk ${selectedWeek}`, semLabel: hwWeeklyTimeline[0]?.semLabel || 'Winter 2026', scrollTarget: 'thisweek' });
             semTabs.push({ id: 'wk-next', label: `Wk ${selectedWeek + 1}`, semLabel: hwWeeklyTimeline[1]?.semLabel || 'Winter 2026', scrollTarget: 'nextweek' });
             semTabs.push({ id: 'wk-third', label: `Wk ${selectedWeek + 2}`, semLabel: hwWeeklyTimeline[2]?.semLabel || 'Winter 2026', scrollTarget: 'twoweeks' });
-            semTabs.push({ id: 'ss-2026', label: 'SS 2026', semLabel: 'Spring/Summer 2026', scrollTarget: 'sem-ss2026' });
+            for (let w = 1; w <= 3; w++) {
+              semTabs.push({ id: `ss26-wk${w}`, label: `SS Wk ${w}`, semLabel: 'Spring/Summer 2026', scrollTarget: w === 1 ? 'sem-ss2026' : `sem-ss2026-wk${w}` });
+            }
             semTabs.push({ id: 'f-2026', label: 'F 2026', semLabel: 'Fall 2026', scrollTarget: 'sem-f2026' });
             for (let y = currentYear + 1; y <= 2029; y++) {
               semTabs.push({ id: `year-${y}`, label: String(y), semLabel: `Winter ${y}`, scrollTarget: `sem-w${y}` });
@@ -23405,8 +23407,8 @@ export default function Dashboard() {
                   return semTabs.map((tab, tabIdx) => {
                   const isActive = (() => {
                     if (tab.id === 'wk-current') return !hwVisibleSemLabel || hwVisibleSemLabel === tab.semLabel;
-                    if (tab.id === 'wk-next') return false;
-                    if (tab.id === 'wk-third') return false;
+                    if (tab.id === 'wk-next' || tab.id === 'wk-third') return false;
+                    if (tab.id.startsWith('ss26-wk')) return tab.id === 'ss26-wk1' && scrollActiveSem === tab.semLabel;
                     return scrollActiveSem === tab.semLabel;
                   })();
                   const reversedIdx = semTabs.length - 1 - tabIdx;
