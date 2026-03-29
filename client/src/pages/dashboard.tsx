@@ -20160,10 +20160,17 @@ export default function Dashboard() {
               const now = new Date();
               const todayIdx = weekDays.findIndex(d => isSameDayET(d, now));
               if (todayIdx < 0) return null;
+              const totalDayW = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0);
+              const beforeW = gridSizes.dayColumnWidths.slice(0, todayIdx).reduce((a: number, b: number) => a + b, 0);
+              const todayW = gridSizes.dayColumnWidths[todayIdx] || 0;
+              const fixedW = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth;
               return (
-                <div className="absolute top-0 bottom-0 w-[3px] z-50 pointer-events-none overflow-hidden red-separator-shimmer" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${gridSizes.dayColumnWidths.slice(0, todayIdx).reduce((a: number, b: number) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 1px)`, backgroundColor: '#ef4444' }}>
+                <>
+                <div className="absolute top-0 bottom-0 w-[3px] z-50 pointer-events-none overflow-hidden red-separator-shimmer" style={{ left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px) - 1px)`, backgroundColor: '#ef4444' }}>
                   <div className="absolute inset-0 red-separator-shimmer-sweep" />
                 </div>
+                <div className="absolute top-0 bottom-0 z-[45] pointer-events-none" style={{ left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px))`, width: `calc((${todayW} / ${totalDayW}) * (100% - ${fixedW}px))`, border: '2.5px solid #000000', borderRadius: '1px' }} />
+                </>
               );
             })()}
             
