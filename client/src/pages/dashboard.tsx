@@ -20263,7 +20263,7 @@ export default function Dashboard() {
                             const now = new Date();
                             const todayIdx = weekDays.findIndex(d => isSameDayET(d, now));
                             return todayIdx >= 0 && idx < todayIdx && day.getDay() !== 6;
-                          })() && !hasShiftBar && (
+                          })() && (
                             <div className="absolute top-0 left-0 right-0 text-center z-20" style={{ padding: '0' }}>
                               <span style={{ display: 'block', fontSize: '7.5px', fontWeight: 700, color: '#86efac', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`WEEK ${selectedWeek + 1}`}</span>
                             </div>
@@ -20272,7 +20272,7 @@ export default function Dashboard() {
                             const now = new Date();
                             const todayIdx = weekDays.findIndex(d => isSameDayET(d, now));
                             return todayIdx >= 0 && idx > todayIdx && day.getDay() !== 6;
-                          })() && !hasShiftBar && (
+                          })() && (
                             <div className="absolute top-0 left-0 right-0 text-center z-20" style={{ padding: '0' }}>
                               <span style={{ display: 'block', fontSize: '7.5px', fontWeight: 700, color: 'rgba(255,255,255,0.6)', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`WEEK ${selectedWeek}`}</span>
                             </div>
