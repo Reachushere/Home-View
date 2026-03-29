@@ -20330,7 +20330,8 @@ export default function Dashboard() {
                           {!isToday && (() => {
                             const now = new Date();
                             const todayIdx = weekDays.findIndex(d => isSameDayET(d, now));
-                            return todayIdx >= 0 && idx < todayIdx && day.getDay() !== 6;
+                            const isTodaySat = now.getDay() === 6;
+                            return todayIdx >= 0 && idx < todayIdx && day.getDay() !== 6 && !isTodaySat;
                           })() && (
                             <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '1px' }}>
                               <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#4ade80', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`Week ${selectedWeek + 1}`}</span>
@@ -20339,6 +20340,8 @@ export default function Dashboard() {
                           {!isToday && (() => {
                             const now = new Date();
                             const todayIdx = weekDays.findIndex(d => isSameDayET(d, now));
+                            const isTodaySat = now.getDay() === 6;
+                            if (isTodaySat) return day.getDay() !== 6;
                             return todayIdx >= 0 && idx > todayIdx && day.getDay() !== 6;
                           })() && (
                             <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '1px' }}>
