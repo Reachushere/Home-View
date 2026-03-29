@@ -20190,7 +20190,7 @@ export default function Dashboard() {
                 <div className="absolute top-0 bottom-0 w-[3px] z-50 pointer-events-none overflow-hidden red-separator-shimmer" style={{ left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px) - 1px)`, backgroundColor: '#ef4444' }}>
                   <div className="absolute inset-0 red-separator-shimmer-sweep" />
                 </div>
-                <div className="absolute top-0 bottom-0 z-[45] pointer-events-none" style={{ left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px))`, width: `calc((${todayW} / ${totalDayW}) * (100% - ${fixedW}px))`, border: '2.5px solid #000000', borderRadius: '1px' }} />
+                <div className="absolute bottom-0 z-[45] pointer-events-none" style={{ top: '0px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px))`, width: `calc((${todayW} / ${totalDayW}) * (100% - ${fixedW}px))`, borderLeft: '2.5px solid #000000', borderRight: '2.5px solid #000000', borderBottom: '2.5px solid #000000', borderTop: 'none' }} />
                 </>
               );
             })()}
