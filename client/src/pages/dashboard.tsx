@@ -13490,7 +13490,7 @@ export default function Dashboard() {
       {/* Timer bar - controls left, bottom-aligned with timer, label above */}
       <div style={{
         position: 'fixed',
-        right: `${calendarRight - calendarReduction + 9}px`,
+        right: `${calendarRight - calendarReduction + 17}px`,
         top: `${3 + d2lTickerHeight - 7}px`,
         zIndex: 100,
         display: 'flex',
