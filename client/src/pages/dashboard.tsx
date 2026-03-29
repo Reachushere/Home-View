@@ -4607,8 +4607,8 @@ export default function Dashboard() {
   };
 
   const semKeyToTermLabel: Record<string, string> = {
-    'ss2025': '2025-SS', 'f2025': '2025-F', 'w2026': '2026-W', 'ss2026': '2026-SS', 'f2026': '2026-F',
-    'w2027': '2027-W', 'ss2027': '2027-SS', 'f2027': '2027-F', 'w2028': '2028-W', 'ss2028': '2028-SS', 'f2028': '2028-F', 'w2029': '2029-W',
+    'ss2025': '2025-SS', 'f2025': '2025-FF', 'w2026': '2026-WW', 'ss2026': '2026-SS', 'f2026': '2026-FF',
+    'w2027': '2027-WW', 'ss2027': '2027-SS', 'f2027': '2027-FF', 'w2028': '2028-WW', 'ss2028': '2028-SS', 'f2028': '2028-FF', 'w2029': '2029-WW',
   };
   const getCourseTerm = (courseCode: string): string => {
     const codeNorm = courseCode.toUpperCase().replace(/\s/g, '');
@@ -13749,7 +13749,7 @@ export default function Dashboard() {
                       {renderGradeInput(c.id)}
                     </div>
                     <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}>{renderTriStateToggle(c.id)}</div>
-                    <div className="no-dim border-l border-black flex items-center justify-center text-[7px] text-gray-500" style={{ width: '40px', minWidth: '40px' }} data-testid={`term-${c.id}`}>{getCourseTerm(c.code)}</div>
+                    <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '40px', minWidth: '40px' }} data-testid={`term-${c.id}`}><TermDropdown id={c.id} code={c.code} isPrevCompleted={isActiveInOtherLevel(c.id)} /></div>
                     <div className="no-dim border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick(c.id)} data-testid={`pencil-cert-${c.id}`}>
                       <Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" />
                     </div>
@@ -13778,7 +13778,7 @@ export default function Dashboard() {
                       {renderGradeInput(c.id)}
                     </div>
                     <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}>{renderTriStateToggle(c.id)}</div>
-                    <div className="no-dim border-l border-black flex items-center justify-center text-[7px] text-gray-500" style={{ width: '40px', minWidth: '40px' }} data-testid={`term-${c.id}`}>{getCourseTerm(c.code)}</div>
+                    <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '40px', minWidth: '40px' }} data-testid={`term-${c.id}`}><TermDropdown id={c.id} code={c.code} isPrevCompleted={isActiveInOtherLevel(c.id)} /></div>
                     <div className="no-dim border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick(c.id)} data-testid={`pencil-cert-${c.id}`}>
                       <Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" />
                     </div>
@@ -13806,7 +13806,7 @@ export default function Dashboard() {
                     {renderGradeInput('LIBERAL')}
                   </div>
                   <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}>{renderTriStateToggle("LIBERAL")}</div>
-                  <div className="no-dim border-l border-black flex items-center justify-center text-[7px] text-gray-500" style={{ width: '40px', minWidth: '40px' }} data-testid="term-LIBERAL">{getCourseTerm(getElectiveCode(openElectives['LIBERAL'] || ''))}</div>
+                  <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '40px', minWidth: '40px' }} data-testid="term-LIBERAL"><TermDropdown id="LIBERAL" code={getElectiveCode(openElectives['LIBERAL'] || '')} isPrevCompleted={isActiveInOtherLevel('LIBERAL')} /></div>
                   <div className="no-dim border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick('LIBERAL')} data-testid="pencil-cert-LIBERAL">
                     <Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" />
                   </div>
@@ -13833,7 +13833,7 @@ export default function Dashboard() {
                       {renderGradeInput(cid)}
                     </div>
                     <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}>{renderTriStateToggle(cid)}</div>
-                    <div className="no-dim border-l border-black flex items-center justify-center text-[7px] text-gray-500" style={{ width: '40px', minWidth: '40px' }} data-testid={`term-${cid}`}>{getCourseTerm(getElectiveCode(openElectives[cid] || ''))}</div>
+                    <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '40px', minWidth: '40px' }} data-testid={`term-${cid}`}><TermDropdown id={cid} code={getElectiveCode(openElectives[cid] || '')} isPrevCompleted={isActiveInOtherLevel(cid)} /></div>
                     <div className="no-dim border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick(cid)} data-testid={`pencil-cert-${cid}`}>
                       <Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" />
                     </div>
@@ -13882,7 +13882,7 @@ export default function Dashboard() {
                     {renderGradeInput('L2_PPA211')}
                   </div>
                   <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '38px', minWidth: '38px' }}>{renderTriStateToggle("L2_PPA211")}</div>
-                  <div className="no-dim border-l border-black flex items-center justify-center text-[7px] text-gray-500" style={{ width: '40px', minWidth: '40px' }} data-testid="term-L2_PPA211">{getCourseTerm('CPPA 211')}</div>
+                  <div className="no-dim border-l border-black flex items-center justify-center" style={{ width: '40px', minWidth: '40px' }} data-testid="term-L2_PPA211"><TermDropdown id="L2_PPA211" code="CPPA 211" isPrevCompleted={isActiveInOtherLevel('L2_PPA211')} /></div>
                   <div className="no-dim border-l border-black flex items-center justify-center cursor-pointer hover:bg-gray-100" style={{ width: '30px', minWidth: '30px' }} onClick={() => handleCertCourseClick('L2_PPA211')} data-testid="pencil-cert-L2_PPA211">
                     <Pencil className="w-3 h-3 text-gray-600 hover:text-gray-900" />
                   </div>
