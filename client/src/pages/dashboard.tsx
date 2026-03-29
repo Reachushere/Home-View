@@ -20193,14 +20193,21 @@ export default function Dashboard() {
                             </div>
                           )}
                           {day.getDay() === 6 && !isToday && (
-                            <div className="absolute top-0 left-0 right-0 text-center" style={{ fontSize: '7.5px', fontWeight: 700, letterSpacing: '0.5px', color: '#86efac', lineHeight: '1', paddingTop: '2px' }}>NEW SCHOOL WEEK</div>
+                            <div className="absolute top-0 left-0 right-0 text-center" style={{ fontSize: '7.5px', fontWeight: 700, letterSpacing: '0.5px', color: '#86efac', lineHeight: '1', paddingTop: '2px' }}>{`SCHOOL WK ${selectedWeek + 1}`}</div>
                           )}
                           {!isToday && (() => {
                             const now = new Date();
                             const todayIdx = weekDays.findIndex(d => isSameDayET(d, now));
                             return todayIdx >= 0 && idx < todayIdx && day.getDay() !== 6;
                           })() && (
-                            <div className="absolute top-0 left-0 right-0 text-center" style={{ fontSize: '6.5px', fontWeight: 700, letterSpacing: '0.5px', color: 'rgba(255,255,255,0.6)', lineHeight: '1', paddingTop: '2px' }}>NEXT WEEK</div>
+                            <div className="absolute top-0 left-0 right-0 text-center" style={{ fontSize: '6.5px', fontWeight: 700, letterSpacing: '0.5px', color: 'rgba(255,255,255,0.6)', lineHeight: '1', paddingTop: '2px' }}>{`WEEK ${selectedWeek + 1}`}</div>
+                          )}
+                          {!isToday && (() => {
+                            const now = new Date();
+                            const todayIdx = weekDays.findIndex(d => isSameDayET(d, now));
+                            return todayIdx >= 0 && idx > todayIdx && day.getDay() !== 6;
+                          })() && (
+                            <div className="absolute top-0 left-0 right-0 text-center" style={{ fontSize: '6.5px', fontWeight: 700, letterSpacing: '0.5px', color: 'rgba(255,255,255,0.6)', lineHeight: '1', paddingTop: '2px' }}>{`WEEK ${selectedWeek}`}</div>
                           )}
                           <div className="flex items-center gap-1.5">
                             <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? '#fff' : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
