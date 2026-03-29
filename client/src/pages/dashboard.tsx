@@ -23551,7 +23551,7 @@ export default function Dashboard() {
                   const bottomInset = 6;
                   const usableH = Math.max(60, boxH + 30 - 15) - topInset - bottomInset;
                   const n = semTabs.length;
-                  const overlapRatio = 0.4;
+                  const overlapRatio = 0;
                   const rawTabH = usableH / (1 + (n - 1) * (1 - overlapRatio));
                   const tabH = rawTabH;
                   const stepPx = rawTabH * (1 - overlapRatio);
