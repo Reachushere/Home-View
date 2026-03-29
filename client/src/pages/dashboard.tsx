@@ -20245,7 +20245,6 @@ export default function Dashboard() {
                     )}
                     {(() => {
                       const hasShiftBar = !isToday && !isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && (shiftForDay === 'day' || shiftForDay === 'night');
-                      const labelTop = '8px';
                       return (
                         <>
                           {isToday && (
@@ -20256,23 +20255,29 @@ export default function Dashboard() {
                             </div>
                           )}
                           {day.getDay() === 6 && !isToday && (
-                            <div className="absolute left-0 right-0 text-center" style={{ top: labelTop, fontSize: '7.5px', fontWeight: 700, letterSpacing: '0.5px', color: '#86efac', lineHeight: '1' }}>{`NEW SCHOOL WEEK - WEEK ${selectedWeek + 1}`}</div>
+                            <div className="absolute top-0 left-0 right-0 text-center z-20" style={{ padding: '0' }}>
+                              <span style={{ display: 'block', fontSize: '7.5px', fontWeight: 700, color: '#86efac', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`NEW SCHOOL WEEK - WEEK ${selectedWeek + 1}`}</span>
+                            </div>
                           )}
                           {!isToday && (() => {
                             const now = new Date();
                             const todayIdx = weekDays.findIndex(d => isSameDayET(d, now));
                             return todayIdx >= 0 && idx < todayIdx && day.getDay() !== 6;
-                          })() && (
-                            <div className="absolute left-0 right-0 text-center" style={{ top: labelTop, fontSize: '7.5px', fontWeight: 700, letterSpacing: '0.5px', color: '#86efac', lineHeight: '1' }}>{`WEEK ${selectedWeek + 1}`}</div>
+                          })() && !hasShiftBar && (
+                            <div className="absolute top-0 left-0 right-0 text-center z-20" style={{ padding: '0' }}>
+                              <span style={{ display: 'block', fontSize: '7.5px', fontWeight: 700, color: '#86efac', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`WEEK ${selectedWeek + 1}`}</span>
+                            </div>
                           )}
                           {!isToday && (() => {
                             const now = new Date();
                             const todayIdx = weekDays.findIndex(d => isSameDayET(d, now));
                             return todayIdx >= 0 && idx > todayIdx && day.getDay() !== 6;
-                          })() && (
-                            <div className="absolute left-0 right-0 text-center" style={{ top: labelTop, fontSize: '7.5px', fontWeight: 700, letterSpacing: '0.5px', color: 'rgba(255,255,255,0.6)', lineHeight: '1' }}>{`WEEK ${selectedWeek}`}</div>
+                          })() && !hasShiftBar && (
+                            <div className="absolute top-0 left-0 right-0 text-center z-20" style={{ padding: '0' }}>
+                              <span style={{ display: 'block', fontSize: '7.5px', fontWeight: 700, color: 'rgba(255,255,255,0.6)', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`WEEK ${selectedWeek}`}</span>
+                            </div>
                           )}
-                          <div className="flex items-center gap-1.5" style={{ marginTop: '6px' }}>
+                          <div className="flex items-center gap-1.5" style={{ marginTop: '4px' }}>
                             <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? '#fff' : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
                             <div style={{ fontSize: isToday ? '25px' : '24px', fontWeight: isToday ? 600 : 700, color: isToday ? '#000000' : '#fff' }}>{dayNum}</div>
                           </div>
