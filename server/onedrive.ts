@@ -680,12 +680,13 @@ export async function resolveSharedNotebookUrl(shareUrl: string): Promise<{ note
   }
 }
 
-export async function getPagesBySectionId(sectionId: string): Promise<{ title: string; content: string }[]> {
+export async function getPagesBySectionId(sectionId: string): Promise<{ title: string; content: string; contentHtml: string; webUrl: string; id: string }[]> {
   const client = await getOneDriveClient();
   try {
-    const pagesRes = await client.api(`/me/onenote/sections/${sectionId}/pages`).select('id,title').top(50).get();
-    const pages: { title: string; content: string }[] = [];
+    const pagesRes = await client.api(`/me/onenote/sections/${sectionId}/pages`).select('id,title,links,contentUrl').top(50).get();
+    const pages: { title: string; content: string; contentHtml: string; webUrl: string; id: string }[] = [];
     for (const p of (pagesRes.value || [])) {
+      const webUrl = p.links?.oneNoteWebUrl?.href || p.links?.oneNoteClientUrl?.href || '';
       try {
         const contentRes = await client.api(`/me/onenote/pages/${p.id}/content`).get();
         let rawHtml: string;
@@ -697,9 +698,9 @@ export async function getPagesBySectionId(sectionId: string): Promise<{ title: s
           rawHtml = contentRes?.toString?.() || '';
         }
         const plainText = rawHtml.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-        pages.push({ title: p.title || 'Untitled', content: plainText });
+        pages.push({ title: p.title || 'Untitled', content: plainText, contentHtml: rawHtml, webUrl, id: p.id });
       } catch {
-        pages.push({ title: p.title || 'Untitled', content: '' });
+        pages.push({ title: p.title || 'Untitled', content: '', contentHtml: '', webUrl, id: p.id });
       }
     }
     return pages;

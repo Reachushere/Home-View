@@ -53,6 +53,9 @@ interface NotebookInfo {
 interface PageInfo {
   title: string;
   content: string;
+  contentHtml: string;
+  webUrl: string;
+  id: string;
 }
 
 type SidebarTab = "notebooks" | "quicknotes";
@@ -593,33 +596,77 @@ export default function OneNotePage() {
                     View in OneNote Online
                   </button>
                 </div>
-              ) : (
-                <div className="max-w-3xl mx-auto px-8 py-6 space-y-4">
-                  {pages.map((page, idx) => (
-                    <div
-                      key={idx}
-                      className={`rounded-lg p-4 transition-colors cursor-pointer ${
-                        selectedPage === page ? 'ring-1 ring-purple-500/40' : 'hover:bg-white/5'
-                      }`}
-                      style={{ background: selectedPage === page ? '#2d2d30' : '#252526', border: '1px solid #3e3e42' }}
-                      onClick={() => setSelectedPage(selectedPage === page ? null : page)}
-                      data-testid={`page-card-${idx}`}
+              ) : selectedPage ? (
+                <div className="flex flex-col h-full">
+                  <div className="h-9 flex items-center px-4 gap-2 shrink-0" style={{ background: '#1e1e1e', borderBottom: '1px solid #3e3e42' }}>
+                    <button
+                      className="text-[10px] text-white/40 hover:text-white transition-colors"
+                      onClick={() => setSelectedPage(null)}
+                      data-testid="button-back-to-pages"
                     >
-                      <div className="flex items-center gap-2 mb-2">
-                        <FileText className="h-3.5 w-3.5 text-purple-400/60 shrink-0" />
-                        <h3 className="text-sm font-medium text-white/80">{page.title}</h3>
-                      </div>
-                      {selectedPage === page ? (
-                        <div className="text-xs text-white/60 leading-relaxed whitespace-pre-wrap mt-3 pl-5">
-                          {page.content || <span className="text-white/25 italic">Empty page</span>}
+                      ← Pages
+                    </button>
+                    <span className="text-[10px] text-white/20">|</span>
+                    <FileText className="h-3 w-3 text-purple-400/50 shrink-0" />
+                    <span className="text-xs text-white/70 truncate">{selectedPage.title}</span>
+                    <div className="flex-1" />
+                    {selectedPage.webUrl && (
+                      <a
+                        href={selectedPage.webUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] text-purple-300/60 hover:text-purple-300 hover:bg-white/5 transition-colors"
+                        data-testid="button-open-page-onenote"
+                      >
+                        <ExternalLink className="h-3 w-3" />
+                        Edit in OneNote
+                      </a>
+                    )}
+                  </div>
+                  <div className="flex-1 overflow-y-auto" style={{ background: '#ffffff' }}>
+                    <div
+                      className="onenote-content"
+                      style={{ padding: '24px 32px', minHeight: '100%', fontSize: '14px', lineHeight: '1.6', color: '#1a1a1a' }}
+                      dangerouslySetInnerHTML={{ __html: selectedPage.contentHtml || `<p style="color:#999;font-style:italic">Empty page</p>` }}
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col h-full">
+                  <div className="flex-1 overflow-y-auto">
+                    <div className="max-w-3xl mx-auto px-8 py-6 space-y-1">
+                      {pages.map((page, idx) => (
+                        <div
+                          key={idx}
+                          className="rounded-lg px-4 py-3 transition-colors cursor-pointer hover:bg-white/5"
+                          style={{ background: '#252526', border: '1px solid #3e3e42' }}
+                          onClick={() => setSelectedPage(page)}
+                          data-testid={`page-card-${idx}`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <FileText className="h-3.5 w-3.5 text-purple-400/60 shrink-0" />
+                            <h3 className="text-sm font-medium text-white/80 flex-1 truncate">{page.title}</h3>
+                            {page.webUrl && (
+                              <a
+                                href={page.webUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="h-5 w-5 flex items-center justify-center rounded text-white/20 hover:text-purple-300 hover:bg-white/10 shrink-0"
+                                onClick={e => e.stopPropagation()}
+                                data-testid={`page-external-${idx}`}
+                              >
+                                <ExternalLink className="h-3 w-3" />
+                              </a>
+                            )}
+                            <ChevronRight className="h-3 w-3 text-white/15 shrink-0" />
+                          </div>
+                          <p className="text-[11px] text-white/30 truncate pl-5 mt-1">
+                            {page.content ? page.content.substring(0, 150) + (page.content.length > 150 ? '...' : '') : 'Empty page'}
+                          </p>
                         </div>
-                      ) : (
-                        <p className="text-[11px] text-white/30 truncate pl-5">
-                          {page.content ? page.content.substring(0, 120) + (page.content.length > 120 ? '...' : '') : 'Empty page'}
-                        </p>
-                      )}
+                      ))}
                     </div>
-                  ))}
+                  </div>
                 </div>
               )}
             </div>
