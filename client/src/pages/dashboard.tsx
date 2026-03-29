@@ -24055,7 +24055,7 @@ export default function Dashboard() {
                       <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                         {format(new Date(), 'MMMM d')}
                       </span>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', width: '100%' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', width: `${hwGroupBarWidth + 9}px`, marginLeft: '-9px' }}>
                         <div style={{ display: 'flex', gap: '2px', padding: '0 2px', width: '100%', justifyContent: 'flex-end' }}>
                           {['Su','Mo','Tu','We','Th','Fr','Sa'].map((dl, dli) => (
                             <div key={dli} style={{ flex: 1, minWidth: 0, fontSize: '8px', fontWeight: 600, textAlign: 'center', color: '#ffffff' }}>{dl}</div>
@@ -24176,7 +24176,7 @@ export default function Dashboard() {
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', whiteSpace: 'nowrap', flexShrink: 0 }}>{hwWeeklyTimeline[0]?.label || 'Week'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', flexShrink: 0 }}>({dueTomorrowTasks.length})</span>
                     {/Week\s+\d/i.test(hwWeeklyTimeline[0]?.label || '') && hwWeeklyTimeline[0]?.weekStart && hwWeeklyTimeline[0]?.weekEnd && (
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', flexShrink: 0, marginLeft: '2px', width: '34px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', flexShrink: 0, marginLeft: '2px', width: '40px' }}>
                         <span style={{ fontSize: '7px', fontWeight: 600, color: '#ffffff', lineHeight: '8px', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden' }}>{(() => { const sm = format(hwWeeklyTimeline[0].weekStart, 'MMM').toUpperCase(); const em = format(hwWeeklyTimeline[0].weekEnd, 'MMM').toUpperCase(); return sm === em ? sm : `${sm}-${em}`; })()}</span>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                           <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
@@ -24230,7 +24230,7 @@ export default function Dashboard() {
                         return (
                           <div key={group.key} data-hw-group-row style={{ display: 'flex', alignItems: 'flex-start', gap: '0px', marginBottom: '2px' }}>
                             <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch', marginLeft: '9px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2, marginTop: '29px' }} data-testid={`mini-cal-w10-group-${group.key}`}>
-                              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '2px', width: '100%' }}>
+                              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '2px', width: `${hwGroupBarWidth + 9}px`, marginLeft: '-9px' }}>
                                 <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: '100%', justifyContent: 'flex-end' }}>
                                   {['Su','Mo','Tu','We','Th','Fr','Sa'].map((dl, dli) => (
                                     <div key={dli} style={{ flex: 1, minWidth: 0, fontSize: '8px', fontWeight: 600, textAlign: 'center', color: '#ffffff' }}>{dl}</div>
@@ -24369,7 +24369,7 @@ export default function Dashboard() {
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', flexShrink: 0 }}>{hwWeeklyTimeline[1]?.label || 'Week'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', flexShrink: 0 }}>({dueNextWeekTasks.length})</span>
                     {/Week\s+\d/i.test(hwWeeklyTimeline[1]?.label || '') && hwWeeklyTimeline[1]?.weekStart && hwWeeklyTimeline[1]?.weekEnd && (
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', flexShrink: 0, marginLeft: '2px', width: '34px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', flexShrink: 0, marginLeft: '2px', width: '40px' }}>
                         <span style={{ fontSize: '7px', fontWeight: 600, color: '#ffffff', lineHeight: '8px', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden' }}>{(() => { const sm = format(hwWeeklyTimeline[1].weekStart, 'MMM').toUpperCase(); const em = format(hwWeeklyTimeline[1].weekEnd, 'MMM').toUpperCase(); return sm === em ? sm : `${sm}-${em}`; })()}</span>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                           <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
@@ -24408,7 +24408,7 @@ export default function Dashboard() {
                         return (
                           <div key={group.key} data-hw-group-row style={{ display: 'flex', alignItems: 'flex-start', gap: '0px', marginBottom: '2px' }}>
                             <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch', marginLeft: '9px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2 }} data-testid={`mini-cal-w11-group-${group.key}`}>
-                              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '2px', width: '100%' }}>
+                              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '2px', width: `${hwGroupBarWidth + 9}px`, marginLeft: '-9px' }}>
                                 <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: '100%', justifyContent: 'flex-end' }}>
                                   {['Su','Mo','Tu','We','Th','Fr','Sa'].map((dl, dli) => (
                                     <div key={dli} style={{ flex: 1, minWidth: 0, fontSize: '8px', fontWeight: 600, textAlign: 'center', color: '#ffffff' }}>{dl}</div>
@@ -24546,7 +24546,7 @@ export default function Dashboard() {
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', flexShrink: 0 }}>{hwWeeklyTimeline[2]?.label || 'Two weeks'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', flexShrink: 0 }}>({dueTwoWeeksTasks.length})</span>
                     {/Week\s+\d/i.test(hwWeeklyTimeline[2]?.label || '') && (
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', flexShrink: 0, marginLeft: '2px', width: '34px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', flexShrink: 0, marginLeft: '2px', width: '40px' }}>
                         <span style={{ fontSize: '7px', fontWeight: 600, color: '#ffffff', lineHeight: '8px', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden' }}>{(() => { const sm = format(twoWeeksStart, 'MMM').toUpperCase(); const em = format(threeWeeksEnd, 'MMM').toUpperCase(); return sm === em ? sm : `${sm}-${em}`; })()}</span>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                           <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
@@ -24603,7 +24603,7 @@ export default function Dashboard() {
                         return (
                           <div key={group.key} data-hw-group-row style={{ display: 'flex', alignItems: 'flex-start', gap: '0px', marginBottom: '2px' }}>
                             <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch', marginLeft: '9px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2 }} data-testid={`mini-cal-2w-group-${group.key}`}>
-                              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '2px', width: '100%' }}>
+                              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '2px', width: `${hwGroupBarWidth + 9}px`, marginLeft: '-9px' }}>
                                 <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: '100%', justifyContent: 'flex-end' }}>
                                   {['Su','Mo','Tu','We','Th','Fr','Sa'].map((dl, dli) => (
                                     <div key={dli} style={{ flex: 1, minWidth: 0, fontSize: '8px', fontWeight: 600, textAlign: 'center', color: '#ffffff' }}>{dl}</div>
@@ -24799,7 +24799,7 @@ export default function Dashboard() {
                                 {groupSublabel}
                               </span>
                               )}
-                              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '2px', width: '100%' }}>
+                              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '2px', width: `${hwGroupBarWidth + 9}px`, marginLeft: '-9px' }}>
                                 <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: '100%', justifyContent: 'flex-end' }}>
                                   {['Su','Mo','Tu','We','Th','Fr','Sa'].map((dl, dli) => (
                                     <div key={dli} style={{ flex: 1, minWidth: 0, fontSize: '8px', fontWeight: 600, textAlign: 'center', color: '#ffffff' }}>{dl}</div>
