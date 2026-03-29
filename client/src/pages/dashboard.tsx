@@ -23512,11 +23512,13 @@ export default function Dashboard() {
                 {(() => {
                   const boxEl = document.querySelector('[data-testid="section-coming-up"]') as HTMLElement | null;
                   const boxH = boxEl ? boxEl.offsetHeight : (window.innerHeight - (calendarBorderTop || (calendarTop + 15)) - calendarBottom);
-                  const availH = Math.max(60, boxH + 30 - 15);
+                  const topInset = 4;
+                  const bottomInset = 6;
+                  const usableH = Math.max(60, boxH + 30 - 15) - topInset - bottomInset;
                   const n = semTabs.length;
                   const overlapRatio = 0.4;
-                  const rawTabH = availH / (1 + (n - 1) * (1 - overlapRatio));
-                  const tabH = rawTabH - 3;
+                  const rawTabH = usableH / (1 + (n - 1) * (1 - overlapRatio));
+                  const tabH = rawTabH - 2;
                   const stepPx = rawTabH * (1 - overlapRatio);
                   return semTabs.map((tab, tabIdx) => {
                   const isActive = (() => {
@@ -23531,7 +23533,7 @@ export default function Dashboard() {
                     <div
                       key={tab.id}
                       className={`cursor-pointer${isActive && tabBounceEnabled ? ' semester-tab-bounce' : ''}`}
-                      style={{ position: 'absolute', bottom: `${reversedIdx * stepPx}px`, width: '21px', height: `${tabH}px`, overflow: 'hidden', zIndex: isActive ? 100 : semTabs.length - tabIdx, clipPath: isActive ? 'none' : 'inset(0 0 0 2px)', transition: 'width 0.25s ease, transform 0.25s ease', transform: isActive ? 'translateX(2px)' : 'none' }}
+                      style={{ position: 'absolute', bottom: `${bottomInset + reversedIdx * stepPx}px`, width: '21px', height: `${tabH}px`, overflow: 'hidden', zIndex: isActive ? 100 : semTabs.length - tabIdx, clipPath: isActive ? 'none' : 'inset(0 0 0 2px)', transition: 'width 0.25s ease, transform 0.25s ease', transform: isActive ? 'translateX(2px)' : 'none' }}
                       onClick={() => {
                         if (homeworkScrollRef.current) {
                           const scrollContainer = homeworkScrollRef.current;
