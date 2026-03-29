@@ -23518,8 +23518,9 @@ export default function Dashboard() {
                   const n = semTabs.length;
                   const overlapRatio = 0.4;
                   const rawTabH = usableH / (1 + (n - 1) * (1 - overlapRatio));
-                  const tabH = rawTabH - 6;
+                  const tabH = rawTabH;
                   const stepPx = rawTabH * (1 - overlapRatio);
+                  const clipBottom = 2;
                   return semTabs.map((tab, tabIdx) => {
                   const isActive = (() => {
                     if (tab.id === 'wk-current') return !hwVisibleSemLabel || hwVisibleSemLabel === tab.semLabel;
@@ -23533,7 +23534,7 @@ export default function Dashboard() {
                     <div
                       key={tab.id}
                       className={`cursor-pointer${isActive && tabBounceEnabled ? ' semester-tab-bounce' : ''}`}
-                      style={{ position: 'absolute', bottom: `${bottomInset + reversedIdx * stepPx}px`, width: '21px', height: `${tabH}px`, overflow: 'hidden', zIndex: isActive ? 100 : semTabs.length - tabIdx, clipPath: isActive ? 'none' : 'inset(0 0 0 2px)', transition: 'width 0.25s ease, transform 0.25s ease', transform: isActive ? 'translateX(1px)' : 'translateX(-1px)' }}
+                      style={{ position: 'absolute', bottom: `${bottomInset + reversedIdx * stepPx + clipBottom}px`, width: '21px', height: `${tabH - clipBottom}px`, overflow: 'hidden', zIndex: isActive ? 100 : semTabs.length - tabIdx, clipPath: isActive ? 'none' : 'inset(0 0 0 2px)', transition: 'width 0.25s ease, transform 0.25s ease', transform: isActive ? 'translateX(1px)' : 'translateX(-1px)' }}
                       onClick={() => {
                         if (homeworkScrollRef.current) {
                           const scrollContainer = homeworkScrollRef.current;
