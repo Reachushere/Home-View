@@ -23485,7 +23485,7 @@ export default function Dashboard() {
               semTabs.push({ id: 'april-gap', label: 'April', semLabel: 'Winter 2026', scrollTarget: 'threeweeks' });
             }
             if (now < semDates.f2026Start) {
-              const ssMaxWk = now >= semDates.ss2026Start ? 4 : 4;
+              const ssMaxWk = now >= semDates.ss2026Start ? 5 : 5;
               for (let w = 1; w <= ssMaxWk; w++) {
                 semTabs.push({ id: `ss26-wk${w}`, label: `SS Wk ${w}`, semLabel: 'Spring/Summer 2026', scrollTarget: w === 1 ? 'sem-ss2026' : `sem-ss2026-wk${w}` });
               }
