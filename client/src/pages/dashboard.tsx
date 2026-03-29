@@ -20297,7 +20297,7 @@ export default function Dashboard() {
                       scaledStops.push(`#ffffff ${pct}%`);
                       scaledStops.push(`#ffffff 100%`);
                       return { background: `linear-gradient(to right, ${scaledStops.join(', ')})` };
-                    })() : { backgroundColor: colorSettings.headerBar }}
+                    })() : { backgroundColor: day.getDay() === 6 ? '#1a6b3a' : colorSettings.headerBar }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {!isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && (
