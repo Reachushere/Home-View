@@ -13420,7 +13420,7 @@ export default function Dashboard() {
         />
       )}
 
-      {/* Timer bar - label above, timer + controls below */}
+      {/* Timer bar - controls left, bottom-aligned with timer, label above */}
       <div style={{
         position: 'fixed',
         right: `${calendarRight - calendarReduction + 9}px`,
@@ -13428,49 +13428,51 @@ export default function Dashboard() {
         zIndex: 100,
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
+        alignItems: 'flex-end',
         gap: '0px',
         opacity: isTopPillOpen ? 0 : 1,
         transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out',
         pointerEvents: isTopPillOpen ? 'none' : 'auto',
       }} data-tpo data-tpo-opacity="1" data-testid="timer-bar">
-        <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.7)', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase', lineHeight: 1, marginBottom: '1px' }}>Pomodoro Timer</span>
-        <div ref={clockContainerRef} data-testid="pomodoro-timer" style={{ position: 'relative', cursor: 'pointer' }} onClick={togglePomodoro}>
-          {(() => {
-            const totalSec = pomodoroMode === 'work' ? 25 * 60 : pomodoroMode === 'shortBreak' ? 5 * 60 : 15 * 60;
-            const elapsed = totalSec - pomodoroTime;
-            const frac = totalSec > 0 ? elapsed / totalSec : 0;
-            const r = 35, cx = 41, cy = 41, sw = 5;
-            const startAng = Math.PI, endAng = 2 * Math.PI;
-            const arcLen = endAng - startAng;
-            const circumHalf = r * arcLen;
-            const dash = frac * circumHalf;
-            const arcColor = pomodoroMode === 'work' ? '#e74c8b' : pomodoroMode === 'shortBreak' ? '#22c55e' : '#3b82f6';
-            return (
-              <svg width="82" height="47" viewBox="0 0 82 47">
-                <path d={`M ${cx - r} ${cy} A ${r} ${r} 0 1 1 ${cx + r} ${cy}`} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={sw} strokeLinecap="round" />
-                <path d={`M ${cx - r} ${cy} A ${r} ${r} 0 1 1 ${cx + r} ${cy}`} fill="none" stroke={arcColor} strokeWidth={sw} strokeLinecap="round" strokeDasharray={`${dash} ${circumHalf}`} />
-                <text x={cx} y={cy - 1} textAnchor="middle" fill="#ffffff" fontSize="14" fontWeight="700" fontFamily="system-ui, sans-serif" style={{ fontVariantNumeric: 'tabular-nums' }}>{formatPomodoroTime(pomodoroTime)}</text>
-              </svg>
-            );
-          })()}
-        </div>
-        <div className="flex flex-row items-center gap-[16px]" style={{ marginTop: '-4px' }}>
-          <div className="flex items-center gap-[4px]">
-            <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={() => { setPomodoroTime(prev => Math.max(60, prev - 60)); }} data-testid="button-pomodoro-sub-min" title="-1 min" style={{ fontSize: '11px', color: 'white', fontWeight: 600, whiteSpace: 'nowrap', lineHeight: 1 }}>
-              −
+        <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.7)', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase', lineHeight: 1, marginBottom: '1px', textAlign: 'center', width: '100%' }}>Pomodoro Timer</span>
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end', gap: '6px' }}>
+          <div className="flex flex-row items-center gap-[16px]" style={{ marginBottom: '4px' }}>
+            <div className="flex items-center gap-[4px]">
+              <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={() => { setPomodoroTime(prev => Math.max(60, prev - 60)); }} data-testid="button-pomodoro-sub-min" title="-1 min" style={{ fontSize: '11px', color: 'white', fontWeight: 600, whiteSpace: 'nowrap', lineHeight: 1 }}>
+                −
+              </button>
+              <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.6)', fontWeight: 500, lineHeight: 1 }}>1m</span>
+              <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={() => { setPomodoroTime(prev => prev + 60); }} data-testid="button-pomodoro-add-min" title="+1 min" style={{ fontSize: '11px', color: 'white', fontWeight: 600, whiteSpace: 'nowrap', lineHeight: 1 }}>
+                +
+              </button>
+            </div>
+            <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle" title={pomodoroRunning ? 'Pause' : 'Play'}>
+              {pomodoroRunning ? <Pause className="h-[16px] w-[16px] text-white" strokeWidth={2.5} /> : <Play className="h-[16px] w-[16px] text-white" strokeWidth={2.5} />}
             </button>
-            <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.6)', fontWeight: 500, lineHeight: 1 }}>1m</span>
-            <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={() => { setPomodoroTime(prev => prev + 60); }} data-testid="button-pomodoro-add-min" title="+1 min" style={{ fontSize: '11px', color: 'white', fontWeight: 600, whiteSpace: 'nowrap', lineHeight: 1 }}>
-              +
+            <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={resetPomodoro} data-testid="button-pomodoro-reset" title="Stop">
+              <Square className="h-[14px] w-[14px] text-white" strokeWidth={2.5} />
             </button>
           </div>
-          <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle" title={pomodoroRunning ? 'Pause' : 'Play'}>
-            {pomodoroRunning ? <Pause className="h-[16px] w-[16px] text-white" strokeWidth={2.5} /> : <Play className="h-[16px] w-[16px] text-white" strokeWidth={2.5} />}
-          </button>
-          <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={resetPomodoro} data-testid="button-pomodoro-reset" title="Stop">
-            <Square className="h-[14px] w-[14px] text-white" strokeWidth={2.5} />
-          </button>
+          <div ref={clockContainerRef} data-testid="pomodoro-timer" style={{ position: 'relative', cursor: 'pointer' }} onClick={togglePomodoro}>
+            {(() => {
+              const totalSec = pomodoroMode === 'work' ? 25 * 60 : pomodoroMode === 'shortBreak' ? 5 * 60 : 15 * 60;
+              const elapsed = totalSec - pomodoroTime;
+              const frac = totalSec > 0 ? elapsed / totalSec : 0;
+              const r = 35, cx = 41, cy = 41, sw = 5;
+              const startAng = Math.PI, endAng = 2 * Math.PI;
+              const arcLen = endAng - startAng;
+              const circumHalf = r * arcLen;
+              const dash = frac * circumHalf;
+              const arcColor = pomodoroMode === 'work' ? '#e74c8b' : pomodoroMode === 'shortBreak' ? '#22c55e' : '#3b82f6';
+              return (
+                <svg width="82" height="47" viewBox="0 0 82 47">
+                  <path d={`M ${cx - r} ${cy} A ${r} ${r} 0 1 1 ${cx + r} ${cy}`} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={sw} strokeLinecap="round" />
+                  <path d={`M ${cx - r} ${cy} A ${r} ${r} 0 1 1 ${cx + r} ${cy}`} fill="none" stroke={arcColor} strokeWidth={sw} strokeLinecap="round" strokeDasharray={`${dash} ${circumHalf}`} />
+                  <text x={cx} y={cy - 1} textAnchor="middle" fill="#ffffff" fontSize="14" fontWeight="700" fontFamily="system-ui, sans-serif" style={{ fontVariantNumeric: 'tabular-nums' }}>{formatPomodoroTime(pomodoroTime)}</text>
+                </svg>
+              );
+            })()}
+          </div>
         </div>
       </div>
 
@@ -24001,7 +24003,7 @@ export default function Dashboard() {
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks due today</div>
                 ) : (
                   <div data-hw-group-row style={{ display: 'flex', alignItems: 'flex-start', marginTop: '4px' }}>
-                    <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginLeft: '10px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2 }}>
+                    <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginLeft: '0px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2 }}>
                       <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
                         {format(new Date(), 'MMMM d')}
                       </span>
@@ -24176,7 +24178,7 @@ export default function Dashboard() {
                         const dueDates = group.tasks.map(t => ({ date: startOfDayET(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
                           <div key={group.key} data-hw-group-row style={{ display: 'flex', alignItems: 'flex-start', gap: '0px', marginBottom: '2px' }}>
-                            <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch', marginLeft: '10px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2, marginTop: '29px' }} data-testid={`mini-cal-w10-group-${group.key}`}>
+                            <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch', marginLeft: '0px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2, marginTop: '29px' }} data-testid={`mini-cal-w10-group-${group.key}`}>
                               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '2px', width: '100%' }}>
                                 <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: '100%', justifyContent: 'flex-end' }}>
                                   {['Su','Mo','Tu','We','Th','Fr','Sa'].map((dl, dli) => (
@@ -24249,7 +24251,7 @@ export default function Dashboard() {
                                     <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'stretch' }}>
                                         <div ref={centerCircleOnGroupBar} style={{ position: 'absolute', left: '86px', top: '50%', transform: 'translateY(-50%)', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 5, border: task.flagged ? '2px solid #ef4444' : 'none', boxShadow: task.flagged ? '0 0 6px rgba(239,68,68,0.5)' : 'none' }}>
-                                          <span style={{ fontSize: '7px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.3px', marginTop: '1px', marginBottom: '-1px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
+                                          <span style={{ fontSize: '7px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.3px', marginTop: '2px', marginBottom: '-2px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
                                           <span style={{ fontSize: '9px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textAlign: 'center', display: 'block', marginTop: '1px' }}>{format(new Date(task.dueDate), 'd')}</span>
                                         </div>
                                         <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '22px' }}>
@@ -24351,7 +24353,7 @@ export default function Dashboard() {
                         const dueDates = group.tasks.map(t => ({ date: startOfDayET(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
                         return (
                           <div key={group.key} data-hw-group-row style={{ display: 'flex', alignItems: 'flex-start', gap: '0px', marginBottom: '2px' }}>
-                            <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch', marginLeft: '10px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2 }} data-testid={`mini-cal-w11-group-${group.key}`}>
+                            <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch', marginLeft: '0px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2 }} data-testid={`mini-cal-w11-group-${group.key}`}>
                               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '2px', width: '100%' }}>
                                 <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: '100%', justifyContent: 'flex-end' }}>
                                   {['Su','Mo','Tu','We','Th','Fr','Sa'].map((dl, dli) => (
@@ -24424,7 +24426,7 @@ export default function Dashboard() {
                                     <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'stretch' }}>
                                         <div ref={centerCircleOnGroupBar} style={{ position: 'absolute', left: '86px', top: '50%', transform: 'translateY(-50%)', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 5, border: task.flagged ? '2px solid #ef4444' : 'none', boxShadow: task.flagged ? '0 0 6px rgba(239,68,68,0.5)' : 'none' }}>
-                                          <span style={{ fontSize: '7px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.3px', marginTop: '1px', marginBottom: '-1px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
+                                          <span style={{ fontSize: '7px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.3px', marginTop: '2px', marginBottom: '-2px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
                                           <span style={{ fontSize: '9px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textAlign: 'center', display: 'block', marginTop: '1px' }}>{format(new Date(task.dueDate), 'd')}</span>
                                         </div>
                                         <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '22px' }}>
@@ -24543,7 +24545,7 @@ export default function Dashboard() {
                         });
                         return (
                           <div key={group.key} data-hw-group-row style={{ display: 'flex', alignItems: 'flex-start', gap: '0px', marginBottom: '2px' }}>
-                            <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch', marginLeft: '10px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2 }} data-testid={`mini-cal-2w-group-${group.key}`}>
+                            <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch', marginLeft: '0px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2 }} data-testid={`mini-cal-2w-group-${group.key}`}>
                               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '2px', width: '100%' }}>
                                 <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: '100%', justifyContent: 'flex-end' }}>
                                   {['Su','Mo','Tu','We','Th','Fr','Sa'].map((dl, dli) => (
@@ -24615,7 +24617,7 @@ export default function Dashboard() {
                                     <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'stretch' }}>
                                         <div ref={centerCircleOnGroupBar} style={{ position: 'absolute', left: '86px', top: '50%', transform: 'translateY(-50%)', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 5, border: task.flagged ? '2px solid #ef4444' : 'none', boxShadow: task.flagged ? '0 0 6px rgba(239,68,68,0.5)' : 'none' }}>
-                                          <span style={{ fontSize: '7px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.3px', marginTop: '1px', marginBottom: '-1px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
+                                          <span style={{ fontSize: '7px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.3px', marginTop: '2px', marginBottom: '-2px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
                                           <span style={{ fontSize: '9px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textAlign: 'center', display: 'block', marginTop: '1px' }}>{format(new Date(task.dueDate), 'd')}</span>
                                         </div>
                                         <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '22px' }}>
@@ -24721,7 +24723,7 @@ export default function Dashboard() {
                             </div>
                           )}
                           <div data-hw-group-row style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '2px' }}>
-                            <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch', marginLeft: '10px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2 }} data-testid={`mini-cal-beyond-group-${group.key}`}>
+                            <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch', marginLeft: '0px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2 }} data-testid={`mini-cal-beyond-group-${group.key}`}>
                               {/Week\s+\d/i.test(groupWeekLabel) && (
                               <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0, justifyContent: 'center', marginBottom: '4px' }}>
                                 <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(100, 100, 100)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
@@ -24811,7 +24813,7 @@ export default function Dashboard() {
                                     <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                                       <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'stretch' }}>
                                         <div ref={centerCircleOnGroupBar} style={{ position: 'absolute', left: '86px', top: '50%', transform: 'translateY(-50%)', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 5, border: task.flagged ? '2px solid #ef4444' : 'none', boxShadow: task.flagged ? '0 0 6px rgba(239,68,68,0.5)' : 'none' }}>
-                                          <span style={{ fontSize: '7px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.3px', marginTop: '1px', marginBottom: '-1px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
+                                          <span style={{ fontSize: '7px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.3px', marginTop: '2px', marginBottom: '-2px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
                                           <span style={{ fontSize: '9px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textAlign: 'center', display: 'block', marginTop: '1px' }}>{format(new Date(task.dueDate), 'd')}</span>
                                         </div>
                                         <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '22px' }}>
