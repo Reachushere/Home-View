@@ -20280,7 +20280,7 @@ export default function Dashboard() {
                         <>
                           {isToday && (
                             <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '1px' }} data-testid="today-full-date">
-                              <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', backgroundColor: colorSettings.headerBar, lineHeight: '11px', letterSpacing: '0.3px', padding: '0 4px' }}>
+                              <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', backgroundColor: colorSettings.headerBar, lineHeight: '13px', letterSpacing: '0.5px', padding: '0 4px' }}>
                                 {format(day, 'EEEE, MMMM d')}
                               </span>
                             </div>
