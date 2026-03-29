@@ -16643,6 +16643,7 @@ export default function Dashboard() {
                       >
                         <option value="all">All Accounts</option>
                         <option value="gmail">Gmail (homeworkbryn@gmail.com)</option>
+                        <option value="gmail2">Gmail (bryn.hendricks@gmail.com)</option>
                         <option value="outlook">Outlook (bryn.kai-hendricks@outlook.com)</option>
                       </select>
                     </div>
@@ -16677,9 +16678,9 @@ export default function Dashboard() {
                         </div>
                       )}
                     </div>
-                    {(emailWizardAccount === 'gmail' || emailWizardAccount === 'all') && (
+                    {(emailWizardAccount === 'gmail' || emailWizardAccount === 'gmail2' || emailWizardAccount === 'all') && (
                       <div className="space-y-1.5">
-                        <label className="text-[10px] text-white/60 uppercase tracking-wider">Gmail Category</label>
+                        <label className="text-[10px] text-white/60 uppercase tracking-wider">Category Filter</label>
                         <select
                           value={emailWizardCategory}
                           onChange={(e) => setEmailWizardCategory(e.target.value)}
@@ -16817,8 +16818,8 @@ export default function Dashboard() {
                             />
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-1.5">
-                                <span className="text-[9px] px-1 py-0.5 rounded" style={{ background: email.account === 'gmail' ? 'rgba(234,67,53,0.2)' : 'rgba(0,120,212,0.2)', border: `1px solid ${email.account === 'gmail' ? 'rgba(234,67,53,0.4)' : 'rgba(0,120,212,0.4)'}` }}>
-                                  {email.account === 'gmail' ? 'Gmail' : 'Outlook'}
+                                <span className="text-[9px] px-1 py-0.5 rounded" style={{ background: email.account === 'gmail' ? 'rgba(234,67,53,0.2)' : email.account === 'gmail2' ? 'rgba(251,188,4,0.2)' : 'rgba(0,120,212,0.2)', border: `1px solid ${email.account === 'gmail' ? 'rgba(234,67,53,0.4)' : email.account === 'gmail2' ? 'rgba(251,188,4,0.4)' : 'rgba(0,120,212,0.4)'}` }}>
+                                  {email.account === 'gmail' ? 'Gmail' : email.account === 'gmail2' ? 'Gmail 2' : 'Outlook'}
                                 </span>
                                 <span className="text-[10px] text-white/90 truncate font-medium">{email.subject}</span>
                               </div>

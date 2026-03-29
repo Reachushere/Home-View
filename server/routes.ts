@@ -17877,6 +17877,38 @@ Keep your tone friendly and educational. Format your response clearly with numbe
         }
         return emails;
       };
+      const searchGmail2 = async () => {
+        const { getSecondAccountGmailAccessToken } = await import("./secondGoogleAccount");
+        const accessToken = await getSecondAccountGmailAccessToken();
+        let query = searchTerm || "";
+        if (dateFrom) query += ` after:${dateFrom}`;
+        if (dateTo) query += ` before:${dateTo}`;
+        if (category && category !== 'skip') {
+          if (category === 'promotions') query += ' category:promotions';
+          else if (category === 'social') query += ' category:social';
+          else if (category === 'updates') query += ' category:updates';
+          else if (category === 'forums') query += ' category:forums';
+          else if (category === 'spam') query += ' in:spam';
+          else if (category === 'trash') query += ' in:trash';
+        }
+        const listResp = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages?q=${encodeURIComponent(query.trim())}&maxResults=50`, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+        const listData = await listResp.json() as any;
+        if (!listData.messages) return [];
+        const emails: any[] = [];
+        for (const msg of listData.messages.slice(0, 50)) {
+          try {
+            const detailResp = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${msg.id}?format=metadata&metadataHeaders=Subject&metadataHeaders=From&metadataHeaders=Date`, {
+              headers: { Authorization: `Bearer ${accessToken}` },
+            });
+            const detail = await detailResp.json() as any;
+            const hdrs = detail.payload?.headers || [];
+            emails.push({ id: msg.id, subject: hdrs.find((h: any) => h.name === 'Subject')?.value || '(no subject)', from: hdrs.find((h: any) => h.name === 'From')?.value || '', date: hdrs.find((h: any) => h.name === 'Date')?.value || '', account: 'gmail2', snippet: detail.snippet || '' });
+          } catch { /* skip */ }
+        }
+        return emails;
+      };
       const searchOutlook = async () => {
         const client = await getOutlookClient();
         const filters: string[] = [];
@@ -17889,6 +17921,7 @@ Keep your tone friendly and educational. Format your response clearly with numbe
         return (resp.value || []).map((m: any) => ({ id: m.id, subject: m.subject || '(no subject)', from: m.from?.emailAddress?.address || '', date: m.receivedDateTime || '', account: 'outlook', snippet: (m.bodyPreview || '').substring(0, 100) }));
       };
       if (account === 'gmail' || account === 'all') { try { results.push(...await searchGmail()); } catch (e: any) { console.error("[Email] Gmail search error:", e.message); } }
+      if (account === 'gmail2' || account === 'all') { try { results.push(...await searchGmail2()); } catch (e: any) { console.error("[Email] Gmail2 search error:", e.message); } }
       if (account === 'outlook' || account === 'all') { try { results.push(...await searchOutlook()); } catch (e: any) { console.error("[Email] Outlook search error:", e.message); } }
       results.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
       res.json({ results });
@@ -17904,6 +17937,11 @@ Keep your tone friendly and educational. Format your response clearly with numbe
           if (email.account === 'gmail') {
             const { getGmailAccessToken } = await import("./gmail");
             const accessToken = await getGmailAccessToken();
+            await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${email.id}/trash`, { method: 'POST', headers: { Authorization: `Bearer ${accessToken}` } });
+            deleted++;
+          } else if (email.account === 'gmail2') {
+            const { getSecondAccountGmailAccessToken } = await import("./secondGoogleAccount");
+            const accessToken = await getSecondAccountGmailAccessToken();
             await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${email.id}/trash`, { method: 'POST', headers: { Authorization: `Bearer ${accessToken}` } });
             deleted++;
           } else if (email.account === 'outlook') {
@@ -17932,6 +17970,17 @@ Keep your tone friendly and educational. Format your response clearly with numbe
           }
         } catch (e: any) { console.error("[Email] Gmail labels error:", e.message); }
       }
+      if (account === 'gmail2' || account === 'all') {
+        try {
+          const { getSecondAccountGmailAccessToken } = await import("./secondGoogleAccount");
+          const accessToken = await getSecondAccountGmailAccessToken();
+          const resp = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/labels`, { headers: { Authorization: `Bearer ${accessToken}` } });
+          const data = await resp.json() as any;
+          for (const label of (data.labels || [])) {
+            if (label.type === 'user' || ['INBOX', 'SPAM', 'TRASH', 'STARRED', 'IMPORTANT'].includes(label.id)) folders.push({ id: label.id, name: label.name, account: 'gmail2' });
+          }
+        } catch (e: any) { console.error("[Email] Gmail2 labels error:", e.message); }
+      }
       if (account === 'outlook' || account === 'all') {
         try {
           const client = await getOutlookClient();
@@ -17952,6 +18001,11 @@ Keep your tone friendly and educational. Format your response clearly with numbe
           if (email.account === 'gmail' && folderAccount === 'gmail') {
             const { getGmailAccessToken } = await import("./gmail");
             const accessToken = await getGmailAccessToken();
+            await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${email.id}/modify`, { method: 'POST', headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ addLabelIds: [folderId], removeLabelIds: ['INBOX'] }) });
+            moved++;
+          } else if (email.account === 'gmail2' && folderAccount === 'gmail2') {
+            const { getSecondAccountGmailAccessToken } = await import("./secondGoogleAccount");
+            const accessToken = await getSecondAccountGmailAccessToken();
             await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${email.id}/modify`, { method: 'POST', headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ addLabelIds: [folderId], removeLabelIds: ['INBOX'] }) });
             moved++;
           } else if (email.account === 'outlook' && folderAccount === 'outlook') {

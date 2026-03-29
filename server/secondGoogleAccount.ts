@@ -7,6 +7,8 @@ const SCOPES = [
   'https://www.googleapis.com/auth/calendar',
   'https://www.googleapis.com/auth/calendar.events',
   'https://www.googleapis.com/auth/userinfo.email',
+  'https://www.googleapis.com/auth/gmail.readonly',
+  'https://www.googleapis.com/auth/gmail.modify',
 ];
 
 function getOAuth2Client() {
@@ -104,6 +106,14 @@ async function getValidAccessToken(account: SecondGoogleAccount): Promise<string
   });
   
   return credentials.access_token;
+}
+
+export async function getSecondAccountGmailAccessToken(): Promise<string> {
+  const account = await storage.getSecondGoogleAccount();
+  if (!account) {
+    throw new Error('Second Google account not connected');
+  }
+  return getValidAccessToken(account);
 }
 
 // Get Google Calendar client for second account
