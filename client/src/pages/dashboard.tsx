@@ -20290,7 +20290,17 @@ export default function Dashboard() {
                     }
                     return `linear-gradient(180deg, ${startColor} 0%, ${endColor} 100%)`;
                   })(),
-                  darkColor: courseData.borderColor || courseData.color || (() => {
+                  darkColor: (() => {
+                    const src = courseData.borderColor || courseData.color;
+                    if (src) {
+                      const parsed = hexToRgb(src);
+                      const lum = (parsed.r * 0.299 + parsed.g * 0.587 + parsed.b * 0.114);
+                      if (lum > 180) {
+                        const dR = Math.max(0, parsed.r - 80), dG = Math.max(0, parsed.g - 80), dB = Math.max(0, parsed.b - 80);
+                        return `rgb(${dR}, ${dG}, ${dB})`;
+                      }
+                      return src;
+                    }
                     const dR = Math.max(0, rgb.r - 40), dG = Math.max(0, rgb.g - 40), dB = Math.max(0, rgb.b - 40);
                     return `rgb(${dR}, ${dG}, ${dB})`;
                   })(),
