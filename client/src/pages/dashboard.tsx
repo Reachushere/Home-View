@@ -20167,7 +20167,7 @@ export default function Dashboard() {
             <div ref={calendarContentRef} className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" style={{ borderRadius: '8px' }} onClick={() => setSelectedTaskId(null)}>
             
             {/* Day Headers - Fixed, not scrollable */}
-            <div data-calendar-grid="true" className="grid z-[44] h-[48px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), borderBottom: '1px solid #666' }}>
+            <div data-calendar-grid="true" className="grid z-[44] h-[54px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), borderBottom: '1px solid #666' }}>
               <div className="flex items-center justify-center relative" style={{ backgroundColor: colorSettings.headerBar }}>
                 <img src={unicalLogo} alt="Uni-Cal" className="rounded" style={{ height: '34px', width: '34px', marginLeft: '3px' }} />
                 {/* Time column resize handle - right edge */}
@@ -20245,7 +20245,7 @@ export default function Dashboard() {
                     )}
                     {(() => {
                       const hasShiftBar = !isToday && !isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && (shiftForDay === 'day' || shiftForDay === 'night');
-                      const labelTop = hasShiftBar ? '6px' : '2px';
+                      const labelTop = '8px';
                       return (
                         <>
                           {isToday && (
@@ -20272,7 +20272,7 @@ export default function Dashboard() {
                           })() && (
                             <div className="absolute left-0 right-0 text-center" style={{ top: labelTop, fontSize: '6.5px', fontWeight: 700, letterSpacing: '0.5px', color: 'rgba(255,255,255,0.6)', lineHeight: '1' }}>{`WEEK ${selectedWeek}`}</div>
                           )}
-                          <div className="flex items-center gap-1.5" style={hasShiftBar ? { marginTop: '4px' } : undefined}>
+                          <div className="flex items-center gap-1.5" style={{ marginTop: '6px' }}>
                             <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? '#fff' : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
                             <div style={{ fontSize: isToday ? '25px' : '24px', fontWeight: isToday ? 600 : 700, color: isToday ? '#000000' : '#fff' }}>{dayNum}</div>
                           </div>
