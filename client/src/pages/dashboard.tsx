@@ -23553,11 +23553,9 @@ export default function Dashboard() {
                   const bottomInset = 3;
                   const usableH = Math.max(60, boxH + 30 - 15) - topInset - bottomInset;
                   const n = semTabs.length;
-                  const overlapRatio = 0;
-                  const rawTabH = usableH / (1 + (n - 1) * (1 - overlapRatio));
-                  const tabH = rawTabH;
-                  const stepPx = rawTabH * (1 - overlapRatio);
-                  const clipBottom = 2;
+                  const tabH = usableH / n;
+                  const stepPx = tabH;
+                  const clipBottom = 0;
                   return semTabs.map((tab, tabIdx) => {
                   const isActive = (() => {
                     if (tab.id === 'wk-current') return !hwVisibleSemLabel || hwVisibleSemLabel === tab.semLabel;
@@ -23571,7 +23569,7 @@ export default function Dashboard() {
                     <div
                       key={tab.id}
                       className={`cursor-pointer${isActive && tabBounceEnabled ? ' semester-tab-bounce' : ''}`}
-                      style={{ position: 'absolute', bottom: `${bottomInset + reversedIdx * stepPx + clipBottom + (tabIdx !== semTabs.length - 1 ? 2 : 0) + (tabIdx > 0 ? tabIdx * 1 : 0) + ({'wk-current': 1, 'wk-next': 2, 'april-gap': 3, 'ss26-wk2': 4}[tab.id] || 0)}px`, width: '22px', height: `${tabH - clipBottom - 2}px`, zIndex: isActive ? 100 : semTabs.length - tabIdx, clipPath: isActive ? 'none' : 'inset(0 0 0 2px)', transition: 'width 0.25s ease, transform 0.25s ease', transform: isActive ? 'translateX(1px)' : 'translateX(-1px)' }}
+                      style={{ position: 'absolute', bottom: `${bottomInset + reversedIdx * stepPx}px`, width: '22px', height: `${tabH}px`, zIndex: isActive ? 100 : semTabs.length - tabIdx, clipPath: isActive ? 'none' : 'inset(0 0 0 2px)', transition: 'width 0.25s ease, transform 0.25s ease', transform: isActive ? 'translateX(1px)' : 'translateX(-1px)' }}
                       onClick={() => {
                         if (homeworkScrollRef.current) {
                           const scrollContainer = homeworkScrollRef.current;
