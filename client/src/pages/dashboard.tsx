@@ -10100,7 +10100,7 @@ export default function Dashboard() {
     >
       {false && hwTimelinePos && createPortal(
         <div style={{ position: 'fixed', top: `${hwTimelinePos.top}px`, left: `${hwTimelinePos.left}px`, width: '50px', height: '15px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2147483647, pointerEvents: 'none', opacity: hwIsScrolling ? 0.5 : 1, transition: 'opacity 0.2s ease' }}>
-          <span style={{ fontSize: '8px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.7px', lineHeight: 1 }}>Timeline</span>
+          <span style={{ fontSize: '10px', fontWeight: 500, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
         </div>,
         document.body
       )}
@@ -24060,7 +24060,7 @@ export default function Dashboard() {
             return '12px';
           })(), flex: 1, paddingBottom: '0px', overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', zIndex: 2 }}>
           <div style={{ width: '100%', height: '15px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', flexShrink: 0 }}>
-            <span style={{ fontSize: '8px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.7px', lineHeight: 1 }}>Timeline</span>
+            <span style={{ fontSize: '10px', fontWeight: 500, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
           </div>
           <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'none', position: 'relative' }} ref={homeworkScrollRef} onScroll={() => { setHwIsScrolling(true); if (hwScrollTimerRef.current) clearTimeout(hwScrollTimerRef.current); hwScrollTimerRef.current = setTimeout(() => setHwIsScrolling(false), 300); const sc = homeworkScrollRef.current; if (sc) { setHwScrolledDown(sc.scrollTop > 5); const sections = sc.querySelectorAll('[data-semester-label]'); let bestLabel: string | null = null; let bestDist = Infinity; const containerTop = sc.getBoundingClientRect().top; sections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestDist) { bestDist = dist; bestLabel = el.getAttribute('data-semester-label') || null; } }); if (bestLabel) setHwVisibleSemLabel(bestLabel); } }}>
             {isLoading ? (
