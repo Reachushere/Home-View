@@ -24390,12 +24390,12 @@ export default function Dashboard() {
                 {/* This Week Section - hidden on Fridays since everything shifts to today */}
                 {new Date().getDay() === 5 ? null : (<>
                 <div data-homework-section="thisweek" data-semester-label={hwWeeklyTimeline[0]?.semLabel || ''} style={{ marginTop: '15px', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '5px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', marginBottom: '0px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', marginBottom: '0px', position: 'relative' }}>
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', whiteSpace: 'nowrap', flexShrink: 0 }}>{hwWeeklyTimeline[0]?.label || 'Week'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', flexShrink: 0 }}>({dueTomorrowTasks.length})</span>
                     <div style={{ flex: 1 }} />
                     {/Week\s+\d/i.test(hwWeeklyTimeline[0]?.label || '') && hwWeeklyTimeline[0]?.weekStart && hwWeeklyTimeline[0]?.weekEnd && (
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', flexShrink: 0, marginLeft: '6px' }}>
+                      <div style={{ position: 'absolute', left: 0, width: `${9 + hwGroupBarWidth + 4}px`, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', flexShrink: 0 }}>
                         <span style={{ fontSize: '7px', fontWeight: 600, color: '#ffffff', lineHeight: '8px', textAlign: 'center', whiteSpace: 'nowrap' }}>{(() => { const sm = format(hwWeeklyTimeline[0].weekStart, 'MMM').toUpperCase(); const em = format(hwWeeklyTimeline[0].weekEnd, 'MMM').toUpperCase(); return sm === em ? sm : `${sm}-${em}`; })()}</span>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                           <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
@@ -24586,12 +24586,12 @@ export default function Dashboard() {
                 </>)}
                 {/* Next Week Section */}
                 <div data-homework-section="nextweek" data-semester-label={hwWeeklyTimeline[1]?.semLabel || ''} style={{ marginTop: '15px', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '5px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', marginBottom: '0px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', marginBottom: '0px', position: 'relative' }}>
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', flexShrink: 0 }}>{hwWeeklyTimeline[1]?.label || 'Week'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', flexShrink: 0 }}>({dueNextWeekTasks.length})</span>
                     <div style={{ flex: 1 }} />
                     {/Week\s+\d/i.test(hwWeeklyTimeline[1]?.label || '') && hwWeeklyTimeline[1]?.weekStart && hwWeeklyTimeline[1]?.weekEnd && (
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', flexShrink: 0, marginLeft: '6px' }}>
+                      <div style={{ position: 'absolute', left: 0, width: `${9 + hwGroupBarWidth + 4}px`, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', flexShrink: 0 }}>
                         <span style={{ fontSize: '7px', fontWeight: 600, color: '#ffffff', lineHeight: '8px', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden' }}>{(() => { const sm = format(hwWeeklyTimeline[1].weekStart, 'MMM').toUpperCase(); const em = format(hwWeeklyTimeline[1].weekEnd, 'MMM').toUpperCase(); return sm === em ? sm : `${sm}-${em}`; })()}</span>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                           <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
