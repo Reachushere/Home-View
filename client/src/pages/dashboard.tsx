@@ -20419,7 +20419,108 @@ export default function Dashboard() {
                 }
                 const filteredCourses = allDisplayCourses;
                 const maxCourseRowHeight = 3 * 20 + 2 * 2 + 4;
+
+                const countdownBarTasks = (() => {
+                  const today = startOfDayET(new Date());
+                  const weekStart = startOfDayET(weekDays[0]);
+                  const weekEnd = startOfDayET(addDays(weekDays[6], 1));
+                  return allTasks
+                    .filter(t => {
+                      if (t.isCompleted || t.hideFromSummary) return false;
+                      if (t.type === 'reminder' || t.type === 'event') return false;
+                      const due = startOfDayET(new Date(t.dueDate));
+                      if (due < today) return false;
+                      const daysUntilDue = Math.round((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                      if (daysUntilDue > 21) return false;
+                      return true;
+                    })
+                    .map(t => {
+                      const due = startOfDayET(new Date(t.dueDate));
+                      const daysUntilDue = Math.round((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                      const barStartDay = weekDays.findIndex(d => isSameDayET(d, today) || startOfDayET(d) > today);
+                      const barEndDay = weekDays.findIndex(d => isSameDayET(d, due));
+                      const barEndDayIdx = barEndDay >= 0 ? barEndDay : (due > weekEnd ? 6 : -1);
+                      const barStartDayIdx = barStartDay >= 0 ? barStartDay : (today < weekStart ? 0 : -1);
+                      if (barStartDayIdx < 0 || barEndDayIdx < 0 || barStartDayIdx > barEndDayIdx) return null;
+                      const courseCode = t.courseName?.split(' - ')[0]?.toUpperCase() || '';
+                      const courseInfo = filteredCourses.find(c => c.name.split(' - ')[0]?.toUpperCase() === courseCode);
+                      return {
+                        task: t,
+                        daysUntilDue,
+                        barStartDayIdx,
+                        barEndDayIdx,
+                        endsThisWeek: barEndDay >= 0,
+                        courseColor: courseInfo?.color || '#666',
+                        courseCode,
+                      };
+                    })
+                    .filter(Boolean)
+                    .sort((a, b) => a!.daysUntilDue - b!.daysUntilDue)
+                    .slice(0, 6) as { task: any; daysUntilDue: number; barStartDayIdx: number; barEndDayIdx: number; endsThisWeek: boolean; courseColor: string; courseCode: string }[];
+                })();
+                
                 return (
+              <>
+              {countdownBarTasks.length > 0 && (
+                <div data-testid="countdown-bars-container" style={{ borderTop: '1px solid black', marginTop: '-2px' }}>
+                  <div className="grid w-full" style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${Math.max(14, countdownBarTasks.length * 14)}px` }}>
+                    <div className="flex items-center justify-center" style={{ backgroundColor: colorSettings.headerBar, minWidth: 0 }}>
+                      <span className="text-[7px] font-bold text-white/70 tracking-wider" style={{ writingMode: countdownBarTasks.length >= 3 ? 'vertical-lr' : undefined, transform: countdownBarTasks.length >= 3 ? 'rotate(180deg)' : undefined }}>DUE</span>
+                    </div>
+                    {gridSizes.moduleColumnWidth > 0 && <div style={{ backgroundColor: '#f0f0f0', minWidth: 0 }} />}
+                    {weekDays.map((day, dayIdx) => {
+                      const isToday = isSameDayET(day, new Date());
+                      return (
+                        <div key={dayIdx} className="relative" style={{ backgroundColor: isToday ? '#e4ecf5' : '#faf8f5', minWidth: 0, overflow: 'hidden' }}>
+                          {countdownBarTasks.map((item, barIdx) => {
+                            if (dayIdx < item.barStartDayIdx || dayIdx > item.barEndDayIdx) return null;
+                            const isStart = dayIdx === item.barStartDayIdx;
+                            const isEnd = dayIdx === item.barEndDayIdx;
+                            const urgencyColor = item.daysUntilDue <= 1 ? '#dc2626' : item.daysUntilDue <= 3 ? '#e89200' : item.daysUntilDue <= 6 ? '#22c55e' : '#3b82f6';
+                            const barH = 10;
+                            const barY = barIdx * 14 + 2;
+                            return (
+                              <div
+                                key={item.task.id}
+                                className="absolute flex items-center"
+                                style={{
+                                  top: `${barY}px`,
+                                  left: isStart ? '2px' : '0px',
+                                  right: isEnd ? '2px' : '0px',
+                                  height: `${barH}px`,
+                                  backgroundColor: urgencyColor,
+                                  opacity: 0.85,
+                                  borderRadius: isStart && isEnd ? '3px' : isStart ? '3px 0 0 3px' : isEnd ? '0 3px 3px 0' : '0',
+                                  cursor: 'pointer',
+                                  overflow: 'hidden',
+                                }}
+                                onClick={(e) => { e.stopPropagation(); setEditingTask(item.task); }}
+                                onMouseEnter={() => setHoveredCountdownTaskIdStable(item.task.id)}
+                                onMouseLeave={() => setHoveredCountdownTaskIdStable(null)}
+                                data-testid={`countdown-bar-${item.task.id}`}
+                              >
+                                {isStart && (
+                                  <span className="text-[7px] font-bold text-white px-1 truncate whitespace-nowrap" style={{ lineHeight: '10px' }}>
+                                    {item.courseCode ? `${item.courseCode} ` : ''}{item.task.title} — {item.daysUntilDue === 0 ? 'TODAY' : item.daysUntilDue === 1 ? '1 day' : `${item.daysUntilDue}d`}
+                                  </span>
+                                )}
+                                {isEnd && item.endsThisWeek && !isStart && (
+                                  <span className="text-[7px] font-bold text-white px-1 truncate whitespace-nowrap ml-auto" style={{ lineHeight: '10px' }}>
+                                    {item.daysUntilDue === 0 ? 'DUE TODAY' : item.daysUntilDue === 1 ? 'DUE TMR' : `${item.daysUntilDue}d`}
+                                  </span>
+                                )}
+                                {isEnd && item.endsThisWeek && (
+                                  <div style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '0', height: '0', borderTop: '4px solid transparent', borderBottom: '4px solid transparent', borderLeft: `4px solid rgba(255,255,255,0.6)` }} />
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
               <div ref={courseRowsRef} data-testid="course-rows-container" style={{ borderTop: '1px solid black', marginTop: '-2px' }}>
               {filteredCourses.map((courseData, courseIdx) => {
                 const courseName = courseData.name.split(' - ')[0].toUpperCase();
@@ -21445,6 +21546,7 @@ export default function Dashboard() {
                   </div>
                 ); })()}
               </div>
+              </>
               ); })()}
 
             {/* ALL DAY Row - Fixed, not scrollable - Only shows true all-day tasks (midnight due time) */}
