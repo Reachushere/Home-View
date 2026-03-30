@@ -24279,7 +24279,53 @@ export default function Dashboard() {
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks due today</div>
                 ) : (
                   <div style={{ marginTop: '4px' }}>
-                    <div style={{ maxHeight: '80px', overflowY: 'auto', scrollbarWidth: 'none' }}>
+                    <div data-hw-group-row style={{ display: 'flex', alignItems: 'flex-start', gap: '0px', marginBottom: '2px' }}>
+                      <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch', marginLeft: '9px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2 }} data-testid="mini-cal-today-group">
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '2px', width: `${hwGroupBarWidth + 9}px`, marginLeft: '-9px' }}>
+                          {(() => {
+                            const today = new Date();
+                            const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
+                            const weeks = [todayWeekStart];
+                            const dueDates = dueTodayTasks.map(t => ({ date: startOfDayET(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
+                            const todayCellBg = colorSettings.headerBar;
+                            return (
+                              <>
+                                <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: '100%', justifyContent: 'flex-end' }}>
+                                  {['Su','Mo','Tu','We','Th','Fr','Sa'].map((dl, dli) => (
+                                    <div key={dli} style={{ flex: 1, minWidth: 0, fontSize: '8px', fontWeight: 600, textAlign: 'center', color: '#ffffff' }}>{dl}</div>
+                                  ))}
+                                </div>
+                                {weeks.map((weekStart, wi) => {
+                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
+                                  return (
+                                    <div key={wi} style={{ display: 'flex', gap: '2px', padding: '1px 2px', width: '100%', justifyContent: 'flex-end', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.15)', border: '0.5px solid rgba(255,255,255,0.55)' }}>
+                                      {days.map((d, di) => {
+                                        const isTodayD = isSameDayET(d, today);
+                                        const dueMatches = dueDates.filter(dd => isSameDayET(d, dd.date));
+                                        const uniqueCourses = [...new Set(dueMatches.map(m => m.courseCode))];
+                                        const isDue = uniqueCourses.length > 0;
+                                        const dueColors = uniqueCourses.map(cc => dynamicCourseColors[cc]?.hex || getCourseGradientColors(cc).start);
+                                        const dueBg = dueColors.length === 1 ? dueColors[0] : dueColors.length > 1 ? `linear-gradient(to right, ${dueColors.map((c, i) => `${c} ${(i / dueColors.length) * 100}%, ${c} ${((i + 1) / dueColors.length) * 100}%`).join(', ')})` : '';
+                                        return (
+                                          <div key={di} style={{
+                                            flex: 1, minWidth: 0, height: '11px', borderRadius: '2px', fontSize: '8px', fontWeight: (isTodayD || isDue) ? 700 : 400,
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            color: (isTodayD || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
+                                            background: isTodayD ? todayCellBg : isDue ? dueBg : 'rgba(255,255,255,0.15)',
+                                            border: isDue && !isTodayD ? `1px solid ${dueColors[0]}` : 'none',
+                                          }}>{d.getDate()}</div>
+                                        );
+                                      })}
+                                    </div>
+                                  );
+                                })}
+                              </>
+                            );
+                          })()}
+                        </div>
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0, marginRight: '-7px' }}>
+                        <div style={{ maxHeight: '80px', overflowY: 'auto', scrollbarWidth: 'none' }}>
                   <div className="flex flex-col gap-0.5">
                     {dueTodayTasks.map((task, tIdx) => {
                       const progressBarWidth = getProgressBarWidth(task);
@@ -24363,6 +24409,8 @@ export default function Dashboard() {
                       );
                     })}
                   </div>
+                    </div>
+                      </div>
                     </div>
                   </div>
                 )}
