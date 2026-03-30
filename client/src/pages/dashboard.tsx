@@ -24279,50 +24279,9 @@ export default function Dashboard() {
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks due today</div>
                 ) : (
                   <div style={{ marginTop: '4px' }}>
-                    <div data-hw-group-row style={{ display: 'flex', alignItems: 'flex-start', gap: '0px', marginBottom: '2px' }}>
-                      <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch', marginLeft: '9px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2 }} data-testid="mini-cal-today-group">
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '2px', width: `${hwGroupBarWidth + 9}px`, marginLeft: '-9px' }}>
-                          {(() => {
-                            const today = new Date();
-                            const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
-                            const weeks = [todayWeekStart];
-                            const dueDates = dueTodayTasks.map(t => ({ date: startOfDayET(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
-                            const todayCellBg = colorSettings.headerBar;
-                            return (
-                              <>
-                                <div style={{ display: 'flex', gap: '2px', padding: '0 2px', marginBottom: '3px', width: '100%', justifyContent: 'flex-end' }}>
-                                  {['Su','Mo','Tu','We','Th','Fr','Sa'].map((dl, dli) => (
-                                    <div key={dli} style={{ flex: 1, minWidth: 0, fontSize: '8px', fontWeight: 600, textAlign: 'center', color: '#ffffff' }}>{dl}</div>
-                                  ))}
-                                </div>
-                                {weeks.map((weekStart, wi) => {
-                                  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
-                                  return (
-                                    <div key={wi} style={{ display: 'flex', gap: '2px', padding: '1px 2px', width: '100%', justifyContent: 'flex-end', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.15)', border: '0.5px solid rgba(255,255,255,0.55)' }}>
-                                      {days.map((d, di) => {
-                                        const isTodayD = isSameDayET(d, today);
-                                        const dueMatches = dueDates.filter(dd => isSameDayET(d, dd.date));
-                                        const uniqueCourses = [...new Set(dueMatches.map(m => m.courseCode))];
-                                        const isDue = uniqueCourses.length > 0;
-                                        const dueColors = uniqueCourses.map(cc => dynamicCourseColors[cc]?.hex || getCourseGradientColors(cc).start);
-                                        const dueBg = dueColors.length === 1 ? dueColors[0] : dueColors.length > 1 ? `linear-gradient(to right, ${dueColors.map((c, i) => `${c} ${(i / dueColors.length) * 100}%, ${c} ${((i + 1) / dueColors.length) * 100}%`).join(', ')})` : '';
-                                        return (
-                                          <div key={di} style={{
-                                            flex: 1, minWidth: 0, height: '11px', borderRadius: '2px', fontSize: '8px', fontWeight: (isTodayD || isDue) ? 700 : 400,
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            color: (isTodayD || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
-                                            background: isTodayD ? todayCellBg : isDue ? dueBg : 'rgba(255,255,255,0.15)',
-                                            border: isDue && !isTodayD ? `1px solid ${dueColors[0]}` : 'none',
-                                          }}>{d.getDate()}</div>
-                                        );
-                                      })}
-                                    </div>
-                                  );
-                                })}
-                              </>
-                            );
-                          })()}
-                        </div>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0px', marginBottom: '2px' }}>
+                      <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', alignSelf: 'stretch', position: 'relative', zIndex: 3 }}>
+                        <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
                       </div>
                       <div style={{ flex: 1, minWidth: 0, marginRight: '-7px' }}>
                         <div style={{ maxHeight: '80px', overflowY: 'auto', scrollbarWidth: 'none' }}>
@@ -24360,11 +24319,11 @@ export default function Dashboard() {
                           </div>
                           <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'stretch' }}>
-                            <div ref={centerCircleOnGroupBar} style={{ position: 'absolute', left: '86px', top: '50%', transform: 'translateY(-50%)', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 5, border: task.flagged ? '2px solid #ef4444' : 'none', boxShadow: task.flagged ? '0 0 6px rgba(239,68,68,0.5)' : 'none' }}>
+                            <div style={{ position: 'relative', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 5, alignSelf: 'center', marginRight: '6px', border: task.flagged ? '2px solid #ef4444' : 'none', boxShadow: task.flagged ? '0 0 6px rgba(239,68,68,0.5)' : 'none' }}>
                               <span style={{ fontSize: '7px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.3px', marginTop: '2px', marginBottom: '-2px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
                               <span style={{ fontSize: '9px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textAlign: 'center', display: 'block', marginTop: '1px' }}>{format(new Date(task.dueDate), 'd')}</span>
                             </div>
-                            <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '23px' }}>
+                            <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' }}>
                               <div>
                                 <button
                                   className="text-[10px] truncate hover:underline cursor-pointer leading-none w-full"
@@ -24421,9 +24380,8 @@ export default function Dashboard() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', marginBottom: '0px' }}>
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', whiteSpace: 'nowrap', flexShrink: 0 }}>{hwWeeklyTimeline[0]?.label || 'Week'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', flexShrink: 0 }}>({dueTomorrowTasks.length})</span>
-                    <div style={{ flex: 1 }} />
                     {/Week\s+\d/i.test(hwWeeklyTimeline[0]?.label || '') && hwWeeklyTimeline[0]?.weekStart && hwWeeklyTimeline[0]?.weekEnd && (
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, marginLeft: '2px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, marginLeft: '6px' }}>
                         <span style={{ fontSize: '7px', fontWeight: 600, color: '#ffffff', lineHeight: '8px', textAlign: 'center', whiteSpace: 'nowrap' }}>{(() => { const sm = format(hwWeeklyTimeline[0].weekStart, 'MMM').toUpperCase(); const em = format(hwWeeklyTimeline[0].weekEnd, 'MMM').toUpperCase(); return sm === em ? sm : `${sm}-${em}`; })()}</span>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                           <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
@@ -24438,6 +24396,7 @@ export default function Dashboard() {
                         </div>
                       </div>
                     )}
+                    <div style={{ flex: 1 }} />
                   </div>
                 {dueTomorrowTasks.length === 0 ? (
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks for {hwWeeklyTimeline[0]?.label || 'this week'}</div>
@@ -24617,9 +24576,8 @@ export default function Dashboard() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', marginBottom: '0px' }}>
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', flexShrink: 0 }}>{hwWeeklyTimeline[1]?.label || 'Week'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', flexShrink: 0 }}>({dueNextWeekTasks.length})</span>
-                    <div style={{ flex: 1 }} />
                     {/Week\s+\d/i.test(hwWeeklyTimeline[1]?.label || '') && hwWeeklyTimeline[1]?.weekStart && hwWeeklyTimeline[1]?.weekEnd && (
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', flexShrink: 0, marginLeft: '2px', width: '40px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', flexShrink: 0, marginLeft: '6px', width: '40px' }}>
                         <span style={{ fontSize: '7px', fontWeight: 600, color: '#ffffff', lineHeight: '8px', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden' }}>{(() => { const sm = format(hwWeeklyTimeline[1].weekStart, 'MMM').toUpperCase(); const em = format(hwWeeklyTimeline[1].weekEnd, 'MMM').toUpperCase(); return sm === em ? sm : `${sm}-${em}`; })()}</span>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                           <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
@@ -24634,6 +24592,7 @@ export default function Dashboard() {
                         </div>
                       </div>
                     )}
+                    <div style={{ flex: 1 }} />
                   </div>
                 {dueNextWeekTasks.length === 0 ? (
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks for {hwWeeklyTimeline[1]?.label || 'this week'}</div>
@@ -24797,9 +24756,8 @@ export default function Dashboard() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', marginBottom: '0px' }}>
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', flexShrink: 0 }}>{hwWeeklyTimeline[2]?.label || 'Two weeks'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', flexShrink: 0 }}>({dueTwoWeeksTasks.length})</span>
-                    <div style={{ flex: 1 }} />
                     {/Week\s+\d/i.test(hwWeeklyTimeline[2]?.label || '') && (
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', flexShrink: 0, marginLeft: '2px', width: '40px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', flexShrink: 0, marginLeft: '6px', width: '40px' }}>
                         <span style={{ fontSize: '7px', fontWeight: 600, color: '#ffffff', lineHeight: '8px', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden' }}>{(() => { const sm = format(twoWeeksStart, 'MMM').toUpperCase(); const em = format(threeWeeksEnd, 'MMM').toUpperCase(); return sm === em ? sm : `${sm}-${em}`; })()}</span>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                           <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
@@ -24814,6 +24772,7 @@ export default function Dashboard() {
                         </div>
                       </div>
                     )}
+                    <div style={{ flex: 1 }} />
                   </div>
                 {dueTwoWeeksTasks.length === 0 ? (
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks in two weeks</div>
