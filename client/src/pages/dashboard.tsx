@@ -20370,7 +20370,7 @@ export default function Dashboard() {
                           })()}
                           {day.getDay() === 6 && !isToday && (
                             <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '8px' }}>
-                              <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#000000', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`New School Week (${selectedWeek + 1})`}</span>
+                              <span style={{ display: 'block', fontSize: 'min(9.5px, 1.4vw)', fontWeight: 400, color: '#000000', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{`New School Week (${selectedWeek + 1})`}</span>
                             </div>
                           )}
                           {!isToday && (() => {
@@ -20380,7 +20380,7 @@ export default function Dashboard() {
                             return todayIdx >= 0 && idx < todayIdx && day.getDay() !== 6 && !isTodaySat;
                           })() && (
                             <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '8px' }}>
-                              <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#000000', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`Week ${selectedWeek + 1} (Next Week)`}</span>
+                              <span style={{ display: 'block', fontSize: 'min(9.5px, 1.4vw)', fontWeight: 400, color: '#000000', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{`Week ${selectedWeek + 1} (Next Week)`}</span>
                             </div>
                           )}
                           {!isToday && (() => {
@@ -23633,23 +23633,23 @@ export default function Dashboard() {
             <button
               onClick={hwFloatingHandlers.onDetach}
               onTouchEnd={(e) => { e.preventDefault(); hwFloatingHandlers.onDetach(); }}
-              className="absolute z-[70] w-5 h-5 rounded-tl-[11px] rounded-br-[4px] rounded-tr-[2px] rounded-bl-[2px] flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors"
-              style={{ top: '1px', left: '1px', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)' }}
+              className="absolute z-[70] rounded-tl-[11px] rounded-br-[4px] rounded-tr-[2px] rounded-bl-[2px] flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors"
+              style={{ top: '1px', left: '1px', width: '25px', height: '25px', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)' }}
               data-testid="hw-detach-button"
               title="Pop out progress as floating window"
             >
-              <Maximize2 className="h-2.5 w-2.5 text-white" />
+              <Maximize2 className="h-3 w-3 text-white" />
             </button>
           ) : (
             <button
               onClick={hwFloatingHandlers.onDock}
               onTouchEnd={(e) => { e.preventDefault(); hwFloatingHandlers.onDock(); }}
-              className="absolute z-[70] w-5 h-5 rounded-tl-[11px] rounded-br-[4px] rounded-tr-[2px] rounded-bl-[2px] flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors"
-              style={{ top: '1px', left: '1px', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)' }}
+              className="absolute z-[70] rounded-tl-[11px] rounded-br-[4px] rounded-tr-[2px] rounded-bl-[2px] flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors"
+              style={{ top: '1px', left: '1px', width: '25px', height: '25px', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)' }}
               data-testid="hw-dock-button"
               title="Dock progress bars back"
             >
-              <Minimize2 className="h-2.5 w-2.5 text-white" />
+              <Minimize2 className="h-3 w-3 text-white" />
             </button>
           )}
           {/* Joint Resize Handle — controls both calendar+homework width and calendar height */}
