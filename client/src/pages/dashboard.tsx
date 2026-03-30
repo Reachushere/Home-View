@@ -23739,7 +23739,7 @@ export default function Dashboard() {
                     <div
                       key={tab.id}
                       className={`cursor-pointer${isActive && tabBounceEnabled ? ' semester-tab-bounce' : ''}`}
-                      style={{ position: 'absolute', bottom: `${bottomInset + reversedIdx * stepPx + (tabIdx > 0 ? tabIdx * 3 : 0) - 14}px`, width: '51px', height: `${tabH}px`, zIndex: isActive ? 100 : semTabs.length - tabIdx, clipPath: isActive ? 'none' : 'inset(0 0 0 2px)', transition: 'width 0.25s ease, transform 0.25s ease', transform: tabIdx === 0 ? 'translateX(2px)' : 'translateX(-2px)' }}
+                      style={{ position: 'absolute', bottom: `${bottomInset + reversedIdx * stepPx + (tabIdx > 0 ? tabIdx * 3 : 0) - 14}px`, width: '51px', height: `${tabH}px`, zIndex: isActive ? 100 : semTabs.length - tabIdx, clipPath: isActive ? 'none' : 'inset(0 0 0 2px)', transition: 'width 0.25s ease, transform 0.25s ease', transform: tabIdx === 0 ? 'translateX(0px)' : 'translateX(-2px)' }}
                       onClick={() => {
                         if (homeworkScrollRef.current) {
                           const scrollContainer = homeworkScrollRef.current;
@@ -23779,7 +23779,7 @@ export default function Dashboard() {
                           : "M-4.00 54.00 L-4.00 4.53 L3.55 4.50 C3.56,4.50 3.86,3.06 4.88,1.65 C5.48,0.99 6.28,0.47 7.20,0.00 C9.86,1.37 13.43,2.33 15.29,5.33 C15.60,5.84 15.83,6.52 16.00,7.33 L16.00 16.95 L16.00 20.53 L16.00 42.13 C15.83,42.94 15.60,43.63 15.29,44.14 C12.79,48.17 7.21,48.53 4.88,51.12 C4.49,51.13 3.55,53.98 3.55,53.98 L-4.00 54.00 Z"
                         } fill={isActive ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.3)'} stroke={isActive ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.7)'} strokeWidth={isActive ? '1.5' : '1.2'} />
                         {(() => {
-                          const tFs = '10';
+                          const tFs = '12';
                           const tFw = isActive ? '450' : '350';
                           const isTopTab = tabIdx === 0;
                           const tFill = '#000000';
