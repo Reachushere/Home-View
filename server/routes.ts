@@ -16045,6 +16045,21 @@ Return ONLY the JSON object, no markdown formatting.`;
     }
   })();
 
+  (async () => {
+    try {
+      const allTasks = await storage.getAllTasks();
+      const tasksToFix = allTasks.filter(t => !t.showCountdownBar);
+      if (tasksToFix.length > 0) {
+        for (const t of tasksToFix) {
+          await storage.updateTask(t.id, { showCountdownBar: true });
+        }
+        console.log(`[Startup Fix] Enabled showCountdownBar for ${tasksToFix.length} tasks`);
+      }
+    } catch (e) {
+      console.error('[Startup Fix] showCountdownBar migration failed:', e);
+    }
+  })();
+
   app.post("/api/tasks/compare-course-list", async (req, res) => {
     try {
       const { courseListText, courseName } = req.body;

@@ -29528,7 +29528,7 @@ function TaskForm({
     repeatEndDate: task?.repeatEndDate ? format(new Date(task.repeatEndDate), "yyyy-MM-dd") : "",
     hideFromSummary: task?.hideFromSummary ?? false,
     flagged: task?.flagged ?? false,
-    showCountdownBar: task?.showCountdownBar ?? false,
+    showCountdownBar: task?.showCountdownBar ?? true,
   });
   const [newAttachment, setNewAttachment] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
