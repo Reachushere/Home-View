@@ -7968,12 +7968,52 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     }
   }
 
+  async function cleanupRascalFromHA() {
+    try {
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      const statesRes = await fetch(`${haUrl}/api/states`, {
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` },
+      });
+      if (statesRes.ok) {
+        const states = await statesRes.json();
+        for (const entity of states) {
+          const eid = entity.entity_id || '';
+          const fname = entity.attributes?.friendly_name || '';
+          const state = entity.state || '';
+          const msg = entity.attributes?.message || '';
+          if (/rascal/i.test(eid) || /rascal/i.test(fname) || /rascal/i.test(state) || /rascal/i.test(msg)) {
+            console.log(`[Cleanup] Found Rascal entity: ${eid} (${fname})`);
+            if (eid.startsWith('persistent_notification.')) {
+              await fetch(`${haUrl}/api/services/persistent_notification/dismiss`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ notification_id: eid.replace('persistent_notification.', '') }),
+              });
+              console.log(`[Cleanup] Dismissed persistent notification: ${eid}`);
+            }
+            if (eid.startsWith('automation.')) {
+              await fetch(`${haUrl}/api/services/automation/turn_off`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ entity_id: eid }),
+              });
+              console.log(`[Cleanup] Turned off automation: ${eid}`);
+            }
+          }
+        }
+      }
+    } catch (e: any) {
+      console.warn(`[Cleanup] Rascal cleanup failed: ${e.message}`);
+    }
+  }
+
   setTimeout(async () => {
     const ok = await checkHAConnectivity();
     console.log(`[HA Health] Initial check: ${ok ? 'connected' : 'disconnected'}`);
     if (ok) {
       await sendStartupNotification();
       await sendHAHeartbeat();
+      await cleanupRascalFromHA();
     }
     haHealthInterval = setInterval(() => {
       checkHAConnectivity();
