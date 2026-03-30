@@ -24132,7 +24132,7 @@ export default function Dashboard() {
                                   {item.p.hasFiles ? `${item.p.percent}%` : 'N/A'}
                                 </span>
                               </div>
-                              <div className="cursor-pointer" style={{ position: 'relative', opacity: item.p.percent === 100 ? 0.5 : 1, marginLeft: '0px', background: item.dark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.12)', borderRadius: '5px', padding: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }} data-testid={item.testPlay}>
+                              <div className="cursor-pointer" style={{ position: 'relative', opacity: item.p.percent === 100 ? 0.5 : 1, marginLeft: '3px', background: item.dark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.12)', borderRadius: '5px', padding: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }} data-testid={item.testPlay}>
                                 {item.p.hasFiles && item.unread > 0 && item.p.percent < 100 && (
                                   <div className="bg-[#FF0000] text-white text-[6px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ position: 'absolute', top: '-5px', right: '-5px', zIndex: 10 }}>
                                     {item.unread}
