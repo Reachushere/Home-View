@@ -352,12 +352,12 @@ button[role="combobox"] > span {
 }
 
 @keyframes semester-tab-nudge {
-  0%, 40% { transform: translateX(0px); }
-  44% { transform: translateX(4px); }
-  48% { transform: translateX(0px); }
-  52% { transform: translateX(2px); }
-  56% { transform: translateX(0px); }
-  60%, 100% { transform: translateX(0px); }
+  0%, 40% { transform: var(--tab-base-transform); }
+  44% { transform: var(--tab-base-transform) translateX(4px); }
+  48% { transform: var(--tab-base-transform); }
+  52% { transform: var(--tab-base-transform) translateX(2px); }
+  56% { transform: var(--tab-base-transform); }
+  60%, 100% { transform: var(--tab-base-transform); }
 }
 
 @keyframes burst-in {
