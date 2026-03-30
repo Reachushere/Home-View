@@ -650,6 +650,10 @@ export default function Dashboard() {
     dueDateMinute: "00",
     timezone: "America/Toronto",
     prepDays: 0,
+    showCountdownBar: true,
+    showCountdownBarMain: true,
+    showCountdownBarSummary: true,
+    countdownBarDays: 0,
     priority: "medium",
     description: "",
     eventStartTime: "",
@@ -735,11 +739,6 @@ export default function Dashboard() {
             setMorningReviewItems(data.items);
             setShowMorningReview(true);
             localStorage.setItem('morning_review_shown_date', todayStr);
-            fetch('/api/morning-review/last-shown', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ date: todayStr }),
-            }).catch(() => {});
           }
         }
       } catch (e) {
@@ -826,17 +825,30 @@ export default function Dashboard() {
     for (const item of morningReviewItems) {
       await handleAcceptReview(item.id);
     }
+    const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+    const todayStr = `${eastern.getFullYear()}-${String(eastern.getMonth()+1).padStart(2,'0')}-${String(eastern.getDate()).padStart(2,'0')}`;
+    fetch('/api/morning-review/last-shown', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ date: todayStr }),
+    }).catch(() => {});
     setMorningReviewLoading(false);
     setShowMorningReview(false);
   };
 
   const handleSkipAllForToday = () => {
     const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+    const todayStr = `${eastern.getFullYear()}-${String(eastern.getMonth()+1).padStart(2,'0')}-${String(eastern.getDate()).padStart(2,'0')}`;
     const tomorrow9am = new Date(eastern);
     tomorrow9am.setDate(tomorrow9am.getDate() + 1);
     tomorrow9am.setHours(9, 0, 0, 0);
     const offsetMs = eastern.getTime() - Date.now();
     localStorage.setItem('morning_review_dismiss_until', String(tomorrow9am.getTime() - offsetMs));
+    fetch('/api/morning-review/last-shown', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ date: todayStr }),
+    }).catch(() => {});
     setShowMorningReview(false);
     setReviewMode('all');
     setReviewCheckedIds(new Set());
@@ -849,6 +861,13 @@ export default function Dashboard() {
     for (const item of morningReviewItems) {
       await handleRejectReview(item.id);
     }
+    const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+    const todayStr = `${eastern.getFullYear()}-${String(eastern.getMonth()+1).padStart(2,'0')}-${String(eastern.getDate()).padStart(2,'0')}`;
+    fetch('/api/morning-review/last-shown', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ date: todayStr }),
+    }).catch(() => {});
     setMorningReviewLoading(false);
     setShowMorningReview(false);
     setReviewMode('all');
@@ -867,7 +886,16 @@ export default function Dashboard() {
     const uncheckedItems = morningReviewItems.filter(i => !reviewCheckedIds.has(i.id));
     setMorningReviewItems(uncheckedItems);
     setMorningReviewLoading(false);
-    if (uncheckedItems.length === 0) setShowMorningReview(false);
+    if (uncheckedItems.length === 0) {
+      const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+      const todayStr = `${eastern.getFullYear()}-${String(eastern.getMonth()+1).padStart(2,'0')}-${String(eastern.getDate()).padStart(2,'0')}`;
+      fetch('/api/morning-review/last-shown', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date: todayStr }),
+      }).catch(() => {});
+      setShowMorningReview(false);
+    }
     setReviewMode('all');
     setReviewCheckedIds(new Set());
     setReviewHideFromSummary(new Set());
@@ -12830,7 +12858,7 @@ export default function Dashboard() {
 
 
           {/* Quick Add Button */}
-          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder2: DEFAULT_REMINDER_2, reminder3: null, reminder4: null, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' }); setIsQuickAddOpen(true); }); }}>+ Add Task</Button>
+          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder2: DEFAULT_REMINDER_2, reminder3: null, reminder4: null, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' }); setIsQuickAddOpen(true); }); }}>+ Add Task</Button>
           </div>
 
           {/* Radio Dialog */}
@@ -15488,7 +15516,12 @@ export default function Dashboard() {
                     setIsAddDialogOpen(false);
                     setInitialStartTime("");
                     setInitialEndTime("");
-                  }} 
+                  }}
+                  currentSemesterCourses={semesterSettings ? [
+                    ...(semesterSettings.course1Code ? [{ code: semesterSettings.course1Code, name: semesterSettings.course1Name.replace(/^[A-Z]+\d+\s*-\s*/, '') }] : []),
+                    ...(semesterSettings.course2Code ? [{ code: semesterSettings.course2Code, name: semesterSettings.course2Name.replace(/^[A-Z]+\d+\s*-\s*/, '') }] : []),
+                    ...(semesterSettings.course3Code ? [{ code: semesterSettings.course3Code, name: semesterSettings.course3Name.replace(/^[A-Z]+\d+\s*-\s*/, '') }] : []),
+                  ] : undefined}
                 />
               </div>
             </section>
@@ -15526,7 +15559,7 @@ export default function Dashboard() {
                     onClick={() => {
                       setIsAddChooserOpen(false);
                       setQuickAddStep(0);
-                      setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder2: DEFAULT_REMINDER_2, reminder3: null, reminder4: null, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' });
+                      setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder2: DEFAULT_REMINDER_2, reminder3: null, reminder4: null, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' });
                       setIsQuickAddOpen(true);
                     }}
                     data-testid="button-chooser-add-task"
@@ -15572,7 +15605,7 @@ export default function Dashboard() {
                   <div className="flex items-center gap-2">
                     <Plus className="text-white" style={{ width: '15px', height: '15px' }} />
                     <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
-                      {quickAddStep === 0 ? 'ADD TASK' : quickAddStep === 1 ? 'TASK NAME' : quickAddStep === 2 ? 'COURSE' : quickAddStep === 3 ? 'DATE & TIME' : quickAddStep === 4 ? 'PREP DAYS' : quickAddStep === 5 ? 'PRIORITY' : quickAddStep === 6 ? 'REMINDERS' : quickAddStep === 7 ? 'ATTACHMENTS' : quickAddStep === 8 ? 'NOTES & LINKS' : quickAddStep === 9 ? 'SUBTASKS & PROJECT' : quickAddStep === 10 ? 'REPEAT' : 'REVIEW'}
+                      {quickAddStep === 0 ? 'ADD TASK' : quickAddStep === 1 ? 'TASK NAME' : quickAddStep === 2 ? 'COURSE' : quickAddStep === 3 ? 'DATE & TIME' : quickAddStep === 4 ? 'COUNTDOWN BAR' : quickAddStep === 5 ? 'PRIORITY' : quickAddStep === 6 ? 'REMINDERS' : quickAddStep === 7 ? 'ATTACHMENTS' : quickAddStep === 8 ? 'NOTES & LINKS' : quickAddStep === 9 ? 'SUBTASKS & PROJECT' : quickAddStep === 10 ? 'REPEAT' : 'REVIEW'}
                     </h2>
                   </div>
                   <button onClick={handleQuickAddClose} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-quick-add">
@@ -15818,24 +15851,68 @@ export default function Dashboard() {
                     </div>
                   )}
 
-                  {/* Step 4: Prep Days */}
+                  {/* Step 4: Countdown Bar */}
                   {quickAddStep === 4 && (
                     <div className="flex flex-col gap-3">
                       <div className="text-center mb-2">
                         <Clock className="h-8 w-8 text-teal-400 mx-auto mb-2" />
-                        <h3 className="text-sm font-medium text-white">Prep Days</h3>
-                        <p className="text-[9px] text-white/50 mt-1">How many preparation days are needed?</p>
+                        <h3 className="text-sm font-medium text-white">Countdown Bar</h3>
+                        <p className="text-[9px] text-white/50 mt-1">Show a coloured planning bar on the calendar</p>
                       </div>
-                      <select
-                        value={quickAddData.prepDays}
-                        onChange={(e) => { const v = parseInt(e.target.value); startTransition(() => setQuickAddData(p => ({ ...p, prepDays: v }))); }}
-                        className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 text-white text-[13px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
-                        data-testid="quick-add-prep-days"
-                      >
-                        {Array.from({ length: 15 }, (_, i) => (
-                          <option key={i} value={i} style={{ color: 'black' }}>{i === 0 ? 'None' : `${i} day${i > 1 ? 's' : ''}`}</option>
-                        ))}
-                      </select>
+                      <label className="flex items-center gap-3 cursor-pointer select-none bg-white/10 border border-white/15 rounded-lg px-4 py-3">
+                        <input
+                          type="checkbox"
+                          checked={quickAddData.showCountdownBar}
+                          onChange={(e) => startTransition(() => setQuickAddData(p => ({ ...p, showCountdownBar: e.target.checked })))}
+                          className="w-4 h-4 rounded accent-blue-500"
+                          data-testid="quick-add-countdown-bar"
+                        />
+                        <span className="text-white text-[13px]">Show countdown bar</span>
+                      </label>
+                      {quickAddData.showCountdownBar && (
+                        <div className="flex flex-col gap-2 pl-2">
+                          <div className="flex items-center gap-3">
+                            <label className="flex items-center gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={quickAddData.showCountdownBarMain}
+                                onChange={(e) => startTransition(() => setQuickAddData(p => ({ ...p, showCountdownBarMain: e.target.checked })))}
+                                className="w-3.5 h-3.5 rounded accent-blue-500"
+                                data-testid="quick-add-countdown-bar-main"
+                              />
+                              <span className="text-white/70 text-[11px]">Main tasks</span>
+                            </label>
+                            <label className="flex items-center gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={quickAddData.showCountdownBarSummary}
+                                onChange={(e) => startTransition(() => setQuickAddData(p => ({ ...p, showCountdownBarSummary: e.target.checked })))}
+                                className="w-3.5 h-3.5 rounded accent-blue-500"
+                                data-testid="quick-add-countdown-bar-summary"
+                              />
+                              <span className="text-white/70 text-[11px]">Summary tasks</span>
+                            </label>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-white/50 text-[11px]">Show for</span>
+                            <select
+                              value={quickAddData.countdownBarDays}
+                              onChange={(e) => startTransition(() => setQuickAddData(p => ({ ...p, countdownBarDays: parseInt(e.target.value) })))}
+                              className="bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
+                              data-testid="quick-add-countdown-bar-days"
+                            >
+                              <option value={0} style={{ color: 'black' }}>All days</option>
+                              <option value={3} style={{ color: 'black' }}>3 days</option>
+                              <option value={5} style={{ color: 'black' }}>5 days</option>
+                              <option value={7} style={{ color: 'black' }}>7 days</option>
+                              <option value={10} style={{ color: 'black' }}>10 days</option>
+                              <option value={14} style={{ color: 'black' }}>14 days</option>
+                              <option value={21} style={{ color: 'black' }}>21 days</option>
+                              <option value={30} style={{ color: 'black' }}>30 days</option>
+                            </select>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -16177,8 +16254,8 @@ export default function Dashboard() {
                           </div>
                         )}
                         <div className="flex justify-between text-[11px]">
-                          <span className="text-white/50">Prep Days</span>
-                          <span className="text-white">{quickAddData.prepDays === 0 ? 'None' : `${quickAddData.prepDays} day${quickAddData.prepDays > 1 ? 's' : ''}`}</span>
+                          <span className="text-white/50">Countdown Bar</span>
+                          <span className="text-white">{quickAddData.showCountdownBar ? (quickAddData.countdownBarDays === 0 ? 'On (all days)' : `On (${quickAddData.countdownBarDays} days)`) : 'Off'}</span>
                         </div>
                         <div className="flex justify-between text-[11px]">
                           <span className="text-white/50">Priority</span>
@@ -16312,6 +16389,10 @@ export default function Dashboard() {
                             notes: quickAddData.notes || null,
                             projectId: quickAddData.projectId,
                             flagged: (quickAddData as any).flagged ?? false,
+                            showCountdownBar: quickAddData.showCountdownBar,
+                            showCountdownBarMain: quickAddData.showCountdownBarMain,
+                            showCountdownBarSummary: quickAddData.showCountdownBarSummary,
+                            countdownBarDays: quickAddData.countdownBarDays,
                           });
                           const newTask = await res.json();
                           if (quickAddData.subtasks.length > 0 && newTask?.id) {
@@ -26810,6 +26891,11 @@ export default function Dashboard() {
                   setRecurringEditPending({ taskId, title, payload, onSuccess: onSuccessCb });
                 }}
                 onUndoPush={(action) => pushUndo(action as UndoAction)}
+                currentSemesterCourses={semesterSettings ? [
+                  ...(semesterSettings.course1Code ? [{ code: semesterSettings.course1Code, name: semesterSettings.course1Name.replace(/^[A-Z]+\d+\s*-\s*/, '') }] : []),
+                  ...(semesterSettings.course2Code ? [{ code: semesterSettings.course2Code, name: semesterSettings.course2Name.replace(/^[A-Z]+\d+\s*-\s*/, '') }] : []),
+                  ...(semesterSettings.course3Code ? [{ code: semesterSettings.course3Code, name: semesterSettings.course3Name.replace(/^[A-Z]+\d+\s*-\s*/, '') }] : []),
+                ] : undefined}
               />
               <div className="flex justify-end gap-3 pt-3 mt-2 border-t border-white/10">
                 <button
@@ -29547,7 +29633,8 @@ function TaskForm({
   hideSubmitButton,
   onSuccess,
   onRecurringEdit,
-  onUndoPush 
+  onUndoPush,
+  currentSemesterCourses 
 }: { 
   task?: Task; 
   weekNumber: number;
@@ -29559,7 +29646,9 @@ function TaskForm({
   onSuccess: () => void;
   onRecurringEdit?: (taskId: number, title: string, payload: Record<string, unknown>, onSuccess: () => void) => void;
   onUndoPush?: (action: { type: 'edit'; description: string; data: { taskId: number; taskTitle: string; oldFields: Record<string, any>; newFields: Record<string, any> } }) => void;
+  currentSemesterCourses?: Array<{ code: string; name: string }>;
 }) {
+  const { toast } = useToast();
   const { data: allTasks = [] } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
   });
@@ -29652,6 +29741,13 @@ function TaskForm({
     }
     return "00";
   });
+
+  const [showEndDate, setShowEndDate] = useState(false);
+  const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState(false);
+  const [endDateValue, setEndDateValue] = useState<string>("");
+  const [tempEndDate, setTempEndDate] = useState<Date | undefined>(undefined);
+  const [tempEndHour, setTempEndHour] = useState("23");
+  const [tempEndMinute, setTempEndMinute] = useState("59");
 
   const { uploadFile, isUploading } = useUpload({
     onSuccess: (response) => {
@@ -29784,10 +29880,17 @@ function TaskForm({
       setPendingSubtasks([]); // Clear pending subtasks after successful creation
       onSuccess();
     },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error?.message || "Failed to save task. Please try again.", variant: "destructive" });
+    },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.dueDate && formData.type !== 'reminder' && formData.type !== 'module') {
+      toast({ title: "Missing due date", description: "Please select a due date for this task.", variant: "destructive" });
+      return;
+    }
     if (!formData.dueDate && formData.type === 'reminder') {
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
@@ -29873,11 +29976,21 @@ function TaskForm({
                 style={{ color: 'black', fontSize: '11px' }}
               >
                 <option value="">Select course</option>
-                {COURSES.map(course => (
-                  <option key={course.code} value={`${course.code} - ${course.name}`}>
-                    {course.code} - {course.name}
-                  </option>
-                ))}
+                {(() => {
+                  const isExamType = formData.type === 'exam' || formData.type === 'quiz';
+                  if (isExamType && currentSemesterCourses && currentSemesterCourses.length > 0) {
+                    return currentSemesterCourses.map(course => (
+                      <option key={course.code} value={`${course.code} - ${course.name}`}>
+                        {course.code} - {course.name}
+                      </option>
+                    ));
+                  }
+                  return COURSES.map(course => (
+                    <option key={course.code} value={`${course.code} - ${course.name}`}>
+                      {course.code} - {course.name}
+                    </option>
+                  ));
+                })()}
               </select>
             </div>
 
@@ -30004,6 +30117,101 @@ function TaskForm({
             </Popover>
           </div>
 
+          <div>
+            <div className="flex items-center gap-2 mt-1">
+              <input
+                type="checkbox"
+                id="showEndDate"
+                checked={showEndDate}
+                onChange={(e) => {
+                  setShowEndDate(e.target.checked);
+                  if (!e.target.checked) {
+                    setEndDateValue("");
+                    setTempEndDate(undefined);
+                    setFormData(prev => ({ ...prev, eventEndTime: '' }));
+                  }
+                }}
+                className="h-3 w-3 rounded border-gray-300"
+                data-testid="checkbox-end-date"
+              />
+              <Label htmlFor="showEndDate" className="text-[10px] text-white/70 cursor-pointer">Add end date/time (optional)</Label>
+            </div>
+            {showEndDate && (
+              <div className="mt-2">
+                <Popover open={isEndDatePickerOpen} onOpenChange={setIsEndDatePickerOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal h-8 bg-white"
+                      style={{ color: 'black', fontSize: '11px' }}
+                      data-testid="input-enddate"
+                    >
+                      <CalendarDays className="mr-2 h-4 w-4" />
+                      {endDateValue ? format(new Date(endDateValue), "MMM d, yyyy 'at' h:mm a") : "Pick end date/time"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start" side="top" style={{ zIndex: 10010, maxHeight: '50vh', overflowY: 'auto' }} onOpenAutoFocus={(e) => e.preventDefault()} onInteractOutside={(e) => e.preventDefault()} onPointerDownOutside={(e) => e.preventDefault()} onFocusOutside={(e) => e.preventDefault()}>
+                    <div className="p-3">
+                      <CalendarPicker
+                        mode="single"
+                        selected={tempEndDate}
+                        onSelect={(date) => { if (date) setTempEndDate(date); }}
+                        defaultMonth={tempDate || new Date()}
+                        numberOfMonths={1}
+                      />
+                      <div className="border-t pt-3 mt-3">
+                        <Label className="text-sm font-medium">End Time</Label>
+                        <div className="flex items-center gap-2 mt-2">
+                          <select
+                            value={tempEndHour}
+                            onChange={(e) => setTempEndHour(e.target.value)}
+                            className="w-16 h-8 rounded-md border border-input bg-white px-2 font-normal"
+                            style={{ color: 'black', fontSize: '11px' }}
+                          >
+                            {Array.from({ length: 24 }, (_, i) => (
+                              <option key={i} value={i.toString().padStart(2, '0')}>
+                                {i.toString().padStart(2, '0')}
+                              </option>
+                            ))}
+                          </select>
+                          <span>:</span>
+                          <select
+                            value={tempEndMinute}
+                            onChange={(e) => setTempEndMinute(e.target.value)}
+                            className="w-16 h-8 rounded-md border border-input bg-white px-2 font-normal"
+                            style={{ color: 'black', fontSize: '11px' }}
+                          >
+                            {['00', '15', '30', '45'].map((min) => (
+                              <option key={min} value={min}>{min}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                      <div className="flex justify-end gap-2 mt-4 pt-3 border-t">
+                        <Button variant="outline" size="sm" onClick={() => setIsEndDatePickerOpen(false)}>Cancel</Button>
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            if (tempEndDate) {
+                              const newDate = new Date(tempEndDate);
+                              newDate.setHours(parseInt(tempEndHour), parseInt(tempEndMinute), 0, 0);
+                              setEndDateValue(format(newDate, "yyyy-MM-dd'T'HH:mm"));
+                              setFormData(prev => ({ ...prev, eventEndTime: `${tempEndHour}:${tempEndMinute}` }));
+                            }
+                            setIsEndDatePickerOpen(false);
+                          }}
+                          data-testid="button-apply-end-date"
+                        >
+                          Apply
+                        </Button>
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
+            )}
+          </div>
+
           <div className="grid grid-cols-3 gap-3">
             <div>
               <Label htmlFor="eventStartTime" className="text-[11px] text-white">Start</Label>
@@ -30106,19 +30314,36 @@ function TaskForm({
               </div>
             </div>
             <div>
-              <Label htmlFor="prepDays" className="text-[11px] text-white">Prep Days</Label>
-              <Input
-                id="prepDays"
-                type="number"
-                min={0}
-                max={30}
-                value={formData.prepDays}
-                onChange={(e) => setFormData(prev => ({ ...prev, prepDays: parseInt(e.target.value) || 0 }))}
-                placeholder="0"
-                data-testid="input-prepdays"
-                className="bg-white h-8 font-normal"
-                style={{ color: 'black', fontSize: '11px' }}
-              />
+              <Label className="text-[11px] text-white">Countdown Bar</Label>
+              <div className="flex flex-col gap-1 mt-1">
+                <label className="flex items-center gap-2 cursor-pointer select-none" data-testid="toggle-show-countdown-bar-inline">
+                  <input
+                    type="checkbox"
+                    checked={formData.showCountdownBar}
+                    onChange={(e) => setFormData(prev => ({ ...prev, showCountdownBar: e.target.checked }))}
+                    className="w-3.5 h-3.5 rounded accent-blue-500"
+                  />
+                  <span className="text-[10px] text-white/70">Show bar</span>
+                </label>
+                {formData.showCountdownBar && (
+                  <select
+                    value={formData.countdownBarDays}
+                    onChange={(e) => setFormData(prev => ({ ...prev, countdownBarDays: parseInt(e.target.value) }))}
+                    className="flex h-7 w-full rounded-md border border-input bg-white px-1 py-0.5 font-normal"
+                    style={{ color: 'black', fontSize: '10px' }}
+                    data-testid="select-countdown-bar-days-inline"
+                  >
+                    <option value={0}>All days</option>
+                    <option value={3}>3 days</option>
+                    <option value={5}>5 days</option>
+                    <option value={7}>7 days</option>
+                    <option value={10}>10 days</option>
+                    <option value={14}>14 days</option>
+                    <option value={21}>21 days</option>
+                    <option value={30}>30 days</option>
+                  </select>
+                )}
+              </div>
             </div>
           </div>
 
@@ -30290,20 +30515,9 @@ function TaskForm({
             </label>
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex items-center gap-2">
-              <label className="flex items-center gap-2 cursor-pointer select-none" data-testid="toggle-show-countdown-bar">
-                <input
-                  type="checkbox"
-                  checked={formData.showCountdownBar}
-                  onChange={(e) => setFormData(prev => ({ ...prev, showCountdownBar: e.target.checked }))}
-                  className="w-3.5 h-3.5 rounded accent-blue-500"
-                />
-                <span className="text-[10px] text-white/70">Show planning countdown bar</span>
-              </label>
-            </div>
+          <div className="flex items-center gap-3">
             {formData.showCountdownBar && (
-              <div className="flex items-center gap-3 pl-5">
+              <>
                 <label className="flex items-center gap-1.5 cursor-pointer select-none" data-testid="toggle-countdown-bar-main">
                   <input
                     type="checkbox"
@@ -30311,7 +30525,7 @@ function TaskForm({
                     onChange={(e) => setFormData(prev => ({ ...prev, showCountdownBarMain: e.target.checked }))}
                     className="w-3 h-3 rounded accent-blue-500"
                   />
-                  <span className="text-[9px] text-white/50">Main tasks</span>
+                  <span className="text-[9px] text-white/50">Main tasks bar</span>
                 </label>
                 <label className="flex items-center gap-1.5 cursor-pointer select-none" data-testid="toggle-countdown-bar-summary">
                   <input
@@ -30320,27 +30534,9 @@ function TaskForm({
                     onChange={(e) => setFormData(prev => ({ ...prev, showCountdownBarSummary: e.target.checked }))}
                     className="w-3 h-3 rounded accent-blue-500"
                   />
-                  <span className="text-[9px] text-white/50">Summary tasks</span>
+                  <span className="text-[9px] text-white/50">Summary tasks bar</span>
                 </label>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[9px] text-white/50">Show for</span>
-                  <select
-                    value={formData.countdownBarDays}
-                    onChange={(e) => setFormData(prev => ({ ...prev, countdownBarDays: parseInt(e.target.value) }))}
-                    className="text-[9px] bg-white/10 border border-white/20 rounded px-1.5 py-0.5 text-white/80 outline-none"
-                    data-testid="select-countdown-bar-days"
-                  >
-                    <option value={0}>All days</option>
-                    <option value={3}>3 days</option>
-                    <option value={5}>5 days</option>
-                    <option value={7}>7 days</option>
-                    <option value={10}>10 days</option>
-                    <option value={14}>14 days</option>
-                    <option value={21}>21 days</option>
-                    <option value={30}>30 days</option>
-                  </select>
-                </div>
-              </div>
+              </>
             )}
           </div>
 
