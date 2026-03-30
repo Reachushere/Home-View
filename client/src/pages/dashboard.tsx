@@ -23784,7 +23784,7 @@ export default function Dashboard() {
                           const isTopTab = tabIdx === 0;
                           const tFill = '#000000';
                           return (
-                            <text x="3" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 3, 26)">{tab.label}</text>
+                            <text x="1" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 1, 26)">{tab.label}</text>
                           );
                         })()}
                       </svg>
