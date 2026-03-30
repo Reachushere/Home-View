@@ -20333,37 +20333,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative${weatherAlerts.length > 0 ? " weather-alert-border-pulse" : ""}`}
-                    style={isToday ? (() => {
-                      const now = new Date();
-                      const minutesSinceMidnight = now.getHours() * 60 + now.getMinutes();
-                      const pct = Math.min(100, Math.max(0, (minutesSinceMidnight / 1440) * 100));
-                      let sunriseMin = 7 * 60, sunsetMin = 18 * 60;
-                      if (weatherData?.sunrise) { const sr = new Date(weatherData.sunrise); sunriseMin = sr.getHours() * 60 + sr.getMinutes(); }
-                      if (weatherData?.sunset) { const ss = new Date(weatherData.sunset); sunsetMin = ss.getHours() * 60 + ss.getMinutes(); }
-                      const skyStops = [
-                        { p: 0, c: '#01294D' },
-                        { p: 20, c: '#01294D' },
-                        { p: 24, c: '#C97355' },
-                        { p: 27, c: '#D6A276' },
-                        { p: 30, c: '#EDC261' },
-                        { p: 35, c: '#8AC3DF' },
-                        { p: 50, c: '#8AC3DF' },
-                        { p: 65, c: '#8AC3DF' },
-                        { p: 68, c: '#C0B9BC' },
-                        { p: 71, c: '#ECC47E' },
-                        { p: 74, c: '#F9A523' },
-                        { p: 82, c: '#01294D' },
-                        { p: 100, c: '#01294D' },
-                      ];
-                      const visibleStops = skyStops.filter(s => s.p <= pct);
-                      if (visibleStops.length === 0) visibleStops.push(skyStops[0]);
-                      const lastVisible = visibleStops[visibleStops.length - 1];
-                      const scaledStops = visibleStops.map(s => `${s.c} ${pct > 0 ? (s.p / pct * pct).toFixed(1) : 0}%`);
-                      scaledStops.push(`${lastVisible.c} ${pct}%`);
-                      scaledStops.push(`#ffffff ${pct}%`);
-                      scaledStops.push(`#ffffff 100%`);
-                      return { background: `linear-gradient(to right, ${scaledStops.join(', ')})` };
-                    })() : { backgroundColor: isNextSchoolWeek ? '#4ade80' : colorSettings.headerBar, color: isNextSchoolWeek ? '#000000' : undefined }}
+                    style={isToday ? { backgroundColor: colorSettings.headerBar } : { backgroundColor: isNextSchoolWeek ? '#4ade80' : colorSettings.headerBar, color: isNextSchoolWeek ? '#000000' : undefined }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {!isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && (
@@ -20381,13 +20351,35 @@ export default function Dashboard() {
                       const hasShiftBar = !isToday && !isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && (shiftForDay === 'day' || shiftForDay === 'night');
                       return (
                         <>
-                          {isToday && (
-                            <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '7px' }} data-testid="today-full-date">
-                              <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', backgroundColor: colorSettings.headerBar, lineHeight: '11px', letterSpacing: '0.5px', padding: '2px 4px 1px' }}>
-                                {format(day, 'EEEE, MMMM d')}
-                              </span>
-                            </div>
-                          )}
+                          {isToday && (() => {
+                            const now = new Date();
+                            const minutesSinceMidnight = now.getHours() * 60 + now.getMinutes();
+                            const pct = Math.min(100, Math.max(0, (minutesSinceMidnight / 1440) * 100));
+                            const skyStops = [
+                              { p: 0, c: '#01294D' }, { p: 20, c: '#01294D' }, { p: 24, c: '#C97355' },
+                              { p: 27, c: '#D6A276' }, { p: 30, c: '#EDC261' }, { p: 35, c: '#8AC3DF' },
+                              { p: 50, c: '#8AC3DF' }, { p: 65, c: '#8AC3DF' }, { p: 68, c: '#C0B9BC' },
+                              { p: 71, c: '#ECC47E' }, { p: 74, c: '#F9A523' }, { p: 82, c: '#01294D' },
+                              { p: 100, c: '#01294D' },
+                            ];
+                            const visibleStops = skyStops.filter(s => s.p <= pct);
+                            if (visibleStops.length === 0) visibleStops.push(skyStops[0]);
+                            const lastVisible = visibleStops[visibleStops.length - 1];
+                            const scaledStops = visibleStops.map(s => `${s.c} ${pct > 0 ? (s.p / pct * pct).toFixed(1) : 0}%`);
+                            scaledStops.push(`${lastVisible.c} ${pct}%`);
+                            scaledStops.push(`#ffffff ${pct}%`);
+                            scaledStops.push(`#ffffff 100%`);
+                            return (
+                              <>
+                                <div className="absolute left-0 right-0 bottom-0 z-10" style={{ top: '22px', background: `linear-gradient(to right, ${scaledStops.join(', ')})` }} />
+                                <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '7px' }} data-testid="today-full-date">
+                                  <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', backgroundColor: colorSettings.headerBar, lineHeight: '11px', letterSpacing: '0.5px', padding: '2px 4px 1px' }}>
+                                    {format(day, 'EEEE, MMMM d')}
+                                  </span>
+                                </div>
+                              </>
+                            );
+                          })()}
                           {day.getDay() === 6 && !isToday && (
                             <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '8px' }}>
                               <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#000000', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`New School Week (${selectedWeek + 1})`}</span>
@@ -24110,7 +24102,7 @@ export default function Dashboard() {
                       <span className="text-[9px] font-bold text-black/60 text-center" style={{ lineHeight: '1.6' }}>N/A</span>
                     </div>
                   ) : (
-                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, borderRadius: '6px', overflow: 'hidden' }}>
+                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, borderRadius: '6px', overflow: 'hidden', justifyContent: 'center' }}>
                       {(() => { const cGrad = getCourseGradientColors(pd.courseCode); return [
                         { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `play-module-${pd.courseCode.toLowerCase()}`, testUpload: `upload-module-${pd.courseCode.toLowerCase()}`, bg: cGrad.start, dark: true },
                         { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, bg: cGrad.end, dark: false },
