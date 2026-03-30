@@ -1051,9 +1051,9 @@ export default function SpotifyPlayerPage() {
     } else if (station.command) {
       showNotif(`Playing ${station.name}...`);
       try {
-        await fetch(`/api/spotify/play-context${authQuery}`, {
+        await fetch(`/api/spotify/play-on-speaker${authQuery}`, {
           method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ entityId: "media_player.byhome", searchQuery: station.command }),
+          body: JSON.stringify({ entityId: "media_player.byhome", searchQuery: station.command, deviceType: "echo" }),
         });
         showNotif(`Playing ${station.name}`);
       } catch { showNotif("Failed to play station"); }
