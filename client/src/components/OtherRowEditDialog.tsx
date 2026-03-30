@@ -32,6 +32,8 @@ interface Props {
 
 export default function OtherRowEditDialog({ open, onClose, colors, onSave, onPreview, headerBarColor = '#051729' }: Props) {
   const [edit, setEdit] = useState<OtherRowColors>(colors);
+  const editRef = useRef<OtherRowColors>(colors);
+  editRef.current = edit;
   const [activeGradientStop, setActiveGradientStop] = useState<'start' | 'end' | number | null>(null);
   const [activeSwatchPicker, setActiveSwatchPicker] = useState<'border' | 'rowBg' | 'taskBg' | null>(null);
   const [dialogPos, setDialogPos] = useState({ x: 0, y: 0 });
@@ -40,10 +42,16 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave, onPr
   const dragStart = useRef<{ x: number; y: number; mx: number; my: number } | null>(null);
   const originalColorsRef = useRef<OtherRowColors>(colors);
 
+  const openedRef = useRef(false);
+
   useEffect(() => {
-    if (open) {
+    if (open && !openedRef.current) {
       setEdit(colors);
       originalColorsRef.current = colors;
+      openedRef.current = true;
+    }
+    if (!open) {
+      openedRef.current = false;
     }
   }, [open, colors]);
 
@@ -87,12 +95,17 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave, onPr
   };
 
   const setActiveColor = (hex: string) => {
-    if (activeGradientStop === 'start') setEdit({ ...edit, labelStart: hex });
-    else if (activeGradientStop === 'end') setEdit({ ...edit, labelEnd: hex });
+    if (activeGradientStop === 'start') setEdit(prev => ({ ...prev, labelStart: hex }));
+    else if (activeGradientStop === 'end') setEdit(prev => ({ ...prev, labelEnd: hex }));
     else if (typeof activeGradientStop === 'number') {
-      const updated = [...midStops];
-      updated[activeGradientStop] = { ...updated[activeGradientStop], color: hex };
-      setEdit({ ...edit, labelStops: JSON.stringify(updated) });
+      setEdit(prev => {
+        const currentStops: Array<{ position: number; color: string }> = prev.labelStops ? (() => { try { return JSON.parse(prev.labelStops); } catch { return []; } })() : [];
+        const updated = [...currentStops];
+        if (updated[activeGradientStop as number]) {
+          updated[activeGradientStop as number] = { ...updated[activeGradientStop as number], color: hex };
+        }
+        return { ...prev, labelStops: JSON.stringify(updated) };
+      });
     }
   };
 
@@ -308,10 +321,13 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave, onPr
                       e.stopPropagation();
                       const el = e.currentTarget as HTMLElement;
                       el.setPointerCapture(e.pointerId);
+                      const currentColor = getActiveColor();
+                      const currentPos = hexToSvPos(currentColor);
                       const update = (cx: number) => {
                         const freshRect = el.getBoundingClientRect();
                         const x = Math.max(0, Math.min(1, (cx - freshRect.left) / freshRect.width));
-                        setActiveColor(hueToHex(Math.round(x * 360)));
+                        const newHue = Math.round(x * 360);
+                        setActiveColor(svToHex(newHue, currentPos.x, currentPos.y));
                       };
                       update(e.clientX);
                       const onMove = (ev: PointerEvent) => { ev.preventDefault(); update(ev.clientX); };
@@ -360,7 +376,7 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave, onPr
             const field = fieldMap[activeSwatchPicker];
             const val = edit[field] || edit.labelStart;
             const hexVal = (() => { const m = val.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/); if (m) return `#${parseInt(m[1]).toString(16).padStart(2,'0')}${parseInt(m[2]).toString(16).padStart(2,'0')}${parseInt(m[3]).toString(16).padStart(2,'0')}`; return val.startsWith('#') ? val : '#6b7280'; })();
-            const setSwatchColor = (hex: string) => setEdit({ ...edit, [field]: hex });
+            const setSwatchColor = (hex: string) => setEdit(prev => ({ ...prev, [field]: hex }));
             return (
               <div className="rounded" style={{ border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(0,0,0,0.4)', padding: '6px' }}>
                 <div className="flex items-center gap-2 mb-1.5">
@@ -377,9 +393,9 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave, onPr
                     const hue = hexToHue(hexVal);
                     const update = (cx: number, cy: number) => {
                       const freshRect = el.getBoundingClientRect();
-                      const x = Math.max(0, Math.min(1, (cx - freshRect.left) / freshRect.width));
-                      const y = Math.max(0, Math.min(1, (cy - freshRect.top) / freshRect.height));
-                      setSwatchColor(svToHex(hue, x, y));
+                      const sx = Math.max(0, Math.min(1, (cx - freshRect.left) / freshRect.width));
+                      const sy = Math.max(0, Math.min(1, (cy - freshRect.top) / freshRect.height));
+                      setSwatchColor(svToHex(hue, sx, sy));
                     };
                     update(e.clientX, e.clientY);
                     const onMove = (ev: PointerEvent) => { ev.preventDefault(); update(ev.clientX, ev.clientY); };
@@ -403,10 +419,12 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave, onPr
                     e.stopPropagation();
                     const el = e.currentTarget as HTMLElement;
                     el.setPointerCapture(e.pointerId);
+                    const currentPos = hexToSvPos(hexVal);
                     const update = (cx: number) => {
                       const freshRect = el.getBoundingClientRect();
-                      const x = Math.max(0, Math.min(1, (cx - freshRect.left) / freshRect.width));
-                      setSwatchColor(hueToHex(Math.round(x * 360)));
+                      const hx = Math.max(0, Math.min(1, (cx - freshRect.left) / freshRect.width));
+                      const newHue = Math.round(hx * 360);
+                      setSwatchColor(svToHex(newHue, currentPos.x, currentPos.y));
                     };
                     update(e.clientX);
                     const onMove = (ev: PointerEvent) => { ev.preventDefault(); update(ev.clientX); };
