@@ -12210,7 +12210,7 @@ export default function Dashboard() {
         {/* Down arrow placeholder - actual tab moved outside pill container */}
 
         {/* Icon buttons and task buttons with adjustable spacing */}
-        <div className="flex items-center flex-nowrap [&>*]:flex-shrink-0" style={{ gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 9)}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '4px', paddingRight: '4px', width: '100%', overflow: 'visible', pointerEvents: 'auto' }}>
+        <div className="flex items-center flex-nowrap [&>*]:flex-shrink-0" style={{ gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 12)}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '4px', paddingRight: '4px', width: '100%', overflow: 'visible', pointerEvents: 'auto' }}>
           {/* Hamburger Menu */}
           <DropdownMenu open={isHamburgerOpen} onOpenChange={(open) => { if (hamburgerCloseTimer.current) { clearTimeout(hamburgerCloseTimer.current); hamburgerCloseTimer.current = null; } startTransition(() => setIsHamburgerOpen(open)); if (open) { triggerButtonGlow('hamburger'); if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); } }} modal={false}>
             <DropdownMenuTrigger asChild>
@@ -12262,7 +12262,7 @@ export default function Dashboard() {
 
 
           {/* ── Tools ── */}
-          <div style={{ background: 'rgba(255,255,255,0.18)', borderRadius: '26px', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 'inherit', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,0.4)', border: '1.5px solid rgba(255,255,255,0.45)', position: 'relative', top: '1px' }}>
+          <div style={{ background: 'rgba(255,255,255,0.18)', borderRadius: '26px', padding: '2px 4px', display: 'flex', alignItems: 'center', gap: '0px', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,0.4)', border: '1.5px solid rgba(255,255,255,0.45)', position: 'relative', top: '1px', margin: '0 3px' }}>
           {/* Home Assistant (moved from bottom pill) */}
           {isAdmin && (
           <div 
@@ -12562,7 +12562,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── School ── */}
-          <div style={{ background: 'rgba(255,255,255,0.18)', borderRadius: '26px', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 'inherit', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,0.4)', border: '1.5px solid rgba(255,255,255,0.45)', position: 'relative', top: '1px' }}>
+          <div style={{ background: 'rgba(255,255,255,0.18)', borderRadius: '26px', padding: '2px 4px', display: 'flex', alignItems: 'center', gap: '0px', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,0.4)', border: '1.5px solid rgba(255,255,255,0.45)', position: 'relative', top: '1px', margin: '0 3px' }}>
           {/* Courses Button */}
           <div className="pill-button-hover" style={{ 
             marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
@@ -12662,7 +12662,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Entertainment ── */}
-          <div style={{ background: 'rgba(255,255,255,0.18)', borderRadius: '26px', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 'inherit', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,0.4)', border: '1.5px solid rgba(255,255,255,0.45)', position: 'relative', top: '1px' }}>
+          <div style={{ background: 'rgba(255,255,255,0.18)', borderRadius: '26px', padding: '2px 4px', display: 'flex', alignItems: 'center', gap: '0px', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,0.4)', border: '1.5px solid rgba(255,255,255,0.45)', position: 'relative', top: '1px', margin: '0 3px' }}>
           {/* Spotify Button */}
           <div className="pill-button-hover" style={{ 
             marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
@@ -12750,7 +12750,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Tasks ── */}
-          <div style={{ background: 'rgba(255,255,255,0.18)', borderRadius: '26px', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 'inherit', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,0.4)', border: '1.5px solid rgba(255,255,255,0.45)', position: 'relative', top: '1px' }}>
+          <div style={{ background: 'rgba(255,255,255,0.18)', borderRadius: '26px', padding: '2px 4px', display: 'flex', alignItems: 'center', gap: '0px', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,0.4)', border: '1.5px solid rgba(255,255,255,0.45)', position: 'relative', top: '1px', margin: '0 3px' }}>
           {/* Completed Tasks Button - Swapped with Graduation Hat */}
           <div className="pill-button-hover" style={{ 
             marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
@@ -23740,7 +23740,7 @@ export default function Dashboard() {
                     <div
                       key={tab.id}
                       className={`cursor-pointer${isActive && tabBounceEnabled ? ' semester-tab-bounce' : ''}`}
-                      style={{ position: 'absolute', bottom: `${bottomInset + reversedIdx * stepPx + (tabIdx > 0 ? tabIdx * 3 : 0) - 14}px`, width: '51px', height: `${tabH}px`, zIndex: isActive ? 100 : semTabs.length - tabIdx, clipPath: isActive ? 'none' : 'inset(0 0 0 2px)', transition: 'width 0.25s ease, transform 0.25s ease', transform: tabIdx === 0 ? 'translateX(-7px)' : 'translateX(-2px)' }}
+                      style={{ position: 'absolute', bottom: `${bottomInset + reversedIdx * stepPx + (tabIdx > 0 ? tabIdx * 3 : 0) - 14}px`, width: '51px', height: `${tabH}px`, zIndex: isActive ? 100 : semTabs.length - tabIdx, clipPath: isActive ? 'none' : 'inset(0 0 0 2px)', transition: 'width 0.25s ease, transform 0.25s ease', transform: tabIdx === 0 ? 'translateX(-8px)' : 'translateX(-3px)' }}
                       onClick={() => {
                         if (homeworkScrollRef.current) {
                           const scrollContainer = homeworkScrollRef.current;
