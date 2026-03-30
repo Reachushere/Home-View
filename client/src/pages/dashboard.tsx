@@ -20351,7 +20351,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative${weatherAlerts.length > 0 ? " weather-alert-border-pulse" : ""}`}
-                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px' } : { backgroundColor: isNextSchoolWeek ? '#228B22' : colorSettings.headerBar, color: isNextSchoolWeek ? '#000000' : undefined }}
+                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px' } : { backgroundColor: isNextSchoolWeek ? '#228B22' : colorSettings.headerBar, color: isNextSchoolWeek ? '#ffffff' : undefined }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {!isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && (
