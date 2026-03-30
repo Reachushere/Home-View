@@ -20236,8 +20236,17 @@ export default function Dashboard() {
               const beforeW = gridSizes.dayColumnWidths.slice(0, todayIdx).reduce((a: number, b: number) => a + b, 0);
               const fixedW = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth;
               return (
-                <div className="absolute top-0 bottom-0 w-[3px] z-50 pointer-events-none overflow-hidden red-separator-shimmer" style={{ left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px) - 1px)`, backgroundColor: '#ef4444' }}>
-                  <div className="absolute inset-0 red-separator-shimmer-sweep" />
+                <div className="absolute top-0 bottom-0 z-50 pointer-events-none overflow-hidden" style={{ left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px) - 3px)`, width: '7px' }}>
+                  <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: '1.5px', backgroundColor: '#ef4444' }} />
+                  <div style={{ position: 'absolute', top: 0, bottom: 0, right: 0, width: '1.5px', backgroundColor: '#ef4444' }} />
+                  <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+                    <defs>
+                      <pattern id="redDiagVert" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
+                        <line x1="0" y1="0" x2="0" y2="6" stroke="#ef4444" strokeWidth="1" strokeOpacity="0.8" />
+                      </pattern>
+                    </defs>
+                    <rect width="100%" height="100%" fill="url(#redDiagVert)" />
+                  </svg>
                 </div>
               );
             })()}
@@ -22291,23 +22300,16 @@ export default function Dashboard() {
                     <div 
                       className="absolute left-0 z-[5] pointer-events-none"
                       style={{ 
-                        top: `${topPosition - 2}px`, 
+                        top: `${topPosition}px`, 
                         right: isTodaySat 
                           ? '0px'
-                          : `calc((${satFr} / ${totalFrUnits}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`,
-                        height: '5px',
+                          : `calc((${satFr} / ${totalFrUnits}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`
                       }}
                     >
-                      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1.5px', backgroundColor: '#dc2626' }} />
-                      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '1.5px', backgroundColor: '#dc2626' }} />
-                      <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-                        <defs>
-                          <pattern id="redDiag" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
-                            <line x1="0" y1="0" x2="0" y2="6" stroke="#dc2626" strokeWidth="1.5" strokeOpacity="0.7" />
-                          </pattern>
-                        </defs>
-                        <rect width="100%" height="100%" fill="url(#redDiag)" />
-                      </svg>
+                      <div 
+                        className="w-full border-t border-dashed"
+                        style={{ borderColor: 'rgba(0, 0, 0, 0.3)' }}
+                      />
                     </div>
                   );
                 })()}
