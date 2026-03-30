@@ -1178,18 +1178,23 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
             reminderEmail: task.reminderEmail,
             reminderAlexa: task.reminderAlexa,
             reminderSms: task.reminderSms,
+            showCountdownBar: task.showCountdownBar,
+            showCountdownBarMain: task.showCountdownBarMain,
+            showCountdownBarSummary: task.showCountdownBarSummary,
+            countdownBarDays: task.countdownBarDays,
+            hideFromSummary: task.hideFromSummary,
+            flagged: task.flagged,
             weekNumber: getWeekNumber(repeatDueDate, semesterStart, activeSemester?.readingWeekStart),
             priority: task.priority,
             notes: task.notes,
             referenceLink: task.referenceLink,
             attachments: task.attachments,
-            repeatType: "none", // Child tasks don't repeat
+            repeatType: "none",
             parentTaskId: task.id,
           };
           
           try {
             const createdChild = await storage.createTask(childTask);
-            // Sync child to calendar too
             const childEvent = await createCalendarEvent({
               id: createdChild.id,
               title: createdChild.title,
@@ -1392,6 +1397,12 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
               reminderEmail: task.reminderEmail,
               reminderAlexa: task.reminderAlexa,
               reminderSms: task.reminderSms,
+              showCountdownBar: task.showCountdownBar,
+              showCountdownBarMain: task.showCountdownBarMain,
+              showCountdownBarSummary: task.showCountdownBarSummary,
+              countdownBarDays: task.countdownBarDays,
+              hideFromSummary: task.hideFromSummary,
+              flagged: task.flagged,
               weekNumber: getWeekNumber(repeatDueDate, semesterStart, activeSemester?.readingWeekStart),
               priority: task.priority,
               notes: task.notes,
