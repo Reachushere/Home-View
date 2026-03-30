@@ -16947,7 +16947,7 @@ Return ONLY the JSON object, no markdown formatting.`;
         
         const isRadioCommand = !spotifyUri && searchQuery && (searchQuery.toLowerCase().includes("fm") || searchQuery.toLowerCase().includes("radio") || searchQuery.toLowerCase().includes("tunein") || searchQuery.toLowerCase().includes("chum"));
         if (isRadioCommand) {
-          const voiceCommand = `play ${searchQuery}${entityId === EVERYWHERE_GROUP_ENTITY ? " on the everywhere group" : ""}`;
+          const voiceCommand = `play ${searchQuery}${entityId === EVERYWHERE_GROUP_ENTITY ? " on byhome" : ""}`;
           const radioTarget = entityId === EVERYWHERE_GROUP_ENTITY ? targetEntity : targetEntity;
           console.log(`[Spotify] Radio/TuneIn content detected, sending voice command to ${radioTarget}: "${voiceCommand}"`);
           try {
