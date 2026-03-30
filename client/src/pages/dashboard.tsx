@@ -23632,8 +23632,23 @@ export default function Dashboard() {
             <span className="text-[10.5px] font-medium leading-tight whitespace-nowrap" style={{ marginRight: '15px', color: 'rgba(255,255,255,0.85)' }} data-testid="text-week-number">{selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? `Week ${selectedWeek}` : ''}{(() => { const variants = courseWeekVariants[selectedWeek]; if (variants && variants.length > 0) { const diffLabels = [...new Set(variants.map(v => v.label))].filter(l => { const n = String(l).replace(/^week\s*/i, '').trim(); return n !== String(selectedWeek); }); if (diffLabels.length === 0) return null; return <span className="text-[9px] font-normal ml-1" style={{ color: 'rgba(255,255,255,0.6)' }}>({diffLabels.map((label, i) => { const lStr = String(label); const prefix = /^week\s/i.test(lStr) ? '' : 'Wk '; return <span key={i}>{i > 0 ? ', ' : ''}{variants.find(v => v.label === label)?.courseCode}: {prefix}{lStr}</span>; })})</span>; } return null; })()}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek && selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? <span className="text-[10px] font-normal ml-1" style={{ color: 'rgba(255,255,255,1)' }}>(current)</span> : null; })()}</span>
             <div style={{ width: '191px', height: '15px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)', padding: '0 6px', gap: '20px' }}>
               <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 2px', height: '100%', pointerEvents: 'auto' }} onClick={() => { const newWeek = selectedWeek - 1; startTransition(() => setSelectedWeek(newWeek)); if (newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }} data-testid="button-pill-prev-week"><span style={{ fontSize: '13px', lineHeight: '1', color: '#000' }}>◀</span></div>
-              <span data-testid="text-week-dates" style={{ fontSize: '9px', fontWeight: 500, color: '#000', whiteSpace: 'nowrap', lineHeight: 1, letterSpacing: '0.3px', padding: '0 1px', marginLeft: '-7px' }}>
-                {format(weekStartDate, 'EEE, MMM d')} – {format(weekEndDate, 'EEE, MMM d')}
+              <span data-testid="text-week-dates" style={{ fontSize: '9px', fontWeight: 500, color: '#000', whiteSpace: 'nowrap', lineHeight: 1, letterSpacing: '0.3px', padding: '0 1px', marginLeft: '-7px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                {(() => {
+                  const startMonth = format(weekStartDate, 'MMM').toUpperCase();
+                  const endMonth = format(weekEndDate, 'MMM').toUpperCase();
+                  const startDay = format(weekStartDate, 'd');
+                  const endDay = format(weekEndDate, 'd');
+                  const monthLabel = startMonth === endMonth ? startMonth : `${startMonth}-${endMonth}`;
+                  return (
+                    <>
+                      <span>{format(weekStartDate, 'EEE')}</span>
+                      <span>{startDay}</span>
+                      <span style={{ textAlign: 'center', fontSize: '8px', fontWeight: 600, letterSpacing: '0.5px' }}>{monthLabel}</span>
+                      <span>{endDay}</span>
+                      <span>{format(weekEndDate, 'EEE')}</span>
+                    </>
+                  );
+                })()}
               </span>
               <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 2px', height: '100%', pointerEvents: 'auto' }} onClick={() => { const newWeek = selectedWeek + 1; startTransition(() => setSelectedWeek(newWeek)); if (newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }} data-testid="button-pill-next-week"><span style={{ fontSize: '13px', lineHeight: '1', color: '#000' }}>▶</span></div>
             </div>
