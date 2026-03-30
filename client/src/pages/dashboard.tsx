@@ -20461,68 +20461,6 @@ export default function Dashboard() {
                 
                 return (
               <>
-              {countdownBarTasks.length > 0 && (
-                <div data-testid="countdown-bars-container" style={{ borderTop: '1px solid black', marginTop: '-2px' }}>
-                  <div className="grid w-full" style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${Math.max(14, countdownBarTasks.length * 14)}px` }}>
-                    <div className="flex items-center justify-center" style={{ backgroundColor: colorSettings.headerBar, minWidth: 0 }}>
-                      <span className="text-[7px] font-bold text-white/70 tracking-wider" style={{ writingMode: countdownBarTasks.length >= 3 ? 'vertical-lr' : undefined, transform: countdownBarTasks.length >= 3 ? 'rotate(180deg)' : undefined }}>DUE</span>
-                    </div>
-                    {gridSizes.moduleColumnWidth > 0 && <div style={{ backgroundColor: '#f0f0f0', minWidth: 0 }} />}
-                    {weekDays.map((day, dayIdx) => {
-                      const isToday = isSameDayET(day, new Date());
-                      return (
-                        <div key={dayIdx} className="relative" style={{ backgroundColor: isToday ? '#e4ecf5' : '#faf8f5', minWidth: 0, overflow: 'hidden' }}>
-                          {countdownBarTasks.map((item, barIdx) => {
-                            if (!item.barIndices.includes(dayIdx)) return null;
-                            const posInBar = item.barIndices.indexOf(dayIdx);
-                            const isStart = posInBar === 0;
-                            const isEnd = posInBar === item.barIndices.length - 1;
-                            const urgencyColor = item.daysUntilDue <= 1 ? '#dc2626' : item.daysUntilDue <= 3 ? '#e89200' : item.daysUntilDue <= 6 ? '#22c55e' : '#3b82f6';
-                            const barH = 10;
-                            const barY = barIdx * 14 + 2;
-                            return (
-                              <div
-                                key={item.task.id}
-                                className="absolute flex items-center"
-                                style={{
-                                  top: `${barY}px`,
-                                  left: isStart ? '2px' : '0px',
-                                  right: isEnd ? '2px' : '0px',
-                                  height: `${barH}px`,
-                                  backgroundColor: urgencyColor,
-                                  opacity: 0.85,
-                                  borderRadius: isStart && isEnd ? '3px' : isStart ? '3px 0 0 3px' : isEnd ? '0 3px 3px 0' : '0',
-                                  cursor: 'pointer',
-                                  overflow: 'hidden',
-                                }}
-                                onClick={(e) => { e.stopPropagation(); setEditingTask(item.task); }}
-                                onMouseEnter={() => setHoveredCountdownTaskIdDebounced(item.task.id)}
-                                onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
-
-                                data-testid={`countdown-bar-${item.task.id}`}
-                              >
-                                {isStart && (
-                                  <span className="text-[7px] font-bold text-white px-1 truncate whitespace-nowrap" style={{ lineHeight: '10px' }}>
-                                    {item.courseCode ? `${item.courseCode} ` : ''}{item.task.title} — {item.daysUntilDue === 0 ? 'TODAY' : item.daysUntilDue === 1 ? '1 day' : `${item.daysUntilDue}d`}
-                                  </span>
-                                )}
-                                {isEnd && item.endsThisWeek && !isStart && (
-                                  <span className="text-[7px] font-bold text-white px-1 truncate whitespace-nowrap ml-auto" style={{ lineHeight: '10px' }}>
-                                    {item.daysUntilDue === 0 ? 'DUE TODAY' : item.daysUntilDue === 1 ? 'DUE TMR' : `${item.daysUntilDue}d`}
-                                  </span>
-                                )}
-                                {isEnd && item.endsThisWeek && (
-                                  <div style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '0', height: '0', borderTop: '4px solid transparent', borderBottom: '4px solid transparent', borderLeft: `4px solid rgba(255,255,255,0.6)` }} />
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
               <div ref={courseRowsRef} data-testid="course-rows-container" style={{ borderTop: '1px solid black', marginTop: '-2px' }}>
               {filteredCourses.map((courseData, courseIdx) => {
                 const courseName = courseData.name.split(' - ')[0].toUpperCase();
@@ -21001,6 +20939,43 @@ export default function Dashboard() {
                         }}
                       >
                         <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', borderLeft: '1px solid rgba(0,0,0,0.12)', zIndex: 5, pointerEvents: 'none' }} />
+                        {countdownBarTasks.filter(item => item.courseCode === course.name && item.barIndices.includes(dayIdx)).map((item, barIdx) => {
+                          const posInBar = item.barIndices.indexOf(dayIdx);
+                          const isStart = posInBar === 0;
+                          const isEnd = posInBar === item.barIndices.length - 1;
+                          const urgencyColor = item.daysUntilDue <= 1 ? '#dc2626' : item.daysUntilDue <= 3 ? '#e89200' : item.daysUntilDue <= 6 ? '#22c55e' : '#3b82f6';
+                          return (
+                            <div
+                              key={`cbar-${item.task.id}`}
+                              className="absolute flex items-center"
+                              style={{
+                                bottom: `${barIdx * 12 + 1}px`,
+                                left: isStart ? '2px' : '0px',
+                                right: isEnd ? '2px' : '0px',
+                                height: '10px',
+                                backgroundColor: urgencyColor,
+                                opacity: 0.85,
+                                borderRadius: isStart && isEnd ? '3px' : isStart ? '3px 0 0 3px' : isEnd ? '0 3px 3px 0' : '0',
+                                cursor: 'pointer',
+                                overflow: 'hidden',
+                                zIndex: 10,
+                              }}
+                              onClick={(e) => { e.stopPropagation(); setEditingTask(item.task); }}
+                              onMouseEnter={() => setHoveredCountdownTaskIdDebounced(item.task.id)}
+                              onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
+                              data-testid={`countdown-bar-${item.task.id}`}
+                            >
+                              {isStart && (
+                                <span className="text-[7px] font-bold text-white px-1 truncate whitespace-nowrap" style={{ lineHeight: '10px' }}>
+                                  {item.task.title} — {item.daysUntilDue === 0 ? 'TODAY' : item.daysUntilDue === 1 ? '1d' : `${item.daysUntilDue}d`}
+                                </span>
+                              )}
+                              {isEnd && item.endsThisWeek && (
+                                <div style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '0', height: '0', borderTop: '4px solid transparent', borderBottom: '4px solid transparent', borderLeft: '4px solid rgba(255,255,255,0.6)' }} />
+                              )}
+                            </div>
+                          );
+                        })}
                         {isDayToday && (() => {
                           const cCode2 = course.name;
                           const nextTask = (allTasks || []).filter(t => {
