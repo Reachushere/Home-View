@@ -16869,8 +16869,14 @@ Return ONLY the JSON object, no markdown formatting.`;
         if (announceMessage) {
           const isEverywhereGroup = entityId === EVERYWHERE_GROUP_ENTITY;
           if (isEverywhereGroup) {
-            const allEchoTargets = FLICK_DEVICES.flatMap(g => g.devices).filter(d => (d.type === "echo" || d.type === "echo_show") && d.entityId.includes("_am")).map(d => d.entityId);
-            console.log(`[Spotify] TTS announce on ALL ${allEchoTargets.length} Echo speakers: "${announceMessage}"`);
+            const onePerRoom = FLICK_DEVICES
+              .filter(g => g.room !== "Balcony")
+              .map(g => {
+                const echo = g.devices.find(d => (d.type === "echo" || d.type === "echo_show") && d.entityId.includes("_am"));
+                return echo?.entityId;
+              })
+              .filter(Boolean) as string[];
+            console.log(`[Spotify] TTS announce on ${onePerRoom.length} speakers (one per room): "${announceMessage}"`);
             try {
               await fetch(`${haUrl}/api/services/notify/alexa_media`, {
                 method: 'POST',
@@ -16878,12 +16884,12 @@ Return ONLY the JSON object, no markdown formatting.`;
                 body: JSON.stringify({
                   message: announceMessage,
                   data: { type: "tts" },
-                  target: allEchoTargets,
+                  target: onePerRoom,
                 }),
               });
               await new Promise(resolve => setTimeout(resolve, 2500));
             } catch (ttsErr: any) {
-              console.log(`[Spotify] TTS announce on all speakers failed (continuing): ${ttsErr.message}`);
+              console.log(`[Spotify] TTS announce on room speakers failed (continuing): ${ttsErr.message}`);
             }
           } else {
             console.log(`[Spotify] TTS announce on ${targetEntity}: "${announceMessage}"`);
@@ -16941,13 +16947,14 @@ Return ONLY the JSON object, no markdown formatting.`;
         
         const isRadioCommand = !spotifyUri && searchQuery && (searchQuery.toLowerCase().includes("fm") || searchQuery.toLowerCase().includes("radio") || searchQuery.toLowerCase().includes("tunein") || searchQuery.toLowerCase().includes("chum"));
         if (isRadioCommand) {
-          const voiceCommand = `play ${searchQuery}`;
-          console.log(`[Spotify] Radio/TuneIn content detected, sending voice command to ${targetEntity}: "${voiceCommand}"`);
+          const voiceCommand = `play ${searchQuery}${entityId === EVERYWHERE_GROUP_ENTITY ? " on the everywhere group" : ""}`;
+          const radioTarget = entityId === EVERYWHERE_GROUP_ENTITY ? targetEntity : targetEntity;
+          console.log(`[Spotify] Radio/TuneIn content detected, sending voice command to ${radioTarget}: "${voiceCommand}"`);
           try {
             await fetch(`${haUrl}/api/services/media_player/turn_on`, {
               method: 'POST',
               headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({ entity_id: targetEntity }),
+              body: JSON.stringify({ entity_id: radioTarget }),
             });
             await new Promise(resolve => setTimeout(resolve, 1500));
           } catch (wakeErr: any) {
@@ -16956,7 +16963,7 @@ Return ONLY the JSON object, no markdown formatting.`;
           await fetch(`${haUrl}/api/services/media_player/play_media`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ entity_id: targetEntity, media_content_id: voiceCommand, media_content_type: "custom" }),
+            body: JSON.stringify({ entity_id: radioTarget, media_content_id: voiceCommand, media_content_type: "custom" }),
           });
           trackSpotifyPlayback(entityId, artistName);
           clearSpotifyStaleTimer();
