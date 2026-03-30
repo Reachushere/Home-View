@@ -2039,22 +2039,36 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                             </div>
                           )}
                           <div className="relative rounded cursor-crosshair" style={{ height: '92px', touchAction: 'none', overflow: 'visible' }} data-testid={`color-area-${activeGradientStop}`}
-                            onPointerDown={(e) => {
+                            onMouseDown={(e) => {
                               e.preventDefault();
-                              const el = e.currentTarget;
-                              el.setPointerCapture(e.pointerId);
-                              const rect = el.getBoundingClientRect();
+                              const rect = e.currentTarget.getBoundingClientRect();
                               const hue = hexToHue(getActiveColor());
-                              const update = (ev: PointerEvent) => {
-                                const x = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
-                                const y = Math.max(0, Math.min(1, (ev.clientY - rect.top) / rect.height));
+                              const update = (cx: number, cy: number) => {
+                                const x = Math.max(0, Math.min(1, (cx - rect.left) / rect.width));
+                                const y = Math.max(0, Math.min(1, (cy - rect.top) / rect.height));
                                 setActiveColor(svToHex(hue, x, y));
                               };
-                              update(e.nativeEvent);
-                              const onMove = (ev: PointerEvent) => update(ev);
-                              const onUp = () => { el.releasePointerCapture(e.pointerId); window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); };
-                              window.addEventListener('pointermove', onMove);
-                              window.addEventListener('pointerup', onUp);
+                              update(e.clientX, e.clientY);
+                              const onMove = (ev: MouseEvent) => { ev.preventDefault(); update(ev.clientX, ev.clientY); };
+                              const onUp = () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); };
+                              window.addEventListener('mousemove', onMove);
+                              window.addEventListener('mouseup', onUp);
+                            }}
+                            onTouchStart={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              const rect = e.currentTarget.getBoundingClientRect();
+                              const hue = hexToHue(getActiveColor());
+                              const update = (cx: number, cy: number) => {
+                                const x = Math.max(0, Math.min(1, (cx - rect.left) / rect.width));
+                                const y = Math.max(0, Math.min(1, (cy - rect.top) / rect.height));
+                                setActiveColor(svToHex(hue, x, y));
+                              };
+                              if (e.touches[0]) update(e.touches[0].clientX, e.touches[0].clientY);
+                              const onMove = (ev: TouchEvent) => { ev.preventDefault(); if (ev.touches[0]) update(ev.touches[0].clientX, ev.touches[0].clientY); };
+                              const onEnd = () => { window.removeEventListener('touchmove', onMove); window.removeEventListener('touchend', onEnd); };
+                              window.addEventListener('touchmove', onMove, { passive: false });
+                              window.addEventListener('touchend', onEnd);
                             }}>
                             <div style={{ position: 'absolute', inset: 0, borderRadius: '3px', background: `linear-gradient(to right, white, hsl(${hexToHue(getActiveColor())}, 100%, 50%))` }} />
                             <div style={{ position: 'absolute', inset: 0, borderRadius: '3px', background: 'linear-gradient(to bottom, transparent, black)' }} />
@@ -2066,25 +2080,32 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                             })()}
                           </div>
                           <div className="relative mt-1.5 rounded cursor-pointer" style={{ height: '14px', touchAction: 'none' }} data-testid={`hue-slider-${activeGradientStop}`}
-                            onClick={(e) => {
-                              const rect = e.currentTarget.getBoundingClientRect();
-                              const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-                              setActiveColor(hueToHex(Math.round(x * 360)));
-                            }}
-                            onPointerDown={(e) => {
+                            onMouseDown={(e) => {
                               e.preventDefault();
-                              const el = e.currentTarget;
-                              el.setPointerCapture(e.pointerId);
-                              const rect = el.getBoundingClientRect();
-                              const update = (ev: PointerEvent) => {
-                                const x = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
+                              const rect = e.currentTarget.getBoundingClientRect();
+                              const update = (cx: number) => {
+                                const x = Math.max(0, Math.min(1, (cx - rect.left) / rect.width));
                                 setActiveColor(hueToHex(Math.round(x * 360)));
                               };
-                              update(e.nativeEvent);
-                              const onMove = (ev: PointerEvent) => update(ev);
-                              const onUp = () => { el.releasePointerCapture(e.pointerId); window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); };
-                              window.addEventListener('pointermove', onMove);
-                              window.addEventListener('pointerup', onUp);
+                              update(e.clientX);
+                              const onMove = (ev: MouseEvent) => { ev.preventDefault(); update(ev.clientX); };
+                              const onUp = () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); };
+                              window.addEventListener('mousemove', onMove);
+                              window.addEventListener('mouseup', onUp);
+                            }}
+                            onTouchStart={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              const rect = e.currentTarget.getBoundingClientRect();
+                              const update = (cx: number) => {
+                                const x = Math.max(0, Math.min(1, (cx - rect.left) / rect.width));
+                                setActiveColor(hueToHex(Math.round(x * 360)));
+                              };
+                              if (e.touches[0]) update(e.touches[0].clientX);
+                              const onMove = (ev: TouchEvent) => { ev.preventDefault(); if (ev.touches[0]) update(ev.touches[0].clientX); };
+                              const onEnd = () => { window.removeEventListener('touchmove', onMove); window.removeEventListener('touchend', onEnd); };
+                              window.addEventListener('touchmove', onMove, { passive: false });
+                              window.addEventListener('touchend', onEnd);
                             }}>
                             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)', borderRadius: '3px' }} />
                             <div style={{ position: 'absolute', top: '-1px', left: `${(hexToHue(getActiveColor()) / 360) * 100}%`, transform: 'translateX(-50%)', width: '4px', height: '16px', background: 'white', borderRadius: '2px', boxShadow: '0 0 3px rgba(0,0,0,0.5)', border: '1px solid rgba(0,0,0,0.3)', pointerEvents: 'none' }} />
