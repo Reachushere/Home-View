@@ -1611,13 +1611,15 @@ export default function SpotifyPlayerPage() {
                 }}
                 className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg transition-all hover:scale-105 mb-1"
                 style={{
-                  color: tc.homeBtnText,
-                  background: tc.homeBtnBg,
-                  border: `1px solid ${tc.homeBtnBorder}`,
+                  background: 'linear-gradient(135deg, #41BDF5 0%, #18A8E0 100%)',
+                  border: '1px solid rgba(65,189,245,0.6)',
+                  color: '#ffffff',
                 }}
-                data-testid="back-to-dashboard">
-                <Home className="h-4 w-4 flex-shrink-0" />
-                {menuOpen && <span className="text-[12px] whitespace-nowrap font-medium">{isSakura ? "ホーム" : "Home"}</span>}
+                data-testid="button-ha-spotify">
+                <svg viewBox="0 0 24 24" fill="white" className="h-4 w-4 flex-shrink-0">
+                  <path d="M12 0L1.5 6v12L12 24l10.5-6V6L12 0zm0 2.1l8.5 4.9v9.8L12 21.9l-8.5-5.1V7L12 2.1zM8.5 9.5v5h2v-3h3v3h2v-5L12 7l-3.5 2.5z"/>
+                </svg>
+                {menuOpen && <span className="text-[12px] whitespace-nowrap font-medium">{isSakura ? "ホーム" : "Home Assistant"}</span>}
               </button>
               <div className="mx-2 mb-1 h-[1px]" style={{ background: tc.divider }} />
               {(Object.keys(PROFILES) as ProfileKey[]).map(k => (

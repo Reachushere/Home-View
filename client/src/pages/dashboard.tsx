@@ -12268,9 +12268,9 @@ export default function Dashboard() {
           <div 
             style={{ 
               marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
-              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+              background: 'linear-gradient(180deg, #41BDF5 0%, #18A8E0 100%)',
               
-              border: '1.5px solid rgba(255,255,255,0.35)',
+              border: '1.5px solid rgba(255,255,255,0.5)',
               boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
             }}
