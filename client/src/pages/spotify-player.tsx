@@ -1099,16 +1099,11 @@ export default function SpotifyPlayerPage() {
     movedEnough: boolean;
     currentDropRoom: string | null;
     currentDropPlayer: boolean;
-    pointerId: number;
-    sourceEl: HTMLElement | null;
   } | null>(null);
 
   const cleanupCustomDrag = useCallback(() => {
     const cd = customDragRef.current;
     if (cd?.ghostEl) cd.ghostEl.remove();
-    if (cd?.sourceEl && cd.pointerId >= 0) {
-      try { cd.sourceEl.releasePointerCapture(cd.pointerId); } catch {}
-    }
     customDragRef.current = null;
     setDropTarget(null);
     setDragItem(null);
@@ -1172,25 +1167,35 @@ export default function SpotifyPlayerPage() {
     }
   }, [selectedArtist, nowPlaying]);
 
-  const handlePointerDragStart = (type: "artist" | "room" | "speaker", data: any) => (e: React.PointerEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const el = e.currentTarget as HTMLElement;
-    try { el.setPointerCapture(e.pointerId); } catch {}
+  const initDrag = (type: "artist" | "room" | "speaker", data: any, x: number, y: number) => {
+    if (customDragRef.current) return;
     customDragRef.current = {
       type, data,
-      startX: e.clientX, startY: e.clientY,
+      startX: x, startY: y,
       isDragging: false, ghostEl: null, movedEnough: false,
       currentDropRoom: null, currentDropPlayer: false,
-      pointerId: e.pointerId, sourceEl: el,
+    };
+  };
+
+  const handleDragItemDown = (type: "artist" | "room" | "speaker", data: any) => {
+    return {
+      onTouchStart: (e: React.TouchEvent) => {
+        const t = e.touches[0];
+        initDrag(type, data, t.clientX, t.clientY);
+      },
+      onMouseDown: (e: React.MouseEvent) => {
+        if (e.button !== 0) return;
+        e.preventDefault();
+        initDrag(type, data, e.clientX, e.clientY);
+      },
+      onContextMenu: (e: React.MouseEvent) => { e.preventDefault(); },
     };
   };
 
   useEffect(() => {
-    const onPointerMove = (e: PointerEvent) => {
+    const onMove = (cx: number, cy: number, evt: Event) => {
       const cd = customDragRef.current;
-      if (!cd || cd.pointerId !== e.pointerId) return;
-      const cx = e.clientX, cy = e.clientY;
+      if (!cd) return;
       const dx = cx - cd.startX;
       const dy = cy - cd.startY;
       const dist = Math.sqrt(dx * dx + dy * dy);
@@ -1207,8 +1212,7 @@ export default function SpotifyPlayerPage() {
       }
 
       if (cd.isDragging && cd.ghostEl) {
-        e.preventDefault();
-        e.stopPropagation();
+        evt.preventDefault();
         cd.ghostEl.style.left = `${cx}px`;
         cd.ghostEl.style.top = `${cy}px`;
         const ghost = cd.ghostEl;
@@ -1222,9 +1226,9 @@ export default function SpotifyPlayerPage() {
       }
     };
 
-    const onPointerUp = (e: PointerEvent) => {
+    const onEnd = () => {
       const cd = customDragRef.current;
-      if (!cd || cd.pointerId !== e.pointerId) return;
+      if (!cd) return;
       if (cd.isDragging && cd.movedEnough) {
         handleDragDrop(cd);
         didDragRef.current = true;
@@ -1233,19 +1237,25 @@ export default function SpotifyPlayerPage() {
       cleanupCustomDrag();
     };
 
-    const onPointerCancel = (e: PointerEvent) => {
-      const cd = customDragRef.current;
-      if (!cd || cd.pointerId !== e.pointerId) return;
-      cleanupCustomDrag();
-    };
+    const onTouchMove = (e: TouchEvent) => { onMove(e.touches[0].clientX, e.touches[0].clientY, e); };
+    const onMouseMove = (e: MouseEvent) => { onMove(e.clientX, e.clientY, e); };
+    const onTouchEnd = () => onEnd();
+    const onMouseUp = () => onEnd();
+    const onContextMenu = (e: Event) => { if (customDragRef.current) e.preventDefault(); };
 
-    document.addEventListener("pointermove", onPointerMove, { capture: true });
-    document.addEventListener("pointerup", onPointerUp, { capture: true });
-    document.addEventListener("pointercancel", onPointerCancel, { capture: true });
+    document.addEventListener("touchmove", onTouchMove, { passive: false, capture: true });
+    document.addEventListener("touchend", onTouchEnd, { capture: true });
+    document.addEventListener("touchcancel", onTouchEnd, { capture: true });
+    document.addEventListener("mousemove", onMouseMove, { capture: true });
+    document.addEventListener("mouseup", onMouseUp, { capture: true });
+    document.addEventListener("contextmenu", onContextMenu, { capture: true });
     return () => {
-      document.removeEventListener("pointermove", onPointerMove, { capture: true });
-      document.removeEventListener("pointerup", onPointerUp, { capture: true });
-      document.removeEventListener("pointercancel", onPointerCancel, { capture: true });
+      document.removeEventListener("touchmove", onTouchMove, { capture: true } as any);
+      document.removeEventListener("touchend", onTouchEnd, { capture: true } as any);
+      document.removeEventListener("touchcancel", onTouchEnd, { capture: true } as any);
+      document.removeEventListener("mousemove", onMouseMove, { capture: true } as any);
+      document.removeEventListener("mouseup", onMouseUp, { capture: true } as any);
+      document.removeEventListener("contextmenu", onContextMenu, { capture: true } as any);
     };
   }, [viewMode, cleanupCustomDrag, handleDragDrop]);
 
@@ -1696,7 +1706,7 @@ export default function SpotifyPlayerPage() {
                     const isSelected = selectedArtist?.name === artist.name;
                     return (
                     <div key={artist.name}
-                      onPointerDown={handlePointerDragStart("artist", artist)}
+                      {...handleDragItemDown("artist", artist)}
                       onClick={() => {
                         if (didDragRef.current) return;
                         if (selectedArtist?.name === artist.name) { setSelectedArtist(null); }
@@ -1705,6 +1715,9 @@ export default function SpotifyPlayerPage() {
                       className="flex flex-col items-center gap-1 p-2 rounded-lg cursor-grab transition-all group hover:scale-105"
                       style={{
                         touchAction: "none",
+                        WebkitTouchCallout: "none",
+                        WebkitUserSelect: "none",
+                        userSelect: "none",
                         background: isSelected
                           ? `${profile.accent}25`
                           : isSakura ? "rgba(30,65,100,0.5)" : "rgba(30,60,110,0.6)",
@@ -1875,7 +1888,7 @@ export default function SpotifyPlayerPage() {
                   return (
                     <div key={spot.room}
                       data-room-hotspot={spot.room}
-                      onPointerDown={handlePointerDragStart("room", spot)}
+                      {...handleDragItemDown("room", spot)}
                       onClick={() => {
                         if (didDragRef.current) return;
                         if (selectedArtist) {
@@ -2002,7 +2015,7 @@ export default function SpotifyPlayerPage() {
                                       const isSpeakerActive = isActive || activeRooms.has("Everywhere");
                                       return (
                                         <button key={spk.entityId}
-                                          onPointerDown={handlePointerDragStart("speaker", { ...spk, room: spot.room })}
+                                          {...handleDragItemDown("speaker", { ...spk, room: spot.room })}
                                           onClick={() => {
                                             if (didDragRef.current) return;
                                             if (selectedArtist) {
