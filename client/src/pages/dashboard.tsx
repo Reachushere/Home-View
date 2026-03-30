@@ -1124,6 +1124,10 @@ export default function Dashboard() {
     el.style.left = `${barCenterX - opRect.left - 9 + 76}px`;
   };
   const [hwGroupBarWidth, setHwGroupBarWidth] = useState(() => {
+    const sw = window.screen.width, sh = window.screen.height, pr = window.devicePixelRatio || 1;
+    const did = `device_${sw}x${sh}@${pr}`;
+    const deviceSaved = localStorage.getItem(`hwGroupBarWidth_${did}`);
+    if (deviceSaved) { const dv = parseFloat(deviceSaved); if (!isNaN(dv) && dv > 0) return dv; }
     const saved = localStorage.getItem('hwGroupBarWidth');
     return saved ? parseFloat(saved) : 111;
   });
@@ -3247,7 +3251,7 @@ export default function Dashboard() {
       document.removeEventListener('mouseup', onUp);
       document.removeEventListener('touchmove', onMove);
       document.removeEventListener('touchend', onUp);
-      setHwGroupBarWidth(w => { localStorage.setItem('hwGroupBarWidth', String(w)); fetch('/api/ui-settings/hwGroupBarWidth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: w }) }).catch(() => {}); return w; });
+      setHwGroupBarWidth(w => { localStorage.setItem('hwGroupBarWidth', String(w)); const sw2 = window.screen.width, sh2 = window.screen.height, pr2 = window.devicePixelRatio || 1; localStorage.setItem(`hwGroupBarWidth_device_${sw2}x${sh2}@${pr2}`, String(w)); fetch('/api/ui-settings/hwGroupBarWidth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: w }) }).catch(() => {}); return w; });
       hwGroupBarDragRef.current = null;
     };
     document.addEventListener('mousemove', onMove);
@@ -22396,6 +22400,7 @@ export default function Dashboard() {
               localStorage.setItem('calendarHeight', String(calendarHeight));
               localStorage.setItem('calendarReduction', String(calendarReduction));
               localStorage.setItem('gridSizes', JSON.stringify(gridSizes));
+              localStorage.setItem('hwGroupBarWidth', String(hwGroupBarWidth));
               setCalendarReductionUserSet(true);
               const screenWidth = window.screen.width;
               const screenHeight = window.screen.height;
@@ -22404,10 +22409,16 @@ export default function Dashboard() {
               localStorage.setItem(`calendarHeight_${deviceId}`, String(calendarHeight));
               localStorage.setItem(`calendarReduction_${deviceId}`, String(calendarReduction));
               localStorage.setItem(`gridSizes_${deviceId}`, JSON.stringify(gridSizes));
+              localStorage.setItem(`hwGroupBarWidth_${deviceId}`, String(hwGroupBarWidth));
               fetch('/api/degree-tracking/bulk', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ calendarHeight, calendarReduction, gridSizes }),
+                body: JSON.stringify({ calendarHeight, calendarReduction, gridSizes, hwGroupBarWidth }),
+              }).catch(() => {});
+              fetch('/api/ui-settings/hwGroupBarWidth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ value: hwGroupBarWidth }),
               }).catch(() => {});
               toast({ title: "Saved", description: "Calendar size saved as default" });
             }}
