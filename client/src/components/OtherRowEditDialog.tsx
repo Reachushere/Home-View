@@ -142,7 +142,7 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave, onPr
         style={{
           width: '420px',
           maxHeight: '520px',
-          overflowY: 'auto',
+          overflowY: (activeGradientStop != null || activeSwatchPicker != null) ? 'hidden' : 'auto',
           scrollbarWidth: 'thin',
           touchAction: (activeGradientStop != null || activeSwatchPicker != null) ? 'none' : 'auto',
           background: 'linear-gradient(180deg, #3a8bbf 0%, color-mix(in srgb, #164a72 70%, black) 100%)',
