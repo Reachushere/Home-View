@@ -24103,7 +24103,7 @@ export default function Dashboard() {
                       <span className="text-[9px] font-bold text-black/60 text-center" style={{ lineHeight: '1.6' }}>N/A</span>
                     </div>
                   ) : (
-                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, borderRadius: '6px', overflow: 'hidden', justifyContent: 'center' }}>
+                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, borderRadius: '6px', overflow: 'hidden', gap: '2px' }}>
                       {(() => { const cGrad = getCourseGradientColors(pd.courseCode); return [
                         { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `play-module-${pd.courseCode.toLowerCase()}`, testUpload: `upload-module-${pd.courseCode.toLowerCase()}`, bg: cGrad.start, dark: true },
                         { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, bg: cGrad.end, dark: false },
@@ -24123,7 +24123,7 @@ export default function Dashboard() {
                             onDragEnter={(e) => { e.preventDefault(); e.stopPropagation(); setHwDragOverTarget(dragKey); }}
                             onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); if (hwDragOverTarget === dragKey) setHwDragOverTarget(null); }}
                             onDrop={(e) => { e.preventDefault(); e.stopPropagation(); setHwDragOverTarget(null); const file = e.dataTransfer.files?.[0]; if (file) item.drop(file); }}
-                            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1px', position: 'relative', flex: '0 1 auto', alignSelf: 'stretch', aspectRatio: '1 / 1', minWidth: 0, background: item.bg, padding: '4px 1px 3px', borderRadius: '6px', overflow: 'visible', outline: isDragOver ? '2px solid rgba(255,255,255,0.8)' : 'none', outlineOffset: '-2px', transition: 'outline 0.15s ease' }}
+                            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1px', position: 'relative', flex: '1 1 0', alignSelf: 'stretch', minWidth: 0, background: item.bg, padding: '4px 1px 3px', borderRadius: '6px', overflow: 'visible', outline: isDragOver ? '2px solid rgba(255,255,255,0.8)' : 'none', outlineOffset: '-2px', transition: 'outline 0.15s ease' }}
                             data-testid={`drop-${item.type}-${pd.courseCode.toLowerCase()}`}>
                             <span style={{ position: 'absolute', top: '2px', left: 0, right: 0, textAlign: 'center', fontSize: '8px', fontWeight: 400, color: item.dark ? '#ffffff' : '#000000', letterSpacing: '0.5px', fontFamily: "'Raleway', sans-serif", zIndex: 5 }}>{item.label}</span>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginTop: '8px' }}>
