@@ -25025,22 +25025,6 @@ export default function Dashboard() {
                               <span className="text-[12px] font-semibold" style={{ color: '#ffffff', flexShrink: 0 }}>{groupWeekLabel}</span>
                               <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', flexShrink: 0 }}>({group.tasks.length})</span>
                               <div style={{ flex: 1 }} />
-                              {/Week\s+\d/i.test(groupWeekLabel) && (
-                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', flexShrink: 0, marginLeft: '2px', width: '40px' }}>
-                                  <span style={{ fontSize: '7px', fontWeight: 600, color: '#ffffff', lineHeight: '8px', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden' }}>{(() => { const sm = format(groupCalDate, 'MMM').toUpperCase(); const em = format(tlEntry.weekEnd, 'MMM').toUpperCase(); return sm === em ? sm : `${sm}-${em}`; })()}</span>
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                    <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(100, 100, 100)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                                      <div style={{ background: 'rgb(100, 100, 100)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(groupCalDate, 'MMM').toUpperCase()}</div>
-                                      <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(groupCalDate, 'd')}</div>
-                                    </div>
-                                    <span style={{ fontSize: '6px', color: 'white', lineHeight: 1 }}>&#9654;</span>
-                                    <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(100, 100, 100)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                                      <div style={{ background: 'rgb(100, 100, 100)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(tlEntry.weekEnd, 'MMM').toUpperCase()}</div>
-                                      <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(tlEntry.weekEnd, 'd')}</div>
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
                             </div>
                           )}
                           <div data-hw-group-row style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '2px' }}>
