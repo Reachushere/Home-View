@@ -43,17 +43,17 @@ interface StationShortcut {
 }
 
 const STATION_SHORTCUTS: StationShortcut[] = [
-  { name: "Gay FM", command: "play Gay FM Radio on tunein on the everywhere group", icon: "📻" },
-  { name: "Vibe of Vegas", command: "play the Vibe of Vegas Radio on tunein on the everywhere group", icon: "🎰" },
-  { name: "Dinner Jazz", command: "play Dinner Jazz music on Spotify on the everywhere group", icon: "🎷" },
-  { name: "Chill Electronic", command: "play Chill Electronic station on Spotify on the everywhere group", icon: "🎧" },
+  { name: "Gay FM", command: "play Gay FM Radio on tunein on byhome", icon: "📻" },
+  { name: "Vibe of Vegas", command: "play the Vibe of Vegas Radio on tunein on byhome", icon: "🎰" },
+  { name: "Dinner Jazz", command: "play Dinner Jazz music on Spotify on byhome", icon: "🎷" },
+  { name: "Chill Electronic", command: "play Chill Electronic station on Spotify on byhome", icon: "🎧" },
   { name: "CHUM FM", command: "play 104.5 Chum FM", icon: "📡" },
-  { name: "Spring Cleaning", command: "play spring cleaning music on Spotify on the everywhere group", icon: "🌸" },
+  { name: "Spring Cleaning", command: "play spring cleaning music on Spotify on byhome", icon: "🌸" },
   { name: "Pink", command: "", uri: "spotify:playlist:37i9dQZF1DZ06evO0YT088", icon: "💖" },
-  { name: "Easy Listening", command: "play easy listening on Spotify in the everywhere group", icon: "🎵" },
+  { name: "Easy Listening", command: "play easy listening on Spotify on byhome", icon: "🎵" },
   { name: "Katy Perry", command: "", uri: "spotify:playlist:37i9dQZF1DZ06evO3Jefw4", icon: "🎤" },
-  { name: "Disney", command: "play Disney songs on Spotify on the everywhere group", icon: "🏰" },
-  { name: "Club Riva", command: "play Club Riva Lounge Radio on tunein on the everywhere group", icon: "🍸" },
+  { name: "Disney", command: "play Disney songs on Spotify on byhome", icon: "🏰" },
+  { name: "Club Riva", command: "play Club Riva Lounge Radio on tunein on byhome", icon: "🍸" },
   { name: "Samui Island", command: "play Samui Island Radio on tunein", icon: "🌴" },
   { name: "Calm My Cat", command: "Enable Calm My Cat everywhere", icon: "🐱" },
 ];

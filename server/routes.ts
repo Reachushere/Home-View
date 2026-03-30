@@ -17010,7 +17010,7 @@ Return ONLY the JSON object, no markdown formatting.`;
             if (!playResp.ok) {
               console.log(`[Spotify] player_media_play_context failed, falling back to voice command`);
               const searchTerm = searchQuery || artistName || "music";
-              const voiceCommand = `play ${searchTerm} on Spotify`;
+              const voiceCommand = `play ${searchTerm} on Spotify${entityId === EVERYWHERE_GROUP_ENTITY ? " on byhome" : ""}`;
               console.log(`[Spotify] Sending voice command to ${targetEntity}: "${voiceCommand}"`);
               await fetch(`${haUrl}/api/services/media_player/play_media`, {
                 method: 'POST',
@@ -17036,7 +17036,7 @@ Return ONLY the JSON object, no markdown formatting.`;
         } else {
           console.log(`[Spotify] No SpotifyPlus source for ${entityId}, using voice command fallback`);
           const searchTerm = searchQuery || artistName || "music";
-          const voiceCommand = `play ${searchTerm} on Spotify`;
+          const voiceCommand = `play ${searchTerm} on Spotify${entityId === EVERYWHERE_GROUP_ENTITY ? " on byhome" : ""}`;
           
           console.log(`[Spotify] Waking up Echo: ${targetEntity}`);
           try {
