@@ -30638,41 +30638,70 @@ function TaskForm({
             />
           </div>
 
-          <div className="flex items-center gap-2">
-            <label className="flex items-center gap-2 cursor-pointer select-none" data-testid="toggle-hide-from-summary">
-              <input
-                type="checkbox"
-                checked={formData.hideFromSummary}
-                onChange={(e) => setFormData(prev => ({ ...prev, hideFromSummary: e.target.checked }))}
-                className="w-3.5 h-3.5 rounded accent-blue-500"
-              />
-              <span className="text-[10px] text-white/70">Hide from summary rows</span>
-            </label>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {formData.showCountdownBar && (
-              <>
-                <label className="flex items-center gap-1.5 cursor-pointer select-none" data-testid="toggle-countdown-bar-main">
-                  <input
-                    type="checkbox"
-                    checked={formData.showCountdownBarMain}
-                    onChange={(e) => setFormData(prev => ({ ...prev, showCountdownBarMain: e.target.checked }))}
-                    className="w-3 h-3 rounded accent-blue-500"
-                  />
-                  <span className="text-[9px] text-white/50">Main tasks bar</span>
-                </label>
-                <label className="flex items-center gap-1.5 cursor-pointer select-none" data-testid="toggle-countdown-bar-summary">
-                  <input
-                    type="checkbox"
-                    checked={formData.showCountdownBarSummary}
-                    onChange={(e) => setFormData(prev => ({ ...prev, showCountdownBarSummary: e.target.checked }))}
-                    className="w-3 h-3 rounded accent-blue-500"
-                  />
-                  <span className="text-[9px] text-white/50">Summary tasks bar</span>
-                </label>
-              </>
-            )}
+          <div style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 12px' }}>
+            <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.45)', letterSpacing: '0.5px' }}>Display Options</span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
+              <label className="flex items-center gap-2 cursor-pointer select-none" data-testid="toggle-hide-from-summary">
+                <input
+                  type="checkbox"
+                  checked={formData.hideFromSummary}
+                  onChange={(e) => setFormData(prev => ({ ...prev, hideFromSummary: e.target.checked }))}
+                  className="w-3.5 h-3.5 rounded accent-blue-500"
+                />
+                <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.75)' }}>Hide from summary rows</span>
+              </label>
+              <div style={{ height: '1px', background: 'rgba(255,255,255,0.08)' }} />
+              <label className="flex items-center gap-2 cursor-pointer select-none" data-testid="toggle-show-countdown-bar-edit">
+                <input
+                  type="checkbox"
+                  checked={formData.showCountdownBar}
+                  onChange={(e) => setFormData(prev => ({ ...prev, showCountdownBar: e.target.checked }))}
+                  className="w-3.5 h-3.5 rounded accent-blue-500"
+                />
+                <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.75)' }}>Show planning countdown bar</span>
+              </label>
+              {formData.showCountdownBar && (
+                <div style={{ paddingLeft: '22px', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                  <label className="flex items-center gap-1.5 cursor-pointer select-none" data-testid="toggle-countdown-bar-main">
+                    <input
+                      type="checkbox"
+                      checked={formData.showCountdownBarMain}
+                      onChange={(e) => setFormData(prev => ({ ...prev, showCountdownBarMain: e.target.checked }))}
+                      className="w-3 h-3 rounded accent-blue-500"
+                    />
+                    <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.55)' }}>Main tasks</span>
+                  </label>
+                  <label className="flex items-center gap-1.5 cursor-pointer select-none" data-testid="toggle-countdown-bar-summary">
+                    <input
+                      type="checkbox"
+                      checked={formData.showCountdownBarSummary}
+                      onChange={(e) => setFormData(prev => ({ ...prev, showCountdownBarSummary: e.target.checked }))}
+                      className="w-3 h-3 rounded accent-blue-500"
+                    />
+                    <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.55)' }}>Summary tasks</span>
+                  </label>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.45)' }}>Show for</span>
+                    <select
+                      value={formData.countdownBarDays}
+                      onChange={(e) => setFormData(prev => ({ ...prev, countdownBarDays: parseInt(e.target.value) }))}
+                      className="rounded border border-white/15 text-white"
+                      style={{ fontSize: '9px', padding: '1px 4px', height: '20px', background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.8)' }}
+                      data-testid="select-countdown-bar-days-edit"
+                    >
+                      <option value={0}>All days</option>
+                      <option value={3}>3 days</option>
+                      <option value={5}>5 days</option>
+                      <option value={7}>7 days</option>
+                      <option value={10}>10 days</option>
+                      <option value={14}>14 days</option>
+                      <option value={21}>21 days</option>
+                      <option value={30}>30 days</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           {task?.attachments && task.attachments.length > 0 && (
