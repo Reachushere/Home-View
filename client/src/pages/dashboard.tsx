@@ -1581,6 +1581,9 @@ export default function Dashboard() {
       el.style.transition = val ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out';
     });
   }, []);
+  const closeTopPill = useCallback(() => {
+    setIsTopPillOpen(false);
+  }, []);
   useEffect(() => {
     if (!isTopPillOpen) return;
     const handleClickOutside = (e: MouseEvent) => {
@@ -1754,9 +1757,6 @@ export default function Dashboard() {
   const openTopPill = useCallback(() => {
     if (!topPillInitDoneRef.current) return;
     setIsTopPillOpen(true);
-  }, []);
-  const closeTopPill = useCallback(() => {
-    setIsTopPillOpen(false);
   }, []);
   useEffect(() => {
     const mountDelay = setTimeout(() => {
