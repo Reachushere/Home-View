@@ -3513,7 +3513,7 @@ export default function Dashboard() {
   const getGridTemplateColumns = () => {
     const allDays = gridSizes.dayColumnWidths.map(w => `${w}fr`).join(' ');
     if (gridSizes.moduleColumnWidth > 0) {
-      return `${gridSizes.timeColumnWidth}px ${gridSizes.moduleColumnWidth}px ${allDays}`;
+      return `${gridSizes.timeColumnWidth}px ${gridSizes.moduleColumnWidth + 9}px ${allDays}`;
     }
     return `${gridSizes.timeColumnWidth}px ${allDays}`;
   };
@@ -20254,7 +20254,7 @@ export default function Dashboard() {
             </div>
           <div ref={calendarBorderRef} className="shadow-lg border border-white flex flex-col relative" style={{ background: '#faf8f5', borderRadius: '8px', overflow: 'hidden', height: 'calc(100%)', width: 'calc(100%)', marginLeft: '2px', marginTop: '-2px' }}>
             {/* Progress/Saturday divider line - grey separator on left border of Saturday column */}
-            <div className="absolute top-0 bottom-0 w-[3px] z-50 pointer-events-none overflow-hidden" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 1px)`, backgroundColor: '#888888' }}>
+            <div className="absolute top-0 bottom-0 w-[3px] z-50 pointer-events-none overflow-hidden" style={{ left: `calc(${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px + (${gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px) - 1px)`, backgroundColor: '#888888' }}>
             </div>
             {/* Black border around today column - always show */}
             {(() => {
@@ -20264,7 +20264,7 @@ export default function Dashboard() {
               const totalDayW = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0);
               const beforeW = gridSizes.dayColumnWidths.slice(0, todayIdx).reduce((a: number, b: number) => a + b, 0);
               const todayW = gridSizes.dayColumnWidths[todayIdx] || 0;
-              const fixedW = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth;
+              const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
               return (
                 <div className="absolute bottom-0 z-[45] pointer-events-none" style={{ top: '0px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px))`, width: `calc((${todayW} / ${totalDayW}) * (100% - ${fixedW}px))`, borderLeft: '2.5px solid #000000', borderRight: '2.5px solid #000000', borderBottom: '2.5px solid #000000', borderTop: 'none' }} />
               );
@@ -20276,7 +20276,7 @@ export default function Dashboard() {
               if (todayIdx <= 0) return null;
               const totalDayW = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0);
               const beforeW = gridSizes.dayColumnWidths.slice(0, todayIdx).reduce((a: number, b: number) => a + b, 0);
-              const fixedW = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth;
+              const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
               return (
                 <div className="absolute top-0 bottom-0 z-50 pointer-events-none overflow-hidden" style={{ left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px) - 4px)`, width: '9px' }}>
                   <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: '2.5px', backgroundColor: '#ef4444' }} />
@@ -20641,8 +20641,10 @@ export default function Dashboard() {
                             {gridSizes.moduleColumnWidth > 0 && (
                             <div style={{ backgroundColor: course.bg }}>
                               <div 
-                                className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded m-0.5 border ${task.isCompleted ? "text-gray-400" : "text-black"}`}
+                                className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded border ${task.isCompleted ? "text-gray-400" : "text-black"}`}
                                 style={{
+                                  margin: '2px 2px 2px 2px',
+                                  marginRight: '0px',
                                   backgroundColor: task.isCompleted ? '#e5e7eb' : (() => { const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === course.name); if (cMatch?.taskBgColor) return cMatch.taskBgColor; const cEnd = cMatch?.colorEnd; const endRgb = hexToRgb(cEnd || course.darkColor); return `rgb(${Math.max(0,endRgb.r-12)},${Math.max(0,endRgb.g-12)},${Math.max(0,endRgb.b-12)})`; })(),
                                   borderColor: task.isCompleted ? '#d1d5db' : course.darkColor
                                 }}
@@ -20729,7 +20731,7 @@ export default function Dashboard() {
                                 return (
                                   <div key={dayIdx} className="flex items-center" style={{ backgroundColor: cellBg }}>
                                     <div 
-                                      className={`flex-1 flex items-center gap-1 text-[8px] px-1 ml-0.5 ${isFriday ? 'mr-0.5' : ''} ${todayBorderClass} ${
+                                      className={`flex-1 flex items-center gap-1 text-[8px] px-0.5 ml-0 ${isFriday ? 'mr-0.5' : ''} ${todayBorderClass} ${
                                         shouldBlink ? "animate-blink" : ""
                                       } ${task.isCompleted ? "text-gray-400" : "text-black"}`}
                                       style={{ 
@@ -22275,8 +22277,8 @@ export default function Dashboard() {
                       }`}
                       style={{
                         top: `${topPx}px`,
-                        left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${gridSizes.dayColumnWidths.slice(0, dayIdx).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) + 2px)`,
-                        width: (() => { const now = new Date(); const currentHourNow = now.getHours(); const taskDay = weekDays[dayIdx]; const isTodayCol = isSameDayET(taskDay, now); const taskCoversCurrentHour = startHour <= currentHourNow && (endHour > currentHourNow || (endHour === currentHourNow && endMin > 0)); const isCurrentHourOverlap = isTodayCol && taskCoversCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return isCurrentHourOverlap ? `calc((${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 2 - 4px)` : `calc((${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 4px)`; })(),
+                        left: `calc(${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px + (${gridSizes.dayColumnWidths.slice(0, dayIdx).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px) + 2px)`,
+                        width: (() => { const now = new Date(); const currentHourNow = now.getHours(); const taskDay = weekDays[dayIdx]; const isTodayCol = isSameDayET(taskDay, now); const taskCoversCurrentHour = startHour <= currentHourNow && (endHour > currentHourNow || (endHour === currentHourNow && endMin > 0)); const isCurrentHourOverlap = isTodayCol && taskCoversCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return isCurrentHourOverlap ? `calc((${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px) / 2 - 4px)` : `calc((${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px) - 4px)`; })(),
                         height: `${heightPx}px`,
                         zIndex: hoveredCountdownTaskId === task.id ? 55 : (selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43)),
                         backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || (task.type === 'other' ? otherRowColors.taskBgColor : '#e5e7eb')),
@@ -22351,7 +22353,7 @@ export default function Dashboard() {
                         top: `${topPosition}px`, 
                         right: isTodaySat 
                           ? '0px'
-                          : `calc((${satFr} / ${totalFrUnits}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`
+                          : `calc((${satFr} / ${totalFrUnits}) * (100% - ${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px))`
                       }}
                     >
                       <div 
