@@ -23642,7 +23642,7 @@ export default function Dashboard() {
                     <>
                       <span>{format(weekStartDate, 'EEE')}</span>
                       <span>{startDay}</span>
-                      <span style={{ textAlign: 'center', fontSize: '8px', fontWeight: 600, letterSpacing: '0.5px' }}>{monthLabel}</span>
+                      <span>{monthLabel}</span>
                       <span>{endDay}</span>
                       <span>{format(weekEndDate, 'EEE')}</span>
                     </>
