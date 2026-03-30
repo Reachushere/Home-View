@@ -20297,7 +20297,7 @@ export default function Dashboard() {
             <div ref={calendarContentRef} className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" style={{ borderRadius: '8px' }} onClick={() => setSelectedTaskId(null)}>
             
             {/* Day Headers - Fixed, not scrollable */}
-            <div data-calendar-grid="true" className="grid z-[44] h-[54px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), borderBottom: '1px solid #666' }}>
+            <div data-calendar-grid="true" className="grid z-[44] h-[60px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), borderBottom: '1px solid #666' }}>
               <div className="flex items-center justify-center relative" style={{ backgroundColor: colorSettings.headerBar }}>
                 <img src={unicalLogo} alt="Uni-Cal" className="rounded" style={{ height: '34px', width: '34px', marginLeft: '3px' }} />
                 {/* Time column resize handle - right edge */}
@@ -20382,14 +20382,14 @@ export default function Dashboard() {
                       return (
                         <>
                           {isToday && (
-                            <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '0px' }} data-testid="today-full-date">
+                            <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '7px' }} data-testid="today-full-date">
                               <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', backgroundColor: colorSettings.headerBar, lineHeight: '11px', letterSpacing: '0.5px', padding: '2px 4px 1px' }}>
                                 {format(day, 'EEEE, MMMM d')}
                               </span>
                             </div>
                           )}
                           {day.getDay() === 6 && !isToday && (
-                            <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '1px' }}>
+                            <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '8px' }}>
                               <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#000000', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`New School Week (${selectedWeek + 1})`}</span>
                             </div>
                           )}
@@ -20399,7 +20399,7 @@ export default function Dashboard() {
                             const isTodaySat = now.getDay() === 6;
                             return todayIdx >= 0 && idx < todayIdx && day.getDay() !== 6 && !isTodaySat;
                           })() && (
-                            <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '1px' }}>
+                            <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '8px' }}>
                               <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#000000', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`Week ${selectedWeek + 1} (Next Week)`}</span>
                             </div>
                           )}
@@ -20410,11 +20410,11 @@ export default function Dashboard() {
                             if (isTodaySat) return day.getDay() !== 6;
                             return todayIdx >= 0 && idx > todayIdx && day.getDay() !== 6;
                           })() && (
-                            <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '1px' }}>
+                            <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '8px' }}>
                               <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`Week ${selectedWeek}`}</span>
                             </div>
                           )}
-                          <div className="flex items-center gap-1.5" style={{ marginTop: '4px' }}>
+                          <div className="flex items-center gap-1.5" style={{ marginTop: '10px' }}>
                             <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? '#fff' : isNextSchoolWeek ? '#000000' : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
                             <div style={{ fontSize: isToday ? '25px' : '24px', fontWeight: isToday ? 600 : 700, color: isToday ? '#000000' : isNextSchoolWeek ? '#000000' : '#fff' }}>{dayNum}</div>
                           </div>
