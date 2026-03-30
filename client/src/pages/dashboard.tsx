@@ -24293,7 +24293,7 @@ export default function Dashboard() {
                       <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch', marginLeft: '14px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2 }}>
                         <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)', position: 'absolute', right: '-6px', top: 0, bottom: 0 }} />
                       </div>
-                      <div style={{ flex: 1, minWidth: 0, marginRight: '-7px' }}>
+                      <div style={{ flex: 1, minWidth: 0, marginRight: '-7px', backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: '6px', padding: '4px 4px' }}>
                         <div style={{ maxHeight: '80px', overflowY: 'auto', scrollbarWidth: 'none' }}>
                   <div className="flex flex-col" style={{ gap: '6px' }}>
                     {dueTodayTasks.map((task, tIdx) => {
@@ -24305,7 +24305,7 @@ export default function Dashboard() {
                       const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
                       const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                       return (
-                        <div key={task.id} className="" style={{ position: 'relative', overflow: 'visible', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: 'rgba(255,255,255,0.08)', marginLeft: `${-(hwGroupBarWidth + 8)}px`, marginRight: '0px', paddingLeft: `${hwGroupBarWidth + 8}px`, paddingRight: '0px' }}
+                        <div key={task.id} className="" style={{ position: 'relative', overflow: 'visible', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: 'transparent', marginLeft: `${-(hwGroupBarWidth + 8)}px`, marginRight: '0px', paddingLeft: `${hwGroupBarWidth + 8}px`, paddingRight: '0px' }}
                           onMouseEnter={() => setHoveredCountdownTaskIdDebounced(task.id)}
                           onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                           ref={(rowEl) => {
