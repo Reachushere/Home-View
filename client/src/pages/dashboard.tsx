@@ -24264,7 +24264,7 @@ export default function Dashboard() {
               if (lastRect) {
                 const lastBottom = lastRect.top + lastRect.height - upcomingTop;
                 const otherRowH = gridSizes.otherRowHeight || 57;
-                return `${lastBottom + otherRowH - headerH - 30}px`;
+                return `${lastBottom + otherRowH - headerH - 15}px`;
               }
             }
             return '12px';
