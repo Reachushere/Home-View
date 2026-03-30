@@ -20256,6 +20256,10 @@ export default function Dashboard() {
               {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: colorSettings.headerBar }} />}
               {weekDays.map((day, idx) => {
                 const isToday = isSameDayET(day, new Date());
+                const nowForWeek = new Date();
+                const todayDowForWeek = nowForWeek.getDay();
+                const thisSaturday = startOfDayET(addDays(nowForWeek, todayDowForWeek === 6 ? 7 : (6 - todayDowForWeek)));
+                const isNextSchoolWeek = startOfDayET(day) >= thisSaturday;
                 const dayName = format(day, "EEE").toUpperCase();
                 const dayNum = format(day, "d");
                 const hasTodayTasks = isToday && allTasks.some(t => 
@@ -20297,7 +20301,7 @@ export default function Dashboard() {
                       scaledStops.push(`#ffffff ${pct}%`);
                       scaledStops.push(`#ffffff 100%`);
                       return { background: `linear-gradient(to right, ${scaledStops.join(', ')})` };
-                    })() : { backgroundColor: colorSettings.headerBar }}
+                    })() : { backgroundColor: isNextSchoolWeek ? '#1a7a3a' : colorSettings.headerBar }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {!isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && (
@@ -20606,7 +20610,11 @@ export default function Dashboard() {
                               const isFriday = dayOfWeek === 5;
                               const isActualToday = isSameDayET(day, today);
                               const isActuallyPast = !isActualToday && startOfDayET(day) < today;
-                              const cellBg = isActualToday ? '#e4ecf5' : isActuallyPast ? dimColor(course.bg) : course.bg;
+                              const mrNow = new Date();
+                              const mrDow = mrNow.getDay();
+                              const mrSat = startOfDayET(addDays(mrNow, mrDow === 6 ? 7 : (6 - mrDow)));
+                              const isMrNextSchoolWeek = !isActualToday && startOfDayET(day) >= mrSat;
+                              const cellBg = isActualToday ? '#e4ecf5' : isMrNextSchoolWeek ? dimColor(course.bg, 0.5) : isActuallyPast ? dimColor(course.bg) : course.bg;
                               
                               // If this day is before today, show empty cell
                               if (isBeforeToday) {
@@ -20887,7 +20895,11 @@ export default function Dashboard() {
                     const isDayToday = isSameDayET(day, new Date());
                     const isDayAfterToday = day > new Date() && !isDayToday;
                     const isDayBeforeToday = !isDayToday && day < new Date();
-                    const cellBgColor = isDayToday ? '#e4ecf5' : isDayBeforeToday ? dimColor(course.bg) : course.bg;
+                    const nwNow = new Date();
+                    const nwDow = nwNow.getDay();
+                    const nwSat = startOfDayET(addDays(nwNow, nwDow === 6 ? 7 : (6 - nwDow)));
+                    const isDayNextSchoolWeek = !isDayToday && startOfDayET(day) >= nwSat;
+                    const cellBgColor = isDayToday ? '#e4ecf5' : isDayNextSchoolWeek ? dimColor(course.bg, 0.5) : course.bg;
                     const cellDate = startOfDayET(day);
                     
                     const dueTasks = allTasks?.filter(task => {
@@ -21440,7 +21452,11 @@ export default function Dashboard() {
                       const otherHasScroll = otherCellCount > 3;
                       const isOtherBeforeToday = !isOtherToday && day < new Date();
                       const otherBaseBg = otherRowColors.courseRowColor || otherRowColors.cellBg;
-                      const otherCellBg = isOtherToday ? '#e4ecf5' : isOtherBeforeToday ? dimColor(otherBaseBg) : otherBaseBg;
+                      const onwNow = new Date();
+                      const onwDow = onwNow.getDay();
+                      const onwSat = startOfDayET(addDays(onwNow, onwDow === 6 ? 7 : (6 - onwDow)));
+                      const isOtherNextSchoolWeek = !isOtherToday && startOfDayET(day) >= onwSat;
+                      const otherCellBg = isOtherToday ? '#e4ecf5' : isOtherNextSchoolWeek ? dimColor(otherBaseBg, 0.5) : otherBaseBg;
                       return (
                         <div
                           key={dayIdx}
@@ -21541,7 +21557,13 @@ export default function Dashboard() {
                     key={dayIdx} 
                     className={`border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 min-w-0 ${isSameDayET(day, new Date()) ? 'border-b border-black' : 'border-b border-border/50'}`}
                     style={{ 
-                      backgroundColor: isSameDayET(day, new Date()) ? '#eef2f7' : '#faf8f5',
+                      backgroundColor: (() => {
+                        if (isSameDayET(day, new Date())) return '#eef2f7';
+                        const adNow = new Date();
+                        const adDow = adNow.getDay();
+                        const adSat = startOfDayET(addDays(adNow, adDow === 6 ? 7 : (6 - adDow)));
+                        return startOfDayET(day) >= adSat ? '#f0f7f0' : '#faf8f5';
+                      })(),
                       paddingLeft: `${2 + DAY_COL_LEFT_REDUCTION}px`,
                     }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
@@ -21763,7 +21785,15 @@ export default function Dashboard() {
                           style={{
                             borderLeftColor: isCurrentHour ? 'rgba(0,0,0,0.15)' : 'hsl(var(--border) / 0.5)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined,
-                            backgroundColor: (isToday || isCurrentHour) ? '#e4ecf5' : isNightShiftSleepHour ? nightSleepColor : (isDayShiftSleepHour ? 'rgba(180, 180, 180, 0.22)' : '#faf8f5'),
+                            backgroundColor: (() => {
+                              if (isToday || isCurrentHour) return '#e4ecf5';
+                              if (isNightShiftSleepHour) return nightSleepColor;
+                              if (isDayShiftSleepHour) return 'rgba(180, 180, 180, 0.22)';
+                              const hsNow = new Date();
+                              const hsDow = hsNow.getDay();
+                              const hsSat = startOfDayET(addDays(hsNow, hsDow === 6 ? 7 : (6 - hsDow)));
+                              return startOfDayET(day) >= hsSat ? '#f0f7f0' : '#faf8f5';
+                            })(),
                             borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined,
                             paddingLeft: `${2 + DAY_COL_LEFT_REDUCTION}px`,
                           }}
