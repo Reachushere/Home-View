@@ -20422,8 +20422,10 @@ export default function Dashboard() {
 
                 const countdownBarTasks = (() => {
                   const today = startOfDayET(new Date());
-                  const weekStart = startOfDayET(weekDays[0]);
-                  const weekEnd = startOfDayET(addDays(weekDays[6], 1));
+                  const sortedDayIndices = weekDays.map((d, i) => ({ date: startOfDayET(d), idx: i }))
+                    .sort((a, b) => a.date.getTime() - b.date.getTime());
+                  const todaySortedPos = sortedDayIndices.findIndex(d => d.date >= today);
+                  const visibleIndices = todaySortedPos >= 0 ? sortedDayIndices.slice(todaySortedPos).map(d => d.idx) : [];
                   return allTasks
                     .filter(t => {
                       if (!t.showCountdownBar) return false;
@@ -20435,26 +20437,26 @@ export default function Dashboard() {
                     .map(t => {
                       const due = startOfDayET(new Date(t.dueDate));
                       const daysUntilDue = Math.round((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-                      const barStartDay = weekDays.findIndex((d, i) => i > 0 && (isSameDayET(d, today) || startOfDayET(d) > today));
-                      const barEndDay = weekDays.findIndex((d, i) => i > 0 && isSameDayET(d, due));
-                      const barEndDayIdx = barEndDay >= 1 ? barEndDay : (due > startOfDayET(weekDays[6]) ? 6 : -1);
-                      const barStartDayIdx = barStartDay >= 1 ? barStartDay : (today < startOfDayET(weekDays[1]) ? 1 : -1);
-                      if (barStartDayIdx < 1 || barEndDayIdx < 1 || barStartDayIdx > barEndDayIdx) return null;
+                      const barIndices = visibleIndices.filter(i => {
+                        const dayDate = startOfDayET(weekDays[i]);
+                        return dayDate >= today && dayDate <= due;
+                      });
+                      if (barIndices.length === 0) return null;
+                      const endsThisWeek = barIndices.some(i => isSameDayET(startOfDayET(weekDays[i]), due));
                       const courseCode = t.courseName?.split(' - ')[0]?.toUpperCase() || '';
                       const courseInfo = filteredCourses.find(c => c.name.split(' - ')[0]?.toUpperCase() === courseCode);
                       return {
                         task: t,
                         daysUntilDue,
-                        barStartDayIdx,
-                        barEndDayIdx,
-                        endsThisWeek: barEndDay >= 0,
+                        barIndices,
+                        endsThisWeek,
                         courseColor: courseInfo?.color || '#666',
                         courseCode,
                       };
                     })
                     .filter(Boolean)
                     .sort((a, b) => a!.daysUntilDue - b!.daysUntilDue)
-                    .slice(0, 6) as { task: any; daysUntilDue: number; barStartDayIdx: number; barEndDayIdx: number; endsThisWeek: boolean; courseColor: string; courseCode: string }[];
+                    .slice(0, 6) as { task: any; daysUntilDue: number; barIndices: number[]; endsThisWeek: boolean; courseColor: string; courseCode: string }[];
                 })();
                 
                 return (
@@ -20471,9 +20473,10 @@ export default function Dashboard() {
                       return (
                         <div key={dayIdx} className="relative" style={{ backgroundColor: isToday ? '#e4ecf5' : '#faf8f5', minWidth: 0, overflow: 'hidden' }}>
                           {countdownBarTasks.map((item, barIdx) => {
-                            if (dayIdx < item.barStartDayIdx || dayIdx > item.barEndDayIdx) return null;
-                            const isStart = dayIdx === item.barStartDayIdx;
-                            const isEnd = dayIdx === item.barEndDayIdx;
+                            if (!item.barIndices.includes(dayIdx)) return null;
+                            const posInBar = item.barIndices.indexOf(dayIdx);
+                            const isStart = posInBar === 0;
+                            const isEnd = posInBar === item.barIndices.length - 1;
                             const urgencyColor = item.daysUntilDue <= 1 ? '#dc2626' : item.daysUntilDue <= 3 ? '#e89200' : item.daysUntilDue <= 6 ? '#22c55e' : '#3b82f6';
                             const barH = 10;
                             const barY = barIdx * 14 + 2;
