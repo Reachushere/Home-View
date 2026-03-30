@@ -20279,16 +20279,16 @@ export default function Dashboard() {
               const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
               return (
                 <div className="absolute top-0 bottom-0 z-50 pointer-events-none overflow-hidden" style={{ left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px) - 4px)`, width: '9px' }}>
-                  <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: '2.5px', backgroundColor: '#ef4444' }} />
-                  <div style={{ position: 'absolute', top: 0, bottom: 0, right: 0, width: '1.5px', backgroundColor: '#ef4444' }} />
+                  <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: '2.5px', backgroundColor: '#000000' }} />
+                  <div style={{ position: 'absolute', top: 0, bottom: 0, right: 0, width: '1.5px', backgroundColor: '#000000' }} />
                   <svg style={{ position: 'absolute', top: 0, left: '2.5px', width: 'calc(100% - 4px)', height: '100%' }}>
                     <defs>
-                      <pattern id="redWhiteDiagVert" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
-                        <rect width="6" height="6" fill="#ef4444" />
-                        <line x1="0" y1="0" x2="0" y2="6" stroke="#ffffff" strokeWidth="1.2" strokeOpacity="0.7" />
+                      <pattern id="blackWhiteDiagVert" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(45)">
+                        <rect width="10" height="10" fill="#000000" />
+                        <line x1="0" y1="0" x2="0" y2="10" stroke="#ffffff" strokeWidth="2" strokeOpacity="0.85" />
                       </pattern>
                     </defs>
-                    <rect width="100%" height="100%" fill="url(#redWhiteDiagVert)" />
+                    <rect width="100%" height="100%" fill="url(#blackWhiteDiagVert)" />
                   </svg>
                 </div>
               );
@@ -20363,7 +20363,7 @@ export default function Dashboard() {
                       scaledStops.push(`#ffffff ${pct}%`);
                       scaledStops.push(`#ffffff 100%`);
                       return { background: `linear-gradient(to right, ${scaledStops.join(', ')})` };
-                    })() : { backgroundColor: isNextSchoolWeek ? '#1a7a3a' : colorSettings.headerBar }}
+                    })() : { backgroundColor: isNextSchoolWeek ? '#4ade80' : colorSettings.headerBar }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {!isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && (
@@ -20390,7 +20390,7 @@ export default function Dashboard() {
                           )}
                           {day.getDay() === 6 && !isToday && (
                             <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '1px' }}>
-                              <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#4ade80', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`New School Week (${selectedWeek + 1})`}</span>
+                              <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`New School Week (${selectedWeek + 1})`}</span>
                             </div>
                           )}
                           {!isToday && (() => {
@@ -20400,7 +20400,7 @@ export default function Dashboard() {
                             return todayIdx >= 0 && idx < todayIdx && day.getDay() !== 6 && !isTodaySat;
                           })() && (
                             <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '1px' }}>
-                              <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#4ade80', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`Week ${selectedWeek + 1} (Next Week)`}</span>
+                              <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`Week ${selectedWeek + 1} (Next Week)`}</span>
                             </div>
                           )}
                           {!isToday && (() => {
