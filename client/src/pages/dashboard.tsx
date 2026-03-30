@@ -20426,12 +20426,10 @@ export default function Dashboard() {
                   const weekEnd = startOfDayET(addDays(weekDays[6], 1));
                   return allTasks
                     .filter(t => {
-                      if (t.isCompleted || t.hideFromSummary) return false;
-                      if (t.type === 'reminder' || t.type === 'event') return false;
+                      if (!t.showCountdownBar) return false;
+                      if (t.isCompleted) return false;
                       const due = startOfDayET(new Date(t.dueDate));
                       if (due < today) return false;
-                      const daysUntilDue = Math.round((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-                      if (daysUntilDue > 21) return false;
                       return true;
                     })
                     .map(t => {
@@ -29503,6 +29501,7 @@ function TaskForm({
     repeatEndDate: task?.repeatEndDate ? format(new Date(task.repeatEndDate), "yyyy-MM-dd") : "",
     hideFromSummary: task?.hideFromSummary ?? false,
     flagged: task?.flagged ?? false,
+    showCountdownBar: task?.showCountdownBar ?? false,
   });
   const [newAttachment, setNewAttachment] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -29626,6 +29625,7 @@ function TaskForm({
         startDate: finalStartDate ? finalStartDate.toISOString() : null,
         hideFromSummary: data.hideFromSummary ?? false,
         flagged: data.flagged ?? false,
+        showCountdownBar: data.showCountdownBar ?? false,
       };
       if (task) {
         if (onUndoPush) {
@@ -29715,6 +29715,7 @@ function TaskForm({
         startDate: finalStartDate ? finalStartDate.toISOString() : null,
         hideFromSummary: data.hideFromSummary ?? false,
         flagged: data.flagged ?? false,
+        showCountdownBar: data.showCountdownBar ?? false,
       };
       if (hasSameTitleSiblings && !isLinkedRecurring) {
         payload.originalTitle = task.title;
@@ -30169,6 +30170,18 @@ function TaskForm({
                 className="w-3.5 h-3.5 rounded accent-blue-500"
               />
               <span className="text-[10px] text-white/70">Hide from summary rows</span>
+            </label>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <label className="flex items-center gap-2 cursor-pointer select-none" data-testid="toggle-show-countdown-bar">
+              <input
+                type="checkbox"
+                checked={formData.showCountdownBar}
+                onChange={(e) => setFormData(prev => ({ ...prev, showCountdownBar: e.target.checked }))}
+                className="w-3.5 h-3.5 rounded accent-blue-500"
+              />
+              <span className="text-[10px] text-white/70">Show planning countdown bar</span>
             </label>
           </div>
 
