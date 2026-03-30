@@ -12163,13 +12163,16 @@ export default function Dashboard() {
         onMouseLeave={() => {
           if (isHamburgerOpenRef.current) return;
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
-          const delay = 'ontouchstart' in window ? 4000 : 1800;
+          const delay = 'ontouchstart' in window ? 4000 : 1000;
           topPillTimeoutRef.current = setTimeout(() => {
             if (isHamburgerOpenRef.current) return;
             closeTopPill();
           }, delay);
         }}
       >
+        <div style={{ position: 'absolute', top: '-20px', left: '-10px', right: '-10px', bottom: '-20px', pointerEvents: 'auto', zIndex: -1 }}
+          onMouseEnter={() => { if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); }}
+        />
         {/* Glass pill background */}
         <div style={{
           position: 'absolute',
@@ -12189,7 +12192,7 @@ export default function Dashboard() {
         {/* Icon buttons and task buttons with adjustable spacing */}
         <div className="flex items-center flex-nowrap [&>*]:flex-shrink-0" style={{ gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 9)}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '4px', paddingRight: '4px', width: '100%', overflow: 'visible', pointerEvents: 'auto' }}>
           {/* Hamburger Menu */}
-          <DropdownMenu open={isHamburgerOpen} onOpenChange={(open) => { if (hamburgerCloseTimer.current) { clearTimeout(hamburgerCloseTimer.current); hamburgerCloseTimer.current = null; } startTransition(() => setIsHamburgerOpen(open)); if (open) { triggerButtonGlow('hamburger'); if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); } else { topPillTimeoutRef.current = setTimeout(() => { closeTopPill(); }, 1800); } }} modal={false}>
+          <DropdownMenu open={isHamburgerOpen} onOpenChange={(open) => { if (hamburgerCloseTimer.current) { clearTimeout(hamburgerCloseTimer.current); hamburgerCloseTimer.current = null; } startTransition(() => setIsHamburgerOpen(open)); if (open) { triggerButtonGlow('hamburger'); if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); } else { topPillTimeoutRef.current = setTimeout(() => { closeTopPill(); }, 1000); } }} modal={false}>
             <DropdownMenuTrigger asChild>
               <div 
                 className="pill-button-hover"
@@ -13447,11 +13450,12 @@ export default function Dashboard() {
         onClick={() => {
           openTopPill();
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
-          const delay = 'ontouchstart' in window ? 6000 : 1800;
-          topPillTimeoutRef.current = setTimeout(() => {
-            if (isHamburgerOpenRef.current) return;
-            closeTopPill();
-          }, delay);
+          if ('ontouchstart' in window) {
+            topPillTimeoutRef.current = setTimeout(() => {
+              if (isHamburgerOpenRef.current) return;
+              closeTopPill();
+            }, 6000);
+          }
         }}
         onMouseEnter={() => {
           openTopPill();
@@ -13485,11 +13489,12 @@ export default function Dashboard() {
         onClick={() => {
           openTopPill();
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
-          const delay = 'ontouchstart' in window ? 6000 : 1800;
-          topPillTimeoutRef.current = setTimeout(() => {
-            if (isHamburgerOpenRef.current) return;
-            closeTopPill();
-          }, delay);
+          if ('ontouchstart' in window) {
+            topPillTimeoutRef.current = setTimeout(() => {
+              if (isHamburgerOpenRef.current) return;
+              closeTopPill();
+            }, 6000);
+          }
         }}
         onMouseEnter={() => {
           openTopPill();
@@ -13498,7 +13503,7 @@ export default function Dashboard() {
         onMouseLeave={() => {
           if (isHamburgerOpenRef.current) return;
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
-          const delay = 'ontouchstart' in window ? 4000 : 1800;
+          const delay = 'ontouchstart' in window ? 4000 : 1000;
           topPillTimeoutRef.current = setTimeout(() => {
             if (isHamburgerOpenRef.current) return;
             closeTopPill();
