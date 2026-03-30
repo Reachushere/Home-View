@@ -2344,24 +2344,6 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
         tickerItems += `<span class="t-item"><span class="t-forecast">🌿 <b>POLLEN</b>:</span> <span class="t-data" style="color:rgba(255,255,255,0.95)">${pollenRes.overall.level} (Tree: ${pollenRes.tree.level}, Grass: ${pollenRes.grass.level}, Weed: ${pollenRes.weed.level})  |  AQI: ${pollenRes.aqi}</span></span>`;
       }
 
-      const customAnnouncements = await storage.getAnnouncements();
-      const tickerNow = new Date();
-      for (const a of customAnnouncements) {
-        if (!a.courseName) continue;
-        const received = new Date(a.receivedAt);
-        const isCustom = a.courseName === 'Custom';
-        if (!isCustom) {
-          const dayOfWeek = received.getDay();
-          const daysUntilFriday = dayOfWeek <= 5 ? (5 - dayOfWeek) : (5 + 7 - dayOfWeek);
-          const fridayEnd = new Date(received);
-          fridayEnd.setDate(received.getDate() + daysUntilFriday);
-          fridayEnd.setHours(23, 59, 59, 999);
-          if (tickerNow > fridayEnd) continue;
-        }
-        const escapedBody = (a.body || a.snippet || a.subject || '').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-        const label = isCustom ? `📌` : `📢 <b>${a.courseName}</b>`;
-        tickerItems += `<span class="t-item"><span class="t-forecast">${label}${isCustom ? '' : ':'}</span> <span class="t-data" style="color:rgba(255,255,255,0.95)">${escapedBody}</span></span>`;
-      }
 
       if (newsRes && Array.isArray(newsRes)) {
         const ca: any[] = [], us: any[] = [], bbc: any[] = [];
