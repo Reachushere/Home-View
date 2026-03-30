@@ -22291,16 +22291,18 @@ export default function Dashboard() {
                     <div 
                       className="absolute left-0 z-[5] pointer-events-none"
                       style={{ 
-                        top: `${topPosition}px`, 
+                        top: `${topPosition - 2}px`, 
                         right: isTodaySat 
                           ? '0px'
-                          : `calc((${satFr} / ${totalFrUnits}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`
+                          : `calc((${satFr} / ${totalFrUnits}) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`,
+                        height: '5px',
                       }}
                     >
-                      <div 
-                        className="w-full border-t border-dashed"
-                        style={{ borderColor: 'rgba(0, 0, 0, 0.3)' }}
-                      />
+                      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1.5px', backgroundColor: '#dc2626' }} />
+                      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '1.5px', backgroundColor: '#dc2626' }} />
+                      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden' }}>
+                        <div style={{ width: '200%', height: '100%', backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 3px, #dc2626 3px, #dc2626 4px)', opacity: 0.7 }} />
+                      </div>
                     </div>
                   );
                 })()}
