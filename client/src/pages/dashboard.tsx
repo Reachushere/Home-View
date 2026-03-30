@@ -20693,7 +20693,7 @@ export default function Dashboard() {
                               const mrDow = mrNow.getDay();
                               const mrSat = startOfDayET(addDays(mrNow, mrDow === 6 ? 7 : (6 - mrDow)));
                               const isMrNextSchoolWeek = !isActualToday && startOfDayET(day) >= mrSat;
-                              const cellBg = isActualToday ? '#e4ecf5' : isMrNextSchoolWeek ? dimColor(course.bg, 0.5) : isActuallyPast ? dimColor(course.bg) : course.bg;
+                              const cellBg = isActualToday ? '#e4ecf5' : isMrNextSchoolWeek ? dimColor(course.bg, 0.375) : isActuallyPast ? dimColor(course.bg) : course.bg;
                               
                               // If this day is before today, show empty cell
                               if (isBeforeToday) {
