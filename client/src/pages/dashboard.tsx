@@ -12179,7 +12179,7 @@ export default function Dashboard() {
           zIndex: 110,
           left: '22px',
           right: '22px',
-          pointerEvents: editingTask ? 'none' : 'auto',
+          pointerEvents: editingTask || !isTopPillOpen ? 'none' : 'auto',
           transform: `translateY(${isTopPillOpen ? '17px' : '-83px'})`,
           transition: topPillMounted ? 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
           animation: (!isTopPillOpen && topPillMounted) ? 'top-pill-container-nudge 6s ease-in-out 1s infinite' : 'none',
@@ -12205,7 +12205,7 @@ export default function Dashboard() {
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
         }}
       >
-        <div style={{ position: 'absolute', top: '-20px', left: '-10px', right: '-10px', bottom: '-20px', pointerEvents: 'auto', zIndex: -1 }}
+        <div style={{ position: 'absolute', top: '-20px', left: '-10px', right: '-10px', bottom: '-20px', pointerEvents: isTopPillOpen ? 'auto' : 'none', zIndex: -1 }}
           onMouseEnter={() => { if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); }}
         />
         {/* Glass pill background */}
@@ -12225,7 +12225,7 @@ export default function Dashboard() {
         {/* Down arrow placeholder - actual tab moved outside pill container */}
 
         {/* Icon buttons and task buttons with adjustable spacing */}
-        <div className="flex items-center flex-nowrap [&>*]:flex-shrink-0" style={{ gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 11)}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '4px', paddingRight: '4px', width: '100%', overflow: 'visible', pointerEvents: 'auto' }}>
+        <div className="flex items-center flex-nowrap [&>*]:flex-shrink-0" style={{ gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 11)}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '4px', paddingRight: '4px', width: '100%', overflow: 'visible', pointerEvents: isTopPillOpen ? 'auto' : 'none' }}>
           {/* Hamburger Menu */}
           <DropdownMenu open={isHamburgerOpen} onOpenChange={(open) => { if (hamburgerCloseTimer.current) { clearTimeout(hamburgerCloseTimer.current); hamburgerCloseTimer.current = null; } startTransition(() => setIsHamburgerOpen(open)); if (open) { triggerButtonGlow('hamburger'); if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); } }} modal={false}>
             <DropdownMenuTrigger asChild>
@@ -23659,14 +23659,26 @@ export default function Dashboard() {
                   const endMonth = format(weekEndDate, 'MMM').toUpperCase();
                   const startDay = format(weekStartDate, 'd');
                   const endDay = format(weekEndDate, 'd');
-                  const monthLabel = startMonth === endMonth ? startMonth : `${startMonth}-${endMonth}`;
+                  if (startMonth === endMonth) {
+                    return (
+                      <>
+                        <span>{format(weekStartDate, 'EEE')}</span>
+                        <span>{startDay}</span>
+                        <span>{startMonth}</span>
+                        <span>{endDay}</span>
+                        <span>{format(weekEndDate, 'EEE')}</span>
+                      </>
+                    );
+                  }
                   return (
                     <>
                       <span>{format(weekStartDate, 'EEE')}</span>
                       <span>{startDay}</span>
-                      <span>{monthLabel}</span>
-                      <span>{endDay}</span>
+                      <span>{startMonth}</span>
+                      <span>-</span>
                       <span>{format(weekEndDate, 'EEE')}</span>
+                      <span>{endMonth}</span>
+                      <span>{endDay}</span>
                     </>
                   );
                 })()}
@@ -24340,7 +24352,7 @@ export default function Dashboard() {
                       const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
                       const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                       return (
-                        <div key={task.id} className="" style={{ position: 'relative', overflow: 'visible', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: 'transparent', marginLeft: `${-(hwGroupBarWidth + 8)}px`, marginRight: '0px', paddingLeft: `${hwGroupBarWidth + 8}px`, paddingRight: '0px' }}
+                        <div key={task.id} className="" style={{ position: 'relative', overflow: 'visible', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: tIdx % 2 === 0 ? '#051729' : 'transparent', marginLeft: `${-(hwGroupBarWidth + 8)}px`, marginRight: '0px', paddingLeft: `${hwGroupBarWidth + 8}px`, paddingRight: '0px' }}
                           onMouseEnter={() => setHoveredCountdownTaskIdDebounced(task.id)}
                           onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                           ref={(rowEl) => {
