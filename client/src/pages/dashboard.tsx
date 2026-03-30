@@ -659,9 +659,28 @@ export default function Dashboard() {
     eventStartTime: "",
     eventEndTime: "",
     reminder1: DEFAULT_REMINDER_1,
+    reminder1Custom: false,
+    reminder1Days: 0,
+    reminder1Hours: 0,
+    reminder1Minutes: 30,
     reminder2: DEFAULT_REMINDER_2,
+    reminder2Custom: false,
+    reminder2Days: 0,
+    reminder2Hours: 2,
+    reminder2Minutes: 0,
     reminder3: null as number | null,
+    reminder3Custom: false,
+    reminder3Days: 0,
+    reminder3Hours: 0,
+    reminder3Minutes: 0,
     reminder4: null as number | null,
+    reminder4Custom: false,
+    reminder4Days: 0,
+    reminder4Hours: 0,
+    reminder4Minutes: 0,
+    reminderEmail: false,
+    reminderAlexa: false,
+    reminderSms: false,
     attachments: [] as string[],
     pasteUrl: "",
     notes: "",
@@ -12858,7 +12877,7 @@ export default function Dashboard() {
 
 
           {/* Quick Add Button */}
-          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder2: DEFAULT_REMINDER_2, reminder3: null, reminder4: null, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' }); setIsQuickAddOpen(true); }); }}>+ Add Task</Button>
+          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminderEmail: false, reminderAlexa: false, reminderSms: false, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' }); setIsQuickAddOpen(true); }); }}>+ Add Task</Button>
           </div>
 
           {/* Radio Dialog */}
@@ -15559,7 +15578,7 @@ export default function Dashboard() {
                     onClick={() => {
                       setIsAddChooserOpen(false);
                       setQuickAddStep(0);
-                      setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder2: DEFAULT_REMINDER_2, reminder3: null, reminder4: null, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' });
+                      setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminderEmail: false, reminderAlexa: false, reminderSms: false, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' });
                       setIsQuickAddOpen(true);
                     }}
                     data-testid="button-chooser-add-task"
@@ -15953,29 +15972,126 @@ export default function Dashboard() {
                         <h3 className="text-sm font-medium text-white">Reminders</h3>
                         <p className="text-[9px] text-white/50 mt-1">Set reminders before due date</p>
                       </div>
-                      {[
-                        { label: 'Reminder 1', key: 'reminder1' as const },
-                        { label: 'Reminder 2', key: 'reminder2' as const },
-                        { label: 'Reminder 3', key: 'reminder3' as const },
-                        { label: 'Reminder 4', key: 'reminder4' as const },
-                      ].map(r => (
-                        <div key={r.key} className="flex gap-2 items-center">
-                          <span className="text-white/50 text-[11px] w-[72px]">{r.label}:</span>
-                          <select
-                            value={quickAddData[r.key] ?? 0}
-                            onChange={(e) => {
-                              const val = parseInt(e.target.value);
-                              setQuickAddData(p => ({ ...p, [r.key]: val === 0 && (r.key === 'reminder3' || r.key === 'reminder4') ? null : val }));
-                            }}
-                            className="flex-1 bg-white/10 border border-white/15 rounded-lg px-2 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
-                            data-testid={`quick-add-${r.key}`}
-                          >
-                            {REMINDER_OPTIONS.map(opt => (
-                              <option key={opt.value} value={opt.value} style={{ color: 'black' }}>{opt.label}</option>
-                            ))}
-                          </select>
+                      <div className="flex flex-col gap-2.5" style={{ maxHeight: '340px', overflowY: 'auto', paddingRight: '4px' }}>
+                      {([
+                        { label: 'Reminder 1', key: 'reminder1' as const, customKey: 'reminder1Custom' as const, daysKey: 'reminder1Days' as const, hoursKey: 'reminder1Hours' as const, minutesKey: 'reminder1Minutes' as const },
+                        { label: 'Reminder 2', key: 'reminder2' as const, customKey: 'reminder2Custom' as const, daysKey: 'reminder2Days' as const, hoursKey: 'reminder2Hours' as const, minutesKey: 'reminder2Minutes' as const },
+                        { label: 'Reminder 3', key: 'reminder3' as const, customKey: 'reminder3Custom' as const, daysKey: 'reminder3Days' as const, hoursKey: 'reminder3Hours' as const, minutesKey: 'reminder3Minutes' as const },
+                        { label: 'Reminder 4', key: 'reminder4' as const, customKey: 'reminder4Custom' as const, daysKey: 'reminder4Days' as const, hoursKey: 'reminder4Hours' as const, minutesKey: 'reminder4Minutes' as const },
+                      ] as const).map(r => (
+                        <div key={r.key} className="flex flex-col gap-1.5 bg-white/5 rounded-lg px-3 py-2 border border-white/10">
+                          <div className="flex gap-2 items-center">
+                            <span className="text-white/50 text-[11px] w-[72px]">{r.label}:</span>
+                            <select
+                              value={(quickAddData as any)[r.customKey] ? -1 : (quickAddData[r.key] ?? 0)}
+                              onChange={(e) => {
+                                const val = parseInt(e.target.value);
+                                if (val === -1) {
+                                  setQuickAddData(p => {
+                                    const d = (p as any)[r.daysKey] || 0;
+                                    const h = (p as any)[r.hoursKey] || 0;
+                                    const m = (p as any)[r.minutesKey] || 0;
+                                    const totalMin = d * 1440 + h * 60 + m;
+                                    return { ...p, [r.customKey]: true, [r.key]: totalMin || null };
+                                  });
+                                } else {
+                                  const isOptional = r.key === 'reminder3' || r.key === 'reminder4';
+                                  setQuickAddData(p => ({ ...p, [r.key]: val === 0 && isOptional ? null : val, [r.customKey]: false }));
+                                }
+                              }}
+                              className="flex-1 bg-white/10 border border-white/15 rounded-lg px-2 py-1.5 text-white text-[11px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
+                              data-testid={`quick-add-${r.key}`}
+                            >
+                              {REMINDER_OPTIONS.map(opt => (
+                                <option key={opt.value} value={opt.value} style={{ color: 'black' }}>{opt.label}</option>
+                              ))}
+                              <option value={-1} style={{ color: 'black' }}>Custom...</option>
+                            </select>
+                          </div>
+                          {(quickAddData as any)[r.customKey] && (
+                            <div className="flex items-center gap-1.5 pl-[72px]">
+                              <select
+                                value={(quickAddData as any)[r.daysKey] || 0}
+                                onChange={(e) => {
+                                  const d = parseInt(e.target.value);
+                                  const totalMin = d * 1440 + ((quickAddData as any)[r.hoursKey] || 0) * 60 + ((quickAddData as any)[r.minutesKey] || 0);
+                                  setQuickAddData(p => ({ ...p, [r.daysKey]: d, [r.key]: totalMin || null }));
+                                }}
+                                className="w-[52px] bg-white/10 border border-white/15 rounded px-1 py-1 text-white text-[10px] focus:outline-none [color-scheme:dark]"
+                                data-testid={`quick-add-${r.key}-days`}
+                              >
+                                {Array.from({ length: 31 }, (_, i) => (
+                                  <option key={i} value={i} style={{ color: 'black' }}>{i}d</option>
+                                ))}
+                              </select>
+                              <select
+                                value={(quickAddData as any)[r.hoursKey] || 0}
+                                onChange={(e) => {
+                                  const h = parseInt(e.target.value);
+                                  const totalMin = ((quickAddData as any)[r.daysKey] || 0) * 1440 + h * 60 + ((quickAddData as any)[r.minutesKey] || 0);
+                                  setQuickAddData(p => ({ ...p, [r.hoursKey]: h, [r.key]: totalMin || null }));
+                                }}
+                                className="w-[52px] bg-white/10 border border-white/15 rounded px-1 py-1 text-white text-[10px] focus:outline-none [color-scheme:dark]"
+                                data-testid={`quick-add-${r.key}-hours`}
+                              >
+                                {Array.from({ length: 13 }, (_, i) => (
+                                  <option key={i} value={i} style={{ color: 'black' }}>{i}h</option>
+                                ))}
+                              </select>
+                              <select
+                                value={(quickAddData as any)[r.minutesKey] || 0}
+                                onChange={(e) => {
+                                  const m = parseInt(e.target.value);
+                                  const totalMin = ((quickAddData as any)[r.daysKey] || 0) * 1440 + ((quickAddData as any)[r.hoursKey] || 0) * 60 + m;
+                                  setQuickAddData(p => ({ ...p, [r.minutesKey]: m, [r.key]: totalMin || null }));
+                                }}
+                                className="w-[52px] bg-white/10 border border-white/15 rounded px-1 py-1 text-white text-[10px] focus:outline-none [color-scheme:dark]"
+                                data-testid={`quick-add-${r.key}-minutes`}
+                              >
+                                {Array.from({ length: 60 }, (_, i) => (
+                                  <option key={i} value={i} style={{ color: 'black' }}>{i}m</option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
                         </div>
                       ))}
+                      </div>
+                      <div className="border-t border-white/15 pt-3 mt-1">
+                        <p className="text-[10px] text-white/40 mb-2">Notification methods for all reminders:</p>
+                        <div className="flex flex-col gap-2">
+                          <label className="flex items-center gap-2.5 cursor-pointer select-none" data-testid="quick-add-reminder-email">
+                            <input
+                              type="checkbox"
+                              checked={quickAddData.reminderEmail}
+                              onChange={(e) => setQuickAddData(p => ({ ...p, reminderEmail: e.target.checked }))}
+                              className="w-3.5 h-3.5 rounded accent-blue-500"
+                            />
+                            <Mail className="h-3.5 w-3.5 text-blue-400" />
+                            <span className="text-white/70 text-[11px]">Email reminder</span>
+                          </label>
+                          <label className="flex items-center gap-2.5 cursor-pointer select-none" data-testid="quick-add-reminder-alexa">
+                            <input
+                              type="checkbox"
+                              checked={quickAddData.reminderAlexa}
+                              onChange={(e) => setQuickAddData(p => ({ ...p, reminderAlexa: e.target.checked }))}
+                              className="w-3.5 h-3.5 rounded accent-blue-500"
+                            />
+                            <Volume2 className="h-3.5 w-3.5 text-cyan-400" />
+                            <span className="text-white/70 text-[11px]">Alexa announcement</span>
+                          </label>
+                          <label className="flex items-center gap-2.5 cursor-pointer select-none" data-testid="quick-add-reminder-sms">
+                            <input
+                              type="checkbox"
+                              checked={quickAddData.reminderSms}
+                              onChange={(e) => setQuickAddData(p => ({ ...p, reminderSms: e.target.checked }))}
+                              className="w-3.5 h-3.5 rounded accent-blue-500"
+                            />
+                            <MessageSquare className="h-3.5 w-3.5 text-green-400" />
+                            <span className="text-white/70 text-[11px]">Text message</span>
+                          </label>
+                        </div>
+                      </div>
                     </div>
                   )}
 
@@ -16263,13 +16379,32 @@ export default function Dashboard() {
                         </div>
                         <div className="flex justify-between text-[11px]">
                           <span className="text-white/50">Reminders</span>
-                          <span className="text-white text-right">
+                          <span className="text-white text-right" style={{ maxWidth: '200px' }}>
                             {[quickAddData.reminder1, quickAddData.reminder2, quickAddData.reminder3, quickAddData.reminder4]
                               .filter(r => r !== null && r !== undefined && r > 0)
-                              .map(r => REMINDER_OPTIONS.find(o => o.value === r)?.label || `${r}m`)
+                              .map(r => {
+                                const preset = REMINDER_OPTIONS.find(o => o.value === r);
+                                if (preset) return preset.label;
+                                const days = Math.floor((r as number) / 1440);
+                                const hours = Math.floor(((r as number) % 1440) / 60);
+                                const mins = (r as number) % 60;
+                                const parts = [];
+                                if (days > 0) parts.push(`${days}d`);
+                                if (hours > 0) parts.push(`${hours}h`);
+                                if (mins > 0) parts.push(`${mins}m`);
+                                return parts.join(' ') + ' before';
+                              })
                               .join(', ') || 'None'}
                           </span>
                         </div>
+                        {(quickAddData.reminderEmail || quickAddData.reminderAlexa || quickAddData.reminderSms) && (
+                          <div className="flex justify-between text-[11px]">
+                            <span className="text-white/50">Notify via</span>
+                            <span className="text-white text-right">
+                              {[quickAddData.reminderEmail && 'Email', quickAddData.reminderAlexa && 'Alexa', quickAddData.reminderSms && 'Text'].filter(Boolean).join(', ')}
+                            </span>
+                          </div>
+                        )}
                         {quickAddData.attachments.length > 0 && (
                           <div className="flex justify-between text-[11px]">
                             <span className="text-white/50">Attachments</span>
@@ -16393,6 +16528,9 @@ export default function Dashboard() {
                             showCountdownBarMain: quickAddData.showCountdownBarMain,
                             showCountdownBarSummary: quickAddData.showCountdownBarSummary,
                             countdownBarDays: quickAddData.countdownBarDays,
+                            reminderEmail: quickAddData.reminderEmail,
+                            reminderAlexa: quickAddData.reminderAlexa,
+                            reminderSms: quickAddData.reminderSms,
                           });
                           const newTask = await res.json();
                           if (quickAddData.subtasks.length > 0 && newTask?.id) {
