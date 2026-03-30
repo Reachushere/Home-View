@@ -28093,8 +28093,8 @@ function SemDatePickerBody({ startLabel, endLabel, initialStart, initialEnd, onC
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
             onClick={(e) => (e.target as HTMLInputElement).showPicker?.()}
-            className="w-full h-8 px-2 text-[10px] rounded-md bg-white border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
-            style={{ fontSize: '10px', color: 'black', colorScheme: 'light' }}
+            className="w-full h-8 px-2 text-[10px] rounded-md bg-white !text-black border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
+            style={{ fontSize: '10px', color: 'black', colorScheme: 'light', WebkitTextFillColor: 'black' }}
             data-testid="input-sem-date-start"
           />
         </div>
@@ -28105,8 +28105,8 @@ function SemDatePickerBody({ startLabel, endLabel, initialStart, initialEnd, onC
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
             onClick={(e) => (e.target as HTMLInputElement).showPicker?.()}
-            className="w-full h-8 px-2 text-[10px] rounded-md bg-white border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
-            style={{ fontSize: '10px', color: 'black', colorScheme: 'light' }}
+            className="w-full h-8 px-2 text-[10px] rounded-md bg-white !text-black border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
+            style={{ fontSize: '10px', color: 'black', colorScheme: 'light', WebkitTextFillColor: 'black' }}
             data-testid="input-sem-date-end"
           />
         </div>
