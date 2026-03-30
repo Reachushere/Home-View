@@ -621,6 +621,14 @@ export default function Dashboard() {
   }, []);
   
   const [selectedWeek, setSelectedWeek] = useState<number>(2);
+  const [calendarWeekMode, setCalendarWeekMode] = useState<'current' | 'next'>(() => {
+    const saved = localStorage.getItem('calendarWeekMode');
+    return (saved === 'next') ? 'next' : 'current';
+  });
+  useEffect(() => {
+    localStorage.setItem('calendarWeekMode', calendarWeekMode);
+    fetch('/api/ui-settings/calendarWeekMode', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: calendarWeekMode }) }).catch(() => {});
+  }, [calendarWeekMode]);
   const [openCourseDropdown, setOpenCourseDropdown] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -9682,6 +9690,12 @@ export default function Dashboard() {
       }
       return d;
     });
+    if (calendarWeekMode === 'next') {
+      weekDays = weekDays.map(d => {
+        const nd = addDays(d, 7);
+        return new Date(nd.getFullYear(), nd.getMonth(), nd.getDate(), 12, 0, 0);
+      });
+    }
   }
   
   const thisWeekAnnouncements = (() => {
@@ -19379,6 +19393,26 @@ export default function Dashboard() {
                 {/* Right Column */}
                 <div className="flex flex-col gap-3 justify-between" style={{ marginTop: '-2px' }}>
                 <div className="flex flex-col gap-3">
+                {/* Calendar Week View */}
+                <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '0px' }}>
+                  <div className="border-b border-primary inline-block -mt-1 pb-0">
+                    <Label className="text-sm font-medium">Week View</Label>
+                    <span className="text-sm" style={{ color: '#3b82f6' }}>&nbsp;|</span><span className="text-xs text-muted-foreground italic">&nbsp;Show current or next week on the calendar</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs font-medium">Show Next Week</Label>
+                    <input
+                      type="checkbox"
+                      checked={calendarWeekMode === 'next'}
+                      onChange={(e) => setCalendarWeekMode(e.target.checked ? 'next' : 'current')}
+                      className="h-1.5 w-1.5 rounded border-gray-300 accent-[#3b82f6]"
+                      data-testid="toggle-calendar-week-mode"
+                    />
+                  </div>
+                  <div className="text-[8px]" style={{ color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>
+                    {calendarWeekMode === 'next' ? 'Showing next week — all columns show upcoming week dates' : 'Showing current week — green columns indicate next week days'}
+                  </div>
+                </div>
                 {/* Blinking & Spacing Settings */}
                 <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '0px' }}>
                   <div className="border-b border-primary inline-block -mt-1 pb-0">
@@ -20305,7 +20339,7 @@ export default function Dashboard() {
                 const nowForWeek = new Date();
                 const todayDowForWeek = nowForWeek.getDay();
                 const thisSaturday = startOfDayET(addDays(nowForWeek, todayDowForWeek === 6 ? 7 : (6 - todayDowForWeek)));
-                const isNextSchoolWeek = startOfDayET(day) >= thisSaturday;
+                const isNextSchoolWeek = calendarWeekMode === 'current' && startOfDayET(day) >= thisSaturday;
                 const dayName = format(day, "EEE").toUpperCase();
                 const dayNum = format(day, "d");
                 const hasTodayTasks = isToday && allTasks.some(t => 
