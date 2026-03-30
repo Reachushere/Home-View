@@ -12237,6 +12237,34 @@ export default function Dashboard() {
             </DropdownMenuContent>
           </DropdownMenu>
 
+
+          {/* ── Tools ── */}
+          <div style={{ background: 'rgba(255,255,255,0.07)', borderRadius: '26px', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 'inherit' }}>
+          {/* Home Assistant (moved from bottom pill) */}
+          {isAdmin && (
+          <div 
+            style={{ 
+              marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+              
+              border: '1.5px solid rgba(255,255,255,0.35)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+            }}
+            className="pill-button-hover"
+            onClick={() => {
+              window.open('http://172.24.0.2:8123/config/dashboard', '_blank');
+            }}
+            data-testid="button-home-assistant"
+            title="Open Home Assistant"
+          >
+            <svg viewBox="0 0 24 24" fill="white" style={{ height: '20px', width: '20px' }}>
+              <path d="M12 0L1.5 6v12L12 24l10.5-6V6L12 0zm0 2.1l8.5 4.9v9.8L12 21.9l-8.5-5.1V7L12 2.1zM8.5 9.5v5h2v-3h3v3h2v-5L12 7l-3.5 2.5z"/>
+            </svg>
+          </div>
+          )}
+
+
           {/* Undo Button */}
           {undoStack.length > 0 ? (
             <div 
@@ -12271,6 +12299,7 @@ export default function Dashboard() {
               <Undo2 className="h-[18px] w-[18px] text-white" />
             </div>
           )}
+
 
           {/* Redo Button */}
           {redoStack.length > 0 ? (
@@ -12307,6 +12336,192 @@ export default function Dashboard() {
             </div>
           )}
 
+
+          {/* Key Contacts Button */}
+          <div className="pill-button-hover" style={{ 
+            marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+            
+            border: '1.5px solid rgba(255,255,255,0.35)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
+              style={{ background: 'transparent' }}
+              data-testid="button-key-contacts"
+              title="Contacts"
+              onClick={() => {
+                triggerButtonGlow('keycontacts');
+                setIsKeyContactsOpen(true);
+              }}
+            >
+              <Contact className="text-white" style={{ height: '22px', width: '22px' }} />
+            </Button>
+          </div>
+
+
+          {/* Email Management Button */}
+          <div className="pill-button-hover" style={{ 
+            marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+            border: '1.5px solid rgba(255,255,255,0.35)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
+              style={{ background: 'transparent' }}
+              data-testid="button-email-wizard"
+              title="Email Management"
+              onClick={() => {
+                triggerButtonGlow('emailwizard');
+                setIsEmailWizardOpen(true);
+                setEmailWizardStep(0);
+                setEmailWizardResults([]);
+                setEmailWizardDone(null);
+                setEmailWizardSelected(new Set());
+              }}
+            >
+              <Mail className="text-white" style={{ height: '22px', width: '22px' }} />
+            </Button>
+          </div>
+
+
+          {/* Feedback Button */}
+          <div className="pill-button-hover" style={{ 
+            marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+            border: '1.5px solid rgba(255,255,255,0.35)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
+              style={{ background: 'transparent' }}
+              data-testid="button-feedback"
+              title="Send Feedback to Agent"
+              onClick={() => setIsFeedbackOpen(true)}
+            >
+              <MessageSquare className="text-white" style={{ height: '20px', width: '20px' }} />
+            </Button>
+          </div>
+
+
+          {/* Fullscreen Toggle (moved from bottom pill) */}
+          <div 
+            style={{ 
+              marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
+              background: isFullscreen ? 'linear-gradient(180deg, #1a6b1a 0%, #2a8a2a 50%, #4aaa4a 100%)' : 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+              
+              border: '1.5px solid rgba(255,255,255,0.35)',
+              boxShadow: isFullscreen ? 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' : '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+            }}
+            className="pill-button-hover"
+            onClick={toggleFullscreen}
+            data-testid="button-fullscreen"
+            title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+          >
+            {isFullscreen ? <Minimize2 className="h-[18px] w-[18px] text-white" /> : <Maximize className="h-[18px] w-[18px] text-white" />}
+          </div>
+
+
+          {/* Sync Button - Push & Pull combined */}
+          <div 
+            style={{ 
+              marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+              
+              border: '1.5px solid rgba(255,255,255,0.35)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+            }}
+            className="pill-button-hover"
+            onClick={async () => {
+              triggerButtonGlow('sync');
+              toast({ title: "Syncing...", description: "Pushing settings, tasks & pulling events" });
+              try {
+                const syncKeys = [
+                  'coursesData', 'schoolData', 'colorSettings', 'blinkSettings',
+                  'semesterCourseAssignments', 'pastCourseInfo', 'certCourseData',
+                  'coursePlayPriority', 'courseDisplayNames', 'profileData',
+                  'checkedCourses', 'inProgressCourses', 'courseGrades', 'openElectives',
+                  'gridSizes', 'calendarHeight', 'calendarReduction', 'showAllDayRow',
+                  'otherRowColors',
+                ];
+                const payload: Record<string, any> = {};
+                for (const key of syncKeys) {
+                  const val = localStorage.getItem(key);
+                  if (val) {
+                    try { payload[key] = JSON.parse(val); } catch { payload[key] = val; }
+                  }
+                }
+                const [syncResult, pullResult, bulkResult] = await Promise.all([
+                  syncAllCalendarMutation.mutateAsync(),
+                  fetch('/api/calendar/pull', { method: 'POST' }),
+                  Object.keys(payload).length > 0
+                    ? fetch('/api/degree-tracking/bulk', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).then(r => r.json())
+                    : Promise.resolve({ ok: true, saved: 0 }),
+                ]);
+                const syncData = syncResult as any;
+                const failCount = (syncData?.results?.dueEvents?.failed || 0) + (syncData?.results?.prepEvents?.failed || 0);
+                const settingsSaved = (bulkResult as any)?.saved || 0;
+                if (failCount > 0) {
+                  toast({ title: "Sync partially complete", description: `${failCount} event(s) failed. ${settingsSaved} settings synced.` });
+                } else {
+                  toast({ title: "Sync complete", description: `Push & pull finished. ${settingsSaved} settings synced.` });
+                }
+                queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+              } catch (error) {
+                toast({ title: "Sync failed", description: "Try again in a minute", variant: "destructive" });
+              }
+            }}
+            data-testid="honeycomb-sync"
+            title="Sync"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M14 4l7 7-7 7V4z" /><path d="M10 20l-7-7 7-7v14z" /></svg>
+          </div>
+
+
+          {/* Refresh Button */}
+          <div 
+            style={{ 
+              marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+              
+              border: '1.5px solid rgba(255,255,255,0.35)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+            }}
+            className="pill-button-hover"
+            onClick={(e) => {
+              triggerButtonGlow('refresh');
+              const icon = (e.currentTarget as HTMLElement).querySelector('svg');
+              if (icon) { icon.style.transition = 'transform 0.6s ease'; icon.style.transform = 'rotate(360deg)'; setTimeout(() => { icon.style.transition = 'none'; icon.style.transform = 'rotate(0deg)'; }, 650); }
+              queryClient.invalidateQueries();
+              queryClient.refetchQueries();
+              refreshFileCounts();
+              fetch('/api/google/calendar/events').catch(() => {});
+              fetch('/api/tasks').catch(() => {});
+              fetch('/api/announcements').catch(() => {});
+            }}
+            data-testid="button-refresh-data"
+            title="Refresh"
+          >
+            <RefreshCw className="h-[18px] w-[18px] text-white" />
+          </div>
+
+          </div>
+
+          {/* ── School ── */}
+          <div style={{ background: 'rgba(255,255,255,0.07)', borderRadius: '26px', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 'inherit' }}>
           {/* Courses Button */}
           <div className="pill-button-hover" style={{ 
             marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
@@ -12333,6 +12548,7 @@ export default function Dashboard() {
               <BookOpen className="text-white" style={{ height: '20px', width: '20px' }} />
             </Button>
           </div>
+
 
           {/* Graduation Hat - Swapped with Completed Tasks */}
           <div className="pill-button-hover" style={{ 
@@ -12376,6 +12592,7 @@ export default function Dashboard() {
             </Button>
           </div>
 
+
           {/* Scholarships Button */}
           <div className="pill-button-hover" style={{ 
             marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
@@ -12401,80 +12618,10 @@ export default function Dashboard() {
             </Button>
           </div>
 
-          {/* Key Contacts Button */}
-          <div className="pill-button-hover" style={{ 
-            marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
-            
-            border: '1.5px solid rgba(255,255,255,0.35)',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
-          }}>
-            <Button 
-              size="icon"
-              variant="ghost"
-              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
-              style={{ background: 'transparent' }}
-              data-testid="button-key-contacts"
-              title="Contacts"
-              onClick={() => {
-                triggerButtonGlow('keycontacts');
-                setIsKeyContactsOpen(true);
-              }}
-            >
-              <Contact className="text-white" style={{ height: '22px', width: '22px' }} />
-            </Button>
           </div>
 
-          {/* Email Management Button */}
-          <div className="pill-button-hover" style={{ 
-            marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
-            border: '1.5px solid rgba(255,255,255,0.35)',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
-          }}>
-            <Button 
-              size="icon"
-              variant="ghost"
-              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
-              style={{ background: 'transparent' }}
-              data-testid="button-email-wizard"
-              title="Email Management"
-              onClick={() => {
-                triggerButtonGlow('emailwizard');
-                setIsEmailWizardOpen(true);
-                setEmailWizardStep(0);
-                setEmailWizardResults([]);
-                setEmailWizardDone(null);
-                setEmailWizardSelected(new Set());
-              }}
-            >
-              <Mail className="text-white" style={{ height: '22px', width: '22px' }} />
-            </Button>
-          </div>
-
-          {/* Feedback Button */}
-          <div className="pill-button-hover" style={{ 
-            marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
-            border: '1.5px solid rgba(255,255,255,0.35)',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
-          }}>
-            <Button 
-              size="icon"
-              variant="ghost"
-              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
-              style={{ background: 'transparent' }}
-              data-testid="button-feedback"
-              title="Send Feedback to Agent"
-              onClick={() => setIsFeedbackOpen(true)}
-            >
-              <MessageSquare className="text-white" style={{ height: '20px', width: '20px' }} />
-            </Button>
-          </div>
-
+          {/* ── Entertainment ── */}
+          <div style={{ background: 'rgba(255,255,255,0.07)', borderRadius: '26px', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 'inherit' }}>
           {/* Spotify Button */}
           <div className="pill-button-hover" style={{ 
             marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
@@ -12499,6 +12646,150 @@ export default function Dashboard() {
             >
               <Music2 className="text-white" style={{ height: '20px', width: '20px' }} />
             </Button>
+          </div>
+
+
+          {/* Radio Button (moved from bottom pill) */}
+          <div 
+            style={{ 
+              marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+              
+              border: '1.5px solid rgba(255,255,255,0.35)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+            }}
+            className="pill-button-hover"
+            onClick={() => { triggerButtonGlow('radio'); setIsRadioDialogOpen(true); }}
+            data-testid="button-radio-dialog"
+            title="Radio Controls"
+          >
+            <Radio className="text-white" style={{ height: '16px', width: '16px' }} />
+          </div>
+
+
+          {/* Bell Button (moved from bottom pill) */}
+          <div 
+            style={{ 
+              marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
+              background: isMuted ? 'linear-gradient(180deg, #FF9494 0%, #FF0000 100%)' : 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+              
+              border: '1.5px solid rgba(255,255,255,0.35)',
+              boxShadow: isMuted ? 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' : '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+            }}
+            className="pill-button-hover"
+            onClick={() => { triggerButtonGlow('bell'); toggleMute(); }}
+            data-testid="button-mute-toggle"
+            title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
+          >
+            {isMuted ? <BellOff className="h-[18px] w-[18px] text-white" /> : <Bell className="h-[18px] w-[18px] text-white" />}
+          </div>
+
+
+          {/* Kitchen Stop Button (moved from bottom pill) */}
+          <div 
+            style={{ 
+              marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
+              background: isKitchenPlaying ? 'linear-gradient(180deg, #8B0000 0%, #DC143C 50%, #FF4500 100%)' : 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+              
+              border: '1.5px solid rgba(255,255,255,0.35)',
+              boxShadow: isKitchenPlaying ? 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 8px rgba(220,20,60,0.5)' : '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+              animation: isKitchenPlaying ? 'pulse 2s infinite' : 'none'
+            }}
+            className="pill-button-hover"
+            onClick={handleKitchenStop}
+            data-testid="button-kitchen-stop"
+            title="Stop"
+          >
+            <Square className="text-white fill-white" style={{ height: '14px', width: '14px' }} />
+          </div>
+
+          </div>
+
+          {/* ── Tasks ── */}
+          <div style={{ background: 'rgba(255,255,255,0.07)', borderRadius: '26px', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 'inherit' }}>
+          {/* Completed Tasks Button - Swapped with Graduation Hat */}
+          <div className="pill-button-hover" style={{ 
+            marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+            
+            border: '1.5px solid rgba(255,255,255,0.35)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
+              style={{ background: 'transparent' }}
+              data-testid="button-completed-tasks"
+              title="Completed"
+              onClick={() => { triggerButtonGlow('completed'); setIsCompletedTasksOpen(true); }}
+            >
+              <CheckSquare className="h-[18px] w-[18px] text-white" />
+            </Button>
+          </div>
+
+
+          {/* Quick Notes Button */}
+          <a 
+            href="/onenote"
+            style={{ 
+              marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
+              background: 'linear-gradient(135deg, #4B2D7F 0%, #7B5EA7 100%)',
+              border: '1.5px solid rgba(255,255,255,0.5)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+              textDecoration: 'none',
+            }}
+            className="pill-button-hover"
+            title="Quick Notes"
+            data-testid="honeycomb-quick-notes"
+          >
+            <StickyNote style={{ color: 'white', strokeWidth: 1.5, height: '18px', width: '18px' }} />
+          </a>
+
+
+          {/* Todo Button (swapped from tall pill) */}
+          <div 
+            style={{ 
+              marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
+              background: hasUnackedReminders
+                ? 'linear-gradient(180deg, #FF9494 0%, #FF0000 100%)'
+                : 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+              
+              border: hasUnackedReminders ? '1.5px solid rgba(220, 38, 38, 0.8)' : '1.5px solid rgba(255,255,255,0.35)',
+              boxShadow: hasUnackedReminders
+                ? '0 0 12px rgba(220, 38, 38, 0.6), inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3)'
+                : '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+            }}
+            className={`pill-button-hover ${hasUnackedReminders ? 'animate-pill-reminder' : ''}`}
+            onClick={() => { if (!isTodoFlyoutOpen) bringFlyoutToFront('todo'); setIsTodoFlyoutOpen(!isTodoFlyoutOpen); }}
+            data-testid="honeycomb-todo-header"
+            title="Reminders"
+          >
+            <ListChecks style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
+          </div>
+
+
+          {/* Projects Button */}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} 
+            style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} 
+            data-testid="button-projects"
+            onClick={() => { triggerButtonGlow('projects'); setEditingProject(null); setProjectWizardStep(0); setProjectWizardData({ name: '', description: '', color: '#6366F1', status: 'planning', targetDate: '', priority: 'medium' }); setProjectDialogOpen(true); }}
+          >
+            + Project
+          </Button>
+
+
+          {/* Quick Add Button */}
+          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder2: DEFAULT_REMINDER_2, reminder3: null, reminder4: null, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' }); setIsQuickAddOpen(true); }); }}>+ Add Task</Button>
           </div>
 
           {/* Radio Dialog */}
@@ -12725,6 +13016,7 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
 
+
           {/* Return-from-break reading prompt (dev only) */}
           {isAdmin && window.location.hostname === 'localhost' && (
             <Dialog open={showReturnReadingPrompt && returnReadingFiles.length > 0} onOpenChange={setShowReturnReadingPrompt}>
@@ -12821,6 +13113,7 @@ export default function Dashboard() {
             </Dialog>
           )}
 
+
           {/* Share Link Dialog */}
           <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
             <DialogContent className="max-w-[360px] text-[11px] text-white p-0 [&>button.absolute]:hidden">
@@ -12865,263 +13158,7 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
 
-          {/* Completed Tasks Button - Swapped with Graduation Hat */}
-          <div className="pill-button-hover" style={{ 
-            marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
-            
-            border: '1.5px solid rgba(255,255,255,0.35)',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
-          }}>
-            <Button 
-              size="icon"
-              variant="ghost"
-              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
-              style={{ background: 'transparent' }}
-              data-testid="button-completed-tasks"
-              title="Completed"
-              onClick={() => { triggerButtonGlow('completed'); setIsCompletedTasksOpen(true); }}
-            >
-              <CheckSquare className="h-[18px] w-[18px] text-white" />
-            </Button>
-          </div>
 
-          {/* Todo Button (swapped from tall pill) */}
-          <div 
-            style={{ 
-              marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
-              background: hasUnackedReminders
-                ? 'linear-gradient(180deg, #FF9494 0%, #FF0000 100%)'
-                : 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
-              
-              border: hasUnackedReminders ? '1.5px solid rgba(220, 38, 38, 0.8)' : '1.5px solid rgba(255,255,255,0.35)',
-              boxShadow: hasUnackedReminders
-                ? '0 0 12px rgba(220, 38, 38, 0.6), inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3)'
-                : '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
-            }}
-            className={`pill-button-hover ${hasUnackedReminders ? 'animate-pill-reminder' : ''}`}
-            onClick={() => { if (!isTodoFlyoutOpen) bringFlyoutToFront('todo'); setIsTodoFlyoutOpen(!isTodoFlyoutOpen); }}
-            data-testid="honeycomb-todo-header"
-            title="Reminders"
-          >
-            <ListChecks style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
-          </div>
-
-          {/* Bell Button (moved from bottom pill) */}
-          <div 
-            style={{ 
-              marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
-              background: isMuted ? 'linear-gradient(180deg, #FF9494 0%, #FF0000 100%)' : 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
-              
-              border: '1.5px solid rgba(255,255,255,0.35)',
-              boxShadow: isMuted ? 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' : '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
-            }}
-            className="pill-button-hover"
-            onClick={() => { triggerButtonGlow('bell'); toggleMute(); }}
-            data-testid="button-mute-toggle"
-            title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
-          >
-            {isMuted ? <BellOff className="h-[18px] w-[18px] text-white" /> : <Bell className="h-[18px] w-[18px] text-white" />}
-          </div>
-
-          {/* Sync Button - Push & Pull combined */}
-          <div 
-            style={{ 
-              marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
-              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
-              
-              border: '1.5px solid rgba(255,255,255,0.35)',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
-            }}
-            className="pill-button-hover"
-            onClick={async () => {
-              triggerButtonGlow('sync');
-              toast({ title: "Syncing...", description: "Pushing settings, tasks & pulling events" });
-              try {
-                const syncKeys = [
-                  'coursesData', 'schoolData', 'colorSettings', 'blinkSettings',
-                  'semesterCourseAssignments', 'pastCourseInfo', 'certCourseData',
-                  'coursePlayPriority', 'courseDisplayNames', 'profileData',
-                  'checkedCourses', 'inProgressCourses', 'courseGrades', 'openElectives',
-                  'gridSizes', 'calendarHeight', 'calendarReduction', 'showAllDayRow',
-                  'otherRowColors',
-                ];
-                const payload: Record<string, any> = {};
-                for (const key of syncKeys) {
-                  const val = localStorage.getItem(key);
-                  if (val) {
-                    try { payload[key] = JSON.parse(val); } catch { payload[key] = val; }
-                  }
-                }
-                const [syncResult, pullResult, bulkResult] = await Promise.all([
-                  syncAllCalendarMutation.mutateAsync(),
-                  fetch('/api/calendar/pull', { method: 'POST' }),
-                  Object.keys(payload).length > 0
-                    ? fetch('/api/degree-tracking/bulk', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).then(r => r.json())
-                    : Promise.resolve({ ok: true, saved: 0 }),
-                ]);
-                const syncData = syncResult as any;
-                const failCount = (syncData?.results?.dueEvents?.failed || 0) + (syncData?.results?.prepEvents?.failed || 0);
-                const settingsSaved = (bulkResult as any)?.saved || 0;
-                if (failCount > 0) {
-                  toast({ title: "Sync partially complete", description: `${failCount} event(s) failed. ${settingsSaved} settings synced.` });
-                } else {
-                  toast({ title: "Sync complete", description: `Push & pull finished. ${settingsSaved} settings synced.` });
-                }
-                queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
-              } catch (error) {
-                toast({ title: "Sync failed", description: "Try again in a minute", variant: "destructive" });
-              }
-            }}
-            data-testid="honeycomb-sync"
-            title="Sync"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M14 4l7 7-7 7V4z" /><path d="M10 20l-7-7 7-7v14z" /></svg>
-          </div>
-
-          {/* Refresh Button */}
-          <div 
-            style={{ 
-              marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
-              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
-              
-              border: '1.5px solid rgba(255,255,255,0.35)',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
-            }}
-            className="pill-button-hover"
-            onClick={(e) => {
-              triggerButtonGlow('refresh');
-              const icon = (e.currentTarget as HTMLElement).querySelector('svg');
-              if (icon) { icon.style.transition = 'transform 0.6s ease'; icon.style.transform = 'rotate(360deg)'; setTimeout(() => { icon.style.transition = 'none'; icon.style.transform = 'rotate(0deg)'; }, 650); }
-              queryClient.invalidateQueries();
-              queryClient.refetchQueries();
-              refreshFileCounts();
-              fetch('/api/google/calendar/events').catch(() => {});
-              fetch('/api/tasks').catch(() => {});
-              fetch('/api/announcements').catch(() => {});
-            }}
-            data-testid="button-refresh-data"
-            title="Refresh"
-          >
-            <RefreshCw className="h-[18px] w-[18px] text-white" />
-          </div>
-
-          {/* Kitchen Stop Button (moved from bottom pill) */}
-          <div 
-            style={{ 
-              marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
-              background: isKitchenPlaying ? 'linear-gradient(180deg, #8B0000 0%, #DC143C 50%, #FF4500 100%)' : 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
-              
-              border: '1.5px solid rgba(255,255,255,0.35)',
-              boxShadow: isKitchenPlaying ? 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 8px rgba(220,20,60,0.5)' : '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-              animation: isKitchenPlaying ? 'pulse 2s infinite' : 'none'
-            }}
-            className="pill-button-hover"
-            onClick={handleKitchenStop}
-            data-testid="button-kitchen-stop"
-            title="Stop"
-          >
-            <Square className="text-white fill-white" style={{ height: '14px', width: '14px' }} />
-          </div>
-
-          {/* Radio Button (moved from bottom pill) */}
-          <div 
-            style={{ 
-              marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
-              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
-              
-              border: '1.5px solid rgba(255,255,255,0.35)',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
-            }}
-            className="pill-button-hover"
-            onClick={() => { triggerButtonGlow('radio'); setIsRadioDialogOpen(true); }}
-            data-testid="button-radio-dialog"
-            title="Radio Controls"
-          >
-            <Radio className="text-white" style={{ height: '16px', width: '16px' }} />
-          </div>
-
-          {/* Fullscreen Toggle (moved from bottom pill) */}
-          <div 
-            style={{ 
-              marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
-              background: isFullscreen ? 'linear-gradient(180deg, #1a6b1a 0%, #2a8a2a 50%, #4aaa4a 100%)' : 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
-              
-              border: '1.5px solid rgba(255,255,255,0.35)',
-              boxShadow: isFullscreen ? 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' : '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
-            }}
-            className="pill-button-hover"
-            onClick={toggleFullscreen}
-            data-testid="button-fullscreen"
-            title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
-          >
-            {isFullscreen ? <Minimize2 className="h-[18px] w-[18px] text-white" /> : <Maximize className="h-[18px] w-[18px] text-white" />}
-          </div>
-
-          {/* Home Assistant (moved from bottom pill) */}
-          {isAdmin && (
-          <div 
-            style={{ 
-              marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
-              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
-              
-              border: '1.5px solid rgba(255,255,255,0.35)',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
-            }}
-            className="pill-button-hover"
-            onClick={() => {
-              window.open('http://172.24.0.2:8123/config/dashboard', '_blank');
-            }}
-            data-testid="button-home-assistant"
-            title="Open Home Assistant"
-          >
-            <svg viewBox="0 0 24 24" fill="white" style={{ height: '20px', width: '20px' }}>
-              <path d="M12 0L1.5 6v12L12 24l10.5-6V6L12 0zm0 2.1l8.5 4.9v9.8L12 21.9l-8.5-5.1V7L12 2.1zM8.5 9.5v5h2v-3h3v3h2v-5L12 7l-3.5 2.5z"/>
-            </svg>
-          </div>
-          )}
-
-          {/* Quick Notes Button */}
-          <a 
-            href="/onenote"
-            style={{ 
-              marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
-              background: 'linear-gradient(135deg, #4B2D7F 0%, #7B5EA7 100%)',
-              border: '1.5px solid rgba(255,255,255,0.5)',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-              textDecoration: 'none',
-            }}
-            className="pill-button-hover"
-            title="Quick Notes"
-            data-testid="honeycomb-quick-notes"
-          >
-            <StickyNote style={{ color: 'white', strokeWidth: 1.5, height: '18px', width: '18px' }} />
-          </a>
-
-          {/* Projects Button */}
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} 
-            style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} 
-            data-testid="button-projects"
-            onClick={() => { triggerButtonGlow('projects'); setEditingProject(null); setProjectWizardStep(0); setProjectWizardData({ name: '', description: '', color: '#6366F1', status: 'planning', targetDate: '', priority: 'medium' }); setProjectDialogOpen(true); }}
-          >
-            + Project
-          </Button>
-
-          {/* Quick Add Button */}
-          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder2: DEFAULT_REMINDER_2, reminder3: null, reminder4: null, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' }); setIsQuickAddOpen(true); }); }}>+ Add Task</Button>
 
         </div>
       </div>
