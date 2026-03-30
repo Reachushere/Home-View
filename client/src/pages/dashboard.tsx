@@ -23713,7 +23713,7 @@ export default function Dashboard() {
                   const boxEl = document.querySelector('[data-testid="section-coming-up"]') as HTMLElement | null;
                   const boxH = boxEl ? boxEl.offsetHeight : (window.innerHeight - (calendarBorderTop || (calendarTop + 15)) - calendarBottom);
                   const availH = Math.max(60, boxH + 30);
-                  return { right: '-51px', top: '-5px', pointerEvents: 'auto' as const, zIndex: 0, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || hwFloating.detached) ? 'none' : 'block', width: '51px', height: `${availH - 15}px`, overflow: 'visible' };
+                  return { right: '-19px', top: '-5px', pointerEvents: 'auto' as const, zIndex: 0, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || hwFloating.detached) ? 'none' : 'block', width: '21px', height: `${availH - 15}px`, overflow: 'visible' };
                 })()}
               >
                 {(() => {
@@ -23772,7 +23772,7 @@ export default function Dashboard() {
                       data-testid={`semester-tab-${tab.id}`}
                       title={tab.semLabel}
                     >
-                      <svg width="22" height={tabH} viewBox="0 0 16 54" style={{ display: 'block' }}>
+                      <svg width="26" height={tabH} viewBox="0 0 16 54" style={{ display: 'block' }}>
                         <defs><filter id={`tabShadow-${tabIdx}`} x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="0" stdDeviation="0.5" floodColor="black" floodOpacity="0.3" /></filter></defs>
                         <path d={tabIdx === 0
                           ? "M0.00 0.00 L0.00 54.00 L3.55 53.98 C3.56,53.98 3.86,52.68 4.88,51.40 C7.21,49.06 12.79,48.74 15.29,45.10 C15.60,44.64 15.83,44.03 16.00,43.29 L16.00 22.62 L16.00 19.38 L16.00 10.71 C15.83,9.98 15.60,9.36 15.29,8.90 C12.79,5.27 7.21,4.94 4.88,2.60 C4.49,2.59 3.55,0.02 3.55,0.02 L0.00 0.00 Z"
