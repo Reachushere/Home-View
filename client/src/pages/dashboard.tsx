@@ -13463,12 +13463,10 @@ export default function Dashboard() {
         onClick={() => {
           openTopPill();
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
-          if ('ontouchstart' in window) {
-            topPillTimeoutRef.current = setTimeout(() => {
-              if (isHamburgerOpenRef.current) return;
-              closeTopPill();
-            }, 6000);
-          }
+          topPillTimeoutRef.current = setTimeout(() => {
+            if (isHamburgerOpenRef.current) return;
+            closeTopPill();
+          }, 6000);
         }}
         onMouseEnter={() => {
           openTopPill();
@@ -13502,12 +13500,10 @@ export default function Dashboard() {
         onClick={() => {
           openTopPill();
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
-          if ('ontouchstart' in window) {
-            topPillTimeoutRef.current = setTimeout(() => {
-              if (isHamburgerOpenRef.current) return;
-              closeTopPill();
-            }, 6000);
-          }
+          topPillTimeoutRef.current = setTimeout(() => {
+            if (isHamburgerOpenRef.current) return;
+            closeTopPill();
+          }, 6000);
         }}
         onMouseEnter={() => {
           openTopPill();
