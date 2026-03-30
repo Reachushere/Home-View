@@ -22300,9 +22300,14 @@ export default function Dashboard() {
                     >
                       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1.5px', backgroundColor: '#dc2626' }} />
                       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '1.5px', backgroundColor: '#dc2626' }} />
-                      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden' }}>
-                        <div style={{ width: '200%', height: '100%', backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 3px, #dc2626 3px, #dc2626 4px)', opacity: 0.7 }} />
-                      </div>
+                      <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+                        <defs>
+                          <pattern id="redDiag" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
+                            <line x1="0" y1="0" x2="0" y2="6" stroke="#dc2626" strokeWidth="1.5" strokeOpacity="0.7" />
+                          </pattern>
+                        </defs>
+                        <rect width="100%" height="100%" fill="url(#redDiag)" />
+                      </svg>
                     </div>
                   );
                 })()}
