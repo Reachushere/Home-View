@@ -12448,25 +12448,6 @@ export default function Dashboard() {
           </div>
 
 
-          {/* Fullscreen Toggle (moved from bottom pill) */}
-          <div 
-            style={{ 
-              marginTop: '3px', width: '44px', height: '44px', borderRadius: '50%',
-              background: isFullscreen ? 'linear-gradient(180deg, #1a6b1a 0%, #2a8a2a 50%, #4aaa4a 100%)' : 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
-              
-              border: '1.5px solid rgba(255,255,255,0.35)',
-              boxShadow: isFullscreen ? 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' : '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
-            }}
-            className="pill-button-hover"
-            onClick={toggleFullscreen}
-            data-testid="button-fullscreen"
-            title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
-          >
-            {isFullscreen ? <Minimize2 className="h-[18px] w-[18px] text-white" /> : <Maximize className="h-[18px] w-[18px] text-white" />}
-          </div>
-
-
           {/* Sync Button - Push & Pull combined */}
           <div 
             style={{ 
@@ -12521,6 +12502,25 @@ export default function Dashboard() {
             title="Sync"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M14 4l7 7-7 7V4z" /><path d="M10 20l-7-7 7-7v14z" /></svg>
+          </div>
+
+
+          {/* Fullscreen Toggle (moved from bottom pill) */}
+          <div 
+            style={{ 
+              marginTop: '3px', width: '44px', height: '44px', borderRadius: '50%',
+              background: isFullscreen ? 'linear-gradient(180deg, #1a6b1a 0%, #2a8a2a 50%, #4aaa4a 100%)' : 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+              
+              border: '1.5px solid rgba(255,255,255,0.35)',
+              boxShadow: isFullscreen ? 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' : '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+            }}
+            className="pill-button-hover"
+            onClick={toggleFullscreen}
+            data-testid="button-fullscreen"
+            title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+          >
+            {isFullscreen ? <Minimize2 className="h-[18px] w-[18px] text-white" /> : <Maximize className="h-[18px] w-[18px] text-white" />}
           </div>
 
 
