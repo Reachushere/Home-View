@@ -23739,7 +23739,7 @@ export default function Dashboard() {
                     <div
                       key={tab.id}
                       className={`cursor-pointer${isActive && tabBounceEnabled ? ' semester-tab-bounce' : ''}`}
-                      style={{ position: 'absolute', bottom: `${bottomInset + reversedIdx * stepPx + (tabIdx > 0 ? tabIdx * 3 : 0) - 14}px`, width: '51px', height: `${tabH}px`, zIndex: isActive ? 100 : semTabs.length - tabIdx, clipPath: isActive ? 'none' : 'inset(0 0 0 2px)', transition: 'width 0.25s ease, transform 0.25s ease', transform: tabIdx === 0 ? 'translateX(-2px)' : 'translateX(-2px)' }}
+                      style={{ position: 'absolute', bottom: `${bottomInset + reversedIdx * stepPx + (tabIdx > 0 ? tabIdx * 3 : 0) - 14}px`, width: '51px', height: `${tabH}px`, zIndex: isActive ? 100 : semTabs.length - tabIdx, clipPath: isActive ? 'none' : 'inset(0 0 0 2px)', transition: 'width 0.25s ease, transform 0.25s ease', transform: tabIdx === 0 ? 'translateX(-3px)' : 'translateX(-2px)' }}
                       onClick={() => {
                         if (homeworkScrollRef.current) {
                           const scrollContainer = homeworkScrollRef.current;
