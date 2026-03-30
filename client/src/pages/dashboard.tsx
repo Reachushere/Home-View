@@ -992,7 +992,7 @@ export default function Dashboard() {
     }
   }, []);
   const [calendarHeight, setCalendarHeight] = useState(() => {
-    const defaultHeight = window.innerHeight - 45;
+    const defaultHeight = window.innerHeight - 51;
     const minHeight = 200;
     const maxHeight = window.innerHeight - 100;
     const screenWidth = window.screen.width;
