@@ -12255,7 +12255,7 @@ export default function Dashboard() {
 
 
           {/* ── Tools ── */}
-          <div style={{ background: 'rgba(255,255,255,0.12)', borderRadius: '26px', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 'inherit', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.2), 0 2px 6px rgba(0,0,0,0.35)', border: '1.5px solid rgba(255,255,255,0.3)' }}>
+          <div style={{ background: 'rgba(255,255,255,0.18)', borderRadius: '26px', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 'inherit', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,0.4)', border: '1.5px solid rgba(255,255,255,0.45)' }}>
           {/* Home Assistant (moved from bottom pill) */}
           {isAdmin && (
           <div 
@@ -12537,7 +12537,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── School ── */}
-          <div style={{ background: 'rgba(255,255,255,0.12)', borderRadius: '26px', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 'inherit', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.2), 0 2px 6px rgba(0,0,0,0.35)', border: '1.5px solid rgba(255,255,255,0.3)' }}>
+          <div style={{ background: 'rgba(255,255,255,0.18)', borderRadius: '26px', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 'inherit', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,0.4)', border: '1.5px solid rgba(255,255,255,0.45)' }}>
           {/* Courses Button */}
           <div className="pill-button-hover" style={{ 
             marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
@@ -12637,7 +12637,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Entertainment ── */}
-          <div style={{ background: 'rgba(255,255,255,0.12)', borderRadius: '26px', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 'inherit', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.2), 0 2px 6px rgba(0,0,0,0.35)', border: '1.5px solid rgba(255,255,255,0.3)' }}>
+          <div style={{ background: 'rgba(255,255,255,0.18)', borderRadius: '26px', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 'inherit', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,0.4)', border: '1.5px solid rgba(255,255,255,0.45)' }}>
           {/* Spotify Button */}
           <div className="pill-button-hover" style={{ 
             marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
@@ -12725,7 +12725,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Tasks ── */}
-          <div style={{ background: 'rgba(255,255,255,0.12)', borderRadius: '26px', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 'inherit', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.2), 0 2px 6px rgba(0,0,0,0.35)', border: '1.5px solid rgba(255,255,255,0.3)' }}>
+          <div style={{ background: 'rgba(255,255,255,0.18)', borderRadius: '26px', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 'inherit', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,0.4)', border: '1.5px solid rgba(255,255,255,0.45)' }}>
           {/* Completed Tasks Button - Swapped with Graduation Hat */}
           <div className="pill-button-hover" style={{ 
             marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
