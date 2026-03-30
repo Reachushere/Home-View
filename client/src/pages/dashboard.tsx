@@ -24278,9 +24278,9 @@ export default function Dashboard() {
                 {dueTodayTasks.length === 0 ? (
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks due today</div>
                 ) : (
-                  <div style={{ marginTop: '4px' }}>
+                  <div style={{ marginTop: '4px', paddingLeft: `${hwGroupBarWidth + 13}px` }}>
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0px', marginBottom: '2px' }}>
-                      <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: `${9 + hwGroupBarWidth - 7}px`, marginRight: '2px', alignSelf: 'stretch', position: 'relative', zIndex: 3 }}>
+                      <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', alignSelf: 'stretch', position: 'relative', zIndex: 3 }}>
                         <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
                       </div>
                       <div style={{ flex: 1, minWidth: 0, marginRight: '-7px' }}>
