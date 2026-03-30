@@ -13726,8 +13726,13 @@ export default function Dashboard() {
                     <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#555' }}>GPA</span>
                     {prevGpa !== null ? (
                       <>
-                        <span className="font-bold text-[14px] leading-none" style={{ color: '#000' }}>{prevGpa.toFixed(2)}</span>
-                        <span className="text-[10px] font-bold leading-none" style={{ color: '#333' }}>({gpaToLetter(prevGpa)})</span>
+                        <span className="flex flex-col items-center leading-none" style={{ gap: '1px' }}>
+                          <span className="text-[7px] font-medium uppercase tracking-wider" style={{ color: '#888' }}>To last semester</span>
+                          <span className="flex items-center gap-0.5">
+                            <span className="font-bold text-[14px] leading-none" style={{ color: '#000' }}>{prevGpa.toFixed(2)}</span>
+                            <span className="text-[10px] font-bold leading-none" style={{ color: '#333' }}>({gpaToLetter(prevGpa)})</span>
+                          </span>
+                        </span>
                       </>
                     ) : (
                       <span className="text-[10px]" style={{ color: '#aaa' }}>—</span>
@@ -13735,8 +13740,13 @@ export default function Dashboard() {
                     {runningGpa !== null && (
                       <>
                         <span style={{ color: '#ccc', fontSize: '16px', fontWeight: 300 }}>|</span>
-                        <span className="font-bold text-[14px] leading-none" style={{ color: '#000' }}>{runningGpa.toFixed(2)}</span>
-                        <span className="text-[10px] font-bold leading-none" style={{ color: '#333' }}>({gpaToLetter(runningGpa)})</span>
+                        <span className="flex flex-col items-center leading-none" style={{ gap: '1px' }}>
+                          <span className="text-[7px] font-medium uppercase tracking-wider" style={{ color: '#888' }}>Current</span>
+                          <span className="flex items-center gap-0.5">
+                            <span className="font-bold text-[14px] leading-none" style={{ color: '#000' }}>{runningGpa.toFixed(2)}</span>
+                            <span className="text-[10px] font-bold leading-none" style={{ color: '#333' }}>({gpaToLetter(runningGpa)})</span>
+                          </span>
+                        </span>
                       </>
                     )}
                   </div>
