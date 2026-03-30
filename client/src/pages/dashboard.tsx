@@ -23615,8 +23615,8 @@ export default function Dashboard() {
             overflow: 'visible',
             right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3}px`,
             width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1 - 5 - 2 - 1 - 3}px`,
-            top: `${(calendarBorderTop || (calendarTop + 15)) - 1}px`,
-            height: `${window.innerHeight - (calendarBorderTop || (calendarTop + 15)) + 1 - calendarBottom}px`,
+            top: `${(calendarBorderTop || (calendarTop + 15)) - 7}px`,
+            height: `${window.innerHeight - (calendarBorderTop || (calendarTop + 15)) + 7 - calendarBottom}px`,
             background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
             boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08)',
             border: '1px solid white',
@@ -23881,17 +23881,17 @@ export default function Dashboard() {
             );
           })()}
           <div style={{ padding: '0 8px', height: courseRowRects.length > 0 ? `${courseRowRects[0].top - (calendarBorderTop || (calendarTop + 15)) - 1}px` : '45px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 46, overflow: 'visible', marginBottom: '0px', boxShadow: '0 3px 6px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3)' }}>
-            <div style={{ position: 'absolute', top: '15px', left: '22px', right: 0, height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)' }} />
+            <div style={{ position: 'absolute', top: '21px', left: '22px', right: 0, height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)' }} />
             <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: '6px', bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Homework Progress</span>
             <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: `${effectiveDividerPct}%`, bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', paddingLeft: '6px' }}>Most Urgent Assignments</span>
             {weatherData && (
-              <div style={{ position: 'absolute', left: '28px', top: '1px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div style={{ position: 'absolute', left: '28px', top: '5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span className="text-[9.5px] font-medium" style={{ color: 'rgba(255,255,255,1)' }} data-testid="homework-weather-temp">Current: {Math.round(weatherData.temp)}°C</span>
                 <span className="text-[9.5px]" style={{ color: 'rgba(255,255,255,1)' }} data-testid="homework-weather-desc">{(() => { const WMO: Record<number, string> = {0:'Clear',1:'Mostly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Rime Fog',51:'Lt Drizzle',53:'Drizzle',55:'Hvy Drizzle',61:'Lt Rain',63:'Rain',65:'Hvy Rain',66:'Frzg Rain',67:'Hvy Frzg Rain',71:'Lt Snow',73:'Snow',75:'Hvy Snow',77:'Snow Grains',80:'Lt Showers',81:'Showers',82:'Hvy Showers',85:'Lt Snow Shwrs',86:'Hvy Snow Shwrs',95:'T-Storm',96:'T-Storm Hail',99:'Svr T-Storm'}; return WMO[weatherData.code] || ''; })()}</span>
               </div>
             )}
             {weatherData && (weatherData.sunrise || weatherData.sunset) && (
-              <div style={{ position: 'absolute', right: '15px', top: '2px', display: 'flex', alignItems: 'center', gap: '11px', lineHeight: 1 }}>
+              <div style={{ position: 'absolute', right: '15px', top: '6px', display: 'flex', alignItems: 'center', gap: '11px', lineHeight: 1 }}>
                 {weatherData.sunrise && <span className="text-[9.5px]" data-testid="homework-sunrise"><span style={{ color: '#FFFF00' }}>☀</span><span style={{ color: '#FFFF00', marginLeft: '3px' }}>↑</span><span style={{ color: 'rgba(255,255,255,1)', position: 'relative', top: '1px', marginLeft: '6px' }}>{(() => { const t = new Date(weatherData.sunrise); const h = t.getHours(); const m = t.getMinutes(); const ampm = h >= 12 ? 'PM' : 'AM'; return `${h === 0 ? 12 : h > 12 ? h - 12 : h}:${m.toString().padStart(2, '0')} ${ampm}`; })()}</span><span style={{ position: 'absolute', marginLeft: '12px', color: 'rgba(255,255,255,0.4)' }}>|</span></span>}
                 {weatherData.sunset && <span className="text-[9.5px]" style={{ marginLeft: '14px' }} data-testid="homework-sunset"><span style={{ color: '#FFFF00', display: 'inline-block', transform: 'scaleX(-1) rotate(30deg)' }}>☽</span><span style={{ color: '#FFFF00', marginLeft: '3px', position: 'relative', top: '-2px' }}>↓</span><span style={{ color: 'rgba(255,255,255,1)', position: 'relative', top: '1px', marginLeft: '6px' }}>{(() => { const t = new Date(weatherData.sunset); const h = t.getHours(); const m = t.getMinutes(); const ampm = h >= 12 ? 'PM' : 'AM'; return `${h === 0 ? 12 : h > 12 ? h - 12 : h}:${m.toString().padStart(2, '0')} ${ampm}`; })()}</span></span>}
               </div>
@@ -25017,10 +25017,25 @@ export default function Dashboard() {
                           })()}
                           {(
                             <div data-semester-label={tlEntry.semLabel || ''} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: tlIdx === 0 ? '20px' : (tlIdx > 0 && beyondTimeline[tlIdx - 1] && tlEntry.weekStart.getFullYear() !== beyondTimeline[tlIdx - 1].weekStart.getFullYear() ? '4px' : '20px') }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{groupWeekLabel}</span>
-                                <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px' }}>({group.tasks.length})</span>
-                              </div>
+                              <span className="text-[12px] font-semibold" style={{ color: '#ffffff', flexShrink: 0 }}>{groupWeekLabel}</span>
+                              <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', flexShrink: 0 }}>({group.tasks.length})</span>
+                              <div style={{ flex: 1 }} />
+                              {/Week\s+\d/i.test(groupWeekLabel) && (
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', flexShrink: 0, marginLeft: '2px', width: '40px' }}>
+                                  <span style={{ fontSize: '7px', fontWeight: 600, color: '#ffffff', lineHeight: '8px', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden' }}>{(() => { const sm = format(groupCalDate, 'MMM').toUpperCase(); const em = format(tlEntry.weekEnd, 'MMM').toUpperCase(); return sm === em ? sm : `${sm}-${em}`; })()}</span>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                    <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(100, 100, 100)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                                      <div style={{ background: 'rgb(100, 100, 100)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(groupCalDate, 'MMM').toUpperCase()}</div>
+                                      <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(groupCalDate, 'd')}</div>
+                                    </div>
+                                    <span style={{ fontSize: '6px', color: 'white', lineHeight: 1 }}>&#9654;</span>
+                                    <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(100, 100, 100)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                                      <div style={{ background: 'rgb(100, 100, 100)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(tlEntry.weekEnd, 'MMM').toUpperCase()}</div>
+                                      <div style={{ flex: 1, background: 'white', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#333', lineHeight: '11px' }}>{format(tlEntry.weekEnd, 'd')}</div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           )}
                           <div data-hw-group-row style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '2px' }}>
