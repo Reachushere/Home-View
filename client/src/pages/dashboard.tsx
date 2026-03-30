@@ -20321,7 +20321,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative${weatherAlerts.length > 0 ? " weather-alert-border-pulse" : ""}`}
-                    style={isToday ? { backgroundColor: colorSettings.headerBar } : { backgroundColor: isNextSchoolWeek ? '#4ade80' : colorSettings.headerBar, color: isNextSchoolWeek ? '#000000' : undefined }}
+                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px' } : { backgroundColor: isNextSchoolWeek ? '#4ade80' : colorSettings.headerBar, color: isNextSchoolWeek ? '#000000' : undefined }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {!isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && (
@@ -20985,7 +20985,7 @@ export default function Dashboard() {
                       <div 
                         key={dayIdx} 
                         className="relative pt-0.5"
-                        style={{ backgroundColor: cellBgColor, padding: '2px 1px 2px 1px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                        style={{ backgroundColor: cellBgColor, padding: isDayToday ? '2px 1px 2px 3px' : '2px 1px 2px 1px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
                           e.preventDefault();
@@ -21510,7 +21510,7 @@ export default function Dashboard() {
                         <div
                           key={dayIdx}
                           className={`relative flex flex-col gap-0.5 pt-0.5${otherHasScroll ? ' course-cell-scroll' : ''}`}
-                          style={{ backgroundColor: otherCellBg, padding: '2px 1px 2px 1px', borderBottom: isOtherToday ? '1px dotted #666' : `1.5px dotted ${otherRowColors.borderColor}`, overflowY: otherHasScroll ? 'auto' : 'hidden', overflowX: 'hidden', scrollbarWidth: 'thin', maxHeight: `${otherRowHeight}px` }}
+                          style={{ backgroundColor: otherCellBg, padding: isOtherToday ? '2px 1px 2px 3px' : '2px 1px 2px 1px', borderBottom: isOtherToday ? '1px dotted #666' : `1.5px dotted ${otherRowColors.borderColor}`, overflowY: otherHasScroll ? 'auto' : 'hidden', overflowX: 'hidden', scrollbarWidth: 'thin', maxHeight: `${otherRowHeight}px` }}
                           data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
                         >
                           <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', borderLeft: '1px solid rgba(0,0,0,0.12)', zIndex: 5, pointerEvents: 'none' }} />
@@ -21844,7 +21844,7 @@ export default function Dashboard() {
                               return startOfDayET(day) >= hsSat ? '#f0f7f0' : '#faf8f5';
                             })(),
                             borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined,
-                            paddingLeft: `${2 + DAY_COL_LEFT_REDUCTION}px`,
+                            paddingLeft: `${(isToday ? 4 : 2) + DAY_COL_LEFT_REDUCTION}px`,
                           }}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
                           onDragOver={(e) => handleDragOver(e, day, hour)}
