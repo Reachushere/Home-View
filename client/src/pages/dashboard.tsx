@@ -24292,9 +24292,9 @@ export default function Dashboard() {
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks due today</div>
                 ) : (
                   <div style={{ marginTop: '4px' }}>
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0px', marginBottom: '2px' }}>
-                      <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: `${hwGroupBarWidth + 16}px`, marginRight: '2px', alignSelf: 'stretch', position: 'relative', zIndex: 3 }}>
-                        <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
+                    <div data-hw-group-row style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '2px' }}>
+                      <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch', marginLeft: '9px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2 }}>
+                        <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)', position: 'absolute', right: '-6px', top: 0, bottom: 0 }} />
                       </div>
                       <div style={{ flex: 1, minWidth: 0, marginRight: '-7px' }}>
                         <div style={{ maxHeight: '80px', overflowY: 'auto', scrollbarWidth: 'none' }}>
@@ -24308,7 +24308,7 @@ export default function Dashboard() {
                       const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
                       const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                       return (
-                        <div key={task.id} className="" style={{ position: 'relative', overflow: 'visible', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: tIdx % 2 === 0 ? '#051729' : 'transparent', marginLeft: `${-(hwGroupBarWidth + 34)}px`, marginRight: '0px', paddingLeft: `${hwGroupBarWidth + 34}px`, paddingRight: '0px' }}
+                        <div key={task.id} className="" style={{ position: 'relative', overflow: 'visible', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: tIdx % 2 === 0 ? '#051729' : 'transparent', marginLeft: `${-(hwGroupBarWidth + 13)}px`, marginRight: '0px', paddingLeft: `${hwGroupBarWidth + 13}px`, paddingRight: '0px' }}
                           onMouseEnter={() => setHoveredCountdownTaskIdDebounced(task.id)}
                           onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                           ref={(rowEl) => {
@@ -24332,11 +24332,11 @@ export default function Dashboard() {
                           </div>
                           <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'stretch' }}>
-                            <div style={{ position: 'relative', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 5, alignSelf: 'center', marginRight: '6px', border: task.flagged ? '2px solid #ef4444' : 'none', boxShadow: task.flagged ? '0 0 6px rgba(239,68,68,0.5)' : 'none' }}>
+                            <div ref={centerCircleOnGroupBar} style={{ position: 'absolute', left: '86px', top: '50%', transform: 'translateY(-50%)', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 5, border: task.flagged ? '2px solid #ef4444' : 'none', boxShadow: task.flagged ? '0 0 6px rgba(239,68,68,0.5)' : 'none' }}>
                               <span style={{ fontSize: '7px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.3px', marginTop: '2px', marginBottom: '-2px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
                               <span style={{ fontSize: '9px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textAlign: 'center', display: 'block', marginTop: '1px' }}>{format(new Date(task.dueDate), 'd')}</span>
                             </div>
-                            <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                            <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '23px' }}>
                               <div>
                                 <button
                                   className="text-[10px] truncate hover:underline cursor-pointer leading-none w-full"
