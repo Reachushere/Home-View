@@ -12229,7 +12229,7 @@ export default function Dashboard() {
         {/* Down arrow placeholder - actual tab moved outside pill container */}
 
         {/* Icon buttons and task buttons with adjustable spacing */}
-        <div className="flex items-center flex-nowrap [&>*]:flex-shrink-0" style={{ gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 11)}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '4px', paddingRight: '4px', width: '100%', overflow: 'visible', pointerEvents: isTopPillOpen ? 'auto' : 'none' }}>
+        <div className="flex items-center flex-nowrap [&>*]:flex-shrink-0" style={{ gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 16)}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '4px', paddingRight: '4px', width: '100%', overflow: 'visible', pointerEvents: isTopPillOpen ? 'auto' : 'none' }}>
           {/* Hamburger Menu */}
           <DropdownMenu open={isHamburgerOpen} onOpenChange={(open) => { if (hamburgerCloseTimer.current) { clearTimeout(hamburgerCloseTimer.current); hamburgerCloseTimer.current = null; } startTransition(() => setIsHamburgerOpen(open)); if (open) { triggerButtonGlow('hamburger'); if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); } }} modal={false}>
             <DropdownMenuTrigger asChild>
