@@ -23730,7 +23730,7 @@ export default function Dashboard() {
                     <div
                       key={tab.id}
                       className={`cursor-pointer${isActive && tabBounceEnabled ? ' semester-tab-bounce' : ''}`}
-                      style={{ position: 'absolute', bottom: `${bottomInset + reversedIdx * stepPx + (tabIdx > 0 ? tabIdx * 3 : 0) - 14}px`, width: '26px', height: `${tabH}px`, zIndex: isActive ? 100 : semTabs.length - tabIdx, clipPath: isActive ? 'none' : 'inset(0 0 0 2px)', transition: 'width 0.25s ease, transform 0.25s ease', transform: isActive ? 'translateX(1px)' : 'translateX(-1px)' }}
+                      style={{ position: 'absolute', bottom: `${bottomInset + reversedIdx * stepPx + (tabIdx > 0 ? tabIdx * 3 : 0) - 14}px`, width: '28px', height: `${tabH}px`, zIndex: isActive ? 100 : semTabs.length - tabIdx, clipPath: isActive ? 'none' : 'inset(0 0 0 2px)', transition: 'width 0.25s ease, transform 0.25s ease', transform: isActive ? 'translateX(-1px)' : 'translateX(-1px)' }}
                       onClick={() => {
                         if (homeworkScrollRef.current) {
                           const scrollContainer = homeworkScrollRef.current;
@@ -24279,12 +24279,6 @@ export default function Dashboard() {
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks due today</div>
                 ) : (
                   <div style={{ marginTop: '4px' }}>
-                    <div data-hw-group-row style={{ display: 'flex', alignItems: 'stretch', gap: '0px' }}>
-                      <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, marginLeft: '9px', marginRight: '4px' }} />
-                      <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', position: 'relative', zIndex: 3 }}>
-                        <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0, marginRight: '-7px' }}>
                     <div style={{ maxHeight: '80px', overflowY: 'auto', scrollbarWidth: 'none' }}>
                   <div className="flex flex-col gap-0.5">
                     {dueTodayTasks.map((task, tIdx) => {
@@ -24369,8 +24363,6 @@ export default function Dashboard() {
                       );
                     })}
                   </div>
-                    </div>
-                      </div>
                     </div>
                   </div>
                 )}
