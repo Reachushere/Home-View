@@ -1049,7 +1049,14 @@ export default function SpotifyPlayerPage() {
         setTimeout(fetchNowPlaying, 1000);
       } catch { showNotif("Failed to play station"); }
     } else if (station.command) {
-      showNotif(`${station.name} (voice command)`);
+      showNotif(`Playing ${station.name}...`);
+      try {
+        await fetch(`/api/spotify/play-context${authQuery}`, {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ entityId: "media_player.byhome", searchQuery: station.command }),
+        });
+        showNotif(`Playing ${station.name}`);
+      } catch { showNotif("Failed to play station"); }
     }
   };
 
