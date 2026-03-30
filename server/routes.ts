@@ -17010,12 +17010,13 @@ Return ONLY the JSON object, no markdown formatting.`;
             if (!playResp.ok) {
               console.log(`[Spotify] player_media_play_context failed, falling back to voice command`);
               const searchTerm = searchQuery || artistName || "music";
-              const voiceCommand = `play ${searchTerm} on Spotify${entityId === EVERYWHERE_GROUP_ENTITY ? " on byhome" : ""}`;
-              console.log(`[Spotify] Sending voice command to ${targetEntity}: "${voiceCommand}"`);
-              await fetch(`${haUrl}/api/services/media_player/play_media`, {
+              const voiceCommand = `play ${searchTerm} on Spotify`;
+              const commandTarget = entityId === EVERYWHERE_GROUP_ENTITY ? EVERYWHERE_GROUP_ENTITY : targetEntity;
+              console.log(`[Spotify] Sending alexa_media command to ${commandTarget}: "${voiceCommand}"`);
+              await fetch(`${haUrl}/api/services/notify/alexa_media`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ entity_id: targetEntity, media_content_id: voiceCommand, media_content_type: "custom" }),
+                body: JSON.stringify({ message: voiceCommand, target: commandTarget, data: { type: "command" } }),
               });
             }
           } else {
@@ -17036,29 +17037,14 @@ Return ONLY the JSON object, no markdown formatting.`;
         } else {
           console.log(`[Spotify] No SpotifyPlus source for ${entityId}, using voice command fallback`);
           const searchTerm = searchQuery || artistName || "music";
-          const voiceCommand = `play ${searchTerm} on Spotify${entityId === EVERYWHERE_GROUP_ENTITY ? " on byhome" : ""}`;
+          const voiceCommand = `play ${searchTerm} on Spotify`;
+          const commandTarget = entityId === EVERYWHERE_GROUP_ENTITY ? EVERYWHERE_GROUP_ENTITY : targetEntity;
           
-          console.log(`[Spotify] Waking up Echo: ${targetEntity}`);
-          try {
-            await fetch(`${haUrl}/api/services/media_player/turn_on`, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({ entity_id: targetEntity }),
-            });
-            await new Promise(resolve => setTimeout(resolve, 1500));
-          } catch (wakeErr: any) {
-            console.log(`[Spotify] Wake-up failed (continuing): ${wakeErr.message}`);
-          }
-          
-          console.log(`[Spotify] Sending voice command to ${targetEntity}: "${voiceCommand}"`);
-          await fetch(`${haUrl}/api/services/media_player/play_media`, {
+          console.log(`[Spotify] Sending alexa_media command to ${commandTarget}: "${voiceCommand}"`);
+          await fetch(`${haUrl}/api/services/notify/alexa_media`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              entity_id: targetEntity,
-              media_content_id: voiceCommand,
-              media_content_type: "custom",
-            }),
+            body: JSON.stringify({ message: voiceCommand, target: commandTarget, data: { type: "command" } }),
           });
         }
       } else {
