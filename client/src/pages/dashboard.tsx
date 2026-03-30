@@ -23773,7 +23773,7 @@ export default function Dashboard() {
                           const tFs = '10';
                           const tFw = isActive ? '450' : '350';
                           const isTopTab = tabIdx === 0;
-                          const tFill = colorSettings.headerBar;
+                          const tFill = '#000000';
                           return (
                             <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">{tab.label}</text>
                           );
