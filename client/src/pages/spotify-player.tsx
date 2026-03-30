@@ -1180,29 +1180,39 @@ export default function SpotifyPlayerPage() {
   }, [selectedArtist, nowPlaying]);
 
   const initDrag = (type: "artist" | "room" | "speaker", data: any, x: number, y: number, imageUrl?: string) => {
-    if (customDragRef.current) return;
+    if (customDragRef.current) {
+      const age = Date.now() - (customDragRef.current as any)._ts;
+      if (age < 2000) return;
+      cleanupCustomDrag();
+    }
     customDragRef.current = {
       type, data,
       startX: x, startY: y,
       isDragging: false, ghostEl: null, movedEnough: false,
       currentDropRoom: null, currentDropPlayer: false,
       imageUrl,
-    };
+      _ts: Date.now(),
+    } as any;
   };
+
+  const lastPointerSourceRef = useRef<string | null>(null);
 
   const handleDragItemDown = (type: "artist" | "room" | "speaker", data: any, imageUrl?: string) => {
     return {
       onTouchStart: (e: React.TouchEvent) => {
+        lastPointerSourceRef.current = "touch";
         const t = e.touches[0];
         initDrag(type, data, t.clientX, t.clientY, imageUrl);
       },
       onPointerDown: (e: React.PointerEvent) => {
-        if (e.pointerType === "touch") return;
+        if (e.pointerType === "touch" && lastPointerSourceRef.current === "touch") return;
+        lastPointerSourceRef.current = "pointer";
         e.preventDefault();
         initDrag(type, data, e.clientX, e.clientY, imageUrl);
       },
       onMouseDown: (e: React.MouseEvent) => {
         if (e.button !== 0) return;
+        if (lastPointerSourceRef.current === "pointer" || lastPointerSourceRef.current === "touch") return;
         e.preventDefault();
         initDrag(type, data, e.clientX, e.clientY, imageUrl);
       },
@@ -1253,6 +1263,7 @@ export default function SpotifyPlayerPage() {
         requestAnimationFrame(() => { requestAnimationFrame(() => { didDragRef.current = false; }); });
       }
       cleanupCustomDrag();
+      lastPointerSourceRef.current = null;
     };
 
     const onTouchMove = (e: TouchEvent) => { onMove(e.touches[0].clientX, e.touches[0].clientY, e); };
