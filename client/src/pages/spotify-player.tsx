@@ -1085,67 +1085,12 @@ export default function SpotifyPlayerPage() {
     } catch { showNotif("Failed to ungroup"); }
   };
 
-  const handleDragStart = (type: "artist" | "room" | "speaker", data: any) => (e: React.DragEvent) => {
-    console.log(`[DnD] Drag started: ${type} = ${data?.name || data?.room}`);
-    setDragItem({ type, data });
-    e.dataTransfer.effectAllowed = "move";
-    e.dataTransfer.setData("text/plain", JSON.stringify({ type, data }));
-    if (type === "artist" && viewMode !== "floor") {
-      switchView("floor");
-    }
-  };
-
-  const handleRoomDrop = (roomName: string) => (e: React.DragEvent) => {
-    e.preventDefault(); setDropTarget(null);
-    console.log(`[DnD] Dropped on room: ${roomName}`);
-    try {
-      const raw = e.dataTransfer.getData("text/plain");
-      const parsed = JSON.parse(raw);
-      console.log(`[DnD] Parsed drop data:`, parsed.type, parsed.data?.name || parsed.data?.room);
-      if (parsed.type === "artist") playOnRoom(roomName, parsed.data);
-      else if (parsed.type === "room" && parsed.data.room !== roomName) groupRooms(parsed.data.room, roomName);
-    } catch (err) {
-      console.error(`[DnD] Drop parse error:`, err);
-    }
-    setDragItem(null);
-  };
-
-  const handleDragOver = (roomName: string) => (e: React.DragEvent) => {
-    e.preventDefault(); e.dataTransfer.dropEffect = "move"; setDropTarget(roomName);
-  };
-
   const [playerDropHighlight, setPlayerDropHighlight] = useState(false);
-  const handlePlayerDrop = (e: React.DragEvent) => {
-    e.preventDefault(); setPlayerDropHighlight(false);
-    try {
-      const raw = e.dataTransfer.getData("text/plain");
-      const parsed = JSON.parse(raw);
-      if (parsed.type === "speaker") {
-        const spk = parsed.data;
-        setActiveSpeakers(prev => {
-          if (prev.some(s => s.entityId === spk.entityId)) return prev;
-          return [...prev, { name: spk.name, entityId: spk.entityId, room: spk.room, type: spk.type }];
-        });
-        if (selectedArtist) {
-          playOnRoom(spk.room, selectedArtist);
-        } else if (isPlaying && nowPlaying) {
-          playOnRoom(spk.room, { name: nowPlaying.artist || "", uri: "", searchQuery: nowPlaying.artist || "" });
-        }
-        setActiveRooms(prev => new Set(prev).add(spk.room));
-        showNotif(`${isSakura ? "スピーカー追加" : "Added"} ${spk.name}`);
-        setFloorSpeakerPopup(null);
-      }
-    } catch (err) { console.error("[DnD] Player drop error:", err); }
-    setDragItem(null);
-  };
-  const handlePlayerDragOver = (e: React.DragEvent) => {
-    if (dragItem?.type === "speaker") {
-      e.preventDefault(); e.dataTransfer.dropEffect = "move"; setPlayerDropHighlight(true);
-    }
-  };
 
-  const touchDragRef = useRef<{
-    type: "artist" | "room";
+  const didDragRef = useRef(false);
+
+  const customDragRef = useRef<{
+    type: "artist" | "room" | "speaker";
     data: any;
     startX: number;
     startY: number;
@@ -1153,113 +1098,165 @@ export default function SpotifyPlayerPage() {
     ghostEl: HTMLDivElement | null;
     movedEnough: boolean;
     currentDropRoom: string | null;
+    currentDropPlayer: boolean;
+    inputType: "mouse" | "touch";
   } | null>(null);
 
-  const cleanupTouchDrag = useCallback(() => {
-    if (touchDragRef.current?.ghostEl) {
-      touchDragRef.current.ghostEl.remove();
+  const cleanupCustomDrag = useCallback(() => {
+    if (customDragRef.current?.ghostEl) {
+      customDragRef.current.ghostEl.remove();
     }
-    touchDragRef.current = null;
+    customDragRef.current = null;
     setDropTarget(null);
     setDragItem(null);
+    setPlayerDropHighlight(false);
   }, []);
 
-  const handleTouchStart = (type: "artist" | "room", data: any) => (e: React.TouchEvent) => {
-    const touch = e.touches[0];
-    touchDragRef.current = {
-      type,
-      data,
-      startX: touch.clientX,
-      startY: touch.clientY,
-      isDragging: false,
-      ghostEl: null,
-      movedEnough: false,
-      currentDropRoom: null,
+  const createGhost = (label: string) => {
+    const ghost = document.createElement("div");
+    ghost.style.cssText = `
+      position:fixed; z-index:9999; pointer-events:none;
+      padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600;
+      color:#fff; background:rgba(59,130,246,0.85); backdrop-filter:blur(8px);
+      box-shadow:0 0 20px rgba(59,130,246,0.5); white-space:nowrap;
+      transform:translate(-50%,-50%);
+    `;
+    ghost.textContent = label;
+    document.body.appendChild(ghost);
+    return ghost;
+  };
+
+  const findDropTarget = (cx: number, cy: number, dragType: string) => {
+    const els = document.elementsFromPoint(cx, cy);
+    let foundRoom: string | null = null;
+    let foundPlayer = false;
+    for (const el of els) {
+      const hotspotEl = (el as HTMLElement).closest("[data-room-hotspot]") as HTMLElement | null;
+      if (hotspotEl) {
+        foundRoom = hotspotEl.dataset.roomHotspot || null;
+        break;
+      }
+      const playerEl = (el as HTMLElement).closest("[data-player-drop]") as HTMLElement | null;
+      if (playerEl) {
+        foundPlayer = true;
+        break;
+      }
+    }
+    return { foundRoom, foundPlayer: foundPlayer && dragType === "speaker" };
+  };
+
+  const handleCustomDragStart = (type: "artist" | "room" | "speaker", data: any, inputType: "mouse" | "touch") => (startX: number, startY: number) => {
+    customDragRef.current = {
+      type, data, startX, startY,
+      isDragging: false, ghostEl: null, movedEnough: false,
+      currentDropRoom: null, currentDropPlayer: false, inputType,
     };
   };
 
+  const handleMouseDragStart = (type: "artist" | "room" | "speaker", data: any) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    handleCustomDragStart(type, data, "mouse")(e.clientX, e.clientY);
+  };
+
+  const handleTouchDragStart = (type: "artist" | "room" | "speaker", data: any) => (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    handleCustomDragStart(type, data, "touch")(touch.clientX, touch.clientY);
+  };
+
+  const handleDragDrop = useCallback((cd: NonNullable<typeof customDragRef.current>) => {
+    if (cd.currentDropRoom) {
+      console.log(`[DnD] Dropped on room: ${cd.currentDropRoom}`);
+      if (cd.type === "artist") playOnRoom(cd.currentDropRoom, cd.data);
+      else if (cd.type === "room" && cd.data.room !== cd.currentDropRoom) groupRooms(cd.data.room, cd.currentDropRoom);
+    } else if (cd.currentDropPlayer && cd.type === "speaker") {
+      const spk = cd.data;
+      setActiveSpeakers(prev => {
+        if (prev.some(s => s.entityId === spk.entityId)) return prev;
+        return [...prev, { name: spk.name, entityId: spk.entityId, room: spk.room, type: spk.type }];
+      });
+      if (selectedArtist) {
+        playOnRoom(spk.room, selectedArtist);
+      } else if (nowPlaying?.playing && nowPlaying) {
+        playOnRoom(spk.room, { name: nowPlaying.artist || "", uri: "", searchQuery: nowPlaying.artist || "" });
+      }
+      setActiveRooms(prev => new Set(prev).add(spk.room));
+      showNotif(`Added ${spk.name}`);
+      setFloorSpeakerPopup(null);
+    } else {
+      console.log(`[DnD] Dropped outside any target`);
+    }
+  }, [selectedArtist, nowPlaying]);
+
   useEffect(() => {
-    const onTouchMove = (e: TouchEvent) => {
-      const td = touchDragRef.current;
-      if (!td) return;
-      const touch = e.touches[0];
-      const dx = touch.clientX - td.startX;
-      const dy = touch.clientY - td.startY;
+    const onMove = (cx: number, cy: number) => {
+      const cd = customDragRef.current;
+      if (!cd) return false;
+      const dx = cx - cd.startX;
+      const dy = cy - cd.startY;
       const dist = Math.sqrt(dx * dx + dy * dy);
 
-      if (!td.movedEnough && dist > 15) {
-        td.movedEnough = true;
-        td.isDragging = true;
-        setDragItem({ type: td.type, data: td.data });
-        if (td.type === "artist" && viewMode !== "floor") {
+      if (!cd.movedEnough && dist > 10) {
+        cd.movedEnough = true;
+        cd.isDragging = true;
+        setDragItem({ type: cd.type, data: cd.data });
+        if (cd.type === "artist" && viewMode !== "floor") {
           switchView("floor");
         }
-        const ghost = document.createElement("div");
-        ghost.style.cssText = `
-          position:fixed; z-index:9999; pointer-events:none;
-          padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600;
-          color:#fff; background:rgba(59,130,246,0.85); backdrop-filter:blur(8px);
-          box-shadow:0 0 20px rgba(59,130,246,0.5); white-space:nowrap;
-          transform:translate(-50%,-50%);
-        `;
-        ghost.textContent = td.data?.name || td.data?.room || "?";
-        document.body.appendChild(ghost);
-        td.ghostEl = ghost;
-        console.log(`[DnD-Touch] Drag started: ${td.type} = ${td.data?.name || td.data?.room}`);
+        cd.ghostEl = createGhost(cd.data?.name || cd.data?.room || "?");
+        console.log(`[DnD] Drag started: ${cd.type} = ${cd.data?.name || cd.data?.room}`);
       }
 
-      if (td.isDragging && td.ghostEl) {
-        e.preventDefault();
-        td.ghostEl.style.left = `${touch.clientX}px`;
-        td.ghostEl.style.top = `${touch.clientY}px`;
-
-        const els = document.elementsFromPoint(touch.clientX, touch.clientY);
-        let foundRoom: string | null = null;
-        let foundPlayer = false;
-        for (const el of els) {
-          const hotspotEl = (el as HTMLElement).closest("[data-room-hotspot]") as HTMLElement | null;
-          if (hotspotEl) {
-            foundRoom = hotspotEl.dataset.roomHotspot || null;
-            break;
-          }
-          const playerEl = (el as HTMLElement).closest("[data-player-drop]") as HTMLElement | null;
-          if (playerEl) {
-            foundPlayer = true;
-            break;
-          }
-        }
-        td.currentDropRoom = foundRoom;
+      if (cd.isDragging && cd.ghostEl) {
+        cd.ghostEl.style.left = `${cx}px`;
+        cd.ghostEl.style.top = `${cy}px`;
+        const { foundRoom, foundPlayer } = findDropTarget(cx, cy, cd.type);
+        cd.currentDropRoom = foundRoom;
+        cd.currentDropPlayer = foundPlayer;
         setDropTarget(foundRoom);
-        setPlayerDropHighlight(foundPlayer && td.type === "speaker");
+        setPlayerDropHighlight(foundPlayer);
       }
+      return cd.isDragging;
     };
 
-    const onTouchEnd = () => {
-      const td = touchDragRef.current;
-      if (!td) return;
-
-      if (td.isDragging && td.movedEnough) {
-        const room = td.currentDropRoom;
-        if (room) {
-          console.log(`[DnD-Touch] Dropped on room: ${room}`);
-          if (td.type === "artist") playOnRoom(room, td.data);
-          else if (td.type === "room" && td.data.room !== room) groupRooms(td.data.room, room);
-        } else {
-          console.log(`[DnD-Touch] Dropped outside any room`);
-        }
+    const onEnd = () => {
+      const cd = customDragRef.current;
+      if (!cd) return;
+      if (cd.isDragging && cd.movedEnough) {
+        handleDragDrop(cd);
+        didDragRef.current = true;
+        requestAnimationFrame(() => { requestAnimationFrame(() => { didDragRef.current = false; }); });
       }
-      cleanupTouchDrag();
+      cleanupCustomDrag();
     };
 
+    const onMouseMove = (e: MouseEvent) => {
+      if (onMove(e.clientX, e.clientY)) {
+        e.preventDefault();
+      }
+    };
+    const onMouseUp = () => onEnd();
+
+    const onTouchMove = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      if (onMove(touch.clientX, touch.clientY)) {
+        e.preventDefault();
+      }
+    };
+    const onTouchEnd = () => onEnd();
+
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
     document.addEventListener("touchmove", onTouchMove, { passive: false });
     document.addEventListener("touchend", onTouchEnd);
     document.addEventListener("touchcancel", onTouchEnd);
     return () => {
+      document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseup", onMouseUp);
       document.removeEventListener("touchmove", onTouchMove);
       document.removeEventListener("touchend", onTouchEnd);
       document.removeEventListener("touchcancel", onTouchEnd);
     };
-  }, [viewMode, cleanupTouchDrag]);
+  }, [viewMode, cleanupCustomDrag, handleDragDrop]);
 
   const switchProfile = (p: ProfileKey) => {
     if (p === activeProfile) return;
@@ -1616,9 +1613,6 @@ export default function SpotifyPlayerPage() {
           <div className="flex flex-col gap-3 flex-shrink-0" style={{ width: 260 }}>
             <HoloPanel accent={profile.accent} glow={isPlaying} sakura={isSakura} className="p-3 flex flex-col items-center"
               data-player-drop="true"
-              onDrop={handlePlayerDrop}
-              onDragOver={handlePlayerDragOver}
-              onDragLeave={() => setPlayerDropHighlight(false)}
               style={playerDropHighlight ? { outline: `2px dashed ${profile.accent}`, outlineOffset: -2 } : undefined}>
               {isPlaying && nowPlaying?.albumArt ? (
                 <div className="relative w-full flex flex-col items-center">
@@ -1710,15 +1704,15 @@ export default function SpotifyPlayerPage() {
                   {profile.artists.map((artist, i) => {
                     const isSelected = selectedArtist?.name === artist.name;
                     return (
-                    <div key={artist.name} draggable
-                      onDragStart={handleDragStart("artist", artist)}
-                      onDragEnd={() => setDragItem(null)}
-                      onTouchStart={handleTouchStart("artist", artist)}
+                    <div key={artist.name}
+                      onMouseDown={handleMouseDragStart("artist", artist)}
+                      onTouchStart={handleTouchDragStart("artist", artist)}
                       onClick={() => {
+                        if (didDragRef.current) return;
                         if (selectedArtist?.name === artist.name) { setSelectedArtist(null); }
                         else { setSelectedArtist(artist); if (viewMode !== "floor") { switchView("floor"); } showNotif(isSakura ? `${artist.name} を選択 → 部屋をタップ` : `${artist.name} selected — tap a room`); }
                       }}
-                      className="flex flex-col items-center gap-1 p-2 rounded-lg cursor-pointer transition-all group hover:scale-105"
+                      className="flex flex-col items-center gap-1 p-2 rounded-lg cursor-grab transition-all group hover:scale-105"
                       style={{
                         touchAction: "none",
                         background: isSelected
@@ -1891,12 +1885,10 @@ export default function SpotifyPlayerPage() {
                   return (
                     <div key={spot.room}
                       data-room-hotspot={spot.room}
-                      draggable onDragStart={handleDragStart("room", spot)}
-                      onDrop={handleRoomDrop(spot.room)}
-                      onDragOver={handleDragOver(spot.room)}
-                      onDragLeave={() => setDropTarget(null)}
-                      onTouchStart={handleTouchStart("room", spot)}
+                      onMouseDown={handleMouseDragStart("room", spot)}
+                      onTouchStart={handleTouchDragStart("room", spot)}
                       onClick={() => {
+                        if (didDragRef.current) return;
                         if (selectedArtist) {
                           playOnRoom(spot.room, selectedArtist);
                           setSelectedArtist(null);
@@ -2021,10 +2013,10 @@ export default function SpotifyPlayerPage() {
                                       const isSpeakerActive = isActive || activeRooms.has("Everywhere");
                                       return (
                                         <button key={spk.entityId}
-                                          draggable
-                                          onDragStart={handleDragStart("speaker", { ...spk, room: spot.room })}
-                                          onDragEnd={() => setDragItem(null)}
+                                          onMouseDown={handleMouseDragStart("speaker", { ...spk, room: spot.room })}
+                                          onTouchStart={handleTouchDragStart("speaker", { ...spk, room: spot.room })}
                                           onClick={() => {
+                                            if (didDragRef.current) return;
                                             if (selectedArtist) {
                                               playOnRoom(spot.room, selectedArtist);
                                               setFloorSpeakerPopup(null);
