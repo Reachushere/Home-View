@@ -20968,7 +20968,7 @@ export default function Dashboard() {
                     const nwDow = nwNow.getDay();
                     const nwSat = startOfDayET(addDays(nwNow, nwDow === 6 ? 7 : (6 - nwDow)));
                     const isDayNextSchoolWeek = !isDayToday && startOfDayET(day) >= nwSat;
-                    const cellBgColor = isDayToday ? '#e4ecf5' : isDayNextSchoolWeek ? dimColor(course.bg, 0.5) : course.bg;
+                    const cellBgColor = isDayToday ? '#e4ecf5' : isDayNextSchoolWeek ? dimColor(course.bg, 0.75) : course.bg;
                     const cellDate = startOfDayET(day);
                     
                     const dueTasks = allTasks?.filter(task => {
