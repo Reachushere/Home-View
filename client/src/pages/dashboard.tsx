@@ -23709,7 +23709,7 @@ export default function Dashboard() {
             if (now < semDates.f2026Start) {
               const ssMaxWk = now >= semDates.ss2026Start ? 6 : 6;
               for (let w = 1; w <= ssMaxWk; w++) {
-                semTabs.push({ id: `ss26-wk${w}`, label: `SS Wk ${w}`, semLabel: 'Spring/Summer 2026', scrollTarget: w === 1 ? 'sem-ss2026' : `sem-ss2026-wk${w}` });
+                semTabs.push({ id: `ss26-wk${w}`, label: `S Wk ${w}`, semLabel: 'Spring/Summer 2026', scrollTarget: w === 1 ? 'sem-ss2026' : `sem-ss2026-wk${w}` });
               }
             }
             if (now >= semDates.ss2026End && now < semDates.f2026Start) {
