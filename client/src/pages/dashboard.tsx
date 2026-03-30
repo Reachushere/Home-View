@@ -1199,6 +1199,7 @@ export default function Dashboard() {
   const [calendarReductionUserSet, setCalendarReductionUserSetRaw] = useState(() => {
     const resetKey = 'calendarHeight_reset_v15';
     if (!localStorage.getItem(resetKey)) return false;
+    if (localStorage.getItem('calendarReductionUserSet')) return true;
     if (localStorage.getItem('calendarReduction')) return true;
     const sw = window.screen.width, sh = window.screen.height, pr = window.devicePixelRatio || 1;
     const did = `device_${sw}x${sh}@${pr}`;
@@ -1209,6 +1210,7 @@ export default function Dashboard() {
   const setCalendarReductionUserSet = (val: boolean) => {
     calendarReductionUserSetRef.current = val;
     setCalendarReductionUserSetRaw(val);
+    if (val) localStorage.setItem('calendarReductionUserSet', '1');
   };
   const [isResizingHomework, setIsResizingHomework] = useState(false);
   const resizingHomeworkRef = useRef<{ startX: number; startReduction: number } | null>(null);
@@ -3093,6 +3095,17 @@ export default function Dashboard() {
     }, 1500);
     return () => clearTimeout(timer);
   }, [calendarHeight]);
+
+  useEffect(() => {
+    if (!calendarReductionUserSetRef.current) return;
+    localStorage.setItem('calendarReduction', calendarReduction.toString());
+    const sw = window.screen.width, sh = window.screen.height, pr = window.devicePixelRatio || 1;
+    localStorage.setItem(`calendarReduction_device_${sw}x${sh}@${pr}`, calendarReduction.toString());
+    const timer = setTimeout(() => {
+      saveDegreeKeyDebounced('calendarReduction', calendarReduction);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [calendarReduction]);
   
   // Column resize state
   const [columnResizing, setColumnResizing] = useState<{
