@@ -12407,6 +12407,24 @@ export default function Dashboard() {
             </Button>
           </div>
 
+          {/* Quick Notes Button */}
+          <div className="pill-button-hover" style={{ 
+            marginTop: '3px', width: '44px', height: '44px', borderRadius: '50%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%)',
+            border: '1.5px solid rgba(255,255,255,0.35)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <a
+              href="/onenote"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200 flex items-center justify-center"
+              style={{ background: 'transparent', textDecoration: 'none' }}
+              title="Quick Notes"
+              data-testid="honeycomb-quick-notes"
+            >
+              <StickyNote className="text-white" style={{ height: '18px', width: '18px', strokeWidth: 1.5 }} />
+            </a>
+          </div>
 
           {/* Feedback Button */}
           <div className="pill-button-hover" style={{ 
@@ -12747,25 +12765,6 @@ export default function Dashboard() {
               <CheckSquare className="h-[18px] w-[18px] text-white" />
             </Button>
           </div>
-
-
-          {/* Quick Notes Button */}
-          <a 
-            href="/onenote"
-            style={{ 
-              marginTop: '3px', width: '44px', height: '44px', borderRadius: '50%',
-              background: 'linear-gradient(135deg, #4B2D7F 0%, #7B5EA7 100%)',
-              border: '1.5px solid rgba(255,255,255,0.5)',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-              textDecoration: 'none',
-            }}
-            className="pill-button-hover"
-            title="Quick Notes"
-            data-testid="honeycomb-quick-notes"
-          >
-            <StickyNote style={{ color: 'white', strokeWidth: 1.5, height: '18px', width: '18px' }} />
-          </a>
 
 
           {/* Todo Button (swapped from tall pill) */}
