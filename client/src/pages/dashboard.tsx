@@ -20266,7 +20266,7 @@ export default function Dashboard() {
               const todayW = gridSizes.dayColumnWidths[todayIdx] || 0;
               const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
               return (
-                <div className="absolute bottom-0 z-[45] pointer-events-none" style={{ top: '0px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px))`, width: `calc((${todayW} / ${totalDayW}) * (100% - ${fixedW}px))`, borderLeft: '2.5px solid #000000', borderRight: '2.5px solid #000000', borderBottom: '2.5px solid #000000', borderTop: 'none' }} />
+                <div className="absolute bottom-0 z-[45] pointer-events-none" style={{ top: '0px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px))`, width: `calc((${todayW} / ${totalDayW}) * (100% - ${fixedW}px))` }} />
               );
             })()}
             {/* Red separator on left border of today column - only show when there are next-week columns to the left */}
@@ -20278,19 +20278,7 @@ export default function Dashboard() {
               const beforeW = gridSizes.dayColumnWidths.slice(0, todayIdx).reduce((a: number, b: number) => a + b, 0);
               const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
               return (
-                <div className="absolute top-0 bottom-0 z-50 pointer-events-none overflow-hidden" style={{ left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px) - 4px)`, width: '9px' }}>
-                  <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: '2.5px', backgroundColor: '#000000' }} />
-                  <div style={{ position: 'absolute', top: 0, bottom: 0, right: 0, width: '1.5px', backgroundColor: '#000000' }} />
-                  <svg style={{ position: 'absolute', top: 0, left: '2.5px', width: 'calc(100% - 4px)', height: '100%' }}>
-                    <defs>
-                      <pattern id="blackWhiteDiagVert" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(45)">
-                        <rect width="10" height="10" fill="#000000" />
-                        <line x1="0" y1="0" x2="0" y2="10" stroke="#ffffff" strokeWidth="2" strokeOpacity="0.85" />
-                      </pattern>
-                    </defs>
-                    <rect width="100%" height="100%" fill="url(#blackWhiteDiagVert)" />
-                  </svg>
-                </div>
+                <div className="absolute top-0 bottom-0 z-50 pointer-events-none" style={{ left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px) - 2px)`, width: '4px', backgroundColor: '#000000' }} />
               );
             })()}
             
