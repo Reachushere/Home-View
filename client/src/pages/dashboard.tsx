@@ -20495,8 +20495,9 @@ export default function Dashboard() {
                                   overflow: 'hidden',
                                 }}
                                 onClick={(e) => { e.stopPropagation(); setEditingTask(item.task); }}
-                                onMouseEnter={() => setHoveredCountdownTaskIdStable(item.task.id)}
-                                onMouseLeave={() => setHoveredCountdownTaskIdStable(null)}
+                                onMouseEnter={() => setHoveredCountdownTaskIdDebounced(item.task.id)}
+                                onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
+
                                 data-testid={`countdown-bar-${item.task.id}`}
                               >
                                 {isStart && (
