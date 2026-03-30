@@ -12242,7 +12242,7 @@ export default function Dashboard() {
 
 
           {/* ── Tools ── */}
-          <div style={{ background: 'rgba(255,255,255,0.07)', borderRadius: '26px', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 'inherit' }}>
+          <div style={{ background: 'rgba(255,255,255,0.13)', borderRadius: '26px', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 'inherit', boxShadow: 'inset 0 0.5px 0 rgba(255,255,255,0.18), 0 0.5px 1px rgba(0,0,0,0.12)' }}>
           {/* Home Assistant (moved from bottom pill) */}
           {isAdmin && (
           <div 
@@ -12524,7 +12524,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── School ── */}
-          <div style={{ background: 'rgba(255,255,255,0.07)', borderRadius: '26px', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 'inherit' }}>
+          <div style={{ background: 'rgba(255,255,255,0.13)', borderRadius: '26px', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 'inherit', boxShadow: 'inset 0 0.5px 0 rgba(255,255,255,0.18), 0 0.5px 1px rgba(0,0,0,0.12)' }}>
           {/* Courses Button */}
           <div className="pill-button-hover" style={{ 
             marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
@@ -12624,7 +12624,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Entertainment ── */}
-          <div style={{ background: 'rgba(255,255,255,0.07)', borderRadius: '26px', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 'inherit' }}>
+          <div style={{ background: 'rgba(255,255,255,0.13)', borderRadius: '26px', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 'inherit', boxShadow: 'inset 0 0.5px 0 rgba(255,255,255,0.18), 0 0.5px 1px rgba(0,0,0,0.12)' }}>
           {/* Spotify Button */}
           <div className="pill-button-hover" style={{ 
             marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
@@ -12712,7 +12712,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Tasks ── */}
-          <div style={{ background: 'rgba(255,255,255,0.07)', borderRadius: '26px', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 'inherit' }}>
+          <div style={{ background: 'rgba(255,255,255,0.13)', borderRadius: '26px', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 'inherit', boxShadow: 'inset 0 0.5px 0 rgba(255,255,255,0.18), 0 0.5px 1px rgba(0,0,0,0.12)' }}>
           {/* Completed Tasks Button - Swapped with Graduation Hat */}
           <div className="pill-button-hover" style={{ 
             marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%',
@@ -23791,7 +23791,7 @@ export default function Dashboard() {
                           const tFs = '10';
                           const tFw = isActive ? '450' : '350';
                           const isTopTab = tabIdx === 0;
-                          const tFill = isTopTab ? colorSettings.mainBackground : 'rgba(255,255,255,0.75)';
+                          const tFill = colorSettings.headerBar;
                           return (
                             <text x="6" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 6, 26)">{tab.label}</text>
                           );
@@ -24330,13 +24330,13 @@ export default function Dashboard() {
                           <div data-swipe-reschedule data-testid={`swipe-reschedule-${task.id}`} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0px', background: '#3b82f6', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 1, borderRadius: '0 4px 4px 0', cursor: 'pointer' }}>
                             <span className="text-white text-[9px] font-bold">Reschedule</span>
                           </div>
-                          <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '4px', paddingBottom: '5px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
+                          <div data-swipe-content style={{ position: 'relative', zIndex: 2, background: 'transparent', paddingTop: '6px', paddingBottom: '7px', paddingLeft: '4px', cursor: 'grab', userSelect: 'none', WebkitUserSelect: 'none' as any, touchAction: 'pan-y' }}>
                           <div data-box-task-id={task.id} style={{ display: 'flex', gap: '2px', alignItems: 'stretch' }}>
-                            <div ref={centerCircleOnGroupBar} style={{ position: 'absolute', left: '86px', top: '50%', transform: 'translateY(-50%)', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 5, border: task.flagged ? '2px solid #ef4444' : 'none', boxShadow: task.flagged ? '0 0 6px rgba(239,68,68,0.5)' : 'none' }}>
-                              <span style={{ fontSize: '6px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.3px', marginTop: '1px', marginBottom: '-1px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
-                              <span style={{ fontSize: '8px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textAlign: 'center', display: 'block', marginTop: '1px' }}>{format(new Date(task.dueDate), 'd')}</span>
+                            <div style={{ width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 5, border: task.flagged ? '2px solid #ef4444' : 'none', boxShadow: task.flagged ? '0 0 6px rgba(239,68,68,0.5)' : 'none', alignSelf: 'center' }}>
+                              <span style={{ fontSize: '7px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.3px', marginTop: '2px', marginBottom: '-2px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
+                              <span style={{ fontSize: '9px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textAlign: 'center', display: 'block', marginTop: '1px' }}>{format(new Date(task.dueDate), 'd')}</span>
                             </div>
-                            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px', marginLeft: '23px' }}>
+                            <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '5px' }}>
                               <div>
                                 <button
                                   className="text-[10px] truncate hover:underline cursor-pointer leading-none w-full"
@@ -24351,13 +24351,26 @@ export default function Dashboard() {
                                   <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName.replace(/^\[|\]$/g, '')}</span>
                                 </div>
                               </div>
-                              {cfp && cfp.moduleP.hasFiles && (task.type === 'module' || task.type === 'reading') && (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '2px', paddingTop: '2px' }}>
-                                  <span className="text-[11px] text-white font-medium" style={{ marginLeft: '0px', lineHeight: 1 }}>M</span>
-                                  <div style={{ width: '17px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(255,255,255,0.15)', overflow: 'hidden' }}>
-                                    {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
-                                  </div>
-                                  <span className="text-[11px] font-bold text-white" style={{ flexShrink: 0, minWidth: '22px', textAlign: 'right', lineHeight: 1 }}>{cfp.moduleP.percent}%</span>
+                              {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (task.type === 'module' || task.type === 'reading') && (
+                                <div style={{ display: 'flex', gap: '6px', paddingTop: '2px', flexWrap: 'nowrap' }}>
+                                  {cfp.moduleP.hasFiles && (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0 }}>
+                                      <span className="text-[11px] text-white font-medium" style={{ marginLeft: '0px', lineHeight: 1 }}>M</span>
+                                      <div style={{ width: '17px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(255,255,255,0.15)', overflow: 'hidden' }}>
+                                        {cfp.moduleP.percent > 0 && <div style={{ width: `${cfp.moduleP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.moduleP.percent) }} />}
+                                      </div>
+                                      <span className="text-[11px] font-bold text-white" style={{ lineHeight: 1 }}>{cfp.moduleP.percent}%</span>
+                                    </div>
+                                  )}
+                                  {cfp.readingP.hasFiles && (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0 }}>
+                                      <span className="text-[11px] text-white font-medium" style={{ marginLeft: '-2px', lineHeight: 1 }}>R</span>
+                                      <div style={{ width: '17px', height: '4px', borderRadius: '2px', backgroundColor: 'rgba(255,255,255,0.15)', overflow: 'hidden' }}>
+                                        {cfp.readingP.percent > 0 && <div style={{ width: `${cfp.readingP.percent}%`, height: '100%', borderRadius: '2px', backgroundColor: cfp.getFileProgressColor(cfp.readingP.percent) }} />}
+                                      </div>
+                                      <span className="text-[11px] font-bold text-white" style={{ lineHeight: 1 }}>{cfp.readingP.percent}%</span>
+                                    </div>
+                                  )}
                                 </div>
                               )}
                             </div>
