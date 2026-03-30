@@ -22138,8 +22138,7 @@ export default function Dashboard() {
                                 data-cal-task-id={task.id}
                                 data-cal-date={format(day, 'yyyy-MM-dd')}
                               >
-                                {/* Red shimmer swipe for due today tasks */}
-                                <div className={`flex items-center gap-1.5 px-0.5 pt-0.5 pb-0 ${isDueToday ? "silver-shimmer-header" : ""}`}>
+                                <div className="flex items-center gap-1.5 px-0.5 pt-0.5 pb-0">
                                   <Checkbox
                                       checked={task.isCompleted || false}
                                       onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
@@ -22302,8 +22301,7 @@ export default function Dashboard() {
                       data-cal-task-id={task.id}
                       data-cal-date={format(taskDay, 'yyyy-MM-dd')}
                     >
-                      {/* Red shimmer swipe for due today tasks */}
-                      <div className={`flex items-center gap-1.5 px-0.5 py-1 ${isDueToday ? "silver-shimmer-header" : ""}`}>
+                      <div className="flex items-center gap-1.5 px-0.5 py-1">
                         <Checkbox
                             checked={task.isCompleted || false}
                             onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
