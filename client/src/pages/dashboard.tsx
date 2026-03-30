@@ -20435,11 +20435,11 @@ export default function Dashboard() {
                     .map(t => {
                       const due = startOfDayET(new Date(t.dueDate));
                       const daysUntilDue = Math.round((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-                      const barStartDay = weekDays.findIndex(d => isSameDayET(d, today) || startOfDayET(d) > today);
-                      const barEndDay = weekDays.findIndex(d => isSameDayET(d, due));
-                      const barEndDayIdx = barEndDay >= 0 ? barEndDay : (due > weekEnd ? 6 : -1);
-                      const barStartDayIdx = barStartDay >= 0 ? barStartDay : (today < weekStart ? 0 : -1);
-                      if (barStartDayIdx < 0 || barEndDayIdx < 0 || barStartDayIdx > barEndDayIdx) return null;
+                      const barStartDay = weekDays.findIndex((d, i) => i > 0 && (isSameDayET(d, today) || startOfDayET(d) > today));
+                      const barEndDay = weekDays.findIndex((d, i) => i > 0 && isSameDayET(d, due));
+                      const barEndDayIdx = barEndDay >= 1 ? barEndDay : (due > startOfDayET(weekDays[6]) ? 6 : -1);
+                      const barStartDayIdx = barStartDay >= 1 ? barStartDay : (today < startOfDayET(weekDays[1]) ? 1 : -1);
+                      if (barStartDayIdx < 1 || barEndDayIdx < 1 || barStartDayIdx > barEndDayIdx) return null;
                       const courseCode = t.courseName?.split(' - ')[0]?.toUpperCase() || '';
                       const courseInfo = filteredCourses.find(c => c.name.split(' - ')[0]?.toUpperCase() === courseCode);
                       return {
