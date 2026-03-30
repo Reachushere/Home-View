@@ -372,6 +372,9 @@ export const tasks = pgTable("tasks", {
   hideFromTimeline: boolean("hide_from_timeline").default(false),
   flagged: boolean("flagged").default(false),
   showCountdownBar: boolean("show_countdown_bar").default(true),
+  showCountdownBarMain: boolean("show_countdown_bar_main").default(true),
+  showCountdownBarSummary: boolean("show_countdown_bar_summary").default(true),
+  countdownBarDays: integer("countdown_bar_days").default(0),
 });
 
 // Base schema from drizzle, then override date fields to accept ISO strings

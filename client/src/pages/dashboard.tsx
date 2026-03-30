@@ -20495,9 +20495,14 @@ export default function Dashboard() {
                   return allTasks
                     .filter(t => {
                       if (!t.showCountdownBar) return false;
+                      if (t.showCountdownBarMain === false) return false;
                       if (t.isCompleted) return false;
                       const due = startOfDayET(new Date(t.dueDate));
                       if (due < today) return false;
+                      if (t.countdownBarDays && t.countdownBarDays > 0) {
+                        const daysUntil = Math.round((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                        if (daysUntil > t.countdownBarDays) return false;
+                      }
                       return true;
                     })
                     .map(t => {
@@ -24291,52 +24296,8 @@ export default function Dashboard() {
                 {dueTodayTasks.length === 0 ? (
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks due today</div>
                 ) : (
-                  <div data-hw-group-row style={{ display: 'flex', alignItems: 'flex-start', marginTop: '4px' }}>
-                    <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginLeft: '9px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2 }}>
-                      <span className="text-[9px] font-medium" style={{ color: '#ffffff', marginBottom: '2px' }}>
-                        {format(new Date(), 'MMMM d')}
-                      </span>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', width: `${hwGroupBarWidth + 9}px`, marginLeft: '-9px' }}>
-                        <div style={{ display: 'flex', gap: '2px', padding: '0 2px', width: '100%', justifyContent: 'flex-end' }}>
-                          {['Su','Mo','Tu','We','Th','Fr','Sa'].map((dl, dli) => (
-                            <div key={dli} style={{ flex: 1, minWidth: 0, fontSize: '8px', fontWeight: 600, textAlign: 'center', color: '#ffffff' }}>{dl}</div>
-                          ))}
-                        </div>
-                        {(() => {
-                          const todayDate = startOfDayET(new Date());
-                          const weekStart = startOfWeek(todayDate, { weekStartsOn: 0 });
-                          const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
-                          const dueDates = dueTodayTasks.map(t => ({ date: startOfDayET(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
-                          return (
-                            <div style={{ display: 'flex', gap: '2px', padding: '1px 2px', width: '100%', justifyContent: 'flex-end', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.15)', border: '0.5px solid rgba(255,255,255,0.55)' }}>
-                              {days.map((d, di) => {
-                                const isToday = isSameDayET(d, todayDate);
-                                const dueMatches = dueDates.filter(dd => isSameDayET(d, dd.date));
-                                const uniqueCourses = [...new Set(dueMatches.map(m => m.courseCode))];
-                                const isDue = uniqueCourses.length > 0;
-                                const dueColors = uniqueCourses.map(cc => getCourseGradientColors(cc).end);
-                                const dueBg = dueColors.length === 1 ? dueColors[0] : dueColors.length > 1 ? `linear-gradient(to right, ${dueColors.map((c, i) => `${c} ${(i / dueColors.length) * 100}%, ${c} ${((i + 1) / dueColors.length) * 100}%`).join(', ')})` : '';
-                                return (
-                                  <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDayET(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
-                                    flex: 1, minWidth: 0, height: '11px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-                                    color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
-                                    background: isToday ? todayCellBg : isDue ? dueBg : 'rgba(255,255,255,0.15)',
-                                    border: isDue && !isToday ? `1px solid ${dueColors[0]}` : 'none',
-                                  }} data-testid={`mini-cal-today-${format(d, 'yyyy-MM-dd')}`}>
-                                    {d.getDate()}
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          );
-                        })()}
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', alignSelf: 'stretch', position: 'relative', zIndex: 3 }}>
-                      <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0, marginRight: '-7px' }}><div style={{ maxHeight: '80px', overflowY: 'auto', scrollbarWidth: 'none', marginLeft: `${-(hwGroupBarWidth / 2 + 17)}px`, paddingLeft: `${hwGroupBarWidth / 2 + 17}px` }}>
+                  <div style={{ marginTop: '4px' }}>
+                    <div style={{ maxHeight: '80px', overflowY: 'auto', scrollbarWidth: 'none' }}>
                   <div className="flex flex-col gap-0.5">
                     {dueTodayTasks.map((task, tIdx) => {
                       const progressBarWidth = getProgressBarWidth(task);
@@ -24407,7 +24368,6 @@ export default function Dashboard() {
                       );
                     })}
                   </div>
-                    </div>
                     </div>
                   </div>
                 )}
@@ -24611,9 +24571,10 @@ export default function Dashboard() {
                 </>)}
                 {/* Next Week Section */}
                 <div data-homework-section="nextweek" data-semester-label={hwWeeklyTimeline[1]?.semLabel || ''} style={{ marginTop: '15px', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '5px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', width: 'fit-content', marginBottom: '0px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', marginBottom: '0px' }}>
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', flexShrink: 0 }}>{hwWeeklyTimeline[1]?.label || 'Week'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', flexShrink: 0 }}>({dueNextWeekTasks.length})</span>
+                    <div style={{ flex: 1 }} />
                     {/Week\s+\d/i.test(hwWeeklyTimeline[1]?.label || '') && hwWeeklyTimeline[1]?.weekStart && hwWeeklyTimeline[1]?.weekEnd && (
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', flexShrink: 0, marginLeft: '2px', width: '40px' }}>
                         <span style={{ fontSize: '7px', fontWeight: 600, color: '#ffffff', lineHeight: '8px', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden' }}>{(() => { const sm = format(hwWeeklyTimeline[1].weekStart, 'MMM').toUpperCase(); const em = format(hwWeeklyTimeline[1].weekEnd, 'MMM').toUpperCase(); return sm === em ? sm : `${sm}-${em}`; })()}</span>
@@ -24790,9 +24751,10 @@ export default function Dashboard() {
                 </div>
                 {/* 2 Weeks Section */}
                 <div data-homework-section="twoweeks" data-semester-label={hwWeeklyTimeline[2]?.semLabel || ''} style={{ marginTop: '15px', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '5px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', width: 'fit-content', marginBottom: '0px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', marginBottom: '0px' }}>
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', flexShrink: 0 }}>{hwWeeklyTimeline[2]?.label || 'Two weeks'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', flexShrink: 0 }}>({dueTwoWeeksTasks.length})</span>
+                    <div style={{ flex: 1 }} />
                     {/Week\s+\d/i.test(hwWeeklyTimeline[2]?.label || '') && (
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', flexShrink: 0, marginLeft: '2px', width: '40px' }}>
                         <span style={{ fontSize: '7px', fontWeight: 600, color: '#ffffff', lineHeight: '8px', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden' }}>{(() => { const sm = format(twoWeeksStart, 'MMM').toUpperCase(); const em = format(threeWeeksEnd, 'MMM').toUpperCase(); return sm === em ? sm : `${sm}-${em}`; })()}</span>
@@ -26540,15 +26502,6 @@ export default function Dashboard() {
                 <DialogTitle className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>EDIT TASK</DialogTitle>
               </div>
               <div className="flex items-center gap-3">
-                <Button
-                  variant="outline"
-                  className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8"
-                  style={{ fontSize: '12px' }}
-                  onClick={() => setEditingTask(null)}
-                  data-testid="button-cancel-edit-task"
-                >
-                  Cancel
-                </Button>
                 {editingTask && editingTask.type === 'reminder' && !(editingTask as any).isAcknowledged && (
                   <Button
                     variant="outline"
@@ -26576,45 +26529,22 @@ export default function Dashboard() {
                 )}
                 {editingTask && (
                   <Button
-                    variant="outline"
-                    className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8"
-                    style={{
-                      fontSize: '12px',
-                      boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)'
+                    size="icon"
+                    variant="ghost"
+                    className="text-white/60 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200 h-7 w-7"
+                    onClick={() => {
+                      if (!confirm(`Delete "${editingTask.title}"? This cannot be undone.`)) return;
+                      const taskId = editingTask.id;
+                      setEditingTask(null);
+                      doDeleteSingleTask(taskId);
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 0 8px rgba(255,255,255,0.8), 0 0 16px rgba(255,255,255,0.6), 0 0 24px rgba(255,255,255,0.5)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)'; }}
-                    onPointerDown={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      const form = document.querySelector('[data-edit-task-form]') as HTMLFormElement;
-                      if (form) form.requestSubmit();
-                    }}
-                    data-testid="button-update-task-header"
+                    data-testid="button-delete-task-header"
                   >
-                    Update Task
+                    <Trash2 className="h-3.5 w-3.5" />
                   </Button>
                 )}
               </div>
             </DialogHeader>
-            {editingTask && (
-              <div className="relative">
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="absolute top-0 right-0 z-10 text-white/60 hover:text-white hover:bg-transparent transition-opacity duration-200 h-6 w-6"
-                  onClick={() => {
-                    if (!confirm(`Delete "${editingTask.title}"?`)) return;
-                    const taskId = editingTask.id;
-                    setEditingTask(null);
-                    doDeleteSingleTask(taskId);
-                  }}
-                  data-testid="button-delete-task-dialog"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </Button>
-              </div>
-            )}
             {editingTask && (
               <div className="flex flex-wrap items-center gap-1.5 px-1 -mt-1 mb-1">
                 {editingTask.calendarEventId && (
@@ -26799,6 +26729,7 @@ export default function Dashboard() {
               </div>
             )}
             {editingTask && (
+              <>
               <TaskForm 
                 key={`edit-task-${editingTask.id}`}
                 task={editingTask}
@@ -26810,6 +26741,43 @@ export default function Dashboard() {
                 }}
                 onUndoPush={(action) => pushUndo(action as UndoAction)}
               />
+              <div className="flex justify-end gap-3 pt-3 mt-2 border-t border-white/10">
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center rounded-md px-4 py-1.5 text-white/70 hover:text-white transition-all duration-200"
+                  style={{
+                    fontSize: '11px',
+                    border: '1.5px solid rgba(255,255,255,0.3)',
+                    background: 'rgba(255,255,255,0.06)',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.12)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)'; }}
+                  onClick={() => { setEditingTask(null); setDupResults(null); setDupDiffTimeEvents([]); setDupShowDiffTime(false); setDupSearching(false); setDupDeleting(false); setEmailWizardSelected(new Set()); }}
+                  data-testid="button-cancel-edit-task"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center rounded-md px-4 py-1.5 text-white transition-opacity duration-200"
+                  style={{
+                    fontSize: '11px',
+                    border: '1.5px solid rgba(255,255,255,0.6)',
+                    background: 'linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.15) 48%, rgba(255,255,255,0.06) 52%, rgba(255,255,255,0.22) 100%)',
+                    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)'
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.22) 48%, rgba(255,255,255,0.1) 52%, rgba(255,255,255,0.3) 100%)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.15) 48%, rgba(255,255,255,0.06) 52%, rgba(255,255,255,0.22) 100%)'; }}
+                  onClick={() => {
+                    const form = document.querySelector('[data-edit-task-form]') as HTMLFormElement;
+                    if (form) form.requestSubmit();
+                  }}
+                  data-testid="button-update-task-footer"
+                >
+                  Update Task
+                </button>
+              </div>
+              </>
             )}
           </DialogContent>
         </Dialog>
@@ -29572,6 +29540,9 @@ function TaskForm({
     hideFromSummary: task?.hideFromSummary ?? false,
     flagged: task?.flagged ?? false,
     showCountdownBar: task?.showCountdownBar ?? true,
+    showCountdownBarMain: task?.showCountdownBarMain ?? true,
+    showCountdownBarSummary: task?.showCountdownBarSummary ?? true,
+    countdownBarDays: task?.countdownBarDays ?? 0,
   });
   const [newAttachment, setNewAttachment] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -29696,6 +29667,9 @@ function TaskForm({
         hideFromSummary: data.hideFromSummary ?? false,
         flagged: data.flagged ?? false,
         showCountdownBar: data.showCountdownBar ?? false,
+        showCountdownBarMain: data.showCountdownBarMain ?? true,
+        showCountdownBarSummary: data.showCountdownBarSummary ?? true,
+        countdownBarDays: data.countdownBarDays ?? 0,
       };
       if (task) {
         if (onUndoPush) {
@@ -29786,6 +29760,9 @@ function TaskForm({
         hideFromSummary: data.hideFromSummary ?? false,
         flagged: data.flagged ?? false,
         showCountdownBar: data.showCountdownBar ?? false,
+        showCountdownBarMain: data.showCountdownBarMain ?? true,
+        showCountdownBarSummary: data.showCountdownBarSummary ?? true,
+        countdownBarDays: data.countdownBarDays ?? 0,
       };
       if (hasSameTitleSiblings && !isLinkedRecurring) {
         payload.originalTitle = task.title;
@@ -30243,16 +30220,58 @@ function TaskForm({
             </label>
           </div>
 
-          <div className="flex items-center gap-2">
-            <label className="flex items-center gap-2 cursor-pointer select-none" data-testid="toggle-show-countdown-bar">
-              <input
-                type="checkbox"
-                checked={formData.showCountdownBar}
-                onChange={(e) => setFormData(prev => ({ ...prev, showCountdownBar: e.target.checked }))}
-                className="w-3.5 h-3.5 rounded accent-blue-500"
-              />
-              <span className="text-[10px] text-white/70">Show planning countdown bar</span>
-            </label>
+          <div className="flex flex-col gap-1.5">
+            <div className="flex items-center gap-2">
+              <label className="flex items-center gap-2 cursor-pointer select-none" data-testid="toggle-show-countdown-bar">
+                <input
+                  type="checkbox"
+                  checked={formData.showCountdownBar}
+                  onChange={(e) => setFormData(prev => ({ ...prev, showCountdownBar: e.target.checked }))}
+                  className="w-3.5 h-3.5 rounded accent-blue-500"
+                />
+                <span className="text-[10px] text-white/70">Show planning countdown bar</span>
+              </label>
+            </div>
+            {formData.showCountdownBar && (
+              <div className="flex items-center gap-3 pl-5">
+                <label className="flex items-center gap-1.5 cursor-pointer select-none" data-testid="toggle-countdown-bar-main">
+                  <input
+                    type="checkbox"
+                    checked={formData.showCountdownBarMain}
+                    onChange={(e) => setFormData(prev => ({ ...prev, showCountdownBarMain: e.target.checked }))}
+                    className="w-3 h-3 rounded accent-blue-500"
+                  />
+                  <span className="text-[9px] text-white/50">Main tasks</span>
+                </label>
+                <label className="flex items-center gap-1.5 cursor-pointer select-none" data-testid="toggle-countdown-bar-summary">
+                  <input
+                    type="checkbox"
+                    checked={formData.showCountdownBarSummary}
+                    onChange={(e) => setFormData(prev => ({ ...prev, showCountdownBarSummary: e.target.checked }))}
+                    className="w-3 h-3 rounded accent-blue-500"
+                  />
+                  <span className="text-[9px] text-white/50">Summary tasks</span>
+                </label>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[9px] text-white/50">Show for</span>
+                  <select
+                    value={formData.countdownBarDays}
+                    onChange={(e) => setFormData(prev => ({ ...prev, countdownBarDays: parseInt(e.target.value) }))}
+                    className="text-[9px] bg-white/10 border border-white/20 rounded px-1.5 py-0.5 text-white/80 outline-none"
+                    data-testid="select-countdown-bar-days"
+                  >
+                    <option value={0}>All days</option>
+                    <option value={3}>3 days</option>
+                    <option value={5}>5 days</option>
+                    <option value={7}>7 days</option>
+                    <option value={10}>10 days</option>
+                    <option value={14}>14 days</option>
+                    <option value={21}>21 days</option>
+                    <option value={30}>30 days</option>
+                  </select>
+                </div>
+              </div>
+            )}
           </div>
 
           {task?.attachments && task.attachments.length > 0 && (
