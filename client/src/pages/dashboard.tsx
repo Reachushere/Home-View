@@ -1581,6 +1581,24 @@ export default function Dashboard() {
       el.style.transition = val ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out';
     });
   }, []);
+  useEffect(() => {
+    if (!isTopPillOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      const pillEl = topPillRef.current;
+      if (pillEl && !pillEl.contains(e.target as Node)) {
+        const target = e.target as HTMLElement;
+        if (target.closest('[data-tpo]') || target.closest('[data-date-nav]')) return;
+        const triggerAreas = document.querySelectorAll('[data-top-pill-trigger]');
+        for (const area of triggerAreas) {
+          if (area.contains(target)) return;
+        }
+        closeTopPill();
+      }
+    };
+    const timer = setTimeout(() => document.addEventListener('click', handleClickOutside), 100);
+    return () => { clearTimeout(timer); document.removeEventListener('click', handleClickOutside); };
+  }, [isTopPillOpen, closeTopPill]);
+
   const [newsHeadlines, setNewsHeadlines] = useState<{ title: string; source: string; link: string; publishedAt?: string }[]>([]);
 
   useEffect(() => {
@@ -12163,24 +12181,13 @@ export default function Dashboard() {
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
         }}
         onTouchEnd={() => {
-          if (isHamburgerOpenRef.current) return;
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
-          topPillTimeoutRef.current = setTimeout(() => {
-            if (isHamburgerOpenRef.current) return;
-            closeTopPill();
-          }, 6000);
         }}
         onMouseEnter={() => {
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
         }}
         onMouseLeave={() => {
-          if (isHamburgerOpenRef.current) return;
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
-          const delay = 'ontouchstart' in window ? 4000 : 1000;
-          topPillTimeoutRef.current = setTimeout(() => {
-            if (isHamburgerOpenRef.current) return;
-            closeTopPill();
-          }, delay);
         }}
       >
         <div style={{ position: 'absolute', top: '-20px', left: '-10px', right: '-10px', bottom: '-20px', pointerEvents: 'auto', zIndex: -1 }}
@@ -12205,7 +12212,7 @@ export default function Dashboard() {
         {/* Icon buttons and task buttons with adjustable spacing */}
         <div className="flex items-center flex-nowrap [&>*]:flex-shrink-0" style={{ gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 9)}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '4px', paddingRight: '4px', width: '100%', overflow: 'visible', pointerEvents: 'auto' }}>
           {/* Hamburger Menu */}
-          <DropdownMenu open={isHamburgerOpen} onOpenChange={(open) => { if (hamburgerCloseTimer.current) { clearTimeout(hamburgerCloseTimer.current); hamburgerCloseTimer.current = null; } startTransition(() => setIsHamburgerOpen(open)); if (open) { triggerButtonGlow('hamburger'); if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); } else { topPillTimeoutRef.current = setTimeout(() => { closeTopPill(); }, 1000); } }} modal={false}>
+          <DropdownMenu open={isHamburgerOpen} onOpenChange={(open) => { if (hamburgerCloseTimer.current) { clearTimeout(hamburgerCloseTimer.current); hamburgerCloseTimer.current = null; } startTransition(() => setIsHamburgerOpen(open)); if (open) { triggerButtonGlow('hamburger'); if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); } }} modal={false}>
             <DropdownMenuTrigger asChild>
               <div 
                 className="pill-button-hover"
@@ -13450,22 +13457,15 @@ export default function Dashboard() {
           zIndex: 110,
           touchAction: 'manipulation',
         }}
+        data-top-pill-trigger
         onTouchStart={(e) => {
           e.preventDefault();
           openTopPill();
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
-          topPillTimeoutRef.current = setTimeout(() => {
-            if (isHamburgerOpenRef.current) return;
-            closeTopPill();
-          }, 6000);
         }}
         onClick={() => {
           openTopPill();
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
-          topPillTimeoutRef.current = setTimeout(() => {
-            if (isHamburgerOpenRef.current) return;
-            closeTopPill();
-          }, 6000);
         }}
         onMouseEnter={() => {
           openTopPill();
@@ -13473,6 +13473,7 @@ export default function Dashboard() {
         }}
       />
       <div
+        data-top-pill-trigger
         style={{
           position: 'fixed',
           left: '50%',
@@ -13491,31 +13492,17 @@ export default function Dashboard() {
           e.preventDefault();
           openTopPill();
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
-          topPillTimeoutRef.current = setTimeout(() => {
-            if (isHamburgerOpenRef.current) return;
-            closeTopPill();
-          }, 6000);
         }}
         onClick={() => {
           openTopPill();
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
-          topPillTimeoutRef.current = setTimeout(() => {
-            if (isHamburgerOpenRef.current) return;
-            closeTopPill();
-          }, 6000);
         }}
         onMouseEnter={() => {
           openTopPill();
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
         }}
         onMouseLeave={() => {
-          if (isHamburgerOpenRef.current) return;
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
-          const delay = 'ontouchstart' in window ? 4000 : 1000;
-          topPillTimeoutRef.current = setTimeout(() => {
-            if (isHamburgerOpenRef.current) return;
-            closeTopPill();
-          }, delay);
         }}
       >
         <svg width="84" height="27" viewBox="0 -1 84 27" style={{ display: 'block' }}>
