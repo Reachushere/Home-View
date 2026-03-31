@@ -2335,6 +2335,66 @@ input[type="date"]::-webkit-datetime-edit-year-field {
   pointer-events: none;
 }
 
+.weather-lightning-bolt {
+  position: absolute;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.weather-lightning-bolt::before,
+.weather-lightning-bolt::after {
+  content: '⚡';
+  position: absolute;
+  font-size: 18px;
+  opacity: 0;
+  filter: brightness(2) drop-shadow(0 0 4px rgba(255,255,200,0.9));
+  text-shadow: 0 0 6px rgba(255,255,100,0.8), 0 0 12px rgba(255,255,200,0.5);
+}
+
+.weather-lightning-bolt::before {
+  top: 2px;
+  left: 30%;
+  animation: boltFlash1 4s ease-in-out infinite;
+}
+
+.weather-lightning-bolt::after {
+  top: 0px;
+  right: 20%;
+  font-size: 14px;
+  animation: boltFlash2 4s ease-in-out infinite;
+  animation-delay: 1.8s;
+}
+
+@keyframes boltFlash1 {
+  0%, 100% { opacity: 0; transform: scaleY(1); }
+  9% { opacity: 0; }
+  10% { opacity: 1; transform: scaleY(1.1); }
+  12% { opacity: 0.3; }
+  13% { opacity: 0.9; transform: scaleY(1); }
+  15% { opacity: 0; }
+  50% { opacity: 0; }
+  51% { opacity: 0.8; transform: scaleY(1.05); }
+  52% { opacity: 0; }
+  53% { opacity: 1; transform: scaleY(1.1); }
+  55% { opacity: 0; }
+}
+
+@keyframes boltFlash2 {
+  0%, 100% { opacity: 0; transform: scaleY(1) rotate(-5deg); }
+  30% { opacity: 0; }
+  31% { opacity: 0.9; transform: scaleY(1.1) rotate(-5deg); }
+  33% { opacity: 0; }
+  34% { opacity: 0.7; }
+  35% { opacity: 0; }
+  70% { opacity: 0; }
+  71% { opacity: 1; transform: scaleY(1.15) rotate(-5deg); }
+  72% { opacity: 0.2; }
+  73% { opacity: 0.8; }
+  74% { opacity: 0; }
+}
+
 @keyframes tickerScroll {
   0% { transform: translate3d(var(--ticker-start), 0, 0); }
   100% { transform: translate3d(var(--ticker-end), 0, 0); }
