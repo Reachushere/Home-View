@@ -21721,8 +21721,8 @@ export default function Dashboard() {
                     
                     {isToday && weatherData && weatherData.code >= 95 && weatherData.code <= 99 && (
                       <>
-                        <div className="absolute inset-0 weather-lightning" style={{ zIndex: 15 }} />
-                        <div className="weather-lightning-bolt" style={{ zIndex: 16, top: '22px', left: 0, right: 0, bottom: 0 }} />
+                        <div className="absolute weather-lightning" style={{ zIndex: 15, top: 0, left: 0, right: 0, height: '48px' }} />
+                        <div className="weather-lightning-bolt" style={{ zIndex: 16, top: 0, left: 0, right: 0, height: '48px', overflow: 'hidden' }} />
                       </>
                     )}
                     {!isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && (
