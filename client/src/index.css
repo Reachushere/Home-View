@@ -2256,13 +2256,48 @@ input[type="date"]::-webkit-datetime-edit-year-field {
 }
 
 @keyframes weatherLightning {
-  0%, 89%, 100% { background: transparent; }
-  90% { background: rgba(255,255,255,0.35); }
-  91% { background: transparent; }
-  93% { background: rgba(200,200,255,0.25); }
-  94% { background: transparent; }
-  96% { background: rgba(255,255,255,0.15); }
-  97% { background: transparent; }
+  0%, 100% { background: transparent; }
+  10% { background: rgba(255,255,255,0.6); }
+  11% { background: transparent; }
+  12% { background: rgba(200,200,255,0.4); }
+  13% { background: transparent; }
+  30% { background: transparent; }
+  31% { background: rgba(255,255,255,0.5); }
+  32% { background: rgba(200,200,255,0.3); }
+  33% { background: transparent; }
+  34% { background: rgba(255,255,255,0.7); }
+  35% { background: transparent; }
+  60% { background: transparent; }
+  61% { background: rgba(220,220,255,0.35); }
+  62% { background: transparent; }
+  80% { background: transparent; }
+  81% { background: rgba(255,255,255,0.55); }
+  82% { background: transparent; }
+  83% { background: rgba(200,200,255,0.45); }
+  84% { background: transparent; }
+}
+
+@keyframes sheetLightning {
+  0%, 100% { opacity: 0; }
+  8% { opacity: 0; }
+  9% { opacity: 0.5; }
+  10% { opacity: 0; }
+  11% { opacity: 0.3; }
+  12% { opacity: 0; }
+  40% { opacity: 0; }
+  41% { opacity: 0.4; }
+  42% { opacity: 0; }
+  43% { opacity: 0.6; }
+  44% { opacity: 0; }
+  70% { opacity: 0; }
+  71% { opacity: 0.35; }
+  72% { opacity: 0; }
+}
+
+.weather-sheet-lightning {
+  animation: sheetLightning 4s ease-in-out infinite;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(180,180,255,0.4) 50%, transparent 100%);
 }
 
 .weather-cloud {
@@ -2296,7 +2331,7 @@ input[type="date"]::-webkit-datetime-edit-year-field {
 }
 
 .weather-lightning {
-  animation: weatherLightning 6s ease-in-out infinite;
+  animation: weatherLightning 3.5s ease-in-out infinite;
   pointer-events: none;
 }
 
