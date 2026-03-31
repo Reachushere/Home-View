@@ -21522,18 +21522,7 @@ export default function Dashboard() {
               })}
             </div>
           )}
-          {weatherAlerts.length > 0 && (
-            <div className="grid w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), height: '8px' }}>
-              <div />
-              {gridSizes.moduleColumnWidth > 0 && <div />}
-              {weekDays.map((day, idx) => {
-                const isTodayBar = isSameDayET(day, new Date());
-                return (
-                  <div key={idx} style={{ backgroundColor: isTodayBar ? '#ff0000' : 'transparent' }} />
-                );
-              })}
-            </div>
-          )}
+          
           <div className="flex-1 min-h-0 relative" style={{ overflow: 'visible' }}>
             <div
               style={{ position: 'absolute', left: '9px', top: '-30px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
@@ -21561,7 +21550,7 @@ export default function Dashboard() {
               const todayW = gridSizes.dayColumnWidths[todayIdx] || 0;
               const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
               return (
-                <div className={`absolute bottom-0 pointer-events-none${weatherAlerts.length > 0 ? ' weather-alert-border-pulse' : ''}`} style={{ top: '0px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px))`, width: `calc((${todayW} / ${totalDayW}) * (100% - ${fixedW}px))`, zIndex: 9990 }} />
+                <div className={`absolute pointer-events-none${weatherAlerts.length > 0 ? ' weather-alert-border-pulse' : ''}`} style={{ top: '0px', height: '60px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px))`, width: `calc((${todayW} / ${totalDayW}) * (100% - ${fixedW}px))`, zIndex: 9990 }} />
               );
             })()}
             {/* Red separator on left border of today column - only show when there are next-week columns to the left */}
@@ -21619,6 +21608,9 @@ export default function Dashboard() {
                     style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'hidden' } : { backgroundColor: isNextSchoolWeek ? '#062d06' : colorSettings.headerBar, color: isNextSchoolWeek ? '#ffffff' : undefined }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
+                    {isToday && weatherAlerts.length > 0 && (
+                      <div className="absolute left-0 right-0" style={{ top: '0px', height: '8px', backgroundColor: '#ff0000', zIndex: 4 }} />
+                    )}
                     {isToday && weatherData && weatherData.code >= 95 && weatherData.code <= 99 && (
                       <div className="absolute inset-0 weather-lightning" style={{ zIndex: 5 }} />
                     )}
