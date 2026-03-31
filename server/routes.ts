@@ -2622,17 +2622,30 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       
       const items = xml.split(/<item[\s>]/i).slice(1, 15);
       
+      const todayET = easternDateStr(new Date());
+      
       for (const item of items) {
         const titleMatch = item.match(/<title[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/title>/is);
         const linkMatch = item.match(/<link[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/link>/is);
         const descMatch = item.match(/<description[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/description>/is);
         const contentMatch = item.match(/<content:encoded[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/content:encoded>/is);
+        const pubDateMatch = item.match(/<pubDate[^>]*>(.*?)<\/pubDate>/is);
         
         const title = titleMatch?.[1]?.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").trim();
         const link = linkMatch?.[1]?.trim() || '';
         
         if (!title || !link) continue;
         if (sentRawStoryUrls.has(link)) continue;
+        
+        if (pubDateMatch?.[1]) {
+          const pubDate = new Date(pubDateMatch[1].trim());
+          const pubDateET = new Date(pubDate.toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+          const pubDateStr = `${pubDateET.getFullYear()}-${String(pubDateET.getMonth()+1).padStart(2,'0')}-${String(pubDateET.getDate()).padStart(2,'0')}`;
+          if (pubDateStr !== todayET) {
+            sentRawStoryUrls.add(link);
+            continue;
+          }
+        }
         
         const trumpPattern = /\btrump\b/i;
         if (!trumpPattern.test(title) && !trumpPattern.test(descMatch?.[1] || '')) continue;
