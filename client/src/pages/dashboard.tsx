@@ -21481,11 +21481,11 @@ export default function Dashboard() {
                 });
               }}
               className="absolute cursor-pointer hover:opacity-80 transition-opacity"
-              style={{ left: '-13px', top: '-12px', zIndex: 60, background: 'none', border: 'none', padding: 0 }}
+              style={{ left: '-13px', top: '-13px', zIndex: 60, background: 'none', border: 'none', padding: 0 }}
               data-testid="button-calendar-settings-cog"
               title="Calendar Settings"
             >
-              <Settings className="h-4 w-4 text-white/70 hover:text-white" />
+              <Settings className="h-[17px] w-[17px] text-white/70 hover:text-white" />
             </button>
             <div
               style={{ position: 'absolute', left: '9px', top: '-30px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
