@@ -186,6 +186,7 @@ import {
   Mic,
   MicOff,
   Flag,
+  Activity,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
@@ -2522,6 +2523,9 @@ export default function Dashboard() {
   
   // Profile state
   const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
+  const [isSystemHealthOpen, setIsSystemHealthOpen] = useState(false);
+  const [systemHealthData, setSystemHealthData] = useState<any>(null);
+  const [systemHealthLoading, setSystemHealthLoading] = useState(false);
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
   const isHamburgerOpenRef = useRef(false);
   isHamburgerOpenRef.current = isHamburgerOpen;
@@ -12612,6 +12616,21 @@ export default function Dashboard() {
                 <Settings className="h-3.5 w-3.5 mr-2" />
                 Calendar Settings
               </DropdownMenuItem>
+              <DropdownMenuItem data-testid="menu-item-system-health" className="text-xs" onClick={() => {
+                  setSystemHealthLoading(true);
+                  setSystemHealthData(null);
+                  setIsSystemHealthOpen(true);
+                  fetch('/api/system-health').then(r => r.json()).then(data => {
+                    setSystemHealthData(data);
+                    setSystemHealthLoading(false);
+                  }).catch(() => {
+                    setSystemHealthData({ overall: 'issues', checks: { server: { status: 'down', message: 'Failed to reach server' } } });
+                    setSystemHealthLoading(false);
+                  });
+                }}>
+                <Activity className="h-3.5 w-3.5 mr-2" />
+                System Health
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -18777,6 +18796,92 @@ export default function Dashboard() {
           </Dialog>
 
           {/* Profile Dialog */}
+          <Dialog open={isSystemHealthOpen} onOpenChange={setIsSystemHealthOpen}>
+            <DialogContent className="max-w-md text-[11px] text-white [&_*:not(input)]:text-white p-0 [&>button.absolute]:hidden" style={{ top: 'calc(50% - 30px)', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+                <div className="flex items-center gap-2">
+                  <Activity className="h-3 w-3 text-white" />
+                  <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
+                    SYSTEM HEALTH
+                  </h2>
+                </div>
+                <button onClick={() => setIsSystemHealthOpen(false)} className="text-white/60 hover:text-white" data-testid="button-close-system-health">
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="px-4 py-3" style={{ maxHeight: '420px', overflowY: 'auto' }}>
+                {systemHealthLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-5 w-5 animate-spin text-white/60" />
+                    <span className="ml-2 text-white/60 text-[11px]">Checking services...</span>
+                  </div>
+                ) : systemHealthData ? (
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2 mb-3 pb-2 border-b border-white/20">
+                      <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: systemHealthData.overall === 'healthy' ? '#22c55e' : systemHealthData.overall === 'degraded' ? '#eab308' : '#ef4444', boxShadow: `0 0 6px ${systemHealthData.overall === 'healthy' ? '#22c55e' : systemHealthData.overall === 'degraded' ? '#eab308' : '#ef4444'}` }} />
+                      <span className="text-[12px] font-semibold" data-testid="text-overall-status">
+                        {systemHealthData.overall === 'healthy' ? 'All Systems Operational' : systemHealthData.overall === 'degraded' ? 'Some Services Degraded' : 'Issues Detected'}
+                      </span>
+                    </div>
+                    {Object.entries(systemHealthData.checks || {}).map(([key, check]: [string, any]) => {
+                      const labels: Record<string, string> = {
+                        server: 'Server',
+                        database: 'Database',
+                        homeAssistant: 'Home Assistant',
+                        spotify: 'Spotify',
+                        oneDrive: 'OneDrive',
+                        openAI: 'OpenAI (TTS/AI)',
+                        weather: 'Weather API',
+                        reminderScheduler: 'Reminders',
+                        email: 'Email Service',
+                      };
+                      const icons: Record<string, string> = {
+                        server: '🖥️',
+                        database: '🗄️',
+                        homeAssistant: '🏠',
+                        spotify: '🎵',
+                        oneDrive: '☁️',
+                        openAI: '🤖',
+                        weather: '🌤️',
+                        reminderScheduler: '⏰',
+                        email: '✉️',
+                      };
+                      const statusColor = check.status === 'ok' ? '#22c55e' : check.status === 'degraded' ? '#eab308' : check.status === 'unconfigured' ? '#6b7280' : '#ef4444';
+                      const statusLabel = check.status === 'ok' ? 'OK' : check.status === 'degraded' ? 'Degraded' : check.status === 'unconfigured' ? 'N/A' : 'Down';
+                      return (
+                        <div key={key} className="flex items-center gap-2 py-1.5 px-2 rounded" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }} data-testid={`health-row-${key}`}>
+                          <span style={{ fontSize: '14px', width: '20px', textAlign: 'center' }}>{icons[key] || '📦'}</span>
+                          <span className="text-[11px] font-medium flex-1" style={{ minWidth: '90px' }}>{labels[key] || key}</span>
+                          <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.6)', flex: 2, textAlign: 'left' }}>{check.message}</span>
+                          <div className="flex items-center gap-1" style={{ minWidth: '52px', justifyContent: 'flex-end' }}>
+                            <div style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: statusColor, boxShadow: `0 0 4px ${statusColor}`, flexShrink: 0 }} />
+                            <span className="text-[9px] font-semibold" style={{ color: statusColor }}>{statusLabel}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    <div className="text-[9px] text-white/30 text-right mt-2" data-testid="text-health-timestamp">
+                      Checked: {systemHealthData.timestamp ? new Date(systemHealthData.timestamp).toLocaleTimeString() : '—'}
+                    </div>
+                    <button
+                      className="text-[10px] text-white/50 hover:text-white/80 underline mt-1 self-end"
+                      data-testid="button-refresh-health"
+                      onClick={() => {
+                        setSystemHealthLoading(true);
+                        fetch('/api/system-health').then(r => r.json()).then(data => {
+                          setSystemHealthData(data);
+                          setSystemHealthLoading(false);
+                        }).catch(() => setSystemHealthLoading(false));
+                      }}
+                    >
+                      Refresh
+                    </button>
+                  </div>
+                ) : null}
+              </div>
+            </DialogContent>
+          </Dialog>
+
           <Dialog open={isProfileDialogOpen} onOpenChange={setIsProfileDialogOpen}>
             <DialogContent className="max-w-md text-[11px] text-white [&_*:not(input)]:text-white [&_label]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ top: 'calc(55% - 30px)', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
               {/* Header bar matching flyouts */}

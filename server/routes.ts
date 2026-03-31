@@ -8387,6 +8387,83 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     });
   });
 
+  app.get("/api/system-health", async (_req, res) => {
+    const uptimeSeconds = Math.round((Date.now() - SERVER_START_TIME) / 1000);
+    const checks: Record<string, { status: 'ok' | 'degraded' | 'down' | 'unconfigured'; message: string; details?: any }> = {};
+
+    checks.server = { status: 'ok', message: `Up ${Math.floor(uptimeSeconds / 3600)}h ${Math.floor((uptimeSeconds % 3600) / 60)}m`, details: { uptimeSeconds } };
+
+    try {
+      const result = await db.execute(sql`SELECT 1`);
+      checks.database = { status: 'ok', message: 'Connected' };
+    } catch (e: any) {
+      checks.database = { status: 'down', message: e.message || 'Connection failed' };
+    }
+
+    checks.homeAssistant = {
+      status: haHealth.connected ? 'ok' : (haHealth.totalChecks === 0 ? 'unconfigured' : 'down'),
+      message: haHealth.connected ? 'Connected' : (haHealth.lastError || 'Not connected'),
+      details: {
+        consecutiveFailures: haHealth.consecutiveFailures,
+        lastSuccessAt: haHealth.lastSuccessAt ? new Date(haHealth.lastSuccessAt).toISOString() : null,
+        lastFailureAt: haHealth.lastFailureAt ? new Date(haHealth.lastFailureAt).toISOString() : null,
+        downSince: haHealth.wasDownSince ? new Date(haHealth.wasDownSince).toISOString() : null,
+        queuePending: haCommandQueue.length,
+      }
+    };
+
+    checks.spotify = {
+      status: spotifyApi.isConnected() ? 'ok' : 'down',
+      message: spotifyApi.isConnected() ? 'Connected' : 'Not connected',
+    };
+
+    try {
+      const { getOneDriveClient } = await import("./onedrive");
+      const client = await getOneDriveClient();
+      const meResp = await client.api('/me/drive').select('id').get();
+      checks.oneDrive = { status: meResp?.id ? 'ok' : 'degraded', message: meResp?.id ? 'Connected' : 'Auth may be stale' };
+    } catch (e: any) {
+      checks.oneDrive = { status: 'down', message: e.message || 'Connection failed' };
+    }
+
+    const hasOpenAI = !!(process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL);
+    checks.openAI = {
+      status: hasOpenAI ? 'ok' : 'unconfigured',
+      message: hasOpenAI ? 'Configured' : 'Missing API key or base URL',
+    };
+
+    try {
+      const localPort = process.env.PORT || 5000;
+      const weatherResp = await fetch(`http://localhost:${localPort}/api/weather`);
+      const wData = await weatherResp.json();
+      checks.weather = {
+        status: wData.temperature !== undefined ? 'ok' : 'degraded',
+        message: wData.temperature !== undefined ? `${Math.round(wData.temperature)}°C, ${wData.description || 'OK'}` : 'No data',
+      };
+    } catch (e: any) {
+      checks.weather = { status: 'down', message: e.message || 'Fetch failed' };
+    }
+
+    const schedulerStatus = getSchedulerStatus() as any;
+    checks.reminderScheduler = {
+      status: schedulerStatus.isRunning !== false ? 'ok' : 'down',
+      message: schedulerStatus.isRunning !== false ? `Running — ${schedulerStatus.sentCount || schedulerStatus.totalSent || 0} sent` : 'Not running',
+    };
+
+    try {
+      const emailModule = await import("./email");
+      checks.email = { status: 'ok', message: 'Module loaded' };
+    } catch (e: any) {
+      checks.email = { status: 'down', message: e.message || 'Module failed' };
+    }
+
+    const overallDown = Object.values(checks).filter(c => c.status === 'down').length;
+    const overallDegraded = Object.values(checks).filter(c => c.status === 'degraded').length;
+    const overall = overallDown > 0 ? 'issues' : overallDegraded > 0 ? 'degraded' : 'healthy';
+
+    res.json({ overall, checks, timestamp: new Date().toISOString() });
+  });
+
   async function checkAndActivateSemester(): Promise<void> {
     try {
       const now = new Date();
