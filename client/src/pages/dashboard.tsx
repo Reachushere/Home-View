@@ -179,6 +179,7 @@ import {
   Cast,
   Monitor,
   Speaker,
+  Megaphone,
   Headphones,
   Sun as SunIcon,
   Moon as MoonIcon,
@@ -3186,8 +3187,12 @@ export default function Dashboard() {
         parsed.progressColumnWidth = oldWidths[6];
         parsed.dayColumnWidths = [...oldWidths.slice(0, 6), oldWidths[7]];
       }
-      parsed.dayColumnWidths = [1, 1, 1, 1, 1, 1, 1];
-      parsed.progressColumnWidth = 0.87;
+      if (!parsed.dayColumnWidths || parsed.dayColumnWidths.length !== 7) {
+        parsed.dayColumnWidths = [1, 1, 1, 1, 1, 1, 1];
+      }
+      if (parsed.progressColumnWidth === undefined) {
+        parsed.progressColumnWidth = 0.87;
+      }
     };
     
     // Check for device-specific saved settings first
@@ -4594,22 +4599,37 @@ export default function Dashboard() {
         if (data.courseDisplayNames) {
           localStorage.setItem('courseDisplayNames', JSON.stringify(data.courseDisplayNames));
         }
-        if (data.gridSizes && !localStorage.getItem('gridSizes')) {
-          localStorage.setItem('gridSizes', JSON.stringify(data.gridSizes));
-          setGridSizes(prev => ({ ...prev, ...data.gridSizes }));
-        }
-        if (data.calendarHeight && !localStorage.getItem('calendarHeight')) {
-          const h = typeof data.calendarHeight === 'number' ? data.calendarHeight : parseInt(data.calendarHeight);
-          if (!isNaN(h)) {
-            localStorage.setItem('calendarHeight', String(h));
-            setCalendarHeight(h);
+        if (data.gridSizes) {
+          const sw = window.screen.width, sh = window.screen.height, pr = window.devicePixelRatio || 1;
+          const did = `device_${sw}x${sh}@${pr}`;
+          if (!localStorage.getItem('gridSizes') && !localStorage.getItem(`gridSizes_${did}`)) {
+            localStorage.setItem('gridSizes', JSON.stringify(data.gridSizes));
+            localStorage.setItem(`gridSizes_${did}`, JSON.stringify(data.gridSizes));
+            setGridSizes(prev => ({ ...prev, ...data.gridSizes }));
           }
         }
-        if (data.calendarReduction && !localStorage.getItem('calendarReduction')) {
-          const r = typeof data.calendarReduction === 'number' ? data.calendarReduction : parseInt(data.calendarReduction);
-          if (!isNaN(r)) {
-            localStorage.setItem('calendarReduction', String(r));
-            setCalendarReduction(r);
+        if (data.calendarHeight) {
+          const sw = window.screen.width, sh = window.screen.height, pr = window.devicePixelRatio || 1;
+          const did = `device_${sw}x${sh}@${pr}`;
+          if (!localStorage.getItem('calendarHeight') && !localStorage.getItem(`calendarHeight_${did}`)) {
+            const h = typeof data.calendarHeight === 'number' ? data.calendarHeight : parseInt(data.calendarHeight);
+            if (!isNaN(h)) {
+              localStorage.setItem('calendarHeight', String(h));
+              localStorage.setItem(`calendarHeight_${did}`, String(h));
+              setCalendarHeight(h);
+            }
+          }
+        }
+        if (data.calendarReduction) {
+          const sw = window.screen.width, sh = window.screen.height, pr = window.devicePixelRatio || 1;
+          const did = `device_${sw}x${sh}@${pr}`;
+          if (!localStorage.getItem('calendarReduction') && !localStorage.getItem(`calendarReduction_${did}`)) {
+            const r = typeof data.calendarReduction === 'number' ? data.calendarReduction : parseInt(data.calendarReduction);
+            if (!isNaN(r)) {
+              localStorage.setItem('calendarReduction', String(r));
+              localStorage.setItem(`calendarReduction_${did}`, String(r));
+              setCalendarReduction(r);
+            }
           }
         }
         if (data.showAllDayRow !== undefined && !localStorage.getItem('showAllDayRow')) {
@@ -14159,24 +14179,24 @@ export default function Dashboard() {
                           title={ann.isEnabled ? 'Hide from HA' : 'Expose to HA'}
                           data-testid={`alexa-toggle-${ann.id}`}
                         >
-                          <div className={`w-[34px] h-[18px] rounded-full relative transition-colors ${ann.isEnabled ? 'bg-cyan-500' : 'bg-white/20'}`}>
-                            <div className={`absolute top-[2px] w-[14px] h-[14px] rounded-full bg-white shadow transition-all ${ann.isEnabled ? 'left-[18px]' : 'left-[2px]'}`} />
+                          <div className={`w-[28px] h-[15px] rounded-full relative transition-colors ${ann.isEnabled ? 'bg-cyan-500' : 'bg-white/20'}`}>
+                            <div className={`absolute top-[2px] w-[11px] h-[11px] rounded-full bg-white shadow transition-all ${ann.isEnabled ? 'left-[15px]' : 'left-[2px]'}`} />
                           </div>
                         </button>
-                        <div className="flex-1 min-w-0" style={{ marginLeft: '30px' }}>
-                          <p className="text-white text-[11px] leading-tight break-words">{ann.message}</p>
-                          <div className="flex items-center gap-2 mt-0.5">
-                            <span className="text-white/40 text-[9px]">
+                        <div className="flex-1 min-w-0" style={{ marginLeft: '6px' }}>
+                          <p className="text-white text-[10px] leading-tight break-words">{ann.message}</p>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className="text-white/40 text-[8px]">
                               {ann.scheduledAt ? new Date(ann.scheduledAt).toLocaleString('en-US', { timeZone: 'America/Toronto', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }) : ''}
                             </span>
                             {ann.repeatType && ann.repeatType !== 'none' && (
-                              <span className="text-cyan-400/60 text-[9px]">
+                              <span className="text-cyan-400/60 text-[8px]">
                                 {ann.repeatType === 'custom' ? `Every ${ann.repeatInterval || 1} ${ann.repeatIntervalUnit || 'days'}` : ann.repeatType}
                               </span>
                             )}
-                            {ann.isSent && <span className="text-cyan-400/50 text-[9px]">sent</span>}
+                            {ann.isSent && <span className="text-cyan-400/50 text-[8px]">sent</span>}
                             {ann.speakers && ann.speakers !== 'all' && (
-                              <span className="text-white/30 text-[9px]">{ECHO_SPEAKER_OPTIONS[ann.speakers] || ann.speakers}</span>
+                              <span className="text-white/30 text-[8px]">{ECHO_SPEAKER_OPTIONS[ann.speakers] || ann.speakers}</span>
                             )}
                           </div>
                         </div>
@@ -14188,7 +14208,7 @@ export default function Dashboard() {
                             title="Send now"
                             data-testid={`alexa-send-now-${ann.id}`}
                           >
-                            <Speaker className="h-3.5 w-3.5" />
+                            <Megaphone className="h-3.5 w-3.5" />
                           </button>
                           {/* Delete button */}
                           <button
