@@ -788,6 +788,24 @@ export default function Dashboard() {
     } catch (e) { console.error('[Review] Sync + review error:', e); }
   }, []);
 
+  useEffect(() => {
+    const checkMonthlyReport = () => {
+      const now = new Date();
+      const etStr = now.toLocaleString('en-US', { timeZone: 'America/Toronto' });
+      const et = new Date(etStr);
+      const day = et.getDate();
+      const hour = et.getHours();
+      const monthKey = `${et.getFullYear()}-${et.getMonth()}`;
+      const dismissed = localStorage.getItem('monthlyReportDismissed');
+      if (day === 19 && hour >= 9 && dismissed !== monthKey) {
+        setIsMonthlyReportOpen(true);
+      }
+    };
+    checkMonthlyReport();
+    const interval = setInterval(checkMonthlyReport, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
   const getRecurringGroupIds = useCallback((id: number): number[] => {
     const item = morningReviewItems.find(i => i.id === id);
     if (!item) return [id];
@@ -1329,6 +1347,26 @@ export default function Dashboard() {
   const [isScholarshipsOpen, setIsScholarshipsOpen] = useState(false);
   const [isKeyContactsOpen, setIsKeyContactsOpen] = useState(false);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+  const [isMonthlyReportOpen, setIsMonthlyReportOpen] = useState(false);
+  const [monthlyReportFields, setMonthlyReportFields] = useState(() => {
+    const saved = localStorage.getItem('monthlyReportFields');
+    if (saved) try { return JSON.parse(saved); } catch {}
+    return {
+      reportingPeriod: '',
+      reportDate: '',
+      coursesEnrolled: '',
+      gradeStatus: '4.0 this class, 3.78 overall',
+      keyAssignments: '',
+      upcomingDeadlines: '',
+      classAttendance: 'Attended all classes',
+      onlineAttendance: '',
+      addDropInfo: '',
+      reasonForChange: '',
+      academicChallenges: '',
+      otherConcerns: '',
+      additionalInfo: '',
+    };
+  });
   const [isAlexaDialogOpen, setIsAlexaDialogOpen] = useState(false);
   const [alexaMessage, setAlexaMessage] = useState('');
   const [alexaDate, setAlexaDate] = useState('');
@@ -17986,6 +18024,189 @@ export default function Dashboard() {
               </div>
             </DialogContent>
           </Dialog>
+
+          {/* Monthly Post-Secondary Report Dialog */}
+          {isMonthlyReportOpen && (
+            <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 10020, backgroundColor: 'rgba(0,0,0,0.6)' }} data-testid="monthly-report-overlay">
+              <div className="sm:rounded-lg shadow-2xl w-[600px] max-h-[85vh] flex flex-col overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }} data-testid="monthly-report-dialog">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+                  <div className="flex items-center gap-2">
+                    <FileText className="text-white" style={{ width: '15px', height: '15px' }} />
+                    <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
+                      POST-SECONDARY MONTHLY REPORT
+                    </h2>
+                  </div>
+                  <span className="text-white/40 text-[10px]">Due on the 19th</span>
+                </div>
+                <div className="flex-1 overflow-y-auto p-4 space-y-3" style={{ scrollbarWidth: 'thin' }}>
+                  <div className="px-3 py-2 rounded-lg border border-white/10" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                    <p className="text-white/50 text-[10px] mb-0.5">Name</p>
+                    <p className="text-white text-[12px]">Bryn Kai-Hendricks</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="px-3 py-2 rounded-lg border border-white/10" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                      <p className="text-white/50 text-[10px] mb-0.5">Program</p>
+                      <p className="text-white text-[12px]">Public Administration and Governance</p>
+                    </div>
+                    <div className="px-3 py-2 rounded-lg border border-white/10" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                      <p className="text-white/50 text-[10px] mb-0.5">Institution</p>
+                      <p className="text-white text-[12px]">Toronto Metropolitan University</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="px-3 py-2 rounded-lg border border-white/10" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                      <p className="text-white/50 text-[10px] mb-0.5">Student ID</p>
+                      <p className="text-white text-[12px]">501405607</p>
+                    </div>
+                    <div>
+                      <p className="text-white/50 text-[10px] mb-0.5">Reporting Period</p>
+                      <input type="text" value={monthlyReportFields.reportingPeriod} onChange={(e) => setMonthlyReportFields((p: any) => ({ ...p, reportingPeriod: e.target.value }))} placeholder="e.g. July 21 to August 20, 2025" className="w-full text-white text-[11px] px-2 py-1.5 rounded focus:outline-none placeholder:text-white/30" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }} data-testid="report-period" />
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-white/50 text-[10px] mb-0.5">Report Date</p>
+                    <input type="text" value={monthlyReportFields.reportDate} onChange={(e) => setMonthlyReportFields((p: any) => ({ ...p, reportDate: e.target.value }))} placeholder="e.g. August 20, 2025" className="w-full text-white text-[11px] px-2 py-1.5 rounded focus:outline-none placeholder:text-white/30" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }} data-testid="report-date" />
+                  </div>
+
+                  <div className="border-t border-white/15 pt-2 mt-2">
+                    <p className="text-cyan-300/80 text-[11px] font-medium mb-2">1. Academic Progress</p>
+                    <div className="space-y-2">
+                      <div>
+                        <p className="text-white/50 text-[10px] mb-0.5">Courses Enrolled This Month</p>
+                        <textarea value={monthlyReportFields.coursesEnrolled} onChange={(e) => setMonthlyReportFields((p: any) => ({ ...p, coursesEnrolled: e.target.value }))} rows={2} className="w-full text-white text-[11px] px-2 py-1.5 rounded resize-none focus:outline-none placeholder:text-white/30" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }} data-testid="report-courses" />
+                      </div>
+                      <div>
+                        <p className="text-white/50 text-[10px] mb-0.5">Grade Status or GPA (if available)</p>
+                        <input type="text" value={monthlyReportFields.gradeStatus} onChange={(e) => setMonthlyReportFields((p: any) => ({ ...p, gradeStatus: e.target.value }))} className="w-full text-white text-[11px] px-2 py-1.5 rounded focus:outline-none placeholder:text-white/30" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }} data-testid="report-gpa" />
+                      </div>
+                      <div>
+                        <p className="text-white/50 text-[10px] mb-0.5">Key Assignments/Projects Completed</p>
+                        <textarea value={monthlyReportFields.keyAssignments} onChange={(e) => setMonthlyReportFields((p: any) => ({ ...p, keyAssignments: e.target.value }))} rows={2} className="w-full text-white text-[11px] px-2 py-1.5 rounded resize-none focus:outline-none placeholder:text-white/30" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }} data-testid="report-assignments" />
+                      </div>
+                      <div>
+                        <p className="text-white/50 text-[10px] mb-0.5">Upcoming Deadlines or Exams</p>
+                        <textarea value={monthlyReportFields.upcomingDeadlines} onChange={(e) => setMonthlyReportFields((p: any) => ({ ...p, upcomingDeadlines: e.target.value }))} rows={2} className="w-full text-white text-[11px] px-2 py-1.5 rounded resize-none focus:outline-none placeholder:text-white/30" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }} data-testid="report-deadlines" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-white/15 pt-2 mt-2">
+                    <p className="text-cyan-300/80 text-[11px] font-medium mb-2">2. Attendance</p>
+                    <div className="space-y-2">
+                      <div>
+                        <p className="text-white/50 text-[10px] mb-0.5">Class Attendance</p>
+                        <input type="text" value={monthlyReportFields.classAttendance} onChange={(e) => setMonthlyReportFields((p: any) => ({ ...p, classAttendance: e.target.value }))} className="w-full text-white text-[11px] px-2 py-1.5 rounded focus:outline-none placeholder:text-white/30" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }} data-testid="report-attendance" />
+                      </div>
+                      <div>
+                        <p className="text-white/50 text-[10px] mb-0.5">Online/Hybrid Attendance (if applicable)</p>
+                        <input type="text" value={monthlyReportFields.onlineAttendance} onChange={(e) => setMonthlyReportFields((p: any) => ({ ...p, onlineAttendance: e.target.value }))} className="w-full text-white text-[11px] px-2 py-1.5 rounded focus:outline-none placeholder:text-white/30" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }} data-testid="report-online" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-white/15 pt-2 mt-2">
+                    <p className="text-cyan-300/80 text-[11px] font-medium mb-2">3. Course Changes</p>
+                    <div className="space-y-2">
+                      <div>
+                        <p className="text-white/50 text-[10px] mb-0.5">Add/Drop Information</p>
+                        <input type="text" value={monthlyReportFields.addDropInfo} onChange={(e) => setMonthlyReportFields((p: any) => ({ ...p, addDropInfo: e.target.value }))} placeholder="N/A" className="w-full text-white text-[11px] px-2 py-1.5 rounded focus:outline-none placeholder:text-white/30" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }} data-testid="report-adddrop" />
+                      </div>
+                      <div>
+                        <p className="text-white/50 text-[10px] mb-0.5">Reason for change</p>
+                        <input type="text" value={monthlyReportFields.reasonForChange} onChange={(e) => setMonthlyReportFields((p: any) => ({ ...p, reasonForChange: e.target.value }))} placeholder="N/A" className="w-full text-white text-[11px] px-2 py-1.5 rounded focus:outline-none placeholder:text-white/30" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }} data-testid="report-reason" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-white/15 pt-2 mt-2">
+                    <p className="text-cyan-300/80 text-[11px] font-medium mb-2">4. Challenges/Concerns (Optional)</p>
+                    <div className="space-y-2">
+                      <div>
+                        <p className="text-white/50 text-[10px] mb-0.5">Academic Challenges</p>
+                        <textarea value={monthlyReportFields.academicChallenges} onChange={(e) => setMonthlyReportFields((p: any) => ({ ...p, academicChallenges: e.target.value }))} rows={2} className="w-full text-white text-[11px] px-2 py-1.5 rounded resize-none focus:outline-none placeholder:text-white/30" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }} data-testid="report-challenges" />
+                      </div>
+                      <div>
+                        <p className="text-white/50 text-[10px] mb-0.5">Other Concerns</p>
+                        <textarea value={monthlyReportFields.otherConcerns} onChange={(e) => setMonthlyReportFields((p: any) => ({ ...p, otherConcerns: e.target.value }))} rows={2} className="w-full text-white text-[11px] px-2 py-1.5 rounded resize-none focus:outline-none placeholder:text-white/30" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }} data-testid="report-concerns" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-white/15 pt-2 mt-2">
+                    <p className="text-cyan-300/80 text-[11px] font-medium mb-2">5. Additional Information (Optional)</p>
+                    <textarea value={monthlyReportFields.additionalInfo} onChange={(e) => setMonthlyReportFields((p: any) => ({ ...p, additionalInfo: e.target.value }))} rows={2} className="w-full text-white text-[11px] px-2 py-1.5 rounded resize-none focus:outline-none placeholder:text-white/30" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }} data-testid="report-additional" />
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
+                  <button
+                    onClick={() => {
+                      localStorage.setItem('monthlyReportFields', JSON.stringify(monthlyReportFields));
+                      toast({ title: "Saved", description: "Report fields saved locally." });
+                    }}
+                    className="text-white text-[11px] font-semibold px-4 py-2 rounded transition-colors hover:brightness-110"
+                    style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.15)', border: '1px solid rgba(255,255,255,0.2)' }}
+                    data-testid="report-save"
+                  >
+                    Save Draft
+                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => {
+                        const lines = [
+                          'Post-Secondary Monthly Report\n',
+                          `Name: Bryn Kai-Hendricks`,
+                          `Program: Public Administration and Governance`,
+                          `Institution: Toronto Metropolitan University`,
+                          `Student ID Number: 501405607`,
+                          `Reporting Period: ${monthlyReportFields.reportingPeriod}`,
+                          `Date: ${monthlyReportFields.reportDate}\n`,
+                          '1. Academic Progress:',
+                          `Courses Enrolled This Month: ${monthlyReportFields.coursesEnrolled}`,
+                          `Grade Status or GPA: ${monthlyReportFields.gradeStatus}`,
+                          `Key Assignments/Projects Completed: ${monthlyReportFields.keyAssignments}`,
+                          `Upcoming Deadlines or Exams: ${monthlyReportFields.upcomingDeadlines}\n`,
+                          '2. Attendance:',
+                          `Class Attendance: ${monthlyReportFields.classAttendance}`,
+                          `Online/Hybrid Attendance: ${monthlyReportFields.onlineAttendance}\n`,
+                          '3. Course Changes:',
+                          `Add/Drop Information: ${monthlyReportFields.addDropInfo}`,
+                          `Reason for change: ${monthlyReportFields.reasonForChange}\n`,
+                          '4. Challenges/Concerns:',
+                          `Academic Challenges: ${monthlyReportFields.academicChallenges}`,
+                          `Other Concerns: ${monthlyReportFields.otherConcerns}\n`,
+                          '5. Additional Information:',
+                          monthlyReportFields.additionalInfo,
+                        ].join('\n');
+                        navigator.clipboard.writeText(lines);
+                        toast({ title: "Copied", description: "Report copied to clipboard." });
+                      }}
+                      className="text-white/60 text-[11px] px-3 py-2 rounded border border-white/20 hover:border-white/40 hover:text-white transition-all"
+                      data-testid="report-copy"
+                    >
+                      Copy to Clipboard
+                    </button>
+                    <Button
+                      variant="outline"
+                      className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 w-[80px]"
+                      style={{ fontSize: '12px' }}
+                      onClick={() => {
+                        localStorage.setItem('monthlyReportFields', JSON.stringify(monthlyReportFields));
+                        const now = new Date();
+                        const etStr = now.toLocaleString('en-US', { timeZone: 'America/Toronto' });
+                        const et = new Date(etStr);
+                        localStorage.setItem('monthlyReportDismissed', `${et.getFullYear()}-${et.getMonth()}`);
+                        setIsMonthlyReportOpen(false);
+                      }}
+                      data-testid="report-close"
+                    >
+                      Close
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           <Dialog open={isFeedbackOpen} onOpenChange={setIsFeedbackOpen}>
             <DialogContent className="max-w-[320px] text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_textarea]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '45%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', zIndex: 10003 }}>
