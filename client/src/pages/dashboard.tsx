@@ -21225,6 +21225,155 @@ export default function Dashboard() {
                   })()}
                 </div>
 
+                <div className="border rounded-lg p-3 space-y-2" data-cal-weeks-info="true">
+                  <Label className="text-[10px] font-medium">Calendar Weeks</Label>
+                  {(() => {
+                    const activeSemKey = (() => {
+                      const now = new Date();
+                      const semesters = [
+                        { key: 'ss2025', start: '2025-05-05', end: '2025-08-08' },
+                        { key: 'f2025', start: '2025-09-08', end: '2025-12-12' },
+                        { key: 'w2026', start: '2026-01-12', end: '2026-04-17' },
+                        { key: 'ss2026', start: '2026-05-04', end: '2026-08-07' },
+                        { key: 'f2026', start: '2026-09-07', end: '2026-12-11' },
+                        { key: 'w2027', start: '2027-01-11', end: '2027-04-16' },
+                      ];
+                      for (const s of semesters) {
+                        if (now >= new Date(s.start) && now <= new Date(s.end)) return s.key;
+                      }
+                      return 'w2026';
+                    })();
+                    const semData = perSemesterSettings[activeSemKey] || {};
+                    const w1 = semData.week1StartDate || schoolData.week1StartDate || '';
+                    const numWeeks = semData.numberOfWeeks || schoolData.numberOfWeeks || 13;
+                    const rw = semData.readingWeekDate || '';
+                    const tz = semData.timezone || schoolData.timezone || 'America/Toronto';
+                    const travelling = semData.isTravelling || false;
+                    const travelTz = semData.travelTimezone || '';
+                    const semLabel: Record<string, string> = { 'ss2025': 'Spring/Summer 2025', 'f2025': 'Fall 2025', 'w2026': 'Winter 2026', 'ss2026': 'Spring/Summer 2026', 'f2026': 'Fall 2026', 'w2027': 'Winter 2027' };
+                    return (
+                      <div className="space-y-2">
+                        <div className="text-[9px] text-white/50">{semLabel[activeSemKey] || activeSemKey}</div>
+                        <div className="grid grid-cols-2 gap-[6px]">
+                          <div className="space-y-0.5">
+                            <Label className="text-[9px] text-white/60">Week 1, Day 1</Label>
+                            <input
+                              type="date"
+                              value={w1}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                const updated = { ...perSemesterSettings, [activeSemKey]: { ...(perSemesterSettings[activeSemKey] || {}), week1StartDate: val } };
+                                setPerSemesterSettings(updated as any);
+                                localStorage.setItem('perSemesterSettings', JSON.stringify(updated));
+                                if (activeSemKey === 'w2026') saveSchool({ ...schoolData, week1StartDate: val });
+                              }}
+                              onClick={(e) => (e.target as HTMLInputElement).showPicker?.()}
+                              className="w-full h-7 px-2 text-[10px] rounded-md bg-white border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
+                              style={{ fontSize: '10px', color: 'black', colorScheme: 'light' }}
+                              data-testid="input-cal-week1-start"
+                            />
+                          </div>
+                          <div className="space-y-0.5">
+                            <Label className="text-[9px] text-white/60">School Weeks</Label>
+                            <select
+                              value={String(numWeeks)}
+                              onChange={(e) => {
+                                const val = Number(e.target.value);
+                                const updated = { ...perSemesterSettings, [activeSemKey]: { ...(perSemesterSettings[activeSemKey] || {}), numberOfWeeks: val } };
+                                setPerSemesterSettings(updated as any);
+                                localStorage.setItem('perSemesterSettings', JSON.stringify(updated));
+                                if (activeSemKey === 'w2026') saveSchool({ ...schoolData, numberOfWeeks: val });
+                              }}
+                              className="w-full h-7 px-2 text-[10px] rounded-md bg-white/10 !text-white border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                              data-testid="select-cal-num-weeks"
+                            >
+                              {[10, 11, 12, 13, 14, 15, 16].map(w => (
+                                <option key={w} value={String(w)} className="text-black bg-white">{w} weeks</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-[6px]">
+                          <div className="space-y-0.5">
+                            <Label className="text-[9px] text-white/60">Reading Week</Label>
+                            <div className="flex items-center gap-1">
+                              <input
+                                type="date"
+                                value={rw}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  const updated = { ...perSemesterSettings, [activeSemKey]: { ...(perSemesterSettings[activeSemKey] || {}), readingWeekDate: val } };
+                                  setPerSemesterSettings(updated as any);
+                                  localStorage.setItem('perSemesterSettings', JSON.stringify(updated));
+                                  if (activeSemKey === 'w2026' && val) {
+                                    apiRequest("PATCH", "/api/semester", { readingWeekStart: new Date(val).toISOString() });
+                                  }
+                                }}
+                                onClick={(e) => (e.target as HTMLInputElement).showPicker?.()}
+                                className="w-full h-7 px-2 text-[10px] rounded-md bg-white border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
+                                style={{ fontSize: '10px', color: 'black', colorScheme: 'light' }}
+                                data-testid="input-cal-reading-week"
+                              />
+                              {rw && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const updated = { ...perSemesterSettings, [activeSemKey]: { ...(perSemesterSettings[activeSemKey] || {}), readingWeekDate: '' } };
+                                    setPerSemesterSettings(updated as any);
+                                    localStorage.setItem('perSemesterSettings', JSON.stringify(updated));
+                                    if (activeSemKey === 'w2026') apiRequest("PATCH", "/api/semester", { readingWeekStart: null });
+                                  }}
+                                  className="text-[8px] text-red-300 hover:text-red-200"
+                                  data-testid="button-cal-clear-reading-week"
+                                >
+                                  ✕
+                                </button>
+                              )}
+                            </div>
+                            {rw && <div className="text-[8px] text-white/40">Skipped in week numbering</div>}
+                          </div>
+                          <div className="space-y-0.5">
+                            <Label className="text-[9px] text-white/60">Time Zone</Label>
+                            <select
+                              value={tz}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                const updated = { ...perSemesterSettings, [activeSemKey]: { ...(perSemesterSettings[activeSemKey] || {}), timezone: val } };
+                                setPerSemesterSettings(updated as any);
+                                localStorage.setItem('perSemesterSettings', JSON.stringify(updated));
+                                if (activeSemKey === 'w2026') saveSchool({ ...schoolData, timezone: val });
+                              }}
+                              className="w-full h-7 px-2 text-[10px] rounded-md bg-white/10 !text-white border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                              data-testid="select-cal-timezone"
+                            >
+                              {[
+                                { value: 'America/Toronto', label: 'Eastern (Toronto)' },
+                                { value: 'America/New_York', label: 'Eastern (NY)' },
+                                { value: 'America/Chicago', label: 'Central' },
+                                { value: 'America/Denver', label: 'Mountain' },
+                                { value: 'America/Los_Angeles', label: 'Pacific (LA)' },
+                                { value: 'America/Vancouver', label: 'Pacific (Van)' },
+                                { value: 'America/Halifax', label: 'Atlantic' },
+                                { value: 'America/St_Johns', label: 'Newfoundland' },
+                                { value: 'Europe/London', label: 'GMT (London)' },
+                                { value: 'Asia/Tokyo', label: 'JST (Tokyo)' },
+                              ].map(t => (
+                                <option key={t.value} value={t.value} className="text-black bg-white">{t.label}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                        {travelling && travelTz && (
+                          <div className="flex items-center gap-1 text-[9px] text-orange-300">
+                            <span>✈</span>
+                            <span>Travel mode: {travelTz}</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
+                </div>
+
                 <div className="border rounded-lg p-3 space-y-2" data-week-variants-section="true">
                   <div className="flex items-center justify-between cursor-pointer" onClick={() => { const opening = !weekVariantsOpen; setWeekVariantsOpen(opening); if (opening) { const tryScroll = (attempt: number) => { setTimeout(() => { const section = document.querySelector('[data-week-variants-section="true"]'); if (section) { section.scrollIntoView({ behavior: 'smooth', block: 'start' }); } else if (attempt < 3) { tryScroll(attempt + 1); } }, attempt === 0 ? 200 : 400); }; tryScroll(0); } }} data-testid="toggle-week-variants">
                     <Label className="text-[10px] font-medium cursor-pointer">Course Week Variants</Label>
