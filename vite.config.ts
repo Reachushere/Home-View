@@ -63,6 +63,13 @@ export default defineConfig({
       compress: { ecma: 5 },
       format: { ecma: 5 },
     },
+    chunkSizeWarningLimit: 5000,
+    cssCodeSplit: false,
+    rollupOptions: {
+      output: {
+        manualChunks: undefined,
+      },
+    },
   },
   server: {
     fs: {
