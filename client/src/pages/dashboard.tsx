@@ -28287,7 +28287,7 @@ export default function Dashboard() {
               </div>
             </DialogHeader>
             {editingTask && (
-              <div className="flex flex-wrap items-center gap-1.5 px-1 -mt-1 mb-1">
+              <div className="flex flex-wrap items-center gap-1.5 px-1 -mt-3 mb-0">
                 {editingTask.calendarEventId && (
                   <span className="text-[9px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(66,133,244,0.2)', border: '1px solid rgba(66,133,244,0.4)', color: 'rgba(66,133,244,0.9)' }} data-testid="badge-calendar-primary">
                     Primary Google
@@ -31543,7 +31543,7 @@ function TaskForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3" data-task-form {...(task ? { 'data-edit-task-form': true } : {})}>
+    <form onSubmit={handleSubmit} className="space-y-3" data-task-form {...(task ? { 'data-edit-task-form': true, style: { marginTop: '-8px' } } : {})}>
       <div className="grid grid-cols-2 gap-5">
         {/* Left Column */}
         <div className="space-y-3">
