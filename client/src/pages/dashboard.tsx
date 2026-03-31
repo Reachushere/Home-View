@@ -12249,7 +12249,7 @@ export default function Dashboard() {
       <div className="fixed flex items-start" data-tpo data-tpo-opacity="1" style={{ left: '23px', top: `${8 + d2lTickerHeight}px`, height: '35px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
         <img src={schoolData.schoolLogo || changSchoolLogo} alt={schoolData.schoolName || "The Chang School"} style={{ height: '44px', objectFit: 'contain' }} />
         <div style={{ width: '1.5px', height: '28px', backgroundColor: 'rgba(255,255,255,0.45)', borderRadius: '1px', flexShrink: 0, marginLeft: '10px', marginRight: '10px' }} />
-        <img src={profilePhotoUrl || profilePhoto} alt="Profile" style={{ width: '30px', height: '30px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, marginRight: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} />
+        <img src={profilePhotoUrl || profilePhoto} alt="Profile" style={{ width: '35px', height: '35px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, marginRight: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.2)', cursor: 'pointer' }} onClick={() => startTransition(() => setIsProfileDialogOpen(true))} data-testid="button-profile-photo" />
         <div className="flex flex-col">
           <span className="text-white font-bold text-[11.5px] leading-tight">Schedule for {profileData.firstName}{profileData.lastName ? ` ${profileData.lastName}` : ''}</span>
           <span className="text-white text-[10px] leading-tight" style={{ fontWeight: 300 }}>{schoolData.schoolName || 'Toronto Metropolitan University'}</span>
@@ -12599,10 +12599,6 @@ export default function Dashboard() {
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" noAnimation onMouseLeave={() => { if (!('ontouchstart' in window)) { hamburgerCloseTimer.current = window.setTimeout(() => setIsHamburgerOpen(false), 250); } }} onMouseEnter={() => { if (hamburgerCloseTimer.current) { clearTimeout(hamburgerCloseTimer.current); hamburgerCloseTimer.current = null; } }}>
-              <DropdownMenuItem data-testid="menu-item-profile" className="text-xs" onClick={() => startTransition(() => setIsProfileDialogOpen(true))}>
-                <User className="h-3.5 w-3.5 mr-2" />
-                Profile Settings
-              </DropdownMenuItem>
               <DropdownMenuItem data-testid="menu-item-school" className="text-xs" onClick={() => startTransition(() => setIsSchoolDialogOpen(true))}>
                 <GraduationCap className="h-3.5 w-3.5 mr-2" />
                 School Settings
