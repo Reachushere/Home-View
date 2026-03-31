@@ -20,6 +20,7 @@ import { textToSpeech, initTTSFallbackStatus } from "./replit_integrations/audio
 import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, sendTestHaPush, sendHaTaskReminder, sendEchoVoiceAnnouncement, sendCalendarInvite, type TaskReminder } from "./email";
 import { syncOutlookEventsToReview, fetchOutlookCalendarEvents, findOrCreateMailFolder, createMailRule, moveExistingEmailsToFolder, moveAllEmailsFromFolder, deleteMailRulesByName, getMailFolderId, moveEmailsNotFromDomains, getOutlookClient } from "./outlookCalendar";
 import { parseTickerCommand, extractInlineExpiry } from "./gmailTicker";
+import { sendGmail } from "./gmail";
 // fetchD2LAnnouncements available in ./gmail but Gmail connector lacks read scope; D2L sync handled by external Apps Script
 import { getSchedulerStatus } from "./reminderScheduler";
 import { fetchTMUCalendarEvents } from "./tmuCalendar";
@@ -2604,6 +2605,109 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       res.status(500).json({ error: "Failed to fetch news" });
     }
   });
+
+  // ── Raw Story Trump Monitor ──
+  const sentRawStoryUrls = new Set<string>();
+  
+  async function checkRawStoryTrump() {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
+      const response = await fetch('https://www.rawstory.com/feed', {
+        signal: controller.signal,
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; UniCal/1.0)' }
+      });
+      clearTimeout(timeout);
+      const xml = await response.text();
+      
+      const items = xml.split(/<item[\s>]/i).slice(1, 15);
+      
+      for (const item of items) {
+        const titleMatch = item.match(/<title[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/title>/is);
+        const linkMatch = item.match(/<link[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/link>/is);
+        const descMatch = item.match(/<description[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/description>/is);
+        const contentMatch = item.match(/<content:encoded[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/content:encoded>/is);
+        
+        const title = titleMatch?.[1]?.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").trim();
+        const link = linkMatch?.[1]?.trim() || '';
+        
+        if (!title || !link) continue;
+        if (sentRawStoryUrls.has(link)) continue;
+        
+        const trumpPattern = /\btrump\b/i;
+        if (!trumpPattern.test(title) && !trumpPattern.test(descMatch?.[1] || '')) continue;
+        
+        let imageUrl = '';
+        const mediaContentMatch = item.match(/<media:content[^>]*url="([^"]+)"[^>]*>/i);
+        const mediaThumbnailMatch = item.match(/<media:thumbnail[^>]*url="([^"]+)"[^>]*>/i);
+        const enclosureMatch = item.match(/<enclosure[^>]*url="([^"]+)"[^>]*type="image\/[^"]*"/i);
+        const contentImgMatch = (contentMatch?.[1] || descMatch?.[1] || '').match(/<img[^>]*src="([^"]+)"[^>]*>/i);
+        const ogImageMatch = item.match(/<image[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/image>/is);
+        imageUrl = mediaContentMatch?.[1] || mediaThumbnailMatch?.[1] || enclosureMatch?.[1] || contentImgMatch?.[1] || '';
+        if (!imageUrl && ogImageMatch?.[1]) {
+          const innerUrl = ogImageMatch[1].match(/https?:\/\/[^\s<]+/);
+          if (innerUrl) imageUrl = innerUrl[0];
+        }
+        imageUrl = imageUrl.replace(/&amp;/g, '&');
+        
+        let body = contentMatch?.[1] || descMatch?.[1] || '';
+        body = body
+          .replace(/<p[^>]*>/gi, '\n\n')
+          .replace(/<br\s*\/?>/gi, '\n')
+          .replace(/<\/p>/gi, '')
+          .replace(/<blockquote[^>]*>/gi, '\n\n"')
+          .replace(/<\/blockquote>/gi, '"\n\n')
+          .replace(/<a[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/gi, '$2')
+          .replace(/<[^>]+>/g, '')
+          .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ')
+          .replace(/\n{3,}/g, '\n\n')
+          .trim();
+        
+        const formattedHeadline = title.toUpperCase();
+        const imageHtml = imageUrl
+          ? `<img src="${imageUrl}" alt="" style="width: 100%; max-width: 700px; height: auto; margin-bottom: 20px; border-radius: 4px;" />`
+          : '';
+        const textBody = `${formattedHeadline}\n\nMSN/RAW STORY -- ${body}${imageUrl ? '\n\nPhoto: ' + imageUrl : ''}`;
+        const htmlBody = `<div style="font-family: Georgia, serif; max-width: 700px;">` +
+          `<h1 style="font-size: 22px; font-weight: bold; margin-bottom: 20px; letter-spacing: 1px;">${formattedHeadline}</h1>` +
+          imageHtml +
+          `<p style="font-size: 15px; line-height: 1.7;"><strong>MSN/RAW STORY</strong> &mdash; ${body.split('\n\n').map(p => p.trim()).filter(Boolean).join('</p><p style="font-size: 15px; line-height: 1.7;">')}</p>` +
+          `<hr style="margin-top: 30px; border: none; border-top: 1px solid #ccc;" />` +
+          `<p style="font-size: 12px; color: #888;"><a href="${link}">Original article</a></p>` +
+          `</div>`;
+        
+        const result = await sendGmail({
+          to: 'homeworkbryn@gmail.com',
+          subject: 'NEW RAW STORY FOR POSTING',
+          htmlBody,
+          textBody,
+        });
+        
+        if (result.success) {
+          sentRawStoryUrls.add(link);
+          console.log(`[Raw Story] Sent Trump article: ${title}`);
+        } else {
+          console.error(`[Raw Story] Failed to send: ${result.error}`);
+        }
+      }
+    } catch (err: any) {
+      console.error('[Raw Story] Check failed:', err.message);
+    }
+  }
+  
+  app.post("/api/raw-story/test", async (_req, res) => {
+    try {
+      sentRawStoryUrls.clear();
+      await checkRawStoryTrump();
+      res.json({ success: true, sent: sentRawStoryUrls.size });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+  
+  setInterval(checkRawStoryTrump, 10 * 60 * 1000);
+  setTimeout(checkRawStoryTrump, 30000);
+  console.log('[Raw Story] Trump article monitor started (checking every 10 minutes)');
 
   app.get("/api/ha/news", async (_req, res) => {
     try {
