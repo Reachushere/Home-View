@@ -12569,7 +12569,7 @@ export default function Dashboard() {
         {/* Down arrow placeholder - actual tab moved outside pill container */}
 
         {/* Icon buttons and task buttons with adjustable spacing */}
-        <div className="flex items-center flex-nowrap [&>*]:flex-shrink-0" style={{ gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 11)}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '4px', paddingRight: '4px', width: '100%', overflow: 'visible', pointerEvents: isTopPillOpen ? 'auto' : 'none' }}>
+        <div className="flex items-center flex-nowrap [&>*]:flex-shrink-0" style={{ gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 19)}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '2px', paddingRight: '2px', width: '100%', overflow: 'visible', pointerEvents: isTopPillOpen ? 'auto' : 'none' }}>
           {/* Hamburger Menu */}
           <DropdownMenu open={isHamburgerOpen} onOpenChange={(open) => { if (hamburgerCloseTimer.current) { clearTimeout(hamburgerCloseTimer.current); hamburgerCloseTimer.current = null; } startTransition(() => setIsHamburgerOpen(open)); if (open) { triggerButtonGlow('hamburger'); if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); } }} modal={false}>
             <DropdownMenuTrigger asChild>
@@ -12636,7 +12636,7 @@ export default function Dashboard() {
 
 
           {/* ── Tools ── */}
-          <div style={{ background: 'rgba(255,255,255,0.18)', borderRadius: '26px', padding: '2px 3px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 16)}px`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,0.4)', border: '1.5px solid rgba(255,255,255,0.45)', position: 'relative', top: '1px', margin: '0 2px' }}>
+          <div style={{ background: 'rgba(255,255,255,0.18)', borderRadius: '26px', padding: '2px 3px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 24)}px`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,0.4)', border: '1.5px solid rgba(255,255,255,0.45)', position: 'relative', top: '1px', margin: '0 1px' }}>
           {/* Home Assistant (moved from bottom pill) */}
           {isAdmin && (
           <div 
@@ -12960,7 +12960,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── School ── */}
-          <div style={{ background: 'rgba(255,255,255,0.18)', borderRadius: '26px', padding: '2px 3px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 16)}px`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,0.4)', border: '1.5px solid rgba(255,255,255,0.45)', position: 'relative', top: '1px', margin: '0 2px' }}>
+          <div style={{ background: 'rgba(255,255,255,0.18)', borderRadius: '26px', padding: '2px 3px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 24)}px`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,0.4)', border: '1.5px solid rgba(255,255,255,0.45)', position: 'relative', top: '1px', margin: '0 1px' }}>
           {/* Courses Button */}
           <div className="pill-button-hover" style={{ 
             marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
@@ -13060,7 +13060,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Entertainment ── */}
-          <div style={{ background: 'rgba(255,255,255,0.18)', borderRadius: '26px', padding: '2px 3px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 16)}px`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,0.4)', border: '1.5px solid rgba(255,255,255,0.45)', position: 'relative', top: '1px', margin: '0 2px' }}>
+          <div style={{ background: 'rgba(255,255,255,0.18)', borderRadius: '26px', padding: '2px 3px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 24)}px`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,0.4)', border: '1.5px solid rgba(255,255,255,0.45)', position: 'relative', top: '1px', margin: '0 1px' }}>
           {/* Spotify Button */}
           <div className="pill-button-hover" style={{ 
             marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
@@ -13148,7 +13148,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Tasks ── */}
-          <div style={{ background: 'rgba(255,255,255,0.18)', borderRadius: '26px', padding: '2px 3px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 16)}px`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,0.4)', border: '1.5px solid rgba(255,255,255,0.45)', position: 'relative', top: '1px', margin: '0 2px' }}>
+          <div style={{ background: 'rgba(255,255,255,0.18)', borderRadius: '26px', padding: '2px 3px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 24)}px`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,0.4)', border: '1.5px solid rgba(255,255,255,0.45)', position: 'relative', top: '1px', margin: '0 1px' }}>
           {/* Completed Tasks Button - Swapped with Graduation Hat */}
           <div className="pill-button-hover" style={{ 
             marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
