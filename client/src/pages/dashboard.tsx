@@ -8690,6 +8690,7 @@ export default function Dashboard() {
   });
   const [selectedSecondaryCalendar, setSelectedSecondaryCalendar] = useState<string>("");
   const [shiftScheduleOpen, setShiftScheduleOpen] = useState(false);
+  const [semestersOpen, setSemestersOpen] = useState(false);
   const [shiftScheduleYear, setShiftScheduleYear] = useState(new Date().getFullYear());
   const [localShiftMap, setLocalShiftMap] = useState<Record<string, string>>({});
   const [sleepDisabledDays, setSleepDisabledDays] = useState<Set<string>>(() => {
@@ -18899,6 +18900,13 @@ export default function Dashboard() {
                       localStorage.removeItem('profilePhotoUrl');
                     }
                   }}
+                  schoolData={{ schoolLogo: schoolData.schoolLogo, schoolName: schoolData.schoolName }}
+                  onSchoolSave={(data) => {
+                    const updated = { ...schoolData, ...data };
+                    setSchoolData(updated);
+                    localStorage.setItem('schoolSettings', JSON.stringify(updated));
+                    saveSchool(updated as any);
+                  }}
                 />
               </div>
             </DialogContent>
@@ -18909,7 +18917,7 @@ export default function Dashboard() {
             <DialogContent 
               data-settings-dialog
               className="overflow-hidden flex flex-col text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden"
-              style={{ position: 'fixed', top: `${(calendarBorderTop || (calendarTop + 15)) - 16 - 30 - 40}px`, left: '50%', transform: 'translateX(-50%)', bottom: '52px', maxHeight: 'none', width: 'calc(96vw + 28px)', maxWidth: 'calc(96vw + 28px)', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}
+              style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', maxHeight: '85vh', width: '420px', maxWidth: '95vw', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}
               onInteractOutside={(e) => { if (isNewCourseDialogOpen || newCourseDialogClosingRef.current || isNewCourseWizardOpen) e.preventDefault(); }}
               onEscapeKeyDown={(e) => { if (isNewCourseDialogOpen || newCourseDialogClosingRef.current || isNewCourseWizardOpen) e.preventDefault(); }}
               onPointerDownOutside={(e) => { if (isNewCourseDialogOpen || newCourseDialogClosingRef.current || isNewCourseWizardOpen) e.preventDefault(); }}
@@ -18925,8 +18933,7 @@ export default function Dashboard() {
                 </div>
               </div>
               <div className="flex-1 overflow-y-auto px-4 pb-4 pt-0" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', marginTop: '-2px' }}>
-              <div className="grid grid-cols-2 gap-4">
-                {/* Left Column - School Settings */}
+              <div>
                 <div className="flex flex-col gap-4" style={{ paddingTop: '0px', marginTop: '6px' }}>
                 <SchoolForm 
                   key={isSchoolDialogOpen ? 'open' : 'closed'}
@@ -18935,235 +18942,6 @@ export default function Dashboard() {
                   onSave={saveSchool}
                   onCancel={() => setIsSchoolDialogOpen(false)} 
                 />
-                </div>
-                
-                {/* Right Column - Courses & Weeks */}
-                <div className="flex flex-col gap-4" style={{ paddingTop: '0px', marginTop: '-9px' }}>
-                {/* Course Legend */}
-                <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '10px' }}>
-                  <div className="flex items-center justify-between">
-                    <Label className="text-[10px] font-medium">Courses</Label>
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity"
-                        onClick={() => { setIsSchoolDialogOpen(false); setTimeout(() => setIsRemainingCoursesDialogOpen(true), 200); }}
-                        data-testid="button-remaining-courses"
-                      >
-                        <span className="text-[10px] text-white/70 font-medium">Remaining</span>
-                        <span className="text-[8px] font-bold text-white/60 bg-white/15 px-1.5 py-0.5 rounded-full">{overallCertProgress.total - overallCertProgress.completed}</span>
-                        <ChevronRight className="text-white/70" style={{ width: '12px', height: '12px' }} />
-                      </div>
-                      <div
-                        className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity"
-                        onClick={() => { setIsSchoolDialogOpen(false); setTimeout(() => { setDraftPriorityBoth({ ...coursePlayPriority }); startTransition(() => setIsSchoolCoursesDialogOpen(true)); }, 200); }}
-                        data-testid="button-past-courses"
-                      >
-                        <span className="text-[10px] text-white/70 font-bold">ALL COURSES</span>
-                        <ChevronRight className="text-white/70" style={{ width: '12px', height: '12px' }} />
-                      </div>
-                    </div>
-                  </div>
-                  {coursesData.courses.filter(course => course.name.trim()).map((course, index) => {
-                    const courseCode = course.name.split(' - ')[0];
-                    const courseName = course.name.split(' - ').slice(1).join(' - ') || course.name;
-                    const tomorrow = addDays(startOfDayET(new Date()), 1);
-                    const hasDueTomorrow = allTasks.some(task => 
-                      task.courseName?.includes(courseCode) && 
-                      !task.isCompleted &&
-                      isSameDayET(new Date(task.dueDate), tomorrow)
-                    );
-                    const professorEmail = course.professorEmail;
-                    const semCourse = semesterSettings ? (() => {
-                      const idx = index + 1;
-                      const s = semesterSettings as any;
-                      return {
-                        delivery: s[`course${idx}DeliveryMode`],
-                        day: s[`course${idx}ClassDay`],
-                        day2: s[`course${idx}ClassDay2`],
-                        time: s[`course${idx}ClassTime`],
-                        endTime: s[`course${idx}ClassEndTime`],
-                      };
-                    })() : null;
-                    const courseTasks = allTasks.filter(t => t.courseName?.includes(courseCode) && t.gradeWeight);
-                    const gradedCompleted = courseTasks.filter(t => t.isCompleted && t.gradeValue !== null && t.gradeValue !== undefined);
-                    const totalWeightGraded = gradedCompleted.reduce((sum, t) => sum + (t.gradeWeight || 0), 0);
-                    const weightedScore = gradedCompleted.reduce((sum, t) => {
-                      const pct = (t.gradeTotal && t.gradeTotal > 0) ? ((t.gradeValue || 0) / t.gradeTotal) * 100 : (t.gradeValue || 0);
-                      return sum + (pct * (t.gradeWeight || 0) / 100);
-                    }, 0);
-                    const currentGrade = totalWeightGraded > 0 ? (weightedScore / totalWeightGraded) * 100 : null;
-                    const totalWeight = courseTasks.reduce((sum, t) => sum + (t.gradeWeight || 0), 0);
-                    return (
-                      <div key={index} className="space-y-0.5">
-                        <div className="flex items-center gap-1.5">
-                          <label className="flex items-center gap-1 cursor-pointer" data-testid={`checkbox-school-aas-${courseCode}`} onClick={() => toggleAasSent(courseCode)}>
-                            <div className={`w-3 h-3 rounded-sm border flex items-center justify-center flex-shrink-0 ${(aasSentStatus[courseCode] || aasSentStatus[courseCode.replace(/\s/g, '')]) ? 'bg-blue-500 border-blue-500' : 'border-amber-400 bg-transparent'}`}>
-                              {(aasSentStatus[courseCode] || aasSentStatus[courseCode.replace(/\s/g, '')]) && (
-                                <Check className="w-2.5 h-2.5 text-white" />
-                              )}
-                            </div>
-                          </label>
-                          <div className="relative flex-shrink-0 flex items-center gap-0.5">
-                            <div className="relative">
-                              <div 
-                                className={`w-3 h-3 rounded-sm cursor-pointer ${hasDueTomorrow ? "animate-blink" : ""}`} 
-                                style={{ backgroundColor: course.color }}
-                                onClick={() => document.getElementById(`school-course-color-${index}`)?.click()}
-                                title="Gradient start color"
-                              />
-                              <input
-                                id={`school-course-color-${index}`}
-                                type="color"
-                                value={course.color}
-                                onChange={(e) => {
-                                  const updatedCourses = [...coursesData.courses];
-                                  updatedCourses[index] = { ...updatedCourses[index], color: e.target.value };
-                                  setCoursesData({ courses: updatedCourses });
-                                  localStorage.setItem('coursesData', JSON.stringify({ courses: updatedCourses }));
-                                  saveCourses({ courses: updatedCourses });
-                                }}
-                                className="absolute inset-0 w-0 h-0 opacity-0"
-                                data-testid={`input-school-course-color-${index}`}
-                              />
-                            </div>
-                            <div className="w-4 h-2.5 rounded-sm" style={{ background: `linear-gradient(to right, ${course.color}, ${course.colorEnd || course.color})` }} />
-                            <div className="relative">
-                              <div 
-                                className="w-3 h-3 rounded-sm cursor-pointer"
-                                style={{ backgroundColor: course.colorEnd || course.color }}
-                                onClick={() => document.getElementById(`school-course-color-end-${index}`)?.click()}
-                                title="Gradient end color"
-                              />
-                              <input
-                                id={`school-course-color-end-${index}`}
-                                type="color"
-                                value={course.colorEnd || course.color}
-                                onChange={(e) => {
-                                  const updatedCourses = [...coursesData.courses];
-                                  updatedCourses[index] = { ...updatedCourses[index], colorEnd: e.target.value };
-                                  setCoursesData({ courses: updatedCourses });
-                                  localStorage.setItem('coursesData', JSON.stringify({ courses: updatedCourses }));
-                                  saveCourses({ courses: updatedCourses });
-                                }}
-                                className="absolute inset-0 w-0 h-0 opacity-0"
-                                data-testid={`input-school-course-color-end-${index}`}
-                              />
-                            </div>
-                          </div>
-                          <span className="text-[10px] text-white">
-                            <span className="font-medium">{courseCode}</span>
-                            {courseName !== courseCode && <span className="text-white/80"> {courseName}</span>}
-                          </span>
-                          {courseCertificateTypes[courseCode] && (
-                            <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-white/10 text-white/60 whitespace-nowrap" data-testid={`badge-cert-type-${index}`}>{courseCertificateTypes[courseCode]}</span>
-                          )}
-                          {course.professor && (
-                            professorEmail ? (
-                              <a
-                                href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(professorEmail)}&su=${encodeURIComponent(`${courseCode} - `)}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-[10px] !text-blue-400 underline hover:!text-blue-300 cursor-pointer"
-                                data-testid={`link-school-email-professor-${index + 1}`}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                }}
-                              >
-                                {course.professor}
-                              </a>
-                            ) : (
-                              <span className="text-[10px] text-white">{course.professor}</span>
-                            )
-                          )}
-                          <button
-                            className="flex-shrink-0 p-0.5 rounded hover:bg-white/10 cursor-pointer"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              startTransition(() => setSelectedCertCourse({ courseCode, courseName: courseName !== courseCode ? courseName : courseCode, certKey: courseCode }));
-                            }}
-                            data-testid={`button-edit-course-${index}`}
-                          >
-                            <Pencil className="w-2.5 h-2.5 text-white/50 hover:text-white/80" strokeWidth={2.5} />
-                          </button>
-                          <div className="flex items-center gap-2 ml-auto text-[9px]" data-testid={`grade-display-${courseCode}`}>
-                            {courseTasks.length > 0 ? (
-                              <>
-                                {currentGrade !== null ? (
-                                  <span className={`font-medium ${currentGrade >= 80 ? 'text-green-400' : currentGrade >= 60 ? 'text-amber-400' : 'text-red-400'}`}>
-                                    {currentGrade.toFixed(1)}%
-                                  </span>
-                                ) : (
-                                  <span className="text-white/30">--</span>
-                                )}
-                                <span className="text-white/30">({totalWeightGraded}/{totalWeight}%)</span>
-                              </>
-                            ) : (
-                              <span className="text-white/30">--</span>
-                            )}
-                          </div>
-                        </div>
-                        {semCourse && (semCourse.delivery || semCourse.day || semCourse.time) && (
-                          <div className="flex items-center gap-2 pl-4 text-[10px] text-white/50">
-                            {semCourse.delivery && <span>{semCourse.delivery}</span>}
-                            {semCourse.day && <span>{semCourse.day}{semCourse.day2 ? `/${semCourse.day2}` : ''}</span>}
-                            {semCourse.time && <span>{semCourse.time}{semCourse.endTime ? `-${semCourse.endTime}` : ''}</span>}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-
-                </div>
-
-                
-                {/* Weeks */}
-                <div className="border rounded-lg p-3 flex flex-col flex-1" style={{ marginTop: '-4px' }}>
-                  <Label className="text-[10px] font-medium mb-1 block">Weeks</Label>
-                  <div className="flex flex-col flex-1 justify-evenly gap-1">
-                  {[...weeks].sort((a, b) => {
-                    const today = startOfDayET(new Date());
-                    const aEndDay = startOfDayET(parseISO(a.endDate));
-                    const bEndDay = startOfDayET(parseISO(b.endDate));
-                    const aFinished = aEndDay < today;
-                    const bFinished = bEndDay < today;
-                    if (aFinished && !bFinished) return 1;
-                    if (!aFinished && bFinished) return -1;
-                    return a.weekNumber - b.weekNumber;
-                  }).map((week) => {
-                    const weekEnd = parseISO(week.endDate);
-                    const isWeekFinished = startOfDayET(weekEnd) < startOfDayET(new Date());
-                    const isSelected = selectedWeek === week.weekNumber && !selectedDate;
-                    return (
-                      <div key={week.weekNumber} className={`flex items-center gap-0.5 rounded-md`} style={isSelected ? { backgroundColor: 'rgba(255,255,255,0.15)' } : undefined}>
-                        <Button
-                          variant="ghost"
-                          className={`justify-start gap-1 h-auto !py-0 !min-h-0 px-1 w-full ${isWeekFinished ? "opacity-60" : ""} ${isSelected ? "bg-transparent hover:bg-transparent" : ""}`}
-                          size="sm"
-                          onClick={() => {
-                            setSelectedWeek(week.weekNumber);
-                            setSelectedDate(null);
-                            setIsSchoolDialogOpen(false);
-                          }}
-                          data-testid={`button-week-school-${week.weekNumber}`}
-                        >
-                          <div className={`flex items-center gap-1 ${isWeekFinished ? "line-through" : ""}`}>
-                            <Calendar className="h-3 w-3 text-white" />
-                            <span className="text-[10px] text-white">Week {week.weekNumber}</span>
-                            <span className={`text-[10px] font-bold ${isSelected ? 'text-white' : 'text-white/70'}`}>
-                              ({format(parseISO(week.startDate), "MMM d")} - {format(parseISO(week.endDate), "MMM d")})
-                            </span>
-                          </div>
-                          {week.taskCount > 0 && (
-                            <Badge variant="outline" className="text-[10px] px-1 py-0 min-w-5 text-center justify-center ml-auto text-white border-white">
-                              {week.taskCount}
-                            </Badge>
-                          )}
-                        </Button>
-                      </div>
-                    );
-                  })}
-                  </div>
-                </div>
                 </div>
               </div>
               </div>
@@ -29228,7 +29006,9 @@ function ProfileForm({
   onSave,
   onCancel,
   profilePhotoUrl,
-  onProfilePhotoChange
+  onProfilePhotoChange,
+  schoolData,
+  onSchoolSave
 }: { 
   profileData: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string; country: string; provinceState: string; emergencyContactName: string; emergencyContactPhone: string; allergies: string };
   timezones: { value: string; label: string }[];
@@ -29236,6 +29016,8 @@ function ProfileForm({
   onCancel: () => void;
   profilePhotoUrl: string | null;
   onProfilePhotoChange: (url: string | null) => void;
+  schoolData: { schoolLogo: string | null; schoolName: string };
+  onSchoolSave: (data: { schoolLogo: string | null; schoolName: string }) => void;
 }) {
   const [firstName, setFirstName] = useState(profileData.firstName);
   const [lastName, setLastName] = useState(profileData.lastName);
@@ -29259,6 +29041,10 @@ function ProfileForm({
   const [emergencyContactName, setEmergencyContactName] = useState(profileData.emergencyContactName || '');
   const [emergencyContactPhone, setEmergencyContactPhone] = useState(profileData.emergencyContactPhone || '');
   const [allergies, setAllergies] = useState(profileData.allergies || '');
+  const [schoolName, setSchoolName] = useState(schoolData.schoolName || 'Toronto Metropolitan University');
+  const [customSchoolName, setCustomSchoolName] = useState('');
+  const [schoolLogoPreview, setSchoolLogoPreview] = useState<string | null>(schoolData.schoolLogo);
+  const schoolLogoInputRef = useRef<HTMLInputElement>(null);
 
   const COUNTRIES = [
     { value: 'CA', label: 'Canada' },
@@ -29306,9 +29092,20 @@ function ProfileForm({
   const regionLabel = country === 'CA' ? 'Province' : country === 'US' ? 'State' : country === 'AU' ? 'State/Territory' : 'Province/State';
   const regionOptions = PROVINCES_STATES[country] || [];
   
+  const handleSchoolLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) return;
+    const reader = new FileReader();
+    reader.onload = () => { setSchoolLogoPreview(reader.result as string); };
+    reader.readAsDataURL(file);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave({ firstName, lastName, birthdate, timezone, travelTimezone: isTraveling ? travelTimezone : null, postalCode, location, phoneNumber, email, address, country, provinceState, emergencyContactName, emergencyContactPhone, allergies });
+    const finalSchoolName = schoolName === 'Other' ? customSchoolName : schoolName;
+    onSchoolSave({ schoolLogo: schoolLogoPreview, schoolName: finalSchoolName });
   };
 
   const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30307,83 +30104,9 @@ function SchoolForm({
               />
             )}
           </div>
-          <div className="space-y-1">
-            <Label htmlFor="firstDayOfWeek" className="text-[10px]">First Day of School Week</Label>
-            <select
-              value={firstDayOfWeek}
-              onChange={(e) => setFirstDayOfWeek(e.target.value)}
-              className="w-full h-8 px-2 text-[10px] rounded-md bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
-              data-testid="select-first-day-of-week"
-            >
-              {daysOfWeek.map(day => (
-                <option key={day.value} value={day.value} className="text-black bg-white">{day.label}</option>
-              ))}
-            </select>
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="lastDayOfSchoolWeek" className="text-[10px]">Last Day of School Week</Label>
-            <select
-              value={lastDayOfSchoolWeek}
-              onChange={(e) => setLastDayOfSchoolWeek(e.target.value)}
-              className="w-full h-8 px-2 text-[10px] rounded-md bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400" style={{ color: 'black' }}
-              data-testid="select-last-day-of-school-week"
-            >
-              {daysOfWeek.map(day => (
-                <option key={day.value} value={day.value} className="text-black bg-white">{day.label}</option>
-              ))}
-            </select>
-          </div>
-          <div className="text-[10px] text-muted-foreground pt-1">
-            Current Semester Ends: {semesterEnd}
-          </div>
         </div>
       </div>
       
-      <div className="border rounded-lg p-3 space-y-2" style={{ marginTop: '12px' }}>
-        <Label className="text-[10px] font-medium">Semesters</Label>
-        <div className="space-y-1 text-[10px]">
-          {[
-            { key: 'ss2025', label: 'Spring/Summer 2025', dates: 'May 5 – August 8, 2025' },
-            { key: 'f2025', label: 'Fall 2025', dates: 'September 8 – December 12, 2025' },
-            { key: 'w2026', label: 'Winter 2026', dates: 'January 12 – April 17, 2026' },
-            { key: 'ss2026', label: 'Spring/Summer 2026', dates: 'May 4 – August 7, 2026' },
-            { key: 'f2026', label: 'Fall 2026', dates: 'September 7 – December 11, 2026' },
-            { key: 'w2027', label: 'Winter 2027', dates: 'January 11 – April 16, 2027' },
-            { key: 'ss2027', label: 'Spring/Summer 2027', dates: 'May 3 – August 6, 2027' },
-            { key: 'f2027', label: 'Fall 2027', dates: 'September 13 – December 17, 2027' },
-            { key: 'w2028', label: 'Winter 2028', dates: 'January 10 – April 14, 2028' },
-            { key: 'ss2028', label: 'Spring/Summer 2028', dates: 'May 1 – August 4, 2028' },
-            { key: 'f2028', label: 'Fall 2028', dates: 'September 11 – December 15, 2028' },
-            { key: 'w2029', label: 'Winter 2029', dates: 'January 8 – April 13, 2029' },
-          ].map(sem => {
-            const isCurrent = (() => {
-              const now = new Date();
-              if (sem.key === 'ss2025' && now >= new Date('2025-05-05') && now <= new Date('2025-08-08')) return true;
-              if (sem.key === 'f2025' && now >= new Date('2025-09-08') && now <= new Date('2025-12-12')) return true;
-              if (sem.key === 'w2026' && now >= new Date('2026-01-12') && now <= new Date('2026-04-17')) return true;
-              if (sem.key === 'ss2026' && now >= new Date('2026-05-04') && now <= new Date('2026-08-07')) return true;
-              if (sem.key === 'f2026' && now >= new Date('2026-09-07') && now <= new Date('2026-12-11')) return true;
-              if (sem.key === 'w2027' && now >= new Date('2027-01-11') && now <= new Date('2027-04-16')) return true;
-              if (sem.key === 'ss2027' && now >= new Date('2027-05-03') && now <= new Date('2027-08-06')) return true;
-              if (sem.key === 'f2027' && now >= new Date('2027-09-13') && now <= new Date('2027-12-17')) return true;
-              if (sem.key === 'w2028' && now >= new Date('2028-01-10') && now <= new Date('2028-04-14')) return true;
-              if (sem.key === 'ss2028' && now >= new Date('2028-05-01') && now <= new Date('2028-08-04')) return true;
-              if (sem.key === 'f2028' && now >= new Date('2028-09-11') && now <= new Date('2028-12-15')) return true;
-              if (sem.key === 'w2029' && now >= new Date('2029-01-08') && now <= new Date('2029-04-13')) return true;
-              return false;
-            })();
-            return (
-              <div key={sem.key} className="flex items-center justify-between py-1 px-1.5 rounded" style={{ background: isCurrent ? 'rgba(255,255,255,0.08)' : 'transparent' }}>
-                <div className="flex items-center gap-1.5">
-                  {isCurrent && <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />}
-                  <span className={`text-white ${isCurrent ? 'font-bold' : 'font-normal'}`}>{sem.label}</span>
-                </div>
-                <span className="text-white/50">{sem.dates}</span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
 
       <WeekVariantsSection semesterSettings={semesterSettings} week1StartDate={week1StartDate} />
       
