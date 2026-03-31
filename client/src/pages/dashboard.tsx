@@ -14158,8 +14158,8 @@ export default function Dashboard() {
                           title={ann.isEnabled ? 'Hide from HA' : 'Expose to HA'}
                           data-testid={`alexa-toggle-${ann.id}`}
                         >
-                          <div className={`w-[30px] h-[16px] rounded-full relative transition-colors ${ann.isEnabled ? 'bg-cyan-500' : 'bg-white/20'}`}>
-                            <div className={`absolute top-[2px] w-[12px] h-[12px] rounded-full bg-white shadow transition-all ${ann.isEnabled ? 'left-[16px]' : 'left-[2px]'}`} />
+                          <div className={`w-[34px] h-[18px] rounded-full relative transition-colors ${ann.isEnabled ? 'bg-cyan-500' : 'bg-white/20'}`}>
+                            <div className={`absolute top-[2px] w-[14px] h-[14px] rounded-full bg-white shadow transition-all ${ann.isEnabled ? 'left-[18px]' : 'left-[2px]'}`} />
                           </div>
                         </button>
                         <div className="flex-1 min-w-0" style={{ marginLeft: '30px' }}>
@@ -27298,7 +27298,7 @@ export default function Dashboard() {
                                 </div>
                                 <button onClick={() => updateHaAutomationMutation.mutate({ id: auto.id, isEnabled: !auto.isEnabled })} className="ml-2 shrink-0" data-testid={`automation-toggle-${auto.id}`}>
                                   <div className={`w-[34px] h-[18px] rounded-full relative transition-colors ${auto.isEnabled ? 'bg-cyan-500' : 'bg-white/20'}`}>
-                                    <div className={`absolute top-[3px] w-[12px] h-[12px] rounded-full bg-white shadow transition-all ${auto.isEnabled ? 'left-[19px]' : 'left-[3px]'}`} />
+                                    <div className={`absolute top-[2px] w-[14px] h-[14px] rounded-full bg-white shadow transition-all ${auto.isEnabled ? 'left-[18px]' : 'left-[2px]'}`} />
                                   </div>
                                 </button>
                               </div>
@@ -32126,15 +32126,15 @@ function TaskForm({
                       aria-checked={formData.showCountdownBarMain}
                       onClick={() => setFormData(prev => ({ ...prev, showCountdownBarMain: !prev.showCountdownBarMain }))}
                       style={{
-                        width: '30px', height: '16px', borderRadius: '8px', position: 'relative',
+                        width: '34px', height: '18px', borderRadius: '9px', position: 'relative',
                         background: formData.showCountdownBarMain ? '#3b82f6' : 'rgba(255,255,255,0.15)',
                         border: 'none', cursor: 'pointer', transition: 'background 0.2s', flexShrink: 0,
                       }}
                     >
                       <div style={{
-                        width: '12px', height: '12px', borderRadius: '50%', background: '#fff',
+                        width: '14px', height: '14px', borderRadius: '50%', background: '#fff',
                         position: 'absolute', top: '2px', transition: 'left 0.2s',
-                        left: formData.showCountdownBarMain ? '16px' : '2px',
+                        left: formData.showCountdownBarMain ? '18px' : '2px',
                       }} />
                     </button>
                   </div>
@@ -32146,15 +32146,15 @@ function TaskForm({
                       aria-checked={formData.showCountdownBarSummary}
                       onClick={() => setFormData(prev => ({ ...prev, showCountdownBarSummary: !prev.showCountdownBarSummary }))}
                       style={{
-                        width: '30px', height: '16px', borderRadius: '8px', position: 'relative',
+                        width: '34px', height: '18px', borderRadius: '9px', position: 'relative',
                         background: formData.showCountdownBarSummary ? '#3b82f6' : 'rgba(255,255,255,0.15)',
                         border: 'none', cursor: 'pointer', transition: 'background 0.2s', flexShrink: 0,
                       }}
                     >
                       <div style={{
-                        width: '12px', height: '12px', borderRadius: '50%', background: '#fff',
+                        width: '14px', height: '14px', borderRadius: '50%', background: '#fff',
                         position: 'absolute', top: '2px', transition: 'left 0.2s',
-                        left: formData.showCountdownBarSummary ? '16px' : '2px',
+                        left: formData.showCountdownBarSummary ? '18px' : '2px',
                       }} />
                     </button>
                   </div>
