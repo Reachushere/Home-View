@@ -2295,7 +2295,7 @@ input[type="date"]::-webkit-datetime-edit-year-field {
 }
 
 .weather-sheet-lightning {
-  animation: sheetLightning 4s ease-in-out infinite;
+  animation: sheetLightning 7s ease-in-out infinite;
   pointer-events: none;
   background: linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(180,180,255,0.4) 50%, transparent 100%);
 }
@@ -2331,7 +2331,7 @@ input[type="date"]::-webkit-datetime-edit-year-field {
 }
 
 .weather-lightning {
-  animation: weatherLightning 3.5s ease-in-out infinite;
+  animation: weatherLightning 6s ease-in-out infinite;
   pointer-events: none;
 }
 
@@ -2356,15 +2356,15 @@ input[type="date"]::-webkit-datetime-edit-year-field {
 .weather-lightning-bolt::before {
   top: 2px;
   left: 30%;
-  animation: boltFlash1 4s ease-in-out infinite;
+  animation: boltFlash1 7s ease-in-out infinite;
 }
 
 .weather-lightning-bolt::after {
   top: 0px;
   right: 20%;
   font-size: 14px;
-  animation: boltFlash2 4s ease-in-out infinite;
-  animation-delay: 1.8s;
+  animation: boltFlash2 7s ease-in-out infinite;
+  animation-delay: 3s;
 }
 
 @keyframes boltFlash1 {
