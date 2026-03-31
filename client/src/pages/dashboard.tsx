@@ -12606,17 +12606,6 @@ export default function Dashboard() {
                 <GraduationCap className="h-3.5 w-3.5 mr-2" />
                 School Settings
               </DropdownMenuItem>
-              <DropdownMenuItem data-testid="menu-item-settings" className="text-xs" onClick={() => {
-                  startTransition(() => {
-                    setIsQuickAddOpen(false);
-                    setOriginalColorSettings({...colorSettings});
-                    setOriginalBlinkSettings({...blinkSettings});
-                    setIsSettingsDialogOpen(true);
-                  });
-                }}>
-                <Settings className="h-3.5 w-3.5 mr-2" />
-                Calendar Settings
-              </DropdownMenuItem>
               <DropdownMenuItem data-testid="menu-item-system-health" className="text-xs" onClick={() => {
                   setSystemHealthLoading(true);
                   setSystemHealthData(null);
@@ -21626,6 +21615,21 @@ export default function Dashboard() {
             </div>
           )}
           <div className="flex-1 min-h-0 relative" style={{ overflow: 'visible' }}>
+            <button
+              onClick={() => {
+                startTransition(() => {
+                  setOriginalColorSettings({...colorSettings});
+                  setOriginalBlinkSettings({...blinkSettings});
+                  setIsSettingsDialogOpen(true);
+                });
+              }}
+              className="absolute cursor-pointer hover:opacity-80 transition-opacity"
+              style={{ right: '-18px', top: '2px', zIndex: 60, background: 'none', border: 'none', padding: 0 }}
+              data-testid="button-calendar-settings-cog"
+              title="Calendar Settings"
+            >
+              <Settings className="h-3.5 w-3.5 text-white/70 hover:text-white" />
+            </button>
             <div
               style={{ position: 'absolute', left: '9px', top: '-30px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
               data-testid="calendar-top-resize-handle"
