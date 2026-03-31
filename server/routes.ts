@@ -17027,14 +17027,13 @@ Return ONLY the JSON object, no markdown formatting.`;
             if (!playResp.ok) {
               console.log(`[Spotify] player_media_play_context failed, falling back to voice command`);
               const searchTerm = searchQuery || artistName || "music";
-              const voiceCommand = entityId === EVERYWHERE_GROUP_ENTITY 
-                ? `play ${searchTerm} on Spotify on byhome`
-                : `play ${searchTerm} on Spotify`;
-              console.log(`[Spotify] Sending alexa_media command to ${targetEntity}: "${voiceCommand}"`);
+              const voiceCommand = `play ${searchTerm} on Spotify`;
+              const commandTarget = entityId === EVERYWHERE_GROUP_ENTITY ? EVERYWHERE_GROUP_ENTITY : targetEntity;
+              console.log(`[Spotify] Sending alexa_media command to ${commandTarget}: "${voiceCommand}"`);
               await fetch(`${haUrl}/api/services/notify/alexa_media`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: voiceCommand, target: [targetEntity], data: { type: "command" } }),
+                body: JSON.stringify({ message: voiceCommand, target: commandTarget, data: { type: "command" } }),
               });
             }
           } else {
@@ -17055,15 +17054,14 @@ Return ONLY the JSON object, no markdown formatting.`;
         } else {
           console.log(`[Spotify] No SpotifyPlus source for ${entityId}, using voice command fallback`);
           const searchTerm = searchQuery || artistName || "music";
-          const voiceCommand = entityId === EVERYWHERE_GROUP_ENTITY 
-            ? `play ${searchTerm} on Spotify on byhome`
-            : `play ${searchTerm} on Spotify`;
+          const voiceCommand = `play ${searchTerm} on Spotify`;
+          const commandTarget = entityId === EVERYWHERE_GROUP_ENTITY ? EVERYWHERE_GROUP_ENTITY : targetEntity;
           
-          console.log(`[Spotify] Sending alexa_media command to ${targetEntity}: "${voiceCommand}"`);
+          console.log(`[Spotify] Sending alexa_media command to ${commandTarget}: "${voiceCommand}"`);
           await fetch(`${haUrl}/api/services/notify/alexa_media`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: voiceCommand, target: [targetEntity], data: { type: "command" } }),
+            body: JSON.stringify({ message: voiceCommand, target: commandTarget, data: { type: "command" } }),
           });
         }
       } else {
