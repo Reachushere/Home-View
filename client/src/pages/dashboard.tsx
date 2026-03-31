@@ -21355,8 +21355,8 @@ export default function Dashboard() {
           
           {weatherData?.daily && (
             <div className="grid w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), height: '16px', marginTop: '-3px' }}>
-              <div style={{ minWidth: 0, backgroundColor: colorSettings.headerBar }} />
-              {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: colorSettings.headerBar }} />}
+              <div style={{ minWidth: 0 }} />
+              {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0 }} />}
               {weekDays.map((day, idx) => {
                 const dateStr = format(day, 'yyyy-MM-dd');
                 const dayForecast = weatherData.daily?.find(d => d.date === dateStr);
@@ -21375,7 +21375,7 @@ export default function Dashboard() {
                 const desc = dayForecast?.weatherCode !== undefined ? (WMO_SHORT[dayForecast.weatherCode] || '') : '';
                 const isTodayForecast = isSameDayET(day, new Date());
                 return (
-                  <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : 1, backgroundColor: colorSettings.headerBar }} data-testid={`weather-above-${dateStr}`}>
+                  <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : 1 }} data-testid={`weather-above-${dateStr}`}>
                     {isTodayForecast && weatherAlerts.length > 0 && (
                       <div className="absolute inset-0" style={{ backgroundColor: 'rgb(255,0,0)', opacity: 1, left: '3px', right: '-2px' }} />
                     )}
@@ -25448,7 +25448,7 @@ export default function Dashboard() {
               }
             }
             return '12px';
-          })(), flex: 1, paddingBottom: '0px', overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', zIndex: 2 }}>
+          })(), flex: 1, minHeight: 0, paddingBottom: '0px', overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', zIndex: 2 }}>
           <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0px 0 0px 0', flexShrink: 0 }}>
             <span className="text-[10.5px] font-medium leading-tight whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.85)' }} data-testid="text-week-number">{selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? `Week ${selectedWeek}` : ''}{(() => { const variants = courseWeekVariants[selectedWeek]; if (variants && variants.length > 0) { const diffLabels = [...new Set(variants.map(v => v.label))].filter(l => { const n = String(l).replace(/^week\s*/i, '').trim(); return n !== String(selectedWeek); }); if (diffLabels.length === 0) return null; return <span className="text-[9px] font-normal ml-1" style={{ color: 'rgba(255,255,255,0.6)' }}>({diffLabels.map((label, i) => { const lStr = String(label); const prefix = /^week\s/i.test(lStr) ? '' : 'Wk '; return <span key={i}>{i > 0 ? ', ' : ''}{variants.find(v => v.label === label)?.courseCode}: {prefix}{lStr}</span>; })})</span>; } return null; })()}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek && selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? <span className="text-[10px] font-normal ml-1" style={{ color: 'rgba(255,255,255,1)' }}>(current)</span> : null; })()}</span>
           </div>
