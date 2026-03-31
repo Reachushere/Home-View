@@ -21501,11 +21501,25 @@ export default function Dashboard() {
                             const now = new Date();
                             const minutesSinceMidnight = now.getHours() * 60 + now.getMinutes();
                             const pct = Math.min(100, Math.max(0, (minutesSinceMidnight / 1440) * 100));
+                            const srTime = weatherData?.sunrise ? new Date(weatherData.sunrise) : null;
+                            const ssTime = weatherData?.sunset ? new Date(weatherData.sunset) : null;
+                            const srMin = srTime ? srTime.getHours() * 60 + srTime.getMinutes() : 420;
+                            const ssMin = ssTime ? ssTime.getHours() * 60 + ssTime.getMinutes() : 1140;
+                            const srPct = (srMin / 1440) * 100;
+                            const ssPct = (ssMin / 1440) * 100;
+                            const preDawnPct = Math.max(0, srPct - 4);
+                            const dawnPct = Math.max(0, srPct - 2);
+                            const postDawnPct = srPct + 2;
+                            const dayStartPct = srPct + 5;
+                            const preDuskPct = ssPct - 4;
+                            const duskPct = ssPct - 2;
+                            const postDuskPct = ssPct + 2;
+                            const nightPct = Math.min(100, ssPct + 5);
                             const skyStops = [
-                              { p: 0, c: '#01294D' }, { p: 20, c: '#01294D' }, { p: 24, c: '#C97355' },
-                              { p: 27, c: '#D6A276' }, { p: 30, c: '#EDC261' }, { p: 35, c: '#8AC3DF' },
-                              { p: 50, c: '#8AC3DF' }, { p: 65, c: '#8AC3DF' }, { p: 68, c: '#C0B9BC' },
-                              { p: 71, c: '#ECC47E' }, { p: 74, c: '#F9A523' }, { p: 82, c: '#01294D' },
+                              { p: 0, c: '#01294D' }, { p: preDawnPct, c: '#01294D' }, { p: dawnPct, c: '#C97355' },
+                              { p: srPct, c: '#D6A276' }, { p: postDawnPct, c: '#EDC261' }, { p: dayStartPct, c: '#8AC3DF' },
+                              { p: (dayStartPct + preDuskPct) / 2, c: '#8AC3DF' }, { p: preDuskPct, c: '#8AC3DF' }, { p: duskPct, c: '#C0B9BC' },
+                              { p: ssPct, c: '#ECC47E' }, { p: postDuskPct, c: '#F9A523' }, { p: nightPct, c: '#01294D' },
                               { p: 100, c: '#01294D' },
                             ];
                             const visibleStops = skyStops.filter(s => s.p <= pct);
