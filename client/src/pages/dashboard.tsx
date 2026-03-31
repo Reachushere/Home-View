@@ -12919,7 +12919,7 @@ export default function Dashboard() {
 
 
           {/* Quick Add Button */}
-          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminderEmail: false, reminderAlexa: false, reminderSms: false, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' }); setIsQuickAddOpen(true); }); }}>+ Add Task</Button>
+          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminderEmail: false, reminderAlexa: false, reminderSms: false, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '', repeatSpanDays: 1 }); setIsQuickAddOpen(true); }); }}>+ Add Task</Button>
           </div>
 
           {/* Radio Dialog */}
@@ -15620,7 +15620,7 @@ export default function Dashboard() {
                     onClick={() => {
                       setIsAddChooserOpen(false);
                       setQuickAddStep(0);
-                      setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminderEmail: false, reminderAlexa: false, reminderSms: false, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' });
+                      setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminderEmail: false, reminderAlexa: false, reminderSms: false, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '', repeatSpanDays: 1 });
                       setIsQuickAddOpen(true);
                     }}
                     data-testid="button-chooser-add-task"
@@ -16366,16 +16366,31 @@ export default function Dashboard() {
                         </div>
                       )}
                       {quickAddData.repeatType !== 'none' && (
-                        <div className="mt-1">
-                          <span className="text-white/50 text-[11px]">End date (optional)</span>
-                          <input
-                            type="date"
-                            value={quickAddData.repeatEndDate}
-                            onChange={(e) => { const v = e.target.value; startTransition(() => setQuickAddData(p => ({ ...p, repeatEndDate: v }))); }}
-                            className="w-full mt-1 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
-                            data-testid="quick-add-repeat-end-date"
-                          />
-                        </div>
+                        <>
+                          <div className="flex gap-2 items-center mt-1">
+                            <span className="text-white/50 text-[11px]">Span</span>
+                            <select
+                              value={quickAddData.repeatSpanDays ?? 1}
+                              onChange={(e) => { const v = parseInt(e.target.value); startTransition(() => setQuickAddData(p => ({ ...p, repeatSpanDays: v }))); }}
+                              className="bg-white/10 border border-white/15 rounded-lg px-2 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
+                              data-testid="quick-add-repeat-span"
+                            >
+                              {[1,2,3,4,5,6,7,10,14].map(n => (
+                                <option key={n} value={n} style={{ color: 'black' }}>{n === 1 ? '1 day (no span)' : `${n} days in a row`}</option>
+                              ))}
+                            </select>
+                          </div>
+                          <div className="mt-1">
+                            <span className="text-white/50 text-[11px]">End date (optional)</span>
+                            <input
+                              type="date"
+                              value={quickAddData.repeatEndDate}
+                              onChange={(e) => { const v = e.target.value; startTransition(() => setQuickAddData(p => ({ ...p, repeatEndDate: v }))); }}
+                              className="w-full mt-1 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
+                              data-testid="quick-add-repeat-end-date"
+                            />
+                          </div>
+                        </>
                       )}
                     </div>
                   )}
@@ -16571,6 +16586,7 @@ export default function Dashboard() {
                             showCountdownBarSummary: quickAddData.showCountdownBarSummary,
                             countdownBarDays: quickAddData.countdownBarDays,
                             countdownBarColor: quickAddData.countdownBarColor || null,
+                            repeatSpanDays: quickAddData.repeatSpanDays ?? 1,
                             reminderEmail: quickAddData.reminderEmail,
                             reminderAlexa: quickAddData.reminderAlexa,
                             reminderSms: quickAddData.reminderSms,
@@ -29881,6 +29897,7 @@ function TaskForm({
     showCountdownBarSummary: task?.showCountdownBarSummary ?? true,
     countdownBarDays: task?.countdownBarDays ?? 0,
     countdownBarColor: task?.countdownBarColor || '',
+    repeatSpanDays: task?.repeatSpanDays ?? 1,
   });
   const [newAttachment, setNewAttachment] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -30016,6 +30033,7 @@ function TaskForm({
         showCountdownBarSummary: data.showCountdownBarSummary ?? true,
         countdownBarDays: data.countdownBarDays ?? 0,
         countdownBarColor: data.countdownBarColor || null,
+        repeatSpanDays: data.repeatSpanDays ?? 1,
       };
       if (task) {
         if (onUndoPush) {
@@ -30117,6 +30135,7 @@ function TaskForm({
         showCountdownBarSummary: data.showCountdownBarSummary ?? true,
         countdownBarDays: data.countdownBarDays ?? 0,
         countdownBarColor: data.countdownBarColor || null,
+        repeatSpanDays: data.repeatSpanDays ?? 1,
       };
       if (hasSameTitleSiblings && !isLinkedRecurring) {
         payload.originalTitle = task.title;
@@ -30588,6 +30607,7 @@ function TaskForm({
                 <option value="daily">Daily</option>
                 <option value="weekly">Weekly</option>
                 <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
                 <option value="custom">Custom...</option>
               </select>
             </div>
@@ -30619,23 +30639,43 @@ function TaskForm({
                 >
                   <option value="days">Days</option>
                   <option value="weeks">Weeks</option>
+                  <option value="months">Months</option>
+                  <option value="years">Years</option>
                 </select>
               </div>
             </div>
           )}
 
           {formData.repeatType !== "none" && (
-            <div>
-              <Label className="text-[11px] text-white">End Repeat (optional)</Label>
-              <input
-                type="date"
-                value={formData.repeatEndDate}
-                onChange={(e) => setFormData(prev => ({ ...prev, repeatEndDate: e.target.value }))}
-                data-testid="input-repeat-end-date"
-                className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                style={{ color: 'black', fontSize: '11px' }}
-              />
-            </div>
+            <>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <Label className="text-[11px] text-white">Span (consecutive days)</Label>
+                  <select
+                    value={formData.repeatSpanDays}
+                    onChange={(e) => setFormData(prev => ({ ...prev, repeatSpanDays: parseInt(e.target.value) }))}
+                    data-testid="select-repeat-span-days"
+                    className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    style={{ color: 'black', fontSize: '11px' }}
+                  >
+                    {[1,2,3,4,5,6,7,10,14].map(n => (
+                      <option key={n} value={n}>{n === 1 ? '1 day (no span)' : `${n} days in a row`}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <Label className="text-[11px] text-white">End Repeat (optional)</Label>
+                  <input
+                    type="date"
+                    value={formData.repeatEndDate}
+                    onChange={(e) => setFormData(prev => ({ ...prev, repeatEndDate: e.target.value }))}
+                    data-testid="input-repeat-end-date"
+                    className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    style={{ color: 'black', fontSize: '11px' }}
+                  />
+                </div>
+              </div>
+            </>
           )}
 
           <div>

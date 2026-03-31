@@ -32,13 +32,17 @@ function generateRepeatDates(
   repeatType: RepeatType,
   repeatEndDate: Date | null,
   repeatInterval?: number,
-  repeatIntervalUnit?: RepeatIntervalUnit
+  repeatIntervalUnit?: RepeatIntervalUnit,
+  repeatSpanDays?: number
 ): Date[] {
   const dates: Date[] = [];
   if (repeatType === "none") return dates;
   
-  // Default end date: 6 months from start if not specified
-  const endDate = repeatEndDate || new Date(startDueDate.getTime() + 180 * 24 * 60 * 60 * 1000);
+  const spanDays = (repeatSpanDays && repeatSpanDays > 1) ? repeatSpanDays : 1;
+  
+  // Default end date: 6 months from start (or 5 years for yearly)
+  const defaultMs = repeatType === "yearly" ? 5 * 365 * 24 * 60 * 60 * 1000 : 180 * 24 * 60 * 60 * 1000;
+  const endDate = repeatEndDate || new Date(startDueDate.getTime() + defaultMs);
   let currentDate = new Date(startDueDate);
   
   // Add interval based on repeat type
@@ -54,24 +58,41 @@ function generateRepeatDates(
       case "monthly":
         newDate.setMonth(newDate.getMonth() + 1);
         break;
+      case "yearly":
+        newDate.setFullYear(newDate.getFullYear() + 1);
+        break;
       case "custom":
         if (repeatIntervalUnit === "days") {
           newDate.setDate(newDate.getDate() + (repeatInterval || 1));
         } else if (repeatIntervalUnit === "weeks") {
           newDate.setDate(newDate.getDate() + (repeatInterval || 1) * 7);
+        } else if (repeatIntervalUnit === "months") {
+          newDate.setMonth(newDate.getMonth() + (repeatInterval || 1));
+        } else if (repeatIntervalUnit === "years") {
+          newDate.setFullYear(newDate.getFullYear() + (repeatInterval || 1));
         }
         break;
     }
     return newDate;
   };
   
-  // Generate dates until end date (max 100 to prevent infinite loops)
+  // Generate dates until end date (max 200 to prevent infinite loops)
   let count = 0;
-  while (count < 100) {
+  while (count < 200) {
     currentDate = addInterval(currentDate);
     if (currentDate > endDate) break;
-    dates.push(new Date(currentDate));
-    count++;
+    if (spanDays > 1) {
+      for (let d = 0; d < spanDays; d++) {
+        const spanDate = new Date(currentDate);
+        spanDate.setDate(spanDate.getDate() + d);
+        if (spanDate > endDate) break;
+        dates.push(spanDate);
+        count++;
+      }
+    } else {
+      dates.push(new Date(currentDate));
+      count++;
+    }
   }
   
   return dates;
@@ -1147,7 +1168,8 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
           task.repeatType as RepeatType,
           task.repeatEndDate,
           task.repeatInterval ?? undefined,
-          task.repeatIntervalUnit as RepeatIntervalUnit | undefined
+          task.repeatIntervalUnit as RepeatIntervalUnit | undefined,
+          task.repeatSpanDays ?? undefined
         );
         
         // Calculate the duration of prep period (if any)
@@ -1369,7 +1391,8 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
             task.repeatType as RepeatType,
             task.repeatEndDate,
             task.repeatInterval ?? undefined,
-            task.repeatIntervalUnit as RepeatIntervalUnit | undefined
+            task.repeatIntervalUnit as RepeatIntervalUnit | undefined,
+            task.repeatSpanDays ?? undefined
           );
           
           let prepDuration = 0;

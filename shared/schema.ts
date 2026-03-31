@@ -22,12 +22,15 @@ export const REPEAT_TYPES = [
   "daily",
   "weekly",
   "monthly",
+  "yearly",
   "custom"
 ] as const;
 
 export const REPEAT_INTERVAL_UNITS = [
   "days",
-  "weeks"
+  "weeks",
+  "months",
+  "years"
 ] as const;
 
 export type RepeatType = typeof REPEAT_TYPES[number];
@@ -379,6 +382,7 @@ export const tasks = pgTable("tasks", {
   showCountdownBarSummary: boolean("show_countdown_bar_summary").default(true),
   countdownBarDays: integer("countdown_bar_days").default(0),
   countdownBarColor: text("countdown_bar_color"),
+  repeatSpanDays: integer("repeat_span_days").default(1),
 });
 
 // Base schema from drizzle, then override date fields to accept ISO strings
