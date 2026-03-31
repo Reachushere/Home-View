@@ -14138,11 +14138,13 @@ export default function Dashboard() {
                     >
                       {/* Delete background (swipe left) */}
                       <div className="absolute inset-0 flex items-center justify-end px-4 rounded-lg" style={{ background: 'rgba(239,68,68,0.3)' }}>
-                        <span className="text-red-300 text-[11px] font-semibold">Delete</span>
+                        <div style={{ background: '#dc2626', borderRadius: '4px', padding: '3px 10px' }}>
+                          <span className="text-white text-[10px] font-semibold">Delete</span>
+                        </div>
                       </div>
                       {/* Save/keep background (swipe right) */}
                       <div className="absolute inset-0 flex items-center justify-start px-4 rounded-lg" style={{ background: 'rgba(6,182,212,0.3)' }}>
-                        <span className="text-cyan-300 text-[11px] font-semibold">{ann.isEnabled ? 'Hide from HA' : 'Expose to HA'}</span>
+                        <span className="text-cyan-300 text-[9px] font-semibold">{ann.isEnabled ? 'Hide from HA' : 'Expose to HA'}</span>
                       </div>
                       {/* Main item */}
                       <div
@@ -14200,11 +14202,11 @@ export default function Dashboard() {
                           title={ann.isEnabled ? 'Hide from HA' : 'Expose to HA'}
                           data-testid={`alexa-toggle-${ann.id}`}
                         >
-                          <div className={`w-[28px] h-[15px] rounded-full relative transition-colors ${ann.isEnabled ? 'bg-cyan-500' : 'bg-white/20'}`}>
-                            <div className={`absolute top-[2px] w-[11px] h-[11px] rounded-full bg-white shadow transition-all ${ann.isEnabled ? 'left-[15px]' : 'left-[2px]'}`} />
+                          <div className={`w-[22px] h-[12px] rounded-full relative transition-colors ${ann.isEnabled ? 'bg-cyan-500' : 'bg-white/20'}`}>
+                            <div className={`absolute top-[1.5px] w-[9px] h-[9px] rounded-full bg-white shadow transition-all ${ann.isEnabled ? 'left-[11px]' : 'left-[1.5px]'}`} />
                           </div>
                         </button>
-                        <div className="flex-1 min-w-0" style={{ marginLeft: '6px' }}>
+                        <div className="flex-1 min-w-0" style={{ marginLeft: '31px' }}>
                           <p className="text-white text-[10px] leading-tight break-words">{ann.message}</p>
                           <div className="flex items-center gap-1.5 mt-0.5">
                             <span className="text-white/40 text-[8px]">
@@ -14221,8 +14223,7 @@ export default function Dashboard() {
                             )}
                           </div>
                         </div>
-                        <div className="flex items-center gap-2 shrink-0 ml-2">
-                          {/* Send now button */}
+                        <div className="flex items-center shrink-0" style={{ marginRight: '10px' }}>
                           <button
                             onClick={(e) => { e.stopPropagation(); sendAlexaNowMutation.mutate(ann.id); }}
                             className="text-white/30 hover:text-cyan-400 transition-colors"
@@ -14230,15 +14231,6 @@ export default function Dashboard() {
                             data-testid={`alexa-send-now-${ann.id}`}
                           >
                             <Megaphone className="h-3.5 w-3.5" />
-                          </button>
-                          {/* Delete button */}
-                          <button
-                            onClick={(e) => { e.stopPropagation(); deleteAlexaMutation.mutate(ann.id); }}
-                            className="text-white/20 hover:text-red-400 transition-colors"
-                            title="Delete"
-                            data-testid={`alexa-delete-${ann.id}`}
-                          >
-                            <X className="h-3.5 w-3.5" />
                           </button>
                         </div>
                       </div>
