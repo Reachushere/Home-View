@@ -21655,8 +21655,13 @@ export default function Dashboard() {
                       if (barIndices.length === 0) return null;
                       const endsThisWeek = barIndices.some(i => isSameDayET(startOfDayET(weekDays[i]), due));
                       const courseCode = t.courseName?.split(' - ')[0]?.toUpperCase() || (() => {
-                        const m = t.title?.match(/^\[([A-Z]{2,}[0-9]+)/);
-                        return m ? m[1] : '';
+                        const m = t.title?.match(/^\[([A-Z]{2,}[0-9]*)/);
+                        if (m) return m[1];
+                        const courseMatch = filteredCourses.find(c => {
+                          const code = c.name.split(' - ')[0]?.toUpperCase();
+                          return code && t.title?.toUpperCase().includes(code);
+                        });
+                        return courseMatch ? courseMatch.name.split(' - ')[0]?.toUpperCase() : '';
                       })();
                       const courseInfo = filteredCourses.find(c => c.name.split(' - ')[0]?.toUpperCase() === courseCode);
                       return {
