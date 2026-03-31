@@ -21120,6 +21120,85 @@ export default function Dashboard() {
                   </div>
                 </div>
 
+                <div className="border rounded-lg p-3 space-y-2">
+                  <Label className="text-[10px] font-medium">School Week</Label>
+                  <div className="flex gap-[6px]">
+                    <div className="space-y-1 w-1/2">
+                      <Label className="text-[9px] text-white/60">First Day</Label>
+                      <select
+                        value={schoolData.firstDayOfWeek || 'saturday'}
+                        onChange={(e) => {
+                          const updated = { ...schoolData, firstDayOfWeek: e.target.value };
+                          setSchoolData(updated);
+                          localStorage.setItem('schoolSettings', JSON.stringify(updated));
+                          saveSchool(updated as any);
+                        }}
+                        className="w-full h-8 px-2 text-[10px] rounded-md bg-white/10 !text-white border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        data-testid="select-first-day-cal-settings"
+                      >
+                        {['sunday','monday','tuesday','wednesday','thursday','friday','saturday'].map(d => (
+                          <option key={d} value={d} className="text-black bg-white">{d.charAt(0).toUpperCase() + d.slice(1)}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="space-y-1 w-1/2">
+                      <Label className="text-[9px] text-white/60">Last Day</Label>
+                      <select
+                        value={schoolData.lastDayOfSchoolWeek || 'friday'}
+                        onChange={(e) => {
+                          const updated = { ...schoolData, lastDayOfSchoolWeek: e.target.value };
+                          setSchoolData(updated);
+                          localStorage.setItem('schoolSettings', JSON.stringify(updated));
+                          saveSchool(updated as any);
+                        }}
+                        className="w-full h-8 px-2 text-[10px] rounded-md bg-white/10 !text-white border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        data-testid="select-last-day-cal-settings"
+                      >
+                        {['sunday','monday','tuesday','wednesday','thursday','friday','saturday'].map(d => (
+                          <option key={d} value={d} className="text-black bg-white">{d.charAt(0).toUpperCase() + d.slice(1)}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border rounded-lg p-3 space-y-2">
+                  <div className="flex items-center justify-between cursor-pointer" onClick={() => setSemestersOpen(!semestersOpen)} data-testid="toggle-semesters-flyout">
+                    <Label className="text-[10px] font-medium cursor-pointer">Semesters</Label>
+                    <span className="text-xs">{semestersOpen ? '▼' : '▶'}</span>
+                  </div>
+                  {semestersOpen && (
+                    <div className="space-y-1 text-[10px]">
+                      {[
+                        { key: 'ss2025', label: 'Spring/Summer 2025', dates: 'May 5 – Aug 8, 2025', start: '2025-05-05', end: '2025-08-08' },
+                        { key: 'f2025', label: 'Fall 2025', dates: 'Sep 8 – Dec 12, 2025', start: '2025-09-08', end: '2025-12-12' },
+                        { key: 'w2026', label: 'Winter 2026', dates: 'Jan 12 – Apr 17, 2026', start: '2026-01-12', end: '2026-04-17' },
+                        { key: 'ss2026', label: 'Spring/Summer 2026', dates: 'May 4 – Aug 7, 2026', start: '2026-05-04', end: '2026-08-07' },
+                        { key: 'f2026', label: 'Fall 2026', dates: 'Sep 7 – Dec 11, 2026', start: '2026-09-07', end: '2026-12-11' },
+                        { key: 'w2027', label: 'Winter 2027', dates: 'Jan 11 – Apr 16, 2027', start: '2027-01-11', end: '2027-04-16' },
+                        { key: 'ss2027', label: 'Spring/Summer 2027', dates: 'May 3 – Aug 6, 2027', start: '2027-05-03', end: '2027-08-06' },
+                        { key: 'f2027', label: 'Fall 2027', dates: 'Sep 13 – Dec 17, 2027', start: '2027-09-13', end: '2027-12-17' },
+                        { key: 'w2028', label: 'Winter 2028', dates: 'Jan 10 – Apr 14, 2028', start: '2028-01-10', end: '2028-04-14' },
+                        { key: 'ss2028', label: 'Spring/Summer 2028', dates: 'May 1 – Aug 4, 2028', start: '2028-05-01', end: '2028-08-04' },
+                        { key: 'f2028', label: 'Fall 2028', dates: 'Sep 11 – Dec 15, 2028', start: '2028-09-11', end: '2028-12-15' },
+                        { key: 'w2029', label: 'Winter 2029', dates: 'Jan 8 – Apr 13, 2029', start: '2029-01-08', end: '2029-04-13' },
+                      ].map(sem => {
+                        const now = new Date();
+                        const isCurrent = now >= new Date(sem.start) && now <= new Date(sem.end);
+                        return (
+                          <div key={sem.key} className="flex items-center justify-between py-1 px-1.5 rounded" style={{ background: isCurrent ? 'rgba(255,255,255,0.08)' : 'transparent' }}>
+                            <div className="flex items-center gap-1.5">
+                              {isCurrent && <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />}
+                              <span className={`text-white ${isCurrent ? 'font-bold' : 'font-normal'}`}>{sem.label}</span>
+                            </div>
+                            <span className="text-white/50">{sem.dates}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
                 {/* Partner Shift Schedule */}
                 <div className="border rounded-lg p-3 space-y-2" data-shift-schedule-section-2="true">
                   <div className="flex items-center justify-between cursor-pointer" onClick={() => { const opening = !shiftScheduleOpen; setShiftScheduleOpen(opening); if (opening) { const tryScroll = (attempt: number) => { setTimeout(() => { const section = document.querySelector('[data-shift-schedule-section-2="true"]'); if (section) { section.scrollIntoView({ behavior: 'smooth', block: 'start' }); } else if (attempt < 3) { tryScroll(attempt + 1); } }, attempt === 0 ? 200 : 400); }; tryScroll(0); } }} data-testid="toggle-shift-schedule">
@@ -29406,6 +29485,50 @@ function ProfileForm({
         </div>
       </div>
 
+      <div className="border rounded-lg p-3 space-y-2" style={{ marginTop: '8px' }}>
+        <Label className="text-[10px] font-medium">School</Label>
+        <div className="flex items-center gap-3">
+          <div
+            className="relative cursor-pointer group flex-shrink-0"
+            onClick={() => schoolLogoInputRef.current?.click()}
+            data-testid="button-upload-school-logo"
+          >
+            <div className="w-[48px] h-[48px] rounded-lg overflow-hidden border border-white/30 group-hover:border-white/60 transition-colors flex items-center justify-center bg-white/5">
+              {schoolLogoPreview ? (
+                <img src={schoolLogoPreview} alt="School logo" className="w-full h-full object-contain" />
+              ) : (
+                <span className="text-[8px] text-white/40">Logo</span>
+              )}
+            </div>
+            <input ref={schoolLogoInputRef} type="file" accept="image/*" className="hidden" onChange={handleSchoolLogoUpload} data-testid="input-school-logo" />
+          </div>
+          <div className="flex-1 space-y-1">
+            <select
+              value={NORTH_AMERICAN_SCHOOLS.includes(schoolName) ? schoolName : 'Other'}
+              onChange={(e) => setSchoolName(e.target.value)}
+              className="w-full h-8 px-2 text-[10px] rounded-md bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-400"
+              style={{ color: 'black' }}
+              data-testid="select-school-name-profile"
+            >
+              {NORTH_AMERICAN_SCHOOLS.map(s => (
+                <option key={s} value={s} className="text-black bg-white">{s}</option>
+              ))}
+              <option value="Other" className="text-black bg-white">Other</option>
+            </select>
+            {(schoolName === 'Other' || !NORTH_AMERICAN_SCHOOLS.includes(schoolName)) && (
+              <Input
+                value={customSchoolName || (NORTH_AMERICAN_SCHOOLS.includes(schoolName) ? '' : schoolName)}
+                onChange={(e) => { setCustomSchoolName(e.target.value); setSchoolName('Other'); }}
+                placeholder="Enter school name"
+                className="bg-white !text-black !text-[10px] h-8"
+                style={{ fontSize: '10px', color: 'black' }}
+                data-testid="input-custom-school-name-profile"
+              />
+            )}
+          </div>
+        </div>
+      </div>
+
       <div className="flex justify-end" style={{ marginTop: '22px' }}>
         <Button 
           type="submit" 
@@ -30035,81 +30158,7 @@ function SchoolForm({
   
   return (
     <form id="school-settings-form" onSubmit={handleSubmit} className="space-y-4 text-[10px]">
-      <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '-2px' }}>
-        <Label className="text-[10px] font-medium" style={{ fontSize: '11px', letterSpacing: '0.05em' }}>School Settings</Label>
-        <div>
-          <Label className="text-[10px] font-medium">School Logo</Label>
-        </div>
-        <div className="space-y-3">
-          <div className="space-y-1">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-auto flex items-center justify-center rounded overflow-hidden bg-white/10 px-2">
-                {logoPreview ? (
-                  <img src={logoPreview} alt="School logo" className="h-8 object-contain" />
-                ) : (
-                  <img src={changSchoolLogo} alt="Default logo" className="h-8 object-contain" />
-                )}
-              </div>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => logoInputRef.current?.click()}
-                  className="px-2 py-1 text-[9px] bg-white/20 hover:bg-white/30 rounded text-white transition-colors"
-                  data-testid="button-upload-logo"
-                >
-                  Upload New Logo
-                </button>
-                {logoPreview && (
-                  <button
-                    type="button"
-                    onClick={() => setLogoPreview(null)}
-                    className="px-2 py-1 text-[9px] bg-red-500/30 hover:bg-red-500/50 rounded text-white transition-colors"
-                    data-testid="button-remove-logo"
-                  >
-                    Reset to Default
-                  </button>
-                )}
-              </div>
-              <input
-                ref={logoInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleLogoUpload}
-                className="hidden"
-                data-testid="input-logo-upload"
-              />
-            </div>
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="schoolName" className="text-[10px]">School Name</Label>
-            <select
-              value={NORTH_AMERICAN_SCHOOLS.includes(schoolName) ? schoolName : 'Other'}
-              onChange={(e) => { const v = e.target.value; setSchoolName(v); if (v !== 'Other') setCustomSchoolName(''); }}
-              style={{ color: '#000000', backgroundColor: '#ffffff' }}
-              className="w-full h-8 px-2 text-[10px] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              data-testid="select-school-name"
-            >
-              {NORTH_AMERICAN_SCHOOLS.map(s => (
-                <option key={s} value={s} style={{ color: '#000000', backgroundColor: '#ffffff' }}>{s}</option>
-              ))}
-            </select>
-            {(schoolName === 'Other' || !NORTH_AMERICAN_SCHOOLS.includes(schoolName)) && (
-              <Input
-                value={customSchoolName || (NORTH_AMERICAN_SCHOOLS.includes(schoolName) ? '' : schoolName)}
-                onChange={(e) => { setCustomSchoolName(e.target.value); setSchoolName('Other'); }}
-                placeholder="Enter your school name"
-                className="!text-black !text-[10px] h-8 mt-1"
-                style={{ fontSize: '10px' }}
-                data-testid="input-custom-school-name"
-              />
-            )}
-          </div>
-        </div>
-      </div>
-      
-
       <WeekVariantsSection semesterSettings={semesterSettings} week1StartDate={week1StartDate} />
-      
     </form>
   );
 }
