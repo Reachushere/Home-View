@@ -22393,7 +22393,7 @@ export default function Dashboard() {
                         }}
                       >
                         <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', borderLeft: '1px solid rgba(0,0,0,0.12)', zIndex: 5, pointerEvents: 'none' }} />
-                        {countdownBarTasks.filter(item => item.courseCode === course.name && item.barIndices.includes(dayIdx)).map((item, barIdx) => {
+                        {countdownBarTasks.filter(item => item.courseCode === course.name.split(' - ')[0]?.toUpperCase() && item.barIndices.includes(dayIdx)).map((item, barIdx) => {
                           const posInBar = item.barIndices.indexOf(dayIdx);
                           const isStart = posInBar === 0;
                           const isEnd = posInBar === item.barIndices.length - 1;
