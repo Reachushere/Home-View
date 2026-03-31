@@ -3373,7 +3373,7 @@ export default function Dashboard() {
       if (!hwGroupBarDragRef.current) return;
       const clientX = 'touches' in ev ? ev.touches[0].clientX : (ev as MouseEvent).clientX;
       const dx = clientX - hwGroupBarDragRef.current.startX;
-      const newW = Math.max(50, Math.min(141, hwGroupBarDragRef.current.startWidth + dx));
+      const newW = Math.max(50, Math.min(250, hwGroupBarDragRef.current.startWidth + dx));
       setHwGroupBarWidth(newW);
     };
     const onUp = () => {
@@ -25223,6 +25223,7 @@ export default function Dashboard() {
             )}
             <div style={{ position: 'absolute', top: '21px', left: '22px', right: 0, height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)' }} />
             <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: '6px', bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Homework Progress</span>
+            <span className="text-[10.5px] font-medium text-white" style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', color: 'rgba(255,255,255,0.85)' }} data-testid="text-week-number">{selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? `Week ${selectedWeek}` : ''}{(() => { const variants = courseWeekVariants[selectedWeek]; if (variants && variants.length > 0) { const diffLabels = [...new Set(variants.map(v => v.label))].filter(l => { const n = String(l).replace(/^week\s*/i, '').trim(); return n !== String(selectedWeek); }); if (diffLabels.length === 0) return null; return <span className="text-[9px] font-normal ml-1" style={{ color: 'rgba(255,255,255,0.6)' }}>({diffLabels.map((label, i) => { const lStr = String(label); const prefix = /^week\s/i.test(lStr) ? '' : 'Wk '; return <span key={i}>{i > 0 ? ', ' : ''}{variants.find(v => v.label === label)?.courseCode}: {prefix}{lStr}</span>; })})</span>; } return null; })()}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek && selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? <span className="text-[10px] font-normal ml-1" style={{ color: 'rgba(255,255,255,1)' }}>(current)</span> : null; })()}</span>
             <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: `${effectiveDividerPct}%`, bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', paddingLeft: '6px' }}>Most Urgent Assignments</span>
             {weatherData && (
               <div style={{ position: 'absolute', left: '28px', top: '5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -25595,22 +25596,7 @@ export default function Dashboard() {
 
             return rows;
           })()}
-          <div className="flex-1 flex flex-col" style={{ paddingLeft: '0px', paddingRight: '0px', marginTop: (() => {
-            const upcomingTop = calendarBorderTop || (calendarTop + 15);
-            if (courseRowRects.length > 0) {
-              const lastRect = courseRowRects[courseRowRects.length - 1];
-              if (lastRect) {
-                const lastBottom = lastRect.top + lastRect.height;
-                const otherRowH = Math.max(57, gridSizes.otherRowHeight || 57);
-                const timelineStart = lastBottom + otherRowH - upcomingTop;
-                return `${timelineStart}px`;
-              }
-            }
-            return '12px';
-          })(), flex: 1, minHeight: 0, paddingBottom: '0px', overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', zIndex: 2 }}>
-          <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0px 0 0px 0', flexShrink: 0 }}>
-            <span className="text-[10.5px] font-medium leading-tight whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.85)' }} data-testid="text-week-number">{selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? `Week ${selectedWeek}` : ''}{(() => { const variants = courseWeekVariants[selectedWeek]; if (variants && variants.length > 0) { const diffLabels = [...new Set(variants.map(v => v.label))].filter(l => { const n = String(l).replace(/^week\s*/i, '').trim(); return n !== String(selectedWeek); }); if (diffLabels.length === 0) return null; return <span className="text-[9px] font-normal ml-1" style={{ color: 'rgba(255,255,255,0.6)' }}>({diffLabels.map((label, i) => { const lStr = String(label); const prefix = /^week\s/i.test(lStr) ? '' : 'Wk '; return <span key={i}>{i > 0 ? ', ' : ''}{variants.find(v => v.label === label)?.courseCode}: {prefix}{lStr}</span>; })})</span>; } return null; })()}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek && selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? <span className="text-[10px] font-normal ml-1" style={{ color: 'rgba(255,255,255,1)' }}>(current)</span> : null; })()}</span>
-          </div>
+          <div className="flex-1 flex flex-col" style={{ paddingLeft: '0px', paddingRight: '0px', marginTop: '0px', flex: 1, minHeight: 0, paddingBottom: '0px', overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', zIndex: 2 }}>
           <div style={{ width: '100%', height: '15px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', flexShrink: 0 }}>
             <span style={{ fontSize: '10px', fontWeight: 500, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
           </div>
