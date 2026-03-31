@@ -2530,7 +2530,6 @@ export default function Dashboard() {
   const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(() => {
     return localStorage.getItem('profilePhotoUrl');
   });
-  const [isSchoolDialogOpen, setIsSchoolDialogOpen] = useState(false);
   const [isSchoolCoursesDialogOpen, setIsSchoolCoursesDialogOpen] = useState(false);
   const [otherRowEditOpen, setOtherRowEditOpen] = useState(false);
   const [otherRowColors, setOtherRowColors] = useState<{
@@ -3848,7 +3847,6 @@ export default function Dashboard() {
         endDate: data.travelEndDate || null,
       }),
     }).catch(err => console.error('Failed to sync travelling state:', err));
-    setIsSchoolDialogOpen(false);
     toast({ title: "School settings saved", description: "Your school settings have been updated." });
   };
   
@@ -22173,6 +22171,7 @@ export default function Dashboard() {
                           const isStart = posInBar === 0;
                           const isEnd = posInBar === item.barIndices.length - 1;
                           const urgencyColor = item.task.countdownBarColor || (item.daysUntilDue <= 1 ? '#dc2626' : item.daysUntilDue <= 3 ? '#e89200' : item.daysUntilDue <= 6 ? '#22c55e' : '#3b82f6');
+                          const isNextWeekDay = calendarWeekMode === 'current' && (() => { const nw = new Date(); const nd = nw.getDay(); const ns = startOfDayET(addDays(nw, nd === 6 ? 7 : (6 - nd))); return startOfDayET(day) >= ns; })();
                           return (
                             <div
                               key={`cbar-${item.task.id}`}
@@ -22183,7 +22182,7 @@ export default function Dashboard() {
                                 right: isEnd ? '2px' : '0px',
                                 height: '10px',
                                 backgroundColor: urgencyColor,
-                                opacity: 0.85,
+                                opacity: isNextWeekDay ? 0.35 : 0.85,
                                 borderRadius: isStart && isEnd ? '3px' : isStart ? '3px 0 0 3px' : isEnd ? '0 3px 3px 0' : '0',
                                 cursor: 'pointer',
                                 overflow: 'hidden',
@@ -29408,7 +29407,7 @@ function ProfileForm({
         </div>
       </div>
 
-      <div className="border rounded-lg p-3 space-y-2" style={{ marginTop: '8px' }}>
+      <div className="border rounded-lg p-3 space-y-2" style={{ marginTop: '20px' }}>
         <Label className="text-[10px] font-medium">School</Label>
         <div className="flex items-center gap-3">
           <div
