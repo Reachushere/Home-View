@@ -20071,7 +20071,6 @@ export default function Dashboard() {
                 <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '-1px' }}>
                   <div className="border-b border-primary inline-block -mt-1 pb-0">
                     <Label className="text-sm font-medium">Colour Settings</Label>
-                    <span className="text-sm" style={{ color: '#3b82f6' }}>&nbsp;|</span><span className="text-xs text-muted-foreground italic">&nbsp;Customise colours for the app</span>
                   </div>
                   
                   <div className="space-y-4">
@@ -20437,7 +20436,6 @@ export default function Dashboard() {
                 <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '-5px' }}>
                   <div className="border-b border-primary inline-block -mt-1 pb-0">
                     <Label className="text-sm font-medium">Layout Settings</Label>
-                    <span className="text-sm" style={{ color: '#3b82f6' }}>&nbsp;|</span><span className="text-xs text-muted-foreground italic">&nbsp;Adjust spacing and reset column widths</span>
                   </div>
                   
                   <div className="space-y-3">
@@ -20516,7 +20514,6 @@ export default function Dashboard() {
                 <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '0px' }}>
                   <div className="border-b border-primary inline-block -mt-1 pb-0">
                     <Label className="text-sm font-medium">Week View</Label>
-                    <span className="text-sm" style={{ color: '#3b82f6' }}>&nbsp;|</span><span className="text-xs text-muted-foreground italic">&nbsp;Show current or next week on the calendar</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <Label className="text-xs font-medium">Show Next Week</Label>
@@ -20536,7 +20533,6 @@ export default function Dashboard() {
                 <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '0px' }}>
                   <div className="border-b border-primary inline-block -mt-1 pb-0">
                     <Label className="text-sm font-medium">Blinking & Spacing</Label>
-                    <span className="text-sm" style={{ color: '#3b82f6' }}>&nbsp;|</span><span className="text-xs text-muted-foreground italic">&nbsp;Control blinking animations and button spacing</span>
                   </div>
                   
                   <div className="space-y-4">
@@ -20610,7 +20606,6 @@ export default function Dashboard() {
                 <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '-4px' }}>
                   <div className="border-b border-primary inline-block -mt-1 pb-0">
                     <Label className="text-sm font-medium">Text-to-Speech Highlighting</Label>
-                    <span className="text-sm" style={{ color: '#3b82f6' }}>&nbsp;|</span><span className="text-xs text-muted-foreground italic">&nbsp;Fine-tune word highlighting</span>
                   </div>
                   
                   <div className="space-y-4">
@@ -20686,7 +20681,6 @@ export default function Dashboard() {
                 <div className="border rounded-lg p-3 space-y-3" style={{ marginTop: '-4px' }}>
                   <div className="border-b border-primary inline-block -mt-1 pb-0">
                     <Label className="text-sm font-medium">Data Sync</Label>
-                    <span className="text-sm" style={{ color: '#3b82f6' }}>&nbsp;|</span><span className="text-xs text-muted-foreground italic">&nbsp;Push to or pull from the published app</span>
                   </div>
                   <div className="flex gap-2">
                     <Button
@@ -20785,35 +20779,6 @@ export default function Dashboard() {
                   </div>
                 </div>
                 
-                {/* Column Spacing */}
-                <div className="border rounded-lg p-3 space-y-2" style={{ marginTop: '-5px' }}>
-                  <div className="border-b border-primary inline-block -mt-1 pb-0">
-                    <Label className="text-sm font-medium">Column Spacing</Label>
-                    <span className="text-sm" style={{ color: '#3b82f6' }}>&nbsp;|</span><span className="text-xs text-muted-foreground italic">&nbsp;Reset the column widths in the summary boxes</span>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-6 text-xs px-2"
-                    onClick={() => {
-                      const defaultWidths = {
-                        taskGap: 0,
-                        taskName: 48,
-                        courseCode: 100,
-                        courseName: 145,
-                        dueDate: 55
-                      };
-                      setTaskColumnWidths(defaultWidths);
-                      localStorage.setItem('taskColumnWidths', JSON.stringify(defaultWidths));
-                      
-                      toast({ title: "Column widths reset", description: "All summary box columns have been reset to defaults." });
-                    }}
-                    data-testid="button-reset-column-widths"
-                  >
-                    <RotateCcw className="h-3 w-3 mr-1" />
-                    Reset Column Widths
-                  </Button>
-                </div>
                 
                 {/* Partner Shift Schedule - moved from secondary dialog */}
                 <div className="border rounded-lg p-3 space-y-2" style={{ marginTop: '-7px' }} data-shift-schedule-section="true">
@@ -20821,7 +20786,6 @@ export default function Dashboard() {
                     <div>
                       <div className="border-b border-primary inline-block -mt-1 pb-0">
                         <Label className="text-sm font-medium cursor-pointer">Partner Shift Schedule</Label>
-                        <span className="text-sm" style={{ color: '#3b82f6' }}>&nbsp;|</span><span className="text-xs text-muted-foreground italic">&nbsp;Set day/night shifts to adjust quiet hours</span>
                       </div>
                     </div>
                     <span className="text-xs">{shiftScheduleOpen ? '▼' : '▶'}</span>
