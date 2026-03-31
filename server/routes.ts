@@ -2665,10 +2665,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         const pubDateMatch = item.match(/<pubDate[^>]*>(.*?)<\/pubDate>/is);
         
         const title = titleMatch?.[1]?.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").trim();
-        const link = linkMatch?.[1]?.trim() || '';
+        const link = linkMatch?.[1]?.trim().replace(/\?.*$/, '').replace(/\/$/, '') || '';
         
         if (!title || !link) continue;
         if (sentRawStoryUrls.has(link)) continue;
+        const titleKey = `title:${title.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
+        if (sentRawStoryUrls.has(titleKey)) continue;
         
         if (pubDateMatch?.[1]) {
           const pubDate = new Date(pubDateMatch[1].trim());
@@ -2731,6 +2733,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         
         if (result.success) {
           sentRawStoryUrls.add(link);
+          sentRawStoryUrls.add(titleKey);
           newlySent = true;
           console.log(`[Raw Story] Sent Trump article: ${title}`);
         } else {
@@ -2756,9 +2759,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
   
-  setInterval(checkRawStoryTrump, 10 * 60 * 1000);
-  setTimeout(checkRawStoryTrump, 30000);
-  console.log('[Raw Story] Trump article monitor started (checking every 10 minutes)');
+  if (process.env.NODE_ENV === 'production' || process.env.REPL_DEPLOYMENT) {
+    setInterval(checkRawStoryTrump, 10 * 60 * 1000);
+    setTimeout(checkRawStoryTrump, 30000);
+    console.log('[Raw Story] Trump article monitor started (checking every 10 minutes)');
+  } else {
+    console.log('[Raw Story] Monitor DISABLED in development (only runs in production)');
+  }
 
   app.get("/api/ha/news", async (_req, res) => {
     try {
