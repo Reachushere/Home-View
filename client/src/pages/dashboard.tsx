@@ -21489,8 +21489,11 @@ export default function Dashboard() {
                         data-testid={`toggle-sleep-${shiftDateStr}`}
                       />
                     )}
-                    {!isToday && !isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && (shiftForDay === 'day' || shiftForDay === 'night') && (
-                      <div className="absolute bottom-0 left-0 right-0" style={{ height: '5px', backgroundColor: shiftForDay === 'day' ? (sleepDisabledDays.has(shiftDateStr) ? 'rgba(255, 178, 50, 0.3)' : 'rgba(255, 178, 50, 0.85)') : (sleepDisabledDays.has(shiftDateStr) ? 'rgba(168, 85, 247, 0.3)' : 'rgba(168, 85, 247, 0.85)'), zIndex: 15 }} />
+                    {!isToday && !isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && shiftForDay === 'day' && (
+                      <div className="absolute top-0 left-0 right-0" style={{ height: '5px', backgroundColor: sleepDisabledDays.has(shiftDateStr) ? 'rgba(255, 178, 50, 0.3)' : 'rgba(255, 178, 50, 0.85)', zIndex: 15 }} />
+                    )}
+                    {!isToday && !isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && shiftForDay === 'night' && (
+                      <div className="absolute bottom-0 left-0 right-0" style={{ height: '5px', backgroundColor: sleepDisabledDays.has(shiftDateStr) ? 'rgba(168, 85, 247, 0.3)' : 'rgba(168, 85, 247, 0.85)', zIndex: 15 }} />
                     )}
                     {(() => {
                       const hasShiftBar = !isToday && !isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && (shiftForDay === 'day' || shiftForDay === 'night');
