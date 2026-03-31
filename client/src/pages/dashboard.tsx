@@ -13637,7 +13637,7 @@ export default function Dashboard() {
                         <span className="font-bold" style={{ position: 'absolute', color: '#ffffff', fontSize: '8px', letterSpacing: '0.5px', textAlign: 'center', lineHeight: '1', textShadow: '0 0 2px rgba(0,0,0,0.5)', left: '50%', top: '50%', transform: 'translate(calc(-50% + -1px), calc(-50% + 3px))', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>{(() => {
                         const cn = a.courseName || 'Custom';
                         if (cn === 'Custom') {
-                          return <span style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '0.3px', lineHeight: '1', whiteSpace: 'nowrap' }}>Reminder</span>;
+                          return <span style={{ fontSize: '8px', fontWeight: 600, letterSpacing: '0.2px', lineHeight: '1', whiteSpace: 'nowrap', transform: 'scaleX(1)' }}>Reminder</span>;
                         }
                         const courseCode = cn.split(' - ')[0]?.replace(/\s+/g, '') || cn;
                         const courseLongName = cn.split(' - ')[1] || '';
@@ -13645,9 +13645,9 @@ export default function Dashboard() {
                         return (<>{courseCode && <span style={{ marginBottom: '-2px' }}>{courseCode}</span>}{nameWords.map((w: string, wi: number) => (<span key={wi} style={{ fontSize: '7px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: '1', whiteSpace: 'nowrap' }}>{w}</span>))}</>);
                       })()}</span>
                       </span>
-                      <span className="text-[14px] font-medium" style={{ color: isTodayTask ? '#FFFF00' : 'rgba(255,255,255,0.9)' }}>{a.courseName === 'Custom' ? (a.body || a.snippet || '') : a.subject}</span>
-                      {!isTodayTask && a.courseName !== 'Custom' && displaySnippet && <span className="text-[14px] text-white/55">{displaySnippet}</span>}
-                      {!isTodayTask && <span className="text-[14px] text-white/60 ml-1">{timeAgo}</span>}
+                      <span className="text-[15px] font-normal" style={{ color: isTodayTask ? '#FFFF00' : 'rgba(255,255,255,0.9)', letterSpacing: '0.2px' }}>{a.courseName === 'Custom' ? (a.body || a.snippet || '') : a.subject}</span>
+                      {!isTodayTask && a.courseName !== 'Custom' && displaySnippet && <span className="text-[14px] font-light text-white/55">{displaySnippet}</span>}
+                      {!isTodayTask && <span className="text-[14px] font-light text-white/55 ml-1">{timeAgo}</span>}
                     </span>
                   );
                 });
@@ -21561,7 +21561,7 @@ export default function Dashboard() {
               const todayW = gridSizes.dayColumnWidths[todayIdx] || 0;
               const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
               return (
-                <div className="absolute bottom-0 z-[45] pointer-events-none" style={{ top: '0px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px))`, width: `calc((${todayW} / ${totalDayW}) * (100% - ${fixedW}px))` }} />
+                <div className={`absolute bottom-0 pointer-events-none${weatherAlerts.length > 0 ? ' weather-alert-border-pulse' : ''}`} style={{ top: '0px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px))`, width: `calc((${todayW} / ${totalDayW}) * (100% - ${fixedW}px))`, zIndex: 9990 }} />
               );
             })()}
             {/* Red separator on left border of today column - only show when there are next-week columns to the left */}
@@ -21615,7 +21615,7 @@ export default function Dashboard() {
                 return (
                   <div 
                     key={idx} 
-                    className={`border-l border-border flex flex-col items-center justify-center h-full relative${isToday && weatherAlerts.length > 0 ? " weather-alert-border-pulse" : ""}`}
+                    className={`border-l border-border flex flex-col items-center justify-center h-full relative`}
                     style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'hidden' } : { backgroundColor: isNextSchoolWeek ? '#062d06' : colorSettings.headerBar, color: isNextSchoolWeek ? '#ffffff' : undefined }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
