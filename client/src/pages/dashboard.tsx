@@ -24928,32 +24928,13 @@ export default function Dashboard() {
               <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 2px', height: '100%', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => { const newWeek = selectedWeek - 1; startTransition(() => setSelectedWeek(newWeek)); if (newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }} data-testid="button-pill-prev-week"><span style={{ fontSize: '13px', lineHeight: '1', color: '#000' }}>◀</span></div>
               <span data-testid="text-week-dates" style={{ fontSize: '9px', fontWeight: 500, color: '#000', whiteSpace: 'nowrap', lineHeight: 1, letterSpacing: '0.3px', flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px' }}>
                 {(() => {
-                  const startMonth = format(weekStartDate, 'MMM').toUpperCase();
-                  const endMonth = format(weekEndDate, 'MMM').toUpperCase();
+                  const startMonth = format(weekStartDate, 'MMMM');
+                  const endMonth = format(weekEndDate, 'MMMM');
                   const startDay = format(weekStartDate, 'd');
                   const endDay = format(weekEndDate, 'd');
-                  if (startMonth === endMonth) {
-                    return (
-                      <>
-                        <span>{format(weekStartDate, 'EEE')}</span>
-                        <span>{startDay}</span>
-                        <span>{startMonth}</span>
-                        <span>{endDay}</span>
-                        <span>{format(weekEndDate, 'EEE')}</span>
-                      </>
-                    );
-                  }
-                  return (
-                    <>
-                      <span>{format(weekStartDate, 'EEE')}</span>
-                      <span>{startDay}</span>
-                      <span>{startMonth}</span>
-                      <span>-</span>
-                      <span>{format(weekEndDate, 'EEE')}</span>
-                      <span>{endMonth}</span>
-                      <span>{endDay}</span>
-                    </>
-                  );
+                  const startDow = format(weekStartDate, 'EEE');
+                  const endDow = format(weekEndDate, 'EEE');
+                  return `${startDow} ${startMonth} ${startDay} - ${endDow} ${endMonth} ${endDay}`;
                 })()}
               </span>
               <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 2px', height: '100%', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => { const newWeek = selectedWeek + 1; startTransition(() => setSelectedWeek(newWeek)); if (newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }} data-testid="button-pill-next-week"><span style={{ fontSize: '13px', lineHeight: '1', color: '#000' }}>▶</span></div>
