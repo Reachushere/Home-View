@@ -28333,31 +28333,6 @@ export default function Dashboard() {
                   ...(semesterSettings.course3Code ? [{ code: semesterSettings.course3Code, name: semesterSettings.course3Name.replace(/^[A-Z]+\d+\s*-\s*/, '') }] : []),
                 ] : undefined}
               />
-              <div className="mt-2">
-                <Button
-                  variant="outline"
-                  className="text-[9px] h-5 px-2 text-orange-300 border-orange-400/40 hover:bg-orange-500/15 hover:text-orange-200"
-                  disabled={dupSearching}
-                  data-testid="button-find-duplicates"
-                  onClick={async () => {
-                    setDupSearching(true);
-                    setDupResults(null);
-                    setDupDiffTimeEvents([]);
-                    setDupShowDiffTime(false);
-                    try {
-                      const resp = await fetch(`/api/tasks/${editingTask.id}/find-calendar-duplicates`, { method: 'POST', credentials: 'include' });
-                      const data = await resp.json();
-                      const exact = (data.duplicates || []).filter((d: any) => d.isExactTime);
-                      const diffTime = (data.duplicates || []).filter((d: any) => !d.isExactTime);
-                      setDupResults(exact);
-                      setDupDiffTimeEvents(diffTime);
-                    } catch { setDupResults([]); }
-                    setDupSearching(false);
-                  }}
-                >
-                  {dupSearching ? 'Searching...' : 'Find Duplicates'}
-                </Button>
-              </div>
               {dupResults !== null && (
                 <div className="px-1 mt-2">
                   {dupResults.length === 0 && dupDiffTimeEvents.length === 0 && (
@@ -31323,6 +31298,13 @@ function TaskForm({
   
   // Date picker popover state
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [editR4CalendarOpen, setEditR4CalendarOpen] = useState(false);
+  const [dupSearching, setDupSearching] = useState(false);
+  const [dupResults, setDupResults] = useState<any[] | null>(null);
+  const [dupDiffTimeEvents, setDupDiffTimeEvents] = useState<any[]>([]);
+  const [dupShowDiffTime, setDupShowDiffTime] = useState(false);
+  const [dupDeleting, setDupDeleting] = useState(false);
+  const [emailWizardSelected, setEmailWizardSelected] = useState<Set<string>>(new Set());
   const [tempDate, setTempDate] = useState<Date | undefined>(() => {
     if (formData.dueDate) {
       return new Date(formData.dueDate);
@@ -31966,7 +31948,7 @@ function TaskForm({
                               {formData.reminder4DateTime?.split('T')[0] ? format(new Date(formData.reminder4DateTime.split('T')[0] + 'T12:00:00'), 'MMM d, yyyy') : 'Pick date'}
                             </button>
                           </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start" style={{ zIndex: 99999 }}>
+                          <PopoverContent className="w-auto p-0" align="start" side="top" sideOffset={4} style={{ zIndex: 99999 }}>
                             <CalendarPicker
                               mode="single"
                               selected={formData.reminder4DateTime?.split('T')[0] ? new Date(formData.reminder4DateTime.split('T')[0] + 'T12:00:00') : undefined}
@@ -32351,6 +32333,32 @@ function TaskForm({
               className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               style={{ color: 'black', fontSize: '11px' }}
             />
+          </div>
+          <div className="mt-2">
+            <Button
+              variant="outline"
+              className="text-[9px] h-5 px-2 text-orange-300 border-orange-400/40 hover:bg-orange-500/15 hover:text-orange-200"
+              disabled={dupSearching || !task?.id}
+              data-testid="button-find-duplicates"
+              onClick={async () => {
+                if (!task?.id) return;
+                setDupSearching(true);
+                setDupResults(null);
+                setDupDiffTimeEvents([]);
+                setDupShowDiffTime(false);
+                try {
+                  const resp = await fetch(`/api/tasks/${task.id}/find-calendar-duplicates`, { method: 'POST', credentials: 'include' });
+                  const data = await resp.json();
+                  const exact = (data.duplicates || []).filter((d: any) => d.isExactTime);
+                  const diffTime = (data.duplicates || []).filter((d: any) => !d.isExactTime);
+                  setDupResults(exact);
+                  setDupDiffTimeEvents(diffTime);
+                } catch { setDupResults([]); }
+                setDupSearching(false);
+              }}
+            >
+              {dupSearching ? 'Searching...' : 'Find Duplicates'}
+            </Button>
           </div>
         </div>
       </div>
