@@ -1378,6 +1378,7 @@ export default function Dashboard() {
   const [alexaRepeatEndDate, setAlexaRepeatEndDate] = useState('');
   const [alexaSpeakers, setAlexaSpeakers] = useState('all');
   const [alexaCalendarOpen, setAlexaCalendarOpen] = useState(false);
+  const [editR4CalendarOpen, setEditR4CalendarOpen] = useState(false);
   const [alexaRepeatEndCalendarOpen, setAlexaRepeatEndCalendarOpen] = useState(false);
   const [alexaSwipeStates, setAlexaSwipeStates] = useState<Record<number, number>>({});
   const alexaSwipeStartRef = useRef<{ id: number; x: number } | null>(null);
@@ -31842,21 +31843,40 @@ function TaskForm({
                 return (
                 <div key={r.key} className="flex flex-col gap-1 bg-white/5 rounded-md px-2 py-1.5 border border-white/10">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-white/50 text-[10px] w-[22px] shrink-0">{r.label}</span>
+                    <span className="text-white text-[10px] w-[22px] shrink-0">{r.label}</span>
                     {isR4 && formData.reminder4DateTimeMode ? (
                       <div className="flex items-center gap-1 flex-1">
-                        <input
-                          type="date"
-                          value={formData.reminder4DateTime?.split('T')[0] || ''}
-                          onChange={(e) => {
-                            const dt = formData.reminder4DateTime || '';
-                            const timePart = dt.includes('T') ? dt.split('T')[1] : '09:00';
-                            setFormData(prev => ({ ...prev, reminder4DateTime: `${e.target.value}T${timePart}` }));
-                          }}
-                          className="flex-1 h-7 rounded-md border border-input bg-white px-1 py-0.5"
-                          style={{ color: 'black', fontSize: '10px' }}
-                          data-testid="edit-reminder4-date"
-                        />
+                        <Popover open={editR4CalendarOpen} onOpenChange={setEditR4CalendarOpen}>
+                          <PopoverTrigger asChild>
+                            <button
+                              type="button"
+                              className="flex-1 h-7 rounded-md border border-input bg-white px-2 py-0.5 text-left"
+                              style={{ color: 'black', fontSize: '10px' }}
+                              data-testid="edit-reminder4-date"
+                            >
+                              {formData.reminder4DateTime?.split('T')[0] ? format(new Date(formData.reminder4DateTime.split('T')[0] + 'T12:00:00'), 'MMM d, yyyy') : 'Pick date'}
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start" style={{ zIndex: 99999 }}>
+                            <CalendarPicker
+                              mode="single"
+                              selected={formData.reminder4DateTime?.split('T')[0] ? new Date(formData.reminder4DateTime.split('T')[0] + 'T12:00:00') : undefined}
+                              onSelect={(date) => {
+                                if (date) {
+                                  const yyyy = date.getFullYear();
+                                  const mm = String(date.getMonth() + 1).padStart(2, '0');
+                                  const dd = String(date.getDate()).padStart(2, '0');
+                                  const dateStr = `${yyyy}-${mm}-${dd}`;
+                                  const dt = formData.reminder4DateTime || '';
+                                  const timePart = dt.includes('T') ? dt.split('T')[1] : '09:00';
+                                  setFormData(prev => ({ ...prev, reminder4DateTime: `${dateStr}T${timePart}` }));
+                                }
+                                setEditR4CalendarOpen(false);
+                              }}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
                         <select
                           value={(() => { const dt = formData.reminder4DateTime || ''; const t = dt.includes('T') ? dt.split('T')[1] : '09:00'; return t.split(':')[0] || '09'; })()}
                           onChange={(e) => {
@@ -31932,7 +31952,7 @@ function TaskForm({
                         key={method.id}
                         type="button"
                         onClick={() => toggleM(method.id)}
-                        className={`px-1 py-0 rounded text-[8px] border transition-colors ${mList.includes(method.id) ? 'bg-blue-500/30 border-blue-400/50 text-blue-300' : 'bg-white/5 border-white/10 text-white/30 hover:text-white/50'}`}
+                        className={`px-1 py-0 rounded text-[8px] border transition-colors ${mList.includes(method.id) ? 'bg-blue-500/30 border-blue-400/50 text-blue-300' : 'bg-white/5 border-white/10 text-white hover:text-white'}`}
                         data-testid={`edit-${r.key}-method-${method.id}`}
                       >
                         {method.icon} {method.label}
