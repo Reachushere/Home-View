@@ -21712,7 +21712,10 @@ export default function Dashboard() {
                       });
                       if (barIndices.length === 0) return null;
                       const endsThisWeek = barIndices.some(i => isSameDayET(startOfDayET(weekDays[i]), due));
-                      const courseCode = t.courseName?.split(' - ')[0]?.toUpperCase() || '';
+                      const courseCode = t.courseName?.split(' - ')[0]?.toUpperCase() || (() => {
+                        const m = t.title?.match(/^\[([A-Z]{2,}[0-9]+)/);
+                        return m ? m[1] : '';
+                      })();
                       const courseInfo = filteredCourses.find(c => c.name.split(' - ')[0]?.toUpperCase() === courseCode);
                       return {
                         task: t,
@@ -21727,7 +21730,7 @@ export default function Dashboard() {
                     .sort((a, b) => a!.daysUntilDue - b!.daysUntilDue)
                     .slice(0, 6) as { task: any; daysUntilDue: number; barIndices: number[]; endsThisWeek: boolean; courseColor: string; courseCode: string }[];
                 })();
-                
+
                 return (
               <>
               <div ref={courseRowsRef} data-testid="course-rows-container" style={{ borderTop: '1px solid black', marginTop: '-2px' }}>
@@ -26038,7 +26041,10 @@ export default function Dashboard() {
                       });
                       return groups.map(group => {
                         const dueDates = group.tasks.map(t => {
-                          const courseCode = t.courseName?.split(' - ')[0]?.toUpperCase() || '';
+                          const courseCode = t.courseName?.split(' - ')[0]?.toUpperCase() || (() => {
+                            const m = t.title?.match(/^\[([A-Z]{2,}[0-9]+)/);
+                            return m ? m[1] : '';
+                          })();
                           return { date: startOfDayET(new Date(t.dueDate)), courseCode };
                         });
                         return (
