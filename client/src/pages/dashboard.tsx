@@ -14115,7 +14115,7 @@ export default function Dashboard() {
                     style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.15)', border: '1px solid rgba(255,255,255,0.2)' }}
                     data-testid="alexa-schedule-button"
                   >
-                    {alexaDate ? '+ Schedule' : 'Send Now'}
+                    {alexaDate ? '+ Schedule' : 'Post Now'}
                   </button>
                 </div>
               </div>
