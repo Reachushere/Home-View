@@ -14242,11 +14242,12 @@ export default function Dashboard() {
           left: '50%',
           transform: 'translateX(-50%)',
           top: `${d2lTickerHeight}px`,
-          width: '120px',
-          height: '35px',
+          width: '420px',
+          maxWidth: 'calc(100vw - 44px)',
+          height: '40px',
           cursor: 'pointer',
           pointerEvents: isTopPillOpen ? 'none' : 'auto',
-          zIndex: 110,
+          zIndex: 111,
           touchAction: 'manipulation',
         }}
         data-top-pill-trigger
