@@ -21654,12 +21654,7 @@ export default function Dashboard() {
               const todayW = gridSizes.dayColumnWidths[todayIdx] || 0;
               const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
               return (
-                <>
                 <div className={`absolute pointer-events-none${weatherAlerts.length > 0 ? ' weather-alert-border-pulse' : ''}`} style={{ top: '0px', height: '60px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px))`, width: `calc((${todayW} / ${totalDayW}) * (100% - ${fixedW}px))`, zIndex: 9990 }} />
-                {weatherAlerts.length > 0 && (
-                  <div className="absolute pointer-events-none" style={{ top: '0px', height: '8px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px))`, width: `calc((${todayW} / ${totalDayW}) * (100% - ${fixedW}px))`, backgroundColor: '#ff0000', zIndex: 9991 }} />
-                )}
-                </>
               );
             })()}
             {/* Red separator on left border of today column - only show when there are next-week columns to the left */}
@@ -21757,8 +21752,11 @@ export default function Dashboard() {
                             return (
                               <>
                                 <div className="absolute left-0 right-0 bottom-0 z-10" style={{ top: '22px', background: `linear-gradient(to right, ${scaledStops.join(', ')})` }} />
+                                {weatherAlerts.length > 0 && (
+                                  <div className="absolute left-0 right-0 z-15" style={{ top: '5px', height: '15px', backgroundColor: '#ff0000' }} />
+                                )}
                                 <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '7px' }} data-testid="today-full-date">
-                                  <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', backgroundColor: colorSettings.headerBar, lineHeight: '11px', letterSpacing: '0.5px', padding: '2px 4px 1px' }}>
+                                  <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', backgroundColor: weatherAlerts.length > 0 ? 'transparent' : colorSettings.headerBar, lineHeight: '11px', letterSpacing: '0.5px', padding: '2px 4px 1px' }}>
                                     {format(day, 'EEEE, MMMM d')}
                                   </span>
                                 </div>
