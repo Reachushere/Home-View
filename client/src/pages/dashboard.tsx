@@ -25663,12 +25663,12 @@ export default function Dashboard() {
               if (lastRect) {
                 const lastBottom = lastRect.top + lastRect.height - upcomingTop;
                 const otherRowH = gridSizes.otherRowHeight || 57;
-                return `${lastBottom + otherRowH - headerH - 15}px`;
+                return `${lastBottom + otherRowH - headerH - 15 - 5}px`;
               }
             }
             return '12px';
           })(), flex: 1, paddingBottom: '0px', overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', zIndex: 2 }}>
-          <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '3px 0 2px 0', flexShrink: 0 }}>
+          <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0px 0 0px 0', flexShrink: 0 }}>
             <span className="text-[10.5px] font-medium leading-tight whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.85)' }} data-testid="text-week-number">{selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? `Week ${selectedWeek}` : ''}{(() => { const variants = courseWeekVariants[selectedWeek]; if (variants && variants.length > 0) { const diffLabels = [...new Set(variants.map(v => v.label))].filter(l => { const n = String(l).replace(/^week\s*/i, '').trim(); return n !== String(selectedWeek); }); if (diffLabels.length === 0) return null; return <span className="text-[9px] font-normal ml-1" style={{ color: 'rgba(255,255,255,0.6)' }}>({diffLabels.map((label, i) => { const lStr = String(label); const prefix = /^week\s/i.test(lStr) ? '' : 'Wk '; return <span key={i}>{i > 0 ? ', ' : ''}{variants.find(v => v.label === label)?.courseCode}: {prefix}{lStr}</span>; })})</span>; } return null; })()}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek && selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? <span className="text-[10px] font-normal ml-1" style={{ color: 'rgba(255,255,255,1)' }}>(current)</span> : null; })()}</span>
           </div>
           <div style={{ width: '100%', height: '15px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', flexShrink: 0 }}>
