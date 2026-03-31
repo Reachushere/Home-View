@@ -678,9 +678,17 @@ export default function Dashboard() {
     reminder4Days: 0,
     reminder4Hours: 0,
     reminder4Minutes: 0,
+    reminder4DateTimeMode: false,
+    reminder4Date: '',
+    reminder4Hour: '09',
+    reminder4Minute: '00',
     reminderEmail: false,
     reminderAlexa: false,
     reminderSms: false,
+    reminder1Methods: '' as string,
+    reminder2Methods: '' as string,
+    reminder3Methods: '' as string,
+    reminder4Methods: '' as string,
     attachments: [] as string[],
     pasteUrl: "",
     notes: "",
@@ -8883,6 +8891,11 @@ export default function Dashboard() {
           reminder2: task.reminder2,
           reminder3: task.reminder3,
           reminder4: task.reminder4,
+          reminder1Methods: task.reminder1Methods,
+          reminder2Methods: task.reminder2Methods,
+          reminder3Methods: task.reminder3Methods,
+          reminder4Methods: task.reminder4Methods,
+          reminder4DateTime: task.reminder4DateTime,
         }
       });
     }
@@ -12919,7 +12932,7 @@ export default function Dashboard() {
 
 
           {/* Quick Add Button */}
-          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminderEmail: false, reminderAlexa: false, reminderSms: false, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '', repeatSpanDays: 1 }); setIsQuickAddOpen(true); }); }}>+ Add Task</Button>
+          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminder4DateTimeMode: false, reminder4Date: '', reminder4Hour: '09', reminder4Minute: '00', reminderEmail: false, reminderAlexa: false, reminderSms: false, reminder1Methods: '', reminder2Methods: '', reminder3Methods: '', reminder4Methods: '', attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '', repeatSpanDays: 1 }); setIsQuickAddOpen(true); }); }}>+ Add Task</Button>
           </div>
 
           {/* Radio Dialog */}
@@ -15620,7 +15633,7 @@ export default function Dashboard() {
                     onClick={() => {
                       setIsAddChooserOpen(false);
                       setQuickAddStep(0);
-                      setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminderEmail: false, reminderAlexa: false, reminderSms: false, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '', repeatSpanDays: 1 });
+                      setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminder4DateTimeMode: false, reminder4Date: '', reminder4Hour: '09', reminder4Minute: '00', reminderEmail: false, reminderAlexa: false, reminderSms: false, reminder1Methods: '', reminder2Methods: '', reminder3Methods: '', reminder4Methods: '', attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '', repeatSpanDays: 1 });
                       setIsQuickAddOpen(true);
                     }}
                     data-testid="button-chooser-add-task"
@@ -16014,31 +16027,54 @@ export default function Dashboard() {
                         <h3 className="text-sm font-medium text-white">Reminders</h3>
                         <p className="text-[9px] text-white/50 mt-1">Set reminders before due date</p>
                       </div>
-                      <div className="flex flex-col gap-2.5" style={{ maxHeight: '340px', overflowY: 'auto', paddingRight: '4px' }}>
+                      <div className="flex flex-col gap-2.5" style={{ maxHeight: '400px', overflowY: 'auto', paddingRight: '4px' }}>
                       {([
-                        { label: 'Reminder 1', key: 'reminder1' as const, customKey: 'reminder1Custom' as const, daysKey: 'reminder1Days' as const, hoursKey: 'reminder1Hours' as const, minutesKey: 'reminder1Minutes' as const },
-                        { label: 'Reminder 2', key: 'reminder2' as const, customKey: 'reminder2Custom' as const, daysKey: 'reminder2Days' as const, hoursKey: 'reminder2Hours' as const, minutesKey: 'reminder2Minutes' as const },
-                        { label: 'Reminder 3', key: 'reminder3' as const, customKey: 'reminder3Custom' as const, daysKey: 'reminder3Days' as const, hoursKey: 'reminder3Hours' as const, minutesKey: 'reminder3Minutes' as const },
-                        { label: 'Reminder 4', key: 'reminder4' as const, customKey: 'reminder4Custom' as const, daysKey: 'reminder4Days' as const, hoursKey: 'reminder4Hours' as const, minutesKey: 'reminder4Minutes' as const },
-                      ] as const).map(r => (
+                        { label: 'Reminder 1', key: 'reminder1' as const, customKey: 'reminder1Custom' as const, daysKey: 'reminder1Days' as const, hoursKey: 'reminder1Hours' as const, minutesKey: 'reminder1Minutes' as const, methodsKey: 'reminder1Methods' as const },
+                        { label: 'Reminder 2', key: 'reminder2' as const, customKey: 'reminder2Custom' as const, daysKey: 'reminder2Days' as const, hoursKey: 'reminder2Hours' as const, minutesKey: 'reminder2Minutes' as const, methodsKey: 'reminder2Methods' as const },
+                        { label: 'Reminder 3', key: 'reminder3' as const, customKey: 'reminder3Custom' as const, daysKey: 'reminder3Days' as const, hoursKey: 'reminder3Hours' as const, minutesKey: 'reminder3Minutes' as const, methodsKey: 'reminder3Methods' as const },
+                        { label: 'Reminder 4', key: 'reminder4' as const, customKey: 'reminder4Custom' as const, daysKey: 'reminder4Days' as const, hoursKey: 'reminder4Hours' as const, minutesKey: 'reminder4Minutes' as const, methodsKey: 'reminder4Methods' as const },
+                      ] as const).map(r => {
+                        const isR4 = r.key === 'reminder4';
+                        const currentMethods = ((quickAddData as any)[r.methodsKey] || '') as string;
+                        const methodsList = currentMethods ? currentMethods.split(',') : [];
+                        const toggleMethod = (method: string) => {
+                          setQuickAddData(p => {
+                            const cur = ((p as any)[r.methodsKey] || '') as string;
+                            const arr = cur ? cur.split(',') : [];
+                            const next = arr.includes(method) ? arr.filter((m: string) => m !== method) : [...arr, method];
+                            return { ...p, [r.methodsKey]: next.join(',') };
+                          });
+                        };
+                        return (
                         <div key={r.key} className="flex flex-col gap-1.5 bg-white/5 rounded-lg px-3 py-2 border border-white/10">
                           <div className="flex gap-2 items-center">
                             <span className="text-white/50 text-[11px] w-[72px]">{r.label}:</span>
+                            {isR4 && quickAddData.reminder4DateTimeMode ? (
+                              <button
+                                onClick={() => setQuickAddData(p => ({ ...p, reminder4DateTimeMode: false }))}
+                                className="flex-1 bg-white/10 border border-white/15 rounded-lg px-2 py-1.5 text-white text-[11px] text-left"
+                                data-testid="quick-add-reminder4-switch-relative"
+                              >
+                                Switch to relative time
+                              </button>
+                            ) : (
                             <select
-                              value={(quickAddData as any)[r.customKey] ? -1 : (quickAddData[r.key] ?? 0)}
+                              value={isR4 && quickAddData.reminder4DateTimeMode ? -2 : (quickAddData as any)[r.customKey] ? -1 : (quickAddData[r.key] ?? 0)}
                               onChange={(e) => {
                                 const val = parseInt(e.target.value);
-                                if (val === -1) {
+                                if (val === -2 && isR4) {
+                                  setQuickAddData(p => ({ ...p, reminder4DateTimeMode: true, [r.customKey]: false }));
+                                } else if (val === -1) {
                                   setQuickAddData(p => {
                                     const d = (p as any)[r.daysKey] || 0;
                                     const h = (p as any)[r.hoursKey] || 0;
                                     const m = (p as any)[r.minutesKey] || 0;
                                     const totalMin = d * 1440 + h * 60 + m;
-                                    return { ...p, [r.customKey]: true, [r.key]: totalMin || null };
+                                    return { ...p, [r.customKey]: true, [r.key]: totalMin || null, ...(isR4 ? { reminder4DateTimeMode: false } : {}) };
                                   });
                                 } else {
                                   const isOptional = r.key === 'reminder3' || r.key === 'reminder4';
-                                  setQuickAddData(p => ({ ...p, [r.key]: val === 0 && isOptional ? null : val, [r.customKey]: false }));
+                                  setQuickAddData(p => ({ ...p, [r.key]: val === 0 && isOptional ? null : val, [r.customKey]: false, ...(isR4 ? { reminder4DateTimeMode: false } : {}) }));
                                 }
                               }}
                               className="flex-1 bg-white/10 border border-white/15 rounded-lg px-2 py-1.5 text-white text-[11px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
@@ -16048,9 +16084,42 @@ export default function Dashboard() {
                                 <option key={opt.value} value={opt.value} style={{ color: 'black' }}>{opt.label}</option>
                               ))}
                               <option value={-1} style={{ color: 'black' }}>Custom...</option>
+                              {isR4 && <option value={-2} style={{ color: 'black' }}>Specific date/time...</option>}
                             </select>
+                            )}
                           </div>
-                          {(quickAddData as any)[r.customKey] && (
+                          {isR4 && quickAddData.reminder4DateTimeMode && (
+                            <div className="flex items-center gap-1.5 pl-[72px] flex-wrap">
+                              <input
+                                type="date"
+                                value={quickAddData.reminder4Date}
+                                onChange={(e) => setQuickAddData(p => ({ ...p, reminder4Date: e.target.value }))}
+                                className="bg-white/10 border border-white/15 rounded px-1.5 py-1 text-white text-[10px] focus:outline-none [color-scheme:dark]"
+                                data-testid="quick-add-reminder4-date"
+                              />
+                              <select
+                                value={quickAddData.reminder4Hour}
+                                onChange={(e) => setQuickAddData(p => ({ ...p, reminder4Hour: e.target.value }))}
+                                className="w-[52px] bg-white/10 border border-white/15 rounded px-1 py-1 text-white text-[10px] focus:outline-none [color-scheme:dark]"
+                                data-testid="quick-add-reminder4-hour"
+                              >
+                                {Array.from({ length: 24 }, (_, i) => (
+                                  <option key={i} value={i.toString().padStart(2, '0')} style={{ color: 'black' }}>{i === 0 ? '12 AM' : i < 12 ? `${i} AM` : i === 12 ? '12 PM' : `${i - 12} PM`}</option>
+                                ))}
+                              </select>
+                              <select
+                                value={quickAddData.reminder4Minute}
+                                onChange={(e) => setQuickAddData(p => ({ ...p, reminder4Minute: e.target.value }))}
+                                className="w-[52px] bg-white/10 border border-white/15 rounded px-1 py-1 text-white text-[10px] focus:outline-none [color-scheme:dark]"
+                                data-testid="quick-add-reminder4-minute"
+                              >
+                                {Array.from({ length: 60 }, (_, i) => (
+                                  <option key={i} value={i.toString().padStart(2, '0')} style={{ color: 'black' }}>{i.toString().padStart(2, '0')}</option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
+                          {!isR4 && (quickAddData as any)[r.customKey] && (
                             <div className="flex items-center gap-1.5 pl-[72px]">
                               <select
                                 value={(quickAddData as any)[r.daysKey] || 0}
@@ -16096,43 +16165,74 @@ export default function Dashboard() {
                               </select>
                             </div>
                           )}
+                          {isR4 && !quickAddData.reminder4DateTimeMode && (quickAddData as any)[r.customKey] && (
+                            <div className="flex items-center gap-1.5 pl-[72px]">
+                              <select
+                                value={(quickAddData as any)[r.daysKey] || 0}
+                                onChange={(e) => {
+                                  const d = parseInt(e.target.value);
+                                  const totalMin = d * 1440 + ((quickAddData as any)[r.hoursKey] || 0) * 60 + ((quickAddData as any)[r.minutesKey] || 0);
+                                  setQuickAddData(p => ({ ...p, [r.daysKey]: d, [r.key]: totalMin || null }));
+                                }}
+                                className="w-[52px] bg-white/10 border border-white/15 rounded px-1 py-1 text-white text-[10px] focus:outline-none [color-scheme:dark]"
+                                data-testid={`quick-add-${r.key}-days`}
+                              >
+                                {Array.from({ length: 31 }, (_, i) => (
+                                  <option key={i} value={i} style={{ color: 'black' }}>{i}d</option>
+                                ))}
+                              </select>
+                              <select
+                                value={(quickAddData as any)[r.hoursKey] || 0}
+                                onChange={(e) => {
+                                  const h = parseInt(e.target.value);
+                                  const totalMin = ((quickAddData as any)[r.daysKey] || 0) * 1440 + h * 60 + ((quickAddData as any)[r.minutesKey] || 0);
+                                  setQuickAddData(p => ({ ...p, [r.hoursKey]: h, [r.key]: totalMin || null }));
+                                }}
+                                className="w-[52px] bg-white/10 border border-white/15 rounded px-1 py-1 text-white text-[10px] focus:outline-none [color-scheme:dark]"
+                                data-testid={`quick-add-${r.key}-hours`}
+                              >
+                                {Array.from({ length: 13 }, (_, i) => (
+                                  <option key={i} value={i} style={{ color: 'black' }}>{i}h</option>
+                                ))}
+                              </select>
+                              <select
+                                value={(quickAddData as any)[r.minutesKey] || 0}
+                                onChange={(e) => {
+                                  const m = parseInt(e.target.value);
+                                  const totalMin = ((quickAddData as any)[r.daysKey] || 0) * 1440 + ((quickAddData as any)[r.hoursKey] || 0) * 60 + m;
+                                  setQuickAddData(p => ({ ...p, [r.minutesKey]: m, [r.key]: totalMin || null }));
+                                }}
+                                className="w-[52px] bg-white/10 border border-white/15 rounded px-1 py-1 text-white text-[10px] focus:outline-none [color-scheme:dark]"
+                                data-testid={`quick-add-${r.key}-minutes`}
+                              >
+                                {Array.from({ length: 60 }, (_, i) => (
+                                  <option key={i} value={i} style={{ color: 'black' }}>{i}m</option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
+                          <div className="flex flex-wrap gap-1 pl-[72px] mt-0.5">
+                            {[
+                              { id: 'email', label: 'Email', icon: '✉️' },
+                              { id: 'sms', label: 'SMS', icon: '💬' },
+                              { id: 'alarm', label: 'Alarm', icon: '⏰' },
+                              { id: 'calendar', label: 'Calendar', icon: '📅' },
+                              { id: 'alexa', label: 'Alexa', icon: '🔊' },
+                            ].map(method => (
+                              <button
+                                key={method.id}
+                                type="button"
+                                onClick={() => toggleMethod(method.id)}
+                                className={`px-1.5 py-0.5 rounded text-[9px] border transition-colors ${methodsList.includes(method.id) ? 'bg-blue-500/30 border-blue-400/50 text-blue-300' : 'bg-white/5 border-white/10 text-white/40 hover:text-white/60'}`}
+                                data-testid={`quick-add-${r.key}-method-${method.id}`}
+                              >
+                                {method.icon} {method.label}
+                              </button>
+                            ))}
+                          </div>
                         </div>
-                      ))}
-                      </div>
-                      <div className="border-t border-white/15 pt-3 mt-1">
-                        <p className="text-[10px] text-white/40 mb-2">Notification methods for all reminders:</p>
-                        <div className="flex flex-col gap-2">
-                          <label className="flex items-center gap-2.5 cursor-pointer select-none" data-testid="quick-add-reminder-email">
-                            <input
-                              type="checkbox"
-                              checked={quickAddData.reminderEmail}
-                              onChange={(e) => setQuickAddData(p => ({ ...p, reminderEmail: e.target.checked }))}
-                              className="w-3.5 h-3.5 rounded accent-blue-500"
-                            />
-                            <Mail className="h-3.5 w-3.5 text-blue-400" />
-                            <span className="text-white/70 text-[11px]">Email reminder</span>
-                          </label>
-                          <label className="flex items-center gap-2.5 cursor-pointer select-none" data-testid="quick-add-reminder-alexa">
-                            <input
-                              type="checkbox"
-                              checked={quickAddData.reminderAlexa}
-                              onChange={(e) => setQuickAddData(p => ({ ...p, reminderAlexa: e.target.checked }))}
-                              className="w-3.5 h-3.5 rounded accent-blue-500"
-                            />
-                            <Volume2 className="h-3.5 w-3.5 text-cyan-400" />
-                            <span className="text-white/70 text-[11px]">Alexa announcement</span>
-                          </label>
-                          <label className="flex items-center gap-2.5 cursor-pointer select-none" data-testid="quick-add-reminder-sms">
-                            <input
-                              type="checkbox"
-                              checked={quickAddData.reminderSms}
-                              onChange={(e) => setQuickAddData(p => ({ ...p, reminderSms: e.target.checked }))}
-                              className="w-3.5 h-3.5 rounded accent-blue-500"
-                            />
-                            <MessageSquare className="h-3.5 w-3.5 text-green-400" />
-                            <span className="text-white/70 text-[11px]">Text message</span>
-                          </label>
-                        </div>
+                        );
+                      })}
                       </div>
                     </div>
                   )}
@@ -16454,11 +16554,14 @@ export default function Dashboard() {
                               .join(', ') || 'None'}
                           </span>
                         </div>
-                        {(quickAddData.reminderEmail || quickAddData.reminderAlexa || quickAddData.reminderSms) && (
+                        {[quickAddData.reminder1Methods, quickAddData.reminder2Methods, quickAddData.reminder3Methods, quickAddData.reminder4Methods].some(m => m) && (
                           <div className="flex justify-between text-[11px]">
                             <span className="text-white/50">Notify via</span>
-                            <span className="text-white text-right">
-                              {[quickAddData.reminderEmail && 'Email', quickAddData.reminderAlexa && 'Alexa', quickAddData.reminderSms && 'Text'].filter(Boolean).join(', ')}
+                            <span className="text-white text-right text-[10px]">
+                              {(['reminder1Methods', 'reminder2Methods', 'reminder3Methods', 'reminder4Methods'] as const).map((mk, i) => {
+                                const v = quickAddData[mk];
+                                return v ? `R${i+1}: ${v.split(',').join(', ')}` : null;
+                              }).filter(Boolean).join(' | ')}
                             </span>
                           </div>
                         )}
@@ -16590,6 +16693,11 @@ export default function Dashboard() {
                             reminderEmail: quickAddData.reminderEmail,
                             reminderAlexa: quickAddData.reminderAlexa,
                             reminderSms: quickAddData.reminderSms,
+                            reminder1Methods: quickAddData.reminder1Methods || null,
+                            reminder2Methods: quickAddData.reminder2Methods || null,
+                            reminder3Methods: quickAddData.reminder3Methods || null,
+                            reminder4Methods: quickAddData.reminder4Methods || null,
+                            reminder4DateTime: quickAddData.reminder4DateTimeMode && quickAddData.reminder4Date ? `${quickAddData.reminder4Date}T${quickAddData.reminder4Hour}:${quickAddData.reminder4Minute}` : null,
                           });
                           const newTask = await res.json();
                           if (quickAddData.subtasks.length > 0 && newTask?.id) {
@@ -29882,6 +29990,12 @@ function TaskForm({
     reminder2: task?.reminder2 ?? DEFAULT_REMINDER_2,
     reminder3: task?.reminder3 ?? 0,
     reminder4: task?.reminder4 ?? 0,
+    reminder1Methods: task?.reminder1Methods || '',
+    reminder2Methods: task?.reminder2Methods || '',
+    reminder3Methods: task?.reminder3Methods || '',
+    reminder4Methods: task?.reminder4Methods || '',
+    reminder4DateTime: task?.reminder4DateTime || '',
+    reminder4DateTimeMode: !!(task?.reminder4DateTime),
     priority: task?.priority || "medium",
     weekNumber: task?.weekNumber || weekNumber,
     referenceLink: task?.referenceLink || "",
@@ -30017,6 +30131,11 @@ function TaskForm({
         reminder2: data.reminder2 || null,
         reminder3: data.reminder3 || null,
         reminder4: data.reminder4 || null,
+        reminder1Methods: data.reminder1Methods || null,
+        reminder2Methods: data.reminder2Methods || null,
+        reminder3Methods: data.reminder3Methods || null,
+        reminder4Methods: data.reminder4Methods || null,
+        reminder4DateTime: data.reminder4DateTimeMode && data.reminder4DateTime ? data.reminder4DateTime : null,
         priority: data.priority,
         weekNumber: data.weekNumber,
         referenceLink: data.referenceLink,
@@ -30119,6 +30238,11 @@ function TaskForm({
         reminder2: data.reminder2 || null,
         reminder3: data.reminder3 || null,
         reminder4: data.reminder4 || null,
+        reminder1Methods: data.reminder1Methods || null,
+        reminder2Methods: data.reminder2Methods || null,
+        reminder3Methods: data.reminder3Methods || null,
+        reminder4Methods: data.reminder4Methods || null,
+        reminder4DateTime: data.reminder4DateTimeMode && data.reminder4DateTime ? data.reminder4DateTime : null,
         priority: data.priority,
         weekNumber: data.weekNumber,
         referenceLink: data.referenceLink,
@@ -30517,51 +30641,127 @@ function TaskForm({
 
           <div>
             <Label className="text-[11px] text-white">Reminders</Label>
-            <div className="grid grid-cols-4 gap-2">
-              <select
-                value={String(formData.reminder1)}
-                onChange={(e) => setFormData(prev => ({ ...prev, reminder1: parseInt(e.target.value) }))}
-                data-testid="select-reminder1"
-                className="flex h-8 w-full rounded-md border border-input bg-white px-1 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                style={{ color: 'black', fontSize: '11px' }}
-              >
-                {REMINDER_OPTIONS.map(opt => (
-                  <option key={opt.value} value={String(opt.value)}>{opt.label}</option>
-                ))}
-              </select>
-              <select
-                value={String(formData.reminder2)}
-                onChange={(e) => setFormData(prev => ({ ...prev, reminder2: parseInt(e.target.value) }))}
-                data-testid="select-reminder2"
-                className="flex h-8 w-full rounded-md border border-input bg-white px-1 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                style={{ color: 'black', fontSize: '11px' }}
-              >
-                {REMINDER_OPTIONS.map(opt => (
-                  <option key={opt.value} value={String(opt.value)}>{opt.label}</option>
-                ))}
-              </select>
-              <select
-                value={String(formData.reminder3)}
-                onChange={(e) => setFormData(prev => ({ ...prev, reminder3: parseInt(e.target.value) }))}
-                data-testid="select-reminder3"
-                className="flex h-8 w-full rounded-md border border-input bg-white px-1 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                style={{ color: 'black', fontSize: '11px' }}
-              >
-                {REMINDER_OPTIONS.map(opt => (
-                  <option key={opt.value} value={String(opt.value)}>{opt.label}</option>
-                ))}
-              </select>
-              <select
-                value={String(formData.reminder4)}
-                onChange={(e) => setFormData(prev => ({ ...prev, reminder4: parseInt(e.target.value) }))}
-                data-testid="select-reminder4"
-                className="flex h-8 w-full rounded-md border border-input bg-white px-1 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                style={{ color: 'black', fontSize: '11px' }}
-              >
-                {REMINDER_OPTIONS.map(opt => (
-                  <option key={opt.value} value={String(opt.value)}>{opt.label}</option>
-                ))}
-              </select>
+            <div className="flex flex-col gap-2">
+              {([
+                { label: 'R1', key: 'reminder1' as const, methodsKey: 'reminder1Methods' as const },
+                { label: 'R2', key: 'reminder2' as const, methodsKey: 'reminder2Methods' as const },
+                { label: 'R3', key: 'reminder3' as const, methodsKey: 'reminder3Methods' as const },
+                { label: 'R4', key: 'reminder4' as const, methodsKey: 'reminder4Methods' as const },
+              ] as const).map(r => {
+                const isR4 = r.key === 'reminder4';
+                const curMethods = (formData[r.methodsKey] || '') as string;
+                const mList = curMethods ? curMethods.split(',') : [];
+                const toggleM = (method: string) => {
+                  setFormData(prev => {
+                    const cur = (prev[r.methodsKey] || '') as string;
+                    const arr = cur ? cur.split(',') : [];
+                    const next = arr.includes(method) ? arr.filter(m => m !== method) : [...arr, method];
+                    return { ...prev, [r.methodsKey]: next.join(',') };
+                  });
+                };
+                return (
+                <div key={r.key} className="flex flex-col gap-1 bg-white/5 rounded-md px-2 py-1.5 border border-white/10">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-white/50 text-[10px] w-[22px] shrink-0">{r.label}</span>
+                    {isR4 && formData.reminder4DateTimeMode ? (
+                      <div className="flex items-center gap-1 flex-1">
+                        <input
+                          type="date"
+                          value={formData.reminder4DateTime?.split('T')[0] || ''}
+                          onChange={(e) => {
+                            const dt = formData.reminder4DateTime || '';
+                            const timePart = dt.includes('T') ? dt.split('T')[1] : '09:00';
+                            setFormData(prev => ({ ...prev, reminder4DateTime: `${e.target.value}T${timePart}` }));
+                          }}
+                          className="flex-1 h-7 rounded-md border border-input bg-white px-1 py-0.5"
+                          style={{ color: 'black', fontSize: '10px' }}
+                          data-testid="edit-reminder4-date"
+                        />
+                        <select
+                          value={(() => { const dt = formData.reminder4DateTime || ''; const t = dt.includes('T') ? dt.split('T')[1] : '09:00'; return t.split(':')[0] || '09'; })()}
+                          onChange={(e) => {
+                            const dt = formData.reminder4DateTime || '';
+                            const datePart = dt.includes('T') ? dt.split('T')[0] : '';
+                            const minPart = dt.includes('T') ? (dt.split('T')[1]?.split(':')[1] || '00') : '00';
+                            setFormData(prev => ({ ...prev, reminder4DateTime: `${datePart}T${e.target.value}:${minPart}` }));
+                          }}
+                          className="w-[56px] h-7 rounded-md border border-input bg-white px-0.5 py-0.5"
+                          style={{ color: 'black', fontSize: '10px' }}
+                          data-testid="edit-reminder4-hour"
+                        >
+                          {Array.from({ length: 24 }, (_, i) => (
+                            <option key={i} value={i.toString().padStart(2, '0')}>{i === 0 ? '12AM' : i < 12 ? `${i}AM` : i === 12 ? '12PM' : `${i-12}PM`}</option>
+                          ))}
+                        </select>
+                        <select
+                          value={(() => { const dt = formData.reminder4DateTime || ''; const t = dt.includes('T') ? dt.split('T')[1] : '09:00'; return t.split(':')[1] || '00'; })()}
+                          onChange={(e) => {
+                            const dt = formData.reminder4DateTime || '';
+                            const datePart = dt.includes('T') ? dt.split('T')[0] : '';
+                            const hourPart = dt.includes('T') ? (dt.split('T')[1]?.split(':')[0] || '09') : '09';
+                            setFormData(prev => ({ ...prev, reminder4DateTime: `${datePart}T${hourPart}:${e.target.value}` }));
+                          }}
+                          className="w-[46px] h-7 rounded-md border border-input bg-white px-0.5 py-0.5"
+                          style={{ color: 'black', fontSize: '10px' }}
+                          data-testid="edit-reminder4-minute"
+                        >
+                          {Array.from({ length: 60 }, (_, i) => (
+                            <option key={i} value={i.toString().padStart(2, '0')}>{i.toString().padStart(2, '0')}</option>
+                          ))}
+                        </select>
+                        <button
+                          type="button"
+                          onClick={() => setFormData(prev => ({ ...prev, reminder4DateTimeMode: false, reminder4DateTime: '' }))}
+                          className="text-[9px] text-white/40 hover:text-white/60 underline"
+                          data-testid="edit-reminder4-switch-relative"
+                        >
+                          relative
+                        </button>
+                      </div>
+                    ) : (
+                    <select
+                      value={String(formData[r.key])}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value);
+                        if (val === -2 && isR4) {
+                          setFormData(prev => ({ ...prev, reminder4DateTimeMode: true, reminder4DateTime: prev.reminder4DateTime || '' }));
+                        } else {
+                          setFormData(prev => ({ ...prev, [r.key]: val, ...(isR4 ? { reminder4DateTimeMode: false } : {}) }));
+                        }
+                      }}
+                      data-testid={`select-${r.key}`}
+                      className="flex h-7 flex-1 rounded-md border border-input bg-white px-1 py-0.5 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      style={{ color: 'black', fontSize: '10px' }}
+                    >
+                      {REMINDER_OPTIONS.map(opt => (
+                        <option key={opt.value} value={String(opt.value)}>{opt.label}</option>
+                      ))}
+                      {isR4 && <option value="-2">Specific date/time...</option>}
+                    </select>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-0.5 pl-[22px]">
+                    {[
+                      { id: 'email', label: 'Email', icon: '✉️' },
+                      { id: 'sms', label: 'SMS', icon: '💬' },
+                      { id: 'alarm', label: 'Alarm', icon: '⏰' },
+                      { id: 'calendar', label: 'Cal', icon: '📅' },
+                      { id: 'alexa', label: 'Alexa', icon: '🔊' },
+                    ].map(method => (
+                      <button
+                        key={method.id}
+                        type="button"
+                        onClick={() => toggleM(method.id)}
+                        className={`px-1 py-0 rounded text-[8px] border transition-colors ${mList.includes(method.id) ? 'bg-blue-500/30 border-blue-400/50 text-blue-300' : 'bg-white/5 border-white/10 text-white/30 hover:text-white/50'}`}
+                        data-testid={`edit-${r.key}-method-${method.id}`}
+                      >
+                        {method.icon} {method.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                );
+              })}
             </div>
           </div>
         </div>
