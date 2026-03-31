@@ -21530,7 +21530,7 @@ export default function Dashboard() {
                           })()}
                           {day.getDay() === 6 && !isToday && (
                             <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '8px' }}>
-                              <span style={{ display: 'block', fontSize: 'min(9.5px, 1.4vw)', fontWeight: 400, color: isNextSchoolWeek ? '#ffffff' : '#000000', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{`New School Week (${selectedWeek + 1})`}</span>
+                              <span style={{ display: 'block', fontSize: 'min(9.5px, 1.4vw)', fontWeight: 400, color: isNextSchoolWeek ? '#9ca3af' : '#000000', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{`New School Week (${selectedWeek + 1})`}</span>
                             </div>
                           )}
                           {!isToday && (() => {
@@ -21540,7 +21540,7 @@ export default function Dashboard() {
                             return todayIdx >= 0 && idx < todayIdx && day.getDay() !== 6 && !isTodaySat;
                           })() && (
                             <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '8px' }}>
-                              <span style={{ display: 'block', fontSize: 'min(9.5px, 1.4vw)', fontWeight: 400, color: isNextSchoolWeek ? '#ffffff' : '#000000', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{`Week ${selectedWeek + 1} (Next Week)`}</span>
+                              <span style={{ display: 'block', fontSize: 'min(9.5px, 1.4vw)', fontWeight: 400, color: isNextSchoolWeek ? '#9ca3af' : '#000000', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{`Week ${selectedWeek + 1} (Next Week)`}</span>
                             </div>
                           )}
                           {!isToday && (() => {
@@ -21555,8 +21555,8 @@ export default function Dashboard() {
                             </div>
                           )}
                           <div className="flex items-center gap-1.5" style={{ marginTop: '10px' }}>
-                            <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? '#fff' : isNextSchoolWeek ? '#ffffff' : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
-                            <div style={{ fontSize: isToday ? '25px' : '24px', fontWeight: isToday ? 600 : 700, color: isToday ? '#000000' : isNextSchoolWeek ? '#ffffff' : '#fff' }}>{dayNum}</div>
+                            <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? '#fff' : isNextSchoolWeek ? '#9ca3af' : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
+                            <div style={{ fontSize: isToday ? '25px' : '24px', fontWeight: isToday ? 600 : 700, color: isToday ? '#000000' : isNextSchoolWeek ? '#9ca3af' : '#fff' }}>{dayNum}</div>
                           </div>
                         </>
                       );
