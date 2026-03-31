@@ -22776,10 +22776,13 @@ export default function Dashboard() {
                     style={{ 
                       backgroundColor: (() => {
                         if (isSameDayET(day, new Date())) return '#eef2f7';
-                        const adNow = new Date();
-                        const adDow = adNow.getDay();
-                        const adSat = startOfDayET(addDays(adNow, adDow === 6 ? 7 : (6 - adDow)));
-                        return startOfDayET(day) >= adSat ? '#f0f7f0' : '#faf8f5';
+                        if (calendarWeekMode === 'current') {
+                          const adNow = new Date();
+                          const adDow = adNow.getDay();
+                          const adSat = startOfDayET(addDays(adNow, adDow === 6 ? 7 : (6 - adDow)));
+                          if (startOfDayET(day) >= adSat) return '#f0f7f0';
+                        }
+                        return '#faf8f5';
                       })(),
                       paddingLeft: `${2 + DAY_COL_LEFT_REDUCTION}px`,
                     }}
@@ -23006,10 +23009,12 @@ export default function Dashboard() {
                               if (isToday || isCurrentHour) return '#e4ecf5';
                               if (isNightShiftSleepHour) return nightSleepColor;
                               if (isDayShiftSleepHour) return 'rgba(180, 180, 180, 0.22)';
-                              const hsNow = new Date();
-                              const hsDow = hsNow.getDay();
-                              const hsSat = startOfDayET(addDays(hsNow, hsDow === 6 ? 7 : (6 - hsDow)));
-                              if (startOfDayET(day) >= hsSat) return '#f0f7f0';
+                              if (calendarWeekMode === 'current') {
+                                const hsNow = new Date();
+                                const hsDow = hsNow.getDay();
+                                const hsSat = startOfDayET(addDays(hsNow, hsDow === 6 ? 7 : (6 - hsDow)));
+                                if (startOfDayET(day) >= hsSat) return '#f0f7f0';
+                              }
                               return '#faf8f5';
                             })(),
                             borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined,
