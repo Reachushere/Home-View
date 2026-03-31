@@ -8591,9 +8591,10 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       const localPort = process.env.PORT || 5000;
       const weatherResp = await fetch(`http://localhost:${localPort}/api/weather`);
       const wData = await weatherResp.json();
+      const wTemp = wData.temperature ?? wData.current?.temperature_2m;
       checks.weather = {
-        status: wData.temperature !== undefined ? 'ok' : 'degraded',
-        message: wData.temperature !== undefined ? `${Math.round(wData.temperature)}°C, ${wData.description || 'OK'}` : 'No data',
+        status: wTemp !== undefined ? 'ok' : 'degraded',
+        message: wTemp !== undefined ? `${Math.round(wTemp)}°C` : 'No data',
       };
     } catch (e: any) {
       checks.weather = { status: 'down', message: e.message || 'Fetch failed' };
