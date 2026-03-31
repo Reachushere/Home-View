@@ -21343,8 +21343,8 @@ export default function Dashboard() {
           
           {weatherData?.daily && (
             <div className="grid w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), height: '16px', marginTop: '-3px' }}>
-              <div style={{ minWidth: 0 }} />
-              {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0 }} />}
+              <div style={{ minWidth: 0, backgroundColor: colorSettings.headerBar }} />
+              {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: colorSettings.headerBar }} />}
               {weekDays.map((day, idx) => {
                 const dateStr = format(day, 'yyyy-MM-dd');
                 const dayForecast = weatherData.daily?.find(d => d.date === dateStr);
@@ -21363,7 +21363,7 @@ export default function Dashboard() {
                 const desc = dayForecast?.weatherCode !== undefined ? (WMO_SHORT[dayForecast.weatherCode] || '') : '';
                 const isTodayForecast = isSameDayET(day, new Date());
                 return (
-                  <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : 1 }} data-testid={`weather-above-${dateStr}`}>
+                  <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : 1, backgroundColor: colorSettings.headerBar }} data-testid={`weather-above-${dateStr}`}>
                     {isTodayForecast && weatherAlerts.length > 0 && (
                       <div className="absolute inset-0" style={{ backgroundColor: 'rgb(255,0,0)', opacity: 1, left: '3px', right: '-2px' }} />
                     )}
@@ -23004,7 +23004,10 @@ export default function Dashboard() {
                               const hsNow = new Date();
                               const hsDow = hsNow.getDay();
                               const hsSat = startOfDayET(addDays(hsNow, hsDow === 6 ? 7 : (6 - hsDow)));
-                              return startOfDayET(day) >= hsSat ? '#f0f7f0' : '#faf8f5';
+                              if (startOfDayET(day) >= hsSat) return '#f0f7f0';
+                              const dow = day.getDay();
+                              if (dow >= 3 && dow <= 5) return colorSettings.headerBar;
+                              return '#faf8f5';
                             })(),
                             borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined,
                             paddingLeft: `${(isToday ? 4 : 2) + DAY_COL_LEFT_REDUCTION}px`,
