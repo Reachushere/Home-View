@@ -2527,10 +2527,6 @@ export default function Dashboard() {
   const [isSystemHealthOpen, setIsSystemHealthOpen] = useState(false);
   const [systemHealthData, setSystemHealthData] = useState<any>(null);
   const [systemHealthLoading, setSystemHealthLoading] = useState(false);
-  const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
-  const isHamburgerOpenRef = useRef(false);
-  isHamburgerOpenRef.current = isHamburgerOpen;
-  const hamburgerCloseTimer = useRef<number | null>(null);
   const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(() => {
     return localStorage.getItem('profilePhotoUrl');
   });
@@ -12585,50 +12581,7 @@ export default function Dashboard() {
 
         {/* Icon buttons and task buttons with adjustable spacing */}
         <div className="flex items-center flex-nowrap [&>*]:flex-shrink-0" style={{ gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 19)}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '2px', paddingRight: '2px', width: '100%', overflow: 'visible', pointerEvents: isTopPillOpen ? 'auto' : 'none' }}>
-          {/* Hamburger Menu */}
-          <DropdownMenu open={isHamburgerOpen} onOpenChange={(open) => { if (hamburgerCloseTimer.current) { clearTimeout(hamburgerCloseTimer.current); hamburgerCloseTimer.current = null; } startTransition(() => setIsHamburgerOpen(open)); if (open) { triggerButtonGlow('hamburger'); if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); } }} modal={false}>
-            <DropdownMenuTrigger asChild>
-              <div 
-                className="pill-button-hover"
-                style={{ 
-                  marginTop: '4px',
-                  width: '44px',
-                  height: '44px',
-                  borderRadius: '50%',
-                  background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
-                  border: '1.5px solid rgba(255,255,255,0.35)',
-                  boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer'
-                }}
-                data-testid="button-hamburger-menu"
-                title="Menu"
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); startTransition(() => setIsHamburgerOpen(prev => !prev)); if (!isHamburgerOpen) triggerButtonGlow('hamburger'); }}
-                onMouseEnter={() => { if (!('ontouchstart' in window)) setIsHamburgerOpen(true); }}
-              >
-                <Menu className="h-[20px] w-[20px]" strokeWidth={3} style={{ color: '#ffffff', marginTop: '2px', filter: 'drop-shadow(0 0 2px rgba(255,255,255,0.8))', WebkitTextStroke: '0.5px white', paintOrder: 'stroke fill' } as any} />
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" noAnimation onMouseLeave={() => { if (!('ontouchstart' in window)) { hamburgerCloseTimer.current = window.setTimeout(() => setIsHamburgerOpen(false), 250); } }} onMouseEnter={() => { if (hamburgerCloseTimer.current) { clearTimeout(hamburgerCloseTimer.current); hamburgerCloseTimer.current = null; } }}>
-              <DropdownMenuItem data-testid="menu-item-system-health" className="text-xs" onClick={() => {
-                  setSystemHealthLoading(true);
-                  setSystemHealthData(null);
-                  setIsSystemHealthOpen(true);
-                  fetch('/api/system-health').then(r => r.json()).then(data => {
-                    setSystemHealthData(data);
-                    setSystemHealthLoading(false);
-                  }).catch(() => {
-                    setSystemHealthData({ overall: 'issues', checks: { server: { status: 'down', message: 'Failed to reach server' } } });
-                    setSystemHealthLoading(false);
-                  });
-                }}>
-                <Activity className="h-3.5 w-3.5 mr-2" />
-                System Health
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          
 
 
           {/* ── Tools ── */}
@@ -12755,6 +12708,38 @@ export default function Dashboard() {
             </Button>
           </div>
 
+
+          {/* System Health Button */}
+          <div className="pill-button-hover" style={{ 
+            marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+            border: '1.5px solid rgba(255,255,255,0.35)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
+              style={{ background: 'transparent' }}
+              data-testid="button-system-health"
+              title="System Health"
+              onClick={() => {
+                setSystemHealthLoading(true);
+                setSystemHealthData(null);
+                setIsSystemHealthOpen(true);
+                fetch('/api/system-health').then(r => r.json()).then(data => {
+                  setSystemHealthData(data);
+                  setSystemHealthLoading(false);
+                }).catch(() => {
+                  setSystemHealthData({ overall: 'issues', checks: { server: { status: 'down', message: 'Failed to reach server' } } });
+                  setSystemHealthLoading(false);
+                });
+              }}
+            >
+              <Activity className="text-white" style={{ height: '22px', width: '22px' }} />
+            </Button>
+          </div>
 
           {/* Email Management Button */}
           <div className="pill-button-hover" style={{ 
