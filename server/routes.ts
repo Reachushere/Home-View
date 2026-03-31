@@ -4780,6 +4780,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
           active.push(a);
           continue;
         }
+        const isManual = a.emailId && typeof a.emailId === 'string' && a.emailId.startsWith('manual-');
+        if (isManual) {
+          active.push(a);
+          continue;
+        }
         const received = new Date(a.receivedAt);
         const dayOfWeek = received.getDay();
         const daysUntilFriday = dayOfWeek <= 5 ? (5 - dayOfWeek) : (5 + 7 - dayOfWeek);

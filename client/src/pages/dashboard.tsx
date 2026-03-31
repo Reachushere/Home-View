@@ -9974,6 +9974,8 @@ export default function Dashboard() {
     wkEnd.setDate(wkEnd.getDate() + 6);
     wkEnd.setHours(23, 59, 59, 999);
     return d2lAnnouncements.filter((a: any) => {
+      const isManual = a.emailId && typeof a.emailId === 'string' && a.emailId.startsWith('manual-');
+      if (isManual) return true;
       const d = new Date(a.receivedAt || a.date);
       return d >= wkStart && d <= wkEnd;
     });
