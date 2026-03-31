@@ -12919,7 +12919,7 @@ export default function Dashboard() {
 
 
           {/* Quick Add Button */}
-          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminderEmail: false, reminderAlexa: false, reminderSms: false, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' }); setIsQuickAddOpen(true); }); }}>+ Add Task</Button>
+          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminderEmail: false, reminderAlexa: false, reminderSms: false, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' }); setIsQuickAddOpen(true); }); }}>+ Add Task</Button>
           </div>
 
           {/* Radio Dialog */}
@@ -15620,7 +15620,7 @@ export default function Dashboard() {
                     onClick={() => {
                       setIsAddChooserOpen(false);
                       setQuickAddStep(0);
-                      setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminderEmail: false, reminderAlexa: false, reminderSms: false, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' });
+                      setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminderEmail: false, reminderAlexa: false, reminderSms: false, attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '' });
                       setIsQuickAddOpen(true);
                     }}
                     data-testid="button-chooser-add-task"
@@ -16570,6 +16570,7 @@ export default function Dashboard() {
                             showCountdownBarMain: quickAddData.showCountdownBarMain,
                             showCountdownBarSummary: quickAddData.showCountdownBarSummary,
                             countdownBarDays: quickAddData.countdownBarDays,
+                            countdownBarColor: quickAddData.countdownBarColor || null,
                             reminderEmail: quickAddData.reminderEmail,
                             reminderAlexa: quickAddData.reminderAlexa,
                             reminderSms: quickAddData.reminderSms,
@@ -21299,7 +21300,7 @@ export default function Dashboard() {
                           const posInBar = item.barIndices.indexOf(dayIdx);
                           const isStart = posInBar === 0;
                           const isEnd = posInBar === item.barIndices.length - 1;
-                          const urgencyColor = item.daysUntilDue <= 1 ? '#dc2626' : item.daysUntilDue <= 3 ? '#e89200' : item.daysUntilDue <= 6 ? '#22c55e' : '#3b82f6';
+                          const urgencyColor = item.task.countdownBarColor || (item.daysUntilDue <= 1 ? '#dc2626' : item.daysUntilDue <= 3 ? '#e89200' : item.daysUntilDue <= 6 ? '#22c55e' : '#3b82f6');
                           return (
                             <div
                               key={`cbar-${item.task.id}`}
@@ -29879,6 +29880,7 @@ function TaskForm({
     showCountdownBarMain: task?.showCountdownBarMain ?? true,
     showCountdownBarSummary: task?.showCountdownBarSummary ?? true,
     countdownBarDays: task?.countdownBarDays ?? 0,
+    countdownBarColor: task?.countdownBarColor || '',
   });
   const [newAttachment, setNewAttachment] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -30013,6 +30015,7 @@ function TaskForm({
         showCountdownBarMain: data.showCountdownBarMain ?? true,
         showCountdownBarSummary: data.showCountdownBarSummary ?? true,
         countdownBarDays: data.countdownBarDays ?? 0,
+        countdownBarColor: data.countdownBarColor || null,
       };
       if (task) {
         if (onUndoPush) {
@@ -30113,6 +30116,7 @@ function TaskForm({
         showCountdownBarMain: data.showCountdownBarMain ?? true,
         showCountdownBarSummary: data.showCountdownBarSummary ?? true,
         countdownBarDays: data.countdownBarDays ?? 0,
+        countdownBarColor: data.countdownBarColor || null,
       };
       if (hasSameTitleSiblings && !isLinkedRecurring) {
         payload.originalTitle = task.title;
@@ -30490,38 +30494,6 @@ function TaskForm({
                 </select>
               </div>
             </div>
-            <div>
-              <Label className="text-[11px] text-white">Countdown Bar</Label>
-              <div className="flex flex-col gap-1 mt-1">
-                <label className="flex items-center gap-2 cursor-pointer select-none" data-testid="toggle-show-countdown-bar-inline">
-                  <input
-                    type="checkbox"
-                    checked={formData.showCountdownBar}
-                    onChange={(e) => setFormData(prev => ({ ...prev, showCountdownBar: e.target.checked }))}
-                    className="w-3.5 h-3.5 rounded accent-blue-500"
-                  />
-                  <span className="text-[10px] text-white/70">Show bar</span>
-                </label>
-                {formData.showCountdownBar && (
-                  <select
-                    value={formData.countdownBarDays}
-                    onChange={(e) => setFormData(prev => ({ ...prev, countdownBarDays: parseInt(e.target.value) }))}
-                    className="flex h-7 w-full rounded-md border border-input bg-white px-1 py-0.5 font-normal"
-                    style={{ color: 'black', fontSize: '10px' }}
-                    data-testid="select-countdown-bar-days-inline"
-                  >
-                    <option value={0}>All days</option>
-                    <option value={3}>3 days</option>
-                    <option value={5}>5 days</option>
-                    <option value={7}>7 days</option>
-                    <option value={10}>10 days</option>
-                    <option value={14}>14 days</option>
-                    <option value={21}>21 days</option>
-                    <option value={30}>30 days</option>
-                  </select>
-                )}
-              </div>
-            </div>
           </div>
 
           <div>
@@ -30682,53 +30654,97 @@ function TaskForm({
 
           <div style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 12px' }}>
             <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.45)', letterSpacing: '0.5px' }}>Display Options</span>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
-              <label className="flex items-center gap-2 cursor-pointer select-none" data-testid="toggle-hide-from-summary">
-                <input
-                  type="checkbox"
-                  checked={formData.hideFromSummary}
-                  onChange={(e) => setFormData(prev => ({ ...prev, hideFromSummary: e.target.checked }))}
-                  className="w-3.5 h-3.5 rounded accent-blue-500"
-                />
-                <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.75)' }}>Hide from summary rows</span>
-              </label>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '8px' }}>
+              <div className="flex items-center justify-between" data-testid="toggle-hide-from-summary">
+                <span className="text-[11px]" style={{ color: 'rgba(255,255,255,0.8)' }}>Hide from summary rows</span>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={formData.hideFromSummary}
+                  onClick={() => setFormData(prev => ({ ...prev, hideFromSummary: !prev.hideFromSummary }))}
+                  style={{
+                    width: '34px', height: '18px', borderRadius: '9px', position: 'relative',
+                    background: formData.hideFromSummary ? '#3b82f6' : 'rgba(255,255,255,0.15)',
+                    border: 'none', cursor: 'pointer', transition: 'background 0.2s', flexShrink: 0,
+                  }}
+                >
+                  <div style={{
+                    width: '14px', height: '14px', borderRadius: '50%', background: '#fff',
+                    position: 'absolute', top: '2px', transition: 'left 0.2s',
+                    left: formData.hideFromSummary ? '18px' : '2px',
+                  }} />
+                </button>
+              </div>
               <div style={{ height: '1px', background: 'rgba(255,255,255,0.08)' }} />
-              <label className="flex items-center gap-2 cursor-pointer select-none" data-testid="toggle-show-countdown-bar-edit">
-                <input
-                  type="checkbox"
-                  checked={formData.showCountdownBar}
-                  onChange={(e) => setFormData(prev => ({ ...prev, showCountdownBar: e.target.checked }))}
-                  className="w-3.5 h-3.5 rounded accent-blue-500"
-                />
-                <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.75)' }}>Show planning countdown bar</span>
-              </label>
+              <div className="flex items-center justify-between" data-testid="toggle-show-countdown-bar-edit">
+                <span className="text-[11px]" style={{ color: 'rgba(255,255,255,0.8)' }}>Show countdown bar</span>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={formData.showCountdownBar}
+                  onClick={() => setFormData(prev => ({ ...prev, showCountdownBar: !prev.showCountdownBar }))}
+                  style={{
+                    width: '34px', height: '18px', borderRadius: '9px', position: 'relative',
+                    background: formData.showCountdownBar ? '#3b82f6' : 'rgba(255,255,255,0.15)',
+                    border: 'none', cursor: 'pointer', transition: 'background 0.2s', flexShrink: 0,
+                  }}
+                >
+                  <div style={{
+                    width: '14px', height: '14px', borderRadius: '50%', background: '#fff',
+                    position: 'absolute', top: '2px', transition: 'left 0.2s',
+                    left: formData.showCountdownBar ? '18px' : '2px',
+                  }} />
+                </button>
+              </div>
               {formData.showCountdownBar && (
-                <div style={{ paddingLeft: '22px', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-                  <label className="flex items-center gap-1.5 cursor-pointer select-none" data-testid="toggle-countdown-bar-main">
-                    <input
-                      type="checkbox"
-                      checked={formData.showCountdownBarMain}
-                      onChange={(e) => setFormData(prev => ({ ...prev, showCountdownBarMain: e.target.checked }))}
-                      className="w-3 h-3 rounded accent-blue-500"
-                    />
-                    <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.55)' }}>Main tasks</span>
-                  </label>
-                  <label className="flex items-center gap-1.5 cursor-pointer select-none" data-testid="toggle-countdown-bar-summary">
-                    <input
-                      type="checkbox"
-                      checked={formData.showCountdownBarSummary}
-                      onChange={(e) => setFormData(prev => ({ ...prev, showCountdownBarSummary: e.target.checked }))}
-                      className="w-3 h-3 rounded accent-blue-500"
-                    />
-                    <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.55)' }}>Summary tasks</span>
-                  </label>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.45)' }}>Show for</span>
+                <div style={{ paddingLeft: '12px', display: 'flex', flexDirection: 'column', gap: '8px', borderLeft: '2px solid rgba(255,255,255,0.1)' }}>
+                  <div className="flex items-center justify-between" data-testid="toggle-countdown-bar-main">
+                    <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.6)' }}>Main tasks</span>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={formData.showCountdownBarMain}
+                      onClick={() => setFormData(prev => ({ ...prev, showCountdownBarMain: !prev.showCountdownBarMain }))}
+                      style={{
+                        width: '30px', height: '16px', borderRadius: '8px', position: 'relative',
+                        background: formData.showCountdownBarMain ? '#3b82f6' : 'rgba(255,255,255,0.15)',
+                        border: 'none', cursor: 'pointer', transition: 'background 0.2s', flexShrink: 0,
+                      }}
+                    >
+                      <div style={{
+                        width: '12px', height: '12px', borderRadius: '50%', background: '#fff',
+                        position: 'absolute', top: '2px', transition: 'left 0.2s',
+                        left: formData.showCountdownBarMain ? '16px' : '2px',
+                      }} />
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-between" data-testid="toggle-countdown-bar-summary">
+                    <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.6)' }}>Summary tasks</span>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={formData.showCountdownBarSummary}
+                      onClick={() => setFormData(prev => ({ ...prev, showCountdownBarSummary: !prev.showCountdownBarSummary }))}
+                      style={{
+                        width: '30px', height: '16px', borderRadius: '8px', position: 'relative',
+                        background: formData.showCountdownBarSummary ? '#3b82f6' : 'rgba(255,255,255,0.15)',
+                        border: 'none', cursor: 'pointer', transition: 'background 0.2s', flexShrink: 0,
+                      }}
+                    >
+                      <div style={{
+                        width: '12px', height: '12px', borderRadius: '50%', background: '#fff',
+                        position: 'absolute', top: '2px', transition: 'left 0.2s',
+                        left: formData.showCountdownBarSummary ? '16px' : '2px',
+                      }} />
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.6)' }}>Show for</span>
                     <select
                       value={formData.countdownBarDays}
                       onChange={(e) => setFormData(prev => ({ ...prev, countdownBarDays: parseInt(e.target.value) }))}
                       className="rounded border border-white/15 text-white"
-                      style={{ fontSize: '9px', padding: '1px 4px', height: '20px', background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.8)' }}
+                      style={{ fontSize: '10px', padding: '2px 6px', height: '22px', background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.8)' }}
                       data-testid="select-countdown-bar-days-edit"
                     >
                       <option value={0}>All days</option>
@@ -30740,6 +30756,33 @@ function TaskForm({
                       <option value={21}>21 days</option>
                       <option value={30}>30 days</option>
                     </select>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.6)' }}>Bar colour</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      {formData.countdownBarColor && (
+                        <div style={{ width: '14px', height: '14px', borderRadius: '3px', background: formData.countdownBarColor, border: '1px solid rgba(255,255,255,0.2)', flexShrink: 0 }} />
+                      )}
+                      <select
+                        value={formData.countdownBarColor}
+                        onChange={(e) => setFormData(prev => ({ ...prev, countdownBarColor: e.target.value }))}
+                        className="rounded border border-white/15 text-white"
+                        style={{ fontSize: '10px', padding: '2px 6px', height: '22px', background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.8)' }}
+                        data-testid="select-countdown-bar-color"
+                      >
+                        <option value="">Auto (urgency)</option>
+                        <option value="#ef4444">Red</option>
+                        <option value="#e89200">Orange</option>
+                        <option value="#eab308">Yellow</option>
+                        <option value="#22c55e">Green</option>
+                        <option value="#3b82f6">Blue</option>
+                        <option value="#8b5cf6">Purple</option>
+                        <option value="#ec4899">Pink</option>
+                        <option value="#14b8a6">Teal</option>
+                        <option value="#6b7280">Grey</option>
+                        <option value="#ffffff">White</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
               )}
