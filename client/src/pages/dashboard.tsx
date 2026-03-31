@@ -417,7 +417,7 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
     if (renderedRef.current && headlinesKey === prevHeadlinesKeyRef.current) return;
     prevHeadlinesKeyRef.current = headlinesKey;
     renderedRef.current = true;
-    const html = `<div class="fixed left-0 right-0 z-[9998] overflow-hidden flex" style="bottom:0;height:38px;background:linear-gradient(90deg,#000000 0%,#14141e 50%,#000000 100%);border-top:1px solid rgba(255,255,255,0.15)" data-testid="news-ticker"><div class="flex-shrink-0 flex items-center justify-center" style="height:38px;width:auto"><img src="${newsTickerLabel}" alt="NEWS" style="height:38px;width:auto;object-fit:contain" /></div><div class="flex-1 overflow-hidden relative h-full"><div class="flex items-center h-full whitespace-nowrap news-ticker-scroll" style="position:relative;padding-top:3px">${headlines.map((item, i) => {
+    const html = `<div class="fixed left-0 right-0 z-[9998] overflow-hidden flex" style="bottom:0;height:38px;background:linear-gradient(90deg,#000000 0%,#14141e 50%,#000000 100%);border-top:1px solid rgba(255,255,255,0.15)" data-testid="news-ticker"><div class="flex-shrink-0 flex items-center justify-center" style="height:38px;width:auto"><img src="${newsTickerLabel}" alt="NEWS" style="height:38px;width:auto;object-fit:contain" /></div><div class="flex-1 overflow-hidden relative h-full"><div class="flex items-center h-full whitespace-nowrap news-ticker-scroll" style="position:relative;padding-top:3px"><span style="display:inline-block;width:40px;flex-shrink:0"></span>${headlines.map((item, i) => {
       if (item.source === '_ALERT_') {
         const safeTitle = item.title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
         return `<span class="inline-flex items-center gap-1.5 mx-4" style="animation:tickerAlertBlink 1s ease-in-out infinite" data-testid="weather-alert-${i}"><img src="${weatherAlertLogoPath}" alt="Weather Alert" class="rounded-sm" style="height:28px;width:auto;object-fit:contain" /><span class="text-[16px] font-bold" style="color:#ff4444;text-shadow:0 0 6px rgba(255,68,68,0.5)">${safeTitle}</span><span class="text-white/20 mx-2">|</span></span>`;
@@ -15737,7 +15737,7 @@ export default function Dashboard() {
 
       {/* News Ticker */}
       <NewsTickerPortal headlines={[
-        ...weatherAlerts.map(a => ({ title: `⚠️ ${a.title}`, source: '_ALERT_', link: '' })),
+        ...weatherAlerts.map(a => ({ title: `⚠️ ${a.title}${a.summary ? ` — ${a.summary}` : ''}`, source: '_ALERT_', link: '' })),
         ...(weatherData ? (() => {
           const WMO_DESC: Record<number, string> = { 0:'Clear',1:'Mainly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Rime Fog',51:'Light Drizzle',53:'Drizzle',55:'Heavy Drizzle',61:'Light Rain',63:'Rain',65:'Heavy Rain',66:'Freezing Rain',67:'Heavy Freezing Rain',71:'Light Snow',73:'Snow',75:'Heavy Snow',77:'Snow Grains',80:'Light Showers',81:'Showers',82:'Heavy Showers',85:'Light Snow Showers',86:'Heavy Snow Showers',95:'Thunderstorm',96:'Thunderstorm w/ Hail',99:'Severe Thunderstorm' };
           const desc = WMO_DESC[weatherData.code] || 'Mixed';
@@ -21502,6 +21502,18 @@ export default function Dashboard() {
               })}
             </div>
           )}
+          {weatherAlerts.length > 0 && (
+            <div className="grid w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), height: '8px' }}>
+              <div />
+              {gridSizes.moduleColumnWidth > 0 && <div />}
+              {weekDays.map((day, idx) => {
+                const isTodayBar = isSameDayET(day, new Date());
+                return (
+                  <div key={idx} style={{ backgroundColor: isTodayBar ? '#ff0000' : 'transparent' }} />
+                );
+              })}
+            </div>
+          )}
           <div className="flex-1 min-h-0 relative" style={{ overflow: 'visible' }}>
             <div
               style={{ position: 'absolute', left: '9px', top: '-30px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
@@ -21583,10 +21595,13 @@ export default function Dashboard() {
                 return (
                   <div 
                     key={idx} 
-                    className={`border-l border-border flex flex-col items-center justify-center h-full relative${weatherAlerts.length > 0 ? " weather-alert-border-pulse" : ""}`}
-                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px' } : { backgroundColor: isNextSchoolWeek ? '#062d06' : colorSettings.headerBar, color: isNextSchoolWeek ? '#ffffff' : undefined }}
+                    className={`border-l border-border flex flex-col items-center justify-center h-full relative${isToday && weatherAlerts.length > 0 ? " weather-alert-border-pulse" : ""}`}
+                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'hidden' } : { backgroundColor: isNextSchoolWeek ? '#062d06' : colorSettings.headerBar, color: isNextSchoolWeek ? '#ffffff' : undefined }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
+                    {isToday && weatherData && weatherData.code >= 95 && weatherData.code <= 99 && (
+                      <div className="absolute inset-0 weather-lightning" style={{ zIndex: 5 }} />
+                    )}
                     {!isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && (
                       <div
                         className="absolute inset-0 cursor-pointer z-10"
