@@ -21617,9 +21617,12 @@ export default function Dashboard() {
                 const desc = dayForecast?.weatherCode !== undefined ? (WMO_SHORT[dayForecast.weatherCode] || '') : '';
                 const isTodayForecast = isSameDayET(day, new Date());
                 return (
-                  <div key={idx} className="flex items-center justify-center overflow-hidden" style={{ opacity: isPast ? 0.5 : 1, backgroundColor: isTodayForecast && weatherAlerts.length > 0 ? '#ff0000' : undefined }} data-testid={`weather-above-${dateStr}`}>
+                  <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : 1 }} data-testid={`weather-above-${dateStr}`}>
+                    {isTodayForecast && weatherAlerts.length > 0 && (
+                      <div className="absolute inset-0" style={{ backgroundColor: 'rgb(255,0,0)', opacity: 1, marginLeft: '2px' }} />
+                    )}
                     {dayForecast && (
-                      <span className="text-[11px] text-white/90 whitespace-nowrap leading-none font-medium" style={{ letterSpacing: '-0.2px' }}>
+                      <span className="text-[11px] text-white/90 whitespace-nowrap leading-none font-medium relative z-10" style={{ letterSpacing: '-0.2px' }}>
                         {wIcon} {Math.round(dayForecast.low)}°/{Math.round(dayForecast.high)}° {desc}
                       </span>
                     )}
