@@ -32187,7 +32187,7 @@ function TaskForm({
             <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.45)', letterSpacing: '0.5px' }}>Display Options</span>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '8px' }}>
               <div className="flex items-center justify-between" data-testid="toggle-hide-from-summary">
-                <span className="text-[11px]" style={{ color: 'rgba(255,255,255,0.8)' }}>Hide from summary rows</span>
+                <span className="text-[11px]" style={{ color: 'rgba(255,255,255,0.8)' }}>Hide task from summary rows</span>
                 <button
                   type="button"
                   role="switch"
