@@ -14242,7 +14242,7 @@ export default function Dashboard() {
 
             {/* Footer */}
             <div className="flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
-              <span className="text-white/30 text-[9px]">Swipe left to delete, right to toggle</span>
+              <span className="text-white text-[9px]">Swipe left to delete, right to toggle</span>
               <Button
                 variant="outline"
                 className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 w-[80px]"
