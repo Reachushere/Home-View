@@ -28206,9 +28206,30 @@ export default function Dashboard() {
                     Not synced
                   </span>
                 )}
+              </div>
+            )}
+            {editingTask && (
+              <>
+              <TaskForm 
+                key={`edit-task-${editingTask.id}`}
+                task={editingTask}
+                weekNumber={editingTask.weekNumber}
+                hideSubmitButton
+                onSuccess={() => setEditingTask(null)}
+                onRecurringEdit={(taskId, title, payload, onSuccessCb) => {
+                  setRecurringEditPending({ taskId, title, payload, onSuccess: onSuccessCb });
+                }}
+                onUndoPush={(action) => pushUndo(action as UndoAction)}
+                currentSemesterCourses={semesterSettings ? [
+                  ...(semesterSettings.course1Code ? [{ code: semesterSettings.course1Code, name: semesterSettings.course1Name.replace(/^[A-Z]+\d+\s*-\s*/, '') }] : []),
+                  ...(semesterSettings.course2Code ? [{ code: semesterSettings.course2Code, name: semesterSettings.course2Name.replace(/^[A-Z]+\d+\s*-\s*/, '') }] : []),
+                  ...(semesterSettings.course3Code ? [{ code: semesterSettings.course3Code, name: semesterSettings.course3Name.replace(/^[A-Z]+\d+\s*-\s*/, '') }] : []),
+                ] : undefined}
+              />
+              <div className="mt-2">
                 <Button
                   variant="outline"
-                  className="text-[9px] h-5 px-2 ml-auto text-orange-300 border-orange-400/40 hover:bg-orange-500/15 hover:text-orange-200"
+                  className="text-[9px] h-5 px-2 text-orange-300 border-orange-400/40 hover:bg-orange-500/15 hover:text-orange-200"
                   disabled={dupSearching}
                   data-testid="button-find-duplicates"
                   onClick={async () => {
@@ -28230,156 +28251,137 @@ export default function Dashboard() {
                   {dupSearching ? 'Searching...' : 'Find Duplicates'}
                 </Button>
               </div>
-            )}
-            {dupResults !== null && editingTask && (
-              <div className="px-1 mb-2">
-                {dupResults.length === 0 && dupDiffTimeEvents.length === 0 && (
-                  <p className="text-[10px] text-green-400">No duplicates found across calendars.</p>
-                )}
-                {dupResults.length > 0 && (
-                  <div className="space-y-1">
-                    <p className="text-[10px] text-orange-400">{dupResults.length} exact duplicate{dupResults.length !== 1 ? 's' : ''} found (same title & time):</p>
-                    {dupResults.map((d: any, i: number) => (
-                      <div key={i} className="text-[9px] flex items-center gap-1.5 px-1.5 py-1 rounded" style={{ background: 'rgba(255,165,0,0.1)', border: '1px solid rgba(255,165,0,0.2)' }}>
-                        <span className="text-white/70">{d.calendarName}</span>
-                        <span className="text-white/40">|</span>
-                        <span className="text-white/50">{new Date(d.start).toLocaleDateString()}</span>
-                        {d.isRecurring && <span className="text-yellow-400">(recurring)</span>}
-                      </div>
-                    ))}
-                    <Button
-                      variant="outline"
-                      className="text-[10px] h-6 px-2 border-red-500/40 text-red-400 hover:bg-red-500/20 hover:text-red-300 mt-1"
-                      disabled={dupDeleting}
-                      data-testid="button-delete-exact-duplicates"
-                      onClick={async () => {
-                        if (!confirm(`Delete ${dupResults.length} exact duplicate${dupResults.length !== 1 ? 's' : ''} from calendars?`)) return;
-                        setDupDeleting(true);
-                        try {
-                          const resp = await fetch(`/api/tasks/${editingTask.id}/delete-calendar-duplicates`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            credentials: 'include',
-                            body: JSON.stringify({ eventIds: dupResults.map((d: any) => ({ id: d.id, account: d.account })) }),
-                          });
-                          const data = await resp.json();
-                          setDupResults([]);
-                          alert(`Deleted ${data.deleted} duplicate${data.deleted !== 1 ? 's' : ''}${data.failed > 0 ? `, ${data.failed} failed` : ''}`);
-                        } catch { alert('Failed to delete duplicates'); }
-                        setDupDeleting(false);
-                      }}
-                    >
-                      {dupDeleting ? 'Deleting...' : `Delete ${dupResults.length} Exact Duplicate${dupResults.length !== 1 ? 's' : ''}`}
-                    </Button>
-                  </div>
-                )}
-                {dupDiffTimeEvents.length > 0 && !dupShowDiffTime && (
-                  <Button
-                    variant="ghost"
-                    className="text-[10px] h-6 px-2 text-yellow-400/70 hover:text-yellow-300 mt-1"
-                    data-testid="button-show-diff-time"
-                    onClick={() => setDupShowDiffTime(true)}
-                  >
-                    {dupDiffTimeEvents.length} same-title event{dupDiffTimeEvents.length !== 1 ? 's' : ''} at different times — show?
-                  </Button>
-                )}
-                {dupShowDiffTime && dupDiffTimeEvents.length > 0 && (
-                  <div className="space-y-1 mt-1">
-                    <p className="text-[10px] text-yellow-400">Same title, different times:</p>
-                    {dupDiffTimeEvents.map((d: any, i: number) => (
-                      <div key={i} className="text-[9px] flex items-center gap-1.5 px-1.5 py-1 rounded" style={{ background: 'rgba(255,255,0,0.05)', border: '1px solid rgba(255,255,0,0.15)' }}>
-                        <input
-                          type="checkbox"
-                          className="h-3 w-3"
-                          data-testid={`checkbox-diff-dup-${i}`}
-                          checked={emailWizardSelected.has(d.id)}
-                          onChange={(e) => {
-                            const next = new Set(emailWizardSelected);
-                            e.target.checked ? next.add(d.id) : next.delete(d.id);
-                            setEmailWizardSelected(next);
-                          }}
-                        />
-                        <span className="text-white/70">{d.calendarName}</span>
-                        <span className="text-white/40">|</span>
-                        <span className="text-white/50">{new Date(d.start).toLocaleString()}</span>
-                        {d.isRecurring && <span className="text-yellow-400">(recurring series)</span>}
-                      </div>
-                    ))}
-                    <div className="flex gap-2 mt-1">
+              {dupResults !== null && (
+                <div className="px-1 mt-2">
+                  {dupResults.length === 0 && dupDiffTimeEvents.length === 0 && (
+                    <p className="text-[10px] text-green-400">No duplicates found across calendars.</p>
+                  )}
+                  {dupResults.length > 0 && (
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-orange-400">{dupResults.length} exact duplicate{dupResults.length !== 1 ? 's' : ''} found (same title & time):</p>
+                      {dupResults.map((d: any, i: number) => (
+                        <div key={i} className="text-[9px] flex items-center gap-1.5 px-1.5 py-1 rounded" style={{ background: 'rgba(255,165,0,0.1)', border: '1px solid rgba(255,165,0,0.2)' }}>
+                          <span className="text-white/70">{d.calendarName}</span>
+                          <span className="text-white/40">|</span>
+                          <span className="text-white/50">{new Date(d.start).toLocaleDateString()}</span>
+                          {d.isRecurring && <span className="text-yellow-400">(recurring)</span>}
+                        </div>
+                      ))}
                       <Button
                         variant="outline"
-                        className="text-[10px] h-6 px-2 border-red-500/40 text-red-400 hover:bg-red-500/20 hover:text-red-300"
-                        disabled={emailWizardSelected.size === 0 || dupDeleting}
-                        data-testid="button-delete-selected-diff"
-                        onClick={async () => {
-                          const selected = dupDiffTimeEvents.filter((d: any) => emailWizardSelected.has(d.id));
-                          if (!confirm(`Delete ${selected.length} selected event${selected.length !== 1 ? 's' : ''}?`)) return;
-                          setDupDeleting(true);
-                          try {
-                            const resp = await fetch(`/api/tasks/${editingTask.id}/delete-calendar-duplicates`, {
-                              method: 'POST',
-                              headers: { 'Content-Type': 'application/json' },
-                              credentials: 'include',
-                              body: JSON.stringify({ eventIds: selected.map((d: any) => ({ id: d.id, account: d.account })) }),
-                            });
-                            const data = await resp.json();
-                            setDupDiffTimeEvents(prev => prev.filter((d: any) => !emailWizardSelected.has(d.id)));
-                            setEmailWizardSelected(new Set());
-                            alert(`Deleted ${data.deleted}${data.failed > 0 ? `, ${data.failed} failed` : ''}`);
-                          } catch { alert('Failed to delete'); }
-                          setDupDeleting(false);
-                        }}
-                      >
-                        {dupDeleting ? 'Deleting...' : `Delete Selected (${emailWizardSelected.size})`}
-                      </Button>
-                      <Button
-                        variant="outline"
-                        className="text-[10px] h-6 px-2 border-red-500/40 text-red-400 hover:bg-red-500/20 hover:text-red-300"
+                        className="text-[10px] h-6 px-2 border-red-500/40 text-red-400 hover:bg-red-500/20 hover:text-red-300 mt-1"
                         disabled={dupDeleting}
-                        data-testid="button-delete-all-diff"
+                        data-testid="button-delete-exact-duplicates"
                         onClick={async () => {
-                          if (!confirm(`Delete ALL ${dupDiffTimeEvents.length} event${dupDiffTimeEvents.length !== 1 ? 's' : ''} with this title at different times?`)) return;
+                          if (!confirm(`Delete ${dupResults.length} exact duplicate${dupResults.length !== 1 ? 's' : ''} from calendars?`)) return;
                           setDupDeleting(true);
                           try {
                             const resp = await fetch(`/api/tasks/${editingTask.id}/delete-calendar-duplicates`, {
                               method: 'POST',
                               headers: { 'Content-Type': 'application/json' },
                               credentials: 'include',
-                              body: JSON.stringify({ eventIds: dupDiffTimeEvents.map((d: any) => ({ id: d.id, account: d.account })) }),
+                              body: JSON.stringify({ eventIds: dupResults.map((d: any) => ({ id: d.id, account: d.account })) }),
                             });
                             const data = await resp.json();
-                            setDupDiffTimeEvents([]);
-                            setEmailWizardSelected(new Set());
-                            alert(`Deleted ${data.deleted}${data.failed > 0 ? `, ${data.failed} failed` : ''}`);
-                          } catch { alert('Failed to delete'); }
+                            setDupResults([]);
+                            alert(`Deleted ${data.deleted} duplicate${data.deleted !== 1 ? 's' : ''}${data.failed > 0 ? `, ${data.failed} failed` : ''}`);
+                          } catch { alert('Failed to delete duplicates'); }
                           setDupDeleting(false);
                         }}
                       >
-                        {dupDeleting ? 'Deleting...' : 'Delete All'}
+                        {dupDeleting ? 'Deleting...' : `Delete ${dupResults.length} Exact Duplicate${dupResults.length !== 1 ? 's' : ''}`}
                       </Button>
                     </div>
-                  </div>
-                )}
-              </div>
-            )}
-            {editingTask && (
-              <>
-              <TaskForm 
-                key={`edit-task-${editingTask.id}`}
-                task={editingTask}
-                weekNumber={editingTask.weekNumber}
-                hideSubmitButton
-                onSuccess={() => setEditingTask(null)}
-                onRecurringEdit={(taskId, title, payload, onSuccessCb) => {
-                  setRecurringEditPending({ taskId, title, payload, onSuccess: onSuccessCb });
-                }}
-                onUndoPush={(action) => pushUndo(action as UndoAction)}
-                currentSemesterCourses={semesterSettings ? [
-                  ...(semesterSettings.course1Code ? [{ code: semesterSettings.course1Code, name: semesterSettings.course1Name.replace(/^[A-Z]+\d+\s*-\s*/, '') }] : []),
-                  ...(semesterSettings.course2Code ? [{ code: semesterSettings.course2Code, name: semesterSettings.course2Name.replace(/^[A-Z]+\d+\s*-\s*/, '') }] : []),
-                  ...(semesterSettings.course3Code ? [{ code: semesterSettings.course3Code, name: semesterSettings.course3Name.replace(/^[A-Z]+\d+\s*-\s*/, '') }] : []),
-                ] : undefined}
-              />
+                  )}
+                  {dupDiffTimeEvents.length > 0 && !dupShowDiffTime && (
+                    <Button
+                      variant="ghost"
+                      className="text-[10px] h-6 px-2 text-yellow-400/70 hover:text-yellow-300 mt-1"
+                      data-testid="button-show-diff-time"
+                      onClick={() => setDupShowDiffTime(true)}
+                    >
+                      {dupDiffTimeEvents.length} same-title event{dupDiffTimeEvents.length !== 1 ? 's' : ''} at different times — show?
+                    </Button>
+                  )}
+                  {dupShowDiffTime && dupDiffTimeEvents.length > 0 && (
+                    <div className="space-y-1 mt-1">
+                      <p className="text-[10px] text-yellow-400">Same title, different times:</p>
+                      {dupDiffTimeEvents.map((d: any, i: number) => (
+                        <div key={i} className="text-[9px] flex items-center gap-1.5 px-1.5 py-1 rounded" style={{ background: 'rgba(255,255,0,0.05)', border: '1px solid rgba(255,255,0,0.15)' }}>
+                          <input
+                            type="checkbox"
+                            className="h-3 w-3"
+                            data-testid={`checkbox-diff-dup-${i}`}
+                            checked={emailWizardSelected.has(d.id)}
+                            onChange={(e) => {
+                              const next = new Set(emailWizardSelected);
+                              e.target.checked ? next.add(d.id) : next.delete(d.id);
+                              setEmailWizardSelected(next);
+                            }}
+                          />
+                          <span className="text-white/70">{d.calendarName}</span>
+                          <span className="text-white/40">|</span>
+                          <span className="text-white/50">{new Date(d.start).toLocaleString()}</span>
+                          {d.isRecurring && <span className="text-yellow-400">(recurring series)</span>}
+                        </div>
+                      ))}
+                      <div className="flex gap-2 mt-1">
+                        <Button
+                          variant="outline"
+                          className="text-[10px] h-6 px-2 border-red-500/40 text-red-400 hover:bg-red-500/20 hover:text-red-300"
+                          disabled={emailWizardSelected.size === 0 || dupDeleting}
+                          data-testid="button-delete-selected-diff"
+                          onClick={async () => {
+                            const selected = dupDiffTimeEvents.filter((d: any) => emailWizardSelected.has(d.id));
+                            if (!confirm(`Delete ${selected.length} selected event${selected.length !== 1 ? 's' : ''}?`)) return;
+                            setDupDeleting(true);
+                            try {
+                              const resp = await fetch(`/api/tasks/${editingTask.id}/delete-calendar-duplicates`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                credentials: 'include',
+                                body: JSON.stringify({ eventIds: selected.map((d: any) => ({ id: d.id, account: d.account })) }),
+                              });
+                              const data = await resp.json();
+                              setDupDiffTimeEvents(prev => prev.filter((d: any) => !emailWizardSelected.has(d.id)));
+                              setEmailWizardSelected(new Set());
+                              alert(`Deleted ${data.deleted}${data.failed > 0 ? `, ${data.failed} failed` : ''}`);
+                            } catch { alert('Failed to delete'); }
+                            setDupDeleting(false);
+                          }}
+                        >
+                          {dupDeleting ? 'Deleting...' : `Delete Selected (${emailWizardSelected.size})`}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          className="text-[10px] h-6 px-2 border-red-500/40 text-red-400 hover:bg-red-500/20 hover:text-red-300"
+                          disabled={dupDeleting}
+                          data-testid="button-delete-all-diff"
+                          onClick={async () => {
+                            if (!confirm(`Delete ALL ${dupDiffTimeEvents.length} event${dupDiffTimeEvents.length !== 1 ? 's' : ''} with this title at different times?`)) return;
+                            setDupDeleting(true);
+                            try {
+                              const resp = await fetch(`/api/tasks/${editingTask.id}/delete-calendar-duplicates`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                credentials: 'include',
+                                body: JSON.stringify({ eventIds: dupDiffTimeEvents.map((d: any) => ({ id: d.id, account: d.account })) }),
+                              });
+                              const data = await resp.json();
+                              setDupDiffTimeEvents([]);
+                              setEmailWizardSelected(new Set());
+                              alert(`Deleted ${data.deleted}${data.failed > 0 ? `, ${data.failed} failed` : ''}`);
+                            } catch { alert('Failed to delete'); }
+                            setDupDeleting(false);
+                          }}
+                        >
+                          {dupDeleting ? 'Deleting...' : 'Delete All'}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
               <div className="flex justify-end gap-3 pt-3 mt-2 border-t border-white/10">
                 <button
                   type="button"
