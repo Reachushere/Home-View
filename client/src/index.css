@@ -2373,3 +2373,16 @@ input[type="date"]::-webkit-datetime-edit-year-field {
 .section-dim-tr > td:not(.no-dim) {
   opacity: 0.45;
 }
+
+@keyframes pomodoro-alert-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.15; }
+}
+.pomodoro-alert-border {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 99998;
+  border: 8px solid #ef4444;
+  animation: pomodoro-alert-blink 1s ease-in-out infinite;
+}

@@ -4206,6 +4206,8 @@ export default function Dashboard() {
   const [pomodoroStarted, setPomodoroStarted] = useState(false);
   const [pomodoroMode, setPomodoroMode] = useState<"work" | "shortBreak" | "longBreak">("work");
   const [pomodoroCount, setPomodoroCount] = useState(0);
+  const [pomodoroAlertVisible, setPomodoroAlertVisible] = useState(false);
+  const [pomodoroAlertMessage, setPomodoroAlertMessage] = useState({ title: '', description: '' });
   const pomodoroIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Keyboard delete handler
@@ -4251,20 +4253,18 @@ export default function Dashboard() {
       }, 1000);
     } else if (pomodoroTime === 0 && pomodoroRunning) {
       setPomodoroRunning(false);
-      // Play notification sound locally
       const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2telehs');
       audio.play().catch(() => {});
-      // Fetch latest state from server (server handles announcement + mode transition)
       fetch("/api/pomodoro/status").then(r => r.json()).then((data: { mode: string; running: boolean; remaining: number; count: number }) => {
         setPomodoroMode(data.mode as "work" | "shortBreak" | "longBreak");
         setPomodoroTime(data.remaining);
         setPomodoroCount(data.count);
         setPomodoroRunning(data.running);
-        if (data.mode === "work") {
-          toast({ title: "Break Over!", description: "Time to focus!" });
-        } else {
-          toast({ title: "Pomodoro Complete!", description: data.mode === "longBreak" ? "Time for a long break!" : "Time for a short break!" });
-        }
+        const msg = data.mode === "work"
+          ? { title: "Break Over!", description: "Time to focus!" }
+          : { title: "Pomodoro Complete!", description: data.mode === "longBreak" ? "Time for a long break!" : "Time for a short break!" };
+        setPomodoroAlertMessage(msg);
+        setPomodoroAlertVisible(true);
       }).catch(() => {});
     }
     return () => {
@@ -10198,6 +10198,48 @@ export default function Dashboard() {
         backgroundColor: colorSettings.mainBackgroundOverlay ? safeHex(colorSettings.mainBackground, '#3a8bbf') : '#000000',
       }}
     >
+      {pomodoroAlertVisible && <div className="pomodoro-alert-border" />}
+      {pomodoroAlertVisible && createPortal(
+        <div
+          data-testid="pomodoro-alert-dialog"
+          style={{
+            position: 'fixed', inset: 0, zIndex: 99999,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'rgba(0,0,0,0.55)',
+          }}
+          onClick={() => setPomodoroAlertVisible(false)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: '#1a1a2e', border: '2px solid rgba(255,255,255,0.2)',
+              borderRadius: '16px', padding: '36px 44px', textAlign: 'center',
+              minWidth: '320px', maxWidth: '420px', boxShadow: '0 20px 60px rgba(0,0,0,0.6)',
+            }}
+          >
+            <div style={{ fontSize: '42px', marginBottom: '12px' }}>
+              {pomodoroAlertMessage.title.includes('Break Over') ? '🎯' : '🎉'}
+            </div>
+            <div style={{ fontSize: '22px', fontWeight: 700, color: '#ffffff', marginBottom: '8px' }}>
+              {pomodoroAlertMessage.title}
+            </div>
+            <div style={{ fontSize: '15px', color: 'rgba(255,255,255,0.7)', marginBottom: '28px' }}>
+              {pomodoroAlertMessage.description}
+            </div>
+            <button
+              data-testid="button-dismiss-pomodoro-alert"
+              onClick={() => setPomodoroAlertVisible(false)}
+              style={{
+                background: '#ef4444', color: '#fff', border: 'none', borderRadius: '10px',
+                padding: '12px 36px', fontSize: '15px', fontWeight: 600, cursor: 'pointer',
+              }}
+            >
+              Dismiss
+            </button>
+          </div>
+        </div>,
+        document.body
+      )}
       {false && hwTimelinePos && createPortal(
         <div style={{ position: 'fixed', top: `${hwTimelinePos.top}px`, left: `${hwTimelinePos.left}px`, width: '50px', height: '15px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2147483647, pointerEvents: 'none', opacity: hwIsScrolling ? 0.5 : 1, transition: 'opacity 0.2s ease' }}>
           <span style={{ fontSize: '10px', fontWeight: 500, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
