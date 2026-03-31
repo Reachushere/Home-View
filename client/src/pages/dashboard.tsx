@@ -23002,8 +23002,6 @@ export default function Dashboard() {
                               const hsDow = hsNow.getDay();
                               const hsSat = startOfDayET(addDays(hsNow, hsDow === 6 ? 7 : (6 - hsDow)));
                               if (startOfDayET(day) >= hsSat) return '#f0f7f0';
-                              const dow = day.getDay();
-                              if (dow >= 3 && dow <= 5) return colorSettings.headerBar;
                               return '#faf8f5';
                             })(),
                             borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined,
