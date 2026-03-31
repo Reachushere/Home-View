@@ -11449,11 +11449,22 @@ document.body.removeChild(a);
       res.json({ action: "confirmed", message: "Module reading confirmed — starting playback" });
     } else if (catLightsLateConfirmFile && Date.now() < catLightsLateConfirmExpiry) {
       console.log(`[Cat Lights Confirm] LATE CONFIRMATION — within 10-minute window`);
-      const lateFile = catLightsLateConfirmFile;
+      const lateFileId = catLightsLateConfirmFile.id;
       const lateWeek = catLightsLateConfirmWeek;
       catLightsLateConfirmFile = null;
       catLightsLateConfirmWeek = null;
       catLightsLateConfirmExpiry = 0;
+
+      let freshFile: any;
+      try {
+        freshFile = await storage.getFile(lateFileId);
+      } catch (e: any) {
+        console.error(`[Cat Lights Confirm] Failed to re-fetch file ${lateFileId}: ${e.message}`);
+      }
+      if (!freshFile) {
+        console.error(`[Cat Lights Confirm] File ${lateFileId} not found — aborting late confirm`);
+        return res.json({ action: "error", reason: "File not found" });
+      }
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       try {
@@ -11463,11 +11474,11 @@ document.body.removeChild(a);
         console.warn(`[Cat Lights Confirm] Failed to stop CHUM FM (non-fatal): ${e.message}`);
       }
 
-      const fileDesc = describeFileForTTS(lateFile, lateWeek || 1);
+      const fileDesc = describeFileForTTS(freshFile, lateWeek || 1);
       const confirmTTS = `Okay, I will now play ${fileDesc}.`;
       catWashPlaybackTrigger = 'lights';
       catLightsPromptPending = false;
-      await startConfirmedPlaybackFlow(lateFile, '[Cat Lights Late]', 'echo', confirmTTS);
+      await startConfirmedPlaybackFlow(freshFile, '[Cat Lights Late]', 'echo', confirmTTS);
 
       res.json({ action: "late_confirmed", message: "Late confirmation accepted — stopping CHUM FM, starting playback" });
     } else {
