@@ -25434,12 +25434,12 @@ export default function Dashboard() {
           <div className="flex-1 flex flex-col" style={{ paddingLeft: '0px', paddingRight: '0px', marginTop: (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
             if (courseRowRects.length > 0) {
-              const headerH = courseRowRects[0].top - upcomingTop - 1;
               const lastRect = courseRowRects[courseRowRects.length - 1];
               if (lastRect) {
-                const lastBottom = lastRect.top + lastRect.height - upcomingTop;
-                const otherRowH = gridSizes.otherRowHeight || 57;
-                return `${lastBottom + otherRowH - headerH - 15 - 5}px`;
+                const lastBottom = lastRect.top + lastRect.height;
+                const otherRowH = Math.max(57, gridSizes.otherRowHeight || 57);
+                const timelineStart = lastBottom + otherRowH - upcomingTop;
+                return `${timelineStart}px`;
               }
             }
             return '12px';
