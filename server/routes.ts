@@ -2680,8 +2680,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
           }
         }
         
-        const trumpPattern = /\btrump\b/i;
-        if (!trumpPattern.test(title) && !trumpPattern.test(descMatch?.[1] || '')) continue;
+        const headlinePattern = /\btrump\b|\bmaga\b/i;
+        if (!headlinePattern.test(title)) continue;
         
         let imageUrl = '';
         const mediaContentMatch = item.match(/<media:content[^>]*url="([^"]+)"[^>]*>/i);
