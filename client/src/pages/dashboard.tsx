@@ -12242,7 +12242,7 @@ export default function Dashboard() {
 
       {/* School Logo - Fixed top left, customizable via school settings */}
       <div className="fixed flex items-start" data-tpo data-tpo-opacity="1" style={{ left: '23px', top: `${8 + d2lTickerHeight}px`, height: '35px', zIndex: 100, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}>
-        <img src={schoolData.schoolLogo || changSchoolLogo} alt={schoolData.schoolName || "The Chang School"} style={{ height: '44px', objectFit: 'contain' }} />
+        <img src={schoolData.schoolLogo || changSchoolLogo} alt={schoolData.schoolName || "The Chang School"} style={{ height: '44px', objectFit: 'contain', cursor: 'pointer' }} onClick={() => startTransition(() => setIsProfileDialogOpen(true))} data-testid="button-school-logo" />
         <div style={{ width: '1.5px', height: '28px', backgroundColor: 'rgba(255,255,255,0.45)', borderRadius: '1px', flexShrink: 0, marginLeft: '10px', marginRight: '10px' }} />
         <img src={profilePhotoUrl || profilePhoto} alt="Profile" style={{ width: '35px', height: '35px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, marginRight: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.2)', cursor: 'pointer' }} onClick={() => startTransition(() => setIsProfileDialogOpen(true))} data-testid="button-profile-photo" />
         <div className="flex flex-col">
