@@ -21615,8 +21615,9 @@ export default function Dashboard() {
                   return '';
                 })(dayForecast?.weatherCode);
                 const desc = dayForecast?.weatherCode !== undefined ? (WMO_SHORT[dayForecast.weatherCode] || '') : '';
+                const isTodayForecast = isSameDayET(day, new Date());
                 return (
-                  <div key={idx} className="flex items-center justify-center overflow-hidden" style={{ opacity: isPast ? 0.5 : 1 }} data-testid={`weather-above-${dateStr}`}>
+                  <div key={idx} className="flex items-center justify-center overflow-hidden" style={{ opacity: isPast ? 0.5 : 1, backgroundColor: isTodayForecast && weatherAlerts.length > 0 ? '#ff0000' : undefined }} data-testid={`weather-above-${dateStr}`}>
                     {dayForecast && (
                       <span className="text-[11px] text-white/90 whitespace-nowrap leading-none font-medium" style={{ letterSpacing: '-0.2px' }}>
                         {wIcon} {Math.round(dayForecast.low)}°/{Math.round(dayForecast.high)}° {desc}
@@ -21628,18 +21629,6 @@ export default function Dashboard() {
             </div>
           )}
           <div className="flex-1 min-h-0 relative" style={{ overflow: 'visible' }}>
-            {weatherAlerts.length > 0 && (() => {
-              const now = new Date();
-              const todayIdx = weekDays.findIndex(d => isSameDayET(d, now));
-              if (todayIdx < 0) return null;
-              const totalDayW = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0);
-              const beforeW = gridSizes.dayColumnWidths.slice(0, todayIdx).reduce((a: number, b: number) => a + b, 0);
-              const todayW = gridSizes.dayColumnWidths[todayIdx] || 0;
-              const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
-              return (
-                <div className="absolute pointer-events-none" style={{ top: '0px', height: '8px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px) + 2px)`, width: `calc((${todayW} / ${totalDayW}) * (100% - ${fixedW}px))`, backgroundColor: '#ff0000', zIndex: 51 }} data-testid="weather-alert-red-bar" />
-              );
-            })()}
             <div
               style={{ position: 'absolute', left: '9px', top: '-30px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
               data-testid="calendar-top-resize-handle"
