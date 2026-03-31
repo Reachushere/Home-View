@@ -32230,7 +32230,7 @@ function TaskForm({
               {formData.showCountdownBar && (
                 <div style={{ paddingLeft: '12px', display: 'flex', flexDirection: 'column', gap: '8px', borderLeft: '2px solid rgba(255,255,255,0.1)' }}>
                   <div className="flex items-center justify-between" data-testid="toggle-countdown-bar-main">
-                    <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.6)' }}>Main tasks</span>
+                    <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.9)' }}>Main tasks</span>
                     <button
                       type="button"
                       role="switch"
@@ -32250,7 +32250,7 @@ function TaskForm({
                     </button>
                   </div>
                   <div className="flex items-center justify-between" data-testid="toggle-countdown-bar-summary">
-                    <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.6)' }}>Summary tasks</span>
+                    <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.9)' }}>Summary tasks</span>
                     <button
                       type="button"
                       role="switch"
@@ -32270,7 +32270,7 @@ function TaskForm({
                     </button>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.6)' }}>Show for</span>
+                    <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.9)' }}>Show for</span>
                     <select
                       value={formData.countdownBarDays}
                       onChange={(e) => setFormData(prev => ({ ...prev, countdownBarDays: parseInt(e.target.value) }))}
@@ -32289,7 +32289,7 @@ function TaskForm({
                     </select>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.6)' }}>Bar colour</span>
+                    <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.9)' }}>Bar colour</span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                       {formData.countdownBarColor && (
                         <div style={{ width: '14px', height: '14px', borderRadius: '3px', background: formData.countdownBarColor, border: '1px solid rgba(255,255,255,0.2)', flexShrink: 0 }} />
