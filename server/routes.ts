@@ -8700,6 +8700,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   let catLightsConfirmResolve: ((value: boolean) => void) | null = null;
   let catLightsLastPromptAt: number | null = null;
   let catLightsPromptPending = false;
+  let catLightsLateConfirmFile: any = null;
+  let catLightsLateConfirmWeek: number | null = null;
+  let catLightsLateConfirmExpiry: number = 0;
   let coursePlayPriority: Record<string, number> = {};
   const CAT_LIGHTS_PROMPT_COOLDOWN_MS = 3 * 60 * 1000;
   let catLightsBypassCooldown = false;
@@ -11444,6 +11447,29 @@ document.body.removeChild(a);
       }
 
       res.json({ action: "confirmed", message: "Module reading confirmed — starting playback" });
+    } else if (catLightsLateConfirmFile && Date.now() < catLightsLateConfirmExpiry) {
+      console.log(`[Cat Lights Confirm] LATE CONFIRMATION — within 10-minute window`);
+      const lateFile = catLightsLateConfirmFile;
+      const lateWeek = catLightsLateConfirmWeek;
+      catLightsLateConfirmFile = null;
+      catLightsLateConfirmWeek = null;
+      catLightsLateConfirmExpiry = 0;
+
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      try {
+        await stopAllCatWashroomSpeakers(haUrl);
+        console.log(`[Cat Lights Confirm] Stopped CHUM FM`);
+      } catch (e: any) {
+        console.warn(`[Cat Lights Confirm] Failed to stop CHUM FM (non-fatal): ${e.message}`);
+      }
+
+      const fileDesc = describeFileForTTS(lateFile, lateWeek || 1);
+      const confirmTTS = `Okay, I will now play ${fileDesc}.`;
+      catWashPlaybackTrigger = 'lights';
+      catLightsPromptPending = false;
+      await startConfirmedPlaybackFlow(lateFile, '[Cat Lights Late]', 'echo', confirmTTS);
+
+      res.json({ action: "late_confirmed", message: "Late confirmation accepted — stopping CHUM FM, starting playback" });
     } else {
       console.log(`[Cat Lights Confirm] No pending confirmation to resolve`);
       res.json({ action: "ignored", reason: "No pending confirmation" });
@@ -11857,6 +11883,10 @@ document.body.removeChild(a);
             return;
           }
           console.log(`[Cat Lights] No confirmation received — playing CHUM FM on Echo speakers`);
+          catLightsLateConfirmFile = nextFile;
+          catLightsLateConfirmWeek = currentWeekNumber;
+          catLightsLateConfirmExpiry = Date.now() + 10 * 60 * 1000;
+          console.log(`[Cat Lights] Late confirmation window open for 10 minutes (file: ${fileName})`);
           await playChumFmRadio(haUrl);
           return;
         }
