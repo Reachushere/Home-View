@@ -8690,6 +8690,7 @@ export default function Dashboard() {
   });
   const [selectedSecondaryCalendar, setSelectedSecondaryCalendar] = useState<string>("");
   const [shiftScheduleOpen, setShiftScheduleOpen] = useState(false);
+  const [weekVariantsOpen, setWeekVariantsOpen] = useState(false);
   const [semestersOpen, setSemestersOpen] = useState(false);
   const [shiftScheduleYear, setShiftScheduleYear] = useState(new Date().getFullYear());
   const [localShiftMap, setLocalShiftMap] = useState<Record<string, string>>({});
@@ -12599,10 +12600,6 @@ export default function Dashboard() {
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" noAnimation onMouseLeave={() => { if (!('ontouchstart' in window)) { hamburgerCloseTimer.current = window.setTimeout(() => setIsHamburgerOpen(false), 250); } }} onMouseEnter={() => { if (hamburgerCloseTimer.current) { clearTimeout(hamburgerCloseTimer.current); hamburgerCloseTimer.current = null; } }}>
-              <DropdownMenuItem data-testid="menu-item-school" className="text-xs" onClick={() => startTransition(() => setIsSchoolDialogOpen(true))}>
-                <GraduationCap className="h-3.5 w-3.5 mr-2" />
-                School Settings
-              </DropdownMenuItem>
               <DropdownMenuItem data-testid="menu-item-system-health" className="text-xs" onClick={() => {
                   setSystemHealthLoading(true);
                   setSystemHealthData(null);
@@ -18908,68 +18905,7 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
           
-          {/* School Dialog */}
-          <Dialog open={isSchoolDialogOpen} onOpenChange={(open) => { if (!isNewCourseDialogOpen && !newCourseDialogClosingRef.current && !isNewCourseWizardOpen) setIsSchoolDialogOpen(open); }}>
-            <DialogContent 
-              data-settings-dialog
-              className="overflow-hidden flex flex-col text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden"
-              style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', maxHeight: '85vh', width: '420px', maxWidth: '95vw', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}
-              onInteractOutside={(e) => { if (isNewCourseDialogOpen || newCourseDialogClosingRef.current || isNewCourseWizardOpen) e.preventDefault(); }}
-              onEscapeKeyDown={(e) => { if (isNewCourseDialogOpen || newCourseDialogClosingRef.current || isNewCourseWizardOpen) e.preventDefault(); }}
-              onPointerDownOutside={(e) => { if (isNewCourseDialogOpen || newCourseDialogClosingRef.current || isNewCourseWizardOpen) e.preventDefault(); }}
-              onFocusOutside={(e) => { if (isNewCourseDialogOpen || newCourseDialogClosingRef.current || isNewCourseWizardOpen) e.preventDefault(); }}
-            >
-              {/* Header bar matching flyouts */}
-              <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
-                <div className="flex items-center gap-2">
-                  <GraduationCap className="text-white" style={{ width: '15px', height: '15px' }} />
-                  <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
-                    SCHOOL SETTINGS
-                  </h2>
-                </div>
-              </div>
-              <div className="flex-1 overflow-y-auto px-4 pb-4 pt-0" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', marginTop: '-2px' }}>
-              <div>
-                <div className="flex flex-col gap-4" style={{ paddingTop: '0px', marginTop: '6px' }}>
-                <SchoolForm 
-                  key={isSchoolDialogOpen ? 'open' : 'closed'}
-                  schoolData={schoolData}
-                  semesterSettings={semesterSettings}
-                  onSave={saveSchool}
-                  onCancel={() => setIsSchoolDialogOpen(false)} 
-                />
-                </div>
-              </div>
-              </div>
-              <div className="px-2 flex justify-end" style={{ marginTop: '-14px' }}>
-                <div className="flex items-center gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 w-[110px]"
-                  style={{ fontSize: '12px', marginRight: '5px' }}
-                  onClick={() => setIsSchoolDialogOpen(false)}
-                  data-testid="button-cancel-school"
-                >
-                  Cancel
-                </Button>
-                <Button 
-                  type="submit" 
-                  form="school-settings-form"
-                  variant="outline"
-                  className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8 w-[110px]"
-                  style={{
-                    boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
-                    fontSize: '12px'
-                  }}
-                  data-testid="button-save-school"
-                >
-                  Save
-                </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+          
           
           {/* Courses Dialog */}
           <Dialog open={isCoursesDialogOpen} onOpenChange={setIsCoursesDialogOpen}>
@@ -19794,7 +19730,7 @@ export default function Dashboard() {
                   variant="outline"
                   size="sm"
                   className="text-[10px] border-white/30 hover:bg-white/10"
-                  onClick={() => { setIsRemainingCoursesDialogOpen(false); setTimeout(() => setIsSchoolDialogOpen(true), 200); }}
+                  onClick={() => { setIsRemainingCoursesDialogOpen(false); }}
                   data-testid="button-back-remaining-courses"
                 >
                   <ChevronLeft className="h-3 w-3 mr-1" />
@@ -21292,6 +21228,16 @@ export default function Dashboard() {
                       </div>
                     );
                   })()}
+                </div>
+
+                <div className="border rounded-lg p-3 space-y-2" data-week-variants-section="true">
+                  <div className="flex items-center justify-between cursor-pointer" onClick={() => { const opening = !weekVariantsOpen; setWeekVariantsOpen(opening); if (opening) { const tryScroll = (attempt: number) => { setTimeout(() => { const section = document.querySelector('[data-week-variants-section="true"]'); if (section) { section.scrollIntoView({ behavior: 'smooth', block: 'start' }); } else if (attempt < 3) { tryScroll(attempt + 1); } }, attempt === 0 ? 200 : 400); }; tryScroll(0); } }} data-testid="toggle-week-variants">
+                    <Label className="text-[10px] font-medium cursor-pointer">Course Week Variants</Label>
+                    <span className="text-xs">{weekVariantsOpen ? '▼' : '▶'}</span>
+                  </div>
+                  {weekVariantsOpen && (
+                    <WeekVariantsSection semesterSettings={semesterSettings} week1StartDate={schoolData.week1StartDate} />
+                  )}
                 </div>
               </div>
             </DialogContent>
@@ -30023,8 +29969,7 @@ function WeekVariantsSection({ semesterSettings, week1StartDate }: { semesterSet
   const currentWeek = semStart ? getWeekNumber(new Date(), semStart, readingWeek) : null;
 
   return (
-    <div className="border rounded-lg p-3 space-y-2" style={{ marginTop: '12px' }} data-testid="week-variants-section">
-      <Label className="text-[10px] font-medium">Course Week Variants</Label>
+    <div className="space-y-2" data-testid="week-variants-section">
       <span className="text-[9px] text-white/50 block">Courses using different week numbering than the TMU standard</span>
       <div className="space-y-1 text-[10px]">
         {weeksWithVariants.map(weekNum => {
@@ -30051,83 +29996,6 @@ function WeekVariantsSection({ semesterSettings, week1StartDate }: { semesterSet
   );
 }
 
-function SchoolForm({ 
-  schoolData, 
-  semesterSettings,
-  onSave,
-  onCancel 
-}: { 
-  schoolData: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; lastDayOfSchoolWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string; travelStartDate?: string; travelEndDate?: string };
-  semesterSettings: SemesterSettings | null | undefined;
-  onSave: (data: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; lastDayOfSchoolWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string; travelStartDate?: string; travelEndDate?: string; semesterType?: string }) => void;
-  onCancel: () => void;
-}) {
-  const [schoolName, setSchoolName] = useState(schoolData.schoolName || 'Toronto Metropolitan University');
-  const [customSchoolName, setCustomSchoolName] = useState('');
-  const [numberOfWeeks, setNumberOfWeeks] = useState(schoolData.numberOfWeeks);
-  const [week1StartDate, setWeek1StartDate] = useState(schoolData.week1StartDate);
-  const [firstDayOfWeek, setFirstDayOfWeek] = useState(schoolData.firstDayOfWeek);
-  const [lastDayOfSchoolWeek, setLastDayOfSchoolWeek] = useState(schoolData.lastDayOfSchoolWeek || 'friday');
-  const [timezone, setTimezone] = useState(schoolData.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Toronto');
-  const [isTravelling, setIsTravelling] = useState(schoolData.isTravelling || false);
-  const [travelTimezone, setTravelTimezone] = useState(schoolData.travelTimezone || '');
-  const [travelStartDate, setTravelStartDate] = useState(schoolData.travelStartDate || '');
-  const [travelEndDate, setTravelEndDate] = useState(schoolData.travelEndDate || '');
-  const [semesterType, setSemesterType] = useState(semesterSettings?.semesterType || 'winter');
-  const [readingWeekDate, setReadingWeekDate] = useState(() => {
-    if (semesterSettings?.readingWeekStart) {
-      const d = new Date(semesterSettings.readingWeekStart);
-      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    }
-    return '';
-  });
-  const [logoPreview, setLogoPreview] = useState<string | null>(schoolData.schoolLogo);
-  const logoInputRef = useRef<HTMLInputElement>(null);
-
-  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size > 2 * 1024 * 1024) {
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = () => {
-      setLogoPreview(reader.result as string);
-    };
-    reader.readAsDataURL(file);
-  };
-  
-  const daysOfWeek = [
-    { value: 'sunday', label: 'Sunday' },
-    { value: 'monday', label: 'Monday' },
-    { value: 'tuesday', label: 'Tuesday' },
-    { value: 'wednesday', label: 'Wednesday' },
-    { value: 'thursday', label: 'Thursday' },
-    { value: 'friday', label: 'Friday' },
-    { value: 'saturday', label: 'Saturday' },
-  ];
-  
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const finalSchoolName = schoolName === 'Other' ? customSchoolName : schoolName;
-    onSave({ schoolLogo: logoPreview, schoolName: finalSchoolName, numberOfWeeks, week1StartDate, firstDayOfWeek, lastDayOfSchoolWeek, timezone, isTravelling, travelTimezone: isTravelling ? travelTimezone : undefined, travelStartDate: isTravelling ? travelStartDate : undefined, travelEndDate: isTravelling ? travelEndDate : undefined, semesterType });
-    if (readingWeekDate) {
-      apiRequest("PATCH", "/api/semester", { readingWeekStart: new Date(readingWeekDate).toISOString() });
-    } else {
-      apiRequest("PATCH", "/api/semester", { readingWeekStart: null });
-    }
-  };
-
-  const semesterEnd = week1StartDate 
-    ? format(addWeeks(new Date(week1StartDate), numberOfWeeks), 'MMMM d, yyyy')
-    : 'Not set';
-  
-  return (
-    <form id="school-settings-form" onSubmit={handleSubmit} className="space-y-4 text-[10px]">
-      <WeekVariantsSection semesterSettings={semesterSettings} week1StartDate={week1StartDate} />
-    </form>
-  );
-}
 
 function CoursesForm({ 
   coursesData, 
