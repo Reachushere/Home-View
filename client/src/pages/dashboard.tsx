@@ -21627,9 +21627,6 @@ export default function Dashboard() {
               })}
             </div>
           )}
-          {weatherAlerts.length > 0 && (
-            <div style={{ height: '8px', flexShrink: 0 }} />
-          )}
           <div className="flex-1 min-h-0 relative" style={{ overflow: 'visible' }}>
             <div
               style={{ position: 'absolute', left: '9px', top: '-30px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
