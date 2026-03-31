@@ -2608,9 +2608,41 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
   // ── Raw Story Trump Monitor ──
   const sentRawStoryUrls = new Set<string>();
+  let rawStoryDbLoaded = false;
+
+  async function loadSentRawStoryUrls() {
+    if (rawStoryDbLoaded) return;
+    try {
+      const row = await db.select().from(appState).where(eq(appState.key, 'raw_story_sent_urls')).limit(1);
+      if (row.length > 0) {
+        const urls: string[] = JSON.parse(row[0].value);
+        urls.forEach(u => sentRawStoryUrls.add(u));
+      }
+      rawStoryDbLoaded = true;
+    } catch (err) {
+      console.error('[Raw Story] Failed to load sent URLs from DB:', err);
+    }
+  }
+
+  async function saveSentRawStoryUrls() {
+    try {
+      const urls = Array.from(sentRawStoryUrls).slice(-200);
+      const value = JSON.stringify(urls);
+      const row = await db.select().from(appState).where(eq(appState.key, 'raw_story_sent_urls')).limit(1);
+      if (row.length > 0) {
+        await db.update(appState).set({ value, updatedAt: new Date() }).where(eq(appState.key, 'raw_story_sent_urls'));
+      } else {
+        await db.insert(appState).values({ key: 'raw_story_sent_urls', value });
+      }
+    } catch (err) {
+      console.error('[Raw Story] Failed to save sent URLs to DB:', err);
+    }
+  }
   
   async function checkRawStoryTrump() {
     try {
+      await loadSentRawStoryUrls();
+
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 10000);
       const response = await fetch('https://www.rawstory.com/feed', {
@@ -2623,6 +2655,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       const items = xml.split(/<item[\s>]/i).slice(1, 15);
       
       const todayET = easternDateStr(new Date());
+      let newlySent = false;
       
       for (const item of items) {
         const titleMatch = item.match(/<title[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/title>/is);
@@ -2698,10 +2731,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         
         if (result.success) {
           sentRawStoryUrls.add(link);
+          newlySent = true;
           console.log(`[Raw Story] Sent Trump article: ${title}`);
         } else {
           console.error(`[Raw Story] Failed to send: ${result.error}`);
         }
+      }
+      if (newlySent) {
+        await saveSentRawStoryUrls();
       }
     } catch (err: any) {
       console.error('[Raw Story] Check failed:', err.message);
@@ -2711,6 +2748,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
   app.post("/api/raw-story/test", async (_req, res) => {
     try {
       sentRawStoryUrls.clear();
+      rawStoryDbLoaded = false;
       await checkRawStoryTrump();
       res.json({ success: true, sent: sentRawStoryUrls.size });
     } catch (err: any) {
