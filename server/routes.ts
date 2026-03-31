@@ -6770,11 +6770,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
   // POST /api/ha-announce - Send a voice announcement to Echo speakers
   app.post("/api/ha-announce", async (req, res) => {
     try {
-      const { message } = req.body;
+      const { message, speakers } = req.body;
       if (!message) {
         return res.status(400).json({ message: "Message is required" });
       }
-      const result = await sendEchoVoiceAnnouncement(message);
+      const result = await sendEchoVoiceAnnouncement(message, speakers);
       if (result.success) {
         res.json({ message: "Announcement sent" });
       } else {
@@ -6846,7 +6846,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
   app.post("/api/scheduled-alexa", async (req, res) => {
     try {
-      const { message, scheduledAt, repeatType, repeatInterval, repeatIntervalUnit, repeatEndDate, isEnabled } = req.body;
+      const { message, scheduledAt, repeatType, repeatInterval, repeatIntervalUnit, repeatEndDate, isEnabled, speakers } = req.body;
       if (!message || !scheduledAt) return res.status(400).json({ message: "Message and scheduledAt are required" });
       const [created] = await db.insert(scheduledAlexaAnnouncements).values({
         message,
@@ -6856,6 +6856,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         repeatIntervalUnit: repeatIntervalUnit || null,
         repeatEndDate: repeatEndDate ? new Date(repeatEndDate) : null,
         isEnabled: isEnabled !== false,
+        speakers: speakers || 'all',
       }).returning();
       res.json(created);
     } catch (err: any) {
@@ -6876,6 +6877,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       if (req.body.repeatEndDate !== undefined) updates.repeatEndDate = req.body.repeatEndDate ? new Date(req.body.repeatEndDate) : null;
       if (req.body.isEnabled !== undefined) updates.isEnabled = req.body.isEnabled;
       if (req.body.isSent !== undefined) updates.isSent = req.body.isSent;
+      if (req.body.speakers !== undefined) updates.speakers = req.body.speakers;
       const [updated] = await db.update(scheduledAlexaAnnouncements).set(updates).where(eq(scheduledAlexaAnnouncements.id, id)).returning();
       res.json(updated);
     } catch (err: any) {
@@ -6900,7 +6902,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       const id = parseInt(req.params.id);
       const [ann] = await db.select().from(scheduledAlexaAnnouncements).where(eq(scheduledAlexaAnnouncements.id, id));
       if (!ann) return res.status(404).json({ message: "Not found" });
-      const result = await sendEchoVoiceAnnouncement(ann.message);
+      const result = await sendEchoVoiceAnnouncement(ann.message, ann.speakers);
       if (result.success) {
         await db.update(scheduledAlexaAnnouncements).set({ lastSentAt: new Date() }).where(eq(scheduledAlexaAnnouncements.id, id));
         res.json({ message: "Announcement sent" });
@@ -6949,7 +6951,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         if (!(global as any).__alexaSentKeys) (global as any).__alexaSentKeys = new Set();
         (global as any).__alexaSentKeys.add(sentKey);
         console.log(`[Alexa Scheduler] Sending announcement ${ann.id}: "${ann.message.slice(0, 50)}..."`);
-        const result = await sendEchoVoiceAnnouncement(ann.message);
+        const result = await sendEchoVoiceAnnouncement(ann.message, ann.speakers);
         if (result.success) {
           await db.update(scheduledAlexaAnnouncements).set({ lastSentAt: new Date(), isSent: true }).where(eq(scheduledAlexaAnnouncements.id, ann.id));
           if (ann.repeatType && ann.repeatType !== 'none') {

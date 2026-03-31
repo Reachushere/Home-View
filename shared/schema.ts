@@ -664,6 +664,7 @@ export const scheduledAlexaAnnouncements = pgTable("scheduled_alexa_announcement
   isEnabled: boolean("is_enabled").default(true),
   isSent: boolean("is_sent").default(false),
   lastSentAt: timestamp("last_sent_at"),
+  speakers: text("speakers").default("all"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

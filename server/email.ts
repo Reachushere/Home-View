@@ -389,19 +389,28 @@ export async function sendHaTaskReminder(task: TaskReminder): Promise<{ success:
   return sendHaPushNotification(title, message);
 }
 
-export async function sendEchoVoiceAnnouncement(message: string): Promise<{ success: boolean; error?: string }> {
+export const ALL_ECHO_SPEAKERS: Record<string, string> = {
+  "media_player.cat_wr": "Cat WR",
+  "media_player.echo_cat_left_am": "Echo Cat Left",
+  "media_player.echo_cat_right_am": "Echo Cat Right",
+  "media_player.echo_cat_washroom_middle": "Echo Cat Washroom",
+  "media_player.echo_kitchen_studio_black_am": "Echo Kitchen Studio",
+};
+
+export function resolveEchoTargets(speakers?: string | null): string[] {
+  const allIds = Object.keys(ALL_ECHO_SPEAKERS);
+  if (!speakers || speakers === 'all') return allIds;
+  const selected = speakers.split(',').map(s => s.trim()).filter(s => allIds.includes(s));
+  return selected.length > 0 ? selected : allIds;
+}
+
+export async function sendEchoVoiceAnnouncement(message: string, speakers?: string | null): Promise<{ success: boolean; error?: string }> {
   if (!HA_TOKEN) {
     return { success: false, error: 'Home Assistant Token not configured' };
   }
 
   const haUrl = HA_URL.replace(/\/$/, '');
-  const ECHO_TARGETS = [
-    "media_player.cat_wr",
-    "media_player.echo_cat_left_am",
-    "media_player.echo_cat_right_am",
-    "media_player.echo_cat_washroom_middle",
-    "media_player.echo_kitchen_studio_black_am",
-  ];
+  const targets = resolveEchoTargets(speakers);
 
   try {
     const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
@@ -413,7 +422,7 @@ export async function sendEchoVoiceAnnouncement(message: string): Promise<{ succ
       body: JSON.stringify({
         message: message,
         data: { type: "tts" },
-        target: ECHO_TARGETS,
+        target: targets,
       }),
     });
 

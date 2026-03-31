@@ -1376,9 +1376,17 @@ export default function Dashboard() {
   const [alexaRepeatInterval, setAlexaRepeatInterval] = useState(1);
   const [alexaRepeatIntervalUnit, setAlexaRepeatIntervalUnit] = useState('days');
   const [alexaRepeatEndDate, setAlexaRepeatEndDate] = useState('');
+  const [alexaSpeakers, setAlexaSpeakers] = useState('all');
   const [alexaSwipeStates, setAlexaSwipeStates] = useState<Record<number, number>>({});
   const alexaSwipeStartRef = useRef<{ id: number; x: number } | null>(null);
   const ALEXA_MAX_CHARS = 250;
+  const ECHO_SPEAKER_OPTIONS: Record<string, string> = {
+    "media_player.cat_wr": "Cat WR",
+    "media_player.echo_cat_left_am": "Echo Cat Left",
+    "media_player.echo_cat_right_am": "Echo Cat Right",
+    "media_player.echo_cat_washroom_middle": "Echo Cat Washroom",
+    "media_player.echo_kitchen_studio_black_am": "Echo Kitchen Studio",
+  };
   const [dupSearching, setDupSearching] = useState(false);
   const [dupResults, setDupResults] = useState<any[] | null>(null);
   const [dupDeleting, setDupDeleting] = useState(false);
@@ -6086,8 +6094,8 @@ export default function Dashboard() {
     onError: () => { toast({ title: "Error", description: "Failed to send announcement.", variant: "destructive" }); },
   });
   const sendAlexaImmediateMutation = useMutation({
-    mutationFn: async (message: string) => {
-      const res = await apiRequest('POST', '/api/ha-announce', { message });
+    mutationFn: async ({ message, speakers }: { message: string; speakers?: string }) => {
+      const res = await apiRequest('POST', '/api/ha-announce', { message, speakers });
       return res.json();
     },
     onSuccess: () => { toast({ title: "Sent", description: "Announcement sent to Alexa now." }); },
@@ -13850,6 +13858,23 @@ export default function Dashboard() {
                   </select>
                 </div>
 
+                {/* Speaker selector */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-white/40 text-[10px] w-[42px] shrink-0">Target:</span>
+                  <select
+                    value={alexaSpeakers}
+                    onChange={(e) => setAlexaSpeakers(e.target.value)}
+                    className="flex-1 text-white text-[11px] px-2 py-1.5 rounded focus:outline-none [color-scheme:dark]"
+                    style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                    data-testid="alexa-speakers-select"
+                  >
+                    <option value="all" style={{ color: 'black' }}>Everywhere (All Speakers)</option>
+                    {Object.entries(ECHO_SPEAKER_OPTIONS).map(([id, name]) => (
+                      <option key={id} value={id} style={{ color: 'black' }}>{name}</option>
+                    ))}
+                  </select>
+                </div>
+
                 {/* Repeat dropdown */}
                 <div className="flex items-center gap-1.5">
                   <span className="text-white/40 text-[10px] w-[42px] shrink-0">Repeat:</span>
@@ -13919,9 +13944,10 @@ export default function Dashboard() {
                           repeatInterval: alexaRepeatType === 'custom' ? alexaRepeatInterval : null,
                           repeatIntervalUnit: alexaRepeatType === 'custom' ? alexaRepeatIntervalUnit : null,
                           repeatEndDate: alexaRepeatEndDate || null,
+                          speakers: alexaSpeakers,
                         });
                       } else {
-                        sendAlexaImmediateMutation.mutate(alexaMessage.trim());
+                        sendAlexaImmediateMutation.mutate({ message: alexaMessage.trim(), speakers: alexaSpeakers });
                         setAlexaMessage('');
                       }
                     }}
@@ -13956,14 +13982,14 @@ export default function Dashboard() {
                         <span className="text-red-300 text-[11px] font-semibold">Delete</span>
                       </div>
                       {/* Save/keep background (swipe right) */}
-                      <div className="absolute inset-0 flex items-center justify-start px-4 rounded-lg" style={{ background: 'rgba(34,197,94,0.3)' }}>
-                        <span className="text-green-300 text-[11px] font-semibold">{ann.isEnabled ? 'Disable' : 'Enable'}</span>
+                      <div className="absolute inset-0 flex items-center justify-start px-4 rounded-lg" style={{ background: 'rgba(6,182,212,0.3)' }}>
+                        <span className="text-cyan-300 text-[11px] font-semibold">{ann.isEnabled ? 'Hide from HA' : 'Expose to HA'}</span>
                       </div>
                       {/* Main item */}
                       <div
                         className="relative flex items-start gap-2 px-3 py-2 border border-white/10 rounded-lg transition-transform"
                         style={{
-                          background: ann.isEnabled ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.02)',
+                          background: ann.isEnabled ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.02)',
                           transform: `translateX(${swipeX}px)`,
                           opacity: ann.isEnabled ? 1 : 0.5,
                         }}
@@ -14012,13 +14038,14 @@ export default function Dashboard() {
                         <button
                           onClick={(e) => { e.stopPropagation(); toggleAlexaMutation.mutate({ id: ann.id, isEnabled: !ann.isEnabled }); }}
                           className="mt-0.5 shrink-0"
+                          title={ann.isEnabled ? 'Hide from HA' : 'Expose to HA'}
                           data-testid={`alexa-toggle-${ann.id}`}
                         >
                           <div className={`w-[30px] h-[16px] rounded-full relative transition-colors ${ann.isEnabled ? 'bg-cyan-500' : 'bg-white/20'}`}>
                             <div className={`absolute top-[2px] w-[12px] h-[12px] rounded-full bg-white shadow transition-all ${ann.isEnabled ? 'left-[16px]' : 'left-[2px]'}`} />
                           </div>
                         </button>
-                        <div className="flex-1 min-w-0">
+                        <div className="flex-1 min-w-0" style={{ marginLeft: '30px' }}>
                           <p className="text-white text-[11px] leading-tight break-words">{ann.message}</p>
                           <div className="flex items-center gap-2 mt-0.5">
                             <span className="text-white/40 text-[9px]">
@@ -14029,27 +14056,32 @@ export default function Dashboard() {
                                 {ann.repeatType === 'custom' ? `Every ${ann.repeatInterval || 1} ${ann.repeatIntervalUnit || 'days'}` : ann.repeatType}
                               </span>
                             )}
-                            {ann.isSent && <span className="text-green-400/50 text-[9px]">sent</span>}
+                            {ann.isSent && <span className="text-cyan-400/50 text-[9px]">sent</span>}
+                            {ann.speakers && ann.speakers !== 'all' && (
+                              <span className="text-white/30 text-[9px]">{ECHO_SPEAKER_OPTIONS[ann.speakers] || ann.speakers}</span>
+                            )}
                           </div>
                         </div>
-                        {/* Send now button */}
-                        <button
-                          onClick={(e) => { e.stopPropagation(); sendAlexaNowMutation.mutate(ann.id); }}
-                          className="shrink-0 text-white/30 hover:text-cyan-400 transition-colors mt-0.5"
-                          title="Send now"
-                          data-testid={`alexa-send-now-${ann.id}`}
-                        >
-                          <Speaker className="h-3.5 w-3.5" />
-                        </button>
-                        {/* Delete button (non-swipe fallback) */}
-                        <button
-                          onClick={(e) => { e.stopPropagation(); deleteAlexaMutation.mutate(ann.id); }}
-                          className="shrink-0 text-white/20 hover:text-red-400 transition-colors mt-0.5"
-                          title="Delete"
-                          data-testid={`alexa-delete-${ann.id}`}
-                        >
-                          <X className="h-3.5 w-3.5" />
-                        </button>
+                        <div className="flex items-center gap-2 shrink-0 ml-2">
+                          {/* Send now button */}
+                          <button
+                            onClick={(e) => { e.stopPropagation(); sendAlexaNowMutation.mutate(ann.id); }}
+                            className="text-white/30 hover:text-cyan-400 transition-colors"
+                            title="Send now"
+                            data-testid={`alexa-send-now-${ann.id}`}
+                          >
+                            <Speaker className="h-3.5 w-3.5" />
+                          </button>
+                          {/* Delete button */}
+                          <button
+                            onClick={(e) => { e.stopPropagation(); deleteAlexaMutation.mutate(ann.id); }}
+                            className="text-white/20 hover:text-red-400 transition-colors"
+                            title="Delete"
+                            data-testid={`alexa-delete-${ann.id}`}
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   );
