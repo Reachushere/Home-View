@@ -8,7 +8,7 @@ import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { db } from "./db";
 import { sql, eq } from "drizzle-orm";
-import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, COURSES, type RepeatType, type RepeatIntervalUnit, type InsertTask, type FileRecord, degreeTrackingData, feedbackNotes, insertFeedbackNoteSchema, appState, announcements } from "@shared/schema";
+import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, COURSES, type RepeatType, type RepeatIntervalUnit, type InsertTask, type FileRecord, degreeTrackingData, feedbackNotes, insertFeedbackNoteSchema, appState, announcements, scheduledAlexaAnnouncements, haAutomations } from "@shared/schema";
 import { z } from "zod";
 import { LIBERAL_STUDIES_COURSES, OPEN_ELECTIVE_COURSES } from "@shared/electiveCourses";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
@@ -6826,6 +6826,283 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
   app.get("/api/reminders/status", (_req, res) => {
     res.json(getSchedulerStatus());
+  });
+
+  // ============= SCHEDULED ALEXA ANNOUNCEMENTS =============
+  app.get("/api/scheduled-alexa", async (_req, res) => {
+    try {
+      const all = await db.select().from(scheduledAlexaAnnouncements).orderBy(scheduledAlexaAnnouncements.scheduledAt);
+      res.json(all);
+    } catch (err: any) {
+      console.error("Error fetching scheduled Alexa announcements:", err.message);
+      res.status(500).json({ message: "Failed to fetch announcements" });
+    }
+  });
+
+  app.post("/api/scheduled-alexa", async (req, res) => {
+    try {
+      const { message, scheduledAt, repeatType, repeatInterval, repeatIntervalUnit, repeatEndDate, isEnabled } = req.body;
+      if (!message || !scheduledAt) return res.status(400).json({ message: "Message and scheduledAt are required" });
+      const [created] = await db.insert(scheduledAlexaAnnouncements).values({
+        message,
+        scheduledAt: new Date(scheduledAt),
+        repeatType: repeatType || 'none',
+        repeatInterval: repeatInterval || null,
+        repeatIntervalUnit: repeatIntervalUnit || null,
+        repeatEndDate: repeatEndDate ? new Date(repeatEndDate) : null,
+        isEnabled: isEnabled !== false,
+      }).returning();
+      res.json(created);
+    } catch (err: any) {
+      console.error("Error creating scheduled Alexa announcement:", err.message);
+      res.status(500).json({ message: "Failed to create announcement" });
+    }
+  });
+
+  app.patch("/api/scheduled-alexa/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updates: any = {};
+      if (req.body.message !== undefined) updates.message = req.body.message;
+      if (req.body.scheduledAt !== undefined) updates.scheduledAt = new Date(req.body.scheduledAt);
+      if (req.body.repeatType !== undefined) updates.repeatType = req.body.repeatType;
+      if (req.body.repeatInterval !== undefined) updates.repeatInterval = req.body.repeatInterval;
+      if (req.body.repeatIntervalUnit !== undefined) updates.repeatIntervalUnit = req.body.repeatIntervalUnit;
+      if (req.body.repeatEndDate !== undefined) updates.repeatEndDate = req.body.repeatEndDate ? new Date(req.body.repeatEndDate) : null;
+      if (req.body.isEnabled !== undefined) updates.isEnabled = req.body.isEnabled;
+      if (req.body.isSent !== undefined) updates.isSent = req.body.isSent;
+      const [updated] = await db.update(scheduledAlexaAnnouncements).set(updates).where(eq(scheduledAlexaAnnouncements.id, id)).returning();
+      res.json(updated);
+    } catch (err: any) {
+      console.error("Error updating scheduled Alexa announcement:", err.message);
+      res.status(500).json({ message: "Failed to update announcement" });
+    }
+  });
+
+  app.delete("/api/scheduled-alexa/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await db.delete(scheduledAlexaAnnouncements).where(eq(scheduledAlexaAnnouncements.id, id));
+      res.json({ ok: true });
+    } catch (err: any) {
+      console.error("Error deleting scheduled Alexa announcement:", err.message);
+      res.status(500).json({ message: "Failed to delete announcement" });
+    }
+  });
+
+  app.post("/api/scheduled-alexa/:id/send-now", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const [ann] = await db.select().from(scheduledAlexaAnnouncements).where(eq(scheduledAlexaAnnouncements.id, id));
+      if (!ann) return res.status(404).json({ message: "Not found" });
+      const result = await sendEchoVoiceAnnouncement(ann.message);
+      if (result.success) {
+        await db.update(scheduledAlexaAnnouncements).set({ lastSentAt: new Date() }).where(eq(scheduledAlexaAnnouncements.id, id));
+        res.json({ message: "Announcement sent" });
+      } else {
+        res.status(500).json({ message: result.error || "Failed" });
+      }
+    } catch (err: any) {
+      console.error("Error sending Alexa announcement now:", err.message);
+      res.status(500).json({ message: "Failed" });
+    }
+  });
+
+  app.get("/api/ha/alexa-entities", async (_req, res) => {
+    try {
+      const all = await db.select().from(scheduledAlexaAnnouncements).where(eq(scheduledAlexaAnnouncements.isEnabled, true));
+      const entities = all.map(a => ({
+        entity_id: `sensor.unical_alexa_announcement_${a.id}`,
+        state: a.isSent ? 'sent' : 'scheduled',
+        attributes: {
+          friendly_name: `UniCal Alexa: ${a.message.slice(0, 40)}`,
+          message: a.message,
+          scheduled_at: a.scheduledAt?.toISOString(),
+          repeat_type: a.repeatType,
+          is_enabled: a.isEnabled,
+          last_sent: a.lastSentAt?.toISOString() || null,
+        },
+      }));
+      res.json(entities);
+    } catch (err: any) {
+      res.status(500).json({ message: "Failed to list entities" });
+    }
+  });
+
+  // Scheduled Alexa announcement checker (runs every 30 seconds)
+  const checkScheduledAlexaAnnouncements = async () => {
+    try {
+      const { toZonedTime } = await import("date-fns-tz");
+      const nowET = toZonedTime(new Date(), "America/Toronto");
+      const all = await db.select().from(scheduledAlexaAnnouncements).where(eq(scheduledAlexaAnnouncements.isEnabled, true));
+      for (const ann of all) {
+        const scheduledET = toZonedTime(ann.scheduledAt, "America/Toronto");
+        const diffMs = nowET.getTime() - scheduledET.getTime();
+        if (diffMs < 0 || diffMs > 120000) continue;
+        const sentKey = `alexa-sched-${ann.id}-${scheduledET.toISOString().slice(0, 16)}`;
+        if ((global as any).__alexaSentKeys?.has(sentKey)) continue;
+        if (!(global as any).__alexaSentKeys) (global as any).__alexaSentKeys = new Set();
+        (global as any).__alexaSentKeys.add(sentKey);
+        console.log(`[Alexa Scheduler] Sending announcement ${ann.id}: "${ann.message.slice(0, 50)}..."`);
+        const result = await sendEchoVoiceAnnouncement(ann.message);
+        if (result.success) {
+          await db.update(scheduledAlexaAnnouncements).set({ lastSentAt: new Date(), isSent: true }).where(eq(scheduledAlexaAnnouncements.id, ann.id));
+          if (ann.repeatType && ann.repeatType !== 'none') {
+            let nextDate = new Date(ann.scheduledAt);
+            const addDays = (d: Date, n: number) => { const r = new Date(d); r.setDate(r.getDate() + n); return r; };
+            const addMonths = (d: Date, n: number) => { const r = new Date(d); r.setMonth(r.getMonth() + n); return r; };
+            if (ann.repeatType === 'daily') nextDate = addDays(nextDate, 1);
+            else if (ann.repeatType === 'weekly') nextDate = addDays(nextDate, 7);
+            else if (ann.repeatType === 'monthly') nextDate = addMonths(nextDate, 1);
+            else if (ann.repeatType === 'yearly') nextDate = addMonths(nextDate, 12);
+            else if (ann.repeatType === 'custom' && ann.repeatInterval) {
+              const unit = ann.repeatIntervalUnit || 'days';
+              if (unit === 'days') nextDate = addDays(nextDate, ann.repeatInterval);
+              else if (unit === 'weeks') nextDate = addDays(nextDate, ann.repeatInterval * 7);
+              else if (unit === 'months') nextDate = addMonths(nextDate, ann.repeatInterval);
+              else if (unit === 'years') nextDate = addMonths(nextDate, ann.repeatInterval * 12);
+            }
+            if (ann.repeatEndDate && nextDate > ann.repeatEndDate) {
+              console.log(`[Alexa Scheduler] Announcement ${ann.id} repeat ended`);
+            } else {
+              await db.update(scheduledAlexaAnnouncements).set({ scheduledAt: nextDate, isSent: false }).where(eq(scheduledAlexaAnnouncements.id, ann.id));
+              console.log(`[Alexa Scheduler] Next occurrence for ${ann.id}: ${nextDate.toISOString()}`);
+            }
+          }
+        }
+      }
+    } catch (err: any) {
+      console.error("[Alexa Scheduler] Error:", err.message);
+    }
+  };
+  setInterval(checkScheduledAlexaAnnouncements, 30000);
+  console.log("=== [Alexa Scheduler] Started (checking every 30 seconds) ===");
+
+  // ============= HA AUTOMATIONS CRUD =============
+  app.get("/api/ha-automations", async (_req, res) => {
+    try {
+      const all = await db.select().from(haAutomations).orderBy(haAutomations.createdAt);
+      res.json(all);
+    } catch (err: any) {
+      res.status(500).json({ message: "Failed to fetch automations" });
+    }
+  });
+
+  app.post("/api/ha-automations", async (req, res) => {
+    try {
+      const { name, description, triggers, conditions, actions, isEnabled } = req.body;
+      if (!name) return res.status(400).json({ message: "Name is required" });
+      const [created] = await db.insert(haAutomations).values({
+        name,
+        description: description || null,
+        triggers: JSON.stringify(triggers || []),
+        conditions: JSON.stringify(conditions || []),
+        actions: JSON.stringify(actions || []),
+        isEnabled: isEnabled !== false,
+      }).returning();
+      res.json(created);
+    } catch (err: any) {
+      console.error("Error creating HA automation:", err.message);
+      res.status(500).json({ message: "Failed to create automation" });
+    }
+  });
+
+  app.patch("/api/ha-automations/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updates: any = {};
+      if (req.body.name !== undefined) updates.name = req.body.name;
+      if (req.body.description !== undefined) updates.description = req.body.description;
+      if (req.body.triggers !== undefined) updates.triggers = JSON.stringify(req.body.triggers);
+      if (req.body.conditions !== undefined) updates.conditions = JSON.stringify(req.body.conditions);
+      if (req.body.actions !== undefined) updates.actions = JSON.stringify(req.body.actions);
+      if (req.body.isEnabled !== undefined) updates.isEnabled = req.body.isEnabled;
+      const [updated] = await db.update(haAutomations).set(updates).where(eq(haAutomations.id, id)).returning();
+      res.json(updated);
+    } catch (err: any) {
+      res.status(500).json({ message: "Failed to update automation" });
+    }
+  });
+
+  app.delete("/api/ha-automations/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await db.delete(haAutomations).where(eq(haAutomations.id, id));
+      res.json({ ok: true });
+    } catch (err: any) {
+      res.status(500).json({ message: "Failed to delete automation" });
+    }
+  });
+
+  app.post("/api/ha-automations/:id/trigger", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const [auto] = await db.select().from(haAutomations).where(eq(haAutomations.id, id));
+      if (!auto) return res.status(404).json({ message: "Not found" });
+      const actionsList = JSON.parse(auto.actions || '[]');
+      const results: any[] = [];
+      for (const action of actionsList) {
+        if (action.type === 'call_service') {
+          try {
+            const haUrl = process.env.HA_URL || 'http://homeassistant.local:8123';
+            const haToken = process.env.HA_TOKEN;
+            if (!haToken) { results.push({ action, error: 'No HA token configured' }); continue; }
+            const resp = await fetch(`${haUrl}/api/services/${action.domain}/${action.service}`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${haToken}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ entity_id: action.entityId, ...(action.serviceData || {}) }),
+            });
+            results.push({ action, success: resp.ok, status: resp.status });
+          } catch (e: any) { results.push({ action, error: e.message }); }
+        } else if (action.type === 'delay') {
+          results.push({ action, note: 'Delay actions are handled by HA natively' });
+        } else if (action.type === 'announce') {
+          const r = await sendEchoVoiceAnnouncement(action.message || 'Automation triggered');
+          results.push({ action, ...r });
+        }
+      }
+      await db.update(haAutomations).set({ lastTriggered: new Date() }).where(eq(haAutomations.id, id));
+      res.json({ results });
+    } catch (err: any) {
+      res.status(500).json({ message: "Failed to trigger automation" });
+    }
+  });
+
+  app.get("/api/ha/entities", async (_req, res) => {
+    try {
+      const haUrl = process.env.HA_URL || 'http://homeassistant.local:8123';
+      const haToken = process.env.HA_TOKEN;
+      if (!haToken) return res.json([]);
+      const resp = await fetch(`${haUrl}/api/states`, {
+        headers: { 'Authorization': `Bearer ${haToken}`, 'Content-Type': 'application/json' },
+      });
+      if (!resp.ok) return res.json([]);
+      const states = await resp.json();
+      res.json(states.map((s: any) => ({
+        entityId: s.entity_id,
+        state: s.state,
+        friendlyName: s.attributes?.friendly_name || s.entity_id,
+        domain: s.entity_id.split('.')[0],
+      })));
+    } catch (err: any) {
+      res.json([]);
+    }
+  });
+
+  app.get("/api/ha/services", async (_req, res) => {
+    try {
+      const haUrl = process.env.HA_URL || 'http://homeassistant.local:8123';
+      const haToken = process.env.HA_TOKEN;
+      if (!haToken) return res.json([]);
+      const resp = await fetch(`${haUrl}/api/services`, {
+        headers: { 'Authorization': `Bearer ${haToken}`, 'Content-Type': 'application/json' },
+      });
+      if (!resp.ok) return res.json([]);
+      const services = await resp.json();
+      res.json(services);
+    } catch (err: any) {
+      res.json([]);
+    }
   });
 
   // POST /api/ha-push/reminder - Send a push notification reminder for a specific task via Home Assistant

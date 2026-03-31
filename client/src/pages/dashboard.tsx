@@ -1329,6 +1329,18 @@ export default function Dashboard() {
   const [isScholarshipsOpen, setIsScholarshipsOpen] = useState(false);
   const [isKeyContactsOpen, setIsKeyContactsOpen] = useState(false);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+  const [isAlexaDialogOpen, setIsAlexaDialogOpen] = useState(false);
+  const [alexaMessage, setAlexaMessage] = useState('');
+  const [alexaDate, setAlexaDate] = useState('');
+  const [alexaHour, setAlexaHour] = useState('09');
+  const [alexaMinute, setAlexaMinute] = useState('00');
+  const [alexaRepeatType, setAlexaRepeatType] = useState('none');
+  const [alexaRepeatInterval, setAlexaRepeatInterval] = useState(1);
+  const [alexaRepeatIntervalUnit, setAlexaRepeatIntervalUnit] = useState('days');
+  const [alexaRepeatEndDate, setAlexaRepeatEndDate] = useState('');
+  const [alexaSwipeStates, setAlexaSwipeStates] = useState<Record<number, number>>({});
+  const alexaSwipeStartRef = useRef<{ id: number; x: number } | null>(null);
+  const ALEXA_MAX_CHARS = 250;
   const [dupSearching, setDupSearching] = useState(false);
   const [dupResults, setDupResults] = useState<any[] | null>(null);
   const [dupDeleting, setDupDeleting] = useState(false);
@@ -1869,6 +1881,15 @@ export default function Dashboard() {
   const [isResizingFlyout2, setIsResizingFlyout2] = useState(false);
   const [isResizingWeeksFlyout, setIsResizingWeeksFlyout] = useState(false);
   const [isTodoFlyoutOpen, setIsTodoFlyoutOpen] = useState(false);
+  const [todoActiveTab, setTodoActiveTab] = useState<'reminders' | 'automations'>('reminders');
+  const [showAutomationWizard, setShowAutomationWizard] = useState(false);
+  const [wizardStep, setWizardStep] = useState(0);
+  const [wizardName, setWizardName] = useState('');
+  const [wizardDescription, setWizardDescription] = useState('');
+  const [wizardTriggers, setWizardTriggers] = useState<any[]>([]);
+  const [wizardConditions, setWizardConditions] = useState<any[]>([]);
+  const [wizardActions, setWizardActions] = useState<any[]>([]);
+  const [editingAutomationId, setEditingAutomationId] = useState<number | null>(null);
   const [isProjectsFlyoutOpen, setIsProjectsFlyoutOpen] = useState(false);
   const [flyoutZOrder, setFlyoutZOrder] = useState<string[]>(['files', 'projects', 'todo', 'addTask']);
   
@@ -5985,6 +6006,148 @@ export default function Dashboard() {
       queryClient.invalidateQueries({ queryKey: ['/api/announcements'] });
     },
   });
+  const scheduledAlexaQuery = useQuery<any[]>({ queryKey: ['/api/scheduled-alexa'] });
+  const scheduledAlexaList = scheduledAlexaQuery.data || [];
+  const createAlexaMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const res = await apiRequest('POST', '/api/scheduled-alexa', data);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/scheduled-alexa'] });
+      setAlexaMessage('');
+      setAlexaDate('');
+      setAlexaHour('09');
+      setAlexaMinute('00');
+      setAlexaRepeatType('none');
+      setAlexaRepeatInterval(1);
+      setAlexaRepeatIntervalUnit('days');
+      setAlexaRepeatEndDate('');
+    },
+  });
+  const deleteAlexaMutation = useMutation({
+    mutationFn: async (id: number) => { await apiRequest('DELETE', `/api/scheduled-alexa/${id}`); },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['/api/scheduled-alexa'] }); },
+  });
+  const toggleAlexaMutation = useMutation({
+    mutationFn: async ({ id, isEnabled }: { id: number; isEnabled: boolean }) => {
+      const res = await apiRequest('PATCH', `/api/scheduled-alexa/${id}`, { isEnabled });
+      return res.json();
+    },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['/api/scheduled-alexa'] }); },
+  });
+  const sendAlexaNowMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await apiRequest('POST', `/api/scheduled-alexa/${id}/send-now`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/scheduled-alexa'] });
+      toast({ title: "Sent", description: "Announcement sent to Alexa." });
+    },
+    onError: () => { toast({ title: "Error", description: "Failed to send announcement.", variant: "destructive" }); },
+  });
+  const sendAlexaImmediateMutation = useMutation({
+    mutationFn: async (message: string) => {
+      const res = await apiRequest('POST', '/api/ha-announce', { message });
+      return res.json();
+    },
+    onSuccess: () => { toast({ title: "Sent", description: "Announcement sent to Alexa now." }); },
+    onError: () => { toast({ title: "Error", description: "Failed to send.", variant: "destructive" }); },
+  });
+
+  const haAutomationsQuery = useQuery<any[]>({ queryKey: ['/api/ha-automations'] });
+  const haAutomationsList = haAutomationsQuery.data || [];
+  const createHaAutomationMutation = useMutation({
+    mutationFn: async (data: any) => { const res = await apiRequest('POST', '/api/ha-automations', data); return res.json(); },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['/api/ha-automations'] }); },
+  });
+  const updateHaAutomationMutation = useMutation({
+    mutationFn: async ({ id, ...data }: any) => { const res = await apiRequest('PATCH', `/api/ha-automations/${id}`, data); return res.json(); },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['/api/ha-automations'] }); },
+  });
+  const deleteHaAutomationMutation = useMutation({
+    mutationFn: async (id: number) => { await apiRequest('DELETE', `/api/ha-automations/${id}`); },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['/api/ha-automations'] }); },
+  });
+  const triggerHaAutomationMutation = useMutation({
+    mutationFn: async (id: number) => { const res = await apiRequest('POST', `/api/ha-automations/${id}/trigger`); return res.json(); },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/ha-automations'] });
+      toast({ title: "Triggered", description: "Automation triggered successfully." });
+    },
+    onError: () => { toast({ title: "Error", description: "Failed to trigger automation.", variant: "destructive" }); },
+  });
+
+  const haEntitiesQuery = useQuery<any[]>({ queryKey: ['/api/ha/entities'], refetchInterval: 60000 });
+  const haEntities = haEntitiesQuery.data || [];
+  const haServicesQuery = useQuery<any[]>({ queryKey: ['/api/ha/services'], refetchInterval: 60000 });
+  const haServices = haServicesQuery.data || [];
+
+  const resetAutomationWizard = () => {
+    setWizardStep(0);
+    setWizardName('');
+    setWizardDescription('');
+    setWizardTriggers([]);
+    setWizardConditions([]);
+    setWizardActions([]);
+    setEditingAutomationId(null);
+    setShowAutomationWizard(false);
+  };
+
+  const saveAutomation = () => {
+    if (!wizardName.trim()) return;
+    const data = {
+      name: wizardName.trim(),
+      description: wizardDescription.trim() || null,
+      triggers: wizardTriggers,
+      conditions: wizardConditions,
+      actions: wizardActions,
+    };
+    if (editingAutomationId) {
+      updateHaAutomationMutation.mutate({ id: editingAutomationId, ...data }, { onSuccess: resetAutomationWizard });
+    } else {
+      createHaAutomationMutation.mutate(data, { onSuccess: resetAutomationWizard });
+    }
+  };
+
+  const editAutomation = (auto: any) => {
+    setWizardName(auto.name);
+    setWizardDescription(auto.description || '');
+    setWizardTriggers(JSON.parse(auto.triggers || '[]'));
+    setWizardConditions(JSON.parse(auto.conditions || '[]'));
+    setWizardActions(JSON.parse(auto.actions || '[]'));
+    setEditingAutomationId(auto.id);
+    setWizardStep(0);
+    setShowAutomationWizard(true);
+  };
+
+  const TRIGGER_TYPES = [
+    { value: 'time', label: 'Time', icon: '🕐', desc: 'Trigger at a specific time' },
+    { value: 'state', label: 'State Change', icon: '🔄', desc: 'When a device state changes' },
+    { value: 'sun', label: 'Sun', icon: '☀️', desc: 'At sunrise or sunset' },
+    { value: 'interval', label: 'Interval', icon: '⏱️', desc: 'Every X minutes/hours' },
+    { value: 'webhook', label: 'Webhook', icon: '🔗', desc: 'External HTTP trigger' },
+  ];
+
+  const ACTION_TYPES = [
+    { value: 'call_service', label: 'Call Service', icon: '⚡', desc: 'Call a Home Assistant service' },
+    { value: 'delay', label: 'Delay', icon: '⏳', desc: 'Wait before next action' },
+    { value: 'announce', label: 'Announce', icon: '🔊', desc: 'Send Alexa announcement' },
+    { value: 'condition_check', label: 'Condition Check', icon: '🔀', desc: 'Only continue if condition met' },
+  ];
+
+  const CONDITION_TYPES = [
+    { value: 'state', label: 'State', icon: '🎯', desc: 'Device is in a specific state' },
+    { value: 'time', label: 'Time Window', icon: '⏰', desc: 'Only during time range' },
+    { value: 'day', label: 'Day of Week', icon: '📅', desc: 'Only on certain days' },
+  ];
+
+  const HA_DOMAINS = [
+    'light', 'switch', 'media_player', 'climate', 'cover', 'fan', 'lock', 'alarm_control_panel',
+    'automation', 'scene', 'script', 'input_boolean', 'input_number', 'timer', 'counter', 'notify',
+  ];
+
   const [dismissedTodayTaskIds, setDismissedTodayTaskIds] = useState<Set<string>>(() => {
     try { const s = localStorage.getItem('dismissedTodayTaskIds'); if (s) { const parsed = JSON.parse(s); return new Set(parsed.filter((x: any) => typeof x === 'string')); } } catch {}
     return new Set();
@@ -12535,6 +12698,30 @@ export default function Dashboard() {
             </Button>
           </div>
 
+          {/* Alexa Announcements Button */}
+          <div className="pill-button-hover" style={{ 
+            marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+            border: '1.5px solid rgba(255,255,255,0.35)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
+              style={{ background: 'transparent' }}
+              data-testid="button-alexa-announce"
+              title="Alexa Announcements"
+              onClick={() => {
+                triggerButtonGlow('alexa');
+                setIsAlexaDialogOpen(true);
+              }}
+            >
+              <Volume2 className="text-white" style={{ height: '22px', width: '22px' }} />
+            </Button>
+          </div>
+
           {/* Quick Notes Button */}
           <div className="pill-button-hover" style={{ 
             marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
@@ -13558,6 +13745,289 @@ export default function Dashboard() {
                 data-testid="button-save-ticker-dialog"
               >
                 Save
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Alexa Announcements Dialog */}
+      {isAlexaDialogOpen && (
+        <div className="fixed inset-0 flex items-start justify-center pt-[50px]" style={{ zIndex: 10010, backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={(e) => { if (e.target === e.currentTarget) setIsAlexaDialogOpen(false); }} data-testid="alexa-dialog-overlay">
+          <div className="sm:rounded-lg shadow-2xl w-[520px] max-h-[600px] flex flex-col overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }} data-testid="alexa-dialog">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+              <span className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>ALEXA ANNOUNCEMENTS</span>
+              <span className="text-white/40 text-[10px]">{scheduledAlexaList.length} scheduled</span>
+            </div>
+
+            {/* Compose area */}
+            <div className="px-4 py-3 border-b border-white/15 flex-shrink-0">
+              <div className="flex flex-col gap-2">
+                <div className="relative">
+                  <textarea
+                    value={alexaMessage}
+                    onChange={(e) => { if (e.target.value.length <= ALEXA_MAX_CHARS) setAlexaMessage(e.target.value); }}
+                    maxLength={ALEXA_MAX_CHARS}
+                    placeholder="Type announcement message..."
+                    rows={2}
+                    className="w-full text-white text-[12px] px-3 py-2 rounded resize-none focus:outline-none placeholder:text-white/30"
+                    style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                    data-testid="alexa-message-input"
+                  />
+                  <span className={`absolute bottom-1.5 right-2 text-[9px] ${alexaMessage.length >= ALEXA_MAX_CHARS ? 'text-red-400' : 'text-white/30'}`}>{alexaMessage.length}/{ALEXA_MAX_CHARS}</span>
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <input
+                    type="date"
+                    value={alexaDate}
+                    onChange={(e) => setAlexaDate(e.target.value)}
+                    className="flex-1 text-white text-[11px] px-2 py-1.5 rounded focus:outline-none [color-scheme:dark]"
+                    style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                    data-testid="alexa-date-input"
+                  />
+                  <select
+                    value={alexaHour}
+                    onChange={(e) => setAlexaHour(e.target.value)}
+                    className="w-[62px] text-white text-[11px] px-1 py-1.5 rounded focus:outline-none [color-scheme:dark]"
+                    style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                    data-testid="alexa-hour-select"
+                  >
+                    {Array.from({ length: 24 }, (_, i) => (
+                      <option key={i} value={i.toString().padStart(2, '0')} style={{ color: 'black' }}>{i === 0 ? '12 AM' : i < 12 ? `${i} AM` : i === 12 ? '12 PM' : `${i-12} PM`}</option>
+                    ))}
+                  </select>
+                  <select
+                    value={alexaMinute}
+                    onChange={(e) => setAlexaMinute(e.target.value)}
+                    className="w-[50px] text-white text-[11px] px-1 py-1.5 rounded focus:outline-none [color-scheme:dark]"
+                    style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                    data-testid="alexa-minute-select"
+                  >
+                    {Array.from({ length: 60 }, (_, i) => (
+                      <option key={i} value={i.toString().padStart(2, '0')} style={{ color: 'black' }}>{i.toString().padStart(2, '0')}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Repeat dropdown */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-white/40 text-[10px] w-[42px] shrink-0">Repeat:</span>
+                  <select
+                    value={alexaRepeatType}
+                    onChange={(e) => setAlexaRepeatType(e.target.value)}
+                    className="flex-1 text-white text-[11px] px-2 py-1.5 rounded focus:outline-none [color-scheme:dark]"
+                    style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                    data-testid="alexa-repeat-type"
+                  >
+                    <option value="none" style={{ color: 'black' }}>No repeat</option>
+                    <option value="daily" style={{ color: 'black' }}>Daily</option>
+                    <option value="weekly" style={{ color: 'black' }}>Weekly</option>
+                    <option value="monthly" style={{ color: 'black' }}>Monthly</option>
+                    <option value="yearly" style={{ color: 'black' }}>Yearly</option>
+                    <option value="custom" style={{ color: 'black' }}>Custom...</option>
+                  </select>
+                  {alexaRepeatType !== 'none' && (
+                    <input
+                      type="date"
+                      value={alexaRepeatEndDate}
+                      onChange={(e) => setAlexaRepeatEndDate(e.target.value)}
+                      placeholder="End date"
+                      className="w-[130px] text-white text-[10px] px-2 py-1.5 rounded focus:outline-none [color-scheme:dark]"
+                      style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                      title="Repeat end date (optional)"
+                      data-testid="alexa-repeat-end"
+                    />
+                  )}
+                </div>
+                {alexaRepeatType === 'custom' && (
+                  <div className="flex items-center gap-1.5 pl-[42px]">
+                    <span className="text-white/40 text-[10px]">Every</span>
+                    <input
+                      type="number"
+                      min={1}
+                      value={alexaRepeatInterval}
+                      onChange={(e) => setAlexaRepeatInterval(parseInt(e.target.value) || 1)}
+                      className="w-[50px] text-white text-[11px] px-2 py-1 rounded focus:outline-none"
+                      style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                      data-testid="alexa-repeat-interval"
+                    />
+                    <select
+                      value={alexaRepeatIntervalUnit}
+                      onChange={(e) => setAlexaRepeatIntervalUnit(e.target.value)}
+                      className="text-white text-[11px] px-2 py-1.5 rounded focus:outline-none [color-scheme:dark]"
+                      style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                      data-testid="alexa-repeat-unit"
+                    >
+                      <option value="days" style={{ color: 'black' }}>days</option>
+                      <option value="weeks" style={{ color: 'black' }}>weeks</option>
+                      <option value="months" style={{ color: 'black' }}>months</option>
+                      <option value="years" style={{ color: 'black' }}>years</option>
+                    </select>
+                  </div>
+                )}
+
+                <div className="flex gap-1.5">
+                  <button
+                    onClick={() => {
+                      if (!alexaMessage.trim()) return;
+                      if (alexaDate) {
+                        createAlexaMutation.mutate({
+                          message: alexaMessage.trim(),
+                          scheduledAt: new Date(`${alexaDate}T${alexaHour}:${alexaMinute}:00`).toISOString(),
+                          repeatType: alexaRepeatType,
+                          repeatInterval: alexaRepeatType === 'custom' ? alexaRepeatInterval : null,
+                          repeatIntervalUnit: alexaRepeatType === 'custom' ? alexaRepeatIntervalUnit : null,
+                          repeatEndDate: alexaRepeatEndDate || null,
+                        });
+                      } else {
+                        sendAlexaImmediateMutation.mutate(alexaMessage.trim());
+                        setAlexaMessage('');
+                      }
+                    }}
+                    disabled={!alexaMessage.trim() || createAlexaMutation.isPending || sendAlexaImmediateMutation.isPending}
+                    className="flex-1 disabled:opacity-40 text-white text-[11px] font-semibold px-3 py-2 rounded transition-colors hover:brightness-110"
+                    style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.15)', border: '1px solid rgba(255,255,255,0.2)' }}
+                    data-testid="alexa-schedule-button"
+                  >
+                    {alexaDate ? '+ Schedule' : 'Send Now'}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Scheduled announcements list with swipe */}
+            <div className="flex-1 overflow-y-auto px-4 py-2" style={{ scrollbarWidth: 'thin' }}>
+              {scheduledAlexaList.length === 0 ? (
+                <div className="text-white/40 text-[12px] text-center py-6">No scheduled announcements</div>
+              ) : (
+                scheduledAlexaList.map((ann: any) => {
+                  const swipeX = alexaSwipeStates[ann.id] || 0;
+                  const showDelete = swipeX < -60;
+                  const showSave = swipeX > 60;
+                  return (
+                    <div
+                      key={ann.id}
+                      className="relative overflow-hidden rounded-lg mb-1.5"
+                      data-testid={`alexa-item-${ann.id}`}
+                    >
+                      {/* Delete background (swipe left) */}
+                      <div className="absolute inset-0 flex items-center justify-end px-4 rounded-lg" style={{ background: 'rgba(239,68,68,0.3)' }}>
+                        <span className="text-red-300 text-[11px] font-semibold">Delete</span>
+                      </div>
+                      {/* Save/keep background (swipe right) */}
+                      <div className="absolute inset-0 flex items-center justify-start px-4 rounded-lg" style={{ background: 'rgba(34,197,94,0.3)' }}>
+                        <span className="text-green-300 text-[11px] font-semibold">{ann.isEnabled ? 'Disable' : 'Enable'}</span>
+                      </div>
+                      {/* Main item */}
+                      <div
+                        className="relative flex items-start gap-2 px-3 py-2 border border-white/10 rounded-lg transition-transform"
+                        style={{
+                          background: ann.isEnabled ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.02)',
+                          transform: `translateX(${swipeX}px)`,
+                          opacity: ann.isEnabled ? 1 : 0.5,
+                        }}
+                        onTouchStart={(e) => {
+                          alexaSwipeStartRef.current = { id: ann.id, x: e.touches[0].clientX };
+                        }}
+                        onTouchMove={(e) => {
+                          if (!alexaSwipeStartRef.current || alexaSwipeStartRef.current.id !== ann.id) return;
+                          const dx = e.touches[0].clientX - alexaSwipeStartRef.current.x;
+                          setAlexaSwipeStates(prev => ({ ...prev, [ann.id]: Math.max(-120, Math.min(120, dx)) }));
+                        }}
+                        onTouchEnd={() => {
+                          const dx = alexaSwipeStates[ann.id] || 0;
+                          if (dx < -60) {
+                            deleteAlexaMutation.mutate(ann.id);
+                          } else if (dx > 60) {
+                            toggleAlexaMutation.mutate({ id: ann.id, isEnabled: !ann.isEnabled });
+                          }
+                          setAlexaSwipeStates(prev => ({ ...prev, [ann.id]: 0 }));
+                          alexaSwipeStartRef.current = null;
+                        }}
+                        onMouseDown={(e) => {
+                          alexaSwipeStartRef.current = { id: ann.id, x: e.clientX };
+                          const onMove = (ev: MouseEvent) => {
+                            if (!alexaSwipeStartRef.current || alexaSwipeStartRef.current.id !== ann.id) return;
+                            const dx = ev.clientX - alexaSwipeStartRef.current.x;
+                            setAlexaSwipeStates(prev => ({ ...prev, [ann.id]: Math.max(-120, Math.min(120, dx)) }));
+                          };
+                          const onUp = () => {
+                            const dx = alexaSwipeStates[ann.id] || 0;
+                            if (dx < -60) {
+                              deleteAlexaMutation.mutate(ann.id);
+                            } else if (dx > 60) {
+                              toggleAlexaMutation.mutate({ id: ann.id, isEnabled: !ann.isEnabled });
+                            }
+                            setAlexaSwipeStates(prev => ({ ...prev, [ann.id]: 0 }));
+                            alexaSwipeStartRef.current = null;
+                            window.removeEventListener('mousemove', onMove);
+                            window.removeEventListener('mouseup', onUp);
+                          };
+                          window.addEventListener('mousemove', onMove);
+                          window.addEventListener('mouseup', onUp);
+                        }}
+                      >
+                        {/* Toggle */}
+                        <button
+                          onClick={(e) => { e.stopPropagation(); toggleAlexaMutation.mutate({ id: ann.id, isEnabled: !ann.isEnabled }); }}
+                          className="mt-0.5 shrink-0"
+                          data-testid={`alexa-toggle-${ann.id}`}
+                        >
+                          <div className={`w-[30px] h-[16px] rounded-full relative transition-colors ${ann.isEnabled ? 'bg-cyan-500' : 'bg-white/20'}`}>
+                            <div className={`absolute top-[2px] w-[12px] h-[12px] rounded-full bg-white shadow transition-all ${ann.isEnabled ? 'left-[16px]' : 'left-[2px]'}`} />
+                          </div>
+                        </button>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-white text-[11px] leading-tight break-words">{ann.message}</p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <span className="text-white/40 text-[9px]">
+                              {ann.scheduledAt ? new Date(ann.scheduledAt).toLocaleString('en-US', { timeZone: 'America/Toronto', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }) : ''}
+                            </span>
+                            {ann.repeatType && ann.repeatType !== 'none' && (
+                              <span className="text-cyan-400/60 text-[9px]">
+                                {ann.repeatType === 'custom' ? `Every ${ann.repeatInterval || 1} ${ann.repeatIntervalUnit || 'days'}` : ann.repeatType}
+                              </span>
+                            )}
+                            {ann.isSent && <span className="text-green-400/50 text-[9px]">sent</span>}
+                          </div>
+                        </div>
+                        {/* Send now button */}
+                        <button
+                          onClick={(e) => { e.stopPropagation(); sendAlexaNowMutation.mutate(ann.id); }}
+                          className="shrink-0 text-white/30 hover:text-cyan-400 transition-colors mt-0.5"
+                          title="Send now"
+                          data-testid={`alexa-send-now-${ann.id}`}
+                        >
+                          <Speaker className="h-3.5 w-3.5" />
+                        </button>
+                        {/* Delete button (non-swipe fallback) */}
+                        <button
+                          onClick={(e) => { e.stopPropagation(); deleteAlexaMutation.mutate(ann.id); }}
+                          className="shrink-0 text-white/20 hover:text-red-400 transition-colors mt-0.5"
+                          title="Delete"
+                          data-testid={`alexa-delete-${ann.id}`}
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
+              <span className="text-white/30 text-[9px]">Swipe left to delete, right to toggle</span>
+              <Button
+                variant="outline"
+                className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 w-[80px]"
+                style={{ fontSize: '12px' }}
+                onClick={() => setIsAlexaDialogOpen(false)}
+                data-testid="alexa-dialog-close"
+              >
+                Close
               </Button>
             </div>
           </div>
@@ -25895,258 +26365,596 @@ export default function Dashboard() {
         </div>
           );
         })()}
-        {/* To Do Bottom Flyout - Burst from bottom */}
+        {/* To Do / Automations Full Page - Degree Tracker sized */}
         <div 
           className={`fixed transition-[opacity,transform] ease-out ${isTodoFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
           style={{ 
-            width: '900px', 
-            height: '85vh',
-            top: '50%',
             left: '50%',
-            transform: isTodoFlyoutOpen ? 'translate(-50%, -50%) scale(1)' : 'translate(-50%, -50%) scale(0)',
-            transformOrigin: '50% calc(50vh + 42.5vh)',
+            transform: isTodoFlyoutOpen ? 'translateX(-50%) scale(1)' : 'translateX(-50%) scale(0)',
+            top: 'calc(3vh - 6px)',
+            width: 'calc(96vw + 24px)',
+            maxWidth: 'calc(96vw + 24px)',
+            bottom: 'calc(3vh + 32px)',
+            transformOrigin: '50% 100%',
             transitionDuration: '400ms',
             zIndex: getFlyoutZIndex('todo')
           }}
           onClick={() => bringFlyoutToFront('todo')}
         >
-          {/* Flyout content */}
           <section 
             className="h-full overflow-hidden flex flex-col rounded-xl text-white" 
             style={{
               background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              boxShadow: '0 -10px 40px rgba(0,0,0,0.3)'
+              border: '1.5px solid rgba(255, 255, 255, 0.35)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)'
             }}
             data-testid="section-todo"
           >
+            {/* Header with tabs */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
-              <div className="flex items-center gap-2">
-                <Bell className="text-white" style={{ width: '15px', height: '15px' }} />
-                <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
-                  REMINDERS ({(allTasks || []).filter(t => t.type === 'reminder' && !t.isCompleted).length})
-                </h2>
-              </div>
-            </div>
-            <div className="flex-1 p-4 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
-              <div className="mb-3 flex items-end gap-2">
-                <div className="flex-1">
-                  <input
-                    type="text"
-                    className="w-full text-xs px-2 py-1.5 rounded bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-1 focus:ring-white/30"
-                    placeholder="New reminder..."
-                    value={newReminderTitle}
-                    onChange={(e) => setNewReminderTitle(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && newReminderTitle.trim()) {
-                        const tomorrow = new Date();
-                        tomorrow.setDate(tomorrow.getDate() + 1);
-                        tomorrow.setHours(9, 0, 0, 0);
-                        fetch('/api/tasks', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          credentials: 'include',
-                          body: JSON.stringify({
-                            title: newReminderTitle.trim(),
-                            type: 'reminder',
-                            dueDate: newReminderDueDate || tomorrow.toISOString(),
-                            weekNumber: getWeekNumber(newReminderDueDate ? new Date(newReminderDueDate) : tomorrow),
-                            isAcknowledged: false,
-                            priority: 'medium',
-                          }),
-                        }).then(() => {
-                          queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
-                          setNewReminderTitle('');
-                          setNewReminderDueDate('');
-                        });
-                      }
-                    }}
-                    data-testid="input-new-reminder"
-                  />
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <CheckSquare className="text-white" style={{ width: '15px', height: '15px' }} />
+                  <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
+                    TO DO
+                  </h2>
                 </div>
-                <div>
-                  <input
-                    type="datetime-local"
-                    className="text-xs px-2 py-1.5 rounded bg-white/10 text-white focus:outline-none focus:ring-1 focus:ring-white/30"
-                    style={{ colorScheme: 'dark', fontSize: '10px' }}
-                    value={newReminderDueDate}
-                    onChange={(e) => setNewReminderDueDate(e.target.value)}
-                    data-testid="input-reminder-due-date"
-                  />
+                <div className="flex rounded overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.25)' }}>
+                  <button
+                    className={`px-4 py-1 text-[11px] font-medium transition-colors ${todoActiveTab === 'reminders' ? 'text-white' : 'text-white/50 hover:text-white/70'}`}
+                    style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif", background: todoActiveTab === 'reminders' ? 'rgba(255,255,255,0.15)' : 'transparent' }}
+                    onClick={() => setTodoActiveTab('reminders')}
+                    data-testid="tab-reminders"
+                  >
+                    Reminders ({(allTasks || []).filter(t => t.type === 'reminder' && !t.isCompleted).length})
+                  </button>
+                  <button
+                    className={`px-4 py-1 text-[11px] font-medium transition-colors ${todoActiveTab === 'automations' ? 'text-white' : 'text-white/50 hover:text-white/70'}`}
+                    style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif", borderLeft: '1px solid rgba(255,255,255,0.25)', background: todoActiveTab === 'automations' ? 'rgba(255,255,255,0.15)' : 'transparent' }}
+                    onClick={() => setTodoActiveTab('automations')}
+                    data-testid="tab-automations"
+                  >
+                    Automations ({haAutomationsList.length})
+                  </button>
                 </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="border !border-white/50 text-white hover:text-white hover:!border-white transition-opacity duration-200 h-7 px-3"
-                  style={{ background: 'rgba(10,15,30,0.85)', boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '11px' }}
-                  disabled={!newReminderTitle.trim()}
-                  onClick={() => {
-                    if (!newReminderTitle.trim()) return;
-                    const tomorrow = new Date();
-                    tomorrow.setDate(tomorrow.getDate() + 1);
-                    tomorrow.setHours(9, 0, 0, 0);
-                    fetch('/api/tasks', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      credentials: 'include',
-                      body: JSON.stringify({
-                        title: newReminderTitle.trim(),
-                        type: 'reminder',
-                        dueDate: newReminderDueDate || tomorrow.toISOString(),
-                        weekNumber: getWeekNumber(newReminderDueDate ? new Date(newReminderDueDate) : tomorrow),
-                        isAcknowledged: false,
-                        priority: 'medium',
-                      }),
-                    }).then(() => {
-                      queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
-                      setNewReminderTitle('');
-                      setNewReminderDueDate('');
-                    });
-                  }}
-                  data-testid="button-add-reminder"
-                >
-                  <Plus className="w-3 h-3 mr-1" />
-                  Add
-                </Button>
               </div>
-              {(() => {
-                const reminderTasks = (allTasks || []).filter(t => t.type === 'reminder').sort((a, b) => {
-                  if (a.isCompleted !== b.isCompleted) return a.isCompleted ? 1 : -1;
-                  return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
-                });
-                if (reminderTasks.length === 0) {
-                  return (
-                    <div className="flex items-center justify-center h-32 text-white/40 text-sm">
-                      No reminders yet — add one above
-                    </div>
-                  );
-                }
-                return (
-                  <div className="space-y-2">
-                    {reminderTasks.map(reminder => {
-                      const isOverdue = !reminder.isCompleted && new Date(reminder.dueDate) < new Date();
-                      const isUnacked = !(reminder as any).isAcknowledged;
-                      return (
-                        <div
-                          key={reminder.id}
-                          className={`flex items-center gap-2 p-2 rounded-lg transition-all ${reminder.isCompleted ? 'opacity-50' : ''} ${isUnacked && !reminder.isCompleted ? 'ring-1 ring-red-400/50' : ''}`}
-                          style={{ background: isOverdue ? 'rgba(220, 38, 38, 0.15)' : 'rgba(255, 255, 255, 0.08)' }}
-                          data-testid={`reminder-item-${reminder.id}`}
-                        >
-                          <input
-                            type="checkbox"
-                            className="w-4 h-4 rounded border-white/40 bg-transparent accent-green-500 flex-shrink-0"
-                            checked={!!reminder.isCompleted}
-                            onChange={(e) => {
-                              fetch(`/api/tasks/${reminder.id}/complete`, {
-                                method: 'PATCH',
-                                headers: { 'Content-Type': 'application/json' },
-                                credentials: 'include',
-                                body: JSON.stringify({ isCompleted: e.target.checked }),
-                              }).then(() => {
-                                queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
-                              });
-                            }}
-                            data-testid={`checkbox-reminder-${reminder.id}`}
-                          />
-                          <div className="flex-1 min-w-0">
-                            <div className={`text-xs ${reminder.isCompleted ? 'line-through text-white/50' : 'text-white'}`} data-testid={`text-reminder-title-${reminder.id}`}>
-                              {reminder.title}
-                            </div>
-                            <div className={`text-[10px] flex items-center gap-1 ${isOverdue ? 'text-red-400' : 'text-white/50'}`}>
-                              <Clock className="w-2.5 h-2.5" />
-                              {format(new Date(reminder.dueDate), 'MMM d, yyyy h:mm a')}
-                              {isOverdue && <span className="text-red-400 font-medium">OVERDUE</span>}
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-1 flex-shrink-0">
-                            {isUnacked && !reminder.isCompleted && (
-                              <button
-                                className="text-red-400 hover:text-red-300 transition-colors p-1"
-                                title="Acknowledge"
-                                onClick={() => {
-                                  fetch(`/api/tasks/${reminder.id}`, {
-                                    method: 'PATCH',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    credentials: 'include',
-                                    body: JSON.stringify({ isAcknowledged: true }),
-                                  }).then(() => {
-                                    queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
-                                  });
-                                }}
-                                data-testid={`button-ack-reminder-${reminder.id}`}
-                              >
-                                <BellOff className="h-3 w-3" />
-                              </button>
-                            )}
-                            {!reminder.isCompleted && (
-                              <button
-                                className="text-white/40 hover:text-teal-300 transition-colors p-1"
-                                title="Send email reminder"
-                                onClick={() => {
-                                  fetch('/api/email/reminder', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    credentials: 'include',
-                                    body: JSON.stringify({ taskId: reminder.id }),
-                                  }).then(res => {
-                                    if (res.ok) {
-                                      toast({ title: 'Reminder sent', description: `Email reminder sent for "${reminder.title}"` });
-                                    } else {
-                                      toast({ title: 'Failed', description: 'Could not send reminder email', variant: 'destructive' });
-                                    }
-                                  });
-                                }}
-                                data-testid={`button-email-reminder-${reminder.id}`}
-                              >
-                                <Mail className="h-3 w-3" />
-                              </button>
-                            )}
-                            <button
-                              className="text-white/40 hover:text-white/80 transition-colors p-1"
-                              title="Edit"
-                              onClick={() => {
-                                setEditingTask(reminder);
-                                setIsTodoFlyoutOpen(false);
-                              }}
-                              data-testid={`button-edit-reminder-${reminder.id}`}
-                            >
-                              <Pencil className="h-3 w-3" />
-                            </button>
-                            <button
-                              className="text-white/40 hover:text-red-400 transition-colors p-1"
-                              title="Delete"
-                              onClick={() => {
-                                deleteTaskWithUndo(reminder.id);
-                              }}
-                              data-testid={`button-delete-reminder-${reminder.id}`}
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                );
-              })()}
-            </div>
-            <div className="px-4 py-3 border-t border-white/20 flex items-center justify-end flex-shrink-0" style={{ background: 'rgba(255,255,255,0.08)' }}>
               <Button
                 variant="outline"
                 onClick={() => setIsTodoFlyoutOpen(false)}
-                className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-6 w-[110px]"
-                style={{
-                  boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
-                  fontSize: '12px'
-                }}
-                data-testid="button-close-reminders"
+                className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-7 w-[70px]"
+                style={{ fontSize: '11px' }}
+                data-testid="button-close-todo-page"
               >
                 Close
               </Button>
             </div>
+
+            {/* REMINDERS TAB */}
+            {todoActiveTab === 'reminders' && (
+              <div className="flex-1 p-4 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+                <div className="mb-3 flex items-end gap-2">
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      className="w-full text-xs px-2 py-1.5 rounded bg-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-1 focus:ring-white/30"
+                      placeholder="New reminder..."
+                      value={newReminderTitle}
+                      onChange={(e) => setNewReminderTitle(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && newReminderTitle.trim()) {
+                          const tomorrow = new Date();
+                          tomorrow.setDate(tomorrow.getDate() + 1);
+                          tomorrow.setHours(9, 0, 0, 0);
+                          fetch('/api/tasks', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include',
+                            body: JSON.stringify({
+                              title: newReminderTitle.trim(),
+                              type: 'reminder',
+                              dueDate: newReminderDueDate || tomorrow.toISOString(),
+                              weekNumber: getWeekNumber(newReminderDueDate ? new Date(newReminderDueDate) : tomorrow),
+                              isAcknowledged: false,
+                              priority: 'medium',
+                            }),
+                          }).then(() => {
+                            queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+                            setNewReminderTitle('');
+                            setNewReminderDueDate('');
+                          });
+                        }
+                      }}
+                      data-testid="input-new-reminder"
+                    />
+                  </div>
+                  <div>
+                    <input
+                      type="datetime-local"
+                      className="text-xs px-2 py-1.5 rounded bg-white/10 text-white focus:outline-none focus:ring-1 focus:ring-white/30"
+                      style={{ colorScheme: 'dark', fontSize: '10px' }}
+                      value={newReminderDueDate}
+                      onChange={(e) => setNewReminderDueDate(e.target.value)}
+                      data-testid="input-reminder-due-date"
+                    />
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="border !border-white/50 text-white hover:text-white hover:!border-white transition-opacity duration-200 h-7 px-3"
+                    style={{ background: 'rgba(10,15,30,0.85)', boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '11px' }}
+                    disabled={!newReminderTitle.trim()}
+                    onClick={() => {
+                      if (!newReminderTitle.trim()) return;
+                      const tomorrow = new Date();
+                      tomorrow.setDate(tomorrow.getDate() + 1);
+                      tomorrow.setHours(9, 0, 0, 0);
+                      fetch('/api/tasks', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                          title: newReminderTitle.trim(),
+                          type: 'reminder',
+                          dueDate: newReminderDueDate || tomorrow.toISOString(),
+                          weekNumber: getWeekNumber(newReminderDueDate ? new Date(newReminderDueDate) : tomorrow),
+                          isAcknowledged: false,
+                          priority: 'medium',
+                        }),
+                      }).then(() => {
+                        queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+                        setNewReminderTitle('');
+                        setNewReminderDueDate('');
+                      });
+                    }}
+                    data-testid="button-add-reminder"
+                  >
+                    + Add
+                  </Button>
+                </div>
+                {(() => {
+                  const reminders = (allTasks || []).filter(t => t.type === 'reminder');
+                  const active = reminders.filter(r => !r.isCompleted).sort((a, b) => new Date(a.dueDate || '').getTime() - new Date(b.dueDate || '').getTime());
+                  const completed = reminders.filter(r => r.isCompleted);
+                  return (
+                    <div>
+                      {active.length === 0 && <div className="text-white/40 text-xs text-center py-4">No active reminders</div>}
+                      {active.map(reminder => {
+                        const isPast = reminder.dueDate && new Date(reminder.dueDate) < new Date();
+                        return (
+                          <div key={reminder.id} className={`flex items-center gap-2 px-3 py-2 rounded-lg mb-1.5 border ${isPast ? 'border-red-500/30' : 'border-white/10'}`} style={{ background: 'rgba(255,255,255,0.04)' }} data-testid={`reminder-item-${reminder.id}`}>
+                            <button onClick={() => { fetch(`/api/tasks/${reminder.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ isCompleted: true }) }).then(() => queryClient.invalidateQueries({ queryKey: ['/api/tasks'] })); }} className="shrink-0 text-white/50 hover:text-green-400 transition-colors" data-testid={`button-complete-reminder-${reminder.id}`}>
+                              <CheckSquare className="h-4 w-4" />
+                            </button>
+                            <div className="flex-1 min-w-0">
+                              <p className={`text-[12px] ${isPast ? 'text-red-300' : 'text-white'}`}>{reminder.title}</p>
+                              {reminder.dueDate && <p className="text-white/40 text-[9px]">{new Date(reminder.dueDate).toLocaleString('en-US', { timeZone: 'America/Toronto', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })}</p>}
+                            </div>
+                            {reminder.dueDate && (
+                              <button className="text-white/30 hover:text-cyan-400 transition-colors p-1" title="Send email reminder" onClick={() => { fetch('/api/send-reminder-email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ taskId: reminder.id, title: reminder.title, dueDate: reminder.dueDate }) }); }} data-testid={`button-email-reminder-${reminder.id}`}>
+                                <Mail className="h-3 w-3" />
+                              </button>
+                            )}
+                            <button className="text-white/40 hover:text-white/80 transition-colors p-1" title="Edit" onClick={() => { setEditingTask(reminder); setIsTodoFlyoutOpen(false); }} data-testid={`button-edit-reminder-${reminder.id}`}>
+                              <Pencil className="h-3 w-3" />
+                            </button>
+                            <button className="text-white/40 hover:text-red-400 transition-colors p-1" title="Delete" onClick={() => { deleteTaskWithUndo(reminder.id); }} data-testid={`button-delete-reminder-${reminder.id}`}>
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          </div>
+                        );
+                      })}
+                      {completed.length > 0 && (
+                        <div className="mt-4">
+                          <p className="text-white/30 text-[10px] uppercase tracking-wide mb-1">Completed ({completed.length})</p>
+                          {completed.slice(0, 10).map(reminder => (
+                            <div key={reminder.id} className="flex items-center gap-2 px-3 py-1.5 rounded-lg mb-1 border border-white/5 opacity-50" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                              <CheckSquare className="h-3.5 w-3.5 text-green-400/50 shrink-0" />
+                              <p className="text-[11px] text-white/40 line-through flex-1">{reminder.title}</p>
+                              <button className="text-white/20 hover:text-red-400 transition-colors p-1" onClick={() => deleteTaskWithUndo(reminder.id)}>
+                                <Trash2 className="h-3 w-3" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
+
+            {/* AUTOMATIONS TAB */}
+            {todoActiveTab === 'automations' && (
+              <div className="flex-1 overflow-hidden flex flex-col">
+                {/* Wizard overlay */}
+                {showAutomationWizard ? (
+                  <div className="flex-1 overflow-y-auto p-4" style={{ scrollbarWidth: 'thin' }}>
+                    {/* Wizard steps indicator */}
+                    <div className="flex items-center gap-1 mb-4">
+                      {['Name', 'Triggers', 'Conditions', 'Actions', 'Review'].map((label, idx) => (
+                        <div key={idx} className="flex items-center gap-1 flex-1">
+                          <button
+                            onClick={() => setWizardStep(idx)}
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-medium transition-all ${wizardStep === idx ? 'bg-white/20 text-white' : wizardStep > idx ? 'bg-green-500/20 text-green-300' : 'bg-white/5 text-white/40'}`}
+                            data-testid={`wizard-step-${idx}`}
+                          >
+                            <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold ${wizardStep === idx ? 'bg-white/30' : wizardStep > idx ? 'bg-green-500/30' : 'bg-white/10'}`}>{idx + 1}</span>
+                            {label}
+                          </button>
+                          {idx < 4 && <div className="flex-1 h-[1px] bg-white/10" />}
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Step 0: Name & Description */}
+                    {wizardStep === 0 && (
+                      <div className="space-y-3 max-w-2xl">
+                        <h3 className="text-white text-[13px] font-medium mb-2">{editingAutomationId ? 'Edit Automation' : 'New Automation'}</h3>
+                        <input
+                          type="text"
+                          value={wizardName}
+                          onChange={(e) => setWizardName(e.target.value)}
+                          placeholder="Automation name..."
+                          className="w-full text-white text-[12px] px-3 py-2 rounded focus:outline-none placeholder:text-white/30"
+                          style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                          data-testid="wizard-name-input"
+                        />
+                        <textarea
+                          value={wizardDescription}
+                          onChange={(e) => setWizardDescription(e.target.value)}
+                          placeholder="Description (optional)..."
+                          rows={2}
+                          className="w-full text-white text-[12px] px-3 py-2 rounded resize-none focus:outline-none placeholder:text-white/30"
+                          style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                          data-testid="wizard-desc-input"
+                        />
+                      </div>
+                    )}
+
+                    {/* Step 1: Triggers */}
+                    {wizardStep === 1 && (
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="text-white text-[13px] font-medium">Triggers — When should this run?</h3>
+                        </div>
+                        <div className="grid grid-cols-5 gap-2 mb-3">
+                          {TRIGGER_TYPES.map(tt => (
+                            <button
+                              key={tt.value}
+                              onClick={() => setWizardTriggers(prev => [...prev, { type: tt.value, value: '', entityId: '', state: '' }])}
+                              className="flex flex-col items-center gap-1 px-3 py-3 rounded-lg border border-white/10 hover:border-white/30 transition-all text-center"
+                              style={{ background: 'rgba(255,255,255,0.04)' }}
+                              data-testid={`trigger-add-${tt.value}`}
+                            >
+                              <span className="text-lg">{tt.icon}</span>
+                              <span className="text-white text-[10px] font-medium">{tt.label}</span>
+                              <span className="text-white/30 text-[9px]">{tt.desc}</span>
+                            </button>
+                          ))}
+                        </div>
+                        {wizardTriggers.length === 0 && <div className="text-white/30 text-[11px] text-center py-3">No triggers added yet. Click a trigger type above.</div>}
+                        {wizardTriggers.map((trigger, idx) => (
+                          <div key={idx} className="flex items-start gap-2 px-3 py-2 rounded-lg border border-white/10 mb-1.5" style={{ background: 'rgba(255,255,255,0.04)' }} data-testid={`trigger-item-${idx}`}>
+                            <span className="text-sm mt-0.5">{TRIGGER_TYPES.find(t => t.value === trigger.type)?.icon || '🔧'}</span>
+                            <div className="flex-1 space-y-1.5 min-w-0">
+                              <span className="text-white/60 text-[10px] font-medium uppercase">{TRIGGER_TYPES.find(t => t.value === trigger.type)?.label}</span>
+                              {trigger.type === 'time' && (
+                                <input type="time" value={trigger.value || ''} onChange={(e) => { const u = [...wizardTriggers]; u[idx] = { ...u[idx], value: e.target.value }; setWizardTriggers(u); }} className="w-full text-white text-[11px] px-2 py-1 rounded focus:outline-none [color-scheme:dark]" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }} data-testid={`trigger-time-${idx}`} />
+                              )}
+                              {trigger.type === 'state' && (
+                                <div className="flex gap-1.5">
+                                  <select value={trigger.entityId || ''} onChange={(e) => { const u = [...wizardTriggers]; u[idx] = { ...u[idx], entityId: e.target.value }; setWizardTriggers(u); }} className="flex-1 text-white text-[11px] px-2 py-1 rounded focus:outline-none [color-scheme:dark]" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }} data-testid={`trigger-entity-${idx}`}>
+                                    <option value="" style={{ color: 'black' }}>Select entity...</option>
+                                    {haEntities.map((e: any) => <option key={e.entityId} value={e.entityId} style={{ color: 'black' }}>{e.friendlyName}</option>)}
+                                  </select>
+                                  <input type="text" placeholder="To state..." value={trigger.state || ''} onChange={(e) => { const u = [...wizardTriggers]; u[idx] = { ...u[idx], state: e.target.value }; setWizardTriggers(u); }} className="w-[120px] text-white text-[11px] px-2 py-1 rounded focus:outline-none placeholder:text-white/30" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }} data-testid={`trigger-state-${idx}`} />
+                                </div>
+                              )}
+                              {trigger.type === 'sun' && (
+                                <select value={trigger.value || 'sunrise'} onChange={(e) => { const u = [...wizardTriggers]; u[idx] = { ...u[idx], value: e.target.value }; setWizardTriggers(u); }} className="w-full text-white text-[11px] px-2 py-1 rounded focus:outline-none [color-scheme:dark]" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }} data-testid={`trigger-sun-${idx}`}>
+                                  <option value="sunrise" style={{ color: 'black' }}>Sunrise</option>
+                                  <option value="sunset" style={{ color: 'black' }}>Sunset</option>
+                                </select>
+                              )}
+                              {trigger.type === 'interval' && (
+                                <div className="flex gap-1.5 items-center">
+                                  <span className="text-white/40 text-[10px]">Every</span>
+                                  <input type="number" min={1} value={trigger.value || 30} onChange={(e) => { const u = [...wizardTriggers]; u[idx] = { ...u[idx], value: e.target.value }; setWizardTriggers(u); }} className="w-[60px] text-white text-[11px] px-2 py-1 rounded focus:outline-none" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }} data-testid={`trigger-interval-${idx}`} />
+                                  <select value={trigger.unit || 'minutes'} onChange={(e) => { const u = [...wizardTriggers]; u[idx] = { ...u[idx], unit: e.target.value }; setWizardTriggers(u); }} className="text-white text-[11px] px-2 py-1 rounded focus:outline-none [color-scheme:dark]" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                    <option value="minutes" style={{ color: 'black' }}>minutes</option>
+                                    <option value="hours" style={{ color: 'black' }}>hours</option>
+                                  </select>
+                                </div>
+                              )}
+                              {trigger.type === 'webhook' && (
+                                <input type="text" placeholder="Webhook ID..." value={trigger.value || ''} onChange={(e) => { const u = [...wizardTriggers]; u[idx] = { ...u[idx], value: e.target.value }; setWizardTriggers(u); }} className="w-full text-white text-[11px] px-2 py-1 rounded focus:outline-none placeholder:text-white/30" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }} data-testid={`trigger-webhook-${idx}`} />
+                              )}
+                            </div>
+                            <button onClick={() => setWizardTriggers(prev => prev.filter((_, i) => i !== idx))} className="text-white/30 hover:text-red-400 transition-colors mt-1" data-testid={`trigger-delete-${idx}`}>
+                              <X className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Step 2: Conditions */}
+                    {wizardStep === 2 && (
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="text-white text-[13px] font-medium">Conditions — Only run when...</h3>
+                          <span className="text-white/30 text-[10px]">Optional</span>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 mb-3">
+                          {CONDITION_TYPES.map(ct => (
+                            <button
+                              key={ct.value}
+                              onClick={() => setWizardConditions(prev => [...prev, { type: ct.value, entityId: '', state: '', after: '', before: '', days: [] }])}
+                              className="flex flex-col items-center gap-1 px-3 py-3 rounded-lg border border-white/10 hover:border-white/30 transition-all text-center"
+                              style={{ background: 'rgba(255,255,255,0.04)' }}
+                              data-testid={`condition-add-${ct.value}`}
+                            >
+                              <span className="text-lg">{ct.icon}</span>
+                              <span className="text-white text-[10px] font-medium">{ct.label}</span>
+                              <span className="text-white/30 text-[9px]">{ct.desc}</span>
+                            </button>
+                          ))}
+                        </div>
+                        {wizardConditions.length === 0 && <div className="text-white/30 text-[11px] text-center py-3">No conditions — automation will always run when triggered.</div>}
+                        {wizardConditions.map((cond, idx) => (
+                          <div key={idx} className="flex items-start gap-2 px-3 py-2 rounded-lg border border-white/10 mb-1.5" style={{ background: 'rgba(255,255,255,0.04)' }} data-testid={`condition-item-${idx}`}>
+                            <span className="text-sm mt-0.5">{CONDITION_TYPES.find(c => c.value === cond.type)?.icon || '🔧'}</span>
+                            <div className="flex-1 space-y-1.5 min-w-0">
+                              <span className="text-white/60 text-[10px] font-medium uppercase">{CONDITION_TYPES.find(c => c.value === cond.type)?.label}</span>
+                              {cond.type === 'state' && (
+                                <div className="flex gap-1.5">
+                                  <select value={cond.entityId || ''} onChange={(e) => { const u = [...wizardConditions]; u[idx] = { ...u[idx], entityId: e.target.value }; setWizardConditions(u); }} className="flex-1 text-white text-[11px] px-2 py-1 rounded focus:outline-none [color-scheme:dark]" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }} data-testid={`condition-entity-${idx}`}>
+                                    <option value="" style={{ color: 'black' }}>Select entity...</option>
+                                    {haEntities.map((e: any) => <option key={e.entityId} value={e.entityId} style={{ color: 'black' }}>{e.friendlyName}</option>)}
+                                  </select>
+                                  <input type="text" placeholder="Is state..." value={cond.state || ''} onChange={(e) => { const u = [...wizardConditions]; u[idx] = { ...u[idx], state: e.target.value }; setWizardConditions(u); }} className="w-[120px] text-white text-[11px] px-2 py-1 rounded focus:outline-none placeholder:text-white/30" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }} data-testid={`condition-state-${idx}`} />
+                                </div>
+                              )}
+                              {cond.type === 'time' && (
+                                <div className="flex gap-1.5 items-center">
+                                  <span className="text-white/40 text-[10px]">After</span>
+                                  <input type="time" value={cond.after || ''} onChange={(e) => { const u = [...wizardConditions]; u[idx] = { ...u[idx], after: e.target.value }; setWizardConditions(u); }} className="text-white text-[11px] px-2 py-1 rounded focus:outline-none [color-scheme:dark]" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }} />
+                                  <span className="text-white/40 text-[10px]">Before</span>
+                                  <input type="time" value={cond.before || ''} onChange={(e) => { const u = [...wizardConditions]; u[idx] = { ...u[idx], before: e.target.value }; setWizardConditions(u); }} className="text-white text-[11px] px-2 py-1 rounded focus:outline-none [color-scheme:dark]" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }} />
+                                </div>
+                              )}
+                              {cond.type === 'day' && (
+                                <div className="flex gap-1 flex-wrap">
+                                  {['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(day => (
+                                    <button key={day} onClick={() => { const u = [...wizardConditions]; const days = u[idx].days || []; u[idx] = { ...u[idx], days: days.includes(day) ? days.filter((d: string) => d !== day) : [...days, day] }; setWizardConditions(u); }} className={`px-2 py-0.5 rounded text-[10px] transition-colors ${(cond.days || []).includes(day) ? 'bg-cyan-500/30 text-cyan-300 border-cyan-500/30' : 'bg-white/5 text-white/40 border-white/10'} border`}>
+                                      {day}
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                            <button onClick={() => setWizardConditions(prev => prev.filter((_, i) => i !== idx))} className="text-white/30 hover:text-red-400 transition-colors mt-1">
+                              <X className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Step 3: Actions */}
+                    {wizardStep === 3 && (
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="text-white text-[13px] font-medium">Actions — What should happen?</h3>
+                        </div>
+                        <div className="grid grid-cols-4 gap-2 mb-3">
+                          {ACTION_TYPES.map(at => (
+                            <button
+                              key={at.value}
+                              onClick={() => setWizardActions(prev => [...prev, { type: at.value, domain: '', service: '', entityId: '', serviceData: {}, message: '', delay: 5 }])}
+                              className="flex flex-col items-center gap-1 px-3 py-3 rounded-lg border border-white/10 hover:border-white/30 transition-all text-center"
+                              style={{ background: 'rgba(255,255,255,0.04)' }}
+                              data-testid={`action-add-${at.value}`}
+                            >
+                              <span className="text-lg">{at.icon}</span>
+                              <span className="text-white text-[10px] font-medium">{at.label}</span>
+                              <span className="text-white/30 text-[9px]">{at.desc}</span>
+                            </button>
+                          ))}
+                        </div>
+                        {wizardActions.length === 0 && <div className="text-white/30 text-[11px] text-center py-3">No actions added yet. Click an action type above.</div>}
+                        {wizardActions.map((action, idx) => (
+                          <div key={idx} className="flex items-start gap-2 px-3 py-2 rounded-lg border border-white/10 mb-1.5" style={{ background: 'rgba(255,255,255,0.04)' }} data-testid={`action-item-${idx}`}>
+                            <span className="text-sm mt-0.5">{ACTION_TYPES.find(a => a.value === action.type)?.icon || '🔧'}</span>
+                            <div className="flex-1 space-y-1.5 min-w-0">
+                              <span className="text-white/60 text-[10px] font-medium uppercase">{ACTION_TYPES.find(a => a.value === action.type)?.label}</span>
+                              {action.type === 'call_service' && (
+                                <div className="space-y-1.5">
+                                  <div className="flex gap-1.5">
+                                    <select value={action.domain || ''} onChange={(e) => { const u = [...wizardActions]; u[idx] = { ...u[idx], domain: e.target.value, service: '' }; setWizardActions(u); }} className="w-[130px] text-white text-[11px] px-2 py-1 rounded focus:outline-none [color-scheme:dark]" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }} data-testid={`action-domain-${idx}`}>
+                                      <option value="" style={{ color: 'black' }}>Domain...</option>
+                                      {HA_DOMAINS.map(d => <option key={d} value={d} style={{ color: 'black' }}>{d}</option>)}
+                                    </select>
+                                    <input type="text" placeholder="Service (e.g. turn_on)" value={action.service || ''} onChange={(e) => { const u = [...wizardActions]; u[idx] = { ...u[idx], service: e.target.value }; setWizardActions(u); }} className="flex-1 text-white text-[11px] px-2 py-1 rounded focus:outline-none placeholder:text-white/30" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }} data-testid={`action-service-${idx}`} />
+                                  </div>
+                                  <select value={action.entityId || ''} onChange={(e) => { const u = [...wizardActions]; u[idx] = { ...u[idx], entityId: e.target.value }; setWizardActions(u); }} className="w-full text-white text-[11px] px-2 py-1 rounded focus:outline-none [color-scheme:dark]" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }} data-testid={`action-entity-${idx}`}>
+                                    <option value="" style={{ color: 'black' }}>Select entity...</option>
+                                    {haEntities.filter((e: any) => !action.domain || e.domain === action.domain).map((e: any) => <option key={e.entityId} value={e.entityId} style={{ color: 'black' }}>{e.friendlyName}</option>)}
+                                  </select>
+                                </div>
+                              )}
+                              {action.type === 'delay' && (
+                                <div className="flex gap-1.5 items-center">
+                                  <span className="text-white/40 text-[10px]">Wait</span>
+                                  <input type="number" min={1} value={action.delay || 5} onChange={(e) => { const u = [...wizardActions]; u[idx] = { ...u[idx], delay: parseInt(e.target.value) || 5 }; setWizardActions(u); }} className="w-[60px] text-white text-[11px] px-2 py-1 rounded focus:outline-none" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }} data-testid={`action-delay-${idx}`} />
+                                  <span className="text-white/40 text-[10px]">seconds</span>
+                                </div>
+                              )}
+                              {action.type === 'announce' && (
+                                <textarea value={action.message || ''} onChange={(e) => { const u = [...wizardActions]; u[idx] = { ...u[idx], message: e.target.value }; setWizardActions(u); }} placeholder="Announcement message..." rows={2} className="w-full text-white text-[11px] px-2 py-1 rounded resize-none focus:outline-none placeholder:text-white/30" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }} data-testid={`action-message-${idx}`} />
+                              )}
+                              {action.type === 'condition_check' && (
+                                <div className="flex gap-1.5">
+                                  <select value={action.entityId || ''} onChange={(e) => { const u = [...wizardActions]; u[idx] = { ...u[idx], entityId: e.target.value }; setWizardActions(u); }} className="flex-1 text-white text-[11px] px-2 py-1 rounded focus:outline-none [color-scheme:dark]" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                    <option value="" style={{ color: 'black' }}>Select entity...</option>
+                                    {haEntities.map((e: any) => <option key={e.entityId} value={e.entityId} style={{ color: 'black' }}>{e.friendlyName}</option>)}
+                                  </select>
+                                  <input type="text" placeholder="Must be state..." value={action.state || ''} onChange={(e) => { const u = [...wizardActions]; u[idx] = { ...u[idx], state: e.target.value }; setWizardActions(u); }} className="w-[120px] text-white text-[11px] px-2 py-1 rounded focus:outline-none placeholder:text-white/30" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }} />
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex flex-col gap-0.5">
+                              {idx > 0 && <button onClick={() => { const u = [...wizardActions]; [u[idx-1], u[idx]] = [u[idx], u[idx-1]]; setWizardActions(u); }} className="text-white/30 hover:text-white transition-colors"><ChevronUp className="h-3 w-3" /></button>}
+                              {idx < wizardActions.length - 1 && <button onClick={() => { const u = [...wizardActions]; [u[idx], u[idx+1]] = [u[idx+1], u[idx]]; setWizardActions(u); }} className="text-white/30 hover:text-white transition-colors"><ChevronDown className="h-3 w-3" /></button>}
+                              <button onClick={() => setWizardActions(prev => prev.filter((_, i) => i !== idx))} className="text-white/30 hover:text-red-400 transition-colors mt-1" data-testid={`action-delete-${idx}`}>
+                                <X className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Step 4: Review */}
+                    {wizardStep === 4 && (
+                      <div className="space-y-4 max-w-3xl">
+                        <h3 className="text-white text-[13px] font-medium">Review Automation</h3>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="px-4 py-3 rounded-lg border border-white/10" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                            <p className="text-white/40 text-[10px] uppercase tracking-wide mb-1">Name</p>
+                            <p className="text-white text-[12px]">{wizardName || '(untitled)'}</p>
+                            {wizardDescription && <p className="text-white/50 text-[10px] mt-1">{wizardDescription}</p>}
+                          </div>
+                          <div className="px-4 py-3 rounded-lg border border-white/10" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                            <p className="text-white/40 text-[10px] uppercase tracking-wide mb-1">Summary</p>
+                            <p className="text-white/60 text-[10px]">{wizardTriggers.length} trigger(s), {wizardConditions.length} condition(s), {wizardActions.length} action(s)</p>
+                          </div>
+                        </div>
+                        {wizardTriggers.length > 0 && (
+                          <div>
+                            <p className="text-white/40 text-[10px] uppercase tracking-wide mb-1">Triggers</p>
+                            {wizardTriggers.map((t, i) => (
+                              <div key={i} className="text-white/70 text-[11px] flex items-center gap-1.5 mb-0.5">
+                                <span>{TRIGGER_TYPES.find(tt => tt.value === t.type)?.icon}</span>
+                                <span>{TRIGGER_TYPES.find(tt => tt.value === t.type)?.label}</span>
+                                {t.value && <span className="text-white/40">— {t.value}</span>}
+                                {t.entityId && <span className="text-white/40">— {t.entityId}</span>}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {wizardConditions.length > 0 && (
+                          <div>
+                            <p className="text-white/40 text-[10px] uppercase tracking-wide mb-1">Conditions</p>
+                            {wizardConditions.map((c, i) => (
+                              <div key={i} className="text-white/70 text-[11px] flex items-center gap-1.5 mb-0.5">
+                                <span>{CONDITION_TYPES.find(ct => ct.value === c.type)?.icon}</span>
+                                <span>{CONDITION_TYPES.find(ct => ct.value === c.type)?.label}</span>
+                                {c.entityId && <span className="text-white/40">— {c.entityId} = {c.state}</span>}
+                                {c.after && <span className="text-white/40">— {c.after} to {c.before}</span>}
+                                {c.days?.length > 0 && <span className="text-white/40">— {c.days.join(', ')}</span>}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {wizardActions.length > 0 && (
+                          <div>
+                            <p className="text-white/40 text-[10px] uppercase tracking-wide mb-1">Actions (in order)</p>
+                            {wizardActions.map((a, i) => (
+                              <div key={i} className="text-white/70 text-[11px] flex items-center gap-1.5 mb-0.5">
+                                <span className="text-white/30 text-[9px] w-4">{i + 1}.</span>
+                                <span>{ACTION_TYPES.find(at => at.value === a.type)?.icon}</span>
+                                <span>{ACTION_TYPES.find(at => at.value === a.type)?.label}</span>
+                                {a.domain && <span className="text-white/40">— {a.domain}.{a.service}</span>}
+                                {a.entityId && <span className="text-white/40">({a.entityId})</span>}
+                                {a.message && <span className="text-white/40">— "{a.message.slice(0, 40)}..."</span>}
+                                {a.type === 'delay' && <span className="text-white/40">— {a.delay}s</span>}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Wizard navigation buttons */}
+                    <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/10">
+                      <Button variant="outline" onClick={resetAutomationWizard} className="border !border-white/30 text-white/60 hover:text-white hover:!border-white/50 hover:bg-transparent h-8 px-4" style={{ fontSize: '11px' }} data-testid="wizard-cancel">Cancel</Button>
+                      <div className="flex gap-2">
+                        {wizardStep > 0 && (
+                          <Button variant="outline" onClick={() => setWizardStep(s => s - 1)} className="border !border-white/30 text-white/60 hover:text-white hover:!border-white/50 hover:bg-transparent h-8 px-4" style={{ fontSize: '11px' }} data-testid="wizard-back">Back</Button>
+                        )}
+                        {wizardStep < 4 ? (
+                          <button onClick={() => setWizardStep(s => s + 1)} disabled={wizardStep === 0 && !wizardName.trim()} className="disabled:opacity-40 text-white text-[11px] font-semibold px-4 py-2 rounded transition-colors hover:brightness-110" style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.15)', border: '1px solid rgba(255,255,255,0.2)' }} data-testid="wizard-next">Next</button>
+                        ) : (
+                          <button onClick={saveAutomation} disabled={!wizardName.trim() || createHaAutomationMutation.isPending || updateHaAutomationMutation.isPending} className="disabled:opacity-40 text-white text-[11px] font-semibold px-4 py-2 rounded transition-colors hover:brightness-110" style={{ background: 'linear-gradient(180deg, rgba(34,197,94,0.4) 0%, rgba(34,197,94,0.25) 100%)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.15)', border: '1px solid rgba(34,197,94,0.3)' }} data-testid="wizard-save">{editingAutomationId ? 'Update' : 'Save'} Automation</button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  /* Automations list */
+                  <div className="flex-1 overflow-y-auto p-4" style={{ scrollbarWidth: 'thin' }}>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-white/40 text-[10px]">{haAutomationsList.length} automation(s)</span>
+                      <button
+                        onClick={() => { resetAutomationWizard(); setShowAutomationWizard(true); }}
+                        className="text-white text-[11px] font-semibold px-4 py-2 rounded transition-colors hover:brightness-110"
+                        style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.15)', border: '1px solid rgba(255,255,255,0.2)' }}
+                        data-testid="button-new-automation"
+                      >
+                        + New Automation
+                      </button>
+                    </div>
+                    {haAutomationsList.length === 0 ? (
+                      <div className="text-center py-16">
+                        <div className="text-4xl mb-3">🏠</div>
+                        <p className="text-white/50 text-[13px] mb-1">No automations yet</p>
+                        <p className="text-white/30 text-[11px]">Create your first Home Assistant automation with the wizard.</p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-2">
+                        {haAutomationsList.map((auto: any) => {
+                          const triggers = JSON.parse(auto.triggers || '[]');
+                          const conditions = JSON.parse(auto.conditions || '[]');
+                          const actions = JSON.parse(auto.actions || '[]');
+                          return (
+                            <div key={auto.id} className={`px-4 py-3 rounded-lg border transition-all ${auto.isEnabled ? 'border-white/15' : 'border-white/5 opacity-50'}`} style={{ background: 'rgba(255,255,255,0.04)' }} data-testid={`automation-card-${auto.id}`}>
+                              <div className="flex items-start justify-between mb-2">
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-white text-[12px] font-medium truncate">{auto.name}</p>
+                                  {auto.description && <p className="text-white/40 text-[10px] truncate">{auto.description}</p>}
+                                </div>
+                                <button onClick={() => updateHaAutomationMutation.mutate({ id: auto.id, isEnabled: !auto.isEnabled })} className="ml-2 shrink-0" data-testid={`automation-toggle-${auto.id}`}>
+                                  <div className={`w-[34px] h-[18px] rounded-full relative transition-colors ${auto.isEnabled ? 'bg-cyan-500' : 'bg-white/20'}`}>
+                                    <div className={`absolute top-[3px] w-[12px] h-[12px] rounded-full bg-white shadow transition-all ${auto.isEnabled ? 'left-[19px]' : 'left-[3px]'}`} />
+                                  </div>
+                                </button>
+                              </div>
+                              <div className="flex items-center gap-2 mb-2 text-[9px]">
+                                <span className="text-white/30">{triggers.length} trigger(s)</span>
+                                <span className="text-white/15">|</span>
+                                <span className="text-white/30">{conditions.length} condition(s)</span>
+                                <span className="text-white/15">|</span>
+                                <span className="text-white/30">{actions.length} action(s)</span>
+                              </div>
+                              {auto.lastTriggered && <p className="text-white/20 text-[9px] mb-2">Last: {new Date(auto.lastTriggered).toLocaleString('en-US', { timeZone: 'America/Toronto', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</p>}
+                              <div className="flex items-center gap-1.5">
+                                <button onClick={() => triggerHaAutomationMutation.mutate(auto.id)} className="text-[10px] text-cyan-400/70 hover:text-cyan-300 transition-colors px-2 py-1 rounded border border-cyan-500/20 hover:border-cyan-500/40" data-testid={`automation-trigger-${auto.id}`}>Run Now</button>
+                                <button onClick={() => editAutomation(auto)} className="text-[10px] text-white/40 hover:text-white/70 transition-colors px-2 py-1 rounded border border-white/10 hover:border-white/20" data-testid={`automation-edit-${auto.id}`}>Edit</button>
+                                <button onClick={() => deleteHaAutomationMutation.mutate(auto.id)} className="text-[10px] text-red-400/50 hover:text-red-400 transition-colors px-2 py-1 rounded border border-red-500/10 hover:border-red-500/30" data-testid={`automation-delete-${auto.id}`}>Delete</button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </section>
         </div>
+
 
         {/* Projects Flyout - Burst from Left */}
         <div 

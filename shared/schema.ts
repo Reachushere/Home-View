@@ -653,6 +653,40 @@ export const insertAnnouncementSchema = createInsertSchema(announcements).omit({
 export type Announcement = typeof announcements.$inferSelect;
 export type InsertAnnouncement = z.infer<typeof insertAnnouncementSchema>;
 
+export const scheduledAlexaAnnouncements = pgTable("scheduled_alexa_announcements", {
+  id: serial("id").primaryKey(),
+  message: text("message").notNull(),
+  scheduledAt: timestamp("scheduled_at").notNull(),
+  repeatType: text("repeat_type").default("none"),
+  repeatInterval: integer("repeat_interval"),
+  repeatIntervalUnit: text("repeat_interval_unit"),
+  repeatEndDate: timestamp("repeat_end_date"),
+  isEnabled: boolean("is_enabled").default(true),
+  isSent: boolean("is_sent").default(false),
+  lastSentAt: timestamp("last_sent_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertScheduledAlexaAnnouncementSchema = createInsertSchema(scheduledAlexaAnnouncements).omit({ id: true });
+export type ScheduledAlexaAnnouncement = typeof scheduledAlexaAnnouncements.$inferSelect;
+export type InsertScheduledAlexaAnnouncement = z.infer<typeof insertScheduledAlexaAnnouncementSchema>;
+
+export const haAutomations = pgTable("ha_automations", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  triggers: text("triggers").notNull().default('[]'),
+  conditions: text("conditions").notNull().default('[]'),
+  actions: text("actions").notNull().default('[]'),
+  isEnabled: boolean("is_enabled").notNull().default(true),
+  lastTriggered: timestamp("last_triggered"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const insertHaAutomationSchema = createInsertSchema(haAutomations).omit({ id: true, createdAt: true });
+export type HaAutomation = typeof haAutomations.$inferSelect;
+export type InsertHaAutomation = z.infer<typeof insertHaAutomationSchema>;
+
 export const PENDING_REVIEW_SOURCES = ["outlook_calendar", "gmail_task"] as const;
 export type PendingReviewSource = typeof PENDING_REVIEW_SOURCES[number];
 
