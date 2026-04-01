@@ -899,10 +899,18 @@ export default function Dashboard() {
   const [mobileAuth, setMobileAuth] = useState<string | null>(() => {
     const stored = localStorage.getItem('mobileAuth');
     if (stored === '5747' || stored === '4201' || stored === '1010') return stored;
+    if (authLevel === '5747' || authLevel === '4201' || authLevel === '1010') return authLevel;
     return null;
   });
   const [mobilePassInput, setMobilePassInput] = useState('');
   const [mobilePassError, setMobilePassError] = useState(false);
+
+  useEffect(() => {
+    if (isMobileView && !mobileAuth && (authLevel === '5747' || authLevel === '4201' || authLevel === '1010')) {
+      localStorage.setItem('mobileAuth', authLevel);
+      setMobileAuth(authLevel);
+    }
+  }, [isMobileView, mobileAuth, authLevel]);
   const [partnerWizardOpen, setPartnerWizardOpen] = useState(false);
   const [partnerWizardStep, setPartnerWizardStep] = useState(0);
   const [partnerWizardDates, setPartnerWizardDates] = useState<string[]>([]);
