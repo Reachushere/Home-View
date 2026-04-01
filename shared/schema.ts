@@ -388,6 +388,7 @@ export const tasks = pgTable("tasks", {
   countdownBarDays: integer("countdown_bar_days").default(0),
   countdownBarColor: text("countdown_bar_color"),
   repeatSpanDays: integer("repeat_span_days").default(1),
+  shiftAdjust: boolean("shift_adjust").default(false),
 });
 
 // Base schema from drizzle, then override date fields to accept ISO strings
@@ -661,6 +662,7 @@ export const scheduledAlexaAnnouncements = pgTable("scheduled_alexa_announcement
   repeatInterval: integer("repeat_interval"),
   repeatIntervalUnit: text("repeat_interval_unit"),
   repeatEndDate: timestamp("repeat_end_date"),
+  shiftAdjust: boolean("shift_adjust").default(false),
   isEnabled: boolean("is_enabled").default(true),
   isSent: boolean("is_sent").default(false),
   lastSentAt: timestamp("last_sent_at"),

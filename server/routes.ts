@@ -15,7 +15,7 @@ import { registerObjectStorageRoutes } from "./replit_integrations/object_storag
 import { objectStorageClient } from "./replit_integrations/object_storage/objectStorage";
 import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent, createEventInCalendar, deleteEventFromCalendar, createRecurringClassEvent, findExistingEventBySummary, findAndDeleteDuplicateEvents, createYearlyScholarshipEvent, syncGoogleEventsToReview, getGoogleCalendarClient } from "./googleCalendar";
 import { getSecondAccountAuthUrl, exchangeCodeForTokens, isSecondAccountConnected, disconnectSecondAccount, createEventInSecondAccount, createPrepEventInSecondAccount, deleteEventFromSecondAccount, updateEventInSecondAccount, getEventsFromSecondAccount } from "./secondGoogleAccount";
-import { getThirdAccountAuthUrl, exchangeCodeForTokensThird, isThirdAccountConnected, disconnectThirdAccount, getEventsFromThirdAccount, listThirdAccountCalendars, getEventsFromThirdAccountCalendar } from "./thirdGoogleAccount";
+import { getThirdAccountAuthUrl, exchangeCodeForTokensThird, isThirdAccountConnected, disconnectThirdAccount, getEventsFromThirdAccount, listThirdAccountCalendars, getEventsFromThirdAccountCalendar, createEventOnThirdAccountCalendar } from "./thirdGoogleAccount";
 import { textToSpeech, initTTSFallbackStatus } from "./replit_integrations/audio/client";
 import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, sendTestHaPush, sendHaTaskReminder, sendEchoVoiceAnnouncement, sendCalendarInvite, type TaskReminder } from "./email";
 import { syncOutlookEventsToReview, fetchOutlookCalendarEvents, findOrCreateMailFolder, createMailRule, moveExistingEmailsToFolder, moveAllEmailsFromFolder, deleteMailRulesByName, getMailFolderId, moveEmailsNotFromDomains, getOutlookClient } from "./outlookCalendar";
@@ -5054,7 +5054,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
   app.post('/api/webhook/reminder', async (req, res) => {
     try {
       const { subject, body, auth } = req.body;
-      if (auth !== '5747') {
+      if (auth !== '5747' && auth !== '4201' && auth !== '1010') {
         return res.status(401).json({ error: 'Unauthorized' });
       }
       const title = (subject || '').replace(/^reminder\s*/i, '').trim() || (body || '').trim() || 'Reminder';
@@ -5098,7 +5098,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
   app.post('/api/webhook/delete', async (req, res) => {
     try {
       const { body, auth } = req.body;
-      if (auth !== '5747') {
+      if (auth !== '5747' && auth !== '4201' && auth !== '1010') {
         return res.status(401).json({ error: 'Unauthorized' });
       }
       if (!body || typeof body !== 'string') {
@@ -5173,7 +5173,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
   app.post('/api/webhook/email', async (req, res) => {
     try {
       const { emailId, subject, body, from, auth } = req.body;
-      if (auth !== '5747') {
+      if (auth !== '5747' && auth !== '4201' && auth !== '1010') {
         return res.status(401).json({ error: 'Unauthorized' });
       }
       const subjectLower = (subject || '').trim().toLowerCase();
@@ -5237,7 +5237,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
   app.post('/api/webhook/ticker', async (req, res) => {
     try {
       const { emailId, body, subject, auth } = req.body;
-      if (auth !== '5747') {
+      if (auth !== '5747' && auth !== '4201' && auth !== '1010') {
         return res.status(401).json({ error: 'Unauthorized' });
       }
       let rawBody = (body && typeof body === 'string' && body.trim()) ? body.trim() : null;
@@ -5619,6 +5619,45 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       res.json({ synced: shiftEntries.length, schedule });
     } catch (err) {
       console.error("CRCU shift sync error:", err);
+      res.status(500).json({ error: String(err) });
+    }
+  });
+
+  app.post("/api/google/third-account/create-shifts", async (req, res) => {
+    try {
+      const calendarId = 'family01331437021788124598@group.calendar.google.com';
+      const { shifts } = req.body;
+      if (!Array.isArray(shifts) || shifts.length === 0) {
+        return res.status(400).json({ error: "shifts array required" });
+      }
+      const results = [];
+      const shiftBulk: { date: string; shiftType: string }[] = [];
+      for (const shift of shifts) {
+        const { date, type } = shift;
+        if (!date || !type) continue;
+        const isDay = type === 'day';
+        const summary = isDay ? 'CRCU Day' : 'CRCU Night';
+        const startTime = isDay ? '07:30' : '19:30';
+        const endDate = isDay ? date : (() => {
+          const d = new Date(date + 'T00:00:00');
+          d.setDate(d.getDate() + 1);
+          return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        })();
+        const endTime = isDay ? '19:30' : '07:30';
+        const startDateTime = `${date}T${startTime}:00`;
+        const endDateTime = `${endDate}T${endTime}:00`;
+        const colorId = isDay ? '5' : '3';
+        const event = await createEventOnThirdAccountCalendar(calendarId, summary, startDateTime, endDateTime, colorId);
+        results.push(event);
+        shiftBulk.push({ date, shiftType: type });
+      }
+      if (shiftBulk.length > 0) {
+        await storage.setShiftBulk(shiftBulk);
+      }
+      const schedule = await storage.getShiftSchedule();
+      res.json({ created: results.length, schedule });
+    } catch (err) {
+      console.error("Create shifts error:", err);
       res.status(500).json({ error: String(err) });
     }
   });

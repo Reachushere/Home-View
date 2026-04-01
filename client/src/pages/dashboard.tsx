@@ -507,6 +507,176 @@ const PrioritySelect = memo(function PrioritySelect({ priorityKey, initialValue,
   );
 });
 
+function PartnerShiftWizard({ partnerWizardStep, setPartnerWizardStep, partnerWizardDates, setPartnerWizardDates, partnerWizardShiftType, setPartnerWizardShiftType, partnerWizardMonth, setPartnerWizardMonth, partnerWizardSubmitting, setPartnerWizardSubmitting, colorSettings, onClose, onDone }: {
+  partnerWizardStep: number; setPartnerWizardStep: (s: number) => void;
+  partnerWizardDates: string[]; setPartnerWizardDates: (d: string[]) => void;
+  partnerWizardShiftType: 'day' | 'night'; setPartnerWizardShiftType: (t: 'day' | 'night') => void;
+  partnerWizardMonth: { year: number; month: number }; setPartnerWizardMonth: (m: { year: number; month: number }) => void;
+  partnerWizardSubmitting: boolean; setPartnerWizardSubmitting: (b: boolean) => void;
+  colorSettings: any; onClose: () => void; onDone: () => void;
+}) {
+  const daysInMonth = new Date(partnerWizardMonth.year, partnerWizardMonth.month + 1, 0).getDate();
+  const firstDayOfWeek = new Date(partnerWizardMonth.year, partnerWizardMonth.month, 1).getDay();
+  const monthName = new Date(partnerWizardMonth.year, partnerWizardMonth.month).toLocaleString('en-US', { month: 'long', year: 'numeric' });
+  const toggleDate = (dateStr: string) => {
+    setPartnerWizardDates(partnerWizardDates.includes(dateStr) ? partnerWizardDates.filter(d => d !== dateStr) : [...partnerWizardDates, dateStr]);
+  };
+  const prevMonth = () => {
+    const m = partnerWizardMonth.month === 0 ? 11 : partnerWizardMonth.month - 1;
+    const y = partnerWizardMonth.month === 0 ? partnerWizardMonth.year - 1 : partnerWizardMonth.year;
+    setPartnerWizardMonth({ year: y, month: m });
+  };
+  const nextMonth = () => {
+    const m = partnerWizardMonth.month === 11 ? 0 : partnerWizardMonth.month + 1;
+    const y = partnerWizardMonth.month === 11 ? partnerWizardMonth.year + 1 : partnerWizardMonth.year;
+    setPartnerWizardMonth({ year: y, month: m });
+  };
+  const handleSubmit = async () => {
+    setPartnerWizardSubmitting(true);
+    try {
+      const resp = await fetch('/api/google/third-account/create-shifts', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ shifts: partnerWizardDates.map(d => ({ date: d, type: partnerWizardShiftType })) }),
+      });
+      if (!resp.ok) throw new Error('Failed');
+      onDone();
+    } catch { /* error handled by caller */ } finally { setPartnerWizardSubmitting(false); }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[10015] flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div style={{
+        width: '320px', maxWidth: '95vw', maxHeight: '90vh', borderRadius: '16px', overflow: 'hidden', display: 'flex', flexDirection: 'column',
+        background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
+        border: '1px solid rgba(255,255,255,0.25)', boxShadow: '0 10px 40px rgba(0,0,0,0.4)',
+      }} onClick={e => e.stopPropagation()} data-testid="partner-shift-wizard">
+        <div style={{
+          padding: '14px 16px', borderBottom: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`,
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45)',
+        }}>
+          <span style={{ color: '#fff', fontSize: '12px', fontWeight: 600, fontFamily: "system-ui, -apple-system, sans-serif" }}>
+            {partnerWizardStep === 0 ? 'SELECT DATES' : 'SELECT SHIFT TYPE'}
+          </span>
+          <button onClick={onClose} style={{ color: 'rgba(255,255,255,0.6)', background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer', lineHeight: 1 }}>×</button>
+        </div>
+
+        <div style={{ flex: 1, overflow: 'auto', padding: '12px 16px' }}>
+          {partnerWizardStep === 0 && (
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                <button onClick={prevMonth} style={{ color: '#fff', background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '6px', width: '28px', height: '28px', cursor: 'pointer', fontSize: '14px' }}>‹</button>
+                <span style={{ color: '#fff', fontSize: '13px', fontWeight: 600, fontFamily: "system-ui, -apple-system, sans-serif" }}>{monthName}</span>
+                <button onClick={nextMonth} style={{ color: '#fff', background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '6px', width: '28px', height: '28px', cursor: 'pointer', fontSize: '14px' }}>›</button>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '8px' }}>
+                {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(d => (
+                  <div key={d} style={{ textAlign: 'center', color: 'rgba(255,255,255,0.4)', fontSize: '9px', fontWeight: 600, paddingBottom: '4px' }}>{d}</div>
+                ))}
+                {Array.from({ length: firstDayOfWeek }).map((_, i) => <div key={`e-${i}`} />)}
+                {Array.from({ length: daysInMonth }).map((_, i) => {
+                  const day = i + 1;
+                  const dateStr = `${partnerWizardMonth.year}-${String(partnerWizardMonth.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                  const isSelected = partnerWizardDates.includes(dateStr);
+                  const today = new Date();
+                  const isToday = day === today.getDate() && partnerWizardMonth.month === today.getMonth() && partnerWizardMonth.year === today.getFullYear();
+                  return (
+                    <button
+                      key={day}
+                      onClick={() => toggleDate(dateStr)}
+                      style={{
+                        width: '100%', aspectRatio: '1', borderRadius: '8px', border: isToday ? '1.5px solid rgba(255,255,255,0.6)' : '1px solid transparent',
+                        background: isSelected ? 'rgba(139,92,246,0.6)' : 'rgba(255,255,255,0.06)',
+                        color: '#fff', fontSize: '12px', fontWeight: isSelected ? 700 : 400, cursor: 'pointer',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        transition: 'background 0.15s',
+                      }}
+                      data-testid={`partner-date-${dateStr}`}
+                    >
+                      {day}
+                    </button>
+                  );
+                })}
+              </div>
+              {partnerWizardDates.length > 0 && (
+                <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '10px', textAlign: 'center', marginTop: '4px' }}>
+                  {partnerWizardDates.length} date{partnerWizardDates.length !== 1 ? 's' : ''} selected
+                </div>
+              )}
+            </div>
+          )}
+
+          {partnerWizardStep === 1 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingTop: '8px' }}>
+              <button
+                onClick={() => setPartnerWizardShiftType('day')}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '14px', padding: '18px 16px', borderRadius: '12px', cursor: 'pointer', border: 'none',
+                  background: partnerWizardShiftType === 'day' ? 'rgba(251,146,60,0.35)' : 'rgba(255,255,255,0.06)',
+                  outline: partnerWizardShiftType === 'day' ? '2px solid rgba(251,146,60,0.7)' : '1px solid rgba(255,255,255,0.1)',
+                  transition: 'all 0.2s',
+                }}
+                data-testid="partner-shift-day"
+              >
+                <span style={{ fontSize: '28px' }}>☀️</span>
+                <div style={{ textAlign: 'left' }}>
+                  <div style={{ color: '#fff', fontSize: '14px', fontWeight: 600 }}>Daytime</div>
+                  <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px' }}>7:30 AM – 7:30 PM</div>
+                </div>
+                <div style={{ marginLeft: 'auto', width: '14px', height: '14px', borderRadius: '3px', background: partnerWizardShiftType === 'day' ? 'rgb(251,146,60)' : 'transparent', border: '2px solid rgba(251,146,60,0.5)' }} />
+              </button>
+              <button
+                onClick={() => setPartnerWizardShiftType('night')}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '14px', padding: '18px 16px', borderRadius: '12px', cursor: 'pointer', border: 'none',
+                  background: partnerWizardShiftType === 'night' ? 'rgba(139,92,246,0.35)' : 'rgba(255,255,255,0.06)',
+                  outline: partnerWizardShiftType === 'night' ? '2px solid rgba(139,92,246,0.7)' : '1px solid rgba(255,255,255,0.1)',
+                  transition: 'all 0.2s',
+                }}
+                data-testid="partner-shift-night"
+              >
+                <span style={{ fontSize: '28px' }}>🌙</span>
+                <div style={{ textAlign: 'left' }}>
+                  <div style={{ color: '#fff', fontSize: '14px', fontWeight: 600 }}>Nighttime</div>
+                  <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px' }}>7:30 PM – 7:30 AM</div>
+                </div>
+                <div style={{ marginLeft: 'auto', width: '14px', height: '14px', borderRadius: '3px', background: partnerWizardShiftType === 'night' ? 'rgb(139,92,246)' : 'transparent', border: '2px solid rgba(139,92,246,0.5)' }} />
+              </button>
+              <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '10px', textAlign: 'center', marginTop: '4px' }}>
+                Adding {partnerWizardDates.length} {partnerWizardShiftType === 'day' ? '☀️ day' : '🌙 night'} shift{partnerWizardDates.length !== 1 ? 's' : ''}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div style={{ padding: '12px 16px', borderTop: '1px solid rgba(255,255,255,0.15)', display: 'flex', gap: '8px' }}>
+          {partnerWizardStep === 0 ? (
+            <>
+              <button onClick={onClose} style={{ flex: 1, height: '38px', borderRadius: '10px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.7)', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }} data-testid="partner-wizard-cancel">Cancel</button>
+              <button
+                onClick={() => setPartnerWizardStep(1)}
+                disabled={partnerWizardDates.length === 0}
+                style={{ flex: 1, height: '38px', borderRadius: '10px', background: partnerWizardDates.length > 0 ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.3)', color: partnerWizardDates.length > 0 ? '#fff' : 'rgba(255,255,255,0.3)', fontSize: '13px', fontWeight: 600, cursor: partnerWizardDates.length > 0 ? 'pointer' : 'default', boxShadow: partnerWizardDates.length > 0 ? '0 0 6px rgba(255,255,255,0.4)' : 'none' }}
+                data-testid="partner-wizard-next"
+              >Next</button>
+            </>
+          ) : (
+            <>
+              <button onClick={() => setPartnerWizardStep(0)} style={{ flex: 1, height: '38px', borderRadius: '10px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.7)', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }} data-testid="partner-wizard-back">Back</button>
+              <button
+                onClick={handleSubmit}
+                disabled={partnerWizardSubmitting}
+                style={{ flex: 1, height: '38px', borderRadius: '10px', background: partnerWizardShiftType === 'day' ? 'rgba(251,146,60,0.4)' : 'rgba(139,92,246,0.4)', border: `1px solid ${partnerWizardShiftType === 'day' ? 'rgba(251,146,60,0.6)' : 'rgba(139,92,246,0.6)'}`, color: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer', boxShadow: `0 0 8px ${partnerWizardShiftType === 'day' ? 'rgba(251,146,60,0.4)' : 'rgba(139,92,246,0.4)'}` }}
+                data-testid="partner-wizard-done"
+              >{partnerWizardSubmitting ? 'Adding...' : 'Done'}</button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const { toast } = useToast();
   
@@ -627,6 +797,19 @@ export default function Dashboard() {
     return (w < 640 || h < 940) && h >= w;
   });
   const isMobileView = isMobileLandscape || isMobilePortrait;
+  const [mobileAuth, setMobileAuth] = useState<string | null>(() => {
+    const stored = localStorage.getItem('mobileAuth');
+    if (stored === '5747' || stored === '4201' || stored === '1010') return stored;
+    return null;
+  });
+  const [mobilePassInput, setMobilePassInput] = useState('');
+  const [mobilePassError, setMobilePassError] = useState(false);
+  const [partnerWizardOpen, setPartnerWizardOpen] = useState(false);
+  const [partnerWizardStep, setPartnerWizardStep] = useState(0);
+  const [partnerWizardDates, setPartnerWizardDates] = useState<string[]>([]);
+  const [partnerWizardShiftType, setPartnerWizardShiftType] = useState<'day' | 'night'>('day');
+  const [partnerWizardMonth, setPartnerWizardMonth] = useState(() => { const n = new Date(); return { year: n.getFullYear(), month: n.getMonth() }; });
+  const [partnerWizardSubmitting, setPartnerWizardSubmitting] = useState(false);
   
   useEffect(() => {
     const handleResize = () => {
@@ -720,6 +903,7 @@ export default function Dashboard() {
     repeatInterval: null as number | null,
     repeatIntervalUnit: null as string | null,
     repeatEndDate: "",
+    shiftAdjust: false,
   });
   const quickAddHasData = quickAddData.type !== "" || quickAddData.title.trim() !== "" || quickAddData.courseName !== "" || quickAddData.dueDate !== "" || quickAddData.notes.trim() !== "" || quickAddData.attachments.length > 0 || quickAddData.subtasks.length > 0;
   const handleQuickAddClose = () => {
@@ -1396,6 +1580,7 @@ export default function Dashboard() {
   const [alexaRepeatInterval, setAlexaRepeatInterval] = useState(1);
   const [alexaRepeatIntervalUnit, setAlexaRepeatIntervalUnit] = useState('days');
   const [alexaRepeatEndDate, setAlexaRepeatEndDate] = useState('');
+  const [alexaShiftAdjust, setAlexaShiftAdjust] = useState(false);
   const [alexaSpeakers, setAlexaSpeakers] = useState('all');
   const [alexaCalendarOpen, setAlexaCalendarOpen] = useState(false);
   const [editR4CalendarOpen, setEditR4CalendarOpen] = useState(false);
@@ -6110,6 +6295,7 @@ export default function Dashboard() {
       setAlexaRepeatInterval(1);
       setAlexaRepeatIntervalUnit('days');
       setAlexaRepeatEndDate('');
+      setAlexaShiftAdjust(false);
     },
   });
   const deleteAlexaMutation = useMutation({
@@ -9139,6 +9325,7 @@ export default function Dashboard() {
           repeatInterval: task.repeatInterval,
           repeatIntervalUnit: task.repeatIntervalUnit,
           repeatEndDate: task.repeatEndDate,
+          shiftAdjust: task.shiftAdjust ?? false,
           reminder1: task.reminder1,
           reminder2: task.reminder2,
           reminder3: task.reminder3,
@@ -10456,20 +10643,128 @@ export default function Dashboard() {
   };
 
   if (isMobileView) {
+    const isFull = mobileAuth === '5747';
+    const hasAddTask = mobileAuth === '5747';
+    const hasPartnerWizard = mobileAuth === '5747' || mobileAuth === '4201';
+
+    if (!mobileAuth) {
+      return (
+        <div
+          style={{
+            width: '100vw', height: '100vh', overflow: 'hidden',
+            backgroundColor: colorSettings.mainBackgroundOverlay ? safeHex(colorSettings.mainBackground, '#3a8bbf') : '#3a8bbf',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px',
+          }}
+          data-testid="mobile-password-screen"
+        >
+          <div style={{
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+            backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+            border: '1.5px solid rgba(255,255,255,0.35)',
+            borderRadius: '16px', padding: '28px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25)',
+            width: '260px',
+          }}>
+            <span style={{ color: '#fff', fontSize: '14px', fontWeight: 600, fontFamily: "system-ui, -apple-system, sans-serif" }}>UniCal</span>
+            <input
+              type="password"
+              inputMode="numeric"
+              placeholder="Password"
+              value={mobilePassInput}
+              onChange={(e) => { setMobilePassInput(e.target.value); setMobilePassError(false); }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  const v = mobilePassInput.trim();
+                  if (v === '5747' || v === '4201' || v === '1010') { localStorage.setItem('mobileAuth', v); setMobileAuth(v); }
+                  else setMobilePassError(true);
+                }
+              }}
+              style={{
+                width: '100%', height: '40px', borderRadius: '10px', border: mobilePassError ? '2px solid #ef4444' : '1.5px solid rgba(255,255,255,0.4)',
+                background: 'rgba(255,255,255,0.12)', color: '#fff', fontSize: '16px', textAlign: 'center',
+                outline: 'none', fontFamily: "system-ui, -apple-system, sans-serif",
+              }}
+              data-testid="mobile-password-input"
+              autoFocus
+            />
+            <button
+              onClick={() => {
+                const v = mobilePassInput.trim();
+                if (v === '5747' || v === '4201' || v === '1010') { localStorage.setItem('mobileAuth', v); setMobileAuth(v); }
+                else setMobilePassError(true);
+              }}
+              style={{
+                width: '100%', height: '38px', borderRadius: '10px',
+                background: 'rgba(255,255,255,0.25)', border: '1px solid rgba(255,255,255,0.4)',
+                color: '#fff', fontSize: '14px', fontWeight: 600, cursor: 'pointer',
+                fontFamily: "system-ui, -apple-system, sans-serif",
+              }}
+              data-testid="mobile-password-submit"
+            >Enter</button>
+            {mobilePassError && <span style={{ color: '#fca5a5', fontSize: '12px' }}>Incorrect password</span>}
+          </div>
+        </div>
+      );
+    }
+
+    if (mobileAuth === '1010' && isMobilePortrait) {
+      return (
+        <div
+          style={{
+            width: '100vw', height: '100vh', overflow: 'hidden',
+            backgroundColor: colorSettings.mainBackgroundOverlay ? safeHex(colorSettings.mainBackground, '#3a8bbf') : '#3a8bbf',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px',
+          }}
+          data-testid="mobile-rotate-prompt"
+        >
+          <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '14px', fontWeight: 500, fontFamily: "system-ui, -apple-system, sans-serif" }}>
+            Rotate your phone to view
+          </div>
+          <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: '28px' }}>↻</div>
+        </div>
+      );
+    }
+
+
     const mobileOpenQuickAdd = () => {
       startTransition(() => {
         setQuickAddStep(0);
-        setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminder4DateTimeMode: false, reminder4Date: '', reminder4Hour: '09', reminder4Minute: '00', reminderEmail: false, reminderAlexa: false, reminderSms: false, reminder1Methods: '', reminder2Methods: '', reminder3Methods: '', reminder4Methods: '', attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '', repeatSpanDays: 1 });
+        setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminder4DateTimeMode: false, reminder4Date: '', reminder4Hour: '09', reminder4Minute: '00', reminderEmail: false, reminderAlexa: false, reminderSms: false, reminder1Methods: '', reminder2Methods: '', reminder3Methods: '', reminder4Methods: '', attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '', repeatSpanDays: 1, shiftAdjust: false });
         setIsQuickAddOpen(true);
       });
     };
 
+    const mobileOpenSettings = () => {
+      startTransition(() => {
+        setOriginalColorSettings({...colorSettings});
+        setOriginalBlinkSettings({...blinkSettings});
+        setMobileSettingsPage(0);
+      });
+    };
+
+    const MOBILE_SETTINGS_PAGES = [
+      'Colour Settings', 'Layout Settings', 'Week View', 'Blinking & Spacing',
+      'Text-to-Speech', 'Data Sync', 'Shift Schedule',
+      'Google & Calendars', 'Display Options', 'School Week', 'Semesters', 'Calendar Weeks'
+    ];
+
+    const mobileBtnStyle = (size: number) => ({
+      width: `${size}px`, height: `${size}px`, borderRadius: '12px',
+      background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)',
+      backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)',
+      border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)',
+      boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      cursor: 'pointer', padding: 0, color: '#ffffff', flexShrink: 0,
+    } as const);
+
+    const btnSize = isMobileLandscape ? 42 : 64;
+    const iconSize = isMobileLandscape ? 19 : 28;
+
     return (
       <div
         style={{
-          width: '100vw',
-          height: '100vh',
-          overflow: 'hidden',
+          width: '100vw', height: '100vh', overflow: 'hidden',
           backgroundColor: colorSettings.mainBackgroundOverlay ? safeHex(colorSettings.mainBackground, '#3a8bbf') : '#3a8bbf',
           display: 'flex',
           flexDirection: isMobileLandscape ? 'row' : 'column',
@@ -10481,179 +10776,116 @@ export default function Dashboard() {
       >
         <div
           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '12px',
-            padding: isMobileLandscape ? '8px 6px' : '20px',
-            flexShrink: 0,
-            zIndex: 10,
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            gap: isMobileLandscape ? '8px' : '14px',
+            padding: isMobileLandscape ? '6px' : '20px',
+            flexShrink: 0, zIndex: 10,
             width: isMobileLandscape ? '56px' : '100%',
             height: isMobileLandscape ? '100%' : 'auto',
           }}
         >
-          <button
-            onClick={() => setTickerDialogOpen(true)}
-            data-testid="mobile-button-d2l"
-            style={{
-              width: isMobileLandscape ? '42px' : '70px',
-              height: isMobileLandscape ? '42px' : '70px',
-              borderRadius: '50%',
-              background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
-              border: '1.5px solid rgba(255,255,255,0.35)',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              padding: 0,
-              overflow: 'hidden',
-            }}
-          >
-            <img src={d2lTickerLabel} alt="D2L" style={{ height: isMobileLandscape ? '42px' : '70px', width: isMobileLandscape ? '42px' : '70px', objectFit: 'cover', borderRadius: '50%' }} />
+          <button onClick={() => setTickerDialogOpen(true)} data-testid="mobile-button-d2l" style={{...mobileBtnStyle(btnSize), overflow: 'hidden'}}>
+            <img src={d2lTickerLabel} alt="D2L" style={{ height: `${btnSize}px`, width: `${btnSize}px`, objectFit: 'cover', borderRadius: '12px' }} />
           </button>
 
-          <button
-            onClick={() => setIsAlexaDialogOpen(true)}
-            data-testid="mobile-button-alexa"
-            style={{
-              width: isMobileLandscape ? '42px' : '70px',
-              height: isMobileLandscape ? '42px' : '70px',
-              borderRadius: '50%',
-              background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
-              border: '1.5px solid rgba(255,255,255,0.35)',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              color: '#ffffff',
-              padding: 0,
-            }}
-          >
-            <Megaphone style={{ height: isMobileLandscape ? '20px' : '30px', width: isMobileLandscape ? '20px' : '30px' }} />
-          </button>
+          {isFull && (
+            <button onClick={() => setIsAlexaDialogOpen(true)} data-testid="mobile-button-alexa" style={mobileBtnStyle(btnSize)}>
+              <Megaphone style={{ height: `${iconSize}px`, width: `${iconSize}px` }} />
+            </button>
+          )}
 
-          <button
-            onClick={mobileOpenQuickAdd}
-            data-testid="mobile-button-add-task"
-            style={{
-              width: isMobileLandscape ? '42px' : '70px',
-              height: isMobileLandscape ? '42px' : '70px',
-              borderRadius: '50%',
-              background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
-              border: '1.5px solid rgba(255,255,255,0.35)',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              color: '#ffffff',
-              fontSize: isMobileLandscape ? '22px' : '32px',
-              fontWeight: 300,
-              padding: 0,
-              fontFamily: "system-ui, -apple-system, sans-serif",
-            }}
-          >
-            +
-          </button>
+          {hasAddTask && (
+            <button onClick={mobileOpenQuickAdd} data-testid="mobile-button-add-task" style={{...mobileBtnStyle(btnSize), fontSize: `${isMobileLandscape ? 22 : 30}px`, fontWeight: 300, fontFamily: "system-ui, -apple-system, sans-serif"}}>
+              +
+            </button>
+          )}
+
+          {isFull && (
+            <button onClick={mobileOpenSettings} data-testid="mobile-button-cog" style={mobileBtnStyle(btnSize)}>
+              <Settings style={{ height: `${iconSize}px`, width: `${iconSize}px` }} />
+            </button>
+          )}
+
+          {hasPartnerWizard && (
+            <button
+              onClick={() => { setPartnerWizardStep(0); setPartnerWizardDates([]); setPartnerWizardShiftType('day'); setPartnerWizardOpen(true); }}
+              data-testid="mobile-button-partner-wizard"
+              style={{...mobileBtnStyle(btnSize), display: 'flex', flexDirection: 'column', gap: '2px'}}
+            >
+              <Calendar style={{ height: `${iconSize * 0.7}px`, width: `${iconSize * 0.7}px` }} />
+              <span style={{ fontSize: '7px', fontWeight: 600, fontFamily: "system-ui, -apple-system, sans-serif", lineHeight: 1 }}>Shifts</span>
+            </button>
+          )}
 
           {isMobilePortrait && (
-            <div style={{ marginTop: '8px', color: 'rgba(255,255,255,0.5)', fontSize: '11px', fontWeight: 400, textAlign: 'center', fontFamily: "system-ui, -apple-system, sans-serif" }}>
+            <div style={{ marginTop: '12px', color: 'rgba(255,255,255,0.4)', fontSize: '10px', textAlign: 'center', fontFamily: "system-ui, -apple-system, sans-serif" }}>
               Rotate for calendar
             </div>
           )}
+
+          <a
+            href={`/?auth=5747`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              marginTop: isMobileLandscape ? 'auto' : '16px', paddingBottom: isMobileLandscape ? '8px' : '0',
+              opacity: 0.35, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+            data-testid="mobile-replit-logo"
+          >
+            <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><path d="M7 5.5C7 4.67 7.67 4 8.5 4h15c.83 0 1.5.67 1.5 1.5v7c0 .83-.67 1.5-1.5 1.5h-15C7.67 14 7 13.33 7 12.5v-7zM7 19.5c0-.83.67-1.5 1.5-1.5h15c.83 0 1.5.67 1.5 1.5v7c0 .83-.67 1.5-1.5 1.5h-15C7.67 28 7 27.33 7 26.5v-7z" fill="rgba(255,255,255,0.8)"/></svg>
+          </a>
         </div>
 
         {isMobileLandscape && (
           <div
-            ref={calendarWrapperRef}
             style={{
-              flex: 1,
-              height: '100%',
-              overflow: 'hidden',
-              display: 'flex',
-              flexDirection: 'column',
+              flex: 1, height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column',
               background: 'linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 100%)',
-              backdropFilter: 'blur(30px)',
-              WebkitBackdropFilter: 'blur(30px)',
+              backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)',
               borderLeft: '1px solid rgba(255,255,255,0.15)',
-              borderRadius: '0',
             }}
             data-testid="mobile-calendar-container"
           >
             <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '4px 10px',
-              borderBottom: '1px solid rgba(255,255,255,0.15)',
-              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.08) 100%)',
-              flexShrink: 0,
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '4px 10px', borderBottom: '1px solid rgba(255,255,255,0.15)',
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.08) 100%)', flexShrink: 0,
             }}>
               <span style={{ color: '#ffffff', fontSize: '12px', fontWeight: 600, fontFamily: "system-ui, -apple-system, sans-serif" }}>
                 {(() => {
                   const weekDates = getWeekDates(selectedWeek);
                   if (!weekDates || weekDates.length === 0) return `Week ${selectedWeek}`;
-                  const first = weekDates[0];
-                  const last = weekDates[weekDates.length - 1];
+                  const first = weekDates[0]; const last = weekDates[weekDates.length - 1];
                   const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' });
                   return `Week ${selectedWeek}: ${fmt.format(first)} – ${fmt.format(last)}`;
                 })()}
               </span>
               <div style={{ display: 'flex', gap: '4px' }}>
-                <button
-                  onClick={() => setSelectedWeek(w => Math.max(FIRST_WEEK, w - 1))}
-                  style={{ color: '#fff', background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '4px', width: '24px', height: '22px', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                  data-testid="mobile-prev-week"
-                >‹</button>
-                <button
-                  onClick={() => setSelectedWeek(w => Math.min(LAST_WEEK, w + 1))}
-                  style={{ color: '#fff', background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '4px', width: '24px', height: '22px', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                  data-testid="mobile-next-week"
-                >›</button>
-                <button
-                  onClick={() => setCalendarView(v => v === 'week' ? 'month' : 'week')}
-                  style={{ color: '#fff', background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '6px', height: '22px', padding: '0 8px', cursor: 'pointer', fontSize: '10px', fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                  data-testid="mobile-toggle-view"
-                >{calendarView === 'week' ? 'Month' : 'Week'}</button>
+                <button onClick={() => setSelectedWeek(w => Math.max(FIRST_WEEK, w - 1))} style={{ color: '#fff', background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '4px', width: '24px', height: '22px', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} data-testid="mobile-prev-week">‹</button>
+                <button onClick={() => setSelectedWeek(w => Math.min(LAST_WEEK, w + 1))} style={{ color: '#fff', background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '4px', width: '24px', height: '22px', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} data-testid="mobile-next-week">›</button>
+                <button onClick={() => setCalendarView(v => v === 'week' ? 'month' : 'week')} style={{ color: '#fff', background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '6px', height: '22px', padding: '0 8px', cursor: 'pointer', fontSize: '10px', fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center' }} data-testid="mobile-toggle-view">{calendarView === 'week' ? 'Month' : 'Week'}</button>
               </div>
             </div>
             <div style={{ flex: 1, overflow: 'auto', position: 'relative' }}>
               {calendarView === "week" ? (
-                <div style={{ display: 'grid', gridTemplateColumns: `40px repeat(${(() => { const weekDates = getWeekDates(selectedWeek); return weekDates?.length || 7; })()}, 1fr)`, height: '100%', minHeight: '100%' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: `40px repeat(${(() => { const wd = getWeekDates(selectedWeek); return wd?.length || 7; })()}, 1fr)`, height: '100%', minHeight: '100%' }}>
                   <div style={{ borderRight: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column' }}>
                     {Array.from({ length: 15 }, (_, i) => {
                       const hour = i + 7;
                       const label = hour <= 12 ? `${hour}${hour === 12 ? 'p' : 'a'}` : `${hour - 12}p`;
-                      return (
-                        <div key={hour} style={{ flex: 1, borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: '1px', color: 'rgba(255,255,255,0.4)', fontSize: '8px', fontWeight: 500 }}>
-                          {label}
-                        </div>
-                      );
+                      return (<div key={hour} style={{ flex: 1, borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: '1px', color: 'rgba(255,255,255,0.4)', fontSize: '8px', fontWeight: 500 }}>{label}</div>);
                     })}
                   </div>
                   {(() => {
                     const weekDates = getWeekDates(selectedWeek) || [];
                     const today = new Date();
-                    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                    const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
                     return weekDates.map((date, dayIdx) => {
-                      const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                      const dateStr = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
                       const isToday = dateStr === todayStr;
                       const dayName = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(date);
-                      const dayTasks = allTasks.filter(t => {
-                        if (!t.dueDate) return false;
-                        const td = new Date(t.dueDate);
-                        const tStr = `${td.getFullYear()}-${String(td.getMonth() + 1).padStart(2, '0')}-${String(td.getDate()).padStart(2, '0')}`;
-                        return tStr === dateStr;
-                      });
+                      const dayTasks = allTasks.filter(t => { if (!t.dueDate) return false; const td = new Date(t.dueDate); return `${td.getFullYear()}-${String(td.getMonth()+1).padStart(2,'0')}-${String(td.getDate()).padStart(2,'0')}` === dateStr; });
                       return (
                         <div key={dayIdx} style={{ borderRight: '1px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column', position: 'relative', background: isToday ? 'rgba(255,255,255,0.04)' : 'transparent' }}>
                           <div style={{ textAlign: 'center', padding: '2px 0', borderBottom: '1px solid rgba(255,255,255,0.1)', flexShrink: 0, background: isToday ? 'rgba(59,130,246,0.2)' : 'transparent' }}>
@@ -10661,44 +10893,17 @@ export default function Dashboard() {
                             <div style={{ fontSize: '13px', color: isToday ? '#ffffff' : 'rgba(255,255,255,0.8)', fontWeight: isToday ? 700 : 500 }}>{date.getDate()}</div>
                           </div>
                           <div style={{ flex: 1, position: 'relative' }}>
-                            {Array.from({ length: 15 }, (_, i) => (
-                              <div key={i} style={{ position: 'absolute', top: `${(i / 15) * 100}%`, left: 0, right: 0, height: `${100 / 15}%`, borderBottom: '1px solid rgba(255,255,255,0.04)' }} />
-                            ))}
+                            {Array.from({ length: 15 }, (_, i) => (<div key={i} style={{ position: 'absolute', top: `${(i/15)*100}%`, left: 0, right: 0, height: `${100/15}%`, borderBottom: '1px solid rgba(255,255,255,0.04)' }} />))}
                             {dayTasks.map((task, ti) => {
                               const td = new Date(task.dueDate!);
-                              const hour = td.getHours();
-                              const minute = td.getMinutes();
-                              const topPct = Math.max(0, Math.min(100, ((hour - 7 + minute / 60) / 15) * 100));
-                              const courseName = task.courseName || '';
-                              const courseObj = allCourses.find((c: any) => c.code === courseName || c.name === courseName);
+                              const hour = td.getHours(); const minute = td.getMinutes();
+                              const topPct = Math.max(0, Math.min(100, ((hour - 7 + minute/60)/15)*100));
+                              const courseObj = allCourses.find((c: any) => c.code === task.courseName || c.name === task.courseName);
                               const bg = courseObj?.color || '#3b82f6';
                               return (
-                                <div
-                                  key={ti}
-                                  style={{
-                                    position: 'absolute',
-                                    top: `${topPct}%`,
-                                    left: '1px',
-                                    right: '1px',
-                                    minHeight: '14px',
-                                    backgroundColor: bg,
-                                    borderRadius: '2px',
-                                    padding: '1px 3px',
-                                    overflow: 'hidden',
-                                    fontSize: '7px',
-                                    color: '#ffffff',
-                                    fontWeight: 600,
-                                    lineHeight: '1.2',
-                                    opacity: task.isCompleted ? 0.4 : 1,
-                                    textDecoration: task.isCompleted ? 'line-through' : 'none',
-                                    zIndex: 5,
-                                    cursor: 'pointer',
-                                  }}
-                                  onClick={() => setEditingTask(task)}
-                                  data-testid={`mobile-task-${task.id}`}
-                                >
-                                  {task.title}
-                                </div>
+                                <div key={ti} style={{ position: 'absolute', top: `${topPct}%`, left: '1px', right: '1px', minHeight: '14px', backgroundColor: bg, borderRadius: '2px', padding: '1px 3px', overflow: 'hidden', fontSize: '7px', color: '#fff', fontWeight: 600, lineHeight: '1.2', opacity: task.isCompleted ? 0.4 : 1, textDecoration: task.isCompleted ? 'line-through' : 'none', zIndex: 5, cursor: 'pointer' }}
+                                  onClick={() => setEditingTask(task)} data-testid={`mobile-task-${task.id}`}
+                                >{task.title}</div>
                               );
                             })}
                           </div>
@@ -10712,41 +10917,31 @@ export default function Dashboard() {
                   {(() => {
                     const weekDates = getWeekDates(selectedWeek) || [];
                     const firstDate = weekDates[0] || new Date();
-                    const year = firstDate.getFullYear();
-                    const month = firstDate.getMonth();
+                    const year = firstDate.getFullYear(); const month = firstDate.getMonth();
                     const firstDay = new Date(year, month, 1).getDay();
                     const daysInMonth = new Date(year, month + 1, 0).getDate();
                     const today = new Date();
-                    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                    const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
                     const monthName = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(firstDate);
-                    const cells: (number | null)[] = [];
+                    const cells: (number|null)[] = [];
                     for (let i = 0; i < firstDay; i++) cells.push(null);
                     for (let d = 1; d <= daysInMonth; d++) cells.push(d);
                     return (
                       <>
                         <div style={{ textAlign: 'center', color: '#fff', fontSize: '12px', fontWeight: 600, marginBottom: '4px' }}>{monthName}</div>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px' }}>
-                          {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(d => (
-                            <div key={d} style={{ textAlign: 'center', color: 'rgba(255,255,255,0.4)', fontSize: '9px', fontWeight: 600, padding: '2px 0' }}>{d}</div>
-                          ))}
+                          {['Su','Mo','Tu','We','Th','Fr','Sa'].map(d => (<div key={d} style={{ textAlign: 'center', color: 'rgba(255,255,255,0.4)', fontSize: '9px', fontWeight: 600, padding: '2px 0' }}>{d}</div>))}
                           {cells.map((day, i) => {
                             if (day === null) return <div key={i} />;
-                            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                            const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
                             const isToday = dateStr === todayStr;
-                            const tasksForDay = allTasks.filter(t => {
-                              if (!t.dueDate) return false;
-                              const td = new Date(t.dueDate);
-                              return `${td.getFullYear()}-${String(td.getMonth() + 1).padStart(2, '0')}-${String(td.getDate()).padStart(2, '0')}` === dateStr;
-                            });
+                            const tasksForDay = allTasks.filter(t => { if (!t.dueDate) return false; const td = new Date(t.dueDate); return `${td.getFullYear()}-${String(td.getMonth()+1).padStart(2,'0')}-${String(td.getDate()).padStart(2,'0')}` === dateStr; });
                             return (
-                              <div key={i} style={{ textAlign: 'center', padding: '4px 2px', borderRadius: '4px', background: isToday ? 'rgba(59,130,246,0.3)' : tasksForDay.length > 0 ? 'rgba(255,255,255,0.06)' : 'transparent', cursor: tasksForDay.length > 0 ? 'pointer' : 'default' }}>
-                                <div style={{ fontSize: '11px', color: isToday ? '#93c5fd' : '#ffffff', fontWeight: isToday ? 700 : 400 }}>{day}</div>
+                              <div key={i} style={{ textAlign: 'center', padding: '4px 2px', borderRadius: '4px', background: isToday ? 'rgba(59,130,246,0.3)' : tasksForDay.length > 0 ? 'rgba(255,255,255,0.06)' : 'transparent' }}>
+                                <div style={{ fontSize: '11px', color: isToday ? '#93c5fd' : '#fff', fontWeight: isToday ? 700 : 400 }}>{day}</div>
                                 {tasksForDay.length > 0 && (
                                   <div style={{ display: 'flex', justifyContent: 'center', gap: '2px', marginTop: '1px' }}>
-                                    {tasksForDay.slice(0, 3).map((t, ti) => {
-                                      const courseObj = allCourses.find((c: any) => c.code === t.courseName || c.name === t.courseName);
-                                      return <div key={ti} style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: courseObj?.color || '#3b82f6' }} />;
-                                    })}
+                                    {tasksForDay.slice(0,3).map((t, ti) => { const co = allCourses.find((c: any) => c.code === t.courseName || c.name === t.courseName); return <div key={ti} style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: co?.color || '#3b82f6' }} />; })}
                                   </div>
                                 )}
                               </div>
@@ -10762,10 +10957,98 @@ export default function Dashboard() {
           </div>
         )}
 
-        {tickerDialogOpen && (
-          <div className="fixed inset-0 flex items-start justify-center" style={{ zIndex: 10010, backgroundColor: 'rgba(0,0,0,0.5)', paddingTop: '20px' }} onClick={(e) => { if (e.target === e.currentTarget) setTickerDialogOpen(false); }} data-testid="mobile-ticker-dialog-overlay">
-          </div>
+        {mobileSettingsOpen && createPortal(
+          <div style={{ position: 'fixed', inset: 0, zIndex: 99999, backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            onClick={(e) => { if (e.target === e.currentTarget) { setColorSettings(originalColorSettings); setBlinkSettings(originalBlinkSettings); setMobileSettingsPage(-1); } }}
+            data-testid="mobile-settings-wizard"
+          >
+            <div style={{
+              width: '92vw', maxWidth: '440px', maxHeight: '88vh',
+              background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
+              border: '1.5px solid rgba(255,255,255,0.35)', borderRadius: '16px',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25)',
+              display: 'flex', flexDirection: 'column', overflow: 'hidden',
+            }} onClick={(e) => e.stopPropagation()}>
+              <div style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px',
+                borderBottom: '1px solid rgba(255,255,255,0.2)',
+                background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`,
+                backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)',
+                borderRadius: '16px 16px 0 0',
+              }}>
+                <span style={{ color: '#fff', fontSize: '12px', fontWeight: 600, fontFamily: "system-ui, -apple-system, sans-serif" }}>
+                  {MOBILE_SETTINGS_PAGES[mobileSettingsPage] || 'Settings'}
+                </span>
+                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '10px', fontFamily: "system-ui, -apple-system, sans-serif" }}>
+                  {mobileSettingsPage + 1} / {MOBILE_SETTINGS_PAGES.length}
+                </span>
+              </div>
+
+              <div style={{ flex: 1, overflow: 'auto', padding: '16px', minHeight: '200px', maxHeight: '60vh' }}>
+                <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', textAlign: 'center', paddingTop: '40px', fontFamily: "system-ui, -apple-system, sans-serif" }}>
+                  {MOBILE_SETTINGS_PAGES[mobileSettingsPage]} settings
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 16px', borderTop: '1px solid rgba(255,255,255,0.15)', gap: '10px' }}>
+                <button
+                  onClick={() => { setColorSettings(originalColorSettings); setBlinkSettings(originalBlinkSettings); setMobileSettingsPage(-1); }}
+                  style={{
+                    flex: 1, height: '36px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.3)',
+                    background: 'transparent', color: 'rgba(255,255,255,0.7)', fontSize: '13px', fontWeight: 500,
+                    cursor: 'pointer', fontFamily: "system-ui, -apple-system, sans-serif",
+                  }}
+                  data-testid="mobile-settings-cancel"
+                >Cancel</button>
+                <button
+                  onClick={() => {
+                    localStorage.setItem('colorSettings', JSON.stringify(colorSettings));
+                    localStorage.setItem('blinkSettings', JSON.stringify(blinkSettings));
+                    saveDegreeToServer('colorSettings', colorSettings);
+                    saveDegreeToServer('blinkSettings', blinkSettings);
+                    setOriginalColorSettings({...colorSettings});
+                    setOriginalBlinkSettings({...blinkSettings});
+                    if (mobileSettingsPage < MOBILE_SETTINGS_PAGES.length - 1) {
+                      setMobileSettingsPage(mobileSettingsPage + 1);
+                    } else {
+                      setMobileSettingsPage(-1);
+                      toast({ title: "Settings saved", description: "Your settings have been applied." });
+                    }
+                  }}
+                  style={{
+                    flex: 1, height: '36px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.5)',
+                    background: 'rgba(255,255,255,0.15)', color: '#fff', fontSize: '13px', fontWeight: 600,
+                    cursor: 'pointer', fontFamily: "system-ui, -apple-system, sans-serif",
+                    boxShadow: '0 0 6px rgba(255,255,255,0.4), 0 0 12px rgba(255,255,255,0.2)',
+                  }}
+                  data-testid="mobile-settings-save"
+                >{mobileSettingsPage < MOBILE_SETTINGS_PAGES.length - 1 ? 'Save & Next' : 'Save & Done'}</button>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '4px', paddingBottom: '10px' }}>
+                {MOBILE_SETTINGS_PAGES.map((_, i) => (
+                  <div key={i} onClick={() => setMobileSettingsPage(i)} style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: i === mobileSettingsPage ? '#ffffff' : 'rgba(255,255,255,0.25)', cursor: 'pointer', transition: 'background-color 0.2s' }} />
+                ))}
+              </div>
+            </div>
+          </div>,
+          document.body
         )}
+
+        {partnerWizardOpen && createPortal(
+          <PartnerShiftWizard
+            partnerWizardStep={partnerWizardStep} setPartnerWizardStep={setPartnerWizardStep}
+            partnerWizardDates={partnerWizardDates} setPartnerWizardDates={setPartnerWizardDates}
+            partnerWizardShiftType={partnerWizardShiftType} setPartnerWizardShiftType={setPartnerWizardShiftType}
+            partnerWizardMonth={partnerWizardMonth} setPartnerWizardMonth={setPartnerWizardMonth}
+            partnerWizardSubmitting={partnerWizardSubmitting} setPartnerWizardSubmitting={setPartnerWizardSubmitting}
+            colorSettings={colorSettings}
+            onClose={() => setPartnerWizardOpen(false)}
+            onDone={() => { queryClient.invalidateQueries({ queryKey: ['/api/shift-schedule'] }); setPartnerWizardOpen(false); toast({ title: 'Shifts added', description: `${partnerWizardDates.length} shift(s) created` }); }}
+          />,
+          document.body
+        )}
+
       </div>
     );
   }
@@ -13522,7 +13805,7 @@ export default function Dashboard() {
 
 
           {/* Quick Add Button */}
-          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminder4DateTimeMode: false, reminder4Date: '', reminder4Hour: '09', reminder4Minute: '00', reminderEmail: false, reminderAlexa: false, reminderSms: false, reminder1Methods: '', reminder2Methods: '', reminder3Methods: '', reminder4Methods: '', attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '', repeatSpanDays: 1 }); setIsQuickAddOpen(true); }); }}>+ Add Task</Button>
+          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminder4DateTimeMode: false, reminder4Date: '', reminder4Hour: '09', reminder4Minute: '00', reminderEmail: false, reminderAlexa: false, reminderSms: false, reminder1Methods: '', reminder2Methods: '', reminder3Methods: '', reminder4Methods: '', attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '', repeatSpanDays: 1, shiftAdjust: false }); setIsQuickAddOpen(true); }); }}>+ Add Task</Button>
           </div>
 
           {/* Radio Dialog */}
@@ -13999,7 +14282,7 @@ export default function Dashboard() {
 
       {tickerDialogOpen && (
         <div className="fixed inset-0 flex items-start justify-center pt-[50px]" style={{ zIndex: 10010, backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={(e) => { if (e.target === e.currentTarget) setTickerDialogOpen(false); }} data-testid="ticker-dialog-overlay">
-          <div className="sm:rounded-lg shadow-2xl w-[500px] max-h-[500px] flex flex-col overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }} data-testid="ticker-dialog">
+          <div className="sm:rounded-lg shadow-2xl w-[500px] max-w-[95vw] max-h-[500px] flex flex-col overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }} data-testid="ticker-dialog">
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
               <span className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>TICKER ITEMS</span>
             </div>
@@ -14158,7 +14441,7 @@ export default function Dashboard() {
       {/* Alexa Announcements Dialog */}
       {isAlexaDialogOpen && (
         <div className="fixed inset-0 flex items-start justify-center pt-[50px]" style={{ zIndex: 10010, backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={(e) => { if (e.target === e.currentTarget) setIsAlexaDialogOpen(false); }} data-testid="alexa-dialog-overlay">
-          <div className="sm:rounded-lg shadow-2xl w-[520px] max-h-[600px] flex flex-col overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }} data-testid="alexa-dialog">
+          <div className="sm:rounded-lg shadow-2xl w-[520px] max-w-[95vw] max-h-[600px] flex flex-col overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }} data-testid="alexa-dialog">
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
               <span className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>ALEXA ANNOUNCEMENTS</span>
               <span className="text-white/40 text-[10px]">{scheduledAlexaList.length} scheduled</span>
@@ -14403,6 +14686,23 @@ export default function Dashboard() {
                   </div>
                 )}
 
+                {alexaRepeatType !== 'none' && (
+                  <div className="flex items-center justify-between pl-[42px]">
+                    <div className="flex flex-col">
+                      <span className="text-white/60 text-[10px]">Partner shift adjust</span>
+                      <span className="text-white/30 text-[8px]">±12h on night-shift days</span>
+                    </div>
+                    <button
+                      onClick={() => setAlexaShiftAdjust(v => !v)}
+                      className="relative shrink-0"
+                      style={{ width: '22px', height: '12px', borderRadius: '6px', background: alexaShiftAdjust ? 'rgba(139,92,246,0.7)' : 'rgba(255,255,255,0.15)', border: '0.5px solid rgba(255,255,255,0.3)', transition: 'background 0.2s' }}
+                      data-testid="alexa-shift-adjust"
+                    >
+                      <div style={{ width: '9px', height: '9px', borderRadius: '4.5px', background: '#fff', position: 'absolute', top: '1.5px', left: alexaShiftAdjust ? '11px' : '1.5px', transition: 'left 0.2s', boxShadow: '0 1px 2px rgba(0,0,0,0.3)' }} />
+                    </button>
+                  </div>
+                )}
+
                 <div className="flex gap-1.5">
                   <button
                     onClick={() => {
@@ -14415,6 +14715,7 @@ export default function Dashboard() {
                           repeatInterval: alexaRepeatType === 'custom' ? alexaRepeatInterval : null,
                           repeatIntervalUnit: alexaRepeatType === 'custom' ? alexaRepeatIntervalUnit : null,
                           repeatEndDate: alexaRepeatEndDate || null,
+                          shiftAdjust: alexaShiftAdjust,
                           speakers: alexaSpeakers,
                         });
                       } else {
@@ -16639,7 +16940,7 @@ export default function Dashboard() {
                     onClick={() => {
                       setIsAddChooserOpen(false);
                       setQuickAddStep(0);
-                      setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminder4DateTimeMode: false, reminder4Date: '', reminder4Hour: '09', reminder4Minute: '00', reminderEmail: false, reminderAlexa: false, reminderSms: false, reminder1Methods: '', reminder2Methods: '', reminder3Methods: '', reminder4Methods: '', attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '', repeatSpanDays: 1 });
+                      setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminder4DateTimeMode: false, reminder4Date: '', reminder4Hour: '09', reminder4Minute: '00', reminderEmail: false, reminderAlexa: false, reminderSms: false, reminder1Methods: '', reminder2Methods: '', reminder3Methods: '', reminder4Methods: '', attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '', repeatSpanDays: 1, shiftAdjust: false });
                       setIsQuickAddOpen(true);
                     }}
                     data-testid="button-chooser-add-task"
@@ -17496,6 +17797,20 @@ export default function Dashboard() {
                               data-testid="quick-add-repeat-end-date"
                             />
                           </div>
+                          <div className="flex items-center justify-between mt-2 px-1">
+                            <div className="flex flex-col">
+                              <span className="text-white/70 text-[11px]">Partner shift adjust</span>
+                              <span className="text-white/40 text-[9px]">Shift time ±12h on night-shift days</span>
+                            </div>
+                            <button
+                              onClick={() => setQuickAddData(p => ({ ...p, shiftAdjust: !p.shiftAdjust }))}
+                              className="relative shrink-0"
+                              style={{ width: '34px', height: '18px', borderRadius: '9px', background: quickAddData.shiftAdjust ? 'rgba(139,92,246,0.7)' : 'rgba(255,255,255,0.15)', border: '0.5px solid rgba(255,255,255,0.3)', transition: 'background 0.2s' }}
+                              data-testid="quick-add-shift-adjust"
+                            >
+                              <div style={{ width: '14px', height: '14px', borderRadius: '7px', background: '#fff', position: 'absolute', top: '2px', left: quickAddData.shiftAdjust ? '18px' : '2px', transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.3)' }} />
+                            </button>
+                          </div>
                         </>
                       )}
                     </div>
@@ -17696,6 +18011,7 @@ export default function Dashboard() {
                             countdownBarDays: quickAddData.countdownBarDays,
                             countdownBarColor: quickAddData.countdownBarColor || null,
                             repeatSpanDays: quickAddData.repeatSpanDays ?? 1,
+                            shiftAdjust: quickAddData.shiftAdjust ?? false,
                             reminderEmail: quickAddData.reminderEmail,
                             reminderAlexa: quickAddData.reminderAlexa,
                             reminderSms: quickAddData.reminderSms,
@@ -32284,6 +32600,23 @@ function TaskForm({
                 </div>
               </div>
             </>
+          )}
+
+          {formData.repeatType !== "none" && (
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col">
+                <Label className="text-[11px] text-white">Partner shift adjust</Label>
+                <span className="text-white/50 text-[9px]">Shift time ±12h on night-shift days</span>
+              </div>
+              <button
+                onClick={() => setFormData(prev => ({ ...prev, shiftAdjust: !prev.shiftAdjust }))}
+                className="relative shrink-0"
+                style={{ width: '34px', height: '18px', borderRadius: '9px', background: formData.shiftAdjust ? 'rgba(139,92,246,0.7)' : 'rgba(255,255,255,0.15)', border: '0.5px solid rgba(255,255,255,0.3)', transition: 'background 0.2s' }}
+                data-testid="edit-task-shift-adjust"
+              >
+                <div style={{ width: '14px', height: '14px', borderRadius: '7px', background: '#fff', position: 'absolute', top: '2px', left: formData.shiftAdjust ? '18px' : '2px', transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.3)' }} />
+              </button>
+            </div>
           )}
 
           <div>

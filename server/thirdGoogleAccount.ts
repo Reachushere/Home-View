@@ -173,3 +173,28 @@ export async function getEventsFromThirdAccountCalendar(calendarId: string, time
     return [];
   }
 }
+
+export async function createEventOnThirdAccountCalendar(
+  calendarId: string,
+  summary: string,
+  startDateTime: string,
+  endDateTime: string,
+  colorId?: string
+) {
+  const calendar = await getThirdAccountCalendarClient();
+  const response = await calendar.events.insert({
+    calendarId,
+    requestBody: {
+      summary,
+      start: { dateTime: startDateTime, timeZone: 'America/Toronto' },
+      end: { dateTime: endDateTime, timeZone: 'America/Toronto' },
+      ...(colorId ? { colorId } : {}),
+    },
+  });
+  return response.data;
+}
+
+export async function deleteEventOnThirdAccountCalendar(calendarId: string, eventId: string) {
+  const calendar = await getThirdAccountCalendarClient();
+  await calendar.events.delete({ calendarId, eventId });
+}
