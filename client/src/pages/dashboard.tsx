@@ -616,9 +616,26 @@ export default function Dashboard() {
 
   // Mobile detection
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
+  const [isMobileLandscape, setIsMobileLandscape] = useState(() => {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    return (w < 940 || h < 640) && w > h;
+  });
+  const [isMobilePortrait, setIsMobilePortrait] = useState(() => {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    return (w < 640 || h < 940) && h >= w;
+  });
+  const isMobileView = isMobileLandscape || isMobilePortrait;
   
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 640);
+    const handleResize = () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      setIsMobile(w < 640);
+      setIsMobileLandscape((w < 940 || h < 640) && w > h);
+      setIsMobilePortrait((w < 640 || h < 940) && h >= w);
+    };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -2786,6 +2803,8 @@ export default function Dashboard() {
     return { ...defaultCourseDisplayNames };
   });
   const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState(false);
+  const [mobileSettingsPage, setMobileSettingsPage] = useState(-1);
+  const mobileSettingsOpen = mobileSettingsPage >= 0;
   // Discussion post checkbox states (persisted per week in localStorage)
   const [startDiscussionComplete, setStartDiscussionComplete] = useState<boolean>(() => {
     const saved = localStorage.getItem(`discussionStart_week${selectedWeek}`);
@@ -10435,6 +10454,321 @@ export default function Dashboard() {
       }
     }
   };
+
+  if (isMobileView) {
+    const mobileOpenQuickAdd = () => {
+      startTransition(() => {
+        setQuickAddStep(0);
+        setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminder4DateTimeMode: false, reminder4Date: '', reminder4Hour: '09', reminder4Minute: '00', reminderEmail: false, reminderAlexa: false, reminderSms: false, reminder1Methods: '', reminder2Methods: '', reminder3Methods: '', reminder4Methods: '', attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '', repeatSpanDays: 1 });
+        setIsQuickAddOpen(true);
+      });
+    };
+
+    return (
+      <div
+        style={{
+          width: '100vw',
+          height: '100vh',
+          overflow: 'hidden',
+          backgroundColor: colorSettings.mainBackgroundOverlay ? safeHex(colorSettings.mainBackground, '#3a8bbf') : '#3a8bbf',
+          display: 'flex',
+          flexDirection: isMobileLandscape ? 'row' : 'column',
+          alignItems: isMobileLandscape ? 'stretch' : 'center',
+          justifyContent: isMobileLandscape ? 'flex-start' : 'center',
+          position: 'relative',
+        }}
+        data-testid="mobile-view"
+      >
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '12px',
+            padding: isMobileLandscape ? '8px 6px' : '20px',
+            flexShrink: 0,
+            zIndex: 10,
+            width: isMobileLandscape ? '56px' : '100%',
+            height: isMobileLandscape ? '100%' : 'auto',
+          }}
+        >
+          <button
+            onClick={() => setTickerDialogOpen(true)}
+            data-testid="mobile-button-d2l"
+            style={{
+              width: isMobileLandscape ? '42px' : '70px',
+              height: isMobileLandscape ? '42px' : '70px',
+              borderRadius: '50%',
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+              border: '1.5px solid rgba(255,255,255,0.35)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              padding: 0,
+              overflow: 'hidden',
+            }}
+          >
+            <img src={d2lTickerLabel} alt="D2L" style={{ height: isMobileLandscape ? '42px' : '70px', width: isMobileLandscape ? '42px' : '70px', objectFit: 'cover', borderRadius: '50%' }} />
+          </button>
+
+          <button
+            onClick={() => setIsAlexaDialogOpen(true)}
+            data-testid="mobile-button-alexa"
+            style={{
+              width: isMobileLandscape ? '42px' : '70px',
+              height: isMobileLandscape ? '42px' : '70px',
+              borderRadius: '50%',
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+              border: '1.5px solid rgba(255,255,255,0.35)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              color: '#ffffff',
+              padding: 0,
+            }}
+          >
+            <Megaphone style={{ height: isMobileLandscape ? '20px' : '30px', width: isMobileLandscape ? '20px' : '30px' }} />
+          </button>
+
+          <button
+            onClick={mobileOpenQuickAdd}
+            data-testid="mobile-button-add-task"
+            style={{
+              width: isMobileLandscape ? '42px' : '70px',
+              height: isMobileLandscape ? '42px' : '70px',
+              borderRadius: '50%',
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+              border: '1.5px solid rgba(255,255,255,0.35)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              color: '#ffffff',
+              fontSize: isMobileLandscape ? '22px' : '32px',
+              fontWeight: 300,
+              padding: 0,
+              fontFamily: "system-ui, -apple-system, sans-serif",
+            }}
+          >
+            +
+          </button>
+
+          {isMobilePortrait && (
+            <div style={{ marginTop: '8px', color: 'rgba(255,255,255,0.5)', fontSize: '11px', fontWeight: 400, textAlign: 'center', fontFamily: "system-ui, -apple-system, sans-serif" }}>
+              Rotate for calendar
+            </div>
+          )}
+        </div>
+
+        {isMobileLandscape && (
+          <div
+            ref={calendarWrapperRef}
+            style={{
+              flex: 1,
+              height: '100%',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 100%)',
+              backdropFilter: 'blur(30px)',
+              WebkitBackdropFilter: 'blur(30px)',
+              borderLeft: '1px solid rgba(255,255,255,0.15)',
+              borderRadius: '0',
+            }}
+            data-testid="mobile-calendar-container"
+          >
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '4px 10px',
+              borderBottom: '1px solid rgba(255,255,255,0.15)',
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.08) 100%)',
+              flexShrink: 0,
+            }}>
+              <span style={{ color: '#ffffff', fontSize: '12px', fontWeight: 600, fontFamily: "system-ui, -apple-system, sans-serif" }}>
+                {(() => {
+                  const weekDates = getWeekDates(selectedWeek);
+                  if (!weekDates || weekDates.length === 0) return `Week ${selectedWeek}`;
+                  const first = weekDates[0];
+                  const last = weekDates[weekDates.length - 1];
+                  const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' });
+                  return `Week ${selectedWeek}: ${fmt.format(first)} – ${fmt.format(last)}`;
+                })()}
+              </span>
+              <div style={{ display: 'flex', gap: '4px' }}>
+                <button
+                  onClick={() => setSelectedWeek(w => Math.max(FIRST_WEEK, w - 1))}
+                  style={{ color: '#fff', background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '4px', width: '24px', height: '22px', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  data-testid="mobile-prev-week"
+                >‹</button>
+                <button
+                  onClick={() => setSelectedWeek(w => Math.min(LAST_WEEK, w + 1))}
+                  style={{ color: '#fff', background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '4px', width: '24px', height: '22px', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  data-testid="mobile-next-week"
+                >›</button>
+                <button
+                  onClick={() => setCalendarView(v => v === 'week' ? 'month' : 'week')}
+                  style={{ color: '#fff', background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '6px', height: '22px', padding: '0 8px', cursor: 'pointer', fontSize: '10px', fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  data-testid="mobile-toggle-view"
+                >{calendarView === 'week' ? 'Month' : 'Week'}</button>
+              </div>
+            </div>
+            <div style={{ flex: 1, overflow: 'auto', position: 'relative' }}>
+              {calendarView === "week" ? (
+                <div style={{ display: 'grid', gridTemplateColumns: `40px repeat(${(() => { const weekDates = getWeekDates(selectedWeek); return weekDates?.length || 7; })()}, 1fr)`, height: '100%', minHeight: '100%' }}>
+                  <div style={{ borderRight: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column' }}>
+                    {Array.from({ length: 15 }, (_, i) => {
+                      const hour = i + 7;
+                      const label = hour <= 12 ? `${hour}${hour === 12 ? 'p' : 'a'}` : `${hour - 12}p`;
+                      return (
+                        <div key={hour} style={{ flex: 1, borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: '1px', color: 'rgba(255,255,255,0.4)', fontSize: '8px', fontWeight: 500 }}>
+                          {label}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {(() => {
+                    const weekDates = getWeekDates(selectedWeek) || [];
+                    const today = new Date();
+                    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                    return weekDates.map((date, dayIdx) => {
+                      const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                      const isToday = dateStr === todayStr;
+                      const dayName = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(date);
+                      const dayTasks = allTasks.filter(t => {
+                        if (!t.dueDate) return false;
+                        const td = new Date(t.dueDate);
+                        const tStr = `${td.getFullYear()}-${String(td.getMonth() + 1).padStart(2, '0')}-${String(td.getDate()).padStart(2, '0')}`;
+                        return tStr === dateStr;
+                      });
+                      return (
+                        <div key={dayIdx} style={{ borderRight: '1px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column', position: 'relative', background: isToday ? 'rgba(255,255,255,0.04)' : 'transparent' }}>
+                          <div style={{ textAlign: 'center', padding: '2px 0', borderBottom: '1px solid rgba(255,255,255,0.1)', flexShrink: 0, background: isToday ? 'rgba(59,130,246,0.2)' : 'transparent' }}>
+                            <div style={{ fontSize: '8px', color: isToday ? '#93c5fd' : 'rgba(255,255,255,0.5)', fontWeight: 600, textTransform: 'uppercase' }}>{dayName}</div>
+                            <div style={{ fontSize: '13px', color: isToday ? '#ffffff' : 'rgba(255,255,255,0.8)', fontWeight: isToday ? 700 : 500 }}>{date.getDate()}</div>
+                          </div>
+                          <div style={{ flex: 1, position: 'relative' }}>
+                            {Array.from({ length: 15 }, (_, i) => (
+                              <div key={i} style={{ position: 'absolute', top: `${(i / 15) * 100}%`, left: 0, right: 0, height: `${100 / 15}%`, borderBottom: '1px solid rgba(255,255,255,0.04)' }} />
+                            ))}
+                            {dayTasks.map((task, ti) => {
+                              const td = new Date(task.dueDate!);
+                              const hour = td.getHours();
+                              const minute = td.getMinutes();
+                              const topPct = Math.max(0, Math.min(100, ((hour - 7 + minute / 60) / 15) * 100));
+                              const courseName = task.courseName || '';
+                              const courseObj = allCourses.find((c: any) => c.code === courseName || c.name === courseName);
+                              const bg = courseObj?.color || '#3b82f6';
+                              return (
+                                <div
+                                  key={ti}
+                                  style={{
+                                    position: 'absolute',
+                                    top: `${topPct}%`,
+                                    left: '1px',
+                                    right: '1px',
+                                    minHeight: '14px',
+                                    backgroundColor: bg,
+                                    borderRadius: '2px',
+                                    padding: '1px 3px',
+                                    overflow: 'hidden',
+                                    fontSize: '7px',
+                                    color: '#ffffff',
+                                    fontWeight: 600,
+                                    lineHeight: '1.2',
+                                    opacity: task.isCompleted ? 0.4 : 1,
+                                    textDecoration: task.isCompleted ? 'line-through' : 'none',
+                                    zIndex: 5,
+                                    cursor: 'pointer',
+                                  }}
+                                  onClick={() => setEditingTask(task)}
+                                  data-testid={`mobile-task-${task.id}`}
+                                >
+                                  {task.title}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    });
+                  })()}
+                </div>
+              ) : (
+                <div style={{ padding: '4px' }}>
+                  {(() => {
+                    const weekDates = getWeekDates(selectedWeek) || [];
+                    const firstDate = weekDates[0] || new Date();
+                    const year = firstDate.getFullYear();
+                    const month = firstDate.getMonth();
+                    const firstDay = new Date(year, month, 1).getDay();
+                    const daysInMonth = new Date(year, month + 1, 0).getDate();
+                    const today = new Date();
+                    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                    const monthName = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(firstDate);
+                    const cells: (number | null)[] = [];
+                    for (let i = 0; i < firstDay; i++) cells.push(null);
+                    for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+                    return (
+                      <>
+                        <div style={{ textAlign: 'center', color: '#fff', fontSize: '12px', fontWeight: 600, marginBottom: '4px' }}>{monthName}</div>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px' }}>
+                          {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(d => (
+                            <div key={d} style={{ textAlign: 'center', color: 'rgba(255,255,255,0.4)', fontSize: '9px', fontWeight: 600, padding: '2px 0' }}>{d}</div>
+                          ))}
+                          {cells.map((day, i) => {
+                            if (day === null) return <div key={i} />;
+                            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                            const isToday = dateStr === todayStr;
+                            const tasksForDay = allTasks.filter(t => {
+                              if (!t.dueDate) return false;
+                              const td = new Date(t.dueDate);
+                              return `${td.getFullYear()}-${String(td.getMonth() + 1).padStart(2, '0')}-${String(td.getDate()).padStart(2, '0')}` === dateStr;
+                            });
+                            return (
+                              <div key={i} style={{ textAlign: 'center', padding: '4px 2px', borderRadius: '4px', background: isToday ? 'rgba(59,130,246,0.3)' : tasksForDay.length > 0 ? 'rgba(255,255,255,0.06)' : 'transparent', cursor: tasksForDay.length > 0 ? 'pointer' : 'default' }}>
+                                <div style={{ fontSize: '11px', color: isToday ? '#93c5fd' : '#ffffff', fontWeight: isToday ? 700 : 400 }}>{day}</div>
+                                {tasksForDay.length > 0 && (
+                                  <div style={{ display: 'flex', justifyContent: 'center', gap: '2px', marginTop: '1px' }}>
+                                    {tasksForDay.slice(0, 3).map((t, ti) => {
+                                      const courseObj = allCourses.find((c: any) => c.code === t.courseName || c.name === t.courseName);
+                                      return <div key={ti} style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: courseObj?.color || '#3b82f6' }} />;
+                                    })}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </>
+                    );
+                  })()}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {tickerDialogOpen && (
+          <div className="fixed inset-0 flex items-start justify-center" style={{ zIndex: 10010, backgroundColor: 'rgba(0,0,0,0.5)', paddingTop: '20px' }} onClick={(e) => { if (e.target === e.currentTarget) setTickerDialogOpen(false); }} data-testid="mobile-ticker-dialog-overlay">
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div 
