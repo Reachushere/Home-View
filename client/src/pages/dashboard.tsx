@@ -10792,6 +10792,11 @@ export default function Dashboard() {
           <div className="sm:rounded-lg shadow-2xl w-[500px] max-w-[95vw] max-h-[500px] flex flex-col overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }} data-testid="ticker-dialog">
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
               <span className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>TICKER ITEMS</span>
+              <div className="flex items-center gap-1 shrink-0" style={{ marginRight: '28px' }}>
+                {['B', 'Y', 'G'].map(label => (
+                  <span key={label} style={{ width: '20px', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.6)', fontFamily: "system-ui, -apple-system, sans-serif" }}>{label}</span>
+                ))}
+              </div>
             </div>
             <div className="flex-1 overflow-y-auto px-4 py-2" style={{ scrollbarWidth: 'thin' }}>
               {(() => {
@@ -10872,18 +10877,14 @@ export default function Dashboard() {
                                   updateTickerVisibilityMutation.mutate({ id: a.id, visibleTo: next });
                                 }}
                                 style={{
-                                  width: '20px', height: '16px', borderRadius: '3px', fontSize: '7px', fontWeight: 700,
-                                  fontFamily: "system-ui, -apple-system, sans-serif",
+                                  width: '20px', height: '16px', borderRadius: '3px',
                                   background: checked ? (p === '5747' ? 'rgba(99,102,241,0.5)' : p === '4201' ? 'rgba(139,92,246,0.5)' : 'rgba(255,255,255,0.2)') : 'rgba(255,255,255,0.05)',
                                   border: checked ? '1px solid rgba(255,255,255,0.4)' : '1px solid rgba(255,255,255,0.15)',
-                                  color: checked ? '#fff' : 'rgba(255,255,255,0.25)',
-                                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                  cursor: 'pointer',
                                 }}
                                 data-testid={`ticker-vis-${a.id}-${p}`}
                                 title={p === '5747' ? 'Bryn' : p === '4201' ? 'Yasu' : 'Guest'}
-                              >
-                                {p === '5747' ? 'B' : p === '4201' ? 'Y' : 'G'}
-                              </button>
+                              />
                             );
                           })}
                         </div>
