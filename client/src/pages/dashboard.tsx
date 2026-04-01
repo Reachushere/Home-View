@@ -566,10 +566,13 @@ function PartnerShiftWizard({ partnerWizardStep, setPartnerWizardStep, partnerWi
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ bulk: delBulk }),
         }).catch(() => {});
-        fetch('/api/google/third-account/delete-shifts', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ dates: removeDates }),
-        }).catch(() => {});
+        try {
+          const delRes = await fetch('/api/google/third-account/delete-shifts', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ dates: removeDates }),
+          });
+          if (!delRes.ok) console.error('[PartnerWizard] Google Calendar delete failed:', await delRes.text());
+        } catch (e) { console.error('[PartnerWizard] Google Calendar delete error:', e); }
       }
       if (partnerWizardDates.length > 0) {
         const bulkData = partnerWizardDates.map(d => ({ date: d, shiftType: partnerWizardShiftType }));
@@ -577,10 +580,13 @@ function PartnerShiftWizard({ partnerWizardStep, setPartnerWizardStep, partnerWi
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ bulk: bulkData }),
         });
-        fetch('/api/google/third-account/create-shifts', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ shifts: partnerWizardDates.map(d => ({ date: d, type: partnerWizardShiftType })), label: shiftLabel }),
-        }).catch(() => {});
+        try {
+          const createRes = await fetch('/api/google/third-account/create-shifts', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ shifts: partnerWizardDates.map(d => ({ date: d, type: partnerWizardShiftType })), label: shiftLabel }),
+          });
+          if (!createRes.ok) console.error('[PartnerWizard] Google Calendar create failed:', await createRes.text());
+        } catch (e) { console.error('[PartnerWizard] Google Calendar create error:', e); }
       }
       onDone();
     } catch (err) {
