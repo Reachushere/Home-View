@@ -59,6 +59,11 @@ export function AccessGate({ children }: AccessGateProps) {
     } catch {}
 
     if (import.meta.env.DEV) {
+      const devParams = new URLSearchParams(window.location.search);
+      const devAuth = devParams.get('auth');
+      if (devAuth && ['5747', '4201', '1010'].includes(devAuth)) {
+        setAuthLevel(devAuth);
+      }
       setIsAuthorized(true);
       return;
     }
