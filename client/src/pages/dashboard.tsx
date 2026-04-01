@@ -922,6 +922,7 @@ export default function Dashboard() {
   });
   const [mobilePassInput, setMobilePassInput] = useState('');
   const [mobilePassError, setMobilePassError] = useState(false);
+  const { isReadOnly, isAdmin, authLevel } = useAccessMode();
 
   useEffect(() => {
     if (isMobileView && !mobileAuth && (authLevel === '5747' || authLevel === '4201' || authLevel === '1010')) {
@@ -1880,7 +1881,6 @@ export default function Dashboard() {
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [shareLink, setShareLink] = useState("");
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
-  const { isReadOnly, isAdmin, authLevel } = useAccessMode();
   const desktopIsFull = authLevel === '5747';
   const desktopHasPartnerWizard = authLevel === '5747' || authLevel === '4201';
   const desktopHasD2L = true;
@@ -10787,10 +10787,6 @@ export default function Dashboard() {
     }
   };
 
-  if (isMobileView) {
-    const isFull = mobileAuth === '5747';
-    const hasAddTask = mobileAuth === '5747';
-
   const tickerDialogJSX = tickerDialogOpen ? (
         <div className="fixed inset-0 flex items-start justify-center pt-[50px]" style={{ zIndex: 10010, backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={(e) => { if (e.target === e.currentTarget) setTickerDialogOpen(false); }} data-testid="ticker-dialog-overlay">
           <div className="sm:rounded-lg shadow-2xl w-[500px] max-w-[95vw] max-h-[500px] flex flex-col overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }} data-testid="ticker-dialog">
@@ -11434,6 +11430,9 @@ export default function Dashboard() {
         </div>
   ) : null;
 
+  if (isMobileView) {
+    const isFull = mobileAuth === '5747';
+    const hasAddTask = mobileAuth === '5747';
     const hasPartnerWizard = mobileAuth === '5747' || mobileAuth === '4201';
 
     if (!mobileAuth) {
