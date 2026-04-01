@@ -187,7 +187,9 @@ export default function TickerPage() {
     const html = renderTickerHtml(allHeadlines);
     const scrollContainer = tickerRef.current.querySelector('.news-ticker-scroll') as HTMLElement;
     if (scrollContainer) {
-      scrollContainer.innerHTML = html;
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(`<body>${html}</body>`, 'text/html');
+      scrollContainer.replaceChildren(...Array.from(doc.body.childNodes).map(n => n.cloneNode(true)));
       const applyAnim = () => {
         const parentWidth = scrollContainer.parentElement?.clientWidth || window.innerWidth;
         const startScroll = () => {

@@ -2,7 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const TOKEN_FILE = path.join(process.cwd(), '.spotify-token.json');
+const TOKEN_FILE = path.join(process.cwd(), '.cache', 'spotify-token.json');
 
 interface SpotifyTokenData {
   accessToken: string;
