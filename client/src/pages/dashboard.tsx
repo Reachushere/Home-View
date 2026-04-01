@@ -926,6 +926,7 @@ export default function Dashboard() {
       setIsMobileLandscape((w < 940 || h < 640) && w > h);
       setIsMobilePortrait((w < 640 || h < 940) && h >= w);
     };
+    handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
