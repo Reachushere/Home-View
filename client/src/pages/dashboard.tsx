@@ -10931,12 +10931,28 @@ export default function Dashboard() {
             </div>
           )}
 
+          {mobileAuth === '4201' && (
+            <div style={{
+              marginTop: isMobileLandscape ? 'auto' : '0',
+              paddingTop: isMobileLandscape ? '0' : '0',
+              color: 'rgba(255,255,255,0.5)',
+              fontSize: '11px',
+              fontWeight: 500,
+              fontStyle: 'italic',
+              fontFamily: "system-ui, -apple-system, sans-serif",
+              textAlign: 'center',
+              letterSpacing: '0.3px',
+            }} data-testid="text-yasu-message">
+              I love you Yasu
+            </div>
+          )}
+
           <a
             href={`/?auth=5747`}
             target="_blank"
             rel="noopener noreferrer"
             style={{
-              marginTop: isMobileLandscape ? 'auto' : '16px', paddingBottom: isMobileLandscape ? '8px' : '0',
+              marginTop: isMobileLandscape ? (mobileAuth === '4201' ? '8px' : 'auto') : '16px', paddingBottom: isMobileLandscape ? '8px' : '0',
               opacity: 0.35, display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
             data-testid="mobile-replit-logo"
