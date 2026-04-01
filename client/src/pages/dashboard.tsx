@@ -580,7 +580,7 @@ function PartnerShiftWizard({ partnerWizardStep, setPartnerWizardStep, partnerWi
   const hasChanges = partnerWizardDates.length > 0 || removeDates.length > 0;
 
   return (
-    <div className="fixed inset-0 z-[10015] flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 10015, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.6)', WebkitTransform: 'translateZ(0)' }} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div style={{
         width: '320px', maxWidth: '95vw', maxHeight: '90vh', borderRadius: '16px', overflow: 'hidden', display: 'flex', flexDirection: 'column',
         background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
