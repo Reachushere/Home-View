@@ -6375,14 +6375,24 @@ export default function Dashboard() {
   const [tickerDialogOpen, setTickerDialogOpen] = useState(false);
   const [newTickerText, setNewTickerText] = useState('');
   const [newTickerTag, setNewTickerTag] = useState('Custom');
+  const [newTickerVisibleTo, setNewTickerVisibleTo] = useState<string[]>(['5747', '4201', '1010']);
   const addTickerMutation = useMutation({
-    mutationFn: async ({ body, tag }: { body: string; tag: string }) => {
-      const res = await apiRequest('POST', '/api/announcements', { body, courseName: tag });
+    mutationFn: async ({ body, tag, visibleTo }: { body: string; tag: string; visibleTo: string[] }) => {
+      const res = await apiRequest('POST', '/api/announcements', { body, courseName: tag, visibleTo });
       return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/announcements'] });
       setNewTickerText('');
+      setNewTickerVisibleTo(['5747', '4201', '1010']);
+    },
+  });
+  const updateTickerVisibilityMutation = useMutation({
+    mutationFn: async ({ id, visibleTo }: { id: number; visibleTo: string[] }) => {
+      await apiRequest('PATCH', `/api/announcements/${id}/visibility`, { visibleTo });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/announcements'] });
     },
   });
   const deleteTickerMutation = useMutation({
@@ -10768,6 +10778,650 @@ export default function Dashboard() {
   if (isMobileView) {
     const isFull = mobileAuth === '5747';
     const hasAddTask = mobileAuth === '5747';
+
+  const tickerDialogJSX = tickerDialogOpen ? (
+        <div className="fixed inset-0 flex items-start justify-center pt-[50px]" style={{ zIndex: 10010, backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={(e) => { if (e.target === e.currentTarget) setTickerDialogOpen(false); }} data-testid="ticker-dialog-overlay">
+          <div className="sm:rounded-lg shadow-2xl w-[500px] max-w-[95vw] max-h-[500px] flex flex-col overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }} data-testid="ticker-dialog">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+              <span className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>TICKER ITEMS</span>
+            </div>
+            <div className="flex-1 overflow-y-auto px-4 py-2" style={{ scrollbarWidth: 'thin' }}>
+              {(() => {
+                const allDialogItems = [...todayTaskTickerItems.map((t: any) => ({ ...t, _isSynthetic: true })), ...d2lAnnouncements];
+                if (allDialogItems.length === 0) return <div className="text-white/40 text-[12px] text-center py-6">No ticker items</div>;
+                return allDialogItems.map((a: any, idx: number) => (
+                  <div
+                    key={a.id}
+                    draggable
+                    onDragStart={(e) => { setTickerDragIdx(idx); e.dataTransfer.effectAllowed = 'move'; }}
+                    onDragOver={(e) => { e.preventDefault(); setTickerDragOverIdx(idx); }}
+                    onDragEnd={() => {
+                      if (tickerDragIdx !== null && tickerDragOverIdx !== null && tickerDragIdx !== tickerDragOverIdx) {
+                        const items = [...d2lAnnouncements];
+                        const [moved] = items.splice(tickerDragIdx, 1);
+                        items.splice(tickerDragOverIdx, 0, moved);
+                        reorderTickerMutation.mutate(items.map((i: any) => i.id));
+                      }
+                      setTickerDragIdx(null);
+                      setTickerDragOverIdx(null);
+                    }}
+                    onTouchStart={(e) => {
+                      const touch = e.touches[0];
+                      tickerTouchDragRef.current = { startY: touch.clientY, idx, el: e.currentTarget as HTMLElement };
+                    }}
+                    onTouchMove={(e) => {
+                      if (!tickerTouchDragRef.current) return;
+                      const touch = e.touches[0];
+                      const container = (e.currentTarget as HTMLElement).parentElement;
+                      if (!container) return;
+                      const children = Array.from(container.querySelectorAll('[data-ticker-drag-item]'));
+                      for (let i = 0; i < children.length; i++) {
+                        const rect = children[i].getBoundingClientRect();
+                        if (touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+                          setTickerDragOverIdx(i);
+                          break;
+                        }
+                      }
+                      setTickerDragIdx(tickerTouchDragRef.current.idx);
+                    }}
+                    onTouchEnd={() => {
+                      if (tickerDragIdx !== null && tickerDragOverIdx !== null && tickerDragIdx !== tickerDragOverIdx) {
+                        const items = [...d2lAnnouncements];
+                        const [moved] = items.splice(tickerDragIdx, 1);
+                        items.splice(tickerDragOverIdx, 0, moved);
+                        reorderTickerMutation.mutate(items.map((i: any) => i.id));
+                      }
+                      setTickerDragIdx(null);
+                      setTickerDragOverIdx(null);
+                      tickerTouchDragRef.current = null;
+                    }}
+                    data-ticker-drag-item
+                    className="cursor-grab active:cursor-grabbing"
+                    style={{
+                      opacity: tickerDragIdx === idx ? 0.4 : 1,
+                      borderTop: tickerDragOverIdx === idx && tickerDragIdx !== null && tickerDragIdx !== idx ? '2px solid rgba(99,102,241,0.8)' : '2px solid transparent',
+                      transition: 'opacity 0.15s',
+                    }}
+                    data-testid={`ticker-item-${a.id}`}
+                  >
+                    <div className="flex items-center gap-2 py-2">
+                      <GripVertical className="h-3.5 w-3.5 text-white/25 shrink-0" />
+                      <span className="text-[10px] px-1.5 py-0.5 rounded font-semibold shrink-0" style={{ minWidth: '60px', textAlign: 'center', backgroundColor: a.courseName === 'Custom' ? 'rgba(255,255,255,0.1)' : a.courseName === 'URGENT' ? 'rgba(239,68,68,0.4)' : a.courseName === 'REMINDER' ? 'rgba(234,179,8,0.35)' : 'rgba(99,102,241,0.3)', color: a.courseName === 'Custom' ? '#9ca3af' : a.courseName === 'URGENT' ? '#fca5a5' : a.courseName === 'REMINDER' ? '#fde047' : '#a5b4fc' }}>
+                        {a.courseName === 'Custom' ? '📌' : a.courseName}
+                      </span>
+                      <span className="text-white text-[12px] flex-1 min-w-0 truncate text-left">{a.body || a.snippet || a.subject}</span>
+                      {!a._isSynthetic && (
+                        <div className="flex items-center gap-1 shrink-0">
+                          {['5747', '4201', '1010'].map(p => {
+                            const vis = a.visibleTo || ['5747', '4201', '1010'];
+                            const checked = vis.includes(p);
+                            return (
+                              <button
+                                key={p}
+                                onClick={() => {
+                                  const curr = a.visibleTo || ['5747', '4201', '1010'];
+                                  const next = checked ? curr.filter((v: string) => v !== p) : [...curr, p];
+                                  updateTickerVisibilityMutation.mutate({ id: a.id, visibleTo: next });
+                                }}
+                                style={{
+                                  width: '20px', height: '16px', borderRadius: '3px', fontSize: '7px', fontWeight: 700,
+                                  fontFamily: "system-ui, -apple-system, sans-serif",
+                                  background: checked ? (p === '5747' ? 'rgba(99,102,241,0.5)' : p === '4201' ? 'rgba(139,92,246,0.5)' : 'rgba(255,255,255,0.2)') : 'rgba(255,255,255,0.05)',
+                                  border: checked ? '1px solid rgba(255,255,255,0.4)' : '1px solid rgba(255,255,255,0.15)',
+                                  color: checked ? '#fff' : 'rgba(255,255,255,0.25)',
+                                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                }}
+                                data-testid={`ticker-vis-${a.id}-${p}`}
+                                title={p === '5747' ? 'Bryn' : p === '4201' ? 'Yasu' : 'Guest'}
+                              >
+                                {p === '5747' ? 'B' : p === '4201' ? 'Y' : 'G'}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                      <button
+                        onClick={() => {
+                          if (a._isSynthetic) {
+                            const newSet = new Set(dismissedTodayTaskIds);
+                            newSet.add(a.id);
+                            setDismissedTodayTaskIds(newSet);
+                            localStorage.setItem('dismissedTodayTaskIds', JSON.stringify([...newSet]));
+                          } else {
+                            deleteTickerMutation.mutate(a.id);
+                          }
+                        }}
+                        className="shrink-0 text-white/30 hover:text-red-400 transition-colors p-1"
+                        data-testid={`button-delete-ticker-${a.id}`}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                    {idx < allDialogItems.length - 1 && (
+                      <div style={{ marginLeft: '22px', marginRight: '8px', borderBottom: '1px solid rgba(255,255,255,0.12)' }} />
+                    )}
+                  </div>
+                ));
+              })()}
+            </div>
+            <div className="px-4 py-3 flex items-center gap-2" style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
+              <select
+                value={newTickerTag}
+                onChange={(e) => setNewTickerTag(e.target.value)}
+                className="text-white text-[11px] px-2 py-2 rounded focus:outline-none"
+                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', minWidth: '90px' }}
+                data-testid="select-ticker-tag"
+              >
+                <option value="Custom" style={{ background: '#1a1a2e' }}>📌 Custom</option>
+                {semesterSettings && [1, 2, 3].map(i => {
+                  const code = ((semesterSettings as any)[`course${i}Code`] || '').trim().replace(/\s/g, '').toUpperCase();
+                  return code ? <option key={code} value={code} style={{ background: '#1a1a2e' }}>{code}</option> : null;
+                })}
+                <option value="REMINDER" style={{ background: '#1a1a2e' }}>REMINDER</option>
+                <option value="URGENT" style={{ background: '#1a1a2e' }}>URGENT</option>
+              </select>
+              <input
+                type="text"
+                value={newTickerText}
+                onChange={(e) => setNewTickerText(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter' && newTickerText.trim()) { addTickerMutation.mutate({ body: newTickerText.trim(), tag: newTickerTag, visibleTo: newTickerVisibleTo }); } }}
+                placeholder="Add ticker item..."
+                className="flex-1 text-white text-[12px] px-3 py-2 rounded focus:outline-none placeholder:text-white/30"
+                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                data-testid="input-new-ticker"
+              />
+              <button
+                onClick={() => { if (newTickerText.trim()) addTickerMutation.mutate({ body: newTickerText.trim(), tag: newTickerTag, visibleTo: newTickerVisibleTo }); }}
+                disabled={!newTickerText.trim() || addTickerMutation.isPending}
+                className="shrink-0 disabled:opacity-40 text-white text-[12px] font-semibold px-3 py-2 rounded transition-colors hover:brightness-110"
+                style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.15)', border: '1px solid rgba(255,255,255,0.2)' }}
+                data-testid="button-add-ticker"
+              >
+                + Add
+              </button>
+            </div>
+            <div className="flex items-center gap-1.5 px-4 pb-1">
+              <span className="text-white/40 text-[9px] mr-1">Visible to:</span>
+              {['5747', '4201', '1010'].map(p => {
+                const checked = newTickerVisibleTo.includes(p);
+                return (
+                  <button
+                    key={p}
+                    onClick={() => setNewTickerVisibleTo(prev => checked ? prev.filter(v => v !== p) : [...prev, p])}
+                    style={{
+                      width: '22px', height: '17px', borderRadius: '3px', fontSize: '8px', fontWeight: 700,
+                      fontFamily: "system-ui, -apple-system, sans-serif",
+                      background: checked ? (p === '5747' ? 'rgba(99,102,241,0.5)' : p === '4201' ? 'rgba(139,92,246,0.5)' : 'rgba(255,255,255,0.2)') : 'rgba(255,255,255,0.05)',
+                      border: checked ? '1px solid rgba(255,255,255,0.4)' : '1px solid rgba(255,255,255,0.15)',
+                      color: checked ? '#fff' : 'rgba(255,255,255,0.25)',
+                      cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}
+                    data-testid={`new-ticker-vis-${p}`}
+                    title={p === '5747' ? 'Bryn' : p === '4201' ? 'Yasu' : 'Guest'}
+                  >
+                    {p === '5747' ? 'B' : p === '4201' ? 'Y' : 'G'}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="flex items-center justify-end gap-2 px-4 py-3" style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
+              <Button
+                variant="outline"
+                className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 w-[110px]"
+                style={{ fontSize: '12px' }}
+                onClick={() => setTickerDialogOpen(false)}
+                data-testid="button-cancel-ticker-dialog"
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="outline"
+                className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8 w-[110px]"
+                style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '12px' }}
+                onClick={() => {
+                  toast({ title: "Saved", description: "Ticker items saved." });
+                  setTickerDialogOpen(false);
+                }}
+                data-testid="button-save-ticker-dialog"
+              >
+                Save
+              </Button>
+            </div>
+          </div>
+        </div>
+  ) : null;
+
+  const alexaDialogJSX = isAlexaDialogOpen ? (
+        <div className="fixed inset-0 flex items-start justify-center pt-[50px]" style={{ zIndex: 10010, backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={(e) => { if (e.target === e.currentTarget) setIsAlexaDialogOpen(false); }} data-testid="alexa-dialog-overlay">
+          <div className="sm:rounded-lg shadow-2xl w-[520px] max-w-[95vw] max-h-[600px] flex flex-col overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }} data-testid="alexa-dialog">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+              <span className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>ALEXA ANNOUNCEMENTS</span>
+              <span className="text-white/40 text-[10px]">{scheduledAlexaList.length} scheduled</span>
+            </div>
+
+            {/* Compose area */}
+            <div className="px-4 py-3 border-b border-white/15 flex-shrink-0">
+              <div className="flex flex-col gap-2">
+                <div className="relative">
+                  <textarea
+                    value={alexaMessage}
+                    onChange={(e) => { if (e.target.value.length <= ALEXA_MAX_CHARS) setAlexaMessage(e.target.value); }}
+                    maxLength={ALEXA_MAX_CHARS}
+                    placeholder="Type announcement message..."
+                    rows={2}
+                    className="w-full text-white text-[12px] px-3 py-2 rounded resize-none focus:outline-none placeholder:text-white/30"
+                    style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                    data-testid="alexa-message-input"
+                  />
+                  <span className={`absolute bottom-1.5 right-2 text-[9px] ${alexaMessage.length >= ALEXA_MAX_CHARS ? 'text-red-400' : 'text-white/30'}`}>{alexaMessage.length}/{ALEXA_MAX_CHARS}</span>
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <Popover open={alexaCalendarOpen} onOpenChange={setAlexaCalendarOpen}>
+                    <PopoverTrigger asChild>
+                      <button
+                        className="flex-1 flex items-center gap-1.5 text-white text-[11px] px-2 py-1.5 rounded focus:outline-none text-left"
+                        style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                        data-testid="alexa-date-input"
+                      >
+                        <Calendar className="h-3 w-3 text-white/40 shrink-0" />
+                        <span className={alexaDate ? 'text-white' : 'text-white/30'}>
+                          {alexaDate ? format(new Date(alexaDate + 'T12:00:00'), 'MMM d, yyyy') : 'Pick a date...'}
+                        </span>
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="w-auto p-0"
+                      style={{ zIndex: 10020, background: '#1a1a2e', border: '1px solid rgba(255,255,255,0.2)' }}
+                      align="start"
+                    >
+                      <CalendarPicker
+                        mode="single"
+                        selected={alexaDate ? new Date(alexaDate + 'T12:00:00') : undefined}
+                        onSelect={(date) => {
+                          if (date) {
+                            const y = date.getFullYear();
+                            const m = String(date.getMonth() + 1).padStart(2, '0');
+                            const d = String(date.getDate()).padStart(2, '0');
+                            setAlexaDate(`${y}-${m}-${d}`);
+                          } else {
+                            setAlexaDate('');
+                          }
+                          setAlexaCalendarOpen(false);
+                        }}
+                        className="text-white"
+                        classNames={{
+                          months: "flex flex-col",
+                          month: "space-y-3",
+                          caption: "flex justify-center pt-1 relative items-center",
+                          caption_label: "text-[13px] font-medium text-white",
+                          nav: "space-x-1 flex items-center",
+                          nav_button: "h-7 w-7 bg-transparent border border-white/20 rounded-md p-0 opacity-60 hover:opacity-100 hover:bg-white/10 inline-flex items-center justify-center text-white",
+                          nav_button_previous: "absolute left-1",
+                          nav_button_next: "absolute right-1",
+                          table: "w-full border-collapse",
+                          head_row: "flex",
+                          head_cell: "text-white/40 rounded-md w-8 font-normal text-[10px]",
+                          row: "flex w-full mt-1",
+                          cell: "h-8 w-8 text-center text-[11px] p-0 relative",
+                          day: "h-8 w-8 p-0 font-normal text-white/70 hover:bg-white/10 rounded-md inline-flex items-center justify-center cursor-pointer",
+                          day_selected: "!bg-cyan-500 !text-white hover:!bg-cyan-600",
+                          day_today: "bg-white/10 text-white font-semibold",
+                          day_outside: "text-white/20",
+                          day_disabled: "text-white/10",
+                        }}
+                      />
+                      {alexaDate && (
+                        <div className="px-3 pb-2">
+                          <button
+                            onClick={() => { setAlexaDate(''); setAlexaCalendarOpen(false); }}
+                            className="text-[10px] text-white/40 hover:text-white/70 transition-colors"
+                          >
+                            Clear date
+                          </button>
+                        </div>
+                      )}
+                    </PopoverContent>
+                  </Popover>
+                  <select
+                    value={alexaHour}
+                    onChange={(e) => setAlexaHour(e.target.value)}
+                    className="w-[62px] text-white text-[11px] px-1 py-1.5 rounded focus:outline-none [color-scheme:dark]"
+                    style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                    data-testid="alexa-hour-select"
+                  >
+                    {Array.from({ length: 24 }, (_, i) => (
+                      <option key={i} value={i.toString().padStart(2, '0')} style={{ color: 'black' }}>{i === 0 ? '12 AM' : i < 12 ? `${i} AM` : i === 12 ? '12 PM' : `${i-12} PM`}</option>
+                    ))}
+                  </select>
+                  <select
+                    value={alexaMinute}
+                    onChange={(e) => setAlexaMinute(e.target.value)}
+                    className="w-[50px] text-white text-[11px] px-1 py-1.5 rounded focus:outline-none [color-scheme:dark]"
+                    style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                    data-testid="alexa-minute-select"
+                  >
+                    {Array.from({ length: 60 }, (_, i) => (
+                      <option key={i} value={i.toString().padStart(2, '0')} style={{ color: 'black' }}>{i.toString().padStart(2, '0')}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Speaker selector */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-white/40 text-[10px] w-[42px] shrink-0">Target:</span>
+                  <select
+                    value={alexaSpeakers}
+                    onChange={(e) => setAlexaSpeakers(e.target.value)}
+                    className="flex-1 text-white text-[11px] px-2 py-1.5 rounded focus:outline-none [color-scheme:dark]"
+                    style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                    data-testid="alexa-speakers-select"
+                  >
+                    <option value="all" style={{ color: 'black' }}>Everywhere (All Speakers)</option>
+                    {Object.entries(ECHO_SPEAKER_OPTIONS).map(([id, name]) => (
+                      <option key={id} value={id} style={{ color: 'black' }}>{name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Repeat dropdown */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-white/40 text-[10px] w-[42px] shrink-0">Repeat:</span>
+                  <select
+                    value={alexaRepeatType}
+                    onChange={(e) => setAlexaRepeatType(e.target.value)}
+                    className="flex-1 text-white text-[11px] px-2 py-1.5 rounded focus:outline-none [color-scheme:dark]"
+                    style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                    data-testid="alexa-repeat-type"
+                  >
+                    <option value="none" style={{ color: 'black' }}>No repeat</option>
+                    <option value="daily" style={{ color: 'black' }}>Daily</option>
+                    <option value="weekly" style={{ color: 'black' }}>Weekly</option>
+                    <option value="monthly" style={{ color: 'black' }}>Monthly</option>
+                    <option value="yearly" style={{ color: 'black' }}>Yearly</option>
+                    <option value="custom" style={{ color: 'black' }}>Custom...</option>
+                  </select>
+                  {alexaRepeatType !== 'none' && (
+                    <Popover open={alexaRepeatEndCalendarOpen} onOpenChange={setAlexaRepeatEndCalendarOpen}>
+                      <PopoverTrigger asChild>
+                        <button
+                          className="w-[130px] flex items-center gap-1 text-[10px] px-2 py-1.5 rounded focus:outline-none text-left"
+                          style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                          title="Repeat end date (optional)"
+                          data-testid="alexa-repeat-end"
+                        >
+                          <Calendar className="h-2.5 w-2.5 text-white/40 shrink-0" />
+                          <span className={alexaRepeatEndDate ? 'text-white' : 'text-white/30'}>
+                            {alexaRepeatEndDate ? format(new Date(alexaRepeatEndDate + 'T12:00:00'), 'MMM d, yyyy') : 'End date'}
+                          </span>
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        className="w-auto p-0"
+                        style={{ zIndex: 10020, background: '#1a1a2e', border: '1px solid rgba(255,255,255,0.2)' }}
+                        align="start"
+                      >
+                        <CalendarPicker
+                          mode="single"
+                          selected={alexaRepeatEndDate ? new Date(alexaRepeatEndDate + 'T12:00:00') : undefined}
+                          onSelect={(date) => {
+                            if (date) {
+                              const y = date.getFullYear();
+                              const m = String(date.getMonth() + 1).padStart(2, '0');
+                              const d = String(date.getDate()).padStart(2, '0');
+                              setAlexaRepeatEndDate(`${y}-${m}-${d}`);
+                            } else {
+                              setAlexaRepeatEndDate('');
+                            }
+                            setAlexaRepeatEndCalendarOpen(false);
+                          }}
+                          className="text-white"
+                          classNames={{
+                            months: "flex flex-col",
+                            month: "space-y-3",
+                            caption: "flex justify-center pt-1 relative items-center",
+                            caption_label: "text-[13px] font-medium text-white",
+                            nav: "space-x-1 flex items-center",
+                            nav_button: "h-7 w-7 bg-transparent border border-white/20 rounded-md p-0 opacity-60 hover:opacity-100 hover:bg-white/10 inline-flex items-center justify-center text-white",
+                            nav_button_previous: "absolute left-1",
+                            nav_button_next: "absolute right-1",
+                            table: "w-full border-collapse",
+                            head_row: "flex",
+                            head_cell: "text-white/40 rounded-md w-8 font-normal text-[10px]",
+                            row: "flex w-full mt-1",
+                            cell: "h-8 w-8 text-center text-[11px] p-0 relative",
+                            day: "h-8 w-8 p-0 font-normal text-white/70 hover:bg-white/10 rounded-md inline-flex items-center justify-center cursor-pointer",
+                            day_selected: "!bg-cyan-500 !text-white hover:!bg-cyan-600",
+                            day_today: "bg-white/10 text-white font-semibold",
+                            day_outside: "text-white/20",
+                            day_disabled: "text-white/10",
+                          }}
+                        />
+                        {alexaRepeatEndDate && (
+                          <div className="px-3 pb-2">
+                            <button
+                              onClick={() => { setAlexaRepeatEndDate(''); setAlexaRepeatEndCalendarOpen(false); }}
+                              className="text-[10px] text-white/40 hover:text-white/70 transition-colors"
+                            >
+                              Clear end date
+                            </button>
+                          </div>
+                        )}
+                      </PopoverContent>
+                    </Popover>
+                  )}
+                </div>
+                {alexaRepeatType === 'custom' && (
+                  <div className="flex items-center gap-1.5 pl-[42px]">
+                    <span className="text-white/40 text-[10px]">Every</span>
+                    <input
+                      type="number"
+                      min={1}
+                      value={alexaRepeatInterval}
+                      onChange={(e) => setAlexaRepeatInterval(parseInt(e.target.value) || 1)}
+                      className="w-[50px] text-white text-[11px] px-2 py-1 rounded focus:outline-none"
+                      style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                      data-testid="alexa-repeat-interval"
+                    />
+                    <select
+                      value={alexaRepeatIntervalUnit}
+                      onChange={(e) => setAlexaRepeatIntervalUnit(e.target.value)}
+                      className="text-white text-[11px] px-2 py-1.5 rounded focus:outline-none [color-scheme:dark]"
+                      style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                      data-testid="alexa-repeat-unit"
+                    >
+                      <option value="days" style={{ color: 'black' }}>days</option>
+                      <option value="weeks" style={{ color: 'black' }}>weeks</option>
+                      <option value="months" style={{ color: 'black' }}>months</option>
+                      <option value="years" style={{ color: 'black' }}>years</option>
+                    </select>
+                  </div>
+                )}
+
+                {alexaRepeatType !== 'none' && (
+                  <div className="flex items-center justify-between pl-[42px]">
+                    <div className="flex flex-col">
+                      <span className="text-white/60 text-[10px]">Partner shift adjust</span>
+                      <span className="text-white/30 text-[8px]">±12h on night-shift days</span>
+                    </div>
+                    <button
+                      onClick={() => setAlexaShiftAdjust(v => !v)}
+                      className="relative shrink-0"
+                      style={{ width: '22px', height: '12px', borderRadius: '6px', background: alexaShiftAdjust ? 'rgba(139,92,246,0.7)' : 'rgba(255,255,255,0.15)', border: '0.5px solid rgba(255,255,255,0.3)', transition: 'background 0.2s' }}
+                      data-testid="alexa-shift-adjust"
+                    >
+                      <div style={{ width: '9px', height: '9px', borderRadius: '4.5px', background: '#fff', position: 'absolute', top: '1.5px', left: alexaShiftAdjust ? '11px' : '1.5px', transition: 'left 0.2s', boxShadow: '0 1px 2px rgba(0,0,0,0.3)' }} />
+                    </button>
+                  </div>
+                )}
+
+                <div className="flex gap-1.5">
+                  <button
+                    onClick={() => {
+                      if (!alexaMessage.trim()) return;
+                      if (alexaDate) {
+                        createAlexaMutation.mutate({
+                          message: alexaMessage.trim(),
+                          scheduledAt: new Date(`${alexaDate}T${alexaHour}:${alexaMinute}:00`).toISOString(),
+                          repeatType: alexaRepeatType,
+                          repeatInterval: alexaRepeatType === 'custom' ? alexaRepeatInterval : null,
+                          repeatIntervalUnit: alexaRepeatType === 'custom' ? alexaRepeatIntervalUnit : null,
+                          repeatEndDate: alexaRepeatEndDate || null,
+                          shiftAdjust: alexaShiftAdjust,
+                          speakers: alexaSpeakers,
+                        });
+                      } else {
+                        sendAlexaImmediateMutation.mutate({ message: alexaMessage.trim(), speakers: alexaSpeakers });
+                        setAlexaMessage('');
+                      }
+                    }}
+                    disabled={!alexaMessage.trim() || createAlexaMutation.isPending || sendAlexaImmediateMutation.isPending}
+                    className="flex-1 disabled:opacity-40 text-white text-[11px] font-semibold px-3 py-2 rounded transition-colors hover:brightness-110"
+                    style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.15)', border: '1px solid rgba(255,255,255,0.2)' }}
+                    data-testid="alexa-schedule-button"
+                  >
+                    {alexaDate ? '+ Schedule' : 'Post Now'}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Scheduled announcements list with swipe */}
+            <div className="flex-1 overflow-y-auto px-4 py-2" style={{ scrollbarWidth: 'thin' }}>
+              {scheduledAlexaList.length === 0 ? (
+                <div className="text-white/40 text-[12px] text-center py-6">No scheduled announcements</div>
+              ) : (
+                scheduledAlexaList.map((ann: any) => {
+                  const swipeX = alexaSwipeStates[ann.id] || 0;
+                  const showDelete = swipeX < -60;
+                  const showSave = swipeX > 60;
+                  return (
+                    <div
+                      key={ann.id}
+                      className="relative overflow-hidden rounded-lg mb-1.5"
+                      data-testid={`alexa-item-${ann.id}`}
+                    >
+                      {/* Delete background (swipe left) */}
+                      <div className="absolute inset-0 flex items-center justify-end px-4 rounded-lg" style={{ background: 'rgba(239,68,68,0.3)' }}>
+                        <div style={{ background: '#dc2626', borderRadius: '4px', padding: '3px 10px' }}>
+                          <span className="text-white text-[10px] font-semibold">Delete</span>
+                        </div>
+                      </div>
+                      {/* Save/keep background (swipe right) */}
+                      <div className="absolute inset-0 flex items-center justify-start px-4 rounded-lg" style={{ background: 'rgba(6,182,212,0.3)' }}>
+                        <span className="text-cyan-300 text-[9px] font-semibold">{ann.isEnabled ? 'Hide from HA' : 'Expose to HA'}</span>
+                      </div>
+                      {/* Main item */}
+                      <div
+                        className="relative flex items-start gap-2 px-3 py-2 border border-white/10 rounded-lg transition-transform"
+                        style={{
+                          background: ann.isEnabled ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.02)',
+                          transform: `translateX(${swipeX}px)`,
+                          opacity: ann.isEnabled ? 1 : 0.5,
+                        }}
+                        onTouchStart={(e) => {
+                          alexaSwipeStartRef.current = { id: ann.id, x: e.touches[0].clientX };
+                        }}
+                        onTouchMove={(e) => {
+                          if (!alexaSwipeStartRef.current || alexaSwipeStartRef.current.id !== ann.id) return;
+                          const dx = e.touches[0].clientX - alexaSwipeStartRef.current.x;
+                          setAlexaSwipeStates(prev => ({ ...prev, [ann.id]: Math.max(-120, Math.min(120, dx)) }));
+                        }}
+                        onTouchEnd={() => {
+                          const dx = alexaSwipeStates[ann.id] || 0;
+                          if (dx < -60) {
+                            deleteAlexaMutation.mutate(ann.id);
+                          } else if (dx > 60) {
+                            toggleAlexaMutation.mutate({ id: ann.id, isEnabled: !ann.isEnabled });
+                          }
+                          setAlexaSwipeStates(prev => ({ ...prev, [ann.id]: 0 }));
+                          alexaSwipeStartRef.current = null;
+                        }}
+                        onMouseDown={(e) => {
+                          alexaSwipeStartRef.current = { id: ann.id, x: e.clientX };
+                          const onMove = (ev: MouseEvent) => {
+                            if (!alexaSwipeStartRef.current || alexaSwipeStartRef.current.id !== ann.id) return;
+                            const dx = ev.clientX - alexaSwipeStartRef.current.x;
+                            setAlexaSwipeStates(prev => ({ ...prev, [ann.id]: Math.max(-120, Math.min(120, dx)) }));
+                          };
+                          const onUp = () => {
+                            const dx = alexaSwipeStates[ann.id] || 0;
+                            if (dx < -60) {
+                              deleteAlexaMutation.mutate(ann.id);
+                            } else if (dx > 60) {
+                              toggleAlexaMutation.mutate({ id: ann.id, isEnabled: !ann.isEnabled });
+                            }
+                            setAlexaSwipeStates(prev => ({ ...prev, [ann.id]: 0 }));
+                            alexaSwipeStartRef.current = null;
+                            window.removeEventListener('mousemove', onMove);
+                            window.removeEventListener('mouseup', onUp);
+                          };
+                          window.addEventListener('mousemove', onMove);
+                          window.addEventListener('mouseup', onUp);
+                        }}
+                      >
+                        {/* Toggle */}
+                        <button
+                          onClick={(e) => { e.stopPropagation(); toggleAlexaMutation.mutate({ id: ann.id, isEnabled: !ann.isEnabled }); }}
+                          className="mt-0.5 shrink-0"
+                          title={ann.isEnabled ? 'Hide from HA' : 'Expose to HA'}
+                          data-testid={`alexa-toggle-${ann.id}`}
+                        >
+                          <div className={`w-[22px] h-[12px] rounded-full relative transition-colors ${ann.isEnabled ? 'bg-cyan-500' : 'bg-white/20'}`}>
+                            <div className={`absolute top-[1.5px] w-[9px] h-[9px] rounded-full bg-white shadow transition-all ${ann.isEnabled ? 'left-[11px]' : 'left-[1.5px]'}`} />
+                          </div>
+                        </button>
+                        <div className="flex-1 min-w-0" style={{ marginLeft: '31px' }}>
+                          <p className="text-white text-[10px] leading-tight break-words">{ann.message}</p>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className="text-white/40 text-[8px]">
+                              {ann.scheduledAt ? new Date(ann.scheduledAt).toLocaleString('en-US', { timeZone: 'America/Toronto', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }) : ''}
+                            </span>
+                            {ann.repeatType && ann.repeatType !== 'none' && (
+                              <span className="text-cyan-400/60 text-[8px]">
+                                {ann.repeatType === 'custom' ? `Every ${ann.repeatInterval || 1} ${ann.repeatIntervalUnit || 'days'}` : ann.repeatType}
+                              </span>
+                            )}
+                            {ann.isSent && <span className="text-cyan-400/50 text-[8px]">sent</span>}
+                            {ann.speakers && ann.speakers !== 'all' && (
+                              <span className="text-white/30 text-[8px]">{ECHO_SPEAKER_OPTIONS[ann.speakers] || ann.speakers}</span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center shrink-0" style={{ marginRight: '10px' }}>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); sendAlexaNowMutation.mutate(ann.id); }}
+                            className="text-white/30 hover:text-cyan-400 transition-colors"
+                            title="Send now"
+                            data-testid={`alexa-send-now-${ann.id}`}
+                          >
+                            <Megaphone className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
+              <span className="text-white text-[9px]">Swipe left to delete, right to toggle</span>
+              <Button
+                variant="outline"
+                className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 w-[80px]"
+                style={{ fontSize: '12px' }}
+                onClick={() => setIsAlexaDialogOpen(false)}
+                data-testid="alexa-dialog-close"
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </div>
+  ) : null;
+
     const hasPartnerWizard = mobileAuth === '5747' || mobileAuth === '4201';
 
     if (!mobileAuth) {
@@ -10939,7 +11593,13 @@ export default function Dashboard() {
                 <img src={d2lTickerLabel} alt="D2L" style={{ height: isMobileLandscape ? '20px' : '28px', width: 'auto', objectFit: 'contain' }} />
               </div>
               <div style={{ flex: 1, overflow: 'hidden', position: 'relative', height: '100%' }}>
-                {tickerWithTodayTasks.length > 0 ? (
+                {(() => {
+                  const profileFiltered = tickerWithTodayTasks.filter((a: any) => {
+                    if (a.isTask || a.isWeatherAlert) return true;
+                    const vis = a.visibleTo || ['5747', '4201', '1010'];
+                    return vis.includes(mobileAuth || '');
+                  });
+                  return profileFiltered.length > 0 ? (
                   <div ref={(el) => {
                     if (!el) return;
                     if ((el as any).__mobileTicker === el) return;
@@ -10966,7 +11626,7 @@ export default function Dashboard() {
                     requestAnimationFrame(go);
                   }} className="flex items-center h-full whitespace-nowrap" style={{ position: 'relative' }}>
                     <span style={{ display: 'inline-block', width: '20px', flexShrink: 0 }} />
-                    {tickerWithTodayTasks.map((a: any, i: number) => (
+                    {profileFiltered.map((a: any, i: number) => (
                       <span key={i} className="inline-flex items-center" style={{ marginRight: '40px' }}>
                         <span style={{ color: a.isTask ? '#60a5fa' : a.isWeatherAlert ? '#ff6b6b' : '#e2e8f0', fontSize: '11px', fontFamily: "system-ui, -apple-system, sans-serif" }}>
                           {a.isTask ? '📋 ' : a.isWeatherAlert ? '⚠️ ' : '📢 '}{a.title || a.Title || a.content}
@@ -10978,7 +11638,8 @@ export default function Dashboard() {
                   <div className="flex items-center h-full px-2">
                     <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '10px', fontFamily: "system-ui, -apple-system, sans-serif" }}>No announcements</span>
                   </div>
-                )}
+                );
+                })()}
               </div>
             </div>
           )}
@@ -11260,6 +11921,9 @@ export default function Dashboard() {
           document.body
         )}
 
+
+        {tickerDialogJSX && createPortal(tickerDialogJSX, document.body)}
+        {alexaDialogJSX && createPortal(alexaDialogJSX, document.body)}
       </div>
     );
   }
@@ -14539,595 +15203,9 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {tickerDialogOpen && (
-        <div className="fixed inset-0 flex items-start justify-center pt-[50px]" style={{ zIndex: 10010, backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={(e) => { if (e.target === e.currentTarget) setTickerDialogOpen(false); }} data-testid="ticker-dialog-overlay">
-          <div className="sm:rounded-lg shadow-2xl w-[500px] max-w-[95vw] max-h-[500px] flex flex-col overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }} data-testid="ticker-dialog">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
-              <span className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>TICKER ITEMS</span>
-            </div>
-            <div className="flex-1 overflow-y-auto px-4 py-2" style={{ scrollbarWidth: 'thin' }}>
-              {(() => {
-                const allDialogItems = [...todayTaskTickerItems.map((t: any) => ({ ...t, _isSynthetic: true })), ...d2lAnnouncements];
-                if (allDialogItems.length === 0) return <div className="text-white/40 text-[12px] text-center py-6">No ticker items</div>;
-                return allDialogItems.map((a: any, idx: number) => (
-                  <div
-                    key={a.id}
-                    draggable
-                    onDragStart={(e) => { setTickerDragIdx(idx); e.dataTransfer.effectAllowed = 'move'; }}
-                    onDragOver={(e) => { e.preventDefault(); setTickerDragOverIdx(idx); }}
-                    onDragEnd={() => {
-                      if (tickerDragIdx !== null && tickerDragOverIdx !== null && tickerDragIdx !== tickerDragOverIdx) {
-                        const items = [...d2lAnnouncements];
-                        const [moved] = items.splice(tickerDragIdx, 1);
-                        items.splice(tickerDragOverIdx, 0, moved);
-                        reorderTickerMutation.mutate(items.map((i: any) => i.id));
-                      }
-                      setTickerDragIdx(null);
-                      setTickerDragOverIdx(null);
-                    }}
-                    onTouchStart={(e) => {
-                      const touch = e.touches[0];
-                      tickerTouchDragRef.current = { startY: touch.clientY, idx, el: e.currentTarget as HTMLElement };
-                    }}
-                    onTouchMove={(e) => {
-                      if (!tickerTouchDragRef.current) return;
-                      const touch = e.touches[0];
-                      const container = (e.currentTarget as HTMLElement).parentElement;
-                      if (!container) return;
-                      const children = Array.from(container.querySelectorAll('[data-ticker-drag-item]'));
-                      for (let i = 0; i < children.length; i++) {
-                        const rect = children[i].getBoundingClientRect();
-                        if (touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
-                          setTickerDragOverIdx(i);
-                          break;
-                        }
-                      }
-                      setTickerDragIdx(tickerTouchDragRef.current.idx);
-                    }}
-                    onTouchEnd={() => {
-                      if (tickerDragIdx !== null && tickerDragOverIdx !== null && tickerDragIdx !== tickerDragOverIdx) {
-                        const items = [...d2lAnnouncements];
-                        const [moved] = items.splice(tickerDragIdx, 1);
-                        items.splice(tickerDragOverIdx, 0, moved);
-                        reorderTickerMutation.mutate(items.map((i: any) => i.id));
-                      }
-                      setTickerDragIdx(null);
-                      setTickerDragOverIdx(null);
-                      tickerTouchDragRef.current = null;
-                    }}
-                    data-ticker-drag-item
-                    className="cursor-grab active:cursor-grabbing"
-                    style={{
-                      opacity: tickerDragIdx === idx ? 0.4 : 1,
-                      borderTop: tickerDragOverIdx === idx && tickerDragIdx !== null && tickerDragIdx !== idx ? '2px solid rgba(99,102,241,0.8)' : '2px solid transparent',
-                      transition: 'opacity 0.15s',
-                    }}
-                    data-testid={`ticker-item-${a.id}`}
-                  >
-                    <div className="flex items-center gap-2 py-2">
-                      <GripVertical className="h-3.5 w-3.5 text-white/25 shrink-0" />
-                      <span className="text-[10px] px-1.5 py-0.5 rounded font-semibold shrink-0" style={{ minWidth: '60px', textAlign: 'center', backgroundColor: a.courseName === 'Custom' ? 'rgba(255,255,255,0.1)' : a.courseName === 'URGENT' ? 'rgba(239,68,68,0.4)' : a.courseName === 'REMINDER' ? 'rgba(234,179,8,0.35)' : 'rgba(99,102,241,0.3)', color: a.courseName === 'Custom' ? '#9ca3af' : a.courseName === 'URGENT' ? '#fca5a5' : a.courseName === 'REMINDER' ? '#fde047' : '#a5b4fc' }}>
-                        {a.courseName === 'Custom' ? '📌' : a.courseName}
-                      </span>
-                      <span className="text-white text-[12px] flex-1 min-w-0 truncate text-left">{a.body || a.snippet || a.subject}</span>
-                      <button
-                        onClick={() => {
-                          if (a._isSynthetic) {
-                            const newSet = new Set(dismissedTodayTaskIds);
-                            newSet.add(a.id);
-                            setDismissedTodayTaskIds(newSet);
-                            localStorage.setItem('dismissedTodayTaskIds', JSON.stringify([...newSet]));
-                          } else {
-                            deleteTickerMutation.mutate(a.id);
-                          }
-                        }}
-                        className="shrink-0 text-white/30 hover:text-red-400 transition-colors p-1"
-                        data-testid={`button-delete-ticker-${a.id}`}
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                    {idx < allDialogItems.length - 1 && (
-                      <div style={{ marginLeft: '22px', marginRight: '8px', borderBottom: '1px solid rgba(255,255,255,0.12)' }} />
-                    )}
-                  </div>
-                ));
-              })()}
-            </div>
-            <div className="px-4 py-3 flex items-center gap-2" style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
-              <select
-                value={newTickerTag}
-                onChange={(e) => setNewTickerTag(e.target.value)}
-                className="text-white text-[11px] px-2 py-2 rounded focus:outline-none"
-                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', minWidth: '90px' }}
-                data-testid="select-ticker-tag"
-              >
-                <option value="Custom" style={{ background: '#1a1a2e' }}>📌 Custom</option>
-                {semesterSettings && [1, 2, 3].map(i => {
-                  const code = ((semesterSettings as any)[`course${i}Code`] || '').trim().replace(/\s/g, '').toUpperCase();
-                  return code ? <option key={code} value={code} style={{ background: '#1a1a2e' }}>{code}</option> : null;
-                })}
-                <option value="REMINDER" style={{ background: '#1a1a2e' }}>REMINDER</option>
-                <option value="URGENT" style={{ background: '#1a1a2e' }}>URGENT</option>
-              </select>
-              <input
-                type="text"
-                value={newTickerText}
-                onChange={(e) => setNewTickerText(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter' && newTickerText.trim()) { addTickerMutation.mutate({ body: newTickerText.trim(), tag: newTickerTag }); } }}
-                placeholder="Add ticker item..."
-                className="flex-1 text-white text-[12px] px-3 py-2 rounded focus:outline-none placeholder:text-white/30"
-                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
-                data-testid="input-new-ticker"
-              />
-              <button
-                onClick={() => { if (newTickerText.trim()) addTickerMutation.mutate({ body: newTickerText.trim(), tag: newTickerTag }); }}
-                disabled={!newTickerText.trim() || addTickerMutation.isPending}
-                className="shrink-0 disabled:opacity-40 text-white text-[12px] font-semibold px-3 py-2 rounded transition-colors hover:brightness-110"
-                style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.15)', border: '1px solid rgba(255,255,255,0.2)' }}
-                data-testid="button-add-ticker"
-              >
-                + Add
-              </button>
-            </div>
-            <div className="flex items-center justify-end gap-2 px-4 py-3" style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
-              <Button
-                variant="outline"
-                className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 w-[110px]"
-                style={{ fontSize: '12px' }}
-                onClick={() => setTickerDialogOpen(false)}
-                data-testid="button-cancel-ticker-dialog"
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="outline"
-                className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8 w-[110px]"
-                style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '12px' }}
-                onClick={() => {
-                  toast({ title: "Saved", description: "Ticker items saved." });
-                  setTickerDialogOpen(false);
-                }}
-                data-testid="button-save-ticker-dialog"
-              >
-                Save
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      {tickerDialogJSX}
 
-      {/* Alexa Announcements Dialog */}
-      {isAlexaDialogOpen && (
-        <div className="fixed inset-0 flex items-start justify-center pt-[50px]" style={{ zIndex: 10010, backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={(e) => { if (e.target === e.currentTarget) setIsAlexaDialogOpen(false); }} data-testid="alexa-dialog-overlay">
-          <div className="sm:rounded-lg shadow-2xl w-[520px] max-w-[95vw] max-h-[600px] flex flex-col overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }} data-testid="alexa-dialog">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
-              <span className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>ALEXA ANNOUNCEMENTS</span>
-              <span className="text-white/40 text-[10px]">{scheduledAlexaList.length} scheduled</span>
-            </div>
-
-            {/* Compose area */}
-            <div className="px-4 py-3 border-b border-white/15 flex-shrink-0">
-              <div className="flex flex-col gap-2">
-                <div className="relative">
-                  <textarea
-                    value={alexaMessage}
-                    onChange={(e) => { if (e.target.value.length <= ALEXA_MAX_CHARS) setAlexaMessage(e.target.value); }}
-                    maxLength={ALEXA_MAX_CHARS}
-                    placeholder="Type announcement message..."
-                    rows={2}
-                    className="w-full text-white text-[12px] px-3 py-2 rounded resize-none focus:outline-none placeholder:text-white/30"
-                    style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
-                    data-testid="alexa-message-input"
-                  />
-                  <span className={`absolute bottom-1.5 right-2 text-[9px] ${alexaMessage.length >= ALEXA_MAX_CHARS ? 'text-red-400' : 'text-white/30'}`}>{alexaMessage.length}/{ALEXA_MAX_CHARS}</span>
-                </div>
-
-                <div className="flex items-center gap-1.5">
-                  <Popover open={alexaCalendarOpen} onOpenChange={setAlexaCalendarOpen}>
-                    <PopoverTrigger asChild>
-                      <button
-                        className="flex-1 flex items-center gap-1.5 text-white text-[11px] px-2 py-1.5 rounded focus:outline-none text-left"
-                        style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
-                        data-testid="alexa-date-input"
-                      >
-                        <Calendar className="h-3 w-3 text-white/40 shrink-0" />
-                        <span className={alexaDate ? 'text-white' : 'text-white/30'}>
-                          {alexaDate ? format(new Date(alexaDate + 'T12:00:00'), 'MMM d, yyyy') : 'Pick a date...'}
-                        </span>
-                      </button>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      className="w-auto p-0"
-                      style={{ zIndex: 10020, background: '#1a1a2e', border: '1px solid rgba(255,255,255,0.2)' }}
-                      align="start"
-                    >
-                      <CalendarPicker
-                        mode="single"
-                        selected={alexaDate ? new Date(alexaDate + 'T12:00:00') : undefined}
-                        onSelect={(date) => {
-                          if (date) {
-                            const y = date.getFullYear();
-                            const m = String(date.getMonth() + 1).padStart(2, '0');
-                            const d = String(date.getDate()).padStart(2, '0');
-                            setAlexaDate(`${y}-${m}-${d}`);
-                          } else {
-                            setAlexaDate('');
-                          }
-                          setAlexaCalendarOpen(false);
-                        }}
-                        className="text-white"
-                        classNames={{
-                          months: "flex flex-col",
-                          month: "space-y-3",
-                          caption: "flex justify-center pt-1 relative items-center",
-                          caption_label: "text-[13px] font-medium text-white",
-                          nav: "space-x-1 flex items-center",
-                          nav_button: "h-7 w-7 bg-transparent border border-white/20 rounded-md p-0 opacity-60 hover:opacity-100 hover:bg-white/10 inline-flex items-center justify-center text-white",
-                          nav_button_previous: "absolute left-1",
-                          nav_button_next: "absolute right-1",
-                          table: "w-full border-collapse",
-                          head_row: "flex",
-                          head_cell: "text-white/40 rounded-md w-8 font-normal text-[10px]",
-                          row: "flex w-full mt-1",
-                          cell: "h-8 w-8 text-center text-[11px] p-0 relative",
-                          day: "h-8 w-8 p-0 font-normal text-white/70 hover:bg-white/10 rounded-md inline-flex items-center justify-center cursor-pointer",
-                          day_selected: "!bg-cyan-500 !text-white hover:!bg-cyan-600",
-                          day_today: "bg-white/10 text-white font-semibold",
-                          day_outside: "text-white/20",
-                          day_disabled: "text-white/10",
-                        }}
-                      />
-                      {alexaDate && (
-                        <div className="px-3 pb-2">
-                          <button
-                            onClick={() => { setAlexaDate(''); setAlexaCalendarOpen(false); }}
-                            className="text-[10px] text-white/40 hover:text-white/70 transition-colors"
-                          >
-                            Clear date
-                          </button>
-                        </div>
-                      )}
-                    </PopoverContent>
-                  </Popover>
-                  <select
-                    value={alexaHour}
-                    onChange={(e) => setAlexaHour(e.target.value)}
-                    className="w-[62px] text-white text-[11px] px-1 py-1.5 rounded focus:outline-none [color-scheme:dark]"
-                    style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
-                    data-testid="alexa-hour-select"
-                  >
-                    {Array.from({ length: 24 }, (_, i) => (
-                      <option key={i} value={i.toString().padStart(2, '0')} style={{ color: 'black' }}>{i === 0 ? '12 AM' : i < 12 ? `${i} AM` : i === 12 ? '12 PM' : `${i-12} PM`}</option>
-                    ))}
-                  </select>
-                  <select
-                    value={alexaMinute}
-                    onChange={(e) => setAlexaMinute(e.target.value)}
-                    className="w-[50px] text-white text-[11px] px-1 py-1.5 rounded focus:outline-none [color-scheme:dark]"
-                    style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
-                    data-testid="alexa-minute-select"
-                  >
-                    {Array.from({ length: 60 }, (_, i) => (
-                      <option key={i} value={i.toString().padStart(2, '0')} style={{ color: 'black' }}>{i.toString().padStart(2, '0')}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Speaker selector */}
-                <div className="flex items-center gap-1.5">
-                  <span className="text-white/40 text-[10px] w-[42px] shrink-0">Target:</span>
-                  <select
-                    value={alexaSpeakers}
-                    onChange={(e) => setAlexaSpeakers(e.target.value)}
-                    className="flex-1 text-white text-[11px] px-2 py-1.5 rounded focus:outline-none [color-scheme:dark]"
-                    style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
-                    data-testid="alexa-speakers-select"
-                  >
-                    <option value="all" style={{ color: 'black' }}>Everywhere (All Speakers)</option>
-                    {Object.entries(ECHO_SPEAKER_OPTIONS).map(([id, name]) => (
-                      <option key={id} value={id} style={{ color: 'black' }}>{name}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Repeat dropdown */}
-                <div className="flex items-center gap-1.5">
-                  <span className="text-white/40 text-[10px] w-[42px] shrink-0">Repeat:</span>
-                  <select
-                    value={alexaRepeatType}
-                    onChange={(e) => setAlexaRepeatType(e.target.value)}
-                    className="flex-1 text-white text-[11px] px-2 py-1.5 rounded focus:outline-none [color-scheme:dark]"
-                    style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
-                    data-testid="alexa-repeat-type"
-                  >
-                    <option value="none" style={{ color: 'black' }}>No repeat</option>
-                    <option value="daily" style={{ color: 'black' }}>Daily</option>
-                    <option value="weekly" style={{ color: 'black' }}>Weekly</option>
-                    <option value="monthly" style={{ color: 'black' }}>Monthly</option>
-                    <option value="yearly" style={{ color: 'black' }}>Yearly</option>
-                    <option value="custom" style={{ color: 'black' }}>Custom...</option>
-                  </select>
-                  {alexaRepeatType !== 'none' && (
-                    <Popover open={alexaRepeatEndCalendarOpen} onOpenChange={setAlexaRepeatEndCalendarOpen}>
-                      <PopoverTrigger asChild>
-                        <button
-                          className="w-[130px] flex items-center gap-1 text-[10px] px-2 py-1.5 rounded focus:outline-none text-left"
-                          style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
-                          title="Repeat end date (optional)"
-                          data-testid="alexa-repeat-end"
-                        >
-                          <Calendar className="h-2.5 w-2.5 text-white/40 shrink-0" />
-                          <span className={alexaRepeatEndDate ? 'text-white' : 'text-white/30'}>
-                            {alexaRepeatEndDate ? format(new Date(alexaRepeatEndDate + 'T12:00:00'), 'MMM d, yyyy') : 'End date'}
-                          </span>
-                        </button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="w-auto p-0"
-                        style={{ zIndex: 10020, background: '#1a1a2e', border: '1px solid rgba(255,255,255,0.2)' }}
-                        align="start"
-                      >
-                        <CalendarPicker
-                          mode="single"
-                          selected={alexaRepeatEndDate ? new Date(alexaRepeatEndDate + 'T12:00:00') : undefined}
-                          onSelect={(date) => {
-                            if (date) {
-                              const y = date.getFullYear();
-                              const m = String(date.getMonth() + 1).padStart(2, '0');
-                              const d = String(date.getDate()).padStart(2, '0');
-                              setAlexaRepeatEndDate(`${y}-${m}-${d}`);
-                            } else {
-                              setAlexaRepeatEndDate('');
-                            }
-                            setAlexaRepeatEndCalendarOpen(false);
-                          }}
-                          className="text-white"
-                          classNames={{
-                            months: "flex flex-col",
-                            month: "space-y-3",
-                            caption: "flex justify-center pt-1 relative items-center",
-                            caption_label: "text-[13px] font-medium text-white",
-                            nav: "space-x-1 flex items-center",
-                            nav_button: "h-7 w-7 bg-transparent border border-white/20 rounded-md p-0 opacity-60 hover:opacity-100 hover:bg-white/10 inline-flex items-center justify-center text-white",
-                            nav_button_previous: "absolute left-1",
-                            nav_button_next: "absolute right-1",
-                            table: "w-full border-collapse",
-                            head_row: "flex",
-                            head_cell: "text-white/40 rounded-md w-8 font-normal text-[10px]",
-                            row: "flex w-full mt-1",
-                            cell: "h-8 w-8 text-center text-[11px] p-0 relative",
-                            day: "h-8 w-8 p-0 font-normal text-white/70 hover:bg-white/10 rounded-md inline-flex items-center justify-center cursor-pointer",
-                            day_selected: "!bg-cyan-500 !text-white hover:!bg-cyan-600",
-                            day_today: "bg-white/10 text-white font-semibold",
-                            day_outside: "text-white/20",
-                            day_disabled: "text-white/10",
-                          }}
-                        />
-                        {alexaRepeatEndDate && (
-                          <div className="px-3 pb-2">
-                            <button
-                              onClick={() => { setAlexaRepeatEndDate(''); setAlexaRepeatEndCalendarOpen(false); }}
-                              className="text-[10px] text-white/40 hover:text-white/70 transition-colors"
-                            >
-                              Clear end date
-                            </button>
-                          </div>
-                        )}
-                      </PopoverContent>
-                    </Popover>
-                  )}
-                </div>
-                {alexaRepeatType === 'custom' && (
-                  <div className="flex items-center gap-1.5 pl-[42px]">
-                    <span className="text-white/40 text-[10px]">Every</span>
-                    <input
-                      type="number"
-                      min={1}
-                      value={alexaRepeatInterval}
-                      onChange={(e) => setAlexaRepeatInterval(parseInt(e.target.value) || 1)}
-                      className="w-[50px] text-white text-[11px] px-2 py-1 rounded focus:outline-none"
-                      style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
-                      data-testid="alexa-repeat-interval"
-                    />
-                    <select
-                      value={alexaRepeatIntervalUnit}
-                      onChange={(e) => setAlexaRepeatIntervalUnit(e.target.value)}
-                      className="text-white text-[11px] px-2 py-1.5 rounded focus:outline-none [color-scheme:dark]"
-                      style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
-                      data-testid="alexa-repeat-unit"
-                    >
-                      <option value="days" style={{ color: 'black' }}>days</option>
-                      <option value="weeks" style={{ color: 'black' }}>weeks</option>
-                      <option value="months" style={{ color: 'black' }}>months</option>
-                      <option value="years" style={{ color: 'black' }}>years</option>
-                    </select>
-                  </div>
-                )}
-
-                {alexaRepeatType !== 'none' && (
-                  <div className="flex items-center justify-between pl-[42px]">
-                    <div className="flex flex-col">
-                      <span className="text-white/60 text-[10px]">Partner shift adjust</span>
-                      <span className="text-white/30 text-[8px]">±12h on night-shift days</span>
-                    </div>
-                    <button
-                      onClick={() => setAlexaShiftAdjust(v => !v)}
-                      className="relative shrink-0"
-                      style={{ width: '22px', height: '12px', borderRadius: '6px', background: alexaShiftAdjust ? 'rgba(139,92,246,0.7)' : 'rgba(255,255,255,0.15)', border: '0.5px solid rgba(255,255,255,0.3)', transition: 'background 0.2s' }}
-                      data-testid="alexa-shift-adjust"
-                    >
-                      <div style={{ width: '9px', height: '9px', borderRadius: '4.5px', background: '#fff', position: 'absolute', top: '1.5px', left: alexaShiftAdjust ? '11px' : '1.5px', transition: 'left 0.2s', boxShadow: '0 1px 2px rgba(0,0,0,0.3)' }} />
-                    </button>
-                  </div>
-                )}
-
-                <div className="flex gap-1.5">
-                  <button
-                    onClick={() => {
-                      if (!alexaMessage.trim()) return;
-                      if (alexaDate) {
-                        createAlexaMutation.mutate({
-                          message: alexaMessage.trim(),
-                          scheduledAt: new Date(`${alexaDate}T${alexaHour}:${alexaMinute}:00`).toISOString(),
-                          repeatType: alexaRepeatType,
-                          repeatInterval: alexaRepeatType === 'custom' ? alexaRepeatInterval : null,
-                          repeatIntervalUnit: alexaRepeatType === 'custom' ? alexaRepeatIntervalUnit : null,
-                          repeatEndDate: alexaRepeatEndDate || null,
-                          shiftAdjust: alexaShiftAdjust,
-                          speakers: alexaSpeakers,
-                        });
-                      } else {
-                        sendAlexaImmediateMutation.mutate({ message: alexaMessage.trim(), speakers: alexaSpeakers });
-                        setAlexaMessage('');
-                      }
-                    }}
-                    disabled={!alexaMessage.trim() || createAlexaMutation.isPending || sendAlexaImmediateMutation.isPending}
-                    className="flex-1 disabled:opacity-40 text-white text-[11px] font-semibold px-3 py-2 rounded transition-colors hover:brightness-110"
-                    style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.15)', border: '1px solid rgba(255,255,255,0.2)' }}
-                    data-testid="alexa-schedule-button"
-                  >
-                    {alexaDate ? '+ Schedule' : 'Post Now'}
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Scheduled announcements list with swipe */}
-            <div className="flex-1 overflow-y-auto px-4 py-2" style={{ scrollbarWidth: 'thin' }}>
-              {scheduledAlexaList.length === 0 ? (
-                <div className="text-white/40 text-[12px] text-center py-6">No scheduled announcements</div>
-              ) : (
-                scheduledAlexaList.map((ann: any) => {
-                  const swipeX = alexaSwipeStates[ann.id] || 0;
-                  const showDelete = swipeX < -60;
-                  const showSave = swipeX > 60;
-                  return (
-                    <div
-                      key={ann.id}
-                      className="relative overflow-hidden rounded-lg mb-1.5"
-                      data-testid={`alexa-item-${ann.id}`}
-                    >
-                      {/* Delete background (swipe left) */}
-                      <div className="absolute inset-0 flex items-center justify-end px-4 rounded-lg" style={{ background: 'rgba(239,68,68,0.3)' }}>
-                        <div style={{ background: '#dc2626', borderRadius: '4px', padding: '3px 10px' }}>
-                          <span className="text-white text-[10px] font-semibold">Delete</span>
-                        </div>
-                      </div>
-                      {/* Save/keep background (swipe right) */}
-                      <div className="absolute inset-0 flex items-center justify-start px-4 rounded-lg" style={{ background: 'rgba(6,182,212,0.3)' }}>
-                        <span className="text-cyan-300 text-[9px] font-semibold">{ann.isEnabled ? 'Hide from HA' : 'Expose to HA'}</span>
-                      </div>
-                      {/* Main item */}
-                      <div
-                        className="relative flex items-start gap-2 px-3 py-2 border border-white/10 rounded-lg transition-transform"
-                        style={{
-                          background: ann.isEnabled ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.02)',
-                          transform: `translateX(${swipeX}px)`,
-                          opacity: ann.isEnabled ? 1 : 0.5,
-                        }}
-                        onTouchStart={(e) => {
-                          alexaSwipeStartRef.current = { id: ann.id, x: e.touches[0].clientX };
-                        }}
-                        onTouchMove={(e) => {
-                          if (!alexaSwipeStartRef.current || alexaSwipeStartRef.current.id !== ann.id) return;
-                          const dx = e.touches[0].clientX - alexaSwipeStartRef.current.x;
-                          setAlexaSwipeStates(prev => ({ ...prev, [ann.id]: Math.max(-120, Math.min(120, dx)) }));
-                        }}
-                        onTouchEnd={() => {
-                          const dx = alexaSwipeStates[ann.id] || 0;
-                          if (dx < -60) {
-                            deleteAlexaMutation.mutate(ann.id);
-                          } else if (dx > 60) {
-                            toggleAlexaMutation.mutate({ id: ann.id, isEnabled: !ann.isEnabled });
-                          }
-                          setAlexaSwipeStates(prev => ({ ...prev, [ann.id]: 0 }));
-                          alexaSwipeStartRef.current = null;
-                        }}
-                        onMouseDown={(e) => {
-                          alexaSwipeStartRef.current = { id: ann.id, x: e.clientX };
-                          const onMove = (ev: MouseEvent) => {
-                            if (!alexaSwipeStartRef.current || alexaSwipeStartRef.current.id !== ann.id) return;
-                            const dx = ev.clientX - alexaSwipeStartRef.current.x;
-                            setAlexaSwipeStates(prev => ({ ...prev, [ann.id]: Math.max(-120, Math.min(120, dx)) }));
-                          };
-                          const onUp = () => {
-                            const dx = alexaSwipeStates[ann.id] || 0;
-                            if (dx < -60) {
-                              deleteAlexaMutation.mutate(ann.id);
-                            } else if (dx > 60) {
-                              toggleAlexaMutation.mutate({ id: ann.id, isEnabled: !ann.isEnabled });
-                            }
-                            setAlexaSwipeStates(prev => ({ ...prev, [ann.id]: 0 }));
-                            alexaSwipeStartRef.current = null;
-                            window.removeEventListener('mousemove', onMove);
-                            window.removeEventListener('mouseup', onUp);
-                          };
-                          window.addEventListener('mousemove', onMove);
-                          window.addEventListener('mouseup', onUp);
-                        }}
-                      >
-                        {/* Toggle */}
-                        <button
-                          onClick={(e) => { e.stopPropagation(); toggleAlexaMutation.mutate({ id: ann.id, isEnabled: !ann.isEnabled }); }}
-                          className="mt-0.5 shrink-0"
-                          title={ann.isEnabled ? 'Hide from HA' : 'Expose to HA'}
-                          data-testid={`alexa-toggle-${ann.id}`}
-                        >
-                          <div className={`w-[22px] h-[12px] rounded-full relative transition-colors ${ann.isEnabled ? 'bg-cyan-500' : 'bg-white/20'}`}>
-                            <div className={`absolute top-[1.5px] w-[9px] h-[9px] rounded-full bg-white shadow transition-all ${ann.isEnabled ? 'left-[11px]' : 'left-[1.5px]'}`} />
-                          </div>
-                        </button>
-                        <div className="flex-1 min-w-0" style={{ marginLeft: '31px' }}>
-                          <p className="text-white text-[10px] leading-tight break-words">{ann.message}</p>
-                          <div className="flex items-center gap-1.5 mt-0.5">
-                            <span className="text-white/40 text-[8px]">
-                              {ann.scheduledAt ? new Date(ann.scheduledAt).toLocaleString('en-US', { timeZone: 'America/Toronto', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }) : ''}
-                            </span>
-                            {ann.repeatType && ann.repeatType !== 'none' && (
-                              <span className="text-cyan-400/60 text-[8px]">
-                                {ann.repeatType === 'custom' ? `Every ${ann.repeatInterval || 1} ${ann.repeatIntervalUnit || 'days'}` : ann.repeatType}
-                              </span>
-                            )}
-                            {ann.isSent && <span className="text-cyan-400/50 text-[8px]">sent</span>}
-                            {ann.speakers && ann.speakers !== 'all' && (
-                              <span className="text-white/30 text-[8px]">{ECHO_SPEAKER_OPTIONS[ann.speakers] || ann.speakers}</span>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex items-center shrink-0" style={{ marginRight: '10px' }}>
-                          <button
-                            onClick={(e) => { e.stopPropagation(); sendAlexaNowMutation.mutate(ann.id); }}
-                            className="text-white/30 hover:text-cyan-400 transition-colors"
-                            title="Send now"
-                            data-testid={`alexa-send-now-${ann.id}`}
-                          >
-                            <Megaphone className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-
-            {/* Footer */}
-            <div className="flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
-              <span className="text-white text-[9px]">Swipe left to delete, right to toggle</span>
-              <Button
-                variant="outline"
-                className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 w-[80px]"
-                style={{ fontSize: '12px' }}
-                onClick={() => setIsAlexaDialogOpen(false)}
-                data-testid="alexa-dialog-close"
-              >
-                Close
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      {alexaDialogJSX}
 
       {/* Top pill tab - centered to page, outside pill container to avoid transform issues */}
       <div
