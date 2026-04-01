@@ -85,31 +85,54 @@ app.use((req: any, res: any, next: any) => {
 
 const SITE_PASSWORD = process.env.SITE_PASSWORD;
 const SESSION_SECRET = process.env.SESSION_SECRET || "uni-cal-session-key";
+const VALID_PASSWORDS = ['5747', '4201', '1010'];
 
 const TOKEN_MAX_AGE_MS = 10 * 365 * 24 * 60 * 60 * 1000;
 
-function createSessionToken(): string {
+function createSessionToken(level: string = '5747'): string {
   const timestamp = Date.now().toString(36);
   const sig = crypto.createHmac("sha256", SESSION_SECRET)
-    .update(`uni-cal-auth:${SITE_PASSWORD}:${timestamp}`)
+    .update(`uni-cal-auth:${level}:${timestamp}`)
     .digest("hex");
-  return `${timestamp}.${sig}`;
+  return `${level}.${timestamp}.${sig}`;
+}
+
+function parseToken(token: string): { level: string; valid: boolean } {
+  if (!SITE_PASSWORD) return { level: '5747', valid: true };
+  if (!token || typeof token !== "string") return { level: '', valid: false };
+  const parts = token.split(".");
+  if (parts.length === 2) {
+    const [timestamp, sig] = parts;
+    if (!/^[a-z0-9]+$/.test(timestamp) || !/^[a-f0-9]{64}$/.test(sig)) return { level: '', valid: false };
+    const created = parseInt(timestamp, 36);
+    if (isNaN(created) || Date.now() - created > TOKEN_MAX_AGE_MS) return { level: '', valid: false };
+    const expected = crypto.createHmac("sha256", SESSION_SECRET)
+      .update(`uni-cal-auth:${SITE_PASSWORD}:${timestamp}`)
+      .digest("hex");
+    if (sig.length === expected.length && crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) {
+      return { level: '5747', valid: true };
+    }
+    return { level: '', valid: false };
+  }
+  if (parts.length === 3) {
+    const [level, timestamp, sig] = parts;
+    if (!VALID_PASSWORDS.includes(level)) return { level: '', valid: false };
+    if (!/^[a-z0-9]+$/.test(timestamp) || !/^[a-f0-9]{64}$/.test(sig)) return { level: '', valid: false };
+    const created = parseInt(timestamp, 36);
+    if (isNaN(created) || Date.now() - created > TOKEN_MAX_AGE_MS) return { level: '', valid: false };
+    const expected = crypto.createHmac("sha256", SESSION_SECRET)
+      .update(`uni-cal-auth:${level}:${timestamp}`)
+      .digest("hex");
+    if (sig.length === expected.length && crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) {
+      return { level, valid: true };
+    }
+    return { level: '', valid: false };
+  }
+  return { level: '', valid: false };
 }
 
 function isValidToken(token: string): boolean {
-  if (!SITE_PASSWORD) return true;
-  if (!token || typeof token !== "string") return false;
-  const dotIndex = token.indexOf(".");
-  if (dotIndex === -1) return false;
-  const timestamp = token.substring(0, dotIndex);
-  const sig = token.substring(dotIndex + 1);
-  if (!/^[a-z0-9]+$/.test(timestamp) || !/^[a-f0-9]{64}$/.test(sig)) return false;
-  const created = parseInt(timestamp, 36);
-  if (isNaN(created) || Date.now() - created > TOKEN_MAX_AGE_MS) return false;
-  const expected = crypto.createHmac("sha256", SESSION_SECRET)
-    .update(`uni-cal-auth:${SITE_PASSWORD}:${timestamp}`)
-    .digest("hex");
-  return sig.length === expected.length && crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected));
+  return parseToken(token).valid;
 }
 
 function getAuthToken(req: Request): string | undefined {
@@ -126,23 +149,28 @@ function getAuthToken(req: Request): string | undefined {
 
 function isAutoAuthRequest(req: Request): boolean {
   const autoAuth = req.query?.auth as string | undefined;
-  return autoAuth === SITE_PASSWORD;
+  return !!autoAuth && VALID_PASSWORDS.includes(autoAuth);
+}
+
+function getAutoAuthLevel(req: Request): string {
+  const autoAuth = req.query?.auth as string | undefined;
+  return (autoAuth && VALID_PASSWORDS.includes(autoAuth)) ? autoAuth : '5747';
 }
 
 app.post("/api/auth/login", (req: Request, res: Response) => {
   const { password } = req.body;
   if (!SITE_PASSWORD) {
-    return res.json({ success: true, token: '' });
+    return res.json({ success: true, token: '', level: '5747' });
   }
-  if (password === SITE_PASSWORD) {
-    const token = createSessionToken();
+  if (VALID_PASSWORDS.includes(password)) {
+    const token = createSessionToken(password);
     res.cookie("uni_cal_session", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 10 * 365 * 24 * 60 * 60 * 1000,
     });
-    return res.json({ success: true, token });
+    return res.json({ success: true, token, level: password });
   }
   return res.status(401).json({ success: false, message: "Incorrect password" });
 });
@@ -152,20 +180,22 @@ app.get("/api/auth/check", (req: Request, res: Response) => {
     return res.json({ authenticated: true });
   }
   if (isAutoAuthRequest(req)) {
-    const token = createSessionToken();
+    const level = getAutoAuthLevel(req);
+    const token = createSessionToken(level);
     res.cookie("uni_cal_session", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 10 * 365 * 24 * 60 * 60 * 1000,
     });
-    return res.json({ authenticated: true, token });
+    return res.json({ authenticated: true, token, level });
   }
   const token = getAuthToken(req);
   if (token) {
     try {
-      if (isValidToken(token)) {
-        return res.json({ authenticated: true });
+      const parsed = parseToken(token);
+      if (parsed.valid) {
+        return res.json({ authenticated: true, level: parsed.level });
       }
     } catch (e) {}
   }
@@ -199,7 +229,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   if (req.path.startsWith("/assets/") || req.path.startsWith("/favicon")) return next();
 
   if (isAutoAuthRequest(req)) {
-    const newToken = createSessionToken();
+    const newToken = createSessionToken(getAutoAuthLevel(req));
     res.cookie("uni_cal_session", newToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

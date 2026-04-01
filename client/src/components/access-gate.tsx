@@ -10,9 +10,10 @@ interface AccessGateProps {
 interface AccessContextType {
   isReadOnly: boolean;
   isAdmin: boolean;
+  authLevel: string;
 }
 
-const AccessContext = createContext<AccessContextType>({ isReadOnly: false, isAdmin: true });
+const AccessContext = createContext<AccessContextType>({ isReadOnly: false, isAdmin: true, authLevel: '5747' });
 
 export function useAccessMode() {
   return useContext(AccessContext);
@@ -20,6 +21,7 @@ export function useAccessMode() {
 
 export function AccessGate({ children }: AccessGateProps) {
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
+  const [authLevel, setAuthLevel] = useState<string>('5747');
   const [error, setError] = useState<string | null>(null);
   const [passwordInput, setPasswordInput] = useState("");
   const [isValidating, setIsValidating] = useState(false);
@@ -38,6 +40,9 @@ export function AccessGate({ children }: AccessGateProps) {
       if (data.authenticated) {
         if (data.token) {
           localStorage.setItem('uni_cal_token', data.token);
+        }
+        if (data.level) {
+          setAuthLevel(data.level);
         }
         if (authParam) {
           const profileNames = ['bryn', 'yasu', 'guest'];
@@ -77,6 +82,9 @@ export function AccessGate({ children }: AccessGateProps) {
       if (data.success) {
         if (data.token) {
           localStorage.setItem('uni_cal_token', data.token);
+        }
+        if (data.level) {
+          setAuthLevel(data.level);
         }
         setIsAuthorized(true);
       } else {
@@ -141,8 +149,10 @@ export function AccessGate({ children }: AccessGateProps) {
     );
   }
 
+  const isFullAccess = authLevel === '5747';
+
   return (
-    <AccessContext.Provider value={{ isReadOnly: false, isAdmin: true }}>
+    <AccessContext.Provider value={{ isReadOnly: !isFullAccess, isAdmin: isFullAccess, authLevel }}>
       {children}
     </AccessContext.Provider>
   );

@@ -515,12 +515,37 @@ function PartnerShiftWizard({ partnerWizardStep, setPartnerWizardStep, partnerWi
   partnerWizardSubmitting: boolean; setPartnerWizardSubmitting: (b: boolean) => void;
   colorSettings: any; onClose: () => void; onDone: () => void;
 }) {
+  const [existingShifts, setExistingShifts] = useState<{ date: string; shiftType: string }[]>([]);
+  const [removeDates, setRemoveDates] = useState<string[]>([]);
+  const [shiftLabel, setShiftLabel] = useState('CRCU');
+  const [editingLabel, setEditingLabel] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/shift-schedule').then(r => r.json()).then(data => {
+      if (Array.isArray(data)) setExistingShifts(data);
+    }).catch(() => {});
+  }, []);
+
   const daysInMonth = new Date(partnerWizardMonth.year, partnerWizardMonth.month + 1, 0).getDate();
   const firstDayOfWeek = new Date(partnerWizardMonth.year, partnerWizardMonth.month, 1).getDay();
   const monthName = new Date(partnerWizardMonth.year, partnerWizardMonth.month).toLocaleString('en-US', { month: 'long', year: 'numeric' });
+
+  const getExistingShift = (dateStr: string) => existingShifts.find(s => s.date === dateStr);
+  const isMarkedForRemoval = (dateStr: string) => removeDates.includes(dateStr);
+
   const toggleDate = (dateStr: string) => {
+    const existing = getExistingShift(dateStr);
+    if (existing && !partnerWizardDates.includes(dateStr)) {
+      setRemoveDates(prev => prev.includes(dateStr) ? prev.filter(d => d !== dateStr) : [...prev, dateStr]);
+      return;
+    }
+    if (existing && partnerWizardDates.includes(dateStr)) {
+      setPartnerWizardDates(partnerWizardDates.filter(d => d !== dateStr));
+      return;
+    }
     setPartnerWizardDates(partnerWizardDates.includes(dateStr) ? partnerWizardDates.filter(d => d !== dateStr) : [...partnerWizardDates, dateStr]);
   };
+
   const prevMonth = () => {
     const m = partnerWizardMonth.month === 0 ? 11 : partnerWizardMonth.month - 1;
     const y = partnerWizardMonth.month === 0 ? partnerWizardMonth.year - 1 : partnerWizardMonth.year;
@@ -531,17 +556,28 @@ function PartnerShiftWizard({ partnerWizardStep, setPartnerWizardStep, partnerWi
     const y = partnerWizardMonth.month === 11 ? partnerWizardMonth.year + 1 : partnerWizardMonth.year;
     setPartnerWizardMonth({ year: y, month: m });
   };
+
   const handleSubmit = async () => {
     setPartnerWizardSubmitting(true);
     try {
-      const resp = await fetch('/api/google/third-account/create-shifts', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ shifts: partnerWizardDates.map(d => ({ date: d, type: partnerWizardShiftType })) }),
-      });
-      if (!resp.ok) throw new Error('Failed');
+      if (removeDates.length > 0) {
+        await fetch('/api/google/third-account/delete-shifts', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ dates: removeDates }),
+        });
+      }
+      if (partnerWizardDates.length > 0) {
+        const resp = await fetch('/api/google/third-account/create-shifts', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ shifts: partnerWizardDates.map(d => ({ date: d, type: partnerWizardShiftType })), label: shiftLabel }),
+        });
+        if (!resp.ok) throw new Error('Failed');
+      }
       onDone();
     } catch { /* error handled by caller */ } finally { setPartnerWizardSubmitting(false); }
   };
+
+  const hasChanges = partnerWizardDates.length > 0 || removeDates.length > 0;
 
   return (
     <div className="fixed inset-0 z-[10015] flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
@@ -555,19 +591,49 @@ function PartnerShiftWizard({ partnerWizardStep, setPartnerWizardStep, partnerWi
           background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`,
           boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45)',
         }}>
-          <span style={{ color: '#fff', fontSize: '12px', fontWeight: 600, fontFamily: "system-ui, -apple-system, sans-serif" }}>
-            {partnerWizardStep === 0 ? 'SELECT DATES' : 'SELECT SHIFT TYPE'}
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {editingLabel ? (
+              <input
+                autoFocus
+                value={shiftLabel}
+                onChange={e => setShiftLabel(e.target.value)}
+                onBlur={() => setEditingLabel(false)}
+                onKeyDown={e => { if (e.key === 'Enter') setEditingLabel(false); }}
+                style={{ color: '#fff', fontSize: '12px', fontWeight: 600, fontFamily: "system-ui, -apple-system, sans-serif", background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '4px', padding: '2px 6px', width: '80px', outline: 'none' }}
+                data-testid="partner-wizard-label-input"
+              />
+            ) : (
+              <>
+                <span style={{ color: '#fff', fontSize: '12px', fontWeight: 600, fontFamily: "system-ui, -apple-system, sans-serif" }}>
+                  {shiftLabel} {partnerWizardStep === 0 ? 'SHIFTS' : 'SHIFT TYPE'}
+                </span>
+                <button onClick={() => setEditingLabel(true)} style={{ color: 'rgba(255,255,255,0.5)', background: 'none', border: 'none', fontSize: '12px', cursor: 'pointer', padding: '2px' }} data-testid="partner-wizard-edit-label">✏️</button>
+              </>
+            )}
+          </div>
           <button onClick={onClose} style={{ color: 'rgba(255,255,255,0.6)', background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer', lineHeight: 1 }}>×</button>
         </div>
 
         <div style={{ flex: 1, overflow: 'auto', padding: '12px 16px' }}>
           {partnerWizardStep === 0 && (
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                 <button onClick={prevMonth} style={{ color: '#fff', background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '6px', width: '28px', height: '28px', cursor: 'pointer', fontSize: '14px' }}>‹</button>
                 <span style={{ color: '#fff', fontSize: '13px', fontWeight: 600, fontFamily: "system-ui, -apple-system, sans-serif" }}>{monthName}</span>
                 <button onClick={nextMonth} style={{ color: '#fff', background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '6px', width: '28px', height: '28px', cursor: 'pointer', fontSize: '14px' }}>›</button>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginBottom: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'rgb(251,146,60)' }} />
+                  <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '9px' }}>Day</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'rgb(139,92,246)' }} />
+                  <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '9px' }}>Night</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.5)' }}>✕ = remove</span>
+                </div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '8px' }}>
                 {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(d => (
@@ -578,31 +644,51 @@ function PartnerShiftWizard({ partnerWizardStep, setPartnerWizardStep, partnerWi
                   const day = i + 1;
                   const dateStr = `${partnerWizardMonth.year}-${String(partnerWizardMonth.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                   const isSelected = partnerWizardDates.includes(dateStr);
+                  const existing = getExistingShift(dateStr);
+                  const markedRemove = isMarkedForRemoval(dateStr);
                   const today = new Date();
                   const isToday = day === today.getDate() && partnerWizardMonth.month === today.getMonth() && partnerWizardMonth.year === today.getFullYear();
+                  const existingColor = existing?.shiftType === 'day' ? 'rgb(251,146,60)' : existing?.shiftType === 'night' ? 'rgb(139,92,246)' : '';
+                  let bg = 'rgba(255,255,255,0.06)';
+                  if (isSelected) bg = 'rgba(139,92,246,0.6)';
+                  else if (existing && !markedRemove) bg = existing.shiftType === 'day' ? 'rgba(251,146,60,0.25)' : 'rgba(139,92,246,0.25)';
+                  else if (markedRemove) bg = 'rgba(239,68,68,0.25)';
                   return (
                     <button
                       key={day}
                       onClick={() => toggleDate(dateStr)}
                       style={{
-                        width: '100%', aspectRatio: '1', borderRadius: '8px', border: isToday ? '1.5px solid rgba(255,255,255,0.6)' : '1px solid transparent',
-                        background: isSelected ? 'rgba(139,92,246,0.6)' : 'rgba(255,255,255,0.06)',
-                        color: '#fff', fontSize: '12px', fontWeight: isSelected ? 700 : 400, cursor: 'pointer',
+                        width: '100%', aspectRatio: '1', borderRadius: '8px',
+                        border: isToday ? '1.5px solid rgba(255,255,255,0.6)' : '1px solid transparent',
+                        background: bg,
+                        color: markedRemove ? 'rgba(239,68,68,0.8)' : isSelected ? '#fff' : existing ? existingColor : 'rgba(255,255,255,0.7)',
+                        fontSize: '12px', fontWeight: (isSelected || existing) ? 700 : 400, cursor: 'pointer',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        position: 'relative',
                         transition: 'background 0.15s',
                       }}
                       data-testid={`partner-date-${dateStr}`}
                     >
-                      {day}
+                      {markedRemove ? '✕' : day}
+                      {existing && !markedRemove && !isSelected && (
+                        <div style={{ position: 'absolute', bottom: '2px', left: '50%', transform: 'translateX(-50%)', width: '5px', height: '5px', borderRadius: '50%', background: existingColor }} />
+                      )}
                     </button>
                   );
                 })}
               </div>
-              {partnerWizardDates.length > 0 && (
-                <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '10px', textAlign: 'center', marginTop: '4px' }}>
-                  {partnerWizardDates.length} date{partnerWizardDates.length !== 1 ? 's' : ''} selected
-                </div>
-              )}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'center' }}>
+                {partnerWizardDates.length > 0 && (
+                  <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '10px' }}>
+                    {partnerWizardDates.length} new date{partnerWizardDates.length !== 1 ? 's' : ''} to add
+                  </div>
+                )}
+                {removeDates.length > 0 && (
+                  <div style={{ color: 'rgba(239,68,68,0.7)', fontSize: '10px' }}>
+                    {removeDates.length} shift{removeDates.length !== 1 ? 's' : ''} to remove
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
@@ -644,6 +730,7 @@ function PartnerShiftWizard({ partnerWizardStep, setPartnerWizardStep, partnerWi
               </button>
               <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '10px', textAlign: 'center', marginTop: '4px' }}>
                 Adding {partnerWizardDates.length} {partnerWizardShiftType === 'day' ? '☀️ day' : '🌙 night'} shift{partnerWizardDates.length !== 1 ? 's' : ''}
+                {removeDates.length > 0 && <span style={{ color: 'rgba(239,68,68,0.7)' }}> · Removing {removeDates.length}</span>}
               </div>
             </div>
           )}
@@ -653,12 +740,25 @@ function PartnerShiftWizard({ partnerWizardStep, setPartnerWizardStep, partnerWi
           {partnerWizardStep === 0 ? (
             <>
               <button onClick={onClose} style={{ flex: 1, height: '38px', borderRadius: '10px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.7)', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }} data-testid="partner-wizard-cancel">Cancel</button>
-              <button
-                onClick={() => setPartnerWizardStep(1)}
-                disabled={partnerWizardDates.length === 0}
-                style={{ flex: 1, height: '38px', borderRadius: '10px', background: partnerWizardDates.length > 0 ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.3)', color: partnerWizardDates.length > 0 ? '#fff' : 'rgba(255,255,255,0.3)', fontSize: '13px', fontWeight: 600, cursor: partnerWizardDates.length > 0 ? 'pointer' : 'default', boxShadow: partnerWizardDates.length > 0 ? '0 0 6px rgba(255,255,255,0.4)' : 'none' }}
-                data-testid="partner-wizard-next"
-              >Next</button>
+              {partnerWizardDates.length > 0 ? (
+                <button
+                  onClick={() => setPartnerWizardStep(1)}
+                  style={{ flex: 1, height: '38px', borderRadius: '10px', background: 'rgba(255,255,255,0.25)', border: '1px solid rgba(255,255,255,0.3)', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer', boxShadow: '0 0 6px rgba(255,255,255,0.4)' }}
+                  data-testid="partner-wizard-next"
+                >Next</button>
+              ) : removeDates.length > 0 ? (
+                <button
+                  onClick={handleSubmit}
+                  disabled={partnerWizardSubmitting}
+                  style={{ flex: 1, height: '38px', borderRadius: '10px', background: 'rgba(239,68,68,0.4)', border: '1px solid rgba(239,68,68,0.6)', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer', boxShadow: '0 0 8px rgba(239,68,68,0.3)' }}
+                  data-testid="partner-wizard-remove"
+                >{partnerWizardSubmitting ? 'Removing...' : `Remove ${removeDates.length} Shift${removeDates.length !== 1 ? 's' : ''}`}</button>
+              ) : (
+                <button
+                  disabled
+                  style={{ flex: 1, height: '38px', borderRadius: '10px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.3)', fontSize: '13px', fontWeight: 600, cursor: 'default' }}
+                >Next</button>
+              )}
             </>
           ) : (
             <>
@@ -668,7 +768,7 @@ function PartnerShiftWizard({ partnerWizardStep, setPartnerWizardStep, partnerWi
                 disabled={partnerWizardSubmitting}
                 style={{ flex: 1, height: '38px', borderRadius: '10px', background: partnerWizardShiftType === 'day' ? 'rgba(251,146,60,0.4)' : 'rgba(139,92,246,0.4)', border: `1px solid ${partnerWizardShiftType === 'day' ? 'rgba(251,146,60,0.6)' : 'rgba(139,92,246,0.6)'}`, color: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer', boxShadow: `0 0 8px ${partnerWizardShiftType === 'day' ? 'rgba(251,146,60,0.4)' : 'rgba(139,92,246,0.4)'}` }}
                 data-testid="partner-wizard-done"
-              >{partnerWizardSubmitting ? 'Adding...' : 'Done'}</button>
+              >{partnerWizardSubmitting ? 'Saving...' : 'Done'}</button>
             </>
           )}
         </div>
@@ -676,7 +776,6 @@ function PartnerShiftWizard({ partnerWizardStep, setPartnerWizardStep, partnerWi
     </div>
   );
 }
-
 export default function Dashboard() {
   const { toast } = useToast();
   
@@ -1739,7 +1838,10 @@ export default function Dashboard() {
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [shareLink, setShareLink] = useState("");
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
-  const { isReadOnly, isAdmin } = useAccessMode();
+  const { isReadOnly, isAdmin, authLevel } = useAccessMode();
+  const desktopIsFull = authLevel === '5747';
+  const desktopHasPartnerWizard = authLevel === '5747' || authLevel === '4201';
+  const desktopHasD2L = true;
   const [isCompletedTasksOpen, setIsCompletedTasksOpen] = useState(false);
   const [dismissedCalendarEvents, setDismissedCalendarEvents] = useState<Set<string>>(() => {
     const saved = localStorage.getItem('dismissedCalendarEvents');
@@ -4171,23 +4273,14 @@ export default function Dashboard() {
     toast({ title: "TTS settings saved", description: "Your text-to-speech highlighting settings have been updated." });
   };
   
-  const generateShareLink = async () => {
-    setIsGeneratingLink(true);
-    try {
-      const response = await fetch('/api/access-tokens', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: `Share link ${new Date().toLocaleDateString()}` }),
-      });
-      const token = await response.json();
-      const link = `${window.location.origin}?access=${token.token}`;
-      setShareLink(link);
-      setIsShareDialogOpen(true);
-    } catch (err) {
-      toast({ title: "Error", description: "Failed to generate share link", variant: "destructive" });
-    } finally {
-      setIsGeneratingLink(false);
-    }
+  const [shareLevelChoice, setShareLevelChoice] = useState<'4201' | '1010'>('4201');
+
+  const generateShareLink = async (level?: '4201' | '1010') => {
+    const chosenLevel = level || shareLevelChoice;
+    const link = `${window.location.origin}/?auth=${chosenLevel}`;
+    setShareLink(link);
+    setShareLevelChoice(chosenLevel);
+    if (!level) setIsShareDialogOpen(true);
   };
   
   const copyShareLink = () => {
@@ -13792,7 +13885,7 @@ export default function Dashboard() {
 
 
           {/* Projects Button */}
-          <Button 
+          {desktopIsFull && <Button 
             variant="ghost" 
             size="sm" 
             className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} 
@@ -13801,11 +13894,11 @@ export default function Dashboard() {
             onClick={() => { triggerButtonGlow('projects'); setEditingProject(null); setProjectWizardStep(0); setProjectWizardData({ name: '', description: '', color: '#6366F1', status: 'planning', targetDate: '', priority: 'medium' }); setProjectDialogOpen(true); }}
           >
             + Project
-          </Button>
+          </Button>}
 
 
           {/* Quick Add Button */}
-          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminder4DateTimeMode: false, reminder4Date: '', reminder4Hour: '09', reminder4Minute: '00', reminderEmail: false, reminderAlexa: false, reminderSms: false, reminder1Methods: '', reminder2Methods: '', reminder3Methods: '', reminder4Methods: '', attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '', repeatSpanDays: 1, shiftAdjust: false }); setIsQuickAddOpen(true); }); }}>+ Add Task</Button>
+          {desktopIsFull && <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminder4DateTimeMode: false, reminder4Date: '', reminder4Hour: '09', reminder4Minute: '00', reminderEmail: false, reminderAlexa: false, reminderSms: false, reminder1Methods: '', reminder2Methods: '', reminder3Methods: '', reminder4Methods: '', attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '', repeatSpanDays: 1, shiftAdjust: false }); setIsQuickAddOpen(true); }); }}>+ Add Task</Button>}
           </div>
 
           {/* Radio Dialog */}
@@ -14137,7 +14230,7 @@ export default function Dashboard() {
                 <div className="flex items-center gap-2">
                   <Share2 className="h-3 w-3 text-white" />
                   <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
-                    TEMPORARY SHARE LINK
+                    SHARE ACCESS
                   </h2>
                 </div>
                 <button 
@@ -14148,10 +14241,38 @@ export default function Dashboard() {
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <div className="p-4 space-y-4">
+              <div className="p-4 space-y-3">
                 <p className="text-white/80 text-[10px]">
-                  This link will expire 1 hour after someone uses it. They can view but not make permanent changes.
+                  Choose the access level for the person you're sharing with.
                 </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => { setShareLevelChoice('4201'); generateShareLink('4201'); }}
+                    style={{
+                      flex: 1, padding: '10px 8px', borderRadius: '10px', cursor: 'pointer', border: 'none',
+                      background: shareLevelChoice === '4201' ? 'rgba(139,92,246,0.35)' : 'rgba(255,255,255,0.06)',
+                      outline: shareLevelChoice === '4201' ? '2px solid rgba(139,92,246,0.7)' : '1px solid rgba(255,255,255,0.15)',
+                      transition: 'all 0.2s',
+                    }}
+                    data-testid="share-level-4201"
+                  >
+                    <div style={{ color: '#fff', fontSize: '11px', fontWeight: 600 }}>D2L + Partner</div>
+                    <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: '9px', marginTop: '2px' }}>Calendar, D2L, shift wizard</div>
+                  </button>
+                  <button
+                    onClick={() => { setShareLevelChoice('1010'); generateShareLink('1010'); }}
+                    style={{
+                      flex: 1, padding: '10px 8px', borderRadius: '10px', cursor: 'pointer', border: 'none',
+                      background: shareLevelChoice === '1010' ? 'rgba(59,130,246,0.35)' : 'rgba(255,255,255,0.06)',
+                      outline: shareLevelChoice === '1010' ? '2px solid rgba(59,130,246,0.7)' : '1px solid rgba(255,255,255,0.15)',
+                      transition: 'all 0.2s',
+                    }}
+                    data-testid="share-level-1010"
+                  >
+                    <div style={{ color: '#fff', fontSize: '11px', fontWeight: 600 }}>D2L Only</div>
+                    <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: '9px', marginTop: '2px' }}>Calendar + D2L view only</div>
+                  </button>
+                </div>
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -14174,7 +14295,18 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
 
-
+          {partnerWizardOpen && (
+            <PartnerShiftWizard
+              partnerWizardStep={partnerWizardStep} setPartnerWizardStep={setPartnerWizardStep}
+              partnerWizardDates={partnerWizardDates} setPartnerWizardDates={setPartnerWizardDates}
+              partnerWizardShiftType={partnerWizardShiftType} setPartnerWizardShiftType={setPartnerWizardShiftType}
+              partnerWizardMonth={partnerWizardMonth} setPartnerWizardMonth={setPartnerWizardMonth}
+              partnerWizardSubmitting={partnerWizardSubmitting} setPartnerWizardSubmitting={setPartnerWizardSubmitting}
+              colorSettings={colorSettings}
+              onClose={() => setPartnerWizardOpen(false)}
+              onDone={() => { queryClient.invalidateQueries({ queryKey: ['/api/shift-schedule'] }); setPartnerWizardOpen(false); toast({ title: 'Shifts saved', description: `Changes applied` }); }}
+            />
+          )}
 
         </div>
       </div>
@@ -14947,7 +15079,7 @@ export default function Dashboard() {
           className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
           style={{ height: '18px', width: '18px', position: 'fixed', bottom: '43px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7 - 2 + 3 + 2 + 8 + 2 - 28 + 5 + 3 + 1}px`, zIndex: 70 }}
-          onClick={generateShareLink}
+          onClick={() => { generateShareLink('4201'); setIsShareDialogOpen(true); }}
           data-testid="button-share-main"
         />
       )}
@@ -17068,6 +17200,14 @@ export default function Dashboard() {
                         >
                           <GraduationCap className="h-3.5 w-3.5" />
                           Course
+                        </button>
+                        <button
+                          className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-opacity duration-200 bg-violet-500/15 text-white border border-violet-400/30 hover:bg-violet-500/25 flex items-center gap-1.5"
+                          onClick={(e) => { e.stopPropagation(); setIsQuickAddOpen(false); setTimeout(() => { setPartnerWizardStep(0); setPartnerWizardDates([]); setPartnerWizardShiftType('day'); setPartnerWizardOpen(true); }, 50); }}
+                          data-testid="quick-add-type-partner-shifts"
+                        >
+                          <Calendar className="h-3.5 w-3.5 text-violet-400" />
+                          Partner Shifts
                         </button>
                       </div>
                       <div className="border-t border-white/15 mt-3 pt-3">
