@@ -5711,8 +5711,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       }
       let deleted = 0;
       for (const date of dates) {
-        const dayStart = `${date}T00:00:00-04:00`;
-        const dayEnd = `${date}T23:59:59-04:00`;
+        const dayStart = new Date(`${date}T00:00:00-04:00`);
+        const dayEnd = new Date(`${date}T23:59:59-04:00`);
         try {
           const events = await getEventsFromThirdAccountCalendar(calendarId, dayStart, dayEnd);
           if (events && Array.isArray(events)) {
