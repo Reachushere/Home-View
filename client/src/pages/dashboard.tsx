@@ -888,12 +888,19 @@ export default function Dashboard() {
   const [isMobileLandscape, setIsMobileLandscape] = useState(() => {
     const w = window.innerWidth;
     const h = window.innerHeight;
-    return (w < 940 || h < 640) && w > h;
+    const ot = screen?.orientation?.type || '';
+    const isLO = ot.includes('landscape') || (window.orientation !== undefined && (window.orientation === 90 || window.orientation === -90));
+    const isMD = w < 940 || h < 640 || (w <= 1024 && h <= 768);
+    return isMD && (isLO || w > h);
   });
   const [isMobilePortrait, setIsMobilePortrait] = useState(() => {
     const w = window.innerWidth;
     const h = window.innerHeight;
-    return (w < 640 || h < 940) && h >= w;
+    const ot = screen?.orientation?.type || '';
+    const isLO = ot.includes('landscape') || (window.orientation !== undefined && (window.orientation === 90 || window.orientation === -90));
+    const isMD = w < 940 || h < 640 || (w <= 1024 && h <= 768);
+    if (isLO && isMD) return false;
+    return isMD && h >= w;
   });
   const isMobileView = isMobileLandscape || isMobilePortrait;
   const [mobileAuth, setMobileAuth] = useState<string | null>(() => {
@@ -921,13 +928,28 @@ export default function Dashboard() {
     const handleResize = () => {
       const w = window.innerWidth;
       const h = window.innerHeight;
+      const orientationType = screen?.orientation?.type || '';
+      const isLandscapeOrientation = orientationType.includes('landscape') || (window.orientation !== undefined && (window.orientation === 90 || window.orientation === -90));
       setIsMobile(w < 640);
-      setIsMobileLandscape((w < 940 || h < 640) && w > h);
-      setIsMobilePortrait((w < 640 || h < 940) && h >= w);
+      const isMobileDimensions = w < 940 || h < 640 || (w <= 1024 && h <= 768);
+      if (isLandscapeOrientation && isMobileDimensions) {
+        setIsMobileLandscape(true);
+        setIsMobilePortrait(false);
+      } else if (isMobileDimensions && w > h) {
+        setIsMobileLandscape(true);
+        setIsMobilePortrait(false);
+      } else if (isMobileDimensions && h >= w) {
+        setIsMobileLandscape(false);
+        setIsMobilePortrait(true);
+      } else {
+        setIsMobileLandscape(false);
+        setIsMobilePortrait(false);
+      }
     };
     handleResize();
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', () => setTimeout(handleResize, 150));
+    return () => { window.removeEventListener('resize', handleResize); window.removeEventListener('orientationchange', handleResize); };
   }, []);
   
   const [selectedWeek, setSelectedWeek] = useState<number>(2);
@@ -10900,9 +10922,66 @@ export default function Dashboard() {
             height: isMobileLandscape ? '100%' : 'auto',
           }}
         >
-          <button onClick={() => setTickerDialogOpen(true)} data-testid="mobile-button-d2l" style={{...mobileBtnStyle(btnSize), overflow: 'hidden'}}>
-            <img src={d2lTickerLabel} alt="D2L" style={{ height: `${btnSize}px`, width: `${btnSize}px`, objectFit: 'cover', borderRadius: '12px' }} />
-          </button>
+          {isFull ? (
+            <button onClick={() => setTickerDialogOpen(true)} data-testid="mobile-button-d2l" style={{...mobileBtnStyle(btnSize), overflow: 'hidden'}}>
+              <img src={d2lTickerLabel} alt="D2L" style={{ height: `${btnSize}px`, width: `${btnSize}px`, objectFit: 'cover', borderRadius: '12px' }} />
+            </button>
+          ) : (
+            <div style={{
+              width: isMobileLandscape ? '48px' : '90%', maxWidth: isMobileLandscape ? '48px' : '340px',
+              height: isMobileLandscape ? 'auto' : '32px',
+              borderRadius: '10px', overflow: 'hidden',
+              background: 'linear-gradient(90deg, #000000 0%, #14141e 50%, #000000 100%)',
+              border: '0.5px solid rgba(255,255,255,0.2)',
+              display: 'flex', alignItems: 'center', position: 'relative',
+            }} data-testid="mobile-inline-ticker">
+              <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', padding: '0 4px' }}>
+                <img src={d2lTickerLabel} alt="D2L" style={{ height: isMobileLandscape ? '20px' : '28px', width: 'auto', objectFit: 'contain' }} />
+              </div>
+              <div style={{ flex: 1, overflow: 'hidden', position: 'relative', height: '100%' }}>
+                {tickerWithTodayTasks.length > 0 ? (
+                  <div ref={(el) => {
+                    if (!el) return;
+                    if ((el as any).__mobileTicker === el) return;
+                    (el as any).__mobileTicker = el;
+                    let isFirst = true;
+                    const go = () => {
+                      if (!el?.parentElement) return;
+                      const pw = el.parentElement.clientWidth || 200;
+                      const cw = el.scrollWidth;
+                      if (cw <= 0) return;
+                      const sp = isFirst ? Math.min(pw, 60) : pw;
+                      isFirst = false;
+                      const dur = (sp + cw) / 45;
+                      el.style.setProperty('--ticker-start', `${sp}px`);
+                      el.style.setProperty('--ticker-end', `-${cw}px`);
+                      el.style.animation = 'none';
+                      void el.offsetWidth;
+                      el.style.animation = `tickerScroll ${dur}s linear 1`;
+                    };
+                    const onEnd = () => { el.style.animation = 'none'; requestAnimationFrame(() => requestAnimationFrame(go)); };
+                    el.removeEventListener('animationend', (el as any).__mobileTickerEnd);
+                    (el as any).__mobileTickerEnd = onEnd;
+                    el.addEventListener('animationend', onEnd);
+                    requestAnimationFrame(go);
+                  }} className="flex items-center h-full whitespace-nowrap" style={{ position: 'relative' }}>
+                    <span style={{ display: 'inline-block', width: '20px', flexShrink: 0 }} />
+                    {tickerWithTodayTasks.map((a: any, i: number) => (
+                      <span key={i} className="inline-flex items-center" style={{ marginRight: '40px' }}>
+                        <span style={{ color: a.isTask ? '#60a5fa' : a.isWeatherAlert ? '#ff6b6b' : '#e2e8f0', fontSize: '11px', fontFamily: "system-ui, -apple-system, sans-serif" }}>
+                          {a.isTask ? '📋 ' : a.isWeatherAlert ? '⚠️ ' : '📢 '}{a.title || a.Title || a.content}
+                        </span>
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex items-center h-full px-2">
+                    <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '10px', fontFamily: "system-ui, -apple-system, sans-serif" }}>No announcements</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {isFull && (
             <button onClick={() => setIsAlexaDialogOpen(true)} data-testid="mobile-button-alexa" style={mobileBtnStyle(btnSize)}>
