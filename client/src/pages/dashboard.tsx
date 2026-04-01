@@ -1883,6 +1883,9 @@ export default function Dashboard() {
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
   const desktopIsFull = authLevel === '5747';
   const desktopHasPartnerWizard = authLevel === '5747' || authLevel === '4201';
+  const desktopShowHomework = authLevel === '5747';
+  const desktopShowWidePill = authLevel === '5747';
+  const desktopShowCalendar = authLevel === '5747' || authLevel === '1010';
   const desktopHasD2L = true;
   const [isCompletedTasksOpen, setIsCompletedTasksOpen] = useState(false);
   const [dismissedCalendarEvents, setDismissedCalendarEvents] = useState<Set<string>>(() => {
@@ -6369,6 +6372,12 @@ export default function Dashboard() {
     retryDelay: 1000,
   });
 
+  const filteredCalendarEvents = useMemo(() => {
+    if (authLevel === '5747') return calendarEvents;
+    if (authLevel === '1010') return calendarEvents.filter(e => e.source === 'tmu');
+    return [];
+  }, [calendarEvents, authLevel]);
+
   const { data: upcomingCalendarEvents = [] } = useQuery<CalendarEvent[]>({
     queryKey: ["/api/calendar/upcoming-events"],
     queryFn: () => fetch('/api/calendar/upcoming-events', { credentials: 'include' }).then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }).catch(() => []),
@@ -10606,7 +10615,7 @@ export default function Dashboard() {
   // Get Google Calendar events for a specific hour on a day (only conflicting events)
   const getCalendarEventsForHour = (day: Date, hour: number) => {
     const now = new Date();
-    return calendarEvents.filter(e => {
+    return filteredCalendarEvents.filter(e => {
       if (e.isAllDay) return false;
       const eventDate = new Date(e.startDate);
       const eventEndDate = new Date(e.endDate);
@@ -10626,7 +10635,7 @@ export default function Dashboard() {
   const getAllDayCalendarEvents = (day: Date) => {
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    return calendarEvents.filter(e => {
+    return filteredCalendarEvents.filter(e => {
       if (!e.isAllDay) return false;
       // For all-day events, extract date part directly to avoid timezone parsing issues
       // startDate may be "2026-03-26T12:00:00" (no TZ) — parse the YYYY-MM-DD directly
@@ -10668,7 +10677,7 @@ export default function Dashboard() {
   
   const weekHasAllDayItems = useMemo(() => {
     return weekDays.some(day => getAllDayTasks(day).length > 0 || getAllDayCalendarEvents(day).length > 0);
-  }, [allTasks, weekDays, calendarEvents]);
+  }, [allTasks, weekDays, filteredCalendarEvents]);
 
   // Get paler version of a color for prep days extension
   const getPalerColor = (colorClass: string) => {
@@ -16854,7 +16863,7 @@ export default function Dashboard() {
       ]} />
 
       {/* Bottom Wide Pill Panel - Slides up from bottom edge */}
-      {(() => {
+      {desktopShowWidePill && (() => {
         const btnCount = 1;
         const btnSize = 44;
         const btnGap = 8;
@@ -22502,7 +22511,7 @@ export default function Dashboard() {
           
           
           {/* Calendar wrapper - leaves space for honeycombs on right */}
-          <div ref={calendarWrapperRef} style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction - 2}px` : ''})`, height: 'calc(100% - 26px)', marginTop: '12px', marginLeft: '12px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 - 2 : 0}px`, display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
+          <div ref={calendarWrapperRef} style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction - 2}px` : ''})`, height: 'calc(100% - 26px)', marginTop: '12px', marginLeft: '12px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 - 2 : 0}px`, display: desktopShowCalendar ? 'flex' : 'none', flexDirection: 'column' }} className="relative overflow-visible">
           
           {/* Glass effect backing box - resizes with calendar */}
           <div 
@@ -26012,7 +26021,7 @@ export default function Dashboard() {
           return (
         <div style={{ order: 3, height: '0px', position: 'relative', flexShrink: 0 }}>
         {/* Coming Up box - positioned to the right of the calendar in the reduction gap */}
-        <section
+        {desktopShowHomework && <section
           ref={homeworkSectionRef}
           className="rounded-[12px] flex flex-col fixed"
           style={{
@@ -27571,9 +27580,9 @@ export default function Dashboard() {
           </div>
           </div>
           </div>
-        </section>
+        </section>}
 
-        {hwFloating.detached && (
+        {desktopShowHomework && hwFloating.detached && (
           <div
             className="flex flex-col fixed"
             style={{
