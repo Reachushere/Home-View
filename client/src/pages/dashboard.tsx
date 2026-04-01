@@ -11719,6 +11719,70 @@ export default function Dashboard() {
             }}
             data-testid="mobile-calendar-container"
           >
+            {mobileAuth === '4201' ? (
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                <div style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '4px 10px', borderBottom: '1px solid rgba(255,255,255,0.15)',
+                  background: 'linear-gradient(180deg, rgba(139,92,246,0.25) 0%, rgba(139,92,246,0.1) 100%)', flexShrink: 0,
+                }}>
+                  <span style={{ color: '#ffffff', fontSize: '12px', fontWeight: 600, fontFamily: "system-ui, -apple-system, sans-serif" }}>
+                    Shift Schedule
+                  </span>
+                </div>
+                <div style={{ flex: 1, overflow: 'auto', padding: '6px' }}>
+                  {(() => {
+                    const today = new Date();
+                    const year = today.getFullYear();
+                    const month = today.getMonth();
+                    const firstDay = new Date(year, month, 1).getDay();
+                    const daysInMonth = new Date(year, month + 1, 0).getDate();
+                    const todayStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                    const monthName = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(today);
+                    const cells: (number | null)[] = [];
+                    for (let i = 0; i < firstDay; i++) cells.push(null);
+                    for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+                    return (
+                      <>
+                        <div style={{ textAlign: 'center', color: '#fff', fontSize: '12px', fontWeight: 600, marginBottom: '4px' }}>{monthName}</div>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px' }}>
+                          {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(d => (
+                            <div key={d} style={{ textAlign: 'center', color: 'rgba(255,255,255,0.4)', fontSize: '9px', fontWeight: 600, padding: '2px 0' }}>{d}</div>
+                          ))}
+                          {cells.map((day, i) => {
+                            if (day === null) return <div key={i} />;
+                            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                            const isToday = dateStr === todayStr;
+                            const shift = localShiftMap[dateStr];
+                            const isDay = shift === 'day';
+                            const isNight = shift === 'night';
+                            return (
+                              <div key={i} style={{
+                                textAlign: 'center', padding: '3px 1px', borderRadius: '4px',
+                                background: isToday ? 'rgba(59,130,246,0.3)' : isDay ? 'rgba(234,179,8,0.2)' : isNight ? 'rgba(99,102,241,0.2)' : 'transparent',
+                                border: isToday ? '1px solid rgba(59,130,246,0.5)' : 'none',
+                              }}>
+                                <div style={{ fontSize: '11px', color: isToday ? '#93c5fd' : '#fff', fontWeight: isToday ? 700 : 400 }}>{day}</div>
+                                {(isDay || isNight) && (
+                                  <div style={{
+                                    fontSize: '7px', fontWeight: 700, marginTop: '1px',
+                                    color: isDay ? '#fde047' : '#a5b4fc',
+                                    fontFamily: "system-ui, -apple-system, sans-serif",
+                                  }}>
+                                    {isDay ? '☀️' : '🌙'}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </>
+                    );
+                  })()}
+                </div>
+              </div>
+            ) : (
+            <>
             <div style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               padding: '4px 10px', borderBottom: '1px solid rgba(255,255,255,0.15)',
@@ -11826,6 +11890,8 @@ export default function Dashboard() {
                 </div>
               )}
             </div>
+            </>
+            )}
           </div>
         )}
 
