@@ -5505,10 +5505,33 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
+  app.get("/api/google/third-account/disconnect", async (_req, res) => {
+    try {
+      await disconnectThirdAccount();
+      res.json({ success: true, message: 'Third account disconnected' });
+    } catch (err) {
+      console.error("Third account disconnect error:", err);
+      res.status(500).json({ error: String(err) });
+    }
+  });
+
+  app.get("/api/google/third-account/reconnect", async (_req, res) => {
+    try {
+      await disconnectThirdAccount();
+    } catch {}
+    try {
+      const authUrl = getThirdAccountAuthUrl();
+      res.redirect(authUrl);
+    } catch (err) {
+      console.error("Third account auth error:", err);
+      res.status(500).json({ error: String(err) });
+    }
+  });
+
   app.get("/api/google/third-account/auth", async (_req, res) => {
     try {
       const authUrl = getThirdAccountAuthUrl();
-      res.json({ authUrl });
+      res.redirect(authUrl);
     } catch (err) {
       console.error("Third account auth error:", err);
       res.status(500).json({ error: String(err) });
