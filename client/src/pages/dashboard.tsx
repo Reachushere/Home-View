@@ -561,20 +561,32 @@ function PartnerShiftWizard({ partnerWizardStep, setPartnerWizardStep, partnerWi
     setPartnerWizardSubmitting(true);
     try {
       if (removeDates.length > 0) {
-        await fetch('/api/google/third-account/delete-shifts', {
+        const delBulk = removeDates.map(d => ({ date: d, shiftType: 'off' }));
+        await fetch('/api/shift-schedule', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ bulk: delBulk }),
+        }).catch(() => {});
+        fetch('/api/google/third-account/delete-shifts', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ dates: removeDates }),
-        });
+        }).catch(() => {});
       }
       if (partnerWizardDates.length > 0) {
-        const resp = await fetch('/api/google/third-account/create-shifts', {
+        const bulkData = partnerWizardDates.map(d => ({ date: d, shiftType: partnerWizardShiftType }));
+        await fetch('/api/shift-schedule', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ bulk: bulkData }),
+        });
+        fetch('/api/google/third-account/create-shifts', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ shifts: partnerWizardDates.map(d => ({ date: d, type: partnerWizardShiftType })), label: shiftLabel }),
-        });
-        if (!resp.ok) throw new Error('Failed');
+        }).catch(() => {});
       }
       onDone();
-    } catch { /* error handled by caller */ } finally { setPartnerWizardSubmitting(false); }
+    } catch (err) {
+      console.error('[PartnerWizard] Submit error:', err);
+      onDone();
+    } finally { setPartnerWizardSubmitting(false); }
   };
 
   const hasChanges = partnerWizardDates.length > 0 || removeDates.length > 0;
