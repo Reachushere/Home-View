@@ -5710,22 +5710,28 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         return res.status(400).json({ error: "dates array required" });
       }
       let deleted = 0;
+      const calendarsToSearch = [calendarId, 'primary'];
       for (const date of dates) {
         const dayStart = new Date(`${date}T00:00:00-04:00`);
         const dayEnd = new Date(`${date}T23:59:59-04:00`);
-        try {
-          const events = await getEventsFromThirdAccountCalendar(calendarId, dayStart, dayEnd);
-          if (events && Array.isArray(events)) {
-            for (const ev of events) {
-              if (ev.summary && (ev.summary.includes('CRCU') || ev.summary.includes('Day') || ev.summary.includes('Night'))) {
-                try {
-                  await deleteEventOnThirdAccountCalendar(calendarId, ev.id);
-                  deleted++;
-                } catch (e) { /* skip individual delete errors */ }
+        for (const cal of calendarsToSearch) {
+          try {
+            const events = await getEventsFromThirdAccountCalendar(cal, dayStart, dayEnd);
+            console.log(`[Delete Shifts] Calendar ${cal}, date ${date}: found ${events?.length || 0} events`);
+            if (events && Array.isArray(events)) {
+              for (const ev of events) {
+                console.log(`[Delete Shifts]   Event: "${ev.summary}" id=${ev.id}`);
+                if (ev.summary && (ev.summary.includes('CRCU') || ev.summary.includes('Day') || ev.summary.includes('Night'))) {
+                  try {
+                    await deleteEventOnThirdAccountCalendar(cal, ev.id!);
+                    deleted++;
+                    console.log(`[Delete Shifts]   DELETED from ${cal}`);
+                  } catch (e) { console.error(`[Delete Shifts]   Delete failed:`, e); }
+                }
               }
             }
-          }
-        } catch (e) { /* skip date lookup errors */ }
+          } catch (e) { console.error(`[Delete Shifts] List failed for ${cal}/${date}:`, e); }
+        }
         try {
           await storage.deleteShiftDay(date);
         } catch (e) { /* skip local delete errors */ }
