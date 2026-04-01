@@ -3,7 +3,7 @@ import { storage } from './storage';
 import type { ThirdGoogleAccount } from '@shared/schema';
 
 const SCOPES = [
-  'https://www.googleapis.com/auth/calendar.readonly',
+  'https://www.googleapis.com/auth/calendar',
   'https://www.googleapis.com/auth/userinfo.email',
 ];
 
