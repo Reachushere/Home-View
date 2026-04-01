@@ -10867,6 +10867,21 @@ export default function Dashboard() {
         }}
         data-testid="mobile-view"
       >
+        {isMobilePortrait && (
+          <div style={{
+            position: 'absolute', top: '12px', left: '50%', transform: 'translateX(-50%)',
+            display: 'flex', alignItems: 'center', gap: '6px',
+            background: 'rgba(0,0,0,0.25)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
+            borderRadius: '20px', padding: '6px 14px',
+            border: '0.5px solid rgba(255,255,255,0.15)',
+            zIndex: 20,
+          }} data-testid="rotate-notice">
+            <span style={{ fontSize: '13px' }}>↻</span>
+            <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px', fontWeight: 500, fontFamily: "system-ui, -apple-system, sans-serif", whiteSpace: 'nowrap' }}>
+              Rotate to landscape to see more
+            </span>
+          </div>
+        )}
         <div
           style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
