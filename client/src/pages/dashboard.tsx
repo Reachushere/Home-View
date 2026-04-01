@@ -11707,18 +11707,20 @@ export default function Dashboard() {
             </div>
           )}
 
+          {mobileAuth === '5747' && (
           <a
             href={`/?auth=5747`}
             target="_blank"
             rel="noopener noreferrer"
             style={{
-              marginTop: isMobileLandscape ? (mobileAuth === '4201' ? '8px' : 'auto') : '16px', paddingBottom: isMobileLandscape ? '8px' : '0',
+              marginTop: isMobileLandscape ? 'auto' : '16px', paddingBottom: isMobileLandscape ? '8px' : '0',
               opacity: 0.35, display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
             data-testid="mobile-replit-logo"
           >
             <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><path d="M7 5.5C7 4.67 7.67 4 8.5 4h15c.83 0 1.5.67 1.5 1.5v7c0 .83-.67 1.5-1.5 1.5h-15C7.67 14 7 13.33 7 12.5v-7zM7 19.5c0-.83.67-1.5 1.5-1.5h15c.83 0 1.5.67 1.5 1.5v7c0 .83-.67 1.5-1.5 1.5h-15C7.67 28 7 27.33 7 26.5v-7z" fill="rgba(255,255,255,0.8)"/></svg>
           </a>
+          )}
         </div>
 
         {isMobileLandscape && (
