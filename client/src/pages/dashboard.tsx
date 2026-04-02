@@ -22861,7 +22861,7 @@ export default function Dashboard() {
                                   <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }} dangerouslySetInnerHTML={{ __html: weatherCss }} />
                                 </div>
                                 <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '7px', overflow: 'hidden' }} data-testid="today-full-date">
-                                  <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '2px 4px 1px' }}>
+                                  <span style={{ display: 'inline-block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '2px 6px 1px', background: 'rgba(30,80,140,0.55)', borderRadius: '4px', backdropFilter: 'blur(4px)' }}>
                                     {format(day, 'EEEE, MMMM d')}
                                   </span>
                                 </div>
