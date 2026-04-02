@@ -2458,6 +2458,19 @@ input[type="date"]::-webkit-datetime-edit-year-field {
   animation: weather-alert-border-pulse 2s ease-in-out infinite;
 }
 
+@keyframes weather-alert-box-pulse {
+  0%, 100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+.weather-alert-box-pulse {
+  animation: weather-alert-box-pulse 2.5s ease-in-out infinite;
+}
+
 .section-dim > *:not(.no-dim) {
   opacity: 0.45;
 }

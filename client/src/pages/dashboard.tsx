@@ -22679,7 +22679,7 @@ export default function Dashboard() {
                 return (
                   <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : 1 }} data-testid={`weather-above-${dateStr}`}>
                     {isTodayForecast && weatherAlerts.length > 0 && (
-                      <div className="absolute inset-0" style={{ backgroundColor: 'rgb(255,0,0)', opacity: 1, left: '3px', right: '-2px' }} />
+                      <div className="absolute inset-0 weather-alert-box-pulse" style={{ backgroundColor: 'rgb(255,0,0)', left: '3px', right: '-2px' }} />
                     )}
                     {dayForecast && (
                       <span className="text-[11px] text-white/90 whitespace-nowrap leading-none font-medium relative z-10" style={{ letterSpacing: '-0.2px' }}>
@@ -22733,7 +22733,7 @@ export default function Dashboard() {
               const todayW = gridSizes.dayColumnWidths[todayIdx] || 0;
               const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
               return (
-                <div className={`absolute pointer-events-none${weatherAlerts.length > 0 ? ' weather-alert-border-pulse' : ''}`} style={{ top: '0px', height: '60px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px))`, width: `calc((${todayW} / ${totalDayW}) * (100% - ${fixedW}px))`, zIndex: 9990 }} />
+                <div className="absolute pointer-events-none" style={{ top: '0px', height: '60px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px))`, width: `calc((${todayW} / ${totalDayW}) * (100% - ${fixedW}px))`, zIndex: 9990 }} />
               );
             })()}
             {/* Red separator on left border of today column - only show when there are next-week columns to the left */}
