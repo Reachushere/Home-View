@@ -13911,7 +13911,11 @@ export default function Dashboard() {
               data-testid="next-task-countdown"
             >
               <div style={{ position: 'relative', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderRadius: '12px', padding: '2px 26px 4px 14px', minWidth: '395px', border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)', boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)', gap: '8px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderRadius: '12px', padding: '2px 26px 4px 14px', minWidth: '395px', border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)', boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>
+                  {selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK && (
+                    <span className="text-[10.5px] font-medium" style={{ color: 'rgba(255,255,255,0.85)', letterSpacing: '0.3px', whiteSpace: 'nowrap', textAlign: 'center', paddingTop: '2px' }} data-testid="text-week-number">Week {selectedWeek}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek ? <span className="text-[10px] font-normal ml-1" style={{ color: 'rgba(255,255,255,1)' }}>(current)</span> : null; })()}</span>
+                  )}
+                  <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
                   {/* Digital clock inside pill */}
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginLeft: '-3px', marginRight: '2px', flexShrink: 0 }}>
                     <span className="text-white" style={{ fontSize: '12px', fontWeight: '400', fontVariantNumeric: 'tabular-nums', lineHeight: '1.2', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>{new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}</span>
@@ -13925,13 +13929,13 @@ export default function Dashboard() {
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginRight: '4px', flexShrink: 0, borderRight: '1px solid rgba(255,255,255,0.3)', paddingRight: '10px' }}>
                       <span style={{ fontSize: '8px', fontWeight: 400, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.5px', lineHeight: 1 }}>WEEK</span>
                       <span style={{ fontSize: '16px', fontWeight: 700, color: '#ffffff', lineHeight: 1, marginTop: '1px' }}>{selectedWeek}</span>
-                      {(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek ? <span style={{ fontSize: '7px', fontWeight: 500, color: 'rgba(255,255,255,0.6)', letterSpacing: '0.3px', lineHeight: 1, marginTop: '2px' }}>(current)</span> : null; })()}
                     </div>
                   )}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginLeft: '2px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap' }} data-testid="countdown-empty-state">
                       <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>All tasks completed</span>
                     </div>
+                  </div>
                   </div>
                 </div>
               </div>
@@ -14002,7 +14006,11 @@ export default function Dashboard() {
             data-testid="next-task-countdown"
           >
             <div style={{ position: 'relative', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderRadius: '12px', padding: '2px 26px 4px 14px', minWidth: '395px', border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)', boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)', gap: '8px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderRadius: '12px', padding: '2px 26px 4px 14px', minWidth: '395px', border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)', boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>
+                {selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK && (
+                  <span className="text-[10.5px] font-medium" style={{ color: 'rgba(255,255,255,0.85)', letterSpacing: '0.3px', whiteSpace: 'nowrap', textAlign: 'center', paddingTop: '2px' }} data-testid="text-week-number">Week {selectedWeek}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek ? <span className="text-[10px] font-normal ml-1" style={{ color: 'rgba(255,255,255,1)' }}>(current)</span> : null; })()}</span>
+                )}
+                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
                 {/* Digital clock inside pill */}
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginLeft: '-3px', marginRight: '2px', flexShrink: 0 }}>
                   <span className="text-white" style={{ fontSize: '12px', fontWeight: '400', fontVariantNumeric: 'tabular-nums', lineHeight: '1.2', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>{new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}</span>
@@ -14016,7 +14024,6 @@ export default function Dashboard() {
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginRight: '4px', flexShrink: 0, borderRight: '1px solid rgba(255,255,255,0.3)', paddingRight: '10px' }}>
                     <span style={{ fontSize: '8px', fontWeight: 400, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.5px', lineHeight: 1 }}>WEEK</span>
                     <span style={{ fontSize: '16px', fontWeight: 700, color: '#ffffff', lineHeight: 1, marginTop: '1px' }}>{selectedWeek}</span>
-                    {(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek ? <span style={{ fontSize: '7px', fontWeight: 500, color: 'rgba(255,255,255,0.6)', letterSpacing: '0.3px', lineHeight: 1, marginTop: '2px' }}>(current)</span> : null; })()}
                   </div>
                 )}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginLeft: '2px' }}>
@@ -14126,6 +14133,7 @@ export default function Dashboard() {
                     )}
                   </div>
                 ))}
+              </div>
               </div>
             </div>
             </div>
@@ -26329,7 +26337,7 @@ export default function Dashboard() {
             )}
             <div style={{ position: 'absolute', top: '21px', left: '22px', right: 0, height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)' }} />
             <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: '6px', bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Homework Progress</span>
-            <span className="text-[10.5px] font-medium text-white" style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', color: 'rgba(255,255,255,0.85)' }} data-testid="text-week-number">{selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK ? `Week ${selectedWeek}` : ''}{(() => { const variants = courseWeekVariants[selectedWeek]; if (variants && variants.length > 0) { const diffLabels = [...new Set(variants.map(v => v.label))].filter(l => { const n = String(l).replace(/^week\s*/i, '').trim(); return n !== String(selectedWeek); }); if (diffLabels.length === 0) return null; return <span className="text-[9px] font-normal ml-1" style={{ color: 'rgba(255,255,255,0.6)' }}>({diffLabels.map((label, i) => { const lStr = String(label); const prefix = /^week\s/i.test(lStr) ? '' : 'Wk '; return <span key={i}>{i > 0 ? ', ' : ''}{variants.find(v => v.label === label)?.courseCode}: {prefix}{lStr}</span>; })})</span>; } return null; })()}</span>
+            {/* Week label moved to countdown box */}
             <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: `${effectiveDividerPct}%`, bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', paddingLeft: '6px' }}>Most Urgent Assignments</span>
             {weatherData && (
               <div style={{ position: 'absolute', left: '28px', top: '5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
