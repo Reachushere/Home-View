@@ -22900,12 +22900,13 @@ export default function Dashboard() {
                             {isToday ? (() => {
                               const now = new Date();
                               const todayPct = Math.min(100, Math.max(0, (now.getHours() * 60 + now.getMinutes()) / 1440 * 100));
-                              return (
+                              const isDarkWeather = weatherData && (weatherData.code >= 51);
+                            return (
                                 <>
-                                  <div className="text-[10px] font-medium tracking-wide" style={{ color: '#000000' }}>
+                                  <div className="text-[10px] font-medium tracking-wide" style={{ color: isDarkWeather ? '#ffffff' : '#000000' }}>
                                     {dayName}
                                   </div>
-                                  <div style={{ fontSize: '25px', fontWeight: 600, color: '#000000' }}>
+                                  <div style={{ fontSize: '25px', fontWeight: 600, color: isDarkWeather ? '#ffffff' : '#000000' }}>
                                     {dayNum}
                                   </div>
                                 </>
