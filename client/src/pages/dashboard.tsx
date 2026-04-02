@@ -14199,7 +14199,7 @@ export default function Dashboard() {
 
 
           {/* ── Tools ── */}
-          <div style={{ borderRadius: '26px', padding: '2px 3px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 24)}px`, border: '1.5px solid rgba(130,195,255,0.5)', position: 'relative', top: '1px', margin: '0 1px', overflow: 'hidden' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(130,195,255,0.38) 0%, rgba(100,170,240,0.2) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ borderRadius: '26px', padding: '2px 3px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 24)}px`, border: '1.5px solid rgba(70,140,220,0.5)', position: 'relative', top: '1px', margin: '0 1px', overflow: 'hidden' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(50,120,210,0.35) 0%, rgba(30,90,180,0.18) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           {/* Home Assistant (moved from bottom pill) */}
           {isAdmin && (
           <div 
