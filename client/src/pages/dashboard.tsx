@@ -23442,44 +23442,7 @@ export default function Dashboard() {
                         }}
                       >
                         <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', borderLeft: '1px solid rgba(0,0,0,0.12)', zIndex: 5, pointerEvents: 'none' }} />
-                        {countdownBarTasks.filter(item => item.courseCode === course.name.split(' - ')[0]?.toUpperCase() && item.barIndices.includes(dayIdx)).map((item, barIdx) => {
-                          const posInBar = item.barIndices.indexOf(dayIdx);
-                          const isStart = posInBar === 0;
-                          const isEnd = posInBar === item.barIndices.length - 1;
-                          const urgencyColor = item.task.countdownBarColor || (item.daysUntilDue <= 1 ? '#dc2626' : item.daysUntilDue <= 3 ? '#e89200' : item.daysUntilDue <= 6 ? '#22c55e' : '#3b82f6');
-                          const isNextWeekDay = calendarWeekMode === 'current' && (() => { const nw = new Date(); const nd = nw.getDay(); const ns = startOfDayET(addDays(nw, nd === 6 ? 7 : (6 - nd))); return startOfDayET(day) >= ns; })();
-                          return (
-                            <div
-                              key={`cbar-${item.task.id}`}
-                              className="absolute flex items-center"
-                              style={{
-                                bottom: `${barIdx * 12 + 1}px`,
-                                left: isStart ? '2px' : '0px',
-                                right: isEnd ? '2px' : '0px',
-                                height: '10px',
-                                backgroundColor: urgencyColor,
-                                opacity: isNextWeekDay ? 0.35 : 0.85,
-                                borderRadius: isStart && isEnd ? '3px' : isStart ? '3px 0 0 3px' : isEnd ? '0 3px 3px 0' : '0',
-                                cursor: 'pointer',
-                                overflow: 'hidden',
-                                zIndex: 10,
-                              }}
-                              onClick={(e) => { e.stopPropagation(); setEditingTask(item.task); }}
-                              onMouseEnter={() => setHoveredCountdownTaskIdDebounced(item.task.id)}
-                              onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
-                              data-testid={`countdown-bar-${item.task.id}`}
-                            >
-                              {isStart && (
-                                <span className="text-[7px] font-bold text-white px-1 truncate whitespace-nowrap" style={{ lineHeight: '10px' }}>
-                                  {item.task.title} — {item.daysUntilDue === 0 ? 'TODAY' : item.daysUntilDue === 1 ? '1d' : `${item.daysUntilDue}d`}
-                                </span>
-                              )}
-                              {isEnd && item.endsThisWeek && (
-                                <div style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '0', height: '0', borderTop: '4px solid transparent', borderBottom: '4px solid transparent', borderLeft: '4px solid rgba(255,255,255,0.6)' }} />
-                              )}
-                            </div>
-                          );
-                        })}
+                        {/* Countdown bars removed — urgency info now shown via "Next Task Due In" badge and sidebar pills */}
                         {isDayToday && (() => {
                           const cCode2 = course.name;
                           const nextTask = (allTasks || []).filter(t => {
@@ -27591,9 +27554,9 @@ export default function Dashboard() {
                                             </div>
                                           </div>
                                         </div>
-                                        <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px', marginLeft: '-3px', position: 'relative', left: '-14px' }}>
-                                          <span className="text-[8px]" style={{ color: '#ffffff', lineHeight: 1, letterSpacing: '0.3px' }}>Due In</span>
-                                          <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
+                                        <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px', marginLeft: '-3px', position: 'relative', left: '-14px' }}>
+                                          <span className="text-[7px]" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1, letterSpacing: '0.3px' }}>Due In</span>
+                                          <span className="text-[9px] font-bold" style={{ color: '#ffffff', lineHeight: 1, backgroundColor: daysUntil <= 1 ? '#dc2626' : daysUntil <= 3 ? '#e89200' : daysUntil <= 6 ? '#22c55e' : '#3b82f6', padding: '2px 5px', borderRadius: '8px', whiteSpace: 'nowrap' }}>{daysUntil === 0 ? 'TODAY' : daysUntil === 1 ? '1 day' : `${daysUntil}d`}</span>
                                         </div>
                                       </div>
                                     </div>
