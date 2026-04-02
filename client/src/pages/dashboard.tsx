@@ -17514,7 +17514,7 @@ export default function Dashboard() {
                             discussion: { bg: 'rgba(160,80,255,0.25)', border: 'rgba(160,80,255,0.55)', hover: 'rgba(160,80,255,0.35)' },
                             poll: { bg: 'rgba(255,70,160,0.25)', border: 'rgba(255,70,160,0.55)', hover: 'rgba(255,70,160,0.35)' },
                             exam: { bg: 'rgba(220,30,30,0.3)', border: 'rgba(220,30,30,0.6)', hover: 'rgba(220,30,30,0.4)' },
-                            quiz: { bg: 'rgba(255,140,0,0.25)', border: 'rgba(255,140,0,0.55)', hover: 'rgba(255,140,0,0.35)' },
+                            quiz: { bg: 'rgba(180,160,40,0.25)', border: 'rgba(180,160,40,0.55)', hover: 'rgba(180,160,40,0.35)' },
                             reminder: { bg: 'rgba(0,210,240,0.25)', border: 'rgba(0,210,240,0.55)', hover: 'rgba(0,210,240,0.35)' },
                             meeting: { bg: 'rgba(80,80,240,0.25)', border: 'rgba(80,80,240,0.55)', hover: 'rgba(80,80,240,0.35)' },
                             other: { bg: 'rgba(160,170,180,0.2)', border: 'rgba(160,170,180,0.5)', hover: 'rgba(160,170,180,0.3)' },
