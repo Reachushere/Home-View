@@ -22729,7 +22729,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative`}
-                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'hidden' } : isNextSchoolWeek ? { background: `linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.42) 50%, rgba(255,255,255,0.35) 100%), ${colorSettings.headerBar}` } : { backgroundColor: colorSettings.headerBar }}
+                    style={isToday ? { background: `linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.42) 50%, rgba(255,255,255,0.35) 100%), ${colorSettings.headerBar}`, paddingLeft: '2px', overflow: 'hidden' } : isNextSchoolWeek ? { background: `linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.42) 50%, rgba(255,255,255,0.35) 100%), ${colorSettings.headerBar}` } : { backgroundColor: colorSettings.headerBar }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     
