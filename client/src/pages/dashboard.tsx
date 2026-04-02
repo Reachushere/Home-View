@@ -26173,14 +26173,16 @@ export default function Dashboard() {
                     if (tab.id.startsWith('ss26-wk')) return tab.id === 'ss26-wk1' && scrollActiveSem === tab.semLabel;
                     return scrollActiveSem === tab.semLabel;
                   })();
-                  const reversedIdx = semTabs.length - 1 - tabIdx;
-                  const overlap = 6;
+                  const overlap = Math.max(4, Math.floor(tabH * 0.25));
                   const tabTop = topInset + tabIdx * (tabH - overlap);
+                  const svgH = tabH + overlap;
+                  const svgW = 22;
+                  const r = 5;
                   return (
                     <div
                       key={tab.id}
                       className={`cursor-pointer${isActive && tabBounceEnabled ? ' semester-tab-bounce' : ''}`}
-                      style={{ position: 'absolute', top: `${tabTop}px`, width: '26px', height: `${tabH + overlap}px`, zIndex: isActive ? 100 : semTabs.length - tabIdx, transition: 'width 0.25s ease, transform 0.25s ease', transform: `translateX(${isActive ? '-5' : '-3'}px)`, '--tab-base-transform': `translateX(${isActive ? '-5' : '-3'}px)` } as React.CSSProperties}
+                      style={{ position: 'absolute', top: `${tabTop}px`, width: `${svgW + 6}px`, height: `${svgH}px`, zIndex: isActive ? 100 : n - tabIdx, transition: 'transform 0.2s ease', transform: `translateX(${isActive ? '-6' : '-2'}px)`, '--tab-base-transform': `translateX(${isActive ? '-6' : '-2'}px)` } as React.CSSProperties}
                       onClick={() => {
                         if (homeworkScrollRef.current) {
                           const scrollContainer = homeworkScrollRef.current;
@@ -26213,15 +26215,19 @@ export default function Dashboard() {
                       data-testid={`semester-tab-${tab.id}`}
                       title={tab.semLabel}
                     >
-                      <svg width="26" height={tabH + overlap} viewBox={`0 0 26 ${tabH + overlap}`} style={{ display: 'block' }}>
-                        <defs><filter id={`tabShadow-${tabIdx}`} x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1" stdDeviation="1" floodColor="black" floodOpacity="0.35" /></filter></defs>
-                        <path d={`M0 0 L0 ${tabH + overlap} L16 ${tabH + overlap} C20,${tabH + overlap} 22,${tabH + overlap - 2} 22,${tabH + overlap - 6} L22 6 C22,2 20,0 16,0 Z`} fill={isActive ? colorSettings.headerBar : colorSettings.headerBar + 'dd'} stroke={isActive ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.25)'} strokeWidth={isActive ? '1.2' : '0.8'} filter={isActive ? `url(#tabShadow-${tabIdx})` : 'none'} />
+                      <svg width={svgW + 6} height={svgH} viewBox={`0 0 ${svgW + 6} ${svgH}`} style={{ display: 'block', overflow: 'visible' }}>
+                        <defs>
+                          <filter id={`tabShadow-${tabIdx}`} x="-20%" y="-10%" width="140%" height="120%"><feDropShadow dx="-1" dy="0" stdDeviation="1.5" floodColor="black" floodOpacity="0.4" /></filter>
+                        </defs>
+                        <path d={`M0 ${r} Q0 0 ${r} 0 L${svgW} 0 L${svgW} ${svgH} L${r} ${svgH} Q0 ${svgH} 0 ${svgH - r} Z`} fill={colorSettings.headerBar} stroke={isActive ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.2)'} strokeWidth={isActive ? '1' : '0.5'} filter={isActive ? `url(#tabShadow-${tabIdx})` : 'none'} />
+                        {isActive && <line x1="0" y1={r} x2="0" y2={svgH - r} stroke={colorSettings.headerBar} strokeWidth="2" />}
                         {(() => {
                           const tFw = isActive ? '600' : '450';
-                          const tFill = isActive ? '#ffffff' : 'rgba(255,255,255,0.85)';
-                          const centerY = (tabH + overlap) / 2;
+                          const tFill = isActive ? '#ffffff' : 'rgba(255,255,255,0.75)';
+                          const centerY = svgH / 2;
+                          const centerX = svgW / 2;
                           return (
-                            <text x="11" y={centerY} textAnchor="middle" dominantBaseline="central" fill={tFill} fontSize="10" fontWeight={tFw} fontFamily="system-ui" transform={`rotate(90, 11, ${centerY})`}>{tab.label}</text>
+                            <text x={centerX} y={centerY} textAnchor="middle" dominantBaseline="central" fill={tFill} fontSize="10" fontWeight={tFw} fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.3" transform={`rotate(90, ${centerX}, ${centerY})`}>{tab.label}</text>
                           );
                         })()}
                       </svg>
