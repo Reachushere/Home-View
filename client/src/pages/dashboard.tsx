@@ -14199,7 +14199,7 @@ export default function Dashboard() {
 
 
           {/* ── Tools ── */}
-          <div style={{ background: 'rgba(255,255,255,0.18)', borderRadius: '26px', padding: '2px 3px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 24)}px`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,0.4)', border: '1.5px solid rgba(255,255,255,0.45)', position: 'relative', top: '1px', margin: '0 1px' }}>
+          <div style={{ background: 'linear-gradient(180deg, rgba(100,180,255,0.35) 0%, rgba(60,140,220,0.2) 100%)', borderRadius: '26px', padding: '2px 3px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 24)}px`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.4), 0 1px 4px rgba(0,0,0,0.15)', border: '1.5px solid rgba(255,255,255,0.5)', position: 'relative', top: '1px', margin: '0 1px' }}>
           {/* Home Assistant (moved from bottom pill) */}
           {isAdmin && (
           <div 
@@ -14555,7 +14555,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── School ── */}
-          <div style={{ background: 'rgba(255,255,255,0.18)', borderRadius: '26px', padding: '2px 3px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 24)}px`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,0.4)', border: '1.5px solid rgba(255,255,255,0.45)', position: 'relative', top: '1px', margin: '0 1px' }}>
+          <div style={{ background: 'linear-gradient(180deg, rgba(120,220,160,0.35) 0%, rgba(60,180,120,0.2) 100%)', borderRadius: '26px', padding: '2px 3px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 24)}px`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.4), 0 1px 4px rgba(0,0,0,0.15)', border: '1.5px solid rgba(255,255,255,0.5)', position: 'relative', top: '1px', margin: '0 1px' }}>
           {/* Courses Button */}
           <div className="pill-button-hover" style={{ 
             marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
@@ -14655,7 +14655,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Entertainment ── */}
-          <div style={{ background: 'rgba(255,255,255,0.18)', borderRadius: '26px', padding: '2px 3px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 24)}px`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,0.4)', border: '1.5px solid rgba(255,255,255,0.45)', position: 'relative', top: '1px', margin: '0 1px' }}>
+          <div style={{ background: 'linear-gradient(180deg, rgba(200,140,255,0.35) 0%, rgba(160,100,220,0.2) 100%)', borderRadius: '26px', padding: '2px 3px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 24)}px`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.4), 0 1px 4px rgba(0,0,0,0.15)', border: '1.5px solid rgba(255,255,255,0.5)', position: 'relative', top: '1px', margin: '0 1px' }}>
           {/* Spotify Button */}
           <div className="pill-button-hover" style={{ 
             marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
@@ -14743,7 +14743,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Tasks ── */}
-          <div style={{ background: 'rgba(255,255,255,0.18)', borderRadius: '26px', padding: '2px 3px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 24)}px`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,0.4)', border: '1.5px solid rgba(255,255,255,0.45)', position: 'relative', top: '1px', margin: '0 1px' }}>
+          <div style={{ background: 'linear-gradient(180deg, rgba(255,180,100,0.35) 0%, rgba(220,140,60,0.2) 100%)', borderRadius: '26px', padding: '2px 3px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 24)}px`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.4), 0 1px 4px rgba(0,0,0,0.15)', border: '1.5px solid rgba(255,255,255,0.5)', position: 'relative', top: '1px', margin: '0 1px' }}>
           {/* Completed Tasks Button - Swapped with Graduation Hat */}
           <div className="pill-button-hover" style={{ 
             marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
