@@ -26174,11 +26174,13 @@ export default function Dashboard() {
                     return scrollActiveSem === tab.semLabel;
                   })();
                   const reversedIdx = semTabs.length - 1 - tabIdx;
+                  const overlap = 6;
+                  const tabTop = topInset + tabIdx * (tabH - overlap);
                   return (
                     <div
                       key={tab.id}
                       className={`cursor-pointer${isActive && tabBounceEnabled ? ' semester-tab-bounce' : ''}`}
-                      style={{ position: 'absolute', bottom: `${bottomInset + reversedIdx * stepPx + (tabIdx > 0 ? tabIdx * 3 : 0) - 14}px`, width: '51px', height: `${tabH}px`, zIndex: isActive ? 100 : semTabs.length - tabIdx, clipPath: isActive ? 'none' : 'inset(0 0 0 2px)', transition: 'width 0.25s ease, transform 0.25s ease', transform: `translateX(${isActive ? '-5' : '-4'}px)`, '--tab-base-transform': `translateX(${isActive ? '-5' : '-4'}px)` } as React.CSSProperties}
+                      style={{ position: 'absolute', top: `${tabTop}px`, width: '26px', height: `${tabH + overlap}px`, zIndex: isActive ? 100 : semTabs.length - tabIdx, transition: 'width 0.25s ease, transform 0.25s ease', transform: `translateX(${isActive ? '-5' : '-3'}px)`, '--tab-base-transform': `translateX(${isActive ? '-5' : '-3'}px)` } as React.CSSProperties}
                       onClick={() => {
                         if (homeworkScrollRef.current) {
                           const scrollContainer = homeworkScrollRef.current;
@@ -26211,19 +26213,15 @@ export default function Dashboard() {
                       data-testid={`semester-tab-${tab.id}`}
                       title={tab.semLabel}
                     >
-                      <svg width="26" height={tabH} viewBox="-4 0 20 54" style={{ display: 'block' }}>
-                        <defs><filter id={`tabShadow-${tabIdx}`} x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="0" stdDeviation="0.5" floodColor="black" floodOpacity="0.3" /></filter></defs>
-                        <path d={tabIdx === 0
-                          ? "M-4.00 0.00 L-4.00 54.00 L3.55 53.98 C3.56,53.98 3.86,52.68 4.88,51.40 C7.21,49.06 12.79,48.74 15.29,45.10 C15.60,44.64 15.83,44.03 16.00,43.29 L16.00 22.62 L16.00 19.38 L16.00 10.71 C15.83,9.98 15.60,9.36 15.29,8.90 C12.79,5.27 7.21,4.94 4.88,2.60 C4.49,2.59 3.55,0.02 3.55,0.02 L-4.00 0.00 Z"
-                          : "M-4.00 54.00 L-4.00 4.53 L3.55 4.50 C3.56,4.50 3.86,3.06 4.88,1.65 C5.48,0.99 6.28,0.47 7.20,0.00 C9.86,1.37 13.43,2.33 15.29,5.33 C15.60,5.84 15.83,6.52 16.00,7.33 L16.00 16.95 L16.00 20.53 L16.00 42.13 C15.83,42.94 15.60,43.63 15.29,44.14 C12.79,48.17 7.21,48.53 4.88,51.12 C4.49,51.13 3.55,53.98 3.55,53.98 L-4.00 54.00 Z"
-                        } fill={colorSettings.headerBar} stroke={isActive ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.5)'} strokeWidth={isActive ? '1.5' : '1.2'} />
+                      <svg width="26" height={tabH + overlap} viewBox={`0 0 26 ${tabH + overlap}`} style={{ display: 'block' }}>
+                        <defs><filter id={`tabShadow-${tabIdx}`} x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1" stdDeviation="1" floodColor="black" floodOpacity="0.35" /></filter></defs>
+                        <path d={`M0 0 L0 ${tabH + overlap} L16 ${tabH + overlap} C20,${tabH + overlap} 22,${tabH + overlap - 2} 22,${tabH + overlap - 6} L22 6 C22,2 20,0 16,0 Z`} fill={isActive ? colorSettings.headerBar : colorSettings.headerBar + 'dd'} stroke={isActive ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.25)'} strokeWidth={isActive ? '1.2' : '0.8'} filter={isActive ? `url(#tabShadow-${tabIdx})` : 'none'} />
                         {(() => {
-                          const tFs = '11';
                           const tFw = isActive ? '600' : '450';
-                          const isTopTab = tabIdx === 0;
-                          const tFill = '#ffffff';
+                          const tFill = isActive ? '#ffffff' : 'rgba(255,255,255,0.85)';
+                          const centerY = (tabH + overlap) / 2;
                           return (
-                            <text x="3" y="26" textAnchor="middle" fill={tFill} fontSize={tFs} fontWeight={tFw} fontFamily="system-ui" filter={`url(#tabShadow-${tabIdx})`} transform="rotate(90, 3, 26)">{tab.label}</text>
+                            <text x="11" y={centerY} textAnchor="middle" dominantBaseline="central" fill={tFill} fontSize="10" fontWeight={tFw} fontFamily="system-ui" transform={`rotate(90, 11, ${centerY})`}>{tab.label}</text>
                           );
                         })()}
                       </svg>
