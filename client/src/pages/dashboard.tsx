@@ -22729,7 +22729,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`flex flex-col items-center justify-center h-full relative`}
-                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'hidden', borderLeft: '2px solid #5596C0' } : day.getDay() === 6 ? { backgroundColor: isNextSchoolWeek ? undefined : colorSettings.headerBar, background: isNextSchoolWeek ? 'linear-gradient(180deg, #5596C0 0%, #8BB8D5 100%)' : undefined, borderLeft: '2px solid #5596C0' } : isNextSchoolWeek ? { background: 'linear-gradient(180deg, #5596C0 0%, #8BB8D5 100%)', borderLeft: '1px solid rgba(255,255,255,0.1)' } : { backgroundColor: colorSettings.headerBar, borderLeft: '1px solid rgba(255,255,255,0.1)' }}
+                    style={isToday ? { backgroundColor: 'transparent', paddingLeft: '2px', overflow: 'hidden', borderLeft: '2px solid #5596C0' } : day.getDay() === 6 ? { backgroundColor: isNextSchoolWeek ? undefined : colorSettings.headerBar, background: isNextSchoolWeek ? 'linear-gradient(180deg, #5596C0 0%, #8BB8D5 100%)' : undefined, borderLeft: '2px solid #5596C0' } : isNextSchoolWeek ? { background: 'linear-gradient(180deg, #5596C0 0%, #8BB8D5 100%)', borderLeft: '1px solid rgba(255,255,255,0.1)' } : { backgroundColor: colorSettings.headerBar, borderLeft: '1px solid rgba(255,255,255,0.1)' }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     
@@ -22793,7 +22793,7 @@ export default function Dashboard() {
                             const wCode = weatherData?.code ?? 0;
                             const isNight = !weatherData?.isDay;
                             const weatherOverlay = (() => {
-                              if (wCode >= 95) return { type: 'thunder', bg: 'rgba(20,20,40,0.5)' };
+                              if (wCode >= 95) return { type: 'thunder', bg: 'rgba(0,0,0,0)' };
                               if (wCode >= 80) return { type: 'showers', bg: 'rgba(60,70,90,0.35)' };
                               if (wCode >= 71 && wCode <= 77) return { type: 'snow', bg: 'rgba(180,200,220,0.3)' };
                               if (wCode >= 61 && wCode <= 67) return { type: 'rain', bg: 'rgba(50,60,80,0.4)' };
