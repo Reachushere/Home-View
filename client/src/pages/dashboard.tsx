@@ -404,7 +404,7 @@ const TICKER_LOGO_MAP: Record<string, { src: string; height: number }> = {
   'Fox News': { src: foxNewsLogoPath, height: 72 },
 };
 
-function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; link: string; source: string; publishedAt?: string }> }) {
+function NewsTickerPortal({ headlines, onAlertClick }: { headlines: Array<{ title: string; link: string; source: string; publishedAt?: string; alertIndex?: number }>; onAlertClick?: (index: number) => void }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const rootRef = useRef<any>(null);
   const prevHeadlinesKeyRef = useRef<string>('');
@@ -444,7 +444,8 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
     const html = `<div class="fixed left-0 right-0 z-[9998] overflow-hidden flex" style="bottom:0;height:38px;background:linear-gradient(90deg,#000000 0%,#14141e 50%,#000000 100%);border-top:1px solid rgba(255,255,255,0.15)" data-testid="news-ticker">${hasAlerts ? '<div style="position:absolute;top:0;left:0;right:0;height:2px;background:#ff0000;z-index:9999"></div>' : ''}<div class="flex-shrink-0 flex items-center justify-center" style="height:38px;width:auto"><img src="${newsTickerLabel}" alt="NEWS" style="height:38px;width:auto;object-fit:contain" /></div><div class="flex-1 overflow-hidden relative h-full"><div class="flex items-center h-full whitespace-nowrap news-ticker-scroll" style="position:relative;padding-top:3px"><span style="display:inline-block;width:40px;flex-shrink:0"></span>${headlines.map((item, i) => {
       if (item.source === '_ALERT_') {
         const safeTitle = item.title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-        return `<span class="inline-flex items-center gap-1.5" style="animation:tickerAlertBlink 1s ease-in-out infinite;margin-left:16px;margin-right:48px" data-testid="weather-alert-${i}"><img src="${weatherAlertLogoPath}" alt="Weather Alert" class="rounded-sm" style="height:28px;width:auto;object-fit:contain" /><span class="text-[16px] font-bold" style="color:#ff4444;text-shadow:0 0 6px rgba(255,68,68,0.5)">${safeTitle}</span><span class="text-white/20 mx-2">|</span></span>`;
+        const alertIdx = (item as any).alertIndex ?? '';
+        return `<span class="inline-flex items-center gap-1.5" style="animation:tickerAlertBlink 1s ease-in-out infinite;margin-left:16px;margin-right:48px;cursor:pointer" data-testid="weather-alert-${i}" data-alert-index="${alertIdx}"><img src="${weatherAlertLogoPath}" alt="Weather Alert" class="rounded-sm" style="height:28px;width:auto;object-fit:contain" /><span class="text-[16px] font-bold" style="color:#ff4444;text-shadow:0 0 6px rgba(255,68,68,0.5)">${safeTitle}</span><span class="text-white/20 mx-2">|</span></span>`;
       }
       if (item.source === '_FORECAST_' || item.source === '_FORECAST_NOSEP_') {
         const forecastHtml = item.title.replace(/(<b>[^<]*<\/b>:?|(?:Toronto Forecast|3-Day Forecast:|Forecast Brief:|Pollen):?)/, '<span style="color:rgb(0,255,0);text-shadow:0 0 4px rgba(0,255,0,0.3)">$1</span>');
@@ -468,6 +469,15 @@ function NewsTickerPortal({ headlines }: { headlines: Array<{ title: string; lin
       return `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 mx-4 no-underline hover:underline" data-testid="news-headline-${i}">${logoHtml}<span class="text-white/85 mx-1 text-[16px]" style="line-height:1;vertical-align:middle;font-weight:300">|</span><span class="text-[16px] text-white/90">${safeTitle}</span>${timeAgoHtml}</a>`;
     }).join('')}</div></div></div>`;
     containerRef.current.innerHTML = html;
+    const tickerEl = containerRef.current;
+    const handleAlertClick = (e: MouseEvent) => {
+      const target = (e.target as HTMLElement).closest('[data-alert-index]') as HTMLElement | null;
+      if (target && onAlertClick) {
+        const idx = parseInt(target.getAttribute('data-alert-index') || '', 10);
+        if (!isNaN(idx)) onAlertClick(idx);
+      }
+    };
+    tickerEl.addEventListener('click', handleAlertClick);
     const applyTickerAnimation = () => {
       const scrollEl = containerRef.current?.querySelector('.news-ticker-scroll') as HTMLElement | null;
       if (!scrollEl) return;
@@ -2139,7 +2149,9 @@ export default function Dashboard() {
 
   const [weatherData, setWeatherData] = useState<{ code: number; temp: number; windSpeed: number; isDay: boolean; sunrise?: string; sunset?: string; daily?: { date: string; high: number; low: number; weatherCode?: number; sunrise?: string; sunset?: string }[] } | null>(null);
   const [pollenData, setPollenData] = useState<{ tree: { value: number; level: string }; grass: { value: number; level: string }; weed: { value: number; level: string }; overall: { value: number; level: string }; aqi: number } | null>(null);
-  const [weatherAlerts, setWeatherAlerts] = useState<{ title: string; summary: string; type: string }[]>([]);
+  const [weatherAlerts, setWeatherAlerts] = useState<{ title: string; summary: string; description: string; type: string; url: string }[]>([]);
+  const [weatherAlertDialogOpen, setWeatherAlertDialogOpen] = useState(false);
+  const [selectedWeatherAlert, setSelectedWeatherAlert] = useState<{ title: string; summary: string; description: string; type: string; url: string } | null>(null);
   const weatherParticles = useMemo(() => Array.from({ length: 70 }, () => ({
     left: Math.random() * 110 - 5,
     delay: Math.random() * 4,
@@ -16858,7 +16870,7 @@ export default function Dashboard() {
 
       {/* News Ticker */}
       <NewsTickerPortal headlines={[
-        ...weatherAlerts.map(a => ({ title: `⚠️ ${a.title}${a.summary ? ` — ${a.summary}` : ''}`, source: '_ALERT_', link: '' })),
+        ...weatherAlerts.map((a, ai) => ({ title: `⚠️ ${a.title}${a.summary ? ` — ${a.summary}` : ''}`, source: '_ALERT_', link: '', alertIndex: ai })),
         ...(weatherData ? (() => {
           const WMO_DESC: Record<number, string> = { 0:'Clear',1:'Mainly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Rime Fog',51:'Light Drizzle',53:'Drizzle',55:'Heavy Drizzle',61:'Light Rain',63:'Rain',65:'Heavy Rain',66:'Freezing Rain',67:'Heavy Freezing Rain',71:'Light Snow',73:'Snow',75:'Heavy Snow',77:'Snow Grains',80:'Light Showers',81:'Showers',82:'Heavy Showers',85:'Light Snow Showers',86:'Heavy Snow Showers',95:'Thunderstorm',96:'Thunderstorm w/ Hail',99:'Severe Thunderstorm' };
           const desc = WMO_DESC[weatherData.code] || 'Mixed';
@@ -16908,7 +16920,37 @@ export default function Dashboard() {
           }
           return interleaved;
         })(),
-      ]} />
+      ]} onAlertClick={(idx) => {
+        if (weatherAlerts[idx]) {
+          setSelectedWeatherAlert(weatherAlerts[idx]);
+          setWeatherAlertDialogOpen(true);
+        }
+      }} />
+
+      {weatherAlertDialogOpen && selectedWeatherAlert && (
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }} onClick={() => setWeatherAlertDialogOpen(false)} data-testid="weather-alert-dialog-overlay">
+          <div className="relative rounded-lg shadow-2xl" style={{ width: '600px', maxWidth: '90vw', maxHeight: '80vh', background: 'linear-gradient(180deg, #1a1a2e 0%, #16213e 100%)', border: '1px solid rgba(255,255,255,0.15)' }} onClick={(e) => e.stopPropagation()} data-testid="weather-alert-dialog">
+            <div className="flex items-center justify-between px-5 py-3 border-b border-white/10" style={{ background: selectedWeatherAlert.type === 'warning' ? 'rgba(255,50,50,0.3)' : selectedWeatherAlert.type === 'watch' ? 'rgba(255,165,0,0.3)' : 'rgba(255,255,0,0.2)', borderRadius: '8px 8px 0 0' }}>
+              <div className="flex items-center gap-2">
+                <span style={{ fontSize: '20px' }}>⚠️</span>
+                <span className="text-white font-bold text-[15px]" data-testid="weather-alert-dialog-title">{selectedWeatherAlert.title}</span>
+              </div>
+              <button onClick={() => setWeatherAlertDialogOpen(false)} className="text-white/60 hover:text-white text-xl font-bold leading-none" data-testid="button-close-weather-alert">&times;</button>
+            </div>
+            <div className="px-5 py-4 overflow-y-auto" style={{ maxHeight: 'calc(80vh - 120px)' }}>
+              {selectedWeatherAlert.summary && (
+                <div className="text-white/60 text-[12px] mb-3" data-testid="weather-alert-dialog-time">{selectedWeatherAlert.summary}</div>
+              )}
+              <div className="text-white/90 text-[14px] leading-relaxed whitespace-pre-wrap" data-testid="weather-alert-dialog-description">
+                {selectedWeatherAlert.description || 'No additional details available.'}
+              </div>
+            </div>
+            <div className="flex justify-end px-5 py-3 border-t border-white/10">
+              <a href={selectedWeatherAlert.url} target="_blank" rel="noopener noreferrer" className="text-[13px] font-medium px-4 py-1.5 rounded" style={{ background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.85)', border: '1px solid rgba(255,255,255,0.2)' }} data-testid="link-eccc-full-warning">View on weather.gc.ca</a>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Bottom Wide Pill Panel - Slides up from bottom edge */}
       {desktopShowWidePill && (() => {

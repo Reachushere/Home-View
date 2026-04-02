@@ -2119,9 +2119,9 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
 
   const WEATHER_ALERT_ZONES = ['on61', 'on20', 'on21', 'on29'];
 
-  async function fetchWeatherAlertsFromECCC(): Promise<{ title: string; summary: string; type: string; updated: string }[]> {
+  async function fetchWeatherAlertsFromECCC(): Promise<{ title: string; summary: string; description: string; type: string; updated: string; url: string }[]> {
     const seen = new Set<string>();
-    const alerts: { title: string; summary: string; type: string; updated: string }[] = [];
+    const alerts: { title: string; summary: string; description: string; type: string; updated: string; url: string }[] = [];
 
     const fetches = WEATHER_ALERT_ZONES.map(async (zone) => {
       try {
@@ -2155,11 +2155,18 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
             const isWarning = /warning/i.test(rawTitle);
             const isWatch = /watch/i.test(rawTitle);
             const isAdvisory = /advisory|statement|special/i.test(rawTitle);
+            const descParts: string[] = [];
+            if (a.alertBodyHeader) descParts.push(a.alertBodyHeader);
+            if (a.alertBody) descParts.push(a.alertBody);
+            if (a.alertBodyFooter) descParts.push(a.alertBodyFooter);
+            const description = descParts.join('\n\n').replace(/<[^>]*>/g, '').trim() || a.issueTimeText || '';
             alerts.push({
               title,
               summary: (a.issueTimeText || '').slice(0, 300),
+              description: description.slice(0, 5000),
               type: isWarning ? 'warning' : isWatch ? 'watch' : isAdvisory ? 'advisory' : 'info',
               updated: a.issueTime || new Date().toISOString(),
+              url: `https://weather.gc.ca/warnings/report_e.html?${zone}=`,
             });
           }
         }
