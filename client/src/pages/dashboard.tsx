@@ -22785,7 +22785,7 @@ export default function Dashboard() {
                               <>
                                 <div className="absolute left-0 right-0 bottom-0 z-10" style={{ top: '22px', background: `linear-gradient(to right, ${scaledStops.join(', ')})` }} />
                                 <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '7px', overflow: 'hidden' }} data-testid="today-full-date">
-                                  <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#000000', lineHeight: '11px', letterSpacing: '0.5px', padding: '2px 4px 1px' }}>
+                                  <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '2px 4px 1px' }}>
                                     {format(day, 'EEEE, MMMM d')}
                                   </span>
                                 </div>
