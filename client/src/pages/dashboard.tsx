@@ -2268,6 +2268,7 @@ export default function Dashboard() {
   const topPillRef = useRef<HTMLDivElement>(null);
   const topPillTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const topPillInitDoneRef = useRef(false);
+  const topPillHoveredRef = useRef(false);
   const openTopPill = useCallback(() => {
     if (!topPillInitDoneRef.current) return;
     setIsTopPillOpen(true);
@@ -2279,7 +2280,9 @@ export default function Dashboard() {
     }, 800);
     topPillTimeoutRef.current = setTimeout(() => {
       topPillInitDoneRef.current = true;
-      closeTopPill();
+      if (!topPillHoveredRef.current) {
+        closeTopPill();
+      }
     }, 4000);
     return () => { clearTimeout(mountDelay); if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); };
   }, []);
@@ -14168,14 +14171,19 @@ export default function Dashboard() {
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
         }}
         onMouseEnter={() => {
+          topPillHoveredRef.current = true;
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
+          if (topPillInitDoneRef.current) setIsTopPillOpen(true);
         }}
         onMouseLeave={() => {
+          topPillHoveredRef.current = false;
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
+          if (topPillInitDoneRef.current) closeTopPill();
         }}
       >
         <div style={{ position: 'absolute', top: '-20px', left: '-10px', right: '-10px', bottom: '-20px', pointerEvents: isTopPillOpen ? 'auto' : 'none', zIndex: -1 }}
-          onMouseEnter={() => { if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); }}
+          onMouseEnter={() => { topPillHoveredRef.current = true; if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); }}
+          onMouseLeave={() => { topPillHoveredRef.current = false; if (topPillInitDoneRef.current) closeTopPill(); }}
         />
         {/* Glass pill background */}
         <div style={{
