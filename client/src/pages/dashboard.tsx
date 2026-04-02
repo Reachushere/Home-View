@@ -6873,10 +6873,10 @@ export default function Dashboard() {
   useEffect(() => {
     if (!semesterSettings || pdfUploadShownRef.current) return;
     const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
-    const semEnd = semesterSettings.semesterEndDate ? new Date(semesterSettings.semesterEndDate) : null;
-    if (!semEnd) return;
-    const daysUntilEnd = Math.floor((semEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-    if (daysUntilEnd > 14 || daysUntilEnd < 0) return;
+    const semStart = semesterSettings.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : null;
+    if (!semStart) return;
+    const daysUntilStart = Math.floor((semStart.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    if (daysUntilStart < 0 || daysUntilStart > 7) return;
     const lastShownKey = `pdfUpload_lastShown_${semesterSettings.id}`;
     const lastShown = parseInt(localStorage.getItem(lastShownKey) || '0', 10);
     const hoursSinceShown = (now.getTime() - lastShown) / (1000 * 60 * 60);
@@ -12872,7 +12872,7 @@ export default function Dashboard() {
           </DialogHeader>
           <div className="space-y-3 text-sm">
             <p className="text-gray-700">
-              Hey Bryn, the semester is ending soon! Time to upload the latest <strong>PAG Elective Course List Offerings PDF</strong> for the upcoming semester so your degree planner stays up to date.
+              Hey Bryn, the new semester is starting soon! Time to upload the latest <strong>PAG Elective Course List Offerings PDF</strong> so your degree planner stays up to date.
             </p>
             <p className="text-gray-600 text-xs">
               You can get the latest PDF from the PAG program office or your advisor. Upload it here and I'll update the elective dropdowns in your degree tracker.
