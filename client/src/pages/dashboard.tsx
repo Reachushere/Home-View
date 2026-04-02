@@ -57,7 +57,7 @@ import hwPlayIconLightPath from "@assets/Headphone3_1774670459512.png";
 import BookAnimation from "@/components/BookAnimation";
 import dragTabPath from "@assets/drag-tab.svg";
 import teacherIconPath from "@assets/Teacher_1775101022422.png";
-import teacherWhiteIconPath from "@assets/Teacher_White_1775164011271.png";
+import teacherWhiteIconPath from "@assets/Teacher_White2_1775164260333.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
