@@ -768,6 +768,28 @@ export async function syncGoogleEventsToReview(): Promise<{ added: number; skipp
     ...allTasks.map(t => t.secondaryCalendarEventId).filter(Boolean),
   ]);
 
+  const { COURSES } = await import('../shared/schema');
+  const courseCodeSet = new Set(COURSES.map(c => c.code.toUpperCase()));
+  const courseNameMap = new Map(COURSES.map(c => [c.code.toUpperCase(), c.name]));
+
+  const isClassEvent = (summary: string): { isClass: boolean; courseCode: string; courseName: string } => {
+    if (!summary) return { isClass: false, courseCode: '', courseName: '' };
+    const bracketMatch = summary.match(/^\[([A-Z]{4}\d{3})\s*-/i);
+    if (bracketMatch) {
+      const code = bracketMatch[1].toUpperCase();
+      if (courseCodeSet.has(code)) {
+        return { isClass: true, courseCode: code, courseName: `${code} - ${courseNameMap.get(code) || ''}` };
+      }
+    }
+    for (const course of COURSES) {
+      const code = course.code.toUpperCase();
+      if (summary.toUpperCase().includes(code)) {
+        return { isClass: true, courseCode: code, courseName: `${code} - ${course.name}` };
+      }
+    }
+    return { isClass: false, courseCode: '', courseName: '' };
+  };
+
   for (const event of allEvents) {
     if (!event.id || syncedEventIds.has(event.id)) {
       skipped++;
@@ -799,6 +821,26 @@ export async function syncGoogleEventsToReview(): Promise<{ added: number; skipp
 
     const startTime = isAllDay ? null : `${String(startDt.getHours()).padStart(2, '0')}:${String(startDt.getMinutes()).padStart(2, '0')}`;
     const endTime = isAllDay ? null : `${String(endDt.getHours()).padStart(2, '0')}:${String(endDt.getMinutes()).padStart(2, '0')}`;
+
+    const classInfo = isClassEvent(event.summary || '');
+    if (classInfo.isClass && startTime && endTime) {
+      const dueDate = `${startDt.getFullYear()}-${String(startDt.getMonth() + 1).padStart(2, '0')}-${String(startDt.getDate()).padStart(2, '0')}T12:00:00`;
+      await storage.createTask({
+        title: `${event.summary || 'Class'}`,
+        type: 'class',
+        dueDate: new Date(dueDate),
+        courseName: classInfo.courseName,
+        eventStartTime: startTime,
+        eventEndTime: endTime,
+        priority: 'medium',
+        isCompleted: false,
+        calendarEventId: event.id,
+        weekNumber: 1,
+      });
+      console.log(`[Google Calendar Review] Auto-created class task: ${event.summary} on ${dateKey} ${startTime}-${endTime}`);
+      added++;
+      continue;
+    }
 
     await storage.createPendingReviewItem({
       source: 'google_calendar',

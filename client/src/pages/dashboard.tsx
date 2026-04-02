@@ -24557,6 +24557,9 @@ export default function Dashboard() {
                                 data-cal-task-id={task.id}
                                 data-cal-date={format(day, 'yyyy-MM-dd')}
                               >
+                                {task.type === 'class' ? (
+                                  <img src={teacherIconPath} alt="Class" style={{ position: 'absolute', top: '1px', left: '1px', width: '12px', height: '12px', objectFit: 'contain', opacity: 0.7, zIndex: 3 }} data-testid={`type-icon-time-${task.id}`} />
+                                ) : (() => { const TIcon = iconMap[task.type || '']; return TIcon ? <TIcon className="h-2.5 w-2.5 shrink-0" style={{ position: 'absolute', top: '2px', left: '2px', opacity: 0.6, color: calendarTypeIconColors[task.type || ''] || '#6b7280', zIndex: 3 } as any} data-testid={`type-icon-time-${task.id}`} /> : null; })()}
                                 <div className="flex items-center gap-1.5 px-0.5 pt-0.5 pb-0">
                                   <Checkbox
                                       checked={task.isCompleted || false}
@@ -24720,6 +24723,9 @@ export default function Dashboard() {
                       data-cal-task-id={task.id}
                       data-cal-date={format(taskDay, 'yyyy-MM-dd')}
                     >
+                      {task.type === 'class' ? (
+                        <img src={teacherIconPath} alt="Class" style={{ position: 'absolute', top: '2px', left: '2px', width: '14px', height: '14px', objectFit: 'contain', opacity: 0.7, zIndex: 3 }} data-testid={`type-icon-multi-${task.id}`} />
+                      ) : (() => { const TIcon = iconMap[task.type || '']; return TIcon ? <TIcon className="h-3 w-3 shrink-0" style={{ position: 'absolute', top: '2px', left: '2px', opacity: 0.6, color: calendarTypeIconColors[task.type || ''] || '#6b7280', zIndex: 3 } as any} data-testid={`type-icon-multi-${task.id}`} /> : null; })()}
                       <div className="flex items-center gap-1.5 px-0.5 py-1">
                         <Checkbox
                             checked={task.isCompleted || false}

@@ -124,6 +124,28 @@ export async function syncOutlookEventsToReview(): Promise<{ added: number; skip
     return `${normT}||${dateK}`;
   }));
 
+  const { COURSES } = await import('../shared/schema');
+  const courseCodeSet = new Set(COURSES.map(c => c.code.toUpperCase()));
+  const courseNameMap = new Map(COURSES.map(c => [c.code.toUpperCase(), c.name]));
+
+  const isClassEvent = (summary: string): { isClass: boolean; courseCode: string; courseName: string } => {
+    if (!summary) return { isClass: false, courseCode: '', courseName: '' };
+    const bracketMatch = summary.match(/^\[([A-Z]{4}\d{3})\s*-/i);
+    if (bracketMatch) {
+      const code = bracketMatch[1].toUpperCase();
+      if (courseCodeSet.has(code)) {
+        return { isClass: true, courseCode: code, courseName: `${code} - ${courseNameMap.get(code) || ''}` };
+      }
+    }
+    for (const course of COURSES) {
+      const code = course.code.toUpperCase();
+      if (summary.toUpperCase().includes(code)) {
+        return { isClass: true, courseCode: code, courseName: `${code} - ${course.name}` };
+      }
+    }
+    return { isClass: false, courseCode: '', courseName: '' };
+  };
+
   for (const event of events) {
     const existing = await storage.getPendingReviewItemByExternalId(event.id, 'outlook_calendar');
     if (existing) {
@@ -149,6 +171,26 @@ export async function syncOutlookEventsToReview(): Promise<{ added: number; skip
 
     const startTime = event.isAllDay ? null : `${String(startDt.getHours()).padStart(2, '0')}:${String(startDt.getMinutes()).padStart(2, '0')}`;
     const endTime = event.isAllDay ? null : `${String(endDt.getHours()).padStart(2, '0')}:${String(endDt.getMinutes()).padStart(2, '0')}`;
+
+    const classInfo = isClassEvent(event.subject || '');
+    if (classInfo.isClass && startTime && endTime) {
+      const dueDate = `${startDt.getFullYear()}-${String(startDt.getMonth() + 1).padStart(2, '0')}-${String(startDt.getDate()).padStart(2, '0')}T12:00:00`;
+      await storage.createTask({
+        title: `${event.subject || 'Class'}`,
+        type: 'class',
+        dueDate: new Date(dueDate),
+        courseName: classInfo.courseName,
+        eventStartTime: startTime,
+        eventEndTime: endTime,
+        priority: 'medium',
+        isCompleted: false,
+        calendarEventId: event.id,
+        weekNumber: 1,
+      });
+      console.log(`[Outlook Calendar] Auto-created class task: ${event.subject} on ${dateKey} ${startTime}-${endTime}`);
+      added++;
+      continue;
+    }
 
     await storage.createPendingReviewItem({
       source: 'outlook_calendar',
