@@ -22787,9 +22787,67 @@ export default function Dashboard() {
                             scaledStops.push(`${lastVisible.c} ${pct}%`);
                             scaledStops.push(`#ffffff ${pct}%`);
                             scaledStops.push(`#ffffff 100%`);
+                            const wCode = weatherData?.code ?? 0;
+                            const isNight = !weatherData?.isDay;
+                            const weatherOverlay = (() => {
+                              if (wCode >= 95) return { type: 'thunder', bg: 'rgba(20,20,40,0.5)' };
+                              if (wCode >= 80) return { type: 'showers', bg: 'rgba(60,70,90,0.35)' };
+                              if (wCode >= 71 && wCode <= 77) return { type: 'snow', bg: 'rgba(180,200,220,0.3)' };
+                              if (wCode >= 61 && wCode <= 67) return { type: 'rain', bg: 'rgba(50,60,80,0.4)' };
+                              if (wCode >= 51 && wCode <= 55) return { type: 'drizzle', bg: 'rgba(80,90,110,0.25)' };
+                              if (wCode === 45 || wCode === 48) return { type: 'fog', bg: 'rgba(180,180,190,0.45)' };
+                              if (wCode === 3) return { type: 'overcast', bg: 'rgba(120,130,140,0.3)' };
+                              if (wCode === 2) return { type: 'partlyCloudy', bg: 'rgba(0,0,0,0)' };
+                              if (wCode <= 1) return { type: 'clear', bg: 'rgba(0,0,0,0)' };
+                              return { type: 'clear', bg: 'rgba(0,0,0,0)' };
+                            })();
+                            const weatherCss = (() => {
+                              const t = weatherOverlay.type;
+                              if (t === 'rain' || t === 'showers' || t === 'drizzle') {
+                                const density = t === 'showers' ? 20 : t === 'rain' ? 14 : 8;
+                                const drops = Array.from({ length: density }, (_, i) => {
+                                  const left = (i * 37 + 13) % 100;
+                                  const delay = ((i * 0.17) % 1.2).toFixed(2);
+                                  const dur = t === 'showers' ? '0.5s' : t === 'rain' ? '0.7s' : '1s';
+                                  const opacity = t === 'showers' ? 0.7 : t === 'rain' ? 0.5 : 0.35;
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1px;height:${t === 'drizzle' ? 4 : 6}px;background:rgba(200,210,230,${opacity});animation:rainDrop ${dur} ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                }).join('');
+                                return drops;
+                              }
+                              if (t === 'snow') {
+                                const flakes = Array.from({ length: 12 }, (_, i) => {
+                                  const left = (i * 31 + 7) % 100;
+                                  const delay = ((i * 0.25) % 2).toFixed(2);
+                                  const size = 2 + (i % 2);
+                                  return `<div style="position:absolute;left:${left}%;top:-3px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.7);border-radius:50%;animation:snowFall 2s ${delay}s linear infinite"></div>`;
+                                }).join('');
+                                return flakes;
+                              }
+                              if (t === 'fog') {
+                                return `<div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(200,200,210,0.1) 0%,rgba(200,200,210,0.5) 30%,rgba(200,200,210,0.3) 60%,rgba(200,200,210,0.5) 100%);animation:fogDrift 6s ease-in-out infinite alternate"></div>`;
+                              }
+                              if (t === 'overcast') {
+                                return `<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(140,145,155,0.4) 0%,rgba(160,165,175,0.2) 100%)"></div>`;
+                              }
+                              if (t === 'clear' && !isNight) {
+                                return `<div style="position:absolute;top:2px;right:4px;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle,rgba(255,230,100,0.9) 30%,rgba(255,200,50,0.3) 70%,transparent 100%);box-shadow:0 0 6px 2px rgba(255,220,80,0.4)"></div>`;
+                              }
+                              if (t === 'partlyCloudy') {
+                                return `<div style="position:absolute;top:3px;right:5px;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,rgba(255,230,100,0.7) 30%,transparent 70%)"></div><div style="position:absolute;top:2px;right:2px;width:16px;height:8px;border-radius:6px;background:rgba(200,210,220,0.5)"></div>`;
+                              }
+                              return '';
+                            })();
                             return (
                               <>
-                                <div className="absolute left-0 right-0 bottom-0 z-10" style={{ top: '22px', background: `linear-gradient(to right, ${scaledStops.join(', ')})` }} />
+                                <style>{`
+                                  @keyframes rainDrop { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(50px); opacity: 0; } }
+                                  @keyframes snowFall { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 15% { opacity: 1; } 100% { transform: translateY(50px) rotate(180deg); opacity: 0; } }
+                                  @keyframes fogDrift { 0% { transform: translateX(-5px); } 100% { transform: translateX(5px); } }
+                                `}</style>
+                                <div className="absolute left-0 right-0 bottom-0 z-10" style={{ top: '22px', background: `linear-gradient(to right, ${scaledStops.join(', ')})`, overflow: 'hidden' }}>
+                                  <div style={{ position: 'absolute', inset: 0, background: weatherOverlay.bg }} />
+                                  <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }} dangerouslySetInnerHTML={{ __html: weatherCss }} />
+                                </div>
                                 <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '7px', overflow: 'hidden' }} data-testid="today-full-date">
                                   <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '2px 4px 1px' }}>
                                     {format(day, 'EEEE, MMMM d')}
