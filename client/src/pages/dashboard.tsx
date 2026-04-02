@@ -14760,7 +14760,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Tasks ── */}
-          <div style={{ borderRadius: '26px', padding: '2px 3px 2px 3px', paddingRight: '5px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 24)}px`, border: '1.5px solid rgba(210,50,50,0.6)', position: 'relative', top: '1px', margin: '0 1px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(210,50,50,0.5) 0%, rgba(180,30,30,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ borderRadius: '26px', padding: '2px 3px 2px 3px', paddingRight: '5px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 24)}px`, border: '1.5px solid rgba(210,190,50,0.6)', position: 'relative', top: '1px', margin: '0 1px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(210,190,50,0.5) 0%, rgba(180,160,30,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           {/* Completed Tasks Button - Swapped with Graduation Hat */}
           <div className="pill-button-hover" style={{ 
             marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
