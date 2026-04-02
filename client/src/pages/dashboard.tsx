@@ -17501,10 +17501,31 @@ export default function Dashboard() {
                       <div className="grid grid-cols-2 gap-2">
                         {TASK_TYPES.filter(t => t !== "class").map(type => {
                           const TypeIcon = iconMap[type] || FileText;
+                          const typeColors: Record<string, { bg: string; border: string; hover: string }> = {
+                            reading: { bg: 'rgba(59,130,246,0.15)', border: 'rgba(59,130,246,0.35)', hover: 'rgba(59,130,246,0.25)' },
+                            module: { bg: 'rgba(16,185,129,0.15)', border: 'rgba(16,185,129,0.35)', hover: 'rgba(16,185,129,0.25)' },
+                            essay: { bg: 'rgba(245,158,11,0.15)', border: 'rgba(245,158,11,0.35)', hover: 'rgba(245,158,11,0.25)' },
+                            project: { bg: 'rgba(239,68,68,0.15)', border: 'rgba(239,68,68,0.35)', hover: 'rgba(239,68,68,0.25)' },
+                            discussion: { bg: 'rgba(168,85,247,0.15)', border: 'rgba(168,85,247,0.35)', hover: 'rgba(168,85,247,0.25)' },
+                            poll: { bg: 'rgba(236,72,153,0.15)', border: 'rgba(236,72,153,0.35)', hover: 'rgba(236,72,153,0.25)' },
+                            exam: { bg: 'rgba(220,38,38,0.2)', border: 'rgba(220,38,38,0.45)', hover: 'rgba(220,38,38,0.3)' },
+                            quiz: { bg: 'rgba(251,146,60,0.15)', border: 'rgba(251,146,60,0.35)', hover: 'rgba(251,146,60,0.25)' },
+                            reminder: { bg: 'rgba(34,211,238,0.15)', border: 'rgba(34,211,238,0.35)', hover: 'rgba(34,211,238,0.25)' },
+                            meeting: { bg: 'rgba(99,102,241,0.15)', border: 'rgba(99,102,241,0.35)', hover: 'rgba(99,102,241,0.25)' },
+                            other: { bg: 'rgba(156,163,175,0.15)', border: 'rgba(156,163,175,0.35)', hover: 'rgba(156,163,175,0.25)' },
+                          };
+                          const tc = typeColors[type] || { bg: 'rgba(255,255,255,0.05)', border: 'rgba(255,255,255,0.1)', hover: 'rgba(255,255,255,0.2)' };
+                          const isSelected = quickAddData.type === type;
                           return (
                             <button
                               key={type}
-                              className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-opacity duration-200 flex items-center gap-1.5 ${quickAddData.type === type ? 'bg-white/20 text-white border border-white/30' : 'bg-white/5 text-white border border-white/10 hover:bg-white/20'}`}
+                              className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 flex items-center gap-1.5 text-white"
+                              style={{
+                                background: isSelected ? tc.hover : tc.bg,
+                                border: `1px solid ${isSelected ? 'rgba(255,255,255,0.4)' : tc.border}`,
+                              }}
+                              onMouseEnter={(e) => { e.currentTarget.style.background = tc.hover; }}
+                              onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = tc.bg; }}
                               onClick={() => { setQuickAddData(p => ({ ...p, type })); setQuickAddStep(1); }}
                               data-testid={`quick-add-type-${type}`}
                             >
@@ -17514,7 +17535,10 @@ export default function Dashboard() {
                           );
                         })}
                         <button
-                          className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-opacity duration-200 bg-white/5 text-white border border-white/10 hover:bg-white/20 flex items-center gap-1.5"
+                          className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 text-white flex items-center gap-1.5"
+                          style={{ background: 'rgba(20,184,166,0.15)', border: '1px solid rgba(20,184,166,0.35)' }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(20,184,166,0.25)'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(20,184,166,0.15)'; }}
                           onClick={(e) => { e.stopPropagation(); setIsQuickAddOpen(false); setTimeout(() => setIsNewCourseWizardOpen(true), 50); }}
                           data-testid="quick-add-type-course"
                         >
