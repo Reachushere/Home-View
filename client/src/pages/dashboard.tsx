@@ -22760,7 +22760,7 @@ export default function Dashboard() {
             </div>
           <div ref={calendarBorderRef} className="shadow-lg border border-white flex flex-col relative" style={{ background: 'transparent', borderRadius: '8px', overflow: 'hidden', height: 'calc(100%)', width: 'calc(100%)', marginLeft: '2px', marginTop: '-2px' }}>
             {/* Progress/Saturday divider line - grey separator on left border of Saturday column */}
-            <div className="absolute top-0 bottom-0 w-[3px] z-50 pointer-events-none overflow-hidden" style={{ left: `calc(${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px + (${gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px) - 1px)`, backgroundColor: '#888888' }}>
+            <div className="absolute top-0 bottom-0 z-50 pointer-events-none overflow-hidden" style={{ left: `calc(${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px + (${gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px) - 1px)`, width: '4px', backgroundColor: '#5596C0' }}>
             </div>
             {/* Black border around today column - always show */}
             {(() => {
@@ -22784,7 +22784,7 @@ export default function Dashboard() {
               const beforeW = gridSizes.dayColumnWidths.slice(0, todayIdx).reduce((a: number, b: number) => a + b, 0);
               const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
               return (
-                <div className="absolute top-0 bottom-0 z-50 pointer-events-none" style={{ left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px) - 2px)`, width: '4px', backgroundColor: '#000000' }} />
+                <div className="absolute top-0 bottom-0 z-50 pointer-events-none" style={{ left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px) - 2px)`, width: '4px', backgroundColor: '#5596C0' }} />
               );
             })()}
             
@@ -22828,7 +22828,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`flex flex-col items-center justify-center h-full relative`}
-                    style={isToday ? { backgroundColor: 'transparent', paddingLeft: '2px', overflow: 'hidden', borderLeft: '2px solid #5596C0' } : day.getDay() === 6 ? { backgroundColor: isNextSchoolWeek ? undefined : colorSettings.headerBar, background: isNextSchoolWeek ? 'linear-gradient(180deg, #5596C0 0%, #8BB8D5 100%)' : undefined, borderLeft: '2px solid #5596C0' } : isNextSchoolWeek ? { background: 'linear-gradient(180deg, #5596C0 0%, #8BB8D5 100%)', borderLeft: '1px solid rgba(255,255,255,0.1)' } : { backgroundColor: colorSettings.headerBar, borderLeft: '1px solid rgba(255,255,255,0.1)' }}
+                    style={isToday ? { backgroundColor: '#5596C0', paddingLeft: '2px', overflow: 'hidden', borderLeft: '2px solid #5596C0' } : day.getDay() === 6 ? { backgroundColor: isNextSchoolWeek ? undefined : colorSettings.headerBar, background: isNextSchoolWeek ? 'linear-gradient(180deg, #5596C0 0%, #8BB8D5 100%)' : undefined, borderLeft: '2px solid #5596C0' } : isNextSchoolWeek ? { background: 'linear-gradient(180deg, #5596C0 0%, #8BB8D5 100%)', borderLeft: '1px solid rgba(255,255,255,0.1)' } : { backgroundColor: colorSettings.headerBar, borderLeft: '1px solid rgba(255,255,255,0.1)' }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     
@@ -22959,7 +22959,7 @@ export default function Dashboard() {
                                   <div style={{ position: 'absolute', inset: 0, background: weatherOverlay.bg }} />
                                   <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }} dangerouslySetInnerHTML={{ __html: weatherCss }} />
                                 </div>
-                                <div className="absolute left-0 right-0 z-15" style={{ top: 0, height: '20px', background: colorSettings.headerBar }} />
+                                <div className="absolute left-0 right-0 z-15" style={{ top: 0, height: '20px', background: '#5596C0' }} />
                                 <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '7px', overflow: 'hidden' }} data-testid="today-full-date">
                                   <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 4px' }}>
                                     {format(day, 'EEEE, MMMM d')}
@@ -24196,7 +24196,7 @@ export default function Dashboard() {
                     style={{ 
                       borderLeft: (isSameDayET(day, new Date()) || day.getDay() === 6) ? '2px solid #5596C0' : '1px solid rgba(255,255,255,0.1)',
                       backgroundColor: (() => {
-                        if (isSameDayET(day, new Date())) return '#eef2f7';
+                        if (isSameDayET(day, new Date())) return '#5596C0';
                         if (calendarWeekMode === 'current') {
                           const adNow = new Date();
                           const adDow = adNow.getDay();
