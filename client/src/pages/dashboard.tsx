@@ -32566,7 +32566,33 @@ function TaskForm({
           </div>
 
           <div>
-            <Label htmlFor="dueDate" className="text-[11px] text-white">Due Date</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="dueDate" className="text-[11px] text-white">Due Date</Label>
+              <Button
+                variant="outline"
+                className="text-[9px] h-5 px-2 text-orange-300 border-orange-400/40 hover:bg-orange-500/15 hover:text-orange-200"
+                disabled={dupSearching || !task?.id}
+                data-testid="button-find-duplicates"
+                onClick={async () => {
+                  if (!task?.id) return;
+                  setDupSearching(true);
+                  setDupResults(null);
+                  setDupDiffTimeEvents([]);
+                  setDupShowDiffTime(false);
+                  try {
+                    const resp = await fetch(`/api/tasks/${task.id}/find-calendar-duplicates`, { method: 'POST', credentials: 'include' });
+                    const data = await resp.json();
+                    const exact = (data.duplicates || []).filter((d: any) => d.isExactTime);
+                    const diffTime = (data.duplicates || []).filter((d: any) => !d.isExactTime);
+                    setDupResults(exact);
+                    setDupDiffTimeEvents(diffTime);
+                  } catch { setDupResults([]); }
+                  setDupSearching(false);
+                }}
+              >
+                {dupSearching ? 'Searching...' : 'Find Duplicates'}
+              </Button>
+            </div>
             <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
               <PopoverTrigger asChild>
                 <Button
@@ -32865,32 +32891,6 @@ function TaskForm({
                   <option value="PM">PM</option>
                 </select>
               </div>
-            </div>
-            <div className="flex items-end">
-              <Button
-                variant="outline"
-                className="text-[9px] h-8 px-2 text-orange-300 border-orange-400/40 hover:bg-orange-500/15 hover:text-orange-200"
-                disabled={dupSearching || !task?.id}
-                data-testid="button-find-duplicates"
-                onClick={async () => {
-                  if (!task?.id) return;
-                  setDupSearching(true);
-                  setDupResults(null);
-                  setDupDiffTimeEvents([]);
-                  setDupShowDiffTime(false);
-                  try {
-                    const resp = await fetch(`/api/tasks/${task.id}/find-calendar-duplicates`, { method: 'POST', credentials: 'include' });
-                    const data = await resp.json();
-                    const exact = (data.duplicates || []).filter((d: any) => d.isExactTime);
-                    const diffTime = (data.duplicates || []).filter((d: any) => !d.isExactTime);
-                    setDupResults(exact);
-                    setDupDiffTimeEvents(diffTime);
-                  } catch { setDupResults([]); }
-                  setDupSearching(false);
-                }}
-              >
-                {dupSearching ? 'Searching...' : 'Find Duplicates'}
-              </Button>
             </div>
           </div>
 
