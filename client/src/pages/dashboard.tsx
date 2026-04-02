@@ -30311,7 +30311,7 @@ function FileSelector({
         <FolderOpen className="h-3 w-3 mr-1" />
         <SelectValue placeholder="Select File" />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent style={{ zIndex: 99999 }}>
         {availableFiles.map(file => (
           <SelectItem key={file.id} value={file.objectPath}>
             {file.displayName}
