@@ -13911,7 +13911,10 @@ export default function Dashboard() {
               data-testid="next-task-countdown"
             >
               <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderRadius: '12px', padding: '2px 14px 4px 14px', minWidth: '395px', border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)', boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", gap: '8px' }}>
+                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', position: 'relative', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderRadius: '12px', padding: '10px 14px 4px 14px', minWidth: '395px', border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)', boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", gap: '8px' }}>
+                  {selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK && (
+                    <span className="text-[10.5px] font-medium" style={{ position: 'absolute', top: '1px', left: '50%', transform: 'translateX(-50%)', color: 'rgba(255,255,255,0.85)', letterSpacing: '0.3px', whiteSpace: 'nowrap', textAlign: 'center' }} data-testid="text-week-number">Week {selectedWeek}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek ? <span className="text-[10px] font-normal ml-1" style={{ color: 'rgba(255,255,255,1)' }}>(current)</span> : null; })()}</span>
+                  )}
                   {/* Digital clock inside pill */}
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginLeft: '-3px', marginRight: '2px', flexShrink: 0 }}>
                     <span className="text-white" style={{ fontSize: '12px', fontWeight: '400', fontVariantNumeric: 'tabular-nums', lineHeight: '1.2', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>{new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}</span>
@@ -13926,11 +13929,6 @@ export default function Dashboard() {
                       <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>All tasks completed</span>
                     </div>
                   </div>
-                  {selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK && (
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderLeft: '1px solid rgba(255,255,255,0.3)', paddingLeft: '10px', marginLeft: '4px', alignSelf: 'stretch' }} data-testid="text-week-number">
-                      <span className="text-[10.5px] font-medium" style={{ color: 'rgba(255,255,255,0.85)', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Week {selectedWeek}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek ? <span className="text-[10px] font-normal ml-1" style={{ color: 'rgba(255,255,255,1)' }}>(current)</span> : null; })()}</span>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
@@ -14000,7 +13998,10 @@ export default function Dashboard() {
             data-testid="next-task-countdown"
           >
             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderRadius: '12px', padding: '2px 14px 4px 14px', minWidth: '395px', border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)', boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", gap: '8px' }}>
+              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', position: 'relative', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderRadius: '12px', padding: '10px 14px 4px 14px', minWidth: '395px', border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)', boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", gap: '8px' }}>
+              {selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK && (
+                <span className="text-[10.5px] font-medium" style={{ position: 'absolute', top: '1px', left: '50%', transform: 'translateX(-50%)', color: 'rgba(255,255,255,0.85)', letterSpacing: '0.3px', whiteSpace: 'nowrap', textAlign: 'center' }} data-testid="text-week-number">Week {selectedWeek}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek ? <span className="text-[10px] font-normal ml-1" style={{ color: 'rgba(255,255,255,1)' }}>(current)</span> : null; })()}</span>
+              )}
                 {/* Digital clock inside pill */}
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginLeft: '-3px', marginRight: '2px', flexShrink: 0 }}>
                   <span className="text-white" style={{ fontSize: '12px', fontWeight: '400', fontVariantNumeric: 'tabular-nums', lineHeight: '1.2', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>{new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}</span>
@@ -14118,11 +14119,6 @@ export default function Dashboard() {
                   </div>
                 ))}
               </div>
-              {selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK && (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderLeft: '1px solid rgba(255,255,255,0.3)', paddingLeft: '10px', marginLeft: '4px', alignSelf: 'stretch' }} data-testid="text-week-number">
-                  <span className="text-[10.5px] font-medium" style={{ color: 'rgba(255,255,255,0.85)', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Week {selectedWeek}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek ? <span className="text-[10px] font-normal ml-1" style={{ color: 'rgba(255,255,255,1)' }}>(current)</span> : null; })()}</span>
-                </div>
-              )}
             </div>
             </div>
           </div>
@@ -22729,7 +22725,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative`}
-                    style={isToday ? { background: `linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.42) 50%, rgba(255,255,255,0.35) 100%), ${colorSettings.headerBar}`, paddingLeft: '2px', overflow: 'hidden' } : isNextSchoolWeek ? { background: `linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.42) 50%, rgba(255,255,255,0.35) 100%), ${colorSettings.headerBar}` } : { backgroundColor: colorSettings.headerBar }}
+                    style={isToday ? { background: `linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.42) 50%, rgba(255,255,255,0.35) 100%), ${colorSettings.headerBar}`, paddingLeft: '2px', overflow: 'hidden' } : isNextSchoolWeek ? { background: `linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%), ${colorSettings.headerBar}` } : { backgroundColor: colorSettings.headerBar }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     
