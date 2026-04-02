@@ -11889,7 +11889,7 @@ export default function Dashboard() {
                               const td = new Date(task.dueDate!);
                               const hour = td.getHours(); const minute = td.getMinutes();
                               const topPct = Math.max(0, Math.min(100, ((hour - 7 + minute/60)/15)*100));
-                              const courseObj = allCourses.find((c: any) => c.code === task.courseName || c.name === task.courseName);
+                              const courseObj = (coursesData?.courses || []).find((c: any) => c.name?.split(' - ')[0]?.toUpperCase() === task.courseName?.toUpperCase() || c.name === task.courseName);
                               const bg = courseObj?.color || '#3b82f6';
                               return (
                                 <div key={ti} style={{ position: 'absolute', top: `${topPct}%`, left: '1px', right: '1px', minHeight: '14px', backgroundColor: bg, borderRadius: '2px', padding: '1px 3px', overflow: 'hidden', fontSize: '7px', color: '#fff', fontWeight: 600, lineHeight: '1.2', opacity: task.isCompleted ? 0.4 : 1, textDecoration: task.isCompleted ? 'line-through' : 'none', zIndex: 5, cursor: 'pointer' }}
@@ -11934,7 +11934,7 @@ export default function Dashboard() {
                                 <div style={{ fontSize: '11px', color: isToday ? '#93c5fd' : '#fff', fontWeight: isToday ? 700 : 400 }}>{day}</div>
                                 {tasksForDay.length > 0 && (
                                   <div style={{ display: 'flex', justifyContent: 'center', gap: '2px', marginTop: '1px' }}>
-                                    {tasksForDay.slice(0,3).map((t, ti) => { const co = allCourses.find((c: any) => c.code === t.courseName || c.name === t.courseName); return <div key={ti} style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: co?.color || '#3b82f6' }} />; })}
+                                    {tasksForDay.slice(0,3).map((t, ti) => { const co = (coursesData?.courses || []).find((c: any) => c.name?.split(' - ')[0]?.toUpperCase() === t.courseName?.toUpperCase() || c.name === t.courseName); return <div key={ti} style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: co?.color || '#3b82f6' }} />; })}
                                   </div>
                                 )}
                               </div>
