@@ -17,63 +17,91 @@ export function NotchedTabs() {
     { label: '2029', active: false },
   ];
 
-  const tabH = 36;
-  const gap = 0;
-  const panelW = 80;
+  const tabH = 38;
 
   return (
-    <div className="min-h-screen bg-[#1a2332] flex items-start justify-center p-8">
-      <div className="relative" style={{ width: '160px', height: '560px' }}>
+    <div className="min-h-screen bg-[#0e1a2b] flex items-start justify-center pt-6 pl-6">
+      <div className="relative flex">
         <div style={{
-          position: 'absolute', left: 0, top: 0, bottom: 0, width: `${panelW}px`,
-          backgroundColor: headerBar, borderRadius: '10px 0 0 10px',
-          boxShadow: '3px 0 12px rgba(0,0,0,0.4)',
+          width: '85px',
+          height: `${tabs.length * tabH + 20}px`,
+          backgroundColor: headerBar,
+          borderRadius: '10px 0 0 10px',
+          boxShadow: '4px 0 16px rgba(0,0,0,0.5)',
+          position: 'relative',
+          zIndex: 5,
         }} />
 
-        {tabs.map((tab, i) => {
-          const top = i * (tabH + gap);
-          const isActive = tab.active;
-          const tabW = isActive ? 40 : 32;
-          const h = tabH;
-          const curveR = 8;
+        <div style={{
+          position: 'relative',
+          width: '6px',
+          height: `${tabs.length * tabH + 20}px`,
+          backgroundColor: '#0a2640',
+          zIndex: 3,
+        }}>
+          {tabs.map((tab, i) => {
+            const isActive = tab.active;
+            const top = 10 + i * tabH;
+            const h = tabH - 2;
 
-          return (
-            <div key={i} style={{
-              position: 'absolute', top: `${top}px`, right: '4px',
-              width: `${tabW}px`, height: `${h}px`, cursor: 'pointer',
-              zIndex: isActive ? 10 : tabs.length - i,
-              transition: 'all 0.15s ease',
-            }}>
-              <svg width={tabW} height={h} viewBox={`0 0 ${tabW} ${h}`} style={{ display: 'block', overflow: 'visible' }}>
-                <defs>
-                  <filter id={`sh-c-${i}`} x="-30%" y="-10%" width="160%" height="130%">
-                    <feDropShadow dx="2" dy="0" stdDeviation="2" floodColor="#000" floodOpacity={isActive ? '0.6' : '0.2'} />
-                  </filter>
-                </defs>
-                <path
-                  d={`M0 0 C${curveR} 0 ${curveR} ${curveR} ${curveR} ${curveR} L${curveR} ${h - curveR} C${curveR} ${h} ${curveR} ${h} 0 ${h} L${tabW - 4} ${h} Q${tabW} ${h} ${tabW} ${h - 4} L${tabW} 4 Q${tabW} 0 ${tabW - 4} 0 Z`}
-                  fill={isActive ? '#143d5e' : '#0a2640'}
-                  stroke={isActive ? 'rgba(120,180,230,0.5)' : 'rgba(255,255,255,0.06)'}
-                  strokeWidth={isActive ? 1 : 0.5}
-                  filter={`url(#sh-c-${i})`}
-                />
-                <text
-                  x={curveR + (tabW - curveR) / 2} y={h / 2}
-                  textAnchor="middle" dominantBaseline="central"
-                  fill={isActive ? '#c8e2f8' : 'rgba(255,255,255,0.35)'}
-                  fontSize="8" fontWeight={isActive ? '600' : '400'}
-                  fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.5"
-                  transform={`rotate(90, ${curveR + (tabW - curveR) / 2}, ${h / 2})`}
-                >{tab.label}</text>
-              </svg>
-            </div>
-          );
-        })}
-      </div>
+            return (
+              <div key={i} style={{
+                position: 'absolute',
+                top: `${top}px`,
+                left: 0,
+                right: 0,
+                height: `${h}px`,
+                backgroundColor: isActive ? '#4a9eff' : 'transparent',
+                borderRadius: '0 2px 2px 0',
+                transition: 'background-color 0.15s ease',
+              }} />
+            );
+          })}
+        </div>
 
-      <div className="ml-10 text-white/70 text-sm" style={{ maxWidth: '220px' }}>
-        <h3 className="text-white font-semibold text-base mb-3">C: Curved Divider</h3>
-        <p className="text-white/50 text-xs">S-curve on the left edge creates a smooth, organic transition from the panel to the tab. Right side has crisp rounded corners. Most polished, modern take on filing dividers.</p>
+        <div style={{ position: 'relative', width: '30px', height: `${tabs.length * tabH + 20}px` }}>
+          {tabs.map((tab, i) => {
+            const isActive = tab.active;
+            const top = 10 + i * tabH;
+            const h = tabH - 2;
+
+            return (
+              <div key={i} style={{
+                position: 'absolute',
+                top: `${top}px`,
+                left: 0,
+                width: '30px',
+                height: `${h}px`,
+                backgroundColor: isActive ? 'rgba(74,158,255,0.12)' : 'transparent',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'background-color 0.15s ease',
+                borderRadius: '0 4px 4px 0',
+              }}>
+                <span style={{
+                  writingMode: 'vertical-rl',
+                  transform: 'rotate(180deg)',
+                  fontSize: '9px',
+                  fontWeight: isActive ? 700 : 400,
+                  color: isActive ? '#4a9eff' : 'rgba(255,255,255,0.3)',
+                  fontFamily: "'SF Pro Display', system-ui, -apple-system, sans-serif",
+                  letterSpacing: '0.8px',
+                  textTransform: 'uppercase',
+                  whiteSpace: 'nowrap',
+                }}>
+                  {tab.label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="ml-10 text-white/60 text-xs" style={{ maxWidth: '180px', paddingTop: '10px' }}>
+          <h3 className="text-white font-semibold text-sm mb-2">C: Rail Indicator</h3>
+          <p className="text-white/40 text-[11px] leading-relaxed">Flat text with a colored accent rail on the left edge — like Notion's sidebar or Figma's panel tabs. Most minimal. Active tab has blue rail + blue text + subtle background.</p>
+        </div>
       </div>
     </div>
   );

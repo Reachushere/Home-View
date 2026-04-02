@@ -17,65 +17,77 @@ export function SteppedTabs() {
     { label: '2029', active: false },
   ];
 
-  const tabH = 36;
-  const gap = 1;
-  const panelW = 80;
+  const tabH = 38;
 
   return (
-    <div className="min-h-screen bg-[#1a2332] flex items-start justify-center p-8">
-      <div className="relative" style={{ width: '160px', height: '560px' }}>
+    <div className="min-h-screen bg-[#0e1a2b] flex items-start justify-center pt-6 pl-6">
+      <div className="relative flex">
         <div style={{
-          position: 'absolute', left: 0, top: 0, bottom: 0, width: `${panelW}px`,
-          backgroundColor: headerBar, borderRadius: '10px 0 0 10px',
-          boxShadow: '3px 0 12px rgba(0,0,0,0.4)',
+          width: '85px',
+          height: `${tabs.length * tabH + 20}px`,
+          backgroundColor: headerBar,
+          borderRadius: '10px 0 0 10px',
+          boxShadow: '4px 0 16px rgba(0,0,0,0.5)',
+          position: 'relative',
+          zIndex: 5,
         }} />
 
-        {tabs.map((tab, i) => {
-          const top = i * (tabH + gap);
-          const isActive = tab.active;
-          const tabW = isActive ? 44 : 36;
-          const svgW = tabW;
-          const svgH = tabH;
-          const r = 5;
-          const notch = 8;
+        <div style={{ position: 'relative', width: '36px', height: `${tabs.length * tabH + 20}px` }}>
+          {tabs.map((tab, i) => {
+            const isActive = tab.active;
+            const top = 10 + i * tabH;
+            const w = 32;
+            const h = tabH - 2;
 
-          return (
-            <div key={i} style={{
-              position: 'absolute', top: `${top}px`, right: '4px',
-              width: `${svgW}px`, height: `${svgH}px`, cursor: 'pointer',
-              zIndex: isActive ? 10 : tabs.length - i,
-              transition: 'all 0.15s ease',
-            }}>
-              <svg width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`} style={{ display: 'block', overflow: 'visible' }}>
-                <defs>
-                  <filter id={`sh-b-${i}`} x="-30%" y="-10%" width="160%" height="130%">
-                    <feDropShadow dx="2" dy="0" stdDeviation="2" floodColor="#000" floodOpacity={isActive ? '0.6' : '0.2'} />
-                  </filter>
-                </defs>
-                <path
-                  d={`M0 0 L${notch} 0 L${notch} 0 L${svgW - r} 0 Q${svgW} 0 ${svgW} ${r} L${svgW} ${svgH - r} Q${svgW} ${svgH} ${svgW - r} ${svgH} L${notch} ${svgH} L0 ${svgH} L0 ${svgH - notch} L${notch / 2} ${svgH - notch} L${notch / 2} ${notch} L0 ${notch} Z`}
-                  fill={isActive ? '#143d5e' : '#0a2640'}
-                  stroke={isActive ? 'rgba(120,180,230,0.5)' : 'rgba(255,255,255,0.06)'}
-                  strokeWidth={isActive ? 1 : 0.5}
-                  filter={`url(#sh-b-${i})`}
-                />
-                <text
-                  x={notch / 2 + (svgW - notch / 2) / 2} y={svgH / 2}
-                  textAnchor="middle" dominantBaseline="central"
-                  fill={isActive ? '#c8e2f8' : 'rgba(255,255,255,0.35)'}
-                  fontSize="8" fontWeight={isActive ? '600' : '400'}
-                  fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.5"
-                  transform={`rotate(90, ${notch / 2 + (svgW - notch / 2) / 2}, ${svgH / 2})`}
-                >{tab.label}</text>
-              </svg>
-            </div>
-          );
-        })}
-      </div>
+            return (
+              <div key={i} style={{
+                position: 'absolute',
+                top: `${top}px`,
+                left: 0,
+                width: `${w}px`,
+                height: `${h}px`,
+                cursor: 'pointer',
+                zIndex: isActive ? 10 : 2,
+                transition: 'all 0.15s ease',
+              }}>
+                <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{ display: 'block', overflow: 'visible', filter: isActive ? 'drop-shadow(3px 0 6px rgba(0,0,0,0.4))' : 'drop-shadow(1px 0 2px rgba(0,0,0,0.2))' }}>
+                  <path
+                    d={`M0 0 L0 ${h} L${w - 8} ${h - 3} Q${w} ${h - 5} ${w} ${h - 10} L${w} 10 Q${w} 5 ${w - 8} 3 Z`}
+                    fill={isActive ? '#1e4d6e' : '#0b2e4a'}
+                    stroke={isActive ? 'rgba(100,180,255,0.35)' : 'rgba(255,255,255,0.06)'}
+                    strokeWidth={isActive ? 1 : 0.5}
+                  />
+                </svg>
+                <span style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: `${w}px`,
+                  height: `${h}px`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  writingMode: 'vertical-rl',
+                  transform: 'rotate(180deg)',
+                  fontSize: '9px',
+                  fontWeight: isActive ? 700 : 400,
+                  color: isActive ? '#b8ddf5' : 'rgba(255,255,255,0.3)',
+                  fontFamily: "'SF Pro Display', system-ui, -apple-system, sans-serif",
+                  letterSpacing: '0.8px',
+                  textTransform: 'uppercase',
+                  whiteSpace: 'nowrap',
+                }}>
+                  {tab.label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
 
-      <div className="ml-10 text-white/70 text-sm" style={{ maxWidth: '220px' }}>
-        <h3 className="text-white font-semibold text-base mb-3">B: Stepped Divider</h3>
-        <p className="text-white/50 text-xs">Has a narrow spine on the left that connects to the panel, then steps out to a wider tab area with rounded right corners. Like a real plastic tab divider with a visible spine.</p>
+        <div className="ml-10 text-white/60 text-xs" style={{ maxWidth: '180px', paddingTop: '10px' }}>
+          <h3 className="text-white font-semibold text-sm mb-2">B: Tapered Divider</h3>
+          <p className="text-white/40 text-[11px] leading-relaxed">Trapezoidal shape that narrows toward the right edge — like a real plastic filing divider that's been cut at an angle. Active tab has blue border glow.</p>
+        </div>
       </div>
     </div>
   );
