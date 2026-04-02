@@ -32933,7 +32933,8 @@ function TaskForm({
                 </select>
               </div>
             </div>
-            <div className="flex justify-end mt-1">
+            <div className="flex items-end">
+              <div className="flex-1" />
               <Button
                 variant="outline"
                 className="text-[9px] h-5 px-2 text-orange-300 border-orange-400/40 hover:bg-orange-500/15 hover:text-orange-200"
@@ -32960,6 +32961,133 @@ function TaskForm({
               </Button>
             </div>
           </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="priority" className="text-[11px] text-white">Priority</Label>
+              <div className="flex items-center gap-2">
+                <select
+                  value={formData.priority}
+                  onChange={(e) => setFormData(prev => ({ ...prev, priority: e.target.value }))}
+                  data-testid="select-priority"
+                  className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  style={{ color: 'black', fontSize: '11px' }}
+                >
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, flagged: !prev.flagged, priority: !prev.flagged ? 'high' : prev.priority }))}
+                  className={`h-8 w-8 flex items-center justify-center rounded-md border transition-all flex-shrink-0 ${formData.flagged ? 'bg-red-500/20 border-red-500/50 text-red-400' : 'bg-white/10 border-white/20 text-white/40 hover:text-red-400 hover:border-red-400/50'}`}
+                  title={formData.flagged ? 'Remove flag' : 'Flag as priority'}
+                  data-testid="button-flag-task"
+                >
+                  <Flag className={`h-4 w-4 ${formData.flagged ? 'fill-red-400' : ''}`} />
+                </button>
+              </div>
+            </div>
+            <div>
+              <Label className="text-[11px] text-white">Repeat</Label>
+              <select
+                value={formData.repeatType}
+                onChange={(e) => setFormData(prev => ({ ...prev, repeatType: e.target.value as typeof REPEAT_TYPES[number] }))}
+                data-testid="select-repeat-type"
+                className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                style={{ color: 'black', fontSize: '11px' }}
+              >
+                <option value="none">No repeat</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
+                <option value="custom">Custom...</option>
+              </select>
+            </div>
+          </div>
+
+          {formData.repeatType === "custom" && (
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label className="text-[11px] text-white">Every</Label>
+                <input
+                  type="number"
+                  min="1"
+                  max="52"
+                  value={formData.repeatInterval}
+                  onChange={(e) => setFormData(prev => ({ ...prev, repeatInterval: parseInt(e.target.value) || 1 }))}
+                  data-testid="input-repeat-interval"
+                  className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  style={{ color: 'black', fontSize: '11px' }}
+                />
+              </div>
+              <div>
+                <Label className="text-[11px] text-white">Unit</Label>
+                <select
+                  value={formData.repeatIntervalUnit}
+                  onChange={(e) => setFormData(prev => ({ ...prev, repeatIntervalUnit: e.target.value as typeof REPEAT_INTERVAL_UNITS[number] }))}
+                  data-testid="select-repeat-unit"
+                  className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  style={{ color: 'black', fontSize: '11px' }}
+                >
+                  <option value="days">Days</option>
+                  <option value="weeks">Weeks</option>
+                  <option value="months">Months</option>
+                  <option value="years">Years</option>
+                </select>
+              </div>
+            </div>
+          )}
+
+          {formData.repeatType !== "none" && (
+            <>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <Label className="text-[11px] text-white">Span (consecutive days)</Label>
+                  <select
+                    value={formData.repeatSpanDays}
+                    onChange={(e) => setFormData(prev => ({ ...prev, repeatSpanDays: parseInt(e.target.value) }))}
+                    data-testid="select-repeat-span-days"
+                    className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    style={{ color: 'black', fontSize: '11px' }}
+                  >
+                    {[1,2,3,4,5,6,7,10,14].map(n => (
+                      <option key={n} value={n}>{n === 1 ? '1 day (no span)' : `${n} days in a row`}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <Label className="text-[11px] text-white">End Repeat (optional)</Label>
+                  <input
+                    type="date"
+                    value={formData.repeatEndDate}
+                    onChange={(e) => setFormData(prev => ({ ...prev, repeatEndDate: e.target.value }))}
+                    data-testid="input-repeat-end-date"
+                    className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    style={{ color: 'black', fontSize: '11px' }}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          {formData.repeatType !== "none" && (
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col">
+                <Label className="text-[11px] text-white">Partner shift adjust</Label>
+                <span className="text-white/50 text-[9px]">Shift time ±12h on night-shift days</span>
+              </div>
+              <button
+                onClick={() => setFormData(prev => ({ ...prev, shiftAdjust: !prev.shiftAdjust }))}
+                className="relative shrink-0"
+                style={{ width: '34px', height: '18px', borderRadius: '9px', background: formData.shiftAdjust ? 'rgba(139,92,246,0.7)' : 'rgba(255,255,255,0.15)', border: '0.5px solid rgba(255,255,255,0.3)', transition: 'background 0.2s' }}
+                data-testid="edit-task-shift-adjust"
+              >
+                <div style={{ width: '14px', height: '14px', borderRadius: '7px', background: '#fff', position: 'absolute', top: '2px', left: formData.shiftAdjust ? '18px' : '2px', transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.3)' }} />
+              </button>
+            </div>
+          )}
 
           <div style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 12px' }}>
             <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.45)', letterSpacing: '0.5px' }}>Reminders</span>
@@ -33109,133 +33237,6 @@ function TaskForm({
 
         {/* Right Column */}
         <div className="flex flex-col gap-3">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="priority" className="text-[11px] text-white">Priority</Label>
-              <div className="flex items-center gap-2">
-                <select
-                  value={formData.priority}
-                  onChange={(e) => setFormData(prev => ({ ...prev, priority: e.target.value }))}
-                  data-testid="select-priority"
-                  className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                  style={{ color: 'black', fontSize: '11px' }}
-                >
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                </select>
-                <button
-                  type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, flagged: !prev.flagged, priority: !prev.flagged ? 'high' : prev.priority }))}
-                  className={`h-8 w-8 flex items-center justify-center rounded-md border transition-all flex-shrink-0 ${formData.flagged ? 'bg-red-500/20 border-red-500/50 text-red-400' : 'bg-white/10 border-white/20 text-white/40 hover:text-red-400 hover:border-red-400/50'}`}
-                  title={formData.flagged ? 'Remove flag' : 'Flag as priority'}
-                  data-testid="button-flag-task"
-                >
-                  <Flag className={`h-4 w-4 ${formData.flagged ? 'fill-red-400' : ''}`} />
-                </button>
-              </div>
-            </div>
-            <div>
-              <Label className="text-[11px] text-white">Repeat</Label>
-              <select
-                value={formData.repeatType}
-                onChange={(e) => setFormData(prev => ({ ...prev, repeatType: e.target.value as typeof REPEAT_TYPES[number] }))}
-                data-testid="select-repeat-type"
-                className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                style={{ color: 'black', fontSize: '11px' }}
-              >
-                <option value="none">No repeat</option>
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
-                <option value="monthly">Monthly</option>
-                <option value="yearly">Yearly</option>
-                <option value="custom">Custom...</option>
-              </select>
-            </div>
-          </div>
-
-          {formData.repeatType === "custom" && (
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <Label className="text-[11px] text-white">Every</Label>
-                <input
-                  type="number"
-                  min="1"
-                  max="52"
-                  value={formData.repeatInterval}
-                  onChange={(e) => setFormData(prev => ({ ...prev, repeatInterval: parseInt(e.target.value) || 1 }))}
-                  data-testid="input-repeat-interval"
-                  className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                  style={{ color: 'black', fontSize: '11px' }}
-                />
-              </div>
-              <div>
-                <Label className="text-[11px] text-white">Unit</Label>
-                <select
-                  value={formData.repeatIntervalUnit}
-                  onChange={(e) => setFormData(prev => ({ ...prev, repeatIntervalUnit: e.target.value as typeof REPEAT_INTERVAL_UNITS[number] }))}
-                  data-testid="select-repeat-unit"
-                  className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                  style={{ color: 'black', fontSize: '11px' }}
-                >
-                  <option value="days">Days</option>
-                  <option value="weeks">Weeks</option>
-                  <option value="months">Months</option>
-                  <option value="years">Years</option>
-                </select>
-              </div>
-            </div>
-          )}
-
-          {formData.repeatType !== "none" && (
-            <>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <Label className="text-[11px] text-white">Span (consecutive days)</Label>
-                  <select
-                    value={formData.repeatSpanDays}
-                    onChange={(e) => setFormData(prev => ({ ...prev, repeatSpanDays: parseInt(e.target.value) }))}
-                    data-testid="select-repeat-span-days"
-                    className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    style={{ color: 'black', fontSize: '11px' }}
-                  >
-                    {[1,2,3,4,5,6,7,10,14].map(n => (
-                      <option key={n} value={n}>{n === 1 ? '1 day (no span)' : `${n} days in a row`}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <Label className="text-[11px] text-white">End Repeat (optional)</Label>
-                  <input
-                    type="date"
-                    value={formData.repeatEndDate}
-                    onChange={(e) => setFormData(prev => ({ ...prev, repeatEndDate: e.target.value }))}
-                    data-testid="input-repeat-end-date"
-                    className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    style={{ color: 'black', fontSize: '11px' }}
-                  />
-                </div>
-              </div>
-            </>
-          )}
-
-          {formData.repeatType !== "none" && (
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col">
-                <Label className="text-[11px] text-white">Partner shift adjust</Label>
-                <span className="text-white/50 text-[9px]">Shift time ±12h on night-shift days</span>
-              </div>
-              <button
-                onClick={() => setFormData(prev => ({ ...prev, shiftAdjust: !prev.shiftAdjust }))}
-                className="relative shrink-0"
-                style={{ width: '34px', height: '18px', borderRadius: '9px', background: formData.shiftAdjust ? 'rgba(139,92,246,0.7)' : 'rgba(255,255,255,0.15)', border: '0.5px solid rgba(255,255,255,0.3)', transition: 'background 0.2s' }}
-                data-testid="edit-task-shift-adjust"
-              >
-                <div style={{ width: '14px', height: '14px', borderRadius: '7px', background: '#fff', position: 'absolute', top: '2px', left: formData.shiftAdjust ? '18px' : '2px', transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.3)' }} />
-              </button>
-            </div>
-          )}
-
           <div>
             <Label htmlFor="description" className="text-[11px] text-white">Description</Label>
             <textarea
@@ -33501,8 +33502,6 @@ function TaskForm({
               </div>
             </div>
           </div>
-
-          <div className="flex-1" />
 
           <div>
             <Label htmlFor="referenceLink" className="text-[11px] text-white">Reference Link</Label>
