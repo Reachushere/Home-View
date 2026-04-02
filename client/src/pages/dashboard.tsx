@@ -24054,7 +24054,7 @@ export default function Dashboard() {
                       const onwDow = onwNow.getDay();
                       const onwSat = startOfDayET(addDays(onwNow, onwDow === 6 ? 7 : (6 - onwDow)));
                       const isOtherNextSchoolWeek = !isOtherToday && startOfDayET(day) >= onwSat;
-                      const otherCellBg = isOtherToday ? '#e4ecf5' : isOtherNextSchoolWeek ? dimColor(otherBaseBg, 0.5) : otherBaseBg;
+                      const otherCellBg = isOtherToday ? '#e4ecf5' : isOtherNextSchoolWeek ? dimColor(otherBaseBg, 0.75) : otherBaseBg;
                       return (
                         <div
                           key={dayIdx}
