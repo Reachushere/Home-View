@@ -14146,8 +14146,8 @@ export default function Dashboard() {
         style={{
           position: 'absolute',
           zIndex: 110,
-          left: '22px',
-          right: '22px',
+          left: '21px',
+          right: '20px',
           pointerEvents: editingTask || !isTopPillOpen ? 'none' : 'auto',
           transform: `translateY(${isTopPillOpen ? '20px' : '-83px'})`,
           transition: topPillMounted ? 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
