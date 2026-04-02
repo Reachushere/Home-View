@@ -17466,22 +17466,45 @@ export default function Dashboard() {
                     { id: 9, label: "Subtasks" },
                     { id: 10, label: "Repeat" },
                     { id: 11, label: "Review" },
-                  ].map((s, i, arr) => (
+                  ].map((s, i, arr) => {
+                    const stepColors = [
+                      { bg: 'rgba(120,90,255,0.7)', text: 'white' },
+                      { bg: 'rgba(56,170,255,0.7)', text: 'white' },
+                      { bg: 'rgba(16,200,130,0.7)', text: 'white' },
+                      { bg: 'rgba(255,160,40,0.7)', text: 'white' },
+                      { bg: 'rgba(230,70,70,0.7)', text: 'white' },
+                      { bg: 'rgba(255,100,160,0.7)', text: 'white' },
+                      { bg: 'rgba(0,190,200,0.7)', text: 'white' },
+                      { bg: 'rgba(160,120,255,0.7)', text: 'white' },
+                      { bg: 'rgba(80,180,80,0.7)', text: 'white' },
+                      { bg: 'rgba(255,130,60,0.7)', text: 'white' },
+                      { bg: 'rgba(100,140,220,0.7)', text: 'white' },
+                      { bg: 'rgba(200,80,200,0.7)', text: 'white' },
+                    ];
+                    const sc = stepColors[s.id] || stepColors[0];
+                    const isActive = s.id === quickAddStep;
+                    const isCompleted = s.id < quickAddStep;
+                    return (
                     <div key={s.id} className="flex items-center flex-shrink-0">
                       <button
-                        onClick={() => { if (s.id < quickAddStep) setQuickAddStep(s.id); }}
+                        onClick={() => { if (isCompleted) setQuickAddStep(s.id); }}
                         className={`flex items-center gap-0.5 px-1 py-1 rounded-full text-[8px] transition-all ${
-                          s.id === quickAddStep
-                            ? "bg-white/20 text-white font-medium"
-                            : s.id < quickAddStep
+                          isActive
+                            ? "text-white font-medium"
+                            : isCompleted
                             ? "text-white/60 cursor-pointer hover:text-white/80"
                             : "text-white/30 cursor-default"
                         }`}
+                        style={isActive ? { background: `${sc.bg.replace('0.7', '0.25')}` } : undefined}
                         data-testid={`quick-add-step-${s.id}`}
                       >
-                        <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[7px] font-bold ${
-                          s.id === quickAddStep ? "bg-white text-black" : s.id < quickAddStep ? "bg-white/40 text-white" : "bg-white/10 text-white/40"
-                        }`}>
+                        <span
+                          className="w-3.5 h-3.5 rounded-full flex items-center justify-center text-[7px] font-bold"
+                          style={{
+                            background: isActive ? sc.bg : isCompleted ? sc.bg.replace('0.7', '0.45') : 'rgba(255,255,255,0.1)',
+                            color: isActive || isCompleted ? 'white' : 'rgba(255,255,255,0.4)',
+                          }}
+                        >
                           {s.id + 1}
                         </span>
                         <span>{s.label}</span>
@@ -17490,7 +17513,7 @@ export default function Dashboard() {
                         <div className={`w-2 h-px mx-0.5 ${s.id < quickAddStep ? "bg-white/40" : "bg-white/10"}`} />
                       )}
                     </div>
-                  ))}
+                  ); })}
                 </div>
 
                 {/* Content area */}
