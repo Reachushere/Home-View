@@ -33109,7 +33109,7 @@ function TaskForm({
         </div>
 
         {/* Right Column */}
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-3">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="priority" className="text-[11px] text-white">Priority</Label>
@@ -33250,8 +33250,6 @@ function TaskForm({
               style={{ color: 'black', fontSize: '11px' }}
             />
           </div>
-
-          <div className="flex-1" />
 
           <div style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 12px' }}>
             <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.45)', letterSpacing: '0.5px' }}>Display Options</span>
@@ -33411,8 +33409,6 @@ function TaskForm({
             </div>
           </div>
 
-          <div className="flex-1" />
-
           <div style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 12px' }}>
             <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.45)', letterSpacing: '0.5px' }}>Attachments</span>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
@@ -33507,21 +33503,23 @@ function TaskForm({
             </div>
           </div>
 
-        </div>
-      </div>
+          <div className="flex-1" />
 
-      <div>
-        <Label htmlFor="referenceLink" className="text-[11px] text-white">Reference Link</Label>
-        <input
-          id="referenceLink"
-          type="url"
-          value={formData.referenceLink}
-          onChange={(e) => setFormData(prev => ({ ...prev, referenceLink: e.target.value }))}
-          placeholder="https://example.com"
-          data-testid="input-reference-link"
-          className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          style={{ color: 'black', fontSize: '11px' }}
-        />
+          <div>
+            <Label htmlFor="referenceLink" className="text-[11px] text-white">Reference Link</Label>
+            <input
+              id="referenceLink"
+              type="url"
+              value={formData.referenceLink}
+              onChange={(e) => setFormData(prev => ({ ...prev, referenceLink: e.target.value }))}
+              placeholder="https://example.com"
+              data-testid="input-reference-link"
+              className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              style={{ color: 'black', fontSize: '11px' }}
+            />
+          </div>
+
+        </div>
       </div>
 
       {/* Subtasks Section - Only show when editing existing task */}
