@@ -33305,6 +33305,100 @@ function TaskForm({
           </div>
 
 
+          <div style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 12px' }}>
+            <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.45)', letterSpacing: '0.5px' }}>Attachments</span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
+              {formData.attachments.map((attachment, idx) => (
+                <div key={idx} className="flex items-center gap-2" style={{ fontSize: '11px' }}>
+                  <Paperclip className="h-3 w-3 flex-shrink-0 text-muted-foreground" />
+                  <a href={attachment.startsWith('/objects/') ? attachment : attachment} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline truncate flex-1">
+                    {getAttachmentDisplayName(attachment)}
+                  </a>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setFormData(prev => ({
+                      ...prev,
+                      attachments: prev.attachments.filter((_, i) => i !== idx)
+                    }))}
+                    data-testid={`button-remove-attachment-${idx}`}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+              <div className="flex gap-2">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                  data-testid="input-file-upload"
+                />
+                <Button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading}
+                  className="flex-1 bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40 h-8"
+                  style={{ fontSize: '11px' }}
+                  data-testid="button-upload-file"
+                >
+                  {isUploading ? (
+                    <>
+                      <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                      Uploading...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-3 w-3 mr-1" />
+                      Upload New
+                    </>
+                  )}
+                </Button>
+                <FileSelector 
+                  onSelect={(objectPath) => {
+                    if (!formData.attachments.includes(objectPath)) {
+                      setFormData(prev => ({
+                        ...prev,
+                        attachments: [...prev.attachments, objectPath]
+                      }));
+                    }
+                  }}
+                  excludePaths={formData.attachments}
+                />
+              </div>
+              <div className="flex gap-2">
+                <input
+                  value={newAttachment}
+                  onChange={(e) => setNewAttachment(e.target.value)}
+                  placeholder="Or paste URL..."
+                  data-testid="input-new-attachment"
+                  className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  style={{ color: 'black', fontSize: '11px' }}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-8"
+                  style={{ fontSize: '11px' }}
+                  onClick={() => {
+                    if (newAttachment.trim()) {
+                      setFormData(prev => ({
+                        ...prev,
+                        attachments: [...prev.attachments, newAttachment.trim()]
+                      }));
+                      setNewAttachment("");
+                    }
+                  }}
+                  data-testid="button-add-attachment"
+                >
+                  Add
+                </Button>
+              </div>
+            </div>
+          </div>
+
           <div>
             <Label htmlFor="referenceLink" className="text-[11px] text-white">Reference Link</Label>
             <input
@@ -33347,111 +33441,15 @@ function TaskForm({
         </div>
       </div>
 
-      <div>
-        <Label className="text-[11px] text-white">Attachments (optional)</Label>
-        <div className="space-y-2">
-          {formData.attachments.map((attachment, idx) => (
-            <div key={idx} className="flex items-center gap-2" style={{ fontSize: '11px' }}>
-              <Paperclip className="h-3 w-3 flex-shrink-0 text-muted-foreground" />
-              <a href={attachment.startsWith('/objects/') ? attachment : attachment} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline truncate flex-1">
-                {getAttachmentDisplayName(attachment)}
-              </a>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={() => setFormData(prev => ({
-                  ...prev,
-                  attachments: prev.attachments.filter((_, i) => i !== idx)
-                }))}
-                data-testid={`button-remove-attachment-${idx}`}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          ))}
-          
-          <div className="flex gap-2">
-            <input
-              ref={fileInputRef}
-              type="file"
-              onChange={handleFileUpload}
-              className="hidden"
-              data-testid="input-file-upload"
-            />
-            <Button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isUploading}
-              className="flex-1 bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40 h-8"
-              style={{ fontSize: '11px' }}
-              data-testid="button-upload-file"
-            >
-              {isUploading ? (
-                <>
-                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                  Uploading...
-                </>
-              ) : (
-                <>
-                  <Upload className="h-3 w-3 mr-1" />
-                  Upload New
-                </>
-              )}
-            </Button>
-            <FileSelector 
-              onSelect={(objectPath) => {
-                if (!formData.attachments.includes(objectPath)) {
-                  setFormData(prev => ({
-                    ...prev,
-                    attachments: [...prev.attachments, objectPath]
-                  }));
-                }
-              }}
-              excludePaths={formData.attachments}
-            />
-          </div>
-          
-          <div className="flex gap-2 mt-4">
-            <input
-              value={newAttachment}
-              onChange={(e) => setNewAttachment(e.target.value)}
-              placeholder="Or paste URL..."
-              data-testid="input-new-attachment"
-              className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              style={{ color: 'black', fontSize: '11px' }}
-            />
-            <Button
-              type="button"
-              variant="outline"
-              className="h-8"
-              style={{ fontSize: '11px' }}
-              onClick={() => {
-                if (newAttachment.trim()) {
-                  setFormData(prev => ({
-                    ...prev,
-                    attachments: [...prev.attachments, newAttachment.trim()]
-                  }));
-                  setNewAttachment("");
-                }
-              }}
-              data-testid="button-add-attachment"
-            >
-              Add
-            </Button>
-          </div>
+      {/* Subtasks Section - Only show when editing existing task */}
+      {task && (
+        <SubtasksSection taskId={task.id} />
+      )}
 
-          {/* Subtasks Section - Only show when editing existing task */}
-          {task && (
-            <SubtasksSection taskId={task.id} />
-          )}
-
-          {/* Dependencies Section - Only show when editing existing task */}
-          {task && (
-            <TaskDependencies taskId={task.id} taskTitle={task.title} />
-          )}
-        </div>
-      </div>
+      {/* Dependencies Section - Only show when editing existing task */}
+      {task && (
+        <TaskDependencies taskId={task.id} taskTitle={task.title} />
+      )}
 
       {/* Subtasks Section for NEW tasks - Pending subtasks */}
       {!task && (
