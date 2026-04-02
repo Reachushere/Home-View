@@ -23595,7 +23595,7 @@ export default function Dashboard() {
                           const daysUntil = differenceInCalendarDays(new Date(nextTask.dueDate), new Date());
                           const badgeGrad = getCourseGradientColors(cCode2);
                           return (
-                            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '15px', background: `linear-gradient(90deg, ${badgeGrad.start} 0%, ${badgeGrad.end} 100%)`, zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'visible' }}>
+                            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '15px', background: `linear-gradient(180deg, ${badgeGrad.start} 0%, ${badgeGrad.end} 100%)`, zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'visible' }}>
                               <span style={{ fontSize: '10px', color: '#ffffff', whiteSpace: 'nowrap', fontWeight: 500, lineHeight: '15px' }}>Next Task Due In: <span style={{ color: '#ffffff', fontWeight: 700, fontSize: '10px' }}>{daysUntil}d</span></span>
                             </div>
                           );
