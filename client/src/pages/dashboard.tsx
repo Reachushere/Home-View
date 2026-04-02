@@ -26985,9 +26985,9 @@ export default function Dashboard() {
                                             </div>
                                           )}
                                         </div>
-                                        <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px', marginLeft: '-3px', position: 'relative', left: '-14px' }}>
-                                          <span className="text-[8px]" style={{ color: '#ffffff', lineHeight: 1, letterSpacing: '0.3px' }}>Due In</span>
-                                          <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
+                                        <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px', marginLeft: '-3px', position: 'relative', left: '-14px' }}>
+                                          <span className="text-[7px]" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1, letterSpacing: '0.3px' }}>Due In</span>
+                                          <span className="text-[9px] font-bold" style={{ color: '#ffffff', lineHeight: 1, backgroundColor: daysUntil <= 1 ? '#dc2626' : daysUntil <= 3 ? '#e89200' : daysUntil <= 6 ? '#22c55e' : '#3b82f6', padding: '2px 5px', borderRadius: '8px', whiteSpace: 'nowrap' }}>{daysUntil === 0 ? 'TODAY' : daysUntil === 1 ? '1 day' : `${daysUntil}d`}</span>
 
                                         </div>
                                         
@@ -27164,9 +27164,9 @@ export default function Dashboard() {
                                             </div>
                                           )}
                                         </div>
-                                        <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px', marginLeft: '-3px', position: 'relative', left: '-14px' }}>
-                                          <span className="text-[8px]" style={{ color: '#ffffff', lineHeight: 1, letterSpacing: '0.3px' }}>Due In</span>
-                                          <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
+                                        <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px', marginLeft: '-3px', position: 'relative', left: '-14px' }}>
+                                          <span className="text-[7px]" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1, letterSpacing: '0.3px' }}>Due In</span>
+                                          <span className="text-[9px] font-bold" style={{ color: '#ffffff', lineHeight: 1, backgroundColor: daysUntil <= 1 ? '#dc2626' : daysUntil <= 3 ? '#e89200' : daysUntil <= 6 ? '#22c55e' : '#3b82f6', padding: '2px 5px', borderRadius: '8px', whiteSpace: 'nowrap' }}>{daysUntil === 0 ? 'TODAY' : daysUntil === 1 ? '1 day' : `${daysUntil}d`}</span>
 
                                         </div>
                                         
@@ -27339,9 +27339,9 @@ export default function Dashboard() {
                                             </div>
                                           </div>
                                         </div>
-                                        <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px', marginLeft: '-3px', position: 'relative', left: '-14px' }}>
-                                          <span className="text-[8px]" style={{ color: '#ffffff', lineHeight: 1, letterSpacing: '0.3px' }}>Due In</span>
-                                          <span className="text-[8px] font-medium" style={{ color: "#ffffff", lineHeight: 1 }}>{daysUntil} days</span>
+                                        <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px', marginLeft: '-3px', position: 'relative', left: '-14px' }}>
+                                          <span className="text-[7px]" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1, letterSpacing: '0.3px' }}>Due In</span>
+                                          <span className="text-[9px] font-bold" style={{ color: '#ffffff', lineHeight: 1, backgroundColor: daysUntil <= 1 ? '#dc2626' : daysUntil <= 3 ? '#e89200' : daysUntil <= 6 ? '#22c55e' : '#3b82f6', padding: '2px 5px', borderRadius: '8px', whiteSpace: 'nowrap' }}>{daysUntil === 0 ? 'TODAY' : daysUntil === 1 ? '1 day' : `${daysUntil}d`}</span>
 
                                         </div>
                                         
