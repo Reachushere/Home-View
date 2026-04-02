@@ -32894,9 +32894,9 @@ function TaskForm({
             </div>
           </div>
 
-          <div>
-            <Label className="text-[11px] text-white">Reminders</Label>
-            <div className="flex flex-col gap-2">
+          <div style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 12px' }}>
+            <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.45)', letterSpacing: '0.5px' }}>Reminders</span>
+            <div className="flex flex-col gap-2" style={{ marginTop: '8px' }}>
               {([
                 { label: 'R1', key: 'reminder1' as const, methodsKey: 'reminder1Methods' as const },
                 { label: 'R2', key: 'reminder2' as const, methodsKey: 'reminder2Methods' as const },
