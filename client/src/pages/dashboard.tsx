@@ -22830,13 +22830,11 @@ export default function Dashboard() {
                               const todayPct = Math.min(100, Math.max(0, (now.getHours() * 60 + now.getMinutes()) / 1440 * 100));
                               return (
                                 <>
-                                  <div className="text-[10px] font-medium tracking-wide" style={{ color: '#000000', position: 'relative' }}>
+                                  <div className="text-[10px] font-medium tracking-wide" style={{ color: '#000000' }}>
                                     {dayName}
-                                    <span aria-hidden="true" style={{ position: 'absolute', inset: 0, color: '#ffffff', clipPath: `inset(0 ${100 - todayPct}% 0 0)`, transition: 'clip-path 60s linear' }}>{dayName}</span>
                                   </div>
-                                  <div style={{ fontSize: '25px', fontWeight: 600, color: '#000000', position: 'relative' }}>
+                                  <div style={{ fontSize: '25px', fontWeight: 600, color: '#000000' }}>
                                     {dayNum}
-                                    <span aria-hidden="true" style={{ position: 'absolute', inset: 0, color: '#ffffff', clipPath: `inset(0 ${100 - todayPct}% 0 0)`, transition: 'clip-path 60s linear' }}>{dayNum}</span>
                                   </div>
                                 </>
                               );
