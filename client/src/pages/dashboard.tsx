@@ -22725,7 +22725,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative`}
-                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'hidden' } : { backgroundColor: isNextSchoolWeek ? '#7bb8d4' : colorSettings.headerBar, color: isNextSchoolWeek ? '#ffffff' : undefined }}
+                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'hidden' } : { backgroundColor: isNextSchoolWeek ? '#6aafcf' : colorSettings.headerBar, color: isNextSchoolWeek ? '#ffffff' : undefined }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     
