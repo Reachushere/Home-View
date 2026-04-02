@@ -14230,10 +14230,10 @@ export default function Dashboard() {
             <div 
               style={{ 
                 width: '44px', height: '44px', marginTop: '4px', zIndex: 100, borderRadius: '50%',
-                background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
-                
-                border: '1.5px solid rgba(255,255,255,0.35)',
-                boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+                background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 100%)',
+                position: 'relative' as const,
+                border: '1.5px solid rgba(255,255,255,0.55)',
+                boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(0,0,0,0.05)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
               }}
               className="pill-button-hover"
@@ -14266,10 +14266,10 @@ export default function Dashboard() {
             <div 
               style={{ 
                 width: '44px', height: '44px', marginTop: '4px', zIndex: 100, borderRadius: '50%',
-                background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
-                
-                border: '1.5px solid rgba(255,255,255,0.35)',
-                boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+                background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 100%)',
+                position: 'relative' as const,
+                border: '1.5px solid rgba(255,255,255,0.55)',
+                boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(0,0,0,0.05)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
               }}
               className="pill-button-hover"
