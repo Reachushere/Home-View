@@ -18349,6 +18349,7 @@ Return ONLY the JSON object, no markdown formatting.`;
         const dateK = t.dueDate ? new Date(t.dueDate).toISOString().split('T')[0] : 'nodate';
         return `${normT}||${dateK}`;
       }));
+      const seenTitles = new Set<string>();
       const filtered = items.filter(item => {
         if (item.startDate) {
           const itemDate = new Date(new Date(item.startDate).toDateString());
@@ -18357,6 +18358,8 @@ Return ONLY the JSON object, no markdown formatting.`;
         const normT = normalizeTitle(item.title || '');
         const dateK = item.startDate ? new Date(item.startDate).toISOString().split('T')[0] : 'nodate';
         if (taskKeys.has(`${normT}||${dateK}`)) return false;
+        if (seenTitles.has(normT)) return false;
+        seenTitles.add(normT);
         return true;
       });
 
