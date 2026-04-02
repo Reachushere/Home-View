@@ -26170,16 +26170,14 @@ export default function Dashboard() {
                     if (tab.id.startsWith('ss26-wk')) return tab.id === 'ss26-wk1' && scrollActiveSem === tab.semLabel;
                     return scrollActiveSem === tab.semLabel;
                   })();
-                  const overlap = Math.max(4, Math.floor(tabH * 0.25));
-                  const tabTop = topInset + tabIdx * (tabH - overlap);
-                  const svgH = tabH + overlap;
-                  const svgW = 22;
-                  const r = 5;
+                  const tabW = 20;
+                  const tabGap = 1;
+                  const tabTop = topInset + tabIdx * (tabH + tabGap);
                   return (
                     <div
                       key={tab.id}
                       className={`cursor-pointer${isActive && tabBounceEnabled ? ' semester-tab-bounce' : ''}`}
-                      style={{ position: 'absolute', top: `${tabTop}px`, width: `${svgW + 6}px`, height: `${svgH}px`, zIndex: isActive ? 100 : n - tabIdx, transition: 'transform 0.2s ease', transform: `translateX(${isActive ? '-6' : '-2'}px)`, '--tab-base-transform': `translateX(${isActive ? '-6' : '-2'}px)` } as React.CSSProperties}
+                      style={{ position: 'absolute', top: `${tabTop}px`, right: '0px', width: `${tabW}px`, height: `${Math.floor(tabH)}px`, zIndex: isActive ? 100 : n - tabIdx, transition: 'transform 0.2s ease', transform: `translateX(${isActive ? '2px' : '0px'})`, '--tab-base-transform': `translateX(${isActive ? '2px' : '0px'})` } as React.CSSProperties}
                       onClick={() => {
                         if (homeworkScrollRef.current) {
                           const scrollContainer = homeworkScrollRef.current;
@@ -26212,22 +26210,29 @@ export default function Dashboard() {
                       data-testid={`semester-tab-${tab.id}`}
                       title={tab.semLabel}
                     >
-                      <svg width={svgW + 6} height={svgH} viewBox={`0 0 ${svgW + 6} ${svgH}`} style={{ display: 'block', overflow: 'visible' }}>
-                        <defs>
-                          <filter id={`tabShadow-${tabIdx}`} x="-20%" y="-10%" width="140%" height="120%"><feDropShadow dx="-1" dy="0" stdDeviation="1.5" floodColor="black" floodOpacity="0.4" /></filter>
-                        </defs>
-                        <path d={`M0 ${r} Q0 0 ${r} 0 L${svgW} 0 L${svgW} ${svgH} L${r} ${svgH} Q0 ${svgH} 0 ${svgH - r} Z`} fill={colorSettings.headerBar} stroke={isActive ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.2)'} strokeWidth={isActive ? '1' : '0.5'} filter={isActive ? `url(#tabShadow-${tabIdx})` : 'none'} />
-                        {isActive && <line x1="0" y1={r} x2="0" y2={svgH - r} stroke={colorSettings.headerBar} strokeWidth="2" />}
-                        {(() => {
-                          const tFw = isActive ? '600' : '450';
-                          const tFill = isActive ? '#ffffff' : 'rgba(255,255,255,0.75)';
-                          const centerY = svgH / 2;
-                          const centerX = svgW / 2;
-                          return (
-                            <text x={centerX} y={centerY} textAnchor="middle" dominantBaseline="central" fill={tFill} fontSize="10" fontWeight={tFw} fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.3" transform={`rotate(90, ${centerX}, ${centerY})`}>{tab.label}</text>
-                          );
-                        })()}
-                      </svg>
+                      <div style={{
+                        width: '100%', height: '100%',
+                        backgroundColor: colorSettings.headerBar,
+                        borderRadius: '0 4px 4px 0',
+                        border: isActive ? '1px solid rgba(255,255,255,0.6)' : '1px solid rgba(255,255,255,0.15)',
+                        borderLeft: 'none',
+                        boxShadow: isActive ? '2px 0 6px rgba(0,0,0,0.3)' : 'none',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        overflow: 'hidden',
+                      }}>
+                        <span style={{
+                          writingMode: 'vertical-rl',
+                          textOrientation: 'mixed',
+                          transform: 'rotate(180deg)',
+                          fontSize: '9px',
+                          fontWeight: isActive ? 600 : 400,
+                          color: isActive ? '#ffffff' : 'rgba(255,255,255,0.6)',
+                          fontFamily: 'system-ui, -apple-system, sans-serif',
+                          letterSpacing: '0.5px',
+                          whiteSpace: 'nowrap',
+                          lineHeight: 1,
+                        }}>{tab.label}</span>
+                      </div>
                     </div>
                   );
                 });
