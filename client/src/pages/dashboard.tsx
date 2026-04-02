@@ -15343,10 +15343,6 @@ export default function Dashboard() {
           openTopPill();
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
         }}
-        onMouseEnter={() => {
-          openTopPill();
-          if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
-        }}
       />
       <div
         data-top-pill-trigger
