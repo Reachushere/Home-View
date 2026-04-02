@@ -14300,10 +14300,10 @@ export default function Dashboard() {
           {/* Key Contacts Button */}
           <div className="pill-button-hover" style={{ 
             marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.32) 100%)',
             
-            border: '1.5px solid rgba(255,255,255,0.35)',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+            border: '1.5px solid rgba(255,255,255,0.5)',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(0,0,0,0.05)',
             display: 'flex', alignItems: 'center', justifyContent: 'center'
           }}>
             <Button 
@@ -14587,10 +14587,10 @@ export default function Dashboard() {
           {/* Graduation Hat - Swapped with Completed Tasks */}
           <div className="pill-button-hover" style={{ 
             marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.32) 100%)',
             
-            border: '1.5px solid rgba(255,255,255,0.35)',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+            border: '1.5px solid rgba(255,255,255,0.5)',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(0,0,0,0.05)',
             display: 'flex', alignItems: 'center', justifyContent: 'center'
           }}>
             <Button 
@@ -14630,10 +14630,10 @@ export default function Dashboard() {
           {/* Scholarships Button */}
           <div className="pill-button-hover" style={{ 
             marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.32) 100%)',
             
-            border: '1.5px solid rgba(255,255,255,0.35)',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+            border: '1.5px solid rgba(255,255,255,0.5)',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(0,0,0,0.05)',
             display: 'flex', alignItems: 'center', justifyContent: 'center'
           }}>
             <Button 
@@ -14747,10 +14747,10 @@ export default function Dashboard() {
           {/* Completed Tasks Button - Swapped with Graduation Hat */}
           <div className="pill-button-hover" style={{ 
             marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.32) 100%)',
             
-            border: '1.5px solid rgba(255,255,255,0.35)',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+            border: '1.5px solid rgba(255,255,255,0.5)',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(0,0,0,0.05)',
             display: 'flex', alignItems: 'center', justifyContent: 'center'
           }}>
             <Button 
