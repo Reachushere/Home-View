@@ -22818,7 +22818,7 @@ export default function Dashboard() {
                               <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`Week ${selectedWeek}`}</span>
                             </div>
                           )}
-                          <div className="flex items-center gap-1.5" style={{ marginTop: '10px', position: 'relative' }}>
+                          <div className="flex items-center gap-1.5" style={{ marginTop: '10px', position: 'relative', zIndex: 15 }}>
                             {isToday ? (() => {
                               const now = new Date();
                               const todayPct = Math.min(100, Math.max(0, (now.getHours() * 60 + now.getMinutes()) / 1440 * 100));
