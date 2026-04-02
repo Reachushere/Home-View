@@ -158,7 +158,7 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave, onPr
           overflowY: (activeGradientStop != null || activeSwatchPicker != null) ? 'hidden' : 'auto',
           scrollbarWidth: 'thin',
           touchAction: (activeGradientStop != null || activeSwatchPicker != null) ? 'none' : 'auto',
-          background: 'linear-gradient(180deg, #3a8bbf 0%, color-mix(in srgb, #164a72 70%, black) 100%)',
+          background: 'linear-gradient(180deg, #4a9dd4 0%, #2a6a9a 100%)',
           border: '1.5px solid rgba(255,255,255,0.35)',
           boxShadow: '0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 0 rgba(0,0,0,0.05)',
           transform: `translate(${dialogPos.x}px, ${dialogPos.y}px)`,
