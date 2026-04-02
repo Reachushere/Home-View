@@ -24664,7 +24664,6 @@ export default function Dashboard() {
                                   zIndex: hoveredCalTaskId === task.id ? 56 : (hoveredCountdownTaskId === task.id ? 55 : (selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43))),
                                   backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || (task.type === 'other' ? otherRowColors.taskBgColor : '#e5e7eb')),
                                   border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1px solid ${task.isCompleted ? '#d1d5db' : (colors?.border || (task.type === 'other' ? otherRowColors.borderColor : '#9ca3af'))}`,
-                                  transform: hoveredCountdownTaskId === task.id ? 'scale(1.15)' : undefined,
                                   boxShadow: hoveredCalTaskId === task.id ? '0 4px 12px rgba(0,0,0,0.3)' : (hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined),
                                   transition: 'left 0.15s ease, width 0.15s ease, box-shadow 0.15s ease, transform 0.2s ease',
                                   transformOrigin: 'center center',
