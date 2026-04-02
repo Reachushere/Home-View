@@ -148,7 +148,7 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave, onPr
 
   return (
     <div className="fixed inset-0 z-[10002] flex items-center justify-center" onClick={() => { if (onPreview) onPreview(originalColorsRef.current); onClose(); }} data-testid="other-row-edit-overlay">
-      <div className="absolute inset-0 bg-black/15" />
+      <div className="absolute inset-0 bg-black/25" />
       <div
         ref={dialogRef}
         className="relative rounded-lg"
@@ -172,8 +172,6 @@ export default function OtherRowEditDialog({ open, onClose, colors, onSave, onPr
           onTouchStart={handleDragStart}
           style={{
             cursor: 'grab',
-            backdropFilter: 'blur(30px)',
-            WebkitBackdropFilter: 'blur(30px)',
             background: headerGradient,
             boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)',
           }}
