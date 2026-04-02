@@ -12871,13 +12871,13 @@ export default function Dashboard() {
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3 text-sm">
-            <p className="text-gray-700">
+            <p className="text-white">
               Hey Bryn, the new semester is starting soon! Time to upload the latest <strong>PAG Elective Course List Offerings PDF</strong> so your degree planner stays up to date.
             </p>
-            <p className="text-gray-600 text-xs">
+            <p className="text-white/60 text-xs">
               You can get the latest PDF from the PAG program office or your advisor. Upload it here and I'll update the elective dropdowns in your degree tracker.
             </p>
-            <div className="border-2 border-dashed border-gray-400 rounded-lg p-6 text-center bg-white/50 hover:bg-white/80 transition-colors cursor-pointer" onClick={() => {
+            <div className="border-2 border-dashed border-white/30 rounded-lg p-6 text-center bg-white/10 hover:bg-white/20 transition-colors cursor-pointer" onClick={() => {
               const input = document.createElement('input');
               input.type = 'file';
               input.accept = '.pdf';
@@ -12890,14 +12890,14 @@ export default function Dashboard() {
               };
               input.click();
             }} data-testid="pdf-upload-dropzone">
-              <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-              <p className="text-sm font-medium text-gray-600">Click to upload PDF</p>
-              <p className="text-xs text-gray-400 mt-1">PAG Registration Package (.pdf)</p>
+              <Upload className="h-8 w-8 mx-auto mb-2 text-white/50" />
+              <p className="text-sm font-medium text-white">Click to upload PDF</p>
+              <p className="text-xs text-white/40 mt-1">PAG Registration Package (.pdf)</p>
             </div>
           </div>
           <DialogFooter>
             <button
-              className="px-4 py-2 text-sm bg-gray-200 rounded-md hover:bg-gray-300 text-gray-700"
+              className="px-4 py-2 text-sm bg-white/15 rounded-md hover:bg-white/25 text-white"
               onClick={() => setShowPdfUploadDialog(false)}
               data-testid="btn-dismiss-pdf-upload"
             >
