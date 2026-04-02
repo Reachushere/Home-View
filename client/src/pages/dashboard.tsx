@@ -13877,6 +13877,7 @@ export default function Dashboard() {
           .filter(t => {
             if (!t.dueDate || t.isCompleted) return false;
             if (isCASL101Finished(t)) return false;
+            if (t.hideFromCountdown) return false;
             const dd = new Date(t.dueDate);
             const ddOnly = new Date(dd.getFullYear(), dd.getMonth(), dd.getDate());
             if (ddOnly.getTime() < nowDate.getTime()) return false;
@@ -13891,6 +13892,7 @@ export default function Dashboard() {
           .filter(t => {
             if (!t.dueDate || t.isCompleted) return false;
             if (isCASL101Finished(t)) return false;
+            if (t.hideFromCountdown) return false;
             return true;
           })
           .sort((a, b) => new Date(b.dueDate!).getTime() - new Date(a.dueDate!).getTime()) : [];
@@ -32211,6 +32213,7 @@ function TaskForm({
     repeatIntervalUnit: (task?.repeatIntervalUnit as typeof REPEAT_INTERVAL_UNITS[number]) || "weeks",
     repeatEndDate: task?.repeatEndDate ? format(new Date(task.repeatEndDate), "yyyy-MM-dd") : "",
     hideFromSummary: task?.hideFromSummary ?? false,
+    hideFromCountdown: task?.hideFromCountdown ?? false,
     flagged: task?.flagged ?? false,
     showCountdownBar: task?.showCountdownBar ?? true,
     showCountdownBarMain: task?.showCountdownBarMain ?? true,
@@ -32359,6 +32362,7 @@ function TaskForm({
         repeatEndDate: data.repeatEndDate ? new Date(data.repeatEndDate).toISOString() : null,
         startDate: finalStartDate ? finalStartDate.toISOString() : null,
         hideFromSummary: data.hideFromSummary ?? false,
+        hideFromCountdown: data.hideFromCountdown ?? false,
         flagged: data.flagged ?? false,
         showCountdownBar: data.showCountdownBar ?? false,
         showCountdownBarMain: data.showCountdownBarMain ?? true,
@@ -32466,6 +32470,7 @@ function TaskForm({
         repeatEndDate: data.repeatEndDate ? new Date(data.repeatEndDate).toISOString() : null,
         startDate: finalStartDate ? finalStartDate.toISOString() : null,
         hideFromSummary: data.hideFromSummary ?? false,
+        hideFromCountdown: data.hideFromCountdown ?? false,
         flagged: data.flagged ?? false,
         showCountdownBar: data.showCountdownBar ?? false,
         showCountdownBarMain: data.showCountdownBarMain ?? true,
@@ -33161,6 +33166,27 @@ function TaskForm({
                     width: '14px', height: '14px', borderRadius: '50%', background: '#fff',
                     position: 'absolute', top: '2px', transition: 'left 0.2s',
                     left: formData.hideFromSummary ? '18px' : '2px',
+                  }} />
+                </button>
+              </div>
+              <div style={{ height: '1px', background: 'rgba(255,255,255,0.08)' }} />
+              <div className="flex items-center justify-between" data-testid="toggle-hide-from-countdown">
+                <span className="text-[11px]" style={{ color: 'rgba(255,255,255,0.8)' }}>Hide task from countdown box</span>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={formData.hideFromCountdown}
+                  onClick={() => setFormData(prev => ({ ...prev, hideFromCountdown: !prev.hideFromCountdown }))}
+                  style={{
+                    width: '34px', height: '18px', borderRadius: '9px', position: 'relative',
+                    background: formData.hideFromCountdown ? '#3b82f6' : 'rgba(255,255,255,0.15)',
+                    border: 'none', cursor: 'pointer', transition: 'background 0.2s', flexShrink: 0,
+                  }}
+                >
+                  <div style={{
+                    width: '14px', height: '14px', borderRadius: '50%', background: '#fff',
+                    position: 'absolute', top: '2px', transition: 'left 0.2s',
+                    left: formData.hideFromCountdown ? '18px' : '2px',
                   }} />
                 </button>
               </div>

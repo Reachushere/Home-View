@@ -373,6 +373,7 @@ export const tasks = pgTable("tasks", {
   inviteEmails: text("invite_emails").array(),
   hideFromSummary: boolean("hide_from_summary").default(false),
   hideFromTimeline: boolean("hide_from_timeline").default(false),
+  hideFromCountdown: boolean("hide_from_countdown").default(false),
   flagged: boolean("flagged").default(false),
   reminderEmail: boolean("reminder_email").default(false),
   reminderAlexa: boolean("reminder_alexa").default(false),
