@@ -2606,42 +2606,40 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
-  // ── Raw Story Trump Monitor ──
-  const sentRawStoryUrls = new Set<string>();
-  let rawStoryDbLoaded = false;
+  // ── Raw Story Top-3 Change Monitor ──
+  let lastTopThree: string[] = [];
+  let rawStoryTop3Loaded = false;
 
-  async function loadSentRawStoryUrls() {
-    if (rawStoryDbLoaded) return;
+  async function loadLastTopThree() {
+    if (rawStoryTop3Loaded) return;
     try {
-      const row = await db.select().from(appState).where(eq(appState.key, 'raw_story_sent_urls')).limit(1);
+      const row = await db.select().from(appState).where(eq(appState.key, 'raw_story_top3')).limit(1);
       if (row.length > 0) {
-        const urls: string[] = JSON.parse(row[0].value);
-        urls.forEach(u => sentRawStoryUrls.add(u));
+        lastTopThree = JSON.parse(row[0].value);
       }
-      rawStoryDbLoaded = true;
+      rawStoryTop3Loaded = true;
     } catch (err) {
-      console.error('[Raw Story] Failed to load sent URLs from DB:', err);
+      console.error('[Raw Story] Failed to load top-3 from DB:', err);
     }
   }
 
-  async function saveSentRawStoryUrls() {
+  async function saveLastTopThree() {
     try {
-      const urls = Array.from(sentRawStoryUrls).slice(-200);
-      const value = JSON.stringify(urls);
-      const row = await db.select().from(appState).where(eq(appState.key, 'raw_story_sent_urls')).limit(1);
+      const value = JSON.stringify(lastTopThree);
+      const row = await db.select().from(appState).where(eq(appState.key, 'raw_story_top3')).limit(1);
       if (row.length > 0) {
-        await db.update(appState).set({ value, updatedAt: new Date() }).where(eq(appState.key, 'raw_story_sent_urls'));
+        await db.update(appState).set({ value, updatedAt: new Date() }).where(eq(appState.key, 'raw_story_top3'));
       } else {
-        await db.insert(appState).values({ key: 'raw_story_sent_urls', value });
+        await db.insert(appState).values({ key: 'raw_story_top3', value });
       }
     } catch (err) {
-      console.error('[Raw Story] Failed to save sent URLs to DB:', err);
+      console.error('[Raw Story] Failed to save top-3 to DB:', err);
     }
   }
-  
-  async function checkRawStoryTrump() {
+
+  async function checkRawStoryTop3() {
     try {
-      await loadSentRawStoryUrls();
+      await loadLastTopThree();
 
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 10000);
@@ -2651,118 +2649,106 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       });
       clearTimeout(timeout);
       const xml = await response.text();
-      
-      const items = xml.split(/<item[\s>]/i).slice(1, 15);
-      
-      const todayET = easternDateStr(new Date());
-      let newlySent = false;
-      
+
+      const items = xml.split(/<item[\s>]/i).slice(1, 4);
+
+      const currentTopThree: Array<{ title: string; link: string; key: string }> = [];
       for (const item of items) {
         const titleMatch = item.match(/<title[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/title>/is);
         const linkMatch = item.match(/<link[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/link>/is);
-        const descMatch = item.match(/<description[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/description>/is);
-        const contentMatch = item.match(/<content:encoded[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/content:encoded>/is);
-        const pubDateMatch = item.match(/<pubDate[^>]*>(.*?)<\/pubDate>/is);
-        
-        const title = titleMatch?.[1]?.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").trim();
+        const title = titleMatch?.[1]?.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").trim() || '';
         const link = linkMatch?.[1]?.trim().replace(/\?.*$/, '').replace(/\/$/, '') || '';
-        
-        if (!title || !link) continue;
-        if (sentRawStoryUrls.has(link)) continue;
-        const titleKey = `title:${title.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
-        if (sentRawStoryUrls.has(titleKey)) continue;
-        
-        if (pubDateMatch?.[1]) {
-          const pubDate = new Date(pubDateMatch[1].trim());
-          const pubDateET = new Date(pubDate.toLocaleString('en-US', { timeZone: 'America/Toronto' }));
-          const pubDateStr = `${pubDateET.getFullYear()}-${String(pubDateET.getMonth()+1).padStart(2,'0')}-${String(pubDateET.getDate()).padStart(2,'0')}`;
-          if (pubDateStr !== todayET) {
-            sentRawStoryUrls.add(link);
-            continue;
-          }
-        }
-        
-        const headlinePattern = /\btrump\b|\bmaga\b/i;
-        if (!headlinePattern.test(title)) continue;
-        
-        let imageUrl = '';
-        const mediaContentMatch = item.match(/<media:content[^>]*url="([^"]+)"[^>]*>/i);
-        const mediaThumbnailMatch = item.match(/<media:thumbnail[^>]*url="([^"]+)"[^>]*>/i);
-        const enclosureMatch = item.match(/<enclosure[^>]*url="([^"]+)"[^>]*type="image\/[^"]*"/i);
-        const contentImgMatch = (contentMatch?.[1] || descMatch?.[1] || '').match(/<img[^>]*src="([^"]+)"[^>]*>/i);
-        const ogImageMatch = item.match(/<image[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/image>/is);
-        imageUrl = mediaContentMatch?.[1] || mediaThumbnailMatch?.[1] || enclosureMatch?.[1] || contentImgMatch?.[1] || '';
-        if (!imageUrl && ogImageMatch?.[1]) {
-          const innerUrl = ogImageMatch[1].match(/https?:\/\/[^\s<]+/);
-          if (innerUrl) imageUrl = innerUrl[0];
-        }
-        imageUrl = imageUrl.replace(/&amp;/g, '&');
-        
-        let body = contentMatch?.[1] || descMatch?.[1] || '';
-        body = body
-          .replace(/<p[^>]*>/gi, '\n\n')
-          .replace(/<br\s*\/?>/gi, '\n')
-          .replace(/<\/p>/gi, '')
-          .replace(/<blockquote[^>]*>/gi, '\n\n"')
-          .replace(/<\/blockquote>/gi, '"\n\n')
-          .replace(/<a[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/gi, '$2')
-          .replace(/<[^>]+>/g, '')
-          .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ')
-          .replace(/\n{3,}/g, '\n\n')
-          .trim();
-        
-        const formattedHeadline = title.toUpperCase();
-        const imageHtml = imageUrl
-          ? `<img src="${imageUrl}" alt="" style="width: 100%; max-width: 700px; height: auto; margin-bottom: 20px; border-radius: 4px;" />`
-          : '';
-        const textBody = `${formattedHeadline}\n\nMSN/RAW STORY -- ${body}${imageUrl ? '\n\nPhoto: ' + imageUrl : ''}`;
-        const htmlBody = `<div style="font-family: Georgia, serif; max-width: 700px;">` +
-          `<h1 style="font-size: 22px; font-weight: bold; margin-bottom: 20px; letter-spacing: 1px;">${formattedHeadline}</h1>` +
-          imageHtml +
-          `<p style="font-size: 15px; line-height: 1.7;"><strong>MSN/RAW STORY</strong> &mdash; ${body.split('\n\n').map(p => p.trim()).filter(Boolean).join('</p><p style="font-size: 15px; line-height: 1.7;">')}</p>` +
-          `<hr style="margin-top: 30px; border: none; border-top: 1px solid #ccc;" />` +
-          `<p style="font-size: 12px; color: #888;"><a href="${link}">Original article</a></p>` +
-          `</div>`;
-        
-        const result = await sendGmail({
-          to: 'bryn.kai-hendricks@outlook.com',
-          subject: 'NEW RAW STORY FOR POSTING',
-          htmlBody,
-          textBody,
-        });
-        
-        if (result.success) {
-          sentRawStoryUrls.add(link);
-          sentRawStoryUrls.add(titleKey);
-          newlySent = true;
-          console.log(`[Raw Story] Sent Trump article: ${title}`);
-        } else {
-          console.error(`[Raw Story] Failed to send: ${result.error}`);
+        if (title && link) {
+          currentTopThree.push({ title, link, key: title.toLowerCase().replace(/[^a-z0-9]/g, '') });
         }
       }
-      if (newlySent) {
-        await saveSentRawStoryUrls();
+
+      if (currentTopThree.length === 0) {
+        console.log('[Raw Story] No items found in feed');
+        return;
       }
+
+      const currentKeys = currentTopThree.map(s => s.key);
+
+      if (lastTopThree.length === 0) {
+        lastTopThree = currentKeys;
+        await saveLastTopThree();
+        console.log('[Raw Story] Initial top-3 stored (no email on first run)');
+        return;
+      }
+
+      if (JSON.stringify(currentKeys) === JSON.stringify(lastTopThree)) {
+        console.log('[Raw Story] Top-3 unchanged');
+        return;
+      }
+
+      const newStories = currentTopThree.filter(s => !lastTopThree.includes(s.key));
+      if (newStories.length === 0) {
+        lastTopThree = currentKeys;
+        await saveLastTopThree();
+        console.log('[Raw Story] Top-3 reordered but same stories — no email');
+        return;
+      }
+
+      const storyLines = currentTopThree.map((s, idx) => {
+        const isNew = !lastTopThree.includes(s.key);
+        return { ...s, position: idx + 1, isNew };
+      });
+
+      const textBody = `RAW STORY — TOP 3 STORIES CHANGED\n\n` +
+        storyLines.map(s => `${s.position}. ${s.isNew ? '[NEW] ' : ''}${s.title}\n   ${s.link}`).join('\n\n');
+
+      const htmlBody = `<div style="font-family: Georgia, serif; max-width: 700px;">` +
+        `<h1 style="font-size: 20px; font-weight: bold; margin-bottom: 20px; letter-spacing: 1px;">RAW STORY — TOP 3 CHANGED</h1>` +
+        `<table style="width:100%;border-collapse:collapse;">` +
+        storyLines.map(s =>
+          `<tr style="border-bottom:1px solid #eee;">` +
+          `<td style="padding:12px 8px;font-size:18px;font-weight:bold;vertical-align:top;width:30px;color:#666;">${s.position}.</td>` +
+          `<td style="padding:12px 8px;">` +
+          `${s.isNew ? '<span style="background:#dc2626;color:#fff;font-size:11px;padding:2px 6px;border-radius:3px;margin-right:6px;font-weight:bold;">NEW</span>' : ''}` +
+          `<a href="${s.link}" style="font-size:16px;font-weight:600;color:#1a1a1a;text-decoration:none;">${s.title}</a>` +
+          `</td></tr>`
+        ).join('') +
+        `</table>` +
+        `<hr style="margin-top:30px;border:none;border-top:1px solid #ccc;" />` +
+        `<p style="font-size:12px;color:#888;">Checked every 10 minutes. Only sent when a top-3 story changes.</p>` +
+        `</div>`;
+
+      const result = await sendGmail({
+        to: 'bryn.kai-hendricks@outlook.com',
+        subject: `RAW STORY TOP 3 CHANGED — ${newStories.length} new stor${newStories.length === 1 ? 'y' : 'ies'}`,
+        htmlBody,
+        textBody,
+      });
+
+      if (result.success) {
+        console.log(`[Raw Story] Top-3 change email sent (${newStories.length} new)`);
+      } else {
+        console.error(`[Raw Story] Failed to send: ${result.error}`);
+      }
+
+      lastTopThree = currentKeys;
+      await saveLastTopThree();
     } catch (err: any) {
       console.error('[Raw Story] Check failed:', err.message);
     }
   }
-  
+
   app.post("/api/raw-story/test", async (_req, res) => {
     try {
-      sentRawStoryUrls.clear();
-      rawStoryDbLoaded = false;
-      await checkRawStoryTrump();
-      res.json({ success: true, sent: sentRawStoryUrls.size });
+      lastTopThree = [];
+      rawStoryTop3Loaded = false;
+      await checkRawStoryTop3();
+      res.json({ success: true, currentTop3: lastTopThree });
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
   });
-  
+
   if (process.env.NODE_ENV === 'production' || process.env.REPL_DEPLOYMENT) {
-    setInterval(checkRawStoryTrump, 10 * 60 * 1000);
-    setTimeout(checkRawStoryTrump, 30000);
-    console.log('[Raw Story] Trump article monitor started (checking every 10 minutes)');
+    setInterval(checkRawStoryTop3, 10 * 60 * 1000);
+    setTimeout(checkRawStoryTop3, 30000);
+    console.log('[Raw Story] Top-3 change monitor started (checking every 10 minutes)');
   } else {
     console.log('[Raw Story] Monitor DISABLED in development (only runs in production)');
   }
