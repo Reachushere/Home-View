@@ -22785,10 +22785,11 @@ export default function Dashboard() {
                             const visibleStops = skyStops.filter(s => s.p <= pct);
                             if (visibleStops.length === 0) visibleStops.push(skyStops[0]);
                             const lastVisible = visibleStops[visibleStops.length - 1];
-                            const scaledStops = visibleStops.map(s => `${s.c} ${pct > 0 ? (s.p / pct * pct).toFixed(1) : 0}%`);
-                            scaledStops.push(`${lastVisible.c} ${pct}%`);
-                            scaledStops.push(`#ffffff ${pct}%`);
-                            scaledStops.push(`#ffffff 100%`);
+                            const scaledStops = visibleStops.map(s => {
+                              const scaled = pct > 0 ? (s.p / pct * 100).toFixed(1) : '0';
+                              return `${s.c} ${scaled}%`;
+                            });
+                            scaledStops.push(`${lastVisible.c} 100%`);
                             const wCode = weatherData?.code ?? 0;
                             const isNight = !weatherData?.isDay;
                             const weatherOverlay = (() => {
@@ -22805,6 +22806,14 @@ export default function Dashboard() {
                             })();
                             const weatherCss = (() => {
                               const t = weatherOverlay.type;
+                              if (t === 'thunder') {
+                                const drops = Array.from({ length: 22 }, (_, i) => {
+                                  const left = (i * 37 + 13) % 100;
+                                  const delay = ((i * 0.13) % 0.8).toFixed(2);
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1.5px;height:8px;background:rgba(180,190,220,0.7);animation:rainDrop 0.4s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                }).join('');
+                                return drops + `<div style="position:absolute;inset:0;background:rgba(255,255,200,0.15);animation:lightningFlash 4s 1s ease-in-out infinite"></div>`;
+                              }
                               if (t === 'rain' || t === 'showers' || t === 'drizzle') {
                                 const density = t === 'showers' ? 20 : t === 'rain' ? 14 : 8;
                                 const drops = Array.from({ length: density }, (_, i) => {
@@ -22845,8 +22854,9 @@ export default function Dashboard() {
                                   @keyframes rainDrop { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(50px); opacity: 0; } }
                                   @keyframes snowFall { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 15% { opacity: 1; } 100% { transform: translateY(50px) rotate(180deg); opacity: 0; } }
                                   @keyframes fogDrift { 0% { transform: translateX(-5px); } 100% { transform: translateX(5px); } }
+                                  @keyframes lightningFlash { 0%,89%,91%,93%,100% { opacity: 0; } 90% { opacity: 1; } 92% { opacity: 0.6; } }
                                 `}</style>
-                                <div className="absolute left-0 right-0 bottom-0 z-10" style={{ top: '22px', background: `linear-gradient(to right, ${scaledStops.join(', ')})`, overflow: 'hidden' }}>
+                                <div className="absolute inset-0 z-10" style={{ background: `linear-gradient(to right, ${scaledStops.join(', ')})`, overflow: 'hidden' }}>
                                   <div style={{ position: 'absolute', inset: 0, background: weatherOverlay.bg }} />
                                   <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }} dangerouslySetInnerHTML={{ __html: weatherCss }} />
                                 </div>
