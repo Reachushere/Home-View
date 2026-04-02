@@ -189,6 +189,8 @@ import {
   MicOff,
   Flag,
   Activity,
+  Users,
+  MoreHorizontal,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
@@ -209,6 +211,8 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   exam: GraduationCap,
   quiz: ClipboardCheck,
   reminder: Bell,
+  meeting: Users,
+  other: MoreHorizontal,
 };
 
 const typeColors: Record<string, string> = {
