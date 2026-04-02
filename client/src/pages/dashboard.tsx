@@ -23592,7 +23592,7 @@ export default function Dashboard() {
                           const badgeBg = `rgb(${Math.round((badgeStartRgb.r + badgeEndRgb.r) / 2)}, ${Math.round((badgeStartRgb.g + badgeEndRgb.g) / 2)}, ${Math.round((badgeStartRgb.b + badgeEndRgb.b) / 2)})`;
                           return (
                             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '15px', backgroundColor: badgeBg, zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'visible' }}>
-                              <span style={{ fontSize: '9px', color: '#ffffff', whiteSpace: 'nowrap', fontWeight: 500, lineHeight: '15px' }}>Next Task Due In: <span style={{ color: '#ffffff', fontWeight: 700, fontSize: '9px' }}>{daysUntil}d</span></span>
+                              <span style={{ fontSize: '10px', color: '#ffffff', whiteSpace: 'nowrap', fontWeight: 500, lineHeight: '15px' }}>Next Task Due In: <span style={{ color: '#ffffff', fontWeight: 700, fontSize: '10px' }}>{daysUntil}d</span></span>
                             </div>
                           );
                         })()}
