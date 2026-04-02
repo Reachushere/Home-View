@@ -14149,7 +14149,7 @@ export default function Dashboard() {
           left: '21px',
           right: '18px',
           pointerEvents: editingTask || !isTopPillOpen ? 'none' : 'auto',
-          transform: `translateY(${isTopPillOpen ? '20px' : '-83px'})`,
+          transform: `translateY(${isTopPillOpen ? '21px' : '-83px'})`,
           transition: topPillMounted ? 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
           animation: (!isTopPillOpen && topPillMounted) ? 'top-pill-container-nudge 6s ease-in-out 1s infinite' : 'none',
           top: '0px',
