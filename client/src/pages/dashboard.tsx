@@ -22856,7 +22856,7 @@ export default function Dashboard() {
                                   @keyframes fogDrift { 0% { transform: translateX(-5px); } 100% { transform: translateX(5px); } }
                                   @keyframes lightningFlash { 0%,89%,91%,93%,100% { opacity: 0; } 90% { opacity: 1; } 92% { opacity: 0.6; } }
                                 `}</style>
-                                <div className="absolute inset-0 z-10" style={{ background: `linear-gradient(to right, ${scaledStops.join(', ')})`, overflow: 'hidden' }}>
+                                <div className="absolute left-0 right-0 bottom-0 z-10" style={{ top: '15px', background: `linear-gradient(to right, ${scaledStops.join(', ')})`, overflow: 'hidden' }}>
                                   <div style={{ position: 'absolute', inset: 0, background: weatherOverlay.bg }} />
                                   <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }} dangerouslySetInnerHTML={{ __html: weatherCss }} />
                                 </div>
