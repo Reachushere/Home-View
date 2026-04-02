@@ -26169,14 +26169,16 @@ export default function Dashboard() {
                     if (tab.id.startsWith('ss26-wk')) return tab.id === 'ss26-wk1' && scrollActiveSem === tab.semLabel;
                     return scrollActiveSem === tab.semLabel;
                   })();
-                  const tabW = 20;
-                  const tabGap = 1;
+                  const tabW = 24;
+                  const tabGap = 2;
                   const tabTop = topInset + tabIdx * (tabH + tabGap);
+                  const svgH = Math.floor(tabH);
+                  const svgW = tabW + 8;
                   return (
                     <div
                       key={tab.id}
                       className={`cursor-pointer${isActive && tabBounceEnabled ? ' semester-tab-bounce' : ''}`}
-                      style={{ position: 'absolute', top: `${tabTop}px`, right: '0px', width: `${tabW}px`, height: `${Math.floor(tabH)}px`, zIndex: isActive ? 100 : n - tabIdx, transition: 'transform 0.2s ease', transform: `translateX(${isActive ? '2px' : '0px'})`, '--tab-base-transform': `translateX(${isActive ? '2px' : '0px'})` } as React.CSSProperties}
+                      style={{ position: 'absolute', top: `${tabTop}px`, right: '-4px', width: `${svgW}px`, height: `${svgH}px`, zIndex: isActive ? 100 : n - tabIdx, transition: 'transform 0.2s ease', transform: `translateX(${isActive ? '4px' : '0px'})`, '--tab-base-transform': `translateX(${isActive ? '4px' : '0px'})` } as React.CSSProperties}
                       onClick={() => {
                         if (homeworkScrollRef.current) {
                           const scrollContainer = homeworkScrollRef.current;
@@ -26209,29 +26211,19 @@ export default function Dashboard() {
                       data-testid={`semester-tab-${tab.id}`}
                       title={tab.semLabel}
                     >
-                      <div style={{
-                        width: '100%', height: '100%',
-                        backgroundColor: colorSettings.headerBar,
-                        borderRadius: '0 4px 4px 0',
-                        border: isActive ? '1px solid rgba(255,255,255,0.6)' : '1px solid rgba(255,255,255,0.15)',
-                        borderLeft: 'none',
-                        boxShadow: isActive ? '2px 0 6px rgba(0,0,0,0.3)' : 'none',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        overflow: 'hidden',
-                      }}>
-                        <span style={{
-                          writingMode: 'vertical-rl',
-                          textOrientation: 'mixed',
-                          transform: 'rotate(180deg)',
-                          fontSize: '9px',
-                          fontWeight: isActive ? 600 : 400,
-                          color: isActive ? '#ffffff' : 'rgba(255,255,255,0.6)',
-                          fontFamily: 'system-ui, -apple-system, sans-serif',
-                          letterSpacing: '0.5px',
-                          whiteSpace: 'nowrap',
-                          lineHeight: 1,
-                        }}>{tab.label}</span>
-                      </div>
+                      <svg width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`} style={{ display: 'block', overflow: 'visible' }}>
+                        <defs>
+                          <filter id={`tabDrop-${tabIdx}`} x="-20%" y="-10%" width="140%" height="120%"><feDropShadow dx="1" dy="0" stdDeviation="1.5" floodColor="black" floodOpacity={isActive ? '0.4' : '0.2'} /></filter>
+                        </defs>
+                        <path d={`M0 0 L${svgW - 6} 0 Q${svgW} 0 ${svgW} 6 L${svgW} ${svgH - 6} Q${svgW} ${svgH} ${svgW - 6} ${svgH} L0 ${svgH} Z`} fill={isActive ? colorSettings.headerBar : `${colorSettings.headerBar}cc`} stroke={isActive ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.12)'} strokeWidth={isActive ? '1' : '0.5'} filter={`url(#tabDrop-${tabIdx})`} />
+                        {(() => {
+                          const centerX = svgW / 2;
+                          const centerY = svgH / 2;
+                          return (
+                            <text x={centerX} y={centerY} textAnchor="middle" dominantBaseline="central" fill={isActive ? '#ffffff' : 'rgba(255,255,255,0.55)'} fontSize="10" fontWeight={isActive ? '600' : '400'} fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.3" transform={`rotate(90, ${centerX}, ${centerY})`}>{tab.label}</text>
+                          );
+                        })()}
+                      </svg>
                     </div>
                   );
                 });
