@@ -17490,7 +17490,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Content area */}
-                <div className="overflow-y-auto p-4 flex flex-col [&_p]:text-white [&_span]:text-white [&_label]:text-white [&_input]:text-white [&_input]:bg-white/10 [&_textarea]:text-white [&_textarea]:bg-white/10" style={{ scrollbarWidth: 'thin', height: '400px' }}>
+                <div className="overflow-y-auto p-4 flex flex-col [&_p]:text-white [&_span]:text-white [&_label]:text-white [&_input]:text-white [&_input]:bg-white/10 [&_textarea]:text-white [&_textarea]:bg-white/10" style={{ scrollbarWidth: 'thin', height: '520px' }}>
                   {/* Step 0: Task Type */}
                   {quickAddStep === 0 && (
                     <div className="flex flex-col gap-2">
@@ -17503,17 +17503,17 @@ export default function Dashboard() {
                         {TASK_TYPES.filter(t => t !== "class").map(type => {
                           const TypeIcon = iconMap[type] || FileText;
                           const typeColors: Record<string, { bg: string; border: string; hover: string }> = {
-                            reading: { bg: 'rgba(59,130,246,0.15)', border: 'rgba(59,130,246,0.35)', hover: 'rgba(59,130,246,0.25)' },
-                            module: { bg: 'rgba(16,185,129,0.15)', border: 'rgba(16,185,129,0.35)', hover: 'rgba(16,185,129,0.25)' },
-                            essay: { bg: 'rgba(245,158,11,0.15)', border: 'rgba(245,158,11,0.35)', hover: 'rgba(245,158,11,0.25)' },
-                            project: { bg: 'rgba(239,68,68,0.15)', border: 'rgba(239,68,68,0.35)', hover: 'rgba(239,68,68,0.25)' },
-                            discussion: { bg: 'rgba(168,85,247,0.15)', border: 'rgba(168,85,247,0.35)', hover: 'rgba(168,85,247,0.25)' },
-                            poll: { bg: 'rgba(236,72,153,0.15)', border: 'rgba(236,72,153,0.35)', hover: 'rgba(236,72,153,0.25)' },
-                            exam: { bg: 'rgba(220,38,38,0.2)', border: 'rgba(220,38,38,0.45)', hover: 'rgba(220,38,38,0.3)' },
-                            quiz: { bg: 'rgba(251,146,60,0.15)', border: 'rgba(251,146,60,0.35)', hover: 'rgba(251,146,60,0.25)' },
-                            reminder: { bg: 'rgba(34,211,238,0.15)', border: 'rgba(34,211,238,0.35)', hover: 'rgba(34,211,238,0.25)' },
-                            meeting: { bg: 'rgba(99,102,241,0.15)', border: 'rgba(99,102,241,0.35)', hover: 'rgba(99,102,241,0.25)' },
-                            other: { bg: 'rgba(156,163,175,0.15)', border: 'rgba(156,163,175,0.35)', hover: 'rgba(156,163,175,0.25)' },
+                            reading: { bg: 'rgba(56,130,255,0.25)', border: 'rgba(56,130,255,0.55)', hover: 'rgba(56,130,255,0.35)' },
+                            module: { bg: 'rgba(16,200,120,0.25)', border: 'rgba(16,200,120,0.55)', hover: 'rgba(16,200,120,0.35)' },
+                            essay: { bg: 'rgba(255,180,30,0.25)', border: 'rgba(255,180,30,0.55)', hover: 'rgba(255,180,30,0.35)' },
+                            project: { bg: 'rgba(255,60,60,0.25)', border: 'rgba(255,60,60,0.55)', hover: 'rgba(255,60,60,0.35)' },
+                            discussion: { bg: 'rgba(160,80,255,0.25)', border: 'rgba(160,80,255,0.55)', hover: 'rgba(160,80,255,0.35)' },
+                            poll: { bg: 'rgba(255,70,160,0.25)', border: 'rgba(255,70,160,0.55)', hover: 'rgba(255,70,160,0.35)' },
+                            exam: { bg: 'rgba(220,30,30,0.3)', border: 'rgba(220,30,30,0.6)', hover: 'rgba(220,30,30,0.4)' },
+                            quiz: { bg: 'rgba(255,140,0,0.25)', border: 'rgba(255,140,0,0.55)', hover: 'rgba(255,140,0,0.35)' },
+                            reminder: { bg: 'rgba(0,210,240,0.25)', border: 'rgba(0,210,240,0.55)', hover: 'rgba(0,210,240,0.35)' },
+                            meeting: { bg: 'rgba(80,80,240,0.25)', border: 'rgba(80,80,240,0.55)', hover: 'rgba(80,80,240,0.35)' },
+                            other: { bg: 'rgba(160,170,180,0.2)', border: 'rgba(160,170,180,0.5)', hover: 'rgba(160,170,180,0.3)' },
                           };
                           const tc = typeColors[type] || { bg: 'rgba(255,255,255,0.05)', border: 'rgba(255,255,255,0.1)', hover: 'rgba(255,255,255,0.2)' };
                           const isSelected = quickAddData.type === type;
@@ -17537,9 +17537,9 @@ export default function Dashboard() {
                         })}
                         <button
                           className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 text-white flex items-center gap-1.5"
-                          style={{ background: 'rgba(20,184,166,0.15)', border: '1px solid rgba(20,184,166,0.35)' }}
-                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(20,184,166,0.25)'; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(20,184,166,0.15)'; }}
+                          style={{ background: 'rgba(0,190,160,0.25)', border: '1px solid rgba(0,190,160,0.55)' }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,190,160,0.35)'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,190,160,0.25)'; }}
                           onClick={(e) => { e.stopPropagation(); setIsQuickAddOpen(false); setTimeout(() => setIsNewCourseWizardOpen(true), 50); }}
                           data-testid="quick-add-type-course"
                         >
