@@ -22779,8 +22779,8 @@ export default function Dashboard() {
                             const lastVisible = visibleStops[visibleStops.length - 1];
                             const scaledStops = visibleStops.map(s => `${s.c} ${pct > 0 ? (s.p / pct * pct).toFixed(1) : 0}%`);
                             scaledStops.push(`${lastVisible.c} ${pct}%`);
-                            scaledStops.push(`#ffffff ${pct}%`);
-                            scaledStops.push(`#ffffff 100%`);
+                            scaledStops.push(`transparent ${pct}%`);
+                            scaledStops.push(`transparent 100%`);
                             return (
                               <>
                                 <div className="absolute left-0 right-0 bottom-0 z-10" style={{ top: '22px', background: `linear-gradient(to right, ${scaledStops.join(', ')})` }} />
