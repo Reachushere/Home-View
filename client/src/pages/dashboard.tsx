@@ -13929,7 +13929,7 @@ export default function Dashboard() {
               data-testid="next-task-countdown"
             >
               <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', position: 'relative', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderRadius: '12px', padding: '10px 14px 4px 14px', width: '475px', border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)', boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", gap: '8px' }}>
+                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', position: 'relative', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderRadius: '12px', padding: '10px 14px 4px 14px', width: '555px', border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)', boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", gap: '8px' }}>
                   {selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK && (
                     <span className="text-[10.5px] font-medium" style={{ position: 'absolute', top: '1px', left: '50%', transform: 'translateX(-50%)', color: 'rgba(255,255,255,0.85)', letterSpacing: '0.3px', whiteSpace: 'nowrap', textAlign: 'center' }} data-testid="text-week-number">Week {selectedWeek}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek ? <span className="text-[10px] font-normal ml-1" style={{ color: 'rgba(255,255,255,1)' }}>(current)</span> : null; })()}</span>
                   )}
@@ -14016,7 +14016,7 @@ export default function Dashboard() {
             data-testid="next-task-countdown"
           >
             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', position: 'relative', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderRadius: '12px', padding: '10px 14px 4px 14px', width: '475px', border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)', boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", gap: '8px' }}>
+              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', position: 'relative', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderRadius: '12px', padding: '10px 14px 4px 14px', width: '555px', border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)', boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", gap: '8px' }}>
               {selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK && (
                 <span className="text-[10.5px] font-medium" style={{ position: 'absolute', top: '1px', left: '50%', transform: 'translateX(-50%)', color: 'rgba(255,255,255,0.85)', letterSpacing: '0.3px', whiteSpace: 'nowrap', textAlign: 'center' }} data-testid="text-week-number">Week {selectedWeek}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek ? <span className="text-[10px] font-normal ml-1" style={{ color: 'rgba(255,255,255,1)' }}>(current)</span> : null; })()}</span>
               )}
@@ -22760,7 +22760,7 @@ export default function Dashboard() {
             </div>
           <div ref={calendarBorderRef} className="shadow-lg border border-white flex flex-col relative" style={{ background: 'transparent', borderRadius: '8px', overflow: 'hidden', height: 'calc(100%)', width: 'calc(100%)', marginLeft: '2px', marginTop: '-2px' }}>
             {/* Progress/Saturday divider line - grey separator on left border of Saturday column */}
-            <div className="absolute top-0 bottom-0 z-50 pointer-events-none overflow-hidden" style={{ left: `calc(${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px + (${gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px) - 1px)`, width: '4px', backgroundColor: '#5596C0' }}>
+            <div className="absolute top-0 bottom-0 z-50 pointer-events-none overflow-hidden" style={{ left: `calc(${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px + (${gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px) - 1px)`, width: '4px', backgroundColor: colorSettings.headerBar }}>
             </div>
             {/* Black border around today column - always show */}
             {(() => {
@@ -22784,7 +22784,7 @@ export default function Dashboard() {
               const beforeW = gridSizes.dayColumnWidths.slice(0, todayIdx).reduce((a: number, b: number) => a + b, 0);
               const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
               return (
-                <div className="absolute top-0 bottom-0 z-50 pointer-events-none" style={{ left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px) - 2px)`, width: '4px', backgroundColor: '#5596C0' }} />
+                <div className="absolute top-0 bottom-0 z-50 pointer-events-none" style={{ left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px) - 2px)`, width: '4px', backgroundColor: colorSettings.headerBar }} />
               );
             })()}
             
@@ -22828,7 +22828,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`flex flex-col items-center justify-center h-full relative`}
-                    style={isToday ? { backgroundColor: '#5596C0', paddingLeft: '2px', overflow: 'hidden', borderLeft: '2px solid #5596C0' } : day.getDay() === 6 ? { backgroundColor: isNextSchoolWeek ? undefined : colorSettings.headerBar, background: isNextSchoolWeek ? 'linear-gradient(180deg, #5596C0 0%, #8BB8D5 100%)' : undefined, borderLeft: '2px solid #5596C0' } : isNextSchoolWeek ? { background: 'linear-gradient(180deg, #5596C0 0%, #8BB8D5 100%)', borderLeft: '1px solid rgba(255,255,255,0.1)' } : { backgroundColor: colorSettings.headerBar, borderLeft: '1px solid rgba(255,255,255,0.1)' }}
+                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'hidden', borderLeft: `2px solid ${colorSettings.headerBar}` } : day.getDay() === 6 ? { backgroundColor: isNextSchoolWeek ? undefined : colorSettings.headerBar, background: isNextSchoolWeek ? 'linear-gradient(180deg, #5596C0 0%, #8BB8D5 100%)' : undefined, borderLeft: `2px solid ${colorSettings.headerBar}` } : isNextSchoolWeek ? { background: 'linear-gradient(180deg, #5596C0 0%, #8BB8D5 100%)', borderLeft: '1px solid rgba(255,255,255,0.1)' } : { backgroundColor: colorSettings.headerBar, borderLeft: '1px solid rgba(255,255,255,0.1)' }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     
@@ -22959,7 +22959,7 @@ export default function Dashboard() {
                                   <div style={{ position: 'absolute', inset: 0, background: weatherOverlay.bg }} />
                                   <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }} dangerouslySetInnerHTML={{ __html: weatherCss }} />
                                 </div>
-                                <div className="absolute left-0 right-0 z-15" style={{ top: 0, height: '20px', background: '#5596C0' }} />
+                                <div className="absolute left-0 right-0 z-15" style={{ top: 0, height: '20px', background: colorSettings.headerBar }} />
                                 <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '7px', overflow: 'hidden' }} data-testid="today-full-date">
                                   <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 4px' }}>
                                     {format(day, 'EEEE, MMMM d')}
@@ -24194,9 +24194,9 @@ export default function Dashboard() {
                     key={dayIdx} 
                     className={`relative p-0.5 flex flex-col gap-0.5 min-w-0 ${isSameDayET(day, new Date()) ? 'border-b border-black' : 'border-b border-border/50'}`}
                     style={{ 
-                      borderLeft: (isSameDayET(day, new Date()) || day.getDay() === 6) ? '2px solid #5596C0' : '1px solid rgba(255,255,255,0.1)',
+                      borderLeft: (isSameDayET(day, new Date()) || day.getDay() === 6) ? `2px solid ${colorSettings.headerBar}` : '1px solid rgba(255,255,255,0.1)',
                       backgroundColor: (() => {
-                        if (isSameDayET(day, new Date())) return '#5596C0';
+                        if (isSameDayET(day, new Date())) return colorSettings.headerBar;
                         if (calendarWeekMode === 'current') {
                           const adNow = new Date();
                           const adDow = adNow.getDay();
