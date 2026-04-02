@@ -9736,13 +9736,12 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         }
 
         let silkLaunched = false;
+        const tvWrapperUrl = `${appUrl}/api/cat-wash/tv-follow`;
         for (let silkAttempt = 1; silkAttempt <= 3; silkAttempt++) {
           try {
-            const silkCmd = tvFollowUrl
-              ? `am start --activity-clear-task -a android.intent.action.VIEW -d "${tvFollowUrl}" com.amazon.cloud9`
-              : 'monkey -p com.amazon.cloud9 -c android.intent.category.LAUNCHER 1';
+            const silkCmd = `am start --activity-clear-task -a android.intent.action.VIEW -d '${tvWrapperUrl}' com.amazon.cloud9`;
             await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: silkCmd }, `FireStick Launch Silk ${silkAttempt}`);
-            console.log(`${logPrefix} Silk launched with URL (attempt ${silkAttempt})`);
+            console.log(`${logPrefix} Silk launched with wrapper URL (attempt ${silkAttempt})`);
             silkLaunched = true;
             break;
           } catch (e: any) {
@@ -10402,12 +10401,15 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           continue;
         }
 
+        stopWordAdvancement();
         if (catWashPlaybackState) {
           catWashPlaybackState.chunkIndex = i;
           const chunkText = chunks[i] || '';
           const cleanedChunkText = cleanTextForTTS(chunkText);
           catWashPlaybackState.currentWords = cleanedChunkText.split(/\s+/).filter((w: string) => w.length > 0);
           catWashPlaybackState.wordIndex = 0;
+          catWashPlaybackState.chunkStartedAt = new Date(Date.now() + 60000);
+          catWashPlaybackState.estimatedChunkDuration = 60000;
         }
 
         if (i > startChunk) {
@@ -10464,7 +10466,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           lookaheadChunkIndex = -1;
           lookaheadPromise = null;
 
-          const wordCount = chunkText.split(/\s+/).length;
+          const cleanedForEstimate = cleanTextForTTS(chunkText);
+          const wordCount = cleanedForEstimate.split(/\s+/).filter((w: string) => w.length > 0).length;
           const estimatedMs = Math.max(5000, (wordCount / 175) * 60 * 1000 + 1000);
 
           if (catWashPlaybackState) {
