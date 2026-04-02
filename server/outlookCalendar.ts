@@ -84,7 +84,7 @@ export async function fetchOutlookCalendarEvents(daysAhead: number = 14): Promis
             endDateTime,
             $orderby: 'start/dateTime',
             $top: 100,
-            $select: 'id,subject,bodyPreview,start,end,location,organizer,isAllDay,isCancelled',
+            $select: 'id,subject,bodyPreview,start,end,location,organizer,isAllDay,isCancelled,seriesMasterId',
           })
           .get();
 
@@ -146,7 +146,18 @@ export async function syncOutlookEventsToReview(): Promise<{ added: number; skip
     return { isClass: false, courseCode: '', courseName: '' };
   };
 
+  const seenRecurringTitles = new Set<string>();
+
   for (const event of events) {
+    if (event.seriesMasterId) {
+      const normRecurring = normalizeTitle(event.subject || '');
+      if (seenRecurringTitles.has(normRecurring)) {
+        skipped++;
+        continue;
+      }
+      seenRecurringTitles.add(normRecurring);
+    }
+
     const existing = await storage.getPendingReviewItemByExternalId(event.id, 'outlook_calendar');
     if (existing) {
       skipped++;

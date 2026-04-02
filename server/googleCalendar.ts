@@ -790,10 +790,27 @@ export async function syncGoogleEventsToReview(): Promise<{ added: number; skipp
     return { isClass: false, courseCode: '', courseName: '' };
   };
 
+  const seenRecurringTitles = new Set<string>();
+
+  allEvents.sort((a: any, b: any) => {
+    const aStart = new Date(a.start?.dateTime || a.start?.date || 0).getTime();
+    const bStart = new Date(b.start?.dateTime || b.start?.date || 0).getTime();
+    return aStart - bStart;
+  });
+
   for (const event of allEvents) {
     if (!event.id || syncedEventIds.has(event.id)) {
       skipped++;
       continue;
+    }
+
+    if (event.recurringEventId) {
+      const normRecurring = normalizeTitle(event.summary || '');
+      if (seenRecurringTitles.has(normRecurring)) {
+        skipped++;
+        continue;
+      }
+      seenRecurringTitles.add(normRecurring);
     }
 
     const existing = await storage.getPendingReviewItemByExternalId(event.id, 'google_calendar');
