@@ -11841,11 +11841,11 @@ export default function Dashboard() {
             }}>
               <span style={{ color: '#ffffff', fontSize: '12px', fontWeight: 600, fontFamily: "system-ui, -apple-system, sans-serif" }}>
                 {(() => {
-                  const weekDates = getWeekDates(selectedWeek);
-                  if (!weekDates || weekDates.length === 0) return `Week ${selectedWeek}`;
-                  const first = weekDates[0]; const last = weekDates[weekDates.length - 1];
+                  const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : undefined;
+                  const readingWeek = semesterSettings?.readingWeekStart || null;
+                  const { start, end } = getWeekDates(selectedWeek, semStart, readingWeek);
                   const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' });
-                  return `Week ${selectedWeek}: ${fmt.format(first)} – ${fmt.format(last)}`;
+                  return `Week ${selectedWeek}: ${fmt.format(start)} – ${fmt.format(end)}`;
                 })()}
               </span>
               <div style={{ display: 'flex', gap: '4px' }}>
@@ -11856,7 +11856,7 @@ export default function Dashboard() {
             </div>
             <div style={{ flex: 1, overflow: 'auto', position: 'relative' }}>
               {calendarView === "week" ? (
-                <div style={{ display: 'grid', gridTemplateColumns: `40px repeat(${(() => { const wd = getWeekDates(selectedWeek); return wd?.length || 7; })()}, 1fr)`, height: '100%', minHeight: '100%' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: `40px repeat(7, 1fr)`, height: '100%', minHeight: '100%' }}>
                   <div style={{ borderRight: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column' }}>
                     {Array.from({ length: 15 }, (_, i) => {
                       const hour = i + 7;
@@ -11865,7 +11865,11 @@ export default function Dashboard() {
                     })}
                   </div>
                   {(() => {
-                    const weekDates = getWeekDates(selectedWeek) || [];
+                    const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : undefined;
+                    const readingWeek = semesterSettings?.readingWeekStart || null;
+                    const { start } = getWeekDates(selectedWeek, semStart, readingWeek);
+                    const weekDates: Date[] = [];
+                    for (let d = 0; d < 7; d++) { const dt = new Date(start); dt.setDate(dt.getDate() + d); weekDates.push(dt); }
                     const today = new Date();
                     const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
                     return weekDates.map((date, dayIdx) => {
@@ -11902,8 +11906,10 @@ export default function Dashboard() {
               ) : (
                 <div style={{ padding: '4px' }}>
                   {(() => {
-                    const weekDates = getWeekDates(selectedWeek) || [];
-                    const firstDate = weekDates[0] || new Date();
+                    const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : undefined;
+                    const readingWeek = semesterSettings?.readingWeekStart || null;
+                    const { start: weekStart } = getWeekDates(selectedWeek, semStart, readingWeek);
+                    const firstDate = weekStart || new Date();
                     const year = firstDate.getFullYear(); const month = firstDate.getMonth();
                     const firstDay = new Date(year, month, 1).getDay();
                     const daysInMonth = new Date(year, month + 1, 0).getDate();
