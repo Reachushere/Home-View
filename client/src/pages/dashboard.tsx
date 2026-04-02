@@ -22721,7 +22721,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative`}
-                    style={isToday ? { background: `linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.42) 50%, rgba(255,255,255,0.35) 100%), ${colorSettings.headerBar}`, paddingLeft: '2px', overflow: 'hidden' } : isNextSchoolWeek ? { background: 'linear-gradient(180deg, #8BB8D5 0%, #5596C0 100%)' } : { backgroundColor: colorSettings.headerBar }}
+                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'hidden' } : isNextSchoolWeek ? { background: 'linear-gradient(180deg, #8BB8D5 0%, #5596C0 100%)' } : { backgroundColor: colorSettings.headerBar }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     
@@ -22785,7 +22785,7 @@ export default function Dashboard() {
                               <>
                                 <div className="absolute left-0 right-0 bottom-0 z-10" style={{ top: '22px', background: `linear-gradient(to right, ${scaledStops.join(', ')})` }} />
                                 <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '7px', overflow: 'hidden' }} data-testid="today-full-date">
-                                  <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '2px 4px 1px' }}>
+                                  <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#000000', lineHeight: '11px', letterSpacing: '0.5px', padding: '2px 4px 1px' }}>
                                     {format(day, 'EEEE, MMMM d')}
                                   </span>
                                 </div>
