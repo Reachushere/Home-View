@@ -23216,7 +23216,6 @@ export default function Dashboard() {
                   const courseCode = course.name.split(' - ')[0]?.trim().toUpperCase() || '';
                   if (!courseCode || !task.courseName?.toUpperCase().startsWith(courseCode)) return false;
                   if (task.isCompleted) return false;
-                  if (task.type === 'other') return false;
                   if (task.hideFromSummary) return false;
                   const taskDueDate = startOfDayET(new Date(task.dueDate));
                   const weekStart = startOfDayET(weekDays[0]);
@@ -23396,7 +23395,6 @@ export default function Dashboard() {
                     const dueTasks = allTasks?.filter(task => {
                       if (!courseCodeUpper || !task.courseName?.toUpperCase().startsWith(courseCodeUpper)) return false;
                       if (task.isCompleted) return false;
-                      if (task.type === 'other') return false;
                       const taskDueDate = startOfDayET(new Date(task.dueDate));
                       return isSameDayET(taskDueDate, cellDate);
                     }) || [];
@@ -23404,7 +23402,6 @@ export default function Dashboard() {
                     const prepTasks = allTasks?.filter(task => {
                       if (!courseCodeUpper || !task.courseName?.toUpperCase().startsWith(courseCodeUpper)) return false;
                       if (task.isCompleted) return false;
-                      if (task.type === 'other') return false;
                       if (!task.startDate) return false;
                       if (!task.prepDays || task.prepDays <= 0) return false;
                       const taskDueDate = startOfDayET(new Date(task.dueDate));
@@ -23613,7 +23610,7 @@ export default function Dashboard() {
                                 className="truncate cursor-pointer hover:opacity-80 pl-1 flex-1 min-w-0"
                                 onClick={() => setEditingTask(task)}
                               >
-                                {task.title}
+                                {task.title?.replace(/^\[?[A-Z]{2,5}\d{3}\s*-?\s*/, '').replace(/^\]\s*/, '').replace(/^-\s*/, '') || task.title}
                               </span>
                               {dueAttachmentLink && !dueModulePdfUrl && (
                                 <a href={dueAttachmentLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={dueAttachmentLink} data-testid={`att-link-icon-task-${task.id}`}>
@@ -23841,9 +23838,14 @@ export default function Dashboard() {
 
               {/* Other Tasks Summary Row - black background, only shows tasks with type "other" */}
               {(() => {
+                const activeCourseNames = filteredCourses.map(c => c.name.split(' - ')[0]?.toUpperCase()).filter(Boolean);
                 const otherTasks = allTasks?.filter(task => {
                   if (task.type !== 'other' && task.type !== 'meeting' && task.type !== 'reminder') return false;
                   if (task.type === 'meeting' && task.courseName) return false;
+                  if (task.courseName) {
+                    const taskCourseCode = task.courseName.split(' - ')[0]?.toUpperCase();
+                    if (taskCourseCode && activeCourseNames.includes(taskCourseCode)) return false;
+                  }
                   if (task.isCompleted) return false;
                   if (task.hideFromSummary) return false;
                   const taskDueDate = startOfDayET(new Date(task.dueDate));
@@ -23856,7 +23858,6 @@ export default function Dashboard() {
                   }
                   return false;
                 }) || [];
-                const activeCourseNames = filteredCourses.map(c => c.name.split(' - ')[0]?.toUpperCase()).filter(Boolean);
                 const otherProjects = allProjects.filter(proj => {
                   if (proj.status === 'completed' || proj.status === 'cancelled') return false;
                   if (!proj.targetDate) return false;
