@@ -14199,7 +14199,7 @@ export default function Dashboard() {
 
 
           {/* ── Tools ── */}
-          <div style={{ background: 'linear-gradient(180deg, rgba(130,195,255,0.3) 0%, rgba(100,170,240,0.15) 100%)', borderRadius: '26px', padding: '2px 3px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 24)}px`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.1)', border: '1.5px solid rgba(130,195,255,0.5)', position: 'relative', top: '1px', margin: '0 1px' }}>
+          <div style={{ borderRadius: '26px', padding: '2px 3px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 24)}px`, border: '1.5px solid rgba(130,195,255,0.25)', position: 'relative', top: '1px', margin: '0 1px', overflow: 'hidden' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(130,195,255,0.15) 0%, rgba(100,170,240,0.08) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           {/* Home Assistant (moved from bottom pill) */}
           {isAdmin && (
           <div 
@@ -14555,7 +14555,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── School ── */}
-          <div style={{ borderRadius: '26px', padding: '2px 3px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 24)}px`, border: '1.5px solid rgba(140,230,170,0.5)', position: 'relative', top: '1px', margin: '0 1px', overflow: 'hidden' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(140,230,170,0.3) 0%, rgba(100,200,140,0.15) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ borderRadius: '26px', padding: '2px 3px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 24)}px`, border: '1.5px solid rgba(140,230,170,0.25)', position: 'relative', top: '1px', margin: '0 1px', overflow: 'hidden' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(140,230,170,0.15) 0%, rgba(100,200,140,0.08) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           {/* Courses Button */}
           <div className="pill-button-hover" style={{ 
             marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
@@ -14655,7 +14655,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Entertainment ── */}
-          <div style={{ borderRadius: '26px', padding: '2px 3px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 24)}px`, border: '1.5px solid rgba(210,160,255,0.5)', position: 'relative', top: '1px', margin: '0 1px', overflow: 'hidden' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(210,160,255,0.3) 0%, rgba(180,130,240,0.15) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ borderRadius: '26px', padding: '2px 3px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 24)}px`, border: '1.5px solid rgba(210,160,255,0.25)', position: 'relative', top: '1px', margin: '0 1px', overflow: 'hidden' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(210,160,255,0.15) 0%, rgba(180,130,240,0.08) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           {/* Spotify Button */}
           <div className="pill-button-hover" style={{ 
             marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
@@ -14743,7 +14743,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Tasks ── */}
-          <div style={{ borderRadius: '26px', padding: '2px 3px 2px 3px', paddingRight: '5px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 24)}px`, border: '1.5px solid rgba(255,195,130,0.5)', position: 'relative', top: '1px', margin: '0 1px', overflow: 'hidden' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(255,195,130,0.3) 0%, rgba(240,170,100,0.15) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ borderRadius: '26px', padding: '2px 3px 2px 3px', paddingRight: '5px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 24)}px`, border: '1.5px solid rgba(255,195,130,0.25)', position: 'relative', top: '1px', margin: '0 1px', overflow: 'hidden' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(255,195,130,0.15) 0%, rgba(240,170,100,0.08) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           {/* Completed Tasks Button - Swapped with Graduation Hat */}
           <div className="pill-button-hover" style={{ 
             marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
