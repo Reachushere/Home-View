@@ -22728,8 +22728,8 @@ export default function Dashboard() {
                 return (
                   <div 
                     key={idx} 
-                    className={`border-l border-border flex flex-col items-center justify-center h-full relative`}
-                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'hidden' } : isNextSchoolWeek ? { background: 'linear-gradient(180deg, #5596C0 0%, #8BB8D5 100%)' } : { backgroundColor: colorSettings.headerBar }}
+                    className={`flex flex-col items-center justify-center h-full relative`}
+                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'hidden', borderLeft: '2px solid #5596C0' } : day.getDay() === 6 ? { backgroundColor: isNextSchoolWeek ? undefined : colorSettings.headerBar, background: isNextSchoolWeek ? 'linear-gradient(180deg, #5596C0 0%, #8BB8D5 100%)' : undefined, borderLeft: '2px solid #5596C0' } : isNextSchoolWeek ? { background: 'linear-gradient(180deg, #5596C0 0%, #8BB8D5 100%)', borderLeft: '1px solid rgba(255,255,255,0.1)' } : { backgroundColor: colorSettings.headerBar, borderLeft: '1px solid rgba(255,255,255,0.1)' }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     
@@ -24094,8 +24094,9 @@ export default function Dashboard() {
                 return (
                   <div 
                     key={dayIdx} 
-                    className={`border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 min-w-0 ${isSameDayET(day, new Date()) ? 'border-b border-black' : 'border-b border-border/50'}`}
+                    className={`relative p-0.5 flex flex-col gap-0.5 min-w-0 ${isSameDayET(day, new Date()) ? 'border-b border-black' : 'border-b border-border/50'}`}
                     style={{ 
+                      borderLeft: (isSameDayET(day, new Date()) || day.getDay() === 6) ? '2px solid #5596C0' : '1px solid rgba(255,255,255,0.1)',
                       backgroundColor: (() => {
                         if (isSameDayET(day, new Date())) return '#eef2f7';
                         if (calendarWeekMode === 'current') {
