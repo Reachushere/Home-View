@@ -56,6 +56,7 @@ import hwPlayIconPath from "@assets/Headphones2_1774667878315.png";
 import hwPlayIconLightPath from "@assets/Headphone3_1774670459512.png";
 import BookAnimation from "@/components/BookAnimation";
 import dragTabPath from "@assets/drag-tab.svg";
+import teacherIconPath from "@assets/Teacher_1775101022422.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -219,6 +220,21 @@ const typeColors: Record<string, string> = {
   exam: "bg-red-500/20 text-red-600 dark:text-red-400",
   quiz: "bg-amber-500/20 text-amber-600 dark:text-amber-400",
   reminder: "bg-teal-500/20 text-teal-600 dark:text-teal-400",
+};
+
+const calendarTypeIconColors: Record<string, string> = {
+  class: '#6d28d9',
+  reading: '#2563eb',
+  module: '#7c3aed',
+  essay: '#ea580c',
+  project: '#16a34a',
+  discussion: '#db2777',
+  poll: '#0891b2',
+  exam: '#dc2626',
+  quiz: '#d97706',
+  reminder: '#0d9488',
+  meeting: '#6366f1',
+  other: '#6b7280',
 };
 
 const courseColors: Record<string, { bg: string; border: string; text: string; dot: string; prepBg: string; prepBorder: string; prepText: string }> = {
