@@ -22717,7 +22717,8 @@ export default function Dashboard() {
                 const nowForWeek = new Date();
                 const todayDowForWeek = nowForWeek.getDay();
                 const thisSaturday = startOfDayET(addDays(nowForWeek, todayDowForWeek === 6 ? 7 : (6 - todayDowForWeek)));
-                const isNextSchoolWeek = calendarWeekMode === 'current' && startOfDayET(day) >= thisSaturday;
+                const todayIdx = weekDays.findIndex(d => isSameDayET(d, new Date()));
+                const isNextSchoolWeek = calendarWeekMode === 'current' && (startOfDayET(day) >= thisSaturday || (todayIdx >= 0 && idx < todayIdx && !isToday));
                 const dayName = format(day, "EEE").toUpperCase();
                 const dayNum = format(day, "d");
                 const hasTodayTasks = isToday && allTasks.some(t => 
@@ -24104,7 +24105,8 @@ export default function Dashboard() {
                           const adNow = new Date();
                           const adDow = adNow.getDay();
                           const adSat = startOfDayET(addDays(adNow, adDow === 6 ? 7 : (6 - adDow)));
-                          if (startOfDayET(day) >= adSat) return '#edf3f9';
+                          const adTodayIdx = weekDays.findIndex(d => isSameDayET(d, adNow));
+                          if (startOfDayET(day) >= adSat || (adTodayIdx >= 0 && dayIdx < adTodayIdx)) return '#edf3f9';
                         }
                         return '#faf8f5';
                       })(),
