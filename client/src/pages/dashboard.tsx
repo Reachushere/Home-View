@@ -13929,7 +13929,6 @@ export default function Dashboard() {
                       <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>All tasks completed</span>
                     </div>
                   </div>
-                  </div>
                 </div>
               </div>
             </div>
