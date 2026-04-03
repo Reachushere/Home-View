@@ -26538,9 +26538,9 @@ export default function Dashboard() {
                       <svg width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`} style={{ display: 'block', overflow: 'visible' }}>
                         <defs>
                           <filter id={`tabDrop-${tabIdx}`} x="-20%" y="-10%" width="140%" height="120%"><feDropShadow dx="1" dy="0" stdDeviation="1.5" floodColor="black" floodOpacity={isActive ? '0.4' : '0.2'} /></filter>
-                          <linearGradient id={`tabGrad-${tabIdx}`} x1="0" y1="0" x2="0" y2="1">
+                          <linearGradient id={`tabGrad-${tabIdx}`} x1="0" y1="0" x2="1" y2="0">
                             <stop offset="0%" stopColor="#61A2CB" />
-                            <stop offset="100%" stopColor="#164A72" />
+                            <stop offset="100%" stopColor="#0F3A5C" />
                           </linearGradient>
                         </defs>
                         <path d={`M0 0 L${svgW - 6} 0 Q${svgW} 0 ${svgW} 6 L${svgW} ${svgH - 6} Q${svgW} ${svgH} ${svgW - 6} ${svgH} L0 ${svgH} Z`} fill={`url(#tabGrad-${tabIdx})`} opacity={isActive ? 1 : 0.8} stroke={isActive ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.12)'} strokeWidth={isActive ? '1' : '0.5'} filter={`url(#tabDrop-${tabIdx})`} />
@@ -26693,7 +26693,7 @@ export default function Dashboard() {
                   left: `${effectiveDividerPct}%`,
                   right: 0,
                   height: `${rowHeight}px`,
-                  background: 'linear-gradient(180deg, #61A2CB 0%, #164A72 100%)',
+                  background: 'linear-gradient(180deg, #61A2CB 0%, #0F3A5C 100%)',
                   zIndex: 41,
                   borderBottom: '0.5px solid rgba(255,255,255,0.2)',
                   overflow: 'hidden',
@@ -27034,7 +27034,7 @@ export default function Dashboard() {
           <div style={{ width: '100%', height: '15px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', flexShrink: 0 }}>
             <span style={{ fontSize: '10px', fontWeight: 500, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
           </div>
-          <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', background: 'linear-gradient(180deg, #61A2CB 0%, #164A72 100%)' }} ref={homeworkScrollRef} onScroll={() => { setHwIsScrolling(true); if (hwScrollTimerRef.current) clearTimeout(hwScrollTimerRef.current); hwScrollTimerRef.current = setTimeout(() => setHwIsScrolling(false), 300); const sc = homeworkScrollRef.current; if (sc) { setHwScrolledDown(sc.scrollTop > 5); const sections = sc.querySelectorAll('[data-semester-label]'); let bestLabel: string | null = null; let bestDist = Infinity; const containerTop = sc.getBoundingClientRect().top; sections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestDist) { bestDist = dist; bestLabel = el.getAttribute('data-semester-label') || null; } }); if (bestLabel) setHwVisibleSemLabel(bestLabel); } }}>
+          <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', background: 'linear-gradient(180deg, #61A2CB 0%, #0F3A5C 100%)' }} ref={homeworkScrollRef} onScroll={() => { setHwIsScrolling(true); if (hwScrollTimerRef.current) clearTimeout(hwScrollTimerRef.current); hwScrollTimerRef.current = setTimeout(() => setHwIsScrolling(false), 300); const sc = homeworkScrollRef.current; if (sc) { setHwScrolledDown(sc.scrollTop > 5); const sections = sc.querySelectorAll('[data-semester-label]'); let bestLabel: string | null = null; let bestDist = Infinity; const containerTop = sc.getBoundingClientRect().top; sections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestDist) { bestDist = dist; bestLabel = el.getAttribute('data-semester-label') || null; } }); if (bestLabel) setHwVisibleSemLabel(bestLabel); } }}>
             {isLoading ? (
               <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
             ) : (
