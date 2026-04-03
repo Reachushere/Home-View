@@ -1646,6 +1646,35 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
     res.status(204).end();
   });
 
+  // DELETE /api/tasks/:id/all-same-title - Delete this task and all tasks with the same title
+  app.delete("/api/tasks/:id/all-same-title", async (req, res) => {
+    const taskId = Number(req.params.id);
+    const task = await storage.getTask(taskId);
+    if (!task) return res.status(404).json({ message: 'Task not found' });
+
+    const allTasks = await storage.getTasks();
+    const matchingTasks = allTasks.filter(t => t.title.trim() === task.title.trim());
+
+    for (const t of matchingTasks) {
+      if (t.calendarEventId) {
+        try { await deleteCalendarEvent(t.calendarEventId); } catch {}
+      }
+      if (t.secondAccountCalendarEventId) {
+        try { await deleteEventFromSecondAccount(t.secondAccountCalendarEventId); } catch {}
+      }
+      if (t.prepCalendarEventId) {
+        try { await deleteCalendarEvent(t.prepCalendarEventId); } catch {}
+      }
+      if (t.secondAccountPrepEventId) {
+        try { await deleteEventFromSecondAccount(t.secondAccountPrepEventId); } catch {}
+      }
+      await storage.deleteSubtasksByTask(t.id);
+      await storage.deleteTask(t.id);
+    }
+
+    res.status(204).end();
+  });
+
   // PATCH /api/tasks/:id/update-recurring - Update all recurring siblings with same fields
   app.patch("/api/tasks/:id/update-recurring", async (req, res) => {
     try {

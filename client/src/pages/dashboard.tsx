@@ -9647,7 +9647,9 @@ export default function Dashboard() {
   });
 
   const isRecurringTask = (task: Task) => {
-    return (task.repeatType && task.repeatType !== 'none') || !!task.parentTaskId;
+    if ((task.repeatType && task.repeatType !== 'none') || !!task.parentTaskId) return true;
+    const sameTitleCount = allTasks.filter(t => t.title.trim() === task.title.trim()).length;
+    return sameTitleCount > 1;
   };
 
   const doDeleteSingleTask = (taskId: number) => {
@@ -9695,6 +9697,15 @@ export default function Dashboard() {
   const deleteFutureMutation = useMutation({
     mutationFn: async (taskId: number) => {
       return apiRequest("DELETE", `/api/tasks/${taskId}/future`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+    },
+  });
+
+  const deleteAllSameTitleMutation = useMutation({
+    mutationFn: async (taskId: number) => {
+      return apiRequest("DELETE", `/api/tasks/${taskId}/all-same-title`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
@@ -30144,6 +30155,27 @@ export default function Dashboard() {
                 data-testid="button-delete-all-future"
               >
                 Delete this and all future events
+              </button>
+              <button
+                className="inline-flex items-center justify-center rounded-md px-4 py-2 text-red-300 transition-opacity duration-200 text-xs"
+                style={{
+                  border: '1.5px solid rgba(239,68,68,0.8)',
+                  background: 'linear-gradient(180deg, rgba(239,68,68,0.5) 0%, rgba(239,68,68,0.25) 48%, rgba(239,68,68,0.15) 52%, rgba(239,68,68,0.35) 100%)',
+                  boxShadow: 'inset 0 1px 0 rgba(239,68,68,0.5), inset 0 -1px 0 rgba(239,68,68,0.15)'
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(239,68,68,0.65) 0%, rgba(239,68,68,0.35) 48%, rgba(239,68,68,0.2) 52%, rgba(239,68,68,0.45) 100%)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(239,68,68,0.5) 0%, rgba(239,68,68,0.25) 48%, rgba(239,68,68,0.15) 52%, rgba(239,68,68,0.35) 100%)'; }}
+                onClick={() => {
+                  if (recurringDeleteTask) {
+                    deleteAllSameTitleMutation.mutate(recurringDeleteTask.id);
+                    setRecurringDeleteTask(null);
+                    setEditingTask(null);
+                    setContextMenu(null);
+                  }
+                }}
+                data-testid="button-delete-all-same-title"
+              >
+                Delete ALL events with this name
               </button>
               <button
                 className="inline-flex items-center justify-center rounded-md px-4 py-2 text-white/60 transition-opacity duration-200 text-xs hover:text-white/80"
