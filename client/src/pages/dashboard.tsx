@@ -22977,7 +22977,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`flex flex-col items-center justify-center h-full relative`}
-                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'hidden', borderLeft: `0.5px solid ${colorSettings.headerBar}` } : day.getDay() === 6 ? { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', borderLeft: `0.5px solid ${colorSettings.headerBar}` } : { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', borderLeft: '1px solid rgba(255,255,255,0.1)' }}
+                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'hidden' } : day.getDay() === 6 ? { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', borderLeft: `0.5px solid ${colorSettings.headerBar}` } : { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', borderLeft: '1px solid rgba(255,255,255,0.1)' }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     
@@ -24389,7 +24389,7 @@ export default function Dashboard() {
                     key={dayIdx} 
                     className={`relative p-0.5 flex flex-col gap-0.5 min-w-0 ${isSameDayET(day, new Date()) ? 'border-b border-black' : 'border-b border-border/50'}`}
                     style={{ 
-                      borderLeft: (isSameDayET(day, new Date()) || day.getDay() === 6) ? `0.5px solid ${colorSettings.headerBar}` : '1px solid rgba(255,255,255,0.1)',
+                      borderLeft: isSameDayET(day, new Date()) ? 'none' : day.getDay() === 6 ? `0.5px solid ${colorSettings.headerBar}` : '1px solid rgba(255,255,255,0.1)',
                       backgroundColor: (() => {
                         if (isSameDayET(day, new Date())) return colorSettings.headerBar;
                         if (calendarWeekMode === 'current') {
