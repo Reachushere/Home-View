@@ -26543,7 +26543,7 @@ export default function Dashboard() {
                             <stop offset="100%" stopColor="#0F3A5C" />
                           </linearGradient>
                         </defs>
-                        <path d={`M0 0 L${svgW - 6} 0 Q${svgW} 0 ${svgW} 6 L${svgW} ${svgH - 6} Q${svgW} ${svgH} ${svgW - 6} ${svgH} L0 ${svgH} Z`} fill={`url(#tabGrad-${tabIdx})`} opacity={isActive ? 1 : 0.8} stroke={colorSettings.headerBar} strokeWidth="1" filter={`url(#tabDrop-${tabIdx})`} />
+                        <path d={`M0 0 L${svgW - 6} 0 Q${svgW} 0 ${svgW} 6 L${svgW} ${svgH - 6} Q${svgW} ${svgH} ${svgW - 6} ${svgH} L0 ${svgH} Z`} fill={`url(#tabGrad-${tabIdx})`} opacity={isActive ? 1 : 0.8} stroke={colorSettings.headerBar} strokeWidth="0.5" filter={`url(#tabDrop-${tabIdx})`} />
                         {(() => {
                           const centerX = svgW / 2;
                           const centerY = svgH / 2;
