@@ -14193,12 +14193,16 @@ export default function Dashboard() {
         onMouseLeave={() => {
           topPillHoveredRef.current = false;
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
-          if (topPillInitDoneRef.current) closeTopPill();
+          if (topPillInitDoneRef.current) {
+            topPillTimeoutRef.current = setTimeout(() => {
+              if (!topPillHoveredRef.current) closeTopPill();
+            }, 400);
+          }
         }}
       >
         <div style={{ position: 'absolute', top: '-20px', left: '-10px', right: '-10px', bottom: '-20px', pointerEvents: isTopPillOpen ? 'auto' : 'none', zIndex: -1 }}
           onMouseEnter={() => { topPillHoveredRef.current = true; if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); }}
-          onMouseLeave={() => { topPillHoveredRef.current = false; if (topPillInitDoneRef.current) closeTopPill(); }}
+          onMouseLeave={() => { topPillHoveredRef.current = false; if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); topPillTimeoutRef.current = setTimeout(() => { if (!topPillHoveredRef.current) closeTopPill(); }, 400); }}
         />
         {/* Glass pill background */}
         <div style={{
