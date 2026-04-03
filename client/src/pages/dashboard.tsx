@@ -26561,9 +26561,10 @@ export default function Dashboard() {
                                   <stop offset="100%" stopColor={botColor} />
                                 </linearGradient>
                               </defs>
-                              <path d={`M0,0 L0,${svgH} L${svgW - br},${svgH} Q${svgW},${svgH} ${svgW},${svgH - br} L${svgW},${br} Q${svgW},0 ${svgW - br},0 Z`} fill={`url(#${gradId})`} />
-                              <path d={`M0,0 L${svgW - br},0 Q${svgW},0 ${svgW},${br} L${svgW},${svgH * 0.5}`} fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
-                              <path d={`M${svgW},${svgH * 0.5} L${svgW},${svgH - br} Q${svgW},${svgH} ${svgW - br},${svgH} L0,${svgH}`} fill="none" stroke="rgba(0,0,0,0.15)" strokeWidth="1" />
+                              <rect x={0} y={0} width={svgW} height={svgH} fill={`url(#${gradId})`} />
+                              <line x1={0} y1={0} x2={svgW} y2={0} stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+                              <line x1={svgW} y1={0} x2={svgW} y2={svgH} stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+                              <line x1={0} y1={svgH} x2={svgW} y2={svgH} stroke="rgba(0,0,0,0.15)" strokeWidth="1" />
                               {tab.topText ? (
                                 <>
                                   <text x={cx} y={svgH * 0.28} textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.9)" fontSize={Math.min(5.5, svgH * 0.15)} fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.5">{tab.bottomText}</text>
