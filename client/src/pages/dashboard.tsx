@@ -24720,8 +24720,8 @@ export default function Dashboard() {
                                 onTouchStart={(e) => handleTouchStart(e, task.id, task.title)}
                                 onTouchEnd={handleTouchEnd}
                                 onTouchMove={handleTouchMove}
-                                onMouseEnter={() => { if (totalItems > 1) setHoveredCalTaskId(task.id); }}
-                                onMouseLeave={() => { if (hoveredCalTaskId === task.id) setHoveredCalTaskId(null); }}
+                                onMouseEnter={() => {}}
+                                onMouseLeave={() => {}}
                                 className={`absolute shadow-sm cursor-grab active:cursor-grabbing rounded overflow-hidden ${
                                   draggedTask?.id === task.id ? "opacity-50" : ""
                                 } ${
@@ -24731,14 +24731,13 @@ export default function Dashboard() {
                                 }`}
                                 style={{
                                   top: `${topOffset}px`,
-                                  left: hoveredCalTaskId === task.id ? '2px' : (() => { const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return hasNextDueBox ? `calc(${taskIdx * columnWidth / 2}% + 2px)` : `calc(${taskIdx * columnWidth}% + 2px)`; })(),
-                                  width: hoveredCalTaskId === task.id ? 'calc(100% - 4px)' : (() => { const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return hasNextDueBox ? `calc(${columnWidth / 2}% - 4px)` : `calc(${columnWidth}% - 4px)`; })(),
+                                  left: (() => { const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return hasNextDueBox ? `calc(${taskIdx * columnWidth / 2}% + 2px)` : `calc(${taskIdx * columnWidth}% + 2px)`; })(),
+                                  width: (() => { const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return hasNextDueBox ? `calc(${columnWidth / 2}% - 4px)` : `calc(${columnWidth}% - 4px)`; })(),
                                   height: `${taskHeight}px`,
-                                  zIndex: hoveredCalTaskId === task.id ? 56 : (hoveredCountdownTaskId === task.id ? 55 : (selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43))),
+                                  zIndex: hoveredCountdownTaskId === task.id ? 55 : (selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43)),
                                   backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || (task.type === 'other' ? otherRowColors.taskBgColor : '#e5e7eb')),
                                   border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1px solid ${task.isCompleted ? '#d1d5db' : (colors?.border || (task.type === 'other' ? otherRowColors.borderColor : '#9ca3af'))}`,
-                                  boxShadow: hoveredCalTaskId === task.id ? '0 4px 12px rgba(0,0,0,0.3)' : (hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined),
-                                  transition: 'left 0.15s ease, width 0.15s ease, box-shadow 0.15s ease, transform 0.2s ease',
+                                  boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
                                   transformOrigin: 'center center',
                                 }}
                                 data-testid={`time-task-${task.id}`}
