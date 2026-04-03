@@ -26507,7 +26507,7 @@ export default function Dashboard() {
                   const tabGap = -2;
                   const tabTop = topInset + tabIdx * (tabH + tabGap);
                   const svgH = Math.floor(tabH);
-                  const svgW = tabW + 5;
+                  const svgW = tabW + 2;
                   return (
                     <div
                       key={tab.id}
