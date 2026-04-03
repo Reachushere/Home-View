@@ -941,6 +941,9 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, colorSe
               NEW COURSE WIZARD
             </h2>
           </div>
+          <button onClick={onClose} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-course-wizard">
+            <X className="h-4 w-4" />
+          </button>
         </div>
 
         {renderStepIndicator()}
