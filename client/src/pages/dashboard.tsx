@@ -14759,7 +14759,7 @@ export default function Dashboard() {
           </div>
 
 
-          {/* Kitchen Stop Button (moved from bottom pill) */}
+          {/* Kitchen Stop/Play Button (moved from bottom pill) */}
           <div 
             style={{ 
               marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
@@ -14771,11 +14771,11 @@ export default function Dashboard() {
               animation: isKitchenPlaying ? 'pulse 2s infinite' : 'none'
             }}
             className="pill-button-hover"
-            onClick={handleKitchenStop}
+            onClick={isKitchenPlaying ? handleKitchenStop : async () => { try { const r = await fetch('/api/kitchen/trigger', { method: 'POST' }); if (r.ok) setIsKitchenPlaying(true); } catch {} }}
             data-testid="button-kitchen-stop"
-            title="Stop"
+            title={isKitchenPlaying ? 'Stop' : 'Play'}
           >
-            <Square className="text-white fill-white" style={{ height: '14px', width: '14px' }} />
+            {isKitchenPlaying ? <Square className="text-white fill-white" style={{ height: '14px', width: '14px' }} /> : <Play className="text-white fill-white" style={{ height: '16px', width: '16px' }} />}
           </div>
 
           </div>
