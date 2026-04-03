@@ -34311,7 +34311,7 @@ function TaskForm({
           </div>
 
           <div style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 12px' }}>
-            <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.45)', letterSpacing: '0.5px' }}>Attachments</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.85)', letterSpacing: '0.5px' }}>Attachments</span>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
               {formData.attachments.map((attachment, idx) => (
                 <div key={idx} className="flex items-center gap-2" style={{ fontSize: '11px' }}>
@@ -34380,8 +34380,8 @@ function TaskForm({
                   onChange={(e) => setNewAttachment(e.target.value)}
                   placeholder="Or paste URL..."
                   data-testid="input-new-attachment"
-                  className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                  style={{ color: 'black', fontSize: '11px' }}
+                  className="flex h-8 w-full rounded-md border px-2 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  style={{ color: 'white', fontSize: '11px', background: 'rgba(255,255,255,0.1)', borderColor: 'rgba(255,255,255,0.2)' }}
                 />
                 <Button
                   type="button"
@@ -34405,18 +34405,20 @@ function TaskForm({
             </div>
           </div>
 
-          <div>
-            <Label htmlFor="referenceLink" className="text-[11px] text-white">Reference Link</Label>
-            <input
-              id="referenceLink"
-              type="url"
-              value={formData.referenceLink}
-              onChange={(e) => setFormData(prev => ({ ...prev, referenceLink: e.target.value }))}
-              placeholder="https://example.com"
-              data-testid="input-reference-link"
-              className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              style={{ color: 'black', fontSize: '11px' }}
-            />
+          <div style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 12px' }}>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-semibold uppercase tracking-wider shrink-0" style={{ color: 'rgba(255,255,255,0.85)', letterSpacing: '0.5px' }}>Reference Link</span>
+              <input
+                id="referenceLink"
+                type="url"
+                value={formData.referenceLink}
+                onChange={(e) => setFormData(prev => ({ ...prev, referenceLink: e.target.value }))}
+                placeholder="https://example.com"
+                data-testid="input-reference-link"
+                className="flex h-8 w-full rounded-md border px-2 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                style={{ color: 'white', fontSize: '11px', background: 'rgba(255,255,255,0.1)', borderColor: 'rgba(255,255,255,0.2)' }}
+              />
+            </div>
           </div>
 
         </div>
