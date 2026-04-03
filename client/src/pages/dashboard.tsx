@@ -25069,12 +25069,13 @@ export default function Dashboard() {
                                   );
                                 })()}
                                 {/* Task body */}
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '2px', padding: '1px 3px 2px 5px', flex: 1 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '1px 3px 2px 5px', flex: 1 }}>
                                   <Checkbox
                                     checked={task.isCompleted || false}
                                     onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
                                     onClick={(e) => e.stopPropagation()}
-                                    className="h-3 w-3 shrink-0 border-white bg-white data-[state=checked]:bg-white data-[state=checked]:border-white data-[state=checked]:text-black"
+                                    className="shrink-0 border-white bg-white data-[state=checked]:bg-white data-[state=checked]:border-white data-[state=checked]:text-black"
+                                    style={{ width: '10px', height: '10px' }}
                                     data-testid={`checkbox-time-${task.id}`}
                                   />
                                   <div style={{ flex: 1, minWidth: 0 }}>
