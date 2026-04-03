@@ -11205,8 +11205,8 @@ export default function Dashboard() {
                       </button>
                     </PopoverTrigger>
                     <PopoverContent
-                      className="w-auto p-0 !bg-[#1a1a2e] !border-white/20 alexa-dark-calendar"
-                      style={{ zIndex: 10020 }}
+                      className="w-auto p-0 alexa-dark-calendar"
+                      style={{ zIndex: 10020, backgroundColor: '#1a1a2e', borderColor: 'rgba(255,255,255,0.2)' }}
                       align="start"
                     >
                       <CalendarPicker
@@ -11311,8 +11311,8 @@ export default function Dashboard() {
                         </button>
                       </PopoverTrigger>
                       <PopoverContent
-                        className="w-auto p-0 !bg-[#1a1a2e] !border-white/20 alexa-dark-calendar"
-                        style={{ zIndex: 10020 }}
+                        className="w-auto p-0 alexa-dark-calendar"
+                        style={{ zIndex: 10020, backgroundColor: '#1a1a2e', borderColor: 'rgba(255,255,255,0.2)' }}
                         align="start"
                       >
                         <CalendarPicker
