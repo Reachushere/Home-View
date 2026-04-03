@@ -14252,7 +14252,7 @@ export default function Dashboard() {
       })()}
 
       {/* Top Pill - Slide up/down container for toolbar buttons */}
-      <div style={{ position: 'fixed', top: `${d2lTickerHeight}px`, left: 0, right: 0, bottom: 0, zIndex: editingTask ? 1 : 110, pointerEvents: 'none', overflow: 'hidden', display: isQuickAddOpen ? 'none' : undefined }}>
+      <div style={{ position: 'fixed', top: `${d2lTickerHeight}px`, left: 0, right: 0, bottom: 0, zIndex: editingTask ? 1 : 110, pointerEvents: 'none', overflow: 'hidden' }}>
       <div 
         ref={topPillRef}
         id="top-pill-container"
@@ -17593,7 +17593,7 @@ export default function Dashboard() {
           {isQuickAddOpen && (
             <div className="fixed inset-0 z-[10003] flex items-center justify-center bg-black/30" onClick={handleQuickAddClose}>
               <div 
-                className="rounded-xl w-[680px] max-w-[95vw] max-h-[95vh] overflow-hidden flex flex-col text-white shadow-2xl"
+                className="rounded-xl w-[680px] max-w-[95vw] overflow-hidden flex flex-col text-white shadow-2xl"
                 style={{
                   fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
                   background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
