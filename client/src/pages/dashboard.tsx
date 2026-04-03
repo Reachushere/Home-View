@@ -24583,6 +24583,8 @@ export default function Dashboard() {
                             onTouchStart={(e) => handleTouchStart(e, task.id, task.title)}
                             onTouchEnd={handleTouchEnd}
                             onTouchMove={handleTouchMove}
+                            onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task.id); }}
+                            onDoubleClick={(e) => { e.stopPropagation(); setEditingTask(task); }}
                           >
                             {(
                               <Checkbox
@@ -24594,7 +24596,6 @@ export default function Dashboard() {
                               />
                             )}
                             <span 
-                              onClick={() => setEditingTask(task)}
                               className={`cursor-pointer hover:opacity-80 truncate flex-1 font-bold ${task.isCompleted ? "line-through" : ""}`}
                             >
                               {task.title}
