@@ -22982,10 +22982,7 @@ export default function Dashboard() {
                   >
                     
                     {isToday && weatherData && weatherData.code >= 95 && weatherData.code <= 99 && (
-                      <>
-                        <div className="absolute weather-lightning" style={{ zIndex: 15, top: 0, left: 0, right: 0, height: '48px' }} />
-                        <div className="weather-lightning-bolt" style={{ zIndex: 16, top: 0, left: 0, right: 0, height: '48px', overflow: 'hidden' }} />
-                      </>
+                      <div className="absolute inset-0 weather-sheet-lightning" style={{ zIndex: 15 }} />
                     )}
                     {!isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && (
                       <div
@@ -26654,7 +26651,7 @@ export default function Dashboard() {
                   <div className="absolute inset-0" style={{ background: 'rgba(200,200,210,0.15)', backdropFilter: 'blur(1px)' }} />
                 )}
                 {isThunder && (
-                  <div className="absolute inset-0 weather-lightning" />
+                  <div className="absolute inset-0 weather-sheet-lightning" />
                 )}
                 {showParticles && weatherParticles.slice(0, particleCount).map((p, i) => {
                   const size = isSnow ? (2 + p.sizeFactor * 3) : isSleet ? (1.5 + p.sizeFactor * 2) : (1 + p.sizeFactor * 1.5);
