@@ -14235,7 +14235,7 @@ export default function Dashboard() {
           {isAdmin && (
           <div 
             style={{ 
-              marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
+              marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
               background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 100%)',
               position: 'relative' as const, zIndex: 1,
               border: '1.5px solid rgba(255,255,255,0.55)',
@@ -14277,7 +14277,7 @@ export default function Dashboard() {
           ) : (
             <div 
               style={{ 
-                marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%', zIndex: 100,
+                marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%', zIndex: 100,
                 background: 'linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.03) 100%)',
                 
                 border: '1.5px solid rgba(255,255,255,0.2)',
@@ -14313,7 +14313,7 @@ export default function Dashboard() {
           ) : (
             <div 
               style={{ 
-                marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%', zIndex: 100,
+                marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%', zIndex: 100,
                 background: 'linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.03) 100%)',
                 
                 border: '1.5px solid rgba(255,255,255,0.2)',
@@ -14330,7 +14330,7 @@ export default function Dashboard() {
 
           {/* Key Contacts Button */}
           <div className="pill-button-hover" style={{ 
-            marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
+            marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
             background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 100%)',
             position: 'relative' as const, zIndex: 1,
             border: '1.5px solid rgba(255,255,255,0.55)',
@@ -14356,7 +14356,7 @@ export default function Dashboard() {
 
           {/* System Health Button */}
           <div className="pill-button-hover" style={{ 
-            marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
+            marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
             background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 100%)',
             position: 'relative' as const, zIndex: 1,
             border: '1.5px solid rgba(255,255,255,0.55)',
@@ -14389,7 +14389,7 @@ export default function Dashboard() {
 
           {/* Email Management Button */}
           <div className="pill-button-hover" style={{ 
-            marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
+            marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
             background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 100%)',
             position: 'relative' as const, zIndex: 1,
             border: '1.5px solid rgba(255,255,255,0.55)',
@@ -14418,7 +14418,7 @@ export default function Dashboard() {
 
           {/* Alexa Announcements Button */}
           <div className="pill-button-hover" style={{ 
-            marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
+            marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
             background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 100%)',
             position: 'relative' as const, zIndex: 1,
             border: '1.5px solid rgba(255,255,255,0.55)',
@@ -14443,7 +14443,7 @@ export default function Dashboard() {
 
           {/* Quick Notes Button */}
           <div className="pill-button-hover" style={{ 
-            marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
+            marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
             background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 100%)',
             position: 'relative' as const, zIndex: 1,
             border: '1.5px solid rgba(255,255,255,0.55)',
@@ -14463,7 +14463,7 @@ export default function Dashboard() {
 
           {/* Feedback Button */}
           <div className="pill-button-hover" style={{ 
-            marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
+            marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
             background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 100%)',
             position: 'relative' as const, zIndex: 1,
             border: '1.5px solid rgba(255,255,255,0.55)',
@@ -14487,7 +14487,7 @@ export default function Dashboard() {
           {/* Sync Button - Push & Pull combined */}
           <div 
             style={{ 
-              marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
+              marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
               background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 100%)',
               position: 'relative' as const, zIndex: 1,
               border: '1.5px solid rgba(255,255,255,0.55)',
@@ -14544,7 +14544,7 @@ export default function Dashboard() {
           {/* Fullscreen Toggle (moved from bottom pill) */}
           <div 
             style={{ 
-              marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
+              marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
               background: isFullscreen ? 'linear-gradient(180deg, #1a6b1a 0%, #2a8a2a 50%, #4aaa4a 100%)' : 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 100%)',
               position: 'relative' as const, zIndex: 1,
               border: '1.5px solid rgba(255,255,255,0.55)',
@@ -14563,7 +14563,7 @@ export default function Dashboard() {
           {/* Refresh Button */}
           <div 
             style={{ 
-              marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
+              marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
               background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 100%)',
               position: 'relative' as const, zIndex: 1,
               border: '1.5px solid rgba(255,255,255,0.55)',
@@ -14595,7 +14595,7 @@ export default function Dashboard() {
           <GraduationCap className="h-[18px] w-[18px] text-white/70" style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px' }} />
           {/* Courses Button */}
           <div className="pill-button-hover" style={{ 
-            marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
+            marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
             background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 100%)',
             position: 'relative' as const, zIndex: 1,
             border: '1.5px solid rgba(255,255,255,0.55)',
@@ -14624,7 +14624,7 @@ export default function Dashboard() {
 
           {/* Graduation Hat - Swapped with Completed Tasks */}
           <div className="pill-button-hover" style={{ 
-            marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
+            marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
             background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 100%)',
             position: 'relative' as const, zIndex: 1,
             border: '1.5px solid rgba(255,255,255,0.55)',
@@ -14667,7 +14667,7 @@ export default function Dashboard() {
 
           {/* Scholarships Button */}
           <div className="pill-button-hover" style={{ 
-            marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
+            marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
             background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 100%)',
             position: 'relative' as const, zIndex: 1,
             border: '1.5px solid rgba(255,255,255,0.55)',
@@ -14697,7 +14697,7 @@ export default function Dashboard() {
           <img src={soundIconPath} alt="Sound" style={{ height: '22px', width: '22px', objectFit: 'contain', position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', opacity: 0.7 }} />
           {/* Spotify Button */}
           <div className="pill-button-hover" style={{ 
-            marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
+            marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
             background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 100%)',
             position: 'relative' as const, zIndex: 1,
             border: '1.5px solid rgba(255,255,255,0.55)',
@@ -14726,7 +14726,7 @@ export default function Dashboard() {
           {/* Radio Button (moved from bottom pill) */}
           <div 
             style={{ 
-              marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
+              marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
               background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 100%)',
               position: 'relative' as const, zIndex: 1,
               border: '1.5px solid rgba(255,255,255,0.55)',
@@ -14745,7 +14745,7 @@ export default function Dashboard() {
           {/* Bell Button (moved from bottom pill) */}
           <div 
             style={{ 
-              marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
+              marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
               background: isMuted ? 'linear-gradient(180deg, #FF9494 0%, #FF0000 100%)' : 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 100%)',
               position: 'relative' as const, zIndex: 1,
               border: '1.5px solid rgba(255,255,255,0.55)',
@@ -14764,7 +14764,7 @@ export default function Dashboard() {
           {/* Kitchen Stop/Play Button (moved from bottom pill) */}
           <div 
             style={{ 
-              marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
+              marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
               background: isKitchenPlaying ? 'linear-gradient(180deg, #8B0000 0%, #DC143C 50%, #FF4500 100%)' : 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 100%)',
               position: 'relative' as const, zIndex: 1,
               border: '1.5px solid rgba(255,255,255,0.55)',
@@ -14787,7 +14787,7 @@ export default function Dashboard() {
           <ListChecks className="h-[18px] w-[18px] text-white/70" style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px' }} />
           {/* Completed Tasks Button - Swapped with Graduation Hat */}
           <div className="pill-button-hover" style={{ 
-            marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
+            marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
             background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 100%)',
             position: 'relative' as const, zIndex: 1,
             border: '1.5px solid rgba(255,255,255,0.55)',
@@ -14811,7 +14811,7 @@ export default function Dashboard() {
           {/* Todo Button (swapped from tall pill) */}
           <div 
             style={{ 
-              marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
+              marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
               background: hasUnackedReminders
                 ? 'linear-gradient(180deg, #FF9494 0%, #FF0000 100%)'
                 : 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 100%)',
