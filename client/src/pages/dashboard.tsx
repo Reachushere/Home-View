@@ -30,6 +30,7 @@ import wifiLogoPath from "@assets/Wifi_1773656687145.png";
 import politicoLogoPath from "@assets/Politico_1773537080711.png";
 import degreeIconPath from "@assets/Degree_1775175568321.png";
 import remindersIconPath from "@assets/Reminders_1775175754351.png";
+import soundIconPath from "@assets/Sound_1775176942072.png";
 import rawStoryLogoPath from "@assets/Raw_Story_1773607642361.png";
 import abcNewsLogoPath from "@assets/ABC_1773609250051.png";
 import weatherAlertLogoPath from "@assets/Weather_Alert_1773608511887.png";
@@ -14692,7 +14693,8 @@ export default function Dashboard() {
           </div>
 
           {/* ── Entertainment ── */}
-          <div style={{ borderRadius: '26px', padding: '2px 3px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 27)}px`, border: '1.5px solid rgba(160,100,240,0.6)', position: 'relative', top: '1px', margin: '0 0px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(150,90,235,0.5) 0%, rgba(120,60,210,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ borderRadius: '26px', padding: '2px 3px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 27)}px`, border: '1.5px solid rgba(160,100,240,0.6)', position: 'relative', top: '1px', margin: '0 0px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(150,90,235,0.5) 0%, rgba(120,60,210,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
+          <img src={soundIconPath} alt="Sound" style={{ height: '18px', width: '18px', objectFit: 'contain', position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', opacity: 0.7 }} />
           {/* Spotify Button */}
           <div className="pill-button-hover" style={{ 
             marginTop: '2px', width: '44px', height: '44px', borderRadius: '50%',
