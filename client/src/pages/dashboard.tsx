@@ -27133,8 +27133,8 @@ export default function Dashboard() {
                                         const dueBg = dueColors.length === 1 ? dueColors[0] : dueColors.length > 1 ? `linear-gradient(to right, ${dueColors.map((c, i) => `${c} ${(i / dueColors.length) * 100}%, ${c} ${((i + 1) / dueColors.length) * 100}%`).join(', ')})` : '';
                                         return (
                                           <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDayET(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
-                                            flex: 1, minWidth: 0, height: '11px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                                            flex: 1, minWidth: 0, height: '13px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', lineHeight: '1',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
                                             background: isDue ? dueBg : isToday ? todayCellBg : 'linear-gradient(180deg, #7AABCC 0%, #7AABCC 100%)',
                                             border: isDue ? `1px solid ${dueColors[0]}` : isToday ? '1px solid rgba(255,255,255,0.7)' : 'none',
@@ -27313,8 +27313,8 @@ export default function Dashboard() {
                                         const dueBg = dueColors.length === 1 ? dueColors[0] : dueColors.length > 1 ? `linear-gradient(to right, ${dueColors.map((c, i) => `${c} ${(i / dueColors.length) * 100}%, ${c} ${((i + 1) / dueColors.length) * 100}%`).join(', ')})` : '';
                                         return (
                                           <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDayET(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
-                                            flex: 1, minWidth: 0, height: '11px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                                            flex: 1, minWidth: 0, height: '13px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', lineHeight: '1',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
                                             background: isDue ? dueBg : isToday ? todayCellBg : 'linear-gradient(180deg, #7AABCC 0%, #7AABCC 100%)',
                                             border: isDue ? `1px solid ${dueColors[0]}` : isToday ? '1px solid rgba(255,255,255,0.7)' : 'none',
@@ -27512,8 +27512,8 @@ export default function Dashboard() {
                                         const dueBg = dueColors.length === 1 ? dueColors[0] : dueColors.length > 1 ? `linear-gradient(to right, ${dueColors.map((c, i) => `${c} ${(i / dueColors.length) * 100}%, ${c} ${((i + 1) / dueColors.length) * 100}%`).join(', ')})` : '';
                                         return (
                                           <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDayET(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
-                                            flex: 1, minWidth: 0, height: '11px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                                            flex: 1, minWidth: 0, height: '13px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', lineHeight: '1',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
                                             background: isDue ? dueBg : isToday ? todayCellBg : 'linear-gradient(180deg, #7AABCC 0%, #7AABCC 100%)',
                                             border: isDue ? `1px solid ${dueColors[0]}` : isToday ? '1px solid rgba(255,255,255,0.7)' : 'none',
@@ -27734,8 +27734,8 @@ export default function Dashboard() {
                                         const dueBg = dueColors.length === 1 ? dueColors[0] : dueColors.length > 1 ? `linear-gradient(to right, ${dueColors.map((c, i) => `${c} ${(i / dueColors.length) * 100}%, ${c} ${((i + 1) / dueColors.length) * 100}%`).join(', ')})` : '';
                                         return (
                                           <div key={di} onClick={() => { const wk = weeks.find(w => { const s = parseISO(w.startDate); const e = parseISO(w.endDate); return isWithinInterval(d, { start: startOfDayET(s), end: endOfDay(e) }); }); if (wk) setSelectedWeek(wk.weekNumber); }} style={{
-                                            flex: 1, minWidth: 0, height: '11px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                                            flex: 1, minWidth: 0, height: '13px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', lineHeight: '1',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
                                             background: isDue ? dueBg : isToday ? todayCellBg : 'linear-gradient(180deg, #7AABCC 0%, #7AABCC 100%)',
                                             border: isDue ? `1px solid ${dueColors[0]}` : isToday ? '1px solid rgba(255,255,255,0.7)' : 'none',
