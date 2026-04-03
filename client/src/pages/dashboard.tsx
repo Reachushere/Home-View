@@ -30095,11 +30095,51 @@ export default function Dashboard() {
                   setRecurringEditPending({ taskId, title, payload, onSuccess: onSuccessCb });
                 }}
                 onUndoPush={(action) => pushUndo(action as UndoAction)}
-                currentSemesterCourses={semesterSettings ? [
-                  ...(semesterSettings.course1Code ? [{ code: semesterSettings.course1Code, name: semesterSettings.course1Name.replace(/^[A-Z]+\d+\s*-\s*/, '') }] : []),
-                  ...(semesterSettings.course2Code ? [{ code: semesterSettings.course2Code, name: semesterSettings.course2Name.replace(/^[A-Z]+\d+\s*-\s*/, '') }] : []),
-                  ...(semesterSettings.course3Code ? [{ code: semesterSettings.course3Code, name: semesterSettings.course3Name.replace(/^[A-Z]+\d+\s*-\s*/, '') }] : []),
-                ] : undefined}
+                currentSemesterCourses={(() => {
+                  const sems = allSemesterSettingsRef.current || (semesterSettings ? [semesterSettings] : []);
+                  const taskDate = editingTask.dueDate ? new Date(editingTask.dueDate) : null;
+                  let matchedSem: any = null;
+                  if (taskDate) {
+                    for (const sem of sems) {
+                      for (let i = 1; i <= 3; i++) {
+                        const code = (sem as any)[`course${i}Code`];
+                        if (!code) continue;
+                        const cStart = (sem as any)[`course${i}StartDate`] || (sem as any).semesterStartDate;
+                        const cEnd = (sem as any)[`course${i}EndDate`] || (sem as any).semesterEndDate;
+                        if (cStart && cEnd) {
+                          const s = new Date(cStart);
+                          const e = new Date(cEnd);
+                          e.setDate(e.getDate() + 14);
+                          if (taskDate >= s && taskDate <= e) { matchedSem = sem; break; }
+                        }
+                      }
+                      if (matchedSem) break;
+                    }
+                  }
+                  if (!matchedSem) {
+                    const taskTitle = editingTask.title || '';
+                    const taskCourseMatch = taskTitle.match(/^\[([^\]]+)\]/);
+                    const taskCourseCode = taskCourseMatch ? taskCourseMatch[1].split(' - ')[0].replace(/\s/g, '') : '';
+                    if (taskCourseCode) {
+                      for (const sem of sems) {
+                        for (let i = 1; i <= 3; i++) {
+                          const code = ((sem as any)[`course${i}Code`] || '').replace(/\s/g, '');
+                          if (code && code === taskCourseCode) { matchedSem = sem; break; }
+                        }
+                        if (matchedSem) break;
+                      }
+                    }
+                  }
+                  if (!matchedSem) matchedSem = semesterSettings;
+                  if (!matchedSem) return undefined;
+                  const courses: Array<{ code: string; name: string }> = [];
+                  for (let i = 1; i <= 3; i++) {
+                    const code = (matchedSem as any)[`course${i}Code`];
+                    const name = (matchedSem as any)[`course${i}Name`] || '';
+                    if (code) courses.push({ code, name: name.replace(/^[A-Z]+\d+\s*-\s*/, '') });
+                  }
+                  return courses.length > 0 ? courses : undefined;
+                })()}
               />
               {dupResults !== null && (
                 <div className="px-1 mt-2">
