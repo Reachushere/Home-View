@@ -16645,8 +16645,12 @@ export default function Dashboard() {
                 return cCode === courseCode.replace(/\s/g, '');
               });
               if (matchIdx >= 0) {
+                const newName = (updates.courseCode || updates.courseName)
+                  ? `${updates.courseCode || courseCode} - ${updates.courseName || updatedCourses[matchIdx].name.split(' - ').slice(1).join(' - ')}`
+                  : updatedCourses[matchIdx].name;
                 updatedCourses[matchIdx] = {
                   ...updatedCourses[matchIdx],
+                  name: newName,
                   professor: updates.professor || updatedCourses[matchIdx].professor,
                   professorEmail: updates.professorEmail || updatedCourses[matchIdx].professorEmail,
                   ...(updates.color ? { color: updates.color } : {}),
@@ -16657,6 +16661,14 @@ export default function Dashboard() {
                   ...(updates.taskBgColor !== undefined ? { taskBgColor: updates.taskBgColor } : {}),
                 };
                 saveCourses({ courses: updatedCourses });
+                if (updates.courseCode || updates.courseName) {
+                  setSelectedCertCourse(prev => prev ? {
+                    ...prev,
+                    courseCode: updates.courseCode || prev.courseCode,
+                    courseName: updates.courseName || prev.courseName,
+                    fullName: newName,
+                  } : prev);
+                }
               }
               const computeSemesterDates = (term: string, yr: string) => {
                 const y = parseInt(yr);

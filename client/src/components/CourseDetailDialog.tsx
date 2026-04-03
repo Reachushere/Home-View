@@ -100,7 +100,7 @@ interface CourseInfo {
 interface CourseDetailDialogProps {
   courseInfo: CourseInfo;
   onClose: () => void;
-  onSaveCourseInfo?: (updates: { professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; classTime2?: string; classEndTime2?: string; zoomLink?: string; semesterTerm?: string; year?: string; startDate?: string; endDate?: string; color?: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; semesterKey?: string; courseRank?: number; springSummerTerm?: string }) => void;
+  onSaveCourseInfo?: (updates: { courseCode?: string; courseName?: string; professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; classTime2?: string; classEndTime2?: string; zoomLink?: string; semesterTerm?: string; year?: string; startDate?: string; endDate?: string; color?: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; semesterKey?: string; courseRank?: number; springSummerTerm?: string }) => void;
   onLiveColorChange?: (updates: { color?: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string }) => void;
   onGradeCalculated?: (grade: string, percent: string) => void;
   onDeleteCourse?: () => void;
@@ -389,6 +389,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   }, [courseInfo.courseCode, courseInfo.courseName, courseInfo.fullName, semesterStart, readingWeekStart, toast]);
   const { uploadFile, isUploading } = useUpload();
   const [editInfo, setEditInfo] = useState({
+    courseCode: courseInfo.courseCode || '',
+    courseName: courseInfo.courseName || '',
     professor: courseInfo.professor || '',
     professorEmail: courseInfo.professorEmail || '',
     deliveryMode: courseInfo.deliveryMode || '',
@@ -1628,6 +1630,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   <button
                     onClick={() => {
                       setEditInfo({
+                        courseCode: courseInfo.courseCode || '',
+                        courseName: courseInfo.courseName || '',
                         professor: courseInfo.professor || '',
                         professorEmail: courseInfo.professorEmail || '',
                         deliveryMode: courseInfo.deliveryMode || '',
@@ -1755,6 +1759,16 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         }}
                         data-testid="button-delete-syllabus"
                       />
+                </div>
+                <div className="grid grid-cols-[1fr_2fr] gap-2 mb-2">
+                  <div>
+                    <label className="text-white text-[9px] mb-0.5 block font-semibold">Course Code</label>
+                    <input className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1.5 placeholder:text-white/25 uppercase" value={editInfo.courseCode} onChange={(e) => setEditInfo({...editInfo, courseCode: e.target.value.toUpperCase()})} placeholder="CPPA122" data-testid="input-edit-course-code" />
+                  </div>
+                  <div>
+                    <label className="text-white text-[9px] mb-0.5 block font-semibold">Course Name</label>
+                    <input className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1.5 placeholder:text-white/25" value={editInfo.courseName} onChange={(e) => setEditInfo({...editInfo, courseName: e.target.value})} placeholder="Local Politics" data-testid="input-edit-course-name" />
+                  </div>
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   <div>
