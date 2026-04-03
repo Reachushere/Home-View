@@ -26548,7 +26548,7 @@ export default function Dashboard() {
                           const centerX = svgW / 2;
                           const centerY = svgH / 2;
                           return (
-                            <text x={centerX} y={centerY} textAnchor="middle" dominantBaseline="central" fill={isActive ? '#ffffff' : 'rgba(255,255,255,0.55)'} fontSize="10" fontWeight={isActive ? '600' : '400'} fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.3" transform={`rotate(90, ${centerX}, ${centerY})`}>{tab.label}</text>
+                            <text x={centerX + 5} y={centerY} textAnchor="middle" dominantBaseline="central" fill={isActive ? '#ffffff' : 'rgba(255,255,255,0.55)'} fontSize="10" fontWeight={isActive ? '600' : '400'} fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.3" transform={`rotate(90, ${centerX + 5}, ${centerY})`}>{tab.label}</text>
                           );
                         })()}
                       </svg>
