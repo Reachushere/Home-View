@@ -13930,7 +13930,7 @@ export default function Dashboard() {
               data-tpo data-tpo-opacity="1"
               style={{
                 position: 'fixed',
-                top: `${23 + d2lTickerHeight}px`,
+                top: `${25 + d2lTickerHeight}px`,
                 zIndex: 101,
                 opacity: isTopPillOpen ? 0 : 1,
                 transition: 'opacity 0.4s ease-in-out',
@@ -14016,7 +14016,7 @@ export default function Dashboard() {
             data-tpo data-tpo-opacity="1"
             style={{
               position: 'fixed',
-              top: `${23 + d2lTickerHeight}px`,
+              top: `${25 + d2lTickerHeight}px`,
               zIndex: 40,
               opacity: isTopPillOpen ? 0 : 1,
               transition: 'opacity 0.4s ease-in-out',
