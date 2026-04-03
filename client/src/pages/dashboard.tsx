@@ -17591,7 +17591,7 @@ export default function Dashboard() {
 
           {/* Quick Add Wizard Dialog */}
           {isQuickAddOpen && (
-            <div className="fixed inset-0 z-[10003] flex items-center justify-center bg-black/30" onClick={handleQuickAddClose}>
+            <div className="fixed inset-0 z-[10003] flex items-center justify-center bg-black/10" onClick={handleQuickAddClose}>
               <div 
                 className="rounded-xl w-[680px] max-w-[95vw] overflow-hidden flex flex-col text-white shadow-2xl"
                 style={{
