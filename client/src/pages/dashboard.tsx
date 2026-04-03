@@ -16897,11 +16897,55 @@ export default function Dashboard() {
             }}
             onDeleteCourse={() => {
               const courseCode = selectedCertCourse!.courseCode;
+              const codeNorm = courseCode.replace(/\s/g, '');
               const updatedCourses = coursesData.courses.filter(c => {
                 const cCode = c.name.split(' - ')[0]?.trim().replace(/\s/g, '');
-                return cCode !== courseCode.replace(/\s/g, '');
+                return cCode !== codeNorm;
               });
               saveCourses({ courses: updatedCourses });
+
+              const sems = allSemesterSettingsRef.current || (semesterSettings ? [semesterSettings] : []);
+              for (const sem of sems) {
+                for (let i = 1; i <= 3; i++) {
+                  const semCode = ((sem as any)[`course${i}Code`] || '').replace(/\s/g, '');
+                  if (semCode === codeNorm) {
+                    const prefix = `course${i}`;
+                    const clearPayload: Record<string, any> = {};
+                    clearPayload[`${prefix}Code`] = '';
+                    clearPayload[`${prefix}Name`] = '';
+                    clearPayload[`${prefix}Professor`] = '';
+                    clearPayload[`${prefix}ProfessorEmail`] = '';
+                    clearPayload[`${prefix}DeliveryMode`] = '';
+                    clearPayload[`${prefix}ClassDay`] = '';
+                    clearPayload[`${prefix}ClassDay2`] = '';
+                    clearPayload[`${prefix}ClassTime`] = '';
+                    clearPayload[`${prefix}ClassEndTime`] = '';
+                    clearPayload[`${prefix}ClassTime2`] = '';
+                    clearPayload[`${prefix}ClassEndTime2`] = '';
+                    clearPayload[`${prefix}ZoomLink`] = '';
+                    clearPayload[`${prefix}Color`] = '';
+                    clearPayload[`${prefix}ColorEnd`] = '';
+                    clearPayload[`${prefix}CourseType`] = '';
+                    clearPayload[`${prefix}ModuleFolder`] = '';
+                    clearPayload[`${prefix}ReadingFolder`] = '';
+                    apiRequest("PATCH", `/api/semesters/${sem.id}`, clearPayload).then(() => {
+                      queryClient.invalidateQueries({ queryKey: ["/api/semesters"] });
+                      queryClient.invalidateQueries({ queryKey: ["/api/semester"] });
+                    });
+
+                    setSemesterCourseAssignments(prev => {
+                      const updated = { ...prev };
+                      for (const sk of Object.keys(updated)) {
+                        updated[sk] = (updated[sk] || []).filter(c => c.code.replace(/\s/g, '') !== codeNorm);
+                      }
+                      localStorage.setItem('semesterCourseAssignments', JSON.stringify(updated));
+                      return updated;
+                    });
+                    break;
+                  }
+                }
+              }
+
               startTransition(() => setSelectedCertCourse(null));
               toast({ title: "Course deleted", description: `${courseCode} has been removed.` });
             }}
