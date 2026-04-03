@@ -25074,7 +25074,7 @@ export default function Dashboard() {
                                     checked={task.isCompleted || false}
                                     onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
                                     onClick={(e) => e.stopPropagation()}
-                                    className="shrink-0 border-white bg-white data-[state=checked]:bg-white data-[state=checked]:border-white data-[state=checked]:text-black"
+                                    className="shrink-0 border-0 bg-white data-[state=checked]:bg-white data-[state=checked]:border-0 data-[state=checked]:text-black"
                                     style={{ width: '10px', height: '10px' }}
                                     data-testid={`checkbox-time-${task.id}`}
                                   />
