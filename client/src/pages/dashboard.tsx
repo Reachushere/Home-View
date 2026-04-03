@@ -23371,7 +23371,7 @@ export default function Dashboard() {
                 const todayDowForWeek = nowForWeek.getDay();
                 const thisSaturday = startOfDayET(addDays(nowForWeek, todayDowForWeek === 6 ? 7 : (6 - todayDowForWeek)));
                 const todayIdx = weekDays.findIndex(d => isSameDayET(d, new Date()));
-                const isNextSchoolWeek = calendarWeekMode === 'current' && (startOfDayET(day) >= thisSaturday || (todayIdx >= 0 && idx < todayIdx && !isToday));
+                const isNextSchoolWeek = calendarWeekMode === 'current' && (startOfDayET(day) >= thisSaturday || (todayIdx >= 0 && idx < todayIdx && !isToday && day.getDay() !== 6));
                 const dayName = format(day, "EEE").toUpperCase();
                 const dayNum = format(day, "d");
                 const hasTodayTasks = isToday && allTasks.some(t => 
