@@ -26582,6 +26582,7 @@ export default function Dashboard() {
               </div>
             );
           })()}
+          <div className="absolute" style={{ top: 0, bottom: 0, right: 0, width: '2px', zIndex: 200, backgroundColor: 'white', pointerEvents: 'none' }} />
           <div className="absolute inset-0 rounded-[12px] overflow-hidden flex flex-col" style={{ pointerEvents: 'auto' }}>
           {/* Weather Overlay */}
           {weatherData && (() => {
