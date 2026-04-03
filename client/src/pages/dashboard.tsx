@@ -15548,7 +15548,7 @@ export default function Dashboard() {
       {/* Timer bar - controls left, bottom-aligned with timer, label above */}
       <div style={{
         position: 'fixed',
-        right: `${calendarRight - calendarReduction + 17}px`,
+        right: `${calendarRight - calendarReduction + 7}px`,
         top: `${3 + d2lTickerHeight - 1}px`,
         zIndex: 100,
         display: 'flex',
@@ -15580,7 +15580,7 @@ export default function Dashboard() {
             </button>
             </div>
           </div>
-          <div ref={clockContainerRef} data-testid="pomodoro-timer" style={{ position: 'relative', cursor: 'pointer', marginLeft: '20px' }} onClick={togglePomodoro}>
+          <div ref={clockContainerRef} data-testid="pomodoro-timer" style={{ position: 'relative', cursor: 'pointer', marginLeft: '10px' }} onClick={togglePomodoro}>
             {(() => {
               const totalSec = pomodoroMode === 'work' ? 25 * 60 : pomodoroMode === 'shortBreak' ? 5 * 60 : 15 * 60;
               const elapsed = totalSec - pomodoroTime;
