@@ -23239,7 +23239,7 @@ export default function Dashboard() {
               const beforeW = gridSizes.dayColumnWidths.slice(0, todayIdx).reduce((a: number, b: number) => a + b, 0);
               const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
               return (
-                <div className="absolute top-0 z-50 pointer-events-none" style={{ height: '60px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px) - 1px)`, width: '3px', backgroundColor: colorSettings.headerBar }} />
+                <div className="absolute bottom-0 z-50 pointer-events-none" style={{ top: '60px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px) - 1px)`, width: '3px', backgroundColor: colorSettings.headerBar }} />
               );
             })()}
             
@@ -23724,7 +23724,7 @@ export default function Dashboard() {
                 if (hasFullWeekTasks) {
                   return (
                     <div key={course.name} className="w-full flex-shrink-0 flex" style={{ borderBottom: `1.5px dotted ${courseData.color}dd` }}>
-                      <div className="px-1 py-0.5 text-[10px] font-bold tracking-wide flex items-center justify-center text-white cursor-pointer hover:brightness-110 flex-shrink-0" onClick={() => { if (selectedCertCourse) return; const cd = courseData; const code = cd.name.split(' - ')[0]?.trim(); const cName = cd.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code })); }} style={{ background: course.label, overflow: 'hidden', minWidth: 0, width: `${gridSizes.timeColumnWidth}px`, position: 'relative' }} data-testid={`course-row-label-${course.name}`}>
+                      <div className="px-1 py-0.5 text-[10px] font-semibold tracking-normal flex items-center justify-center text-white cursor-pointer hover:brightness-110 flex-shrink-0" onClick={() => { if (selectedCertCourse) return; const cd = courseData; const code = cd.name.split(' - ')[0]?.trim(); const cName = cd.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code })); }} style={{ background: course.label, overflow: 'hidden', minWidth: 0, width: `${gridSizes.timeColumnWidth}px`, position: 'relative' }} data-testid={`course-row-label-${course.name}`}>
                         {course.name}
                         <div style={{ position: 'absolute', top: '1px', right: '1px', zIndex: 2 }} onClick={(e) => { e.stopPropagation(); if (selectedCertCourse) return; const cd = courseData; const code = cd.name.split(' - ')[0]?.trim(); const cName = cd.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code, openInEdit: true })); }} data-testid={`pencil-edit-course-${course.name}`}><Pencil className="w-[9px] h-[9px] text-white" strokeWidth={3} /></div>
                       </div>
@@ -23945,7 +23945,7 @@ export default function Dashboard() {
                 
                 return (
                 <div key={course.name} ref={el => { courseRowRefs.current[courseIdx] = el; }} className="grid w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${maxCourseRowHeight}px`, maxHeight: `${maxCourseRowHeight}px`, overflow: 'hidden' }}>
-                  <div className="px-1 py-0.5 text-[8px] font-medium tracking-wide flex flex-col items-center justify-center text-white relative leading-tight cursor-pointer hover:brightness-110" onClick={() => { if (selectedCertCourse) return; const code = courseData.name.split(' - ')[0]?.trim(); const cName = courseData.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code })); }} style={{ background: course.label, borderBottom: `1.5px dotted ${courseData.color}dd`, overflow: 'hidden', minWidth: 0 }} data-testid={`course-row-label-${course.name}`}>
+                  <div className="px-1 py-0.5 text-[8px] font-medium tracking-normal flex flex-col items-center justify-center text-white relative leading-tight cursor-pointer hover:brightness-110" onClick={() => { if (selectedCertCourse) return; const code = courseData.name.split(' - ')[0]?.trim(); const cName = courseData.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code })); }} style={{ background: course.label, borderBottom: `1.5px dotted ${courseData.color}dd`, overflow: 'hidden', minWidth: 0 }} data-testid={`course-row-label-${course.name}`}>
                     {(() => {
                       const code = course.name.split(' - ')[0];
                       const fullName = course.name.split(' - ').slice(1).join(' - ');
@@ -25071,7 +25071,7 @@ export default function Dashboard() {
                               <>
                                 {missedCount > 0 && (
                                   <div className="absolute top-0 bottom-0 z-[3] pointer-events-none animate-due-box-blink" style={{ left: '0px', width: `${gridSizes.timeSlotHeight + 3}px`, padding: '0px' }} data-testid="missed-tasks-indicator">
-                                    <div style={{ width: '100%', height: '100%', position: 'relative', backgroundColor: '#dc2626', borderRadius: '5px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0px' }}>
+                                    <div style={{ width: '100%', height: '100%', position: 'relative', backgroundColor: '#dc2626', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0px' }}>
                                       <span style={{ fontSize: '20px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{missedCount}</span>
                                       <span style={{ fontSize: '9px', color: 'white', fontWeight: 600, lineHeight: 1, marginTop: '2px' }}>due</span>
                                     </div>
@@ -25082,9 +25082,9 @@ export default function Dashboard() {
                                     const courseCode = nextSchoolTask?.courseName?.split(' - ')[0]?.trim() || '';
                                     const gradColors = getCourseGradientColors(courseCode);
                                     return (
-                                      <div style={{ flex: 1, position: 'relative', borderRadius: '5px', overflow: 'hidden', background: 'linear-gradient(180deg, #16a34a 0%, #16a34a 60%, #22c55e 100%)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 8px 0 4px' }}>
-                                        <span style={{ zIndex: 1, fontSize: '9px', color: 'rgba(255,255,255,0.9)', fontWeight: 400, textShadow: '0 1px 3px rgba(0,0,0,0.5)', lineHeight: 1.1, textAlign: 'left' }}>Next<br/>Task<br/>Due In</span>
-                                        <span style={{ zIndex: 1, fontSize: '20px', color: 'white', fontWeight: 900, lineHeight: 1, textShadow: '0 1px 3px rgba(0,0,0,0.5)', flexShrink: 0 }}>{displayTime}<span style={{ fontSize: '10px', fontWeight: 600, marginLeft: '2px' }}>{hoursUntil !== null && hoursUntil < 1 ? 'min' : 'hrs'}</span></span>
+                                      <div style={{ flex: 1, position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, #16a34a 0%, #16a34a 60%, #22c55e 100%)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 8px 0 4px' }}>
+                                        <span style={{ zIndex: 1, fontSize: '9px', color: 'rgba(255,255,255,0.9)', fontWeight: 400, lineHeight: 1.1, textAlign: 'left' }}>Next<br/>Task<br/>Due In</span>
+                                        <span style={{ zIndex: 1, fontSize: '20px', color: 'white', fontWeight: 900, lineHeight: 1, flexShrink: 0 }}>{displayTime}<span style={{ fontSize: '10px', fontWeight: 600, marginLeft: '2px' }}>{hoursUntil !== null && hoursUntil < 1 ? 'min' : 'hrs'}</span></span>
                                       </div>
                                     );
                                   })()}
@@ -26785,7 +26785,7 @@ export default function Dashboard() {
           {/* Date navigation tab above glass box */}
           <div
             className="absolute z-[60]"
-            style={{ top: '-30px', right: '7px', left: '5px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '15px', pointerEvents: 'auto', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.2s ease' }}
+            style={{ top: '-30px', right: '7px', left: '10px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '15px', pointerEvents: 'auto', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.2s ease' }}
             data-testid="date-nav-tab"
           >
             <div style={{ width: '191px', height: '15px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', padding: '0 4px' }}>
@@ -26917,11 +26917,13 @@ export default function Dashboard() {
                   const tabTop = topInset + tabIdx * (tabH + tabGap);
                   const svgH = Math.floor(tabH);
                   const svgW = tabW + 3;
+                  const activeExtra = isActive ? 4 : 0;
+                  const displayW = svgW + activeExtra;
                   return (
                     <div
                       key={tab.id}
                       className={`cursor-pointer${isActive && tabBounceEnabled ? ' semester-tab-bounce' : ''}`}
-                      style={{ position: 'absolute', top: `${tabTop}px`, right: '1px', width: `${svgW}px`, height: `${svgH}px`, zIndex: isActive ? 100 : n - tabIdx, transition: 'transform 0.2s ease', transform: `translateX(${isActive ? '4px' : '0px'})`, '--tab-base-transform': `translateX(${isActive ? '4px' : '0px'})` } as React.CSSProperties}
+                      style={{ position: 'absolute', top: `${tabTop}px`, right: '1px', width: `${displayW}px`, height: `${svgH}px`, zIndex: isActive ? 100 : n - tabIdx, transition: 'transform 0.2s ease, width 0.2s ease', transform: `translateX(${isActive ? '4px' : '0px'})`, '--tab-base-transform': `translateX(${isActive ? '4px' : '0px'})` } as React.CSSProperties}
                       onClick={() => {
                         if (homeworkScrollRef.current) {
                           const scrollContainer = homeworkScrollRef.current;
@@ -26951,14 +26953,14 @@ export default function Dashboard() {
                       data-testid={`semester-tab-${tab.id}`}
                       title={tab.semLabel}
                     >
-                      <svg width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`} style={{ display: 'block', overflow: 'visible' }}>
+                      <svg width={displayW} height={svgH} viewBox={`0 0 ${displayW} ${svgH}`} style={{ display: 'block', overflow: 'visible' }}>
                         {(() => {
                           const [c1, c2] = tab.colors;
                           const br = 7;
                           const gradId = `tabGrad-${tabIdx}`;
                           const topColor = c1;
                           const botColor = c2;
-                          const cx = svgW / 2;
+                          const cx = displayW / 2;
                           return (
                             <>
                               <defs>
@@ -26968,7 +26970,7 @@ export default function Dashboard() {
                                 </linearGradient>
                               </defs>
                               <defs><filter id={`tabShadow-${tabIdx}`}><feDropShadow dx="0" dy="2" stdDeviation="1.5" floodColor="rgba(0,0,0,0.35)" /></filter></defs>
-                              <path d={`M0,0 L${svgW - br},0 Q${svgW},0 ${svgW},${br} L${svgW},${svgH - br} Q${svgW},${svgH} ${svgW - br},${svgH} L0,${svgH} Z`} fill={`url(#${gradId})`} filter={`url(#tabShadow-${tabIdx})`} />
+                              <path d={`M0,0 L${displayW - br},0 Q${displayW},0 ${displayW},${br} L${displayW},${svgH - br} Q${displayW},${svgH} ${displayW - br},${svgH} L0,${svgH} Z`} fill={`url(#${gradId})`} filter={`url(#tabShadow-${tabIdx})`} />
                               {tab.topText ? (
                                 <>
                                   <text x={cx} y={svgH * 0.28 + 2} textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.9)" fontSize={Math.min(8.5, svgH * 0.15 + 3)} fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.5">{tab.bottomText}</text>
@@ -33676,19 +33678,24 @@ function TaskForm({
 
             <div>
               <Label htmlFor="type" className="text-[11px] text-white">Type</Label>
-              <select
-                value={formData.type}
-                onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value }))}
-                data-testid="select-type"
-                className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 font-normal ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                style={{ color: 'black', fontSize: '11px' }}
-              >
-                {TASK_TYPES.map(type => (
-                  <option key={type} value={type}>
-                    {type.charAt(0).toUpperCase() + type.slice(1)}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <select
+                  value={formData.type}
+                  onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value }))}
+                  data-testid="select-type"
+                  className="flex h-8 w-full rounded-md border border-input bg-white pl-7 pr-2 py-1 font-normal ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 appearance-none"
+                  style={{ color: 'black', fontSize: '11px' }}
+                >
+                  {TASK_TYPES.map(type => (
+                    <option key={type} value={type}>
+                      {type.charAt(0).toUpperCase() + type.slice(1)}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: calendarTypeIconColors[formData.type] || '#6b7280' }}>
+                  {(() => { const Icon = iconMap[formData.type] || MoreHorizontal; return <Icon className="h-3.5 w-3.5" />; })()}
+                </div>
+              </div>
             </div>
           </div>
 
