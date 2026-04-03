@@ -26971,7 +26971,7 @@ export default function Dashboard() {
                                     {item.unread}
                                   </div>
                                 )}
-                                <img src={item.dark ? hwPlayIconPath : hwPlayIconLightPath} alt="Play" style={{ width: '18px', height: '18px', objectFit: 'contain' }} />
+                                <Play fill="currentColor" style={{ width: '14px', height: '14px' }} />
                               </div>
                             </div>
                           </div>
@@ -28129,7 +28129,7 @@ export default function Dashboard() {
                                         {item.unread}
                                       </div>
                                     )}
-                                    <img src={item.dark ? hwPlayIconPath : hwPlayIconLightPath} alt="Play" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
+                                    <Play fill="currentColor" style={{ width: '18px', height: '18px' }} />
                                   </div>
                                 </div>
                               </div>
