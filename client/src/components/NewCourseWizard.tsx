@@ -941,9 +941,6 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, colorSe
               NEW COURSE WIZARD
             </h2>
           </div>
-          <button onClick={onClose} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-course-wizard">
-            <X className="h-4 w-4" />
-          </button>
         </div>
 
         {renderStepIndicator()}
@@ -958,18 +955,28 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, colorSe
         </div>
 
         <div className="flex items-center justify-between px-4 py-3 border-t border-white/20 bg-white/10 flex-shrink-0">
+          <div className="flex items-center gap-2">
+            {step > 1 && (
+              <Button
+                variant="outline"
+                onClick={handleBack}
+                className="border !border-white/30 text-white/60 transition-all duration-200"
+                style={{ fontSize: "11px" }}
+                data-testid="wizard-back"
+              >
+                <ChevronLeft className="h-3 w-3 mr-1" /> Back
+              </Button>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
           <Button
             variant="outline"
-            onClick={step === 1 ? onClose : handleBack}
+            onClick={onClose}
             className="border !border-white/30 text-white/60 transition-all duration-200"
             style={{ fontSize: "11px" }}
-            data-testid="wizard-back"
+            data-testid="wizard-cancel"
           >
-            {step === 1 ? (
-              "Cancel"
-            ) : (
-              <><ChevronLeft className="h-3 w-3 mr-1" /> Back</>
-            )}
+            Cancel
           </Button>
 
           {step < 6 ? (
@@ -1000,6 +1007,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, colorSe
               Save Course
             </Button>
           )}
+          </div>
         </div>
       </div>
     </div>,
