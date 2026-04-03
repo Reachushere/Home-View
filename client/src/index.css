@@ -2491,6 +2491,16 @@ input[type="date"]::-webkit-datetime-edit-year-field {
   animation: pomodoro-alert-blink 1s ease-in-out infinite;
 }
 
+.wizard-white-text {
+  color: white;
+}
+.wizard-white-text * {
+  color: inherit;
+}
+.wizard-white-text select,
+.wizard-white-text option {
+  color: white;
+}
 input.wizard-dark-input {
   color: #333 !important;
   background-color: white !important;

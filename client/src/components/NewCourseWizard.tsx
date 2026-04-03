@@ -1107,7 +1107,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, existin
       onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
-        className="rounded-xl w-[560px] max-h-[90vh] overflow-hidden flex flex-col text-white shadow-2xl [&_*]:text-white"
+        className="rounded-xl w-[560px] max-h-[90vh] overflow-hidden flex flex-col shadow-2xl wizard-white-text"
         style={{
           background: colorSettings ? `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` : 'linear-gradient(180deg, #0a0f1e 0%, #060b14 100%)',
           border: '1px solid rgba(255, 255, 255, 0.2)',
