@@ -26584,7 +26584,7 @@ export default function Dashboard() {
               </div>
             );
           })()}
-          <div className="absolute" style={{ top: -1, bottom: -1, right: -1, width: '3px', zIndex: 200, borderRight: '1px solid white', borderTopRightRadius: '12px', borderBottomRightRadius: '12px', pointerEvents: 'none' }} />
+          <div className="absolute" style={{ top: 0, bottom: 0, right: -1, width: '3px', zIndex: 200, borderRight: '1px solid white', borderTopRightRadius: '12px', borderBottomRightRadius: '12px', pointerEvents: 'none' }} />
           <div className="absolute inset-0 rounded-[12px] overflow-hidden flex flex-col" style={{ pointerEvents: 'auto' }}>
           {/* Weather Overlay */}
           {weatherData && (() => {
