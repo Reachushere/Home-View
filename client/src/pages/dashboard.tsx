@@ -26548,7 +26548,7 @@ export default function Dashboard() {
                       <svg width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`} style={{ display: 'block', overflow: 'visible' }}>
                         {(() => {
                           const [c1, c2] = tab.colors;
-                          const br = 6;
+                          const br = 0;
                           const gradId = `tabGrad-${tabIdx}`;
                           const topColor = c1;
                           const botColor = c2;
