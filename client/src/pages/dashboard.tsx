@@ -11210,7 +11210,7 @@ export default function Dashboard() {
                       style={{ zIndex: 10020, background: 'transparent', backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }}
                       align="start"
                     >
-                      <div style={{ backgroundColor: '#1a1a2e', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', padding: '12px' }}>
+                      <div data-dark-calendar style={{ backgroundColor: '#1a1a2e', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', padding: '12px' }}>
                         <CalendarPicker
                           mode="single"
                           selected={alexaDate ? new Date(alexaDate + 'T12:00:00') : undefined}
@@ -11341,7 +11341,7 @@ export default function Dashboard() {
                         style={{ zIndex: 10020, background: 'transparent', backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }}
                         align="start"
                       >
-                        <div style={{ backgroundColor: '#1a1a2e', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', padding: '12px' }}>
+                        <div data-dark-calendar style={{ backgroundColor: '#1a1a2e', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', padding: '12px' }}>
                           <CalendarPicker
                             mode="single"
                             selected={alexaRepeatEndDate ? new Date(alexaRepeatEndDate + 'T12:00:00') : undefined}
