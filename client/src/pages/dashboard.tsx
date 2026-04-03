@@ -28125,6 +28125,7 @@ export default function Dashboard() {
           );
         })()}
         {/* To Do / Automations Full Page - Degree Tracker sized */}
+        {isTodoFlyoutOpen && <div style={{ position: 'fixed', inset: 0, zIndex: 9989, background: 'rgba(0,0,0,0.85)' }} onClick={() => setIsTodoFlyoutOpen(false)} />}
         <div 
           className={`fixed transition-[opacity,transform] ease-out ${isTodoFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
           style={{ 
