@@ -24524,7 +24524,7 @@ export default function Dashboard() {
                   >
                     {/* All-day tasks */}
                     {allDayTasks.map(task => {
-                      const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
+                      const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || (task.title?.match(/^\[([^\]\s]+)/)?.[1]?.toUpperCase() || "");
                       const colors = dynamicCourseColors[courseCode];
                       const today = startOfDayET(new Date());
                       const tomorrow = addDays(today, 1);
@@ -24912,7 +24912,7 @@ export default function Dashboard() {
                             }
                             return true;
                           }).map((task, taskIdx) => {
-                            const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
+                            const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || (task.title?.match(/^\[([^\]\s]+)/)?.[1]?.toUpperCase() || "");
                             const colors = dynamicCourseColors[courseCode];
                             const today = startOfDayET(new Date());
                             const tomorrow = addDays(today, 1);
@@ -25142,7 +25142,7 @@ export default function Dashboard() {
                     heightPx += (endMin / 60) * endHourHeight;
                   }
                   
-                  const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
+                  const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || (task.title?.match(/^\[([^\]\s]+)/)?.[1]?.toUpperCase() || "");
                   const colors = dynamicCourseColors[courseCode];
                   const today = startOfDayET(new Date());
                   const tomorrow = addDays(today, 1);
@@ -26091,7 +26091,7 @@ export default function Dashboard() {
                           </div>
                           <div className="space-y-0.5">
                             {dayTasks.slice(0, 3).map((task) => {
-                              const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
+                              const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || (task.title?.match(/^\[([^\]\s]+)/)?.[1]?.toUpperCase() || "");
                               const colors = dynamicCourseColors[courseCode];
                               return (
                                 <div
