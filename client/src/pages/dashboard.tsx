@@ -26944,14 +26944,14 @@ export default function Dashboard() {
               w2027Start: new Date(2027, 0, 11),
             };
             const semTabColors: Record<string, [string, string]> = {
-              'Winter 2026': ['#7EC845', '#5BA630'],
-              'Spring/Summer 2026': ['#7EC845', '#5BA630'],
-              'Fall 2026': ['#7EC845', '#5BA630'],
-              'Winter 2027': ['#C063A0', '#9B3F7E'],
-              'Winter 2028': ['#E8733C', '#C8552A'],
-              'Winter 2029': ['#4FC1E9', '#2FA0C8'],
+              'Winter 2026': ['rgba(34,197,94,0.85)', 'rgba(22,163,74,0.7)'],
+              'Spring/Summer 2026': ['rgba(34,197,94,0.85)', 'rgba(22,163,74,0.7)'],
+              'Fall 2026': ['rgba(34,197,94,0.85)', 'rgba(22,163,74,0.7)'],
+              'Winter 2027': ['rgba(150,90,235,0.8)', 'rgba(120,60,210,0.6)'],
+              'Winter 2028': ['rgba(120,120,120,0.8)', 'rgba(95,95,95,0.6)'],
+              'Winter 2029': ['rgba(40,110,210,0.8)', 'rgba(25,80,180,0.6)'],
             };
-            const getTabColors = (sem: string): [string, string] => semTabColors[sem] || ['#8DC63F', '#5A9E1F'];
+            const getTabColors = (sem: string): [string, string] => semTabColors[sem] || ['rgba(34,197,94,0.85)', 'rgba(22,163,74,0.7)'];
             const gapColor: [string, string] = ['#95A5A6', '#7F8C8D'];
             const semTabs: Array<{ id: string; topText: string; bottomText: string; semLabel: string; scrollTarget: string; colors: [string, string] }> = [];
             semTabs.push({ id: 'wk-current', topText: String(selectedWeek), bottomText: 'W', semLabel: hwWeeklyTimeline[0]?.semLabel || 'Winter 2026', scrollTarget: 'thisweek', colors: getTabColors('Winter 2026') });
