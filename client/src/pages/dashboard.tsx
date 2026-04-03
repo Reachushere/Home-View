@@ -26538,8 +26538,12 @@ export default function Dashboard() {
                       <svg width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`} style={{ display: 'block', overflow: 'visible' }}>
                         <defs>
                           <filter id={`tabDrop-${tabIdx}`} x="-20%" y="-10%" width="140%" height="120%"><feDropShadow dx="1" dy="0" stdDeviation="1.5" floodColor="black" floodOpacity={isActive ? '0.4' : '0.2'} /></filter>
+                          <linearGradient id={`tabGrad-${tabIdx}`} x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#61A2CB" />
+                            <stop offset="100%" stopColor="#164A72" />
+                          </linearGradient>
                         </defs>
-                        <path d={`M0 0 L${svgW - 6} 0 Q${svgW} 0 ${svgW} 6 L${svgW} ${svgH - 6} Q${svgW} ${svgH} ${svgW - 6} ${svgH} L0 ${svgH} Z`} fill={isActive ? colorSettings.headerBar : `${colorSettings.headerBar}cc`} stroke={isActive ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.12)'} strokeWidth={isActive ? '1' : '0.5'} filter={`url(#tabDrop-${tabIdx})`} />
+                        <path d={`M0 0 L${svgW - 6} 0 Q${svgW} 0 ${svgW} 6 L${svgW} ${svgH - 6} Q${svgW} ${svgH} ${svgW - 6} ${svgH} L0 ${svgH} Z`} fill={`url(#tabGrad-${tabIdx})`} opacity={isActive ? 1 : 0.8} stroke={isActive ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.12)'} strokeWidth={isActive ? '1' : '0.5'} filter={`url(#tabDrop-${tabIdx})`} />
                         {(() => {
                           const centerX = svgW / 2;
                           const centerY = svgH / 2;
