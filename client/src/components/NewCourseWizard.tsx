@@ -731,7 +731,8 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, existin
               type="time"
               value={data.classTime}
               onChange={(e) => updateField("classTime", e.target.value)}
-              className="wizard-dark-input h-8 w-full rounded-md border border-input px-3 text-[10px]"
+              className="h-8 w-full rounded-md border border-input px-3 text-[10px]"
+              style={{ color: '#333', backgroundColor: 'white', colorScheme: 'light' }}
               data-testid="wizard-input-start-time"
             />
           </div>
@@ -741,7 +742,8 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, existin
               type="time"
               value={data.classEndTime}
               onChange={(e) => updateField("classEndTime", e.target.value)}
-              className="wizard-dark-input h-8 w-full rounded-md border border-input px-3 text-[10px]"
+              className="h-8 w-full rounded-md border border-input px-3 text-[10px]"
+              style={{ color: '#333', backgroundColor: 'white', colorScheme: 'light' }}
               data-testid="wizard-input-end-time"
             />
           </div>
@@ -797,7 +799,8 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, existin
             type="date"
             value={data.startDate}
             onChange={(e) => updateField("startDate", e.target.value)}
-            className="wizard-dark-input h-8 w-full rounded-md border border-input px-3 text-[10px]"
+            className="h-8 w-full rounded-md border border-input px-3 text-[10px]"
+            style={{ color: '#333', backgroundColor: 'white', colorScheme: 'light' }}
             data-testid="wizard-input-start-date"
           />
         </div>
@@ -807,7 +810,8 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, existin
             type="date"
             value={data.endDate}
             onChange={(e) => updateField("endDate", e.target.value)}
-            className="wizard-dark-input h-8 w-full rounded-md border border-input px-3 text-[10px]"
+            className="h-8 w-full rounded-md border border-input px-3 text-[10px]"
+            style={{ color: '#333', backgroundColor: 'white', colorScheme: 'light' }}
             data-testid="wizard-input-end-date"
           />
         </div>
@@ -939,7 +943,8 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, existin
                   type="date"
                   value={task.dueDate}
                   onChange={(e) => updateTask(index, "dueDate", e.target.value)}
-                  className="wizard-dark-input h-7 w-full rounded-md border border-input px-3 text-[10px]"
+                  className="h-7 w-full rounded-md border border-input px-3 text-[10px]"
+                  style={{ color: '#333', backgroundColor: 'white', colorScheme: 'light' }}
                   data-testid={`wizard-task-due-${index}`}
                 />
               </div>
@@ -949,7 +954,8 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, existin
                   type="time"
                   value={task.dueTime}
                   onChange={(e) => updateTask(index, "dueTime", e.target.value)}
-                  className="wizard-dark-input h-7 w-full rounded-md border border-input px-3 text-[10px]"
+                  className="h-7 w-full rounded-md border border-input px-3 text-[10px]"
+                  style={{ color: '#333', backgroundColor: 'white', colorScheme: 'light' }}
                   data-testid={`wizard-task-time-${index}`}
                 />
               </div>

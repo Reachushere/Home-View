@@ -2501,8 +2501,3 @@ input[type="date"]::-webkit-datetime-edit-year-field {
 .wizard-white-text option {
   color: white;
 }
-input.wizard-dark-input {
-  color: #333 !important;
-  background-color: white !important;
-  color-scheme: light !important;
-}
