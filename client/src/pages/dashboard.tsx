@@ -77,6 +77,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
 import { Calendar as CalendarPicker } from "@/components/ui/calendar";
+import { DayPicker } from "react-day-picker";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useUpload } from "@/hooks/use-upload";
 import { useToast } from "@/hooks/use-toast";
@@ -20867,7 +20868,7 @@ export default function Dashboard() {
             <div className="fixed inset-0 z-[10003] bg-black/50" onClick={() => setSemDatePickerKey(null)} />
             <div
               className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-[10003] overflow-hidden flex flex-col text-[11px] text-white p-0 sm:rounded-lg"
-              style={{ width: '340px', maxWidth: '94vw', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
+              style={{ width: '340px', maxWidth: '94vw', maxHeight: '90vh', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
             >
               <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                 <div className="flex items-center gap-2">
@@ -31560,32 +31561,107 @@ function SemDatePickerBody({ startLabel, endLabel, initialStart, initialEnd, onC
 }) {
   const [startDate, setStartDate] = useState(initialStart);
   const [endDate, setEndDate] = useState(initialEnd);
+  const [showStartCal, setShowStartCal] = useState(false);
+  const [showEndCal, setShowEndCal] = useState(false);
+
+  const parseDate = (d: string) => { if (!d) return undefined; const parts = d.split('-'); return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2])); };
+  const fmtDate = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const fmtDisplay = (d: string) => { if (!d) return 'Select date'; const dt = parseDate(d); return dt ? dt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'Select date'; };
+
   return (
     <>
       <div className="px-4 py-3 space-y-3">
         <div className="space-y-1">
           <label className="text-[10px] text-white/70 block">{startLabel}</label>
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            onClick={(e) => (e.target as HTMLInputElement).showPicker?.()}
-            className="w-full h-8 px-2 text-[10px] rounded-md bg-white !text-black border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
-            style={{ fontSize: '10px', color: 'black', colorScheme: 'light', WebkitTextFillColor: 'black' }}
+          <button
+            className="w-full h-8 px-3 text-[10px] rounded-md bg-white/10 border border-white/20 text-white text-left hover:bg-white/15 transition-colors flex items-center justify-between"
+            onClick={() => { setShowStartCal(!showStartCal); setShowEndCal(false); }}
             data-testid="input-sem-date-start"
-          />
+          >
+            <span className={startDate ? 'text-white' : 'text-white/40'}>{fmtDisplay(startDate)}</span>
+            <Calendar className="h-3 w-3 text-white/50" />
+          </button>
+          {showStartCal && (
+            <div className="rounded-lg border border-white/20 overflow-hidden" style={{ background: 'rgba(0,0,0,0.3)' }}>
+              <DayPicker
+                mode="single"
+                selected={parseDate(startDate)}
+                defaultMonth={parseDate(startDate) || parseDate(endDate)}
+                onSelect={(day) => { if (day) { setStartDate(fmtDate(day)); setShowStartCal(false); } }}
+                className="!bg-transparent p-2"
+                classNames={{
+                  months: "flex flex-col",
+                  month: "space-y-2",
+                  caption: "flex justify-center pt-1 relative items-center",
+                  caption_label: "text-[11px] font-medium text-white",
+                  nav: "space-x-1 flex items-center",
+                  nav_button: "h-6 w-6 bg-transparent p-0 opacity-60 hover:opacity-100 inline-flex items-center justify-center rounded-md border border-white/20 text-white",
+                  nav_button_previous: "absolute left-1",
+                  nav_button_next: "absolute right-1",
+                  table: "w-full border-collapse",
+                  head_row: "flex",
+                  head_cell: "text-white/50 rounded-md w-8 font-normal text-[9px]",
+                  row: "flex w-full mt-1",
+                  cell: "h-8 w-8 text-center text-[10px] p-0 relative",
+                  day: "h-8 w-8 p-0 font-normal text-white/80 hover:bg-white/20 rounded-md inline-flex items-center justify-center cursor-pointer transition-colors",
+                  day_selected: "!bg-blue-500 !text-white hover:!bg-blue-600",
+                  day_today: "bg-white/10 text-white font-bold",
+                  day_outside: "text-white/20",
+                  day_disabled: "text-white/20 opacity-50",
+                }}
+                components={{
+                  IconLeft: () => <ChevronLeft className="h-3 w-3 text-white" />,
+                  IconRight: () => <ChevronRight className="h-3 w-3 text-white" />,
+                }}
+              />
+            </div>
+          )}
         </div>
         <div className="space-y-1">
           <label className="text-[10px] text-white/70 block">{endLabel}</label>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            onClick={(e) => (e.target as HTMLInputElement).showPicker?.()}
-            className="w-full h-8 px-2 text-[10px] rounded-md bg-white !text-black border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
-            style={{ fontSize: '10px', color: 'black', colorScheme: 'light', WebkitTextFillColor: 'black' }}
+          <button
+            className="w-full h-8 px-3 text-[10px] rounded-md bg-white/10 border border-white/20 text-white text-left hover:bg-white/15 transition-colors flex items-center justify-between"
+            onClick={() => { setShowEndCal(!showEndCal); setShowStartCal(false); }}
             data-testid="input-sem-date-end"
-          />
+          >
+            <span className={endDate ? 'text-white' : 'text-white/40'}>{fmtDisplay(endDate)}</span>
+            <Calendar className="h-3 w-3 text-white/50" />
+          </button>
+          {showEndCal && (
+            <div className="rounded-lg border border-white/20 overflow-hidden" style={{ background: 'rgba(0,0,0,0.3)' }}>
+              <DayPicker
+                mode="single"
+                selected={parseDate(endDate)}
+                defaultMonth={parseDate(endDate) || parseDate(startDate)}
+                onSelect={(day) => { if (day) { setEndDate(fmtDate(day)); setShowEndCal(false); } }}
+                className="!bg-transparent p-2"
+                classNames={{
+                  months: "flex flex-col",
+                  month: "space-y-2",
+                  caption: "flex justify-center pt-1 relative items-center",
+                  caption_label: "text-[11px] font-medium text-white",
+                  nav: "space-x-1 flex items-center",
+                  nav_button: "h-6 w-6 bg-transparent p-0 opacity-60 hover:opacity-100 inline-flex items-center justify-center rounded-md border border-white/20 text-white",
+                  nav_button_previous: "absolute left-1",
+                  nav_button_next: "absolute right-1",
+                  table: "w-full border-collapse",
+                  head_row: "flex",
+                  head_cell: "text-white/50 rounded-md w-8 font-normal text-[9px]",
+                  row: "flex w-full mt-1",
+                  cell: "h-8 w-8 text-center text-[10px] p-0 relative",
+                  day: "h-8 w-8 p-0 font-normal text-white/80 hover:bg-white/20 rounded-md inline-flex items-center justify-center cursor-pointer transition-colors",
+                  day_selected: "!bg-blue-500 !text-white hover:!bg-blue-600",
+                  day_today: "bg-white/10 text-white font-bold",
+                  day_outside: "text-white/20",
+                  day_disabled: "text-white/20 opacity-50",
+                }}
+                components={{
+                  IconLeft: () => <ChevronLeft className="h-3 w-3 text-white" />,
+                  IconRight: () => <ChevronRight className="h-3 w-3 text-white" />,
+                }}
+              />
+            </div>
+          )}
         </div>
       </div>
       <div className="flex justify-end gap-2 px-4 py-2.5 border-t border-white/20">
