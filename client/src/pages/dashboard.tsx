@@ -30451,17 +30451,26 @@ interface FileRecord {
 
 function FileSelector({ 
   onSelect, 
-  excludePaths 
+  excludePaths,
+  courseName 
 }: { 
   onSelect: (objectPath: string) => void;
   excludePaths: string[];
+  courseName?: string;
 }) {
   const { data: files = [] } = useQuery<FileRecord[]>({
     queryKey: ["/api/files"],
   });
 
+  const courseCode = courseName ? courseName.split(' - ')[0].trim().toLowerCase() : '';
+
   const availableFiles = files
     .filter(f => !excludePaths.includes(f.objectPath))
+    .filter(f => {
+      if (!courseCode) return true;
+      if (!f.folder) return false;
+      return f.folder.toLowerCase().includes(courseCode);
+    })
     .sort((a, b) => a.displayName.localeCompare(b.displayName, undefined, { numeric: true, sensitivity: 'base' }));
 
   if (availableFiles.length === 0) {
@@ -33560,6 +33569,7 @@ function TaskForm({
                     }
                   }}
                   excludePaths={formData.attachments}
+                  courseName={formData.courseName}
                 />
               </div>
               <div className="flex gap-2">
