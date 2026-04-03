@@ -26454,9 +26454,9 @@ export default function Dashboard() {
             const getTabColors = (sem: string): [string, string] => semTabColors[sem] || ['#8DC63F', '#5A9E1F'];
             const gapColor: [string, string] = ['#95A5A6', '#7F8C8D'];
             const semTabs: Array<{ id: string; topText: string; bottomText: string; semLabel: string; scrollTarget: string; colors: [string, string] }> = [];
-            semTabs.push({ id: 'wk-current', topText: String(selectedWeek), bottomText: 'WINTER', semLabel: hwWeeklyTimeline[0]?.semLabel || 'Winter 2026', scrollTarget: 'thisweek', colors: getTabColors('Winter 2026') });
-            semTabs.push({ id: 'wk-next', topText: String(selectedWeek + 1), bottomText: 'WINTER', semLabel: hwWeeklyTimeline[1]?.semLabel || 'Winter 2026', scrollTarget: 'nextweek', colors: getTabColors('Winter 2026') });
-            semTabs.push({ id: 'wk-third', topText: String(selectedWeek + 2), bottomText: 'WINTER', semLabel: hwWeeklyTimeline[2]?.semLabel || 'Winter 2026', scrollTarget: 'twoweeks', colors: getTabColors('Winter 2026') });
+            semTabs.push({ id: 'wk-current', topText: String(selectedWeek), bottomText: 'W', semLabel: hwWeeklyTimeline[0]?.semLabel || 'Winter 2026', scrollTarget: 'thisweek', colors: getTabColors('Winter 2026') });
+            semTabs.push({ id: 'wk-next', topText: String(selectedWeek + 1), bottomText: 'W', semLabel: hwWeeklyTimeline[1]?.semLabel || 'Winter 2026', scrollTarget: 'nextweek', colors: getTabColors('Winter 2026') });
+            semTabs.push({ id: 'wk-third', topText: String(selectedWeek + 2), bottomText: 'W', semLabel: hwWeeklyTimeline[2]?.semLabel || 'Winter 2026', scrollTarget: 'twoweeks', colors: getTabColors('Winter 2026') });
             if (now < semDates.ss2026Start) {
               semTabs.push({ id: 'april-gap', topText: '', bottomText: 'APRIL', semLabel: 'Winter 2026', scrollTarget: 'threeweeks', colors: gapColor });
             }
@@ -26567,7 +26567,7 @@ export default function Dashboard() {
                               <line x1={0} y1={svgH} x2={svgW} y2={svgH} stroke="rgba(0,0,0,0.15)" strokeWidth="1" />
                               {tab.topText ? (
                                 <>
-                                  <text x={cx} y={svgH * 0.28} textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.9)" fontSize={Math.min(5.5, svgH * 0.15)} fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.5">{tab.bottomText}</text>
+                                  <text x={cx} y={svgH * 0.28} textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.9)" fontSize={Math.min(8.5, svgH * 0.15 + 3)} fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.5">{tab.bottomText}</text>
                                   <text x={cx} y={svgH * 0.62} textAnchor="middle" dominantBaseline="central" fill="#ffffff" fontSize={Math.min(14, svgH * 0.4)} fontWeight="700" fontFamily="system-ui, -apple-system, sans-serif">{tab.topText}</text>
                                 </>
                               ) : (
