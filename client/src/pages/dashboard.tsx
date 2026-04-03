@@ -23118,7 +23118,7 @@ export default function Dashboard() {
                           })()}
                           {day.getDay() === 6 && !isToday && (
                             <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '8px' }}>
-                              <span style={{ display: 'block', fontSize: 'min(9.5px, 1.4vw)', fontWeight: 400, color: 'rgba(255,255,255,0.35)', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{`New School Week (${selectedWeek + 1})`}</span>
+                              <span style={{ display: 'block', fontSize: 'min(9.5px, 1.4vw)', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{`New School Week (${selectedWeek + 1})`}</span>
                             </div>
                           )}
                           {!isToday && (() => {
