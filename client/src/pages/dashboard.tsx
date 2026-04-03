@@ -1429,6 +1429,7 @@ export default function Dashboard() {
   const [initialEndTime, setInitialEndTime] = useState<string>("");
   const [editingTask, setEditingTaskRaw] = useState<Task | null>(null);
   const setEditingTask = useCallback((task: Task | null) => {
+    if (task) setIsAddDialogOpen(false);
     startTransition(() => setEditingTaskRaw(task));
   }, []);
   const [maxTaskNameWidth, setMaxTaskNameWidth] = useState<number>(0);
