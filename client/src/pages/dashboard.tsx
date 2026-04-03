@@ -11210,7 +11210,7 @@ export default function Dashboard() {
                       style={{ zIndex: 10020, background: 'transparent', backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }}
                       align="start"
                     >
-                      <div data-dark-calendar style={{ backgroundColor: '#1a1a2e', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', padding: '12px' }}>
+                      <div style={{ borderRadius: '8px', padding: '4px' }}>
                         <CalendarPicker
                           mode="single"
                           selected={alexaDate ? new Date(alexaDate + 'T12:00:00') : undefined}
@@ -11226,35 +11226,12 @@ export default function Dashboard() {
                             setAlexaCalendarOpen(false);
                           }}
                           className="p-0"
-                          classNames={{
-                            months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-                            month: "space-y-4",
-                            caption: "flex justify-center pt-1 relative items-center",
-                            caption_label: "text-sm font-medium text-white",
-                            nav: "space-x-1 flex items-center",
-                            nav_button: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 text-white border border-white/20 rounded-md inline-flex items-center justify-center",
-                            nav_button_previous: "absolute left-1",
-                            nav_button_next: "absolute right-1",
-                            table: "w-full border-collapse space-y-1",
-                            head_row: "flex",
-                            head_cell: "text-white/40 rounded-md w-9 font-normal text-[0.8rem]",
-                            row: "flex w-full mt-2",
-                            cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected])]:bg-cyan-600 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-                            day: "h-9 w-9 p-0 font-normal text-white/70 hover:bg-white/10 hover:text-white rounded-md inline-flex items-center justify-center aria-selected:opacity-100",
-                            day_range_end: "day-range-end",
-                            day_selected: "bg-cyan-500 text-white hover:bg-cyan-600 hover:text-white focus:bg-cyan-500 focus:text-white",
-                            day_today: "bg-white/15 text-white font-semibold",
-                            day_outside: "day-outside text-white/20 aria-selected:bg-cyan-600/50 aria-selected:text-white/50",
-                            day_disabled: "text-white/20 opacity-50",
-                            day_range_middle: "aria-selected:bg-cyan-600/30 aria-selected:text-white",
-                            day_hidden: "invisible",
-                          }}
                         />
                         {alexaDate && (
                           <div className="pt-2">
                             <button
                               onClick={() => { setAlexaDate(''); setAlexaCalendarOpen(false); }}
-                              className="text-[10px] text-white/40 hover:text-white/70 transition-colors"
+                              className="text-[10px] text-black/40 hover:text-black/70 transition-colors"
                             >
                               Clear date
                             </button>
@@ -11341,7 +11318,7 @@ export default function Dashboard() {
                         style={{ zIndex: 10020, background: 'transparent', backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }}
                         align="start"
                       >
-                        <div data-dark-calendar style={{ backgroundColor: '#1a1a2e', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', padding: '12px' }}>
+                        <div style={{ borderRadius: '8px', padding: '4px' }}>
                           <CalendarPicker
                             mode="single"
                             selected={alexaRepeatEndDate ? new Date(alexaRepeatEndDate + 'T12:00:00') : undefined}
@@ -11357,35 +11334,12 @@ export default function Dashboard() {
                               setAlexaRepeatEndCalendarOpen(false);
                             }}
                             className="p-0"
-                            classNames={{
-                              months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-                              month: "space-y-4",
-                              caption: "flex justify-center pt-1 relative items-center",
-                              caption_label: "text-sm font-medium text-white",
-                              nav: "space-x-1 flex items-center",
-                              nav_button: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 text-white border border-white/20 rounded-md inline-flex items-center justify-center",
-                              nav_button_previous: "absolute left-1",
-                              nav_button_next: "absolute right-1",
-                              table: "w-full border-collapse space-y-1",
-                              head_row: "flex",
-                              head_cell: "text-white/40 rounded-md w-9 font-normal text-[0.8rem]",
-                              row: "flex w-full mt-2",
-                              cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected])]:bg-cyan-600 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-                              day: "h-9 w-9 p-0 font-normal text-white/70 hover:bg-white/10 hover:text-white rounded-md inline-flex items-center justify-center aria-selected:opacity-100",
-                              day_range_end: "day-range-end",
-                              day_selected: "bg-cyan-500 text-white hover:bg-cyan-600 hover:text-white focus:bg-cyan-500 focus:text-white",
-                              day_today: "bg-white/15 text-white font-semibold",
-                              day_outside: "day-outside text-white/20 aria-selected:bg-cyan-600/50 aria-selected:text-white/50",
-                              day_disabled: "text-white/20 opacity-50",
-                              day_range_middle: "aria-selected:bg-cyan-600/30 aria-selected:text-white",
-                              day_hidden: "invisible",
-                            }}
                           />
                           {alexaRepeatEndDate && (
                             <div className="pt-2">
                               <button
                                 onClick={() => { setAlexaRepeatEndDate(''); setAlexaRepeatEndCalendarOpen(false); }}
-                                className="text-[10px] text-white/40 hover:text-white/70 transition-colors"
+                                className="text-[10px] text-black/40 hover:text-black/70 transition-colors"
                               >
                                 Clear end date
                               </button>

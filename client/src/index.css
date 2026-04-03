@@ -1839,7 +1839,7 @@ button[role="combobox"] > span {
 [data-radix-dropdown-menu-item],
 [role="listbox"],
 [role="option"],
-[data-radix-popper-content-wrapper] div:not([data-dark-calendar] *):not([data-dark-calendar]),
+[data-radix-popper-content-wrapper] div,
 [data-radix-collection-item] {
   background-color: white !important;
   color: black !important;
@@ -1850,7 +1850,7 @@ button[role="combobox"] > span {
 [role="option"] *,
 [role="option"] span,
 [data-radix-collection-item] *,
-[data-radix-popper-content-wrapper] span:not([data-dark-calendar] *) {
+[data-radix-popper-content-wrapper] span {
   color: black !important;
 }
 
@@ -2491,78 +2491,6 @@ input[type="date"]::-webkit-datetime-edit-year-field {
   animation: pomodoro-alert-blink 1s ease-in-out infinite;
 }
 
-[data-dark-calendar],
-.alexa-dark-calendar {
-  background-color: #1a1a2e !important;
-  background: #1a1a2e !important;
-  color: white !important;
-  border-color: rgba(255,255,255,0.2) !important;
-}
-[data-dark-calendar] *,
-[data-dark-calendar] div,
-[data-dark-calendar] span,
-[data-dark-calendar] th,
-[data-dark-calendar] td,
-.alexa-dark-calendar *,
-.alexa-dark-calendar span,
-.alexa-dark-calendar th,
-.alexa-dark-calendar td {
-  background-color: transparent !important;
-  color: rgba(255,255,255,0.7) !important;
-}
-[data-dark-calendar] button,
-.alexa-dark-calendar button {
-  background: transparent !important;
-  background-color: transparent !important;
-  color: rgba(255,255,255,0.7) !important;
-  border-color: rgba(255,255,255,0.2) !important;
-}
-[data-dark-calendar] button:hover,
-.alexa-dark-calendar button:hover {
-  background: rgba(255,255,255,0.1) !important;
-  background-color: rgba(255,255,255,0.1) !important;
-  color: white !important;
-}
-[data-dark-calendar] button[aria-selected="true"],
-.alexa-dark-calendar button[aria-selected="true"] {
-  background: #06b6d4 !important;
-  background-color: #06b6d4 !important;
-  color: white !important;
-}
-[data-dark-calendar] button[aria-selected="true"]:hover,
-.alexa-dark-calendar button[aria-selected="true"]:hover {
-  background: #0891b2 !important;
-  background-color: #0891b2 !important;
-}
-[data-dark-calendar] button[aria-current="date"],
-.alexa-dark-calendar .rdp-day_today,
-.alexa-dark-calendar button[aria-current="date"] {
-  background: rgba(255,255,255,0.15) !important;
-  background-color: rgba(255,255,255,0.15) !important;
-  color: white !important;
-  font-weight: 600 !important;
-}
-[data-dark-calendar] .day-outside,
-.alexa-dark-calendar .rdp-day_outside button,
-.alexa-dark-calendar .day-outside {
-  color: rgba(255,255,255,0.2) !important;
-}
-[data-dark-calendar] .rdp-head_cell,
-.alexa-dark-calendar .rdp-head_cell {
-  color: rgba(255,255,255,0.4) !important;
-}
-[data-dark-calendar] .rdp-caption_label,
-.alexa-dark-calendar .rdp-caption_label {
-  color: white !important;
-}
-[data-dark-calendar] .rdp-nav_button,
-.alexa-dark-calendar .rdp-nav_button {
-  color: rgba(255,255,255,0.6) !important;
-}
-[data-dark-calendar] .rdp-nav_button:hover,
-.alexa-dark-calendar .rdp-nav_button:hover {
-  color: white !important;
-}
 
 .wizard-white-text {
   color: white;
