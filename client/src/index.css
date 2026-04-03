@@ -544,18 +544,28 @@ button[role="combobox"] > span {
 }
 
 .pill-button-hover {
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  will-change: transform;
+  transition: filter 0.15s ease, box-shadow 0.15s ease;
 }
 .pill-button-hover:hover {
-  transform: scale(1.12);
+  filter: brightness(1.2);
   box-shadow: 0 0 12px 3px rgba(255, 255, 255, 0.3) !important;
 }
 .pill-button-hover:active {
-  transform: scale(1.05);
+  filter: brightness(1.1);
 }
 .pill-button-hover[data-state="open"] {
-  transform: scale(1);
+  filter: none;
+}
+
+[data-testid^="time-task-"]:hover,
+[data-testid^="multi-hour-task-"]:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+}
+
+[data-testid^="time-task-"],
+[data-testid^="multi-hour-task-"] {
+  transition: filter 0.15s ease, box-shadow 0.15s ease;
 }
 
 [data-radix-menu-content] [role="menuitem"]:hover,

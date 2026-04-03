@@ -25398,10 +25398,9 @@ export default function Dashboard() {
                           zIndex: hoveredCountdownTaskId === task.id ? 55 : (selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43)),
                           background: bgGradient,
                           border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1.5px solid ${borderColor}`,
-                          transform: hoveredCountdownTaskId === task.id ? 'scale(1.08)' : undefined,
-                          boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
-                          transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                          transformOrigin: 'center center',
+                          filter: hoveredCountdownTaskId === task.id ? 'brightness(1.15)' : undefined,
+                          boxShadow: hoveredCountdownTaskId === task.id ? '0 2px 8px rgba(0,0,0,0.35)' : undefined,
+                          transition: 'filter 0.2s ease, box-shadow 0.2s ease',
                           display: 'flex',
                           flexDirection: 'column' as const,
                         };
@@ -30166,7 +30165,7 @@ export default function Dashboard() {
         {/* Edit Dialog */}
         <Dialog open={!!editingTask} onOpenChange={(open) => { if (!open) { const active = document.activeElement; if (active && (active.tagName === 'SELECT' || active.tagName === 'INPUT' || active.closest('[data-radix-popper-content-wrapper]'))) return; setEditingTask(null); setDupResults(null); setDupDiffTimeEvents([]); setDupShowDiffTime(false); setDupSearching(false); setDupDeleting(false); setEmailWizardSelected(new Set()); } }} modal={false}>
           <DialogContent onInteractOutside={(e) => e.preventDefault()} onPointerDownOutside={(e) => e.preventDefault()} onFocusOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => { const active = document.activeElement; if (active && (active.tagName === 'SELECT' || active.tagName === 'INPUT')) { e.preventDefault(); return; } }} className="max-w-[95vw] sm:max-w-[900px] max-h-[90vh] overflow-y-auto text-white [&_label]:text-white [&_label]:font-normal [&_input]:font-normal [&_select]:font-normal [&_option]:font-normal [&>button[class*='absolute']]:hidden" style={{ zIndex: 10004, background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.25)' }}>
-            <DialogHeader className="flex flex-row items-center justify-between px-4 py-3 -mx-6 -mt-6 rounded-t-lg border-b border-white/40" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: (() => { let cc = editingTask?.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; if (!cc && editingTask?.title) { const m = editingTask.title.match(/^\[([^\]]+)\]/); if (m) cc = m[1].split(' - ')[0].replace(/\s/g, '').toUpperCase(); } const grad = cc ? getCourseGradientColors(cc) : null; const hasColor = grad && grad.start !== '#6b7280'; return hasColor ? `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${grad.start}cc 40%, ${grad.end}bb 100%)` : `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`; })(), boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+            <DialogHeader className="flex flex-row items-center justify-between px-4 py-3 -mx-6 -mt-6 rounded-t-lg border-b border-white/40" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
               <div className="flex items-center gap-2">
                 {(() => { const TaskIcon = editingTask ? (iconMap[editingTask.type] || Pencil) : Pencil; return <TaskIcon className="h-3 w-3 text-white" />; })()}
                 <DialogTitle className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>EDIT TASK</DialogTitle>
@@ -33905,8 +33904,8 @@ function TaskForm({
                     setFormData(prev => ({ ...prev, eventStartTime: e.target.value }));
                   }}
                   data-testid="input-start-time"
-                  className="bg-white h-8 flex-1 font-normal"
-                  style={{ color: 'black', fontSize: '11px' }}
+                  className="bg-white h-8 flex-1 font-normal !text-black"
+                  style={{ color: 'black', fontSize: '11px', colorScheme: 'light' }}
                 />
               </div>
             </div>
@@ -33921,8 +33920,8 @@ function TaskForm({
                     setFormData(prev => ({ ...prev, eventEndTime: e.target.value }));
                   }}
                   data-testid="input-end-time"
-                  className="bg-white h-8 flex-1 font-normal"
-                  style={{ color: 'black', fontSize: '11px' }}
+                  className="bg-white h-8 flex-1 font-normal !text-black"
+                  style={{ color: 'black', fontSize: '11px', colorScheme: 'light' }}
                 />
               </div>
             </div>
