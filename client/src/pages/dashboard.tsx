@@ -14252,7 +14252,7 @@ export default function Dashboard() {
       })()}
 
       {/* Top Pill - Slide up/down container for toolbar buttons */}
-      <div style={{ position: 'fixed', top: `${d2lTickerHeight}px`, left: 0, right: 0, bottom: 0, zIndex: editingTask ? 1 : 110, pointerEvents: 'none', overflow: 'hidden' }}>
+      <div style={{ position: 'fixed', top: `${d2lTickerHeight}px`, left: 0, right: 0, bottom: 0, zIndex: editingTask ? 1 : 110, pointerEvents: 'none', overflow: 'hidden', display: isQuickAddOpen ? 'none' : undefined }}>
       <div 
         ref={topPillRef}
         id="top-pill-container"
@@ -17692,7 +17692,18 @@ export default function Dashboard() {
                         <p className="text-[9px] text-white/50 mt-1">What would you like to add?</p>
                       </div>
                       <div className="grid grid-cols-2 gap-2">
-                        {TASK_TYPES.filter(t => t !== "class").map(type => {
+                        <button
+                          className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 text-white flex items-center gap-1.5"
+                          style={{ background: 'rgba(0,190,160,0.25)', border: '1px solid rgba(0,190,160,0.55)' }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,190,160,0.35)'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,190,160,0.25)'; }}
+                          onClick={(e) => { e.stopPropagation(); setIsQuickAddOpen(false); setTimeout(() => setIsNewCourseWizardOpen(true), 50); }}
+                          data-testid="quick-add-type-course"
+                        >
+                          <img src={teacherWhiteIconPath} alt="Course" className="h-3.5 w-3.5" style={{ filter: 'brightness(1)' }} />
+                          Course
+                        </button>
+                        {(["module", "reading", "essay", "discussion", "poll", "quiz", "exam", "project", "reminder", "meeting", "other"] as const).map(type => {
                           const TypeIcon = iconMap[type] || FileText;
                           const typeColors: Record<string, { bg: string; border: string; hover: string }> = {
                             reading: { bg: 'rgba(56,130,255,0.25)', border: 'rgba(56,130,255,0.55)', hover: 'rgba(56,130,255,0.35)' },
@@ -17727,17 +17738,6 @@ export default function Dashboard() {
                             </button>
                           );
                         })}
-                        <button
-                          className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 text-white flex items-center gap-1.5"
-                          style={{ background: 'rgba(0,190,160,0.25)', border: '1px solid rgba(0,190,160,0.55)' }}
-                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,190,160,0.35)'; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,190,160,0.25)'; }}
-                          onClick={(e) => { e.stopPropagation(); setIsQuickAddOpen(false); setTimeout(() => setIsNewCourseWizardOpen(true), 50); }}
-                          data-testid="quick-add-type-course"
-                        >
-                          <img src={teacherWhiteIconPath} alt="Course" className="h-3.5 w-3.5" style={{ filter: 'brightness(1)' }} />
-                          Course
-                        </button>
                         <button
                           className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-opacity duration-200 bg-violet-500/15 text-white border border-violet-400/30 hover:bg-violet-500/25 flex items-center gap-1.5"
                           onClick={(e) => { e.stopPropagation(); setIsQuickAddOpen(false); setTimeout(() => { setPartnerWizardStep(0); setPartnerWizardDates([]); setPartnerWizardShiftType('day'); setPartnerWizardOpen(true); }, 50); }}
