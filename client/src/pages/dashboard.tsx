@@ -2192,6 +2192,16 @@ export default function Dashboard() {
     opacityFactor: Math.random(),
   })), []);
 
+  const bgWeatherParticles = useMemo(() => Array.from({ length: 120 }, () => ({
+    left: Math.random() * 105 - 2.5,
+    delay: Math.random() * 6,
+    sizeFactor: Math.random(),
+    durationFactor: Math.random(),
+    driftFactor: Math.random(),
+    opacityFactor: Math.random(),
+    swayFactor: Math.random(),
+  })), []);
+
   useEffect(() => {
     const fetchWeather = async () => {
       try {
@@ -14005,6 +14015,79 @@ export default function Dashboard() {
             style={{ background: 'linear-gradient(to bottom, rgba(10, 15, 30, 0.6) 0%, rgba(5, 10, 25, 0.7) 100%)', zIndex: 0 }}
           />
         )}
+        {/* Weather background overlay - reflects current weather conditions */}
+        {weatherData && !colorSettings.mainBackgroundOverlay && (() => {
+          const wc = weatherData.code;
+          const isRain = (wc >= 51 && wc <= 55) || (wc >= 61 && wc <= 65) || (wc >= 80 && wc <= 82);
+          const isHeavyRain = wc === 55 || wc === 65 || wc === 82;
+          const isSnow = (wc >= 71 && wc <= 77) || (wc >= 85 && wc <= 86);
+          const isFreezingRain = wc === 66 || wc === 67;
+          const isFog = wc === 45 || wc === 48;
+          const isThunder = wc >= 95;
+          const isOvercast = wc === 3;
+          const isCloudy = wc >= 2 && wc <= 3;
+          const rainCount = isHeavyRain ? 100 : isRain ? 60 : isFreezingRain ? 50 : 0;
+          const snowCount = isSnow ? 80 : 0;
+          const particleCount = rainCount || snowCount;
+          return (
+            <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 1 }}>
+              {isFog && (
+                <>
+                  <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(180,185,200,0.12) 0%, rgba(160,165,180,0.08) 40%, rgba(180,185,200,0.15) 100%)', animation: 'bgFogPulse 8s ease-in-out infinite' }} />
+                  <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 30% 60%, rgba(200,200,215,0.12) 0%, transparent 60%)', animation: 'bgFogDrift 15s ease-in-out infinite alternate' }} />
+                  <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 70% 40%, rgba(195,200,215,0.1) 0%, transparent 55%)', animation: 'bgFogDrift 18s ease-in-out infinite alternate-reverse' }} />
+                </>
+              )}
+              {isThunder && (
+                <div className="absolute inset-0 weather-sheet-lightning" style={{ opacity: 0.4 }} />
+              )}
+              {isOvercast && (
+                <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(100,110,130,0.12) 0%, rgba(80,90,110,0.06) 100%)' }} />
+              )}
+              {isCloudy && (
+                <>
+                  <div className="weather-cloud" style={{ top: '8%', left: '10%', width: '180px', height: '50px', opacity: 0.08 }} />
+                  <div className="weather-cloud" style={{ top: '15%', left: '45%', width: '220px', height: '60px', opacity: 0.06, animationDelay: '3s' }} />
+                  <div className="weather-cloud" style={{ top: '25%', left: '70%', width: '160px', height: '45px', opacity: 0.07, animationDelay: '6s' }} />
+                  <div className="weather-cloud" style={{ top: '50%', left: '25%', width: '200px', height: '55px', opacity: 0.05, animationDelay: '9s' }} />
+                </>
+              )}
+              {particleCount > 0 && bgWeatherParticles.slice(0, particleCount).map((p, i) => {
+                if (snowCount > 0) {
+                  const size = 2.5 + p.sizeFactor * 4;
+                  const duration = 6 + p.durationFactor * 8;
+                  const drift = p.driftFactor * 50 - 25;
+                  const sway = p.swayFactor * 20 - 10;
+                  return (
+                    <div key={`bg-snow-${i}`} style={{
+                      position: 'absolute', left: `${p.left}%`, top: '-10px',
+                      width: `${size}px`, height: `${size}px`, borderRadius: '50%',
+                      background: 'rgba(255,255,255,0.6)',
+                      opacity: 0.15 + p.opacityFactor * 0.25,
+                      animation: `bgSnowFall ${duration}s linear ${p.delay}s infinite`,
+                      transform: `translateX(${drift}px)`,
+                      filter: size > 4 ? 'blur(0.5px)' : 'none',
+                    }} />
+                  );
+                }
+                const height = isFreezingRain ? (8 + p.sizeFactor * 10) : (12 + p.sizeFactor * 18);
+                const width = isFreezingRain ? 1.5 : (0.8 + p.sizeFactor * 0.8);
+                const duration = isHeavyRain ? (0.8 + p.durationFactor * 0.6) : (1.2 + p.durationFactor * 1);
+                const windAngle = isHeavyRain ? 12 : 8;
+                return (
+                  <div key={`bg-rain-${i}`} style={{
+                    position: 'absolute', left: `${p.left}%`, top: '-20px',
+                    width: `${width}px`, height: `${height}px`, borderRadius: '0 0 2px 2px',
+                    background: isFreezingRain ? 'rgba(160,200,255,0.25)' : 'rgba(150,180,220,0.18)',
+                    opacity: 0.15 + p.opacityFactor * 0.2,
+                    animation: `bgRainFall ${duration}s linear ${p.delay}s infinite`,
+                    transform: `rotate(${windAngle}deg)`,
+                  }} />
+                );
+              })}
+            </div>
+          );
+        })()}
       {isTodayExpanded && (
         <div 
           className="today-backdrop"
