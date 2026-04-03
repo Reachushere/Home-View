@@ -5768,6 +5768,8 @@ export default function Dashboard() {
     let startDate = '';
     let endDate = '';
     let zoomLink = '';
+    let moduleFolder = '';
+    let readingFolder = '';
     let professor = matchedCourse?.professor || '';
     let professorEmail = matchedCourse?.professorEmail || '';
     let color = matchedCourse?.color || '#6366F1';
@@ -5796,6 +5798,8 @@ export default function Dashboard() {
           classEndTime2 = (sem as any)[`${prefix}ClassEndTime2`] || '';
           zoomLink = (sem as any)[`${prefix}ZoomLink`] || '';
           courseType = (sem as any)[`${prefix}CourseType`] || '';
+          moduleFolder = (sem as any)[`${prefix}ModuleFolder`] || '';
+          readingFolder = (sem as any)[`${prefix}ReadingFolder`] || '';
           if (!professor) professor = (sem as any)[`${prefix}Professor`] || '';
           if (!professorEmail) professorEmail = (sem as any)[`${prefix}ProfessorEmail`] || '';
           const semType = (sem as any).semesterType || '';
@@ -5882,6 +5886,8 @@ export default function Dashboard() {
       courseType,
       semesterTerm,
       year,
+      moduleFolder,
+      readingFolder,
     };
   };
 
@@ -16717,6 +16723,8 @@ export default function Dashboard() {
                       if ((updates as any).startDate) payload[`${prefix}StartDate`] = new Date((updates as any).startDate + 'T12:00:00').toISOString();
                       if ((updates as any).endDate) payload[`${prefix}EndDate`] = new Date((updates as any).endDate + 'T12:00:00').toISOString();
                       if ((updates as any).springSummerTerm !== undefined) payload[`${prefix}SpringSummerTerm`] = (updates as any).springSummerTerm;
+                      if ((updates as any).moduleFolder !== undefined) payload[`${prefix}ModuleFolder`] = (updates as any).moduleFolder;
+                      if ((updates as any).readingFolder !== undefined) payload[`${prefix}ReadingFolder`] = (updates as any).readingFolder;
                       if (updates.semesterTerm && updates.year && !(updates as any).startDate) {
                         const dates = computeSemesterDates(updates.semesterTerm, updates.year);
                         if (dates.startDate) {

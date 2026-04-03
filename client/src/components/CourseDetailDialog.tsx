@@ -38,6 +38,10 @@ import {
   Flag,
   ClipboardList,
   Award,
+  FolderOpen,
+  Folder,
+  ChevronUp,
+  AlertTriangle,
 } from "lucide-react";
 import zoomLogoPath from "@assets/Zoom2_1773776262533.png";
 import wifiLogoPath from "@assets/Wifi_1773656687145.png";
@@ -97,12 +101,14 @@ interface CourseInfo {
   endDate?: string;
   semesterTerm?: string;
   year?: string;
+  moduleFolder?: string;
+  readingFolder?: string;
 }
 
 interface CourseDetailDialogProps {
   courseInfo: CourseInfo;
   onClose: () => void;
-  onSaveCourseInfo?: (updates: { courseCode?: string; courseName?: string; professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; classTime2?: string; classEndTime2?: string; zoomLink?: string; semesterTerm?: string; year?: string; startDate?: string; endDate?: string; color?: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; semesterKey?: string; courseRank?: number; springSummerTerm?: string }) => void;
+  onSaveCourseInfo?: (updates: { courseCode?: string; courseName?: string; professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; classTime2?: string; classEndTime2?: string; zoomLink?: string; semesterTerm?: string; year?: string; startDate?: string; endDate?: string; color?: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; semesterKey?: string; courseRank?: number; springSummerTerm?: string; moduleFolder?: string; readingFolder?: string }) => void;
   onLiveColorChange?: (updates: { color?: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string }) => void;
   onGradeCalculated?: (grade: string, percent: string) => void;
   onDeleteCourse?: () => void;
@@ -442,7 +448,71 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     taskBgColor: courseInfo.taskBgColor || '',
     courseRank: courseRank ?? 0,
     springSummerTerm: courseSpSuTerm || 'full',
+    moduleFolder: courseInfo.moduleFolder || '',
+    readingFolder: courseInfo.readingFolder || '',
   });
+  const [moduleFolderValid, setModuleFolderValid] = useState<boolean | null>(null);
+  const [readingFolderValid, setReadingFolderValid] = useState<boolean | null>(null);
+  const [folderValidating, setFolderValidating] = useState(false);
+  const [browsingFor, setBrowsingFor] = useState<'module' | 'reading' | null>(null);
+  const [browsePath, setBrowsePath] = useState('/');
+  const [browseFolders, setBrowseFolders] = useState<Array<{ name: string; path: string }>>([]);
+  const [browseLoading, setBrowseLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isEditingInfo) return;
+    const validateFolders = async () => {
+      setFolderValidating(true);
+      if (editInfo.moduleFolder) {
+        try {
+          const res = await fetch(`/api/onedrive/validate-folder?path=${encodeURIComponent(editInfo.moduleFolder)}`);
+          const data = await res.json();
+          setModuleFolderValid(data.valid);
+        } catch { setModuleFolderValid(false); }
+      }
+      if (editInfo.readingFolder) {
+        try {
+          const res = await fetch(`/api/onedrive/validate-folder?path=${encodeURIComponent(editInfo.readingFolder)}`);
+          const data = await res.json();
+          setReadingFolderValid(data.valid);
+        } catch { setReadingFolderValid(false); }
+      }
+      setFolderValidating(false);
+    };
+    validateFolders();
+  }, [isEditingInfo]);
+
+  const openFolderBrowser = async (target: 'module' | 'reading') => {
+    setBrowsingFor(target);
+    const currentPath = target === 'module' ? editInfo.moduleFolder : editInfo.readingFolder;
+    const startPath = currentPath ? currentPath.split('/').slice(0, -1).join('/') || '/' : '/';
+    setBrowsePath(startPath);
+    setBrowseLoading(true);
+    try {
+      const res = await fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(startPath)}`);
+      const folders = await res.json();
+      setBrowseFolders(Array.isArray(folders) ? folders : []);
+    } catch { setBrowseFolders([]); }
+    setBrowseLoading(false);
+  };
+
+  const navigateBrowseFolder = async (path: string) => {
+    setBrowsePath(path);
+    setBrowseLoading(true);
+    try {
+      const res = await fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(path)}`);
+      const folders = await res.json();
+      setBrowseFolders(Array.isArray(folders) ? folders : []);
+    } catch { setBrowseFolders([]); }
+    setBrowseLoading(false);
+  };
+
+  const selectBrowseFolder = (path: string) => {
+    if (browsingFor === 'module') { setEditInfo({...editInfo, moduleFolder: path}); setModuleFolderValid(true); }
+    else if (browsingFor === 'reading') { setEditInfo({...editInfo, readingFolder: path}); setReadingFolderValid(true); }
+    setBrowsingFor(null);
+  };
+
   const ssTermLocked = isSpringSummer && isEditingInfo && !editInfo.springSummerTerm;
   const editFieldsLocked = isEditingInfo && (!editInfo.semesterTerm || (isSpringSummer && !editInfo.springSummerTerm));
 
@@ -1919,6 +1989,87 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                       </optgroup>
                     ))}
                   </select>
+                </div>
+                <div className={`border-t border-white/10 pt-2 ${editFieldsLocked ? 'opacity-30 pointer-events-none' : ''}`}>
+                  <label className="text-white text-[9px] mb-1 block flex items-center gap-1.5">
+                    <FolderOpen className="h-3 w-3 text-blue-400" />
+                    OneDrive File Folders
+                  </label>
+                  <p className="text-[7px] text-white/40 mb-1.5">Set the OneDrive folder where the reader finds Module & Reading files.</p>
+                  <div className="space-y-1.5 mb-2">
+                    {(['module', 'reading'] as const).map(type => {
+                      const folder = type === 'module' ? editInfo.moduleFolder : editInfo.readingFolder;
+                      const valid = type === 'module' ? moduleFolderValid : readingFolderValid;
+                      return (
+                        <div key={type}>
+                          <label className="text-white/60 text-[8px] mb-0.5 block capitalize">{type} Files Folder</label>
+                          <div className="flex items-center gap-1">
+                            <div className={`flex-1 min-w-0 h-6 rounded border flex items-center px-1.5 overflow-hidden ${
+                              !folder ? 'bg-white/5 border-white/15' :
+                              valid === false ? 'bg-red-900/20 border-red-500/50' :
+                              valid === true ? 'bg-green-900/10 border-green-500/30' :
+                              'bg-white/5 border-white/15'
+                            }`}>
+                              {folder ? (
+                                <div className="flex items-center gap-1 min-w-0">
+                                  {valid === false && <AlertTriangle className="h-2.5 w-2.5 text-red-400 shrink-0" />}
+                                  {valid === true && <Check className="h-2.5 w-2.5 text-green-400 shrink-0" />}
+                                  {valid === null && folderValidating && <Loader2 className="h-2.5 w-2.5 text-white/40 animate-spin shrink-0" />}
+                                  <span className={`text-[8px] truncate ${valid === false ? 'text-red-400' : 'text-white/80'}`}>
+                                    {folder.split('/').pop()}
+                                  </span>
+                                </div>
+                              ) : (
+                                <span className="text-[8px] text-white/30">Not set</span>
+                              )}
+                            </div>
+                            <button type="button" onClick={() => openFolderBrowser(type)} className="h-6 px-2 rounded bg-blue-600/30 border border-blue-500/40 text-[8px] text-blue-300 hover:bg-blue-600/50 transition-colors flex items-center gap-1 shrink-0" data-testid={`btn-browse-${type}-folder`}>
+                              <FolderOpen className="h-2.5 w-2.5" /> Browse
+                            </button>
+                            {folder && (
+                              <button type="button" onClick={() => { setEditInfo({...editInfo, [type === 'module' ? 'moduleFolder' : 'readingFolder']: ''}); if (type === 'module') setModuleFolderValid(null); else setReadingFolderValid(null); }} className="h-6 px-1 rounded text-white/30 hover:text-red-400 transition-colors shrink-0" data-testid={`btn-clear-${type}-folder`}>
+                                <X className="h-2.5 w-2.5" />
+                              </button>
+                            )}
+                          </div>
+                          {folder && <p className="text-[6px] text-white/25 mt-0.5 truncate">{folder}</p>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {browsingFor && (
+                    <div className="mb-2 bg-black/40 border border-white/20 rounded-lg overflow-hidden">
+                      <div className="flex items-center justify-between px-2 py-1.5 bg-white/5 border-b border-white/10">
+                        <span className="text-[9px] text-white font-medium">Select {browsingFor === 'module' ? 'Module' : 'Reading'} Folder</span>
+                        <button type="button" onClick={() => setBrowsingFor(null)} className="text-white/40 hover:text-white"><X className="h-3 w-3" /></button>
+                      </div>
+                      <div className="px-2 py-1 bg-white/3 border-b border-white/10 flex items-center gap-1">
+                        {browsePath !== '/' && (
+                          <button type="button" onClick={() => navigateBrowseFolder(browsePath.split('/').slice(0, -1).join('/') || '/')} className="text-blue-400 hover:text-blue-300 shrink-0">
+                            <ChevronUp className="h-3 w-3" />
+                          </button>
+                        )}
+                        <span className="text-[7px] text-white/50 truncate">{browsePath}</span>
+                        <button type="button" onClick={() => selectBrowseFolder(browsePath)} className="ml-auto text-[7px] px-1.5 py-0.5 rounded bg-green-600/40 border border-green-500/50 text-green-300 hover:bg-green-600/60 shrink-0" data-testid="btn-select-current-folder">
+                          Select This Folder
+                        </button>
+                      </div>
+                      <div className="max-h-[120px] overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+                        {browseLoading ? (
+                          <div className="flex items-center justify-center py-3"><Loader2 className="h-3.5 w-3.5 text-white/40 animate-spin" /></div>
+                        ) : browseFolders.length === 0 ? (
+                          <div className="text-[8px] text-white/30 text-center py-2">No subfolders here</div>
+                        ) : (
+                          browseFolders.map(f => (
+                            <button key={f.path} type="button" onClick={() => navigateBrowseFolder(f.path)} className="w-full flex items-center gap-1.5 px-2 py-1 text-left hover:bg-white/10 transition-colors" data-testid={`browse-folder-${f.name}`}>
+                              <Folder className="h-3 w-3 text-yellow-400 shrink-0" />
+                              <span className="text-[8px] text-white/80 truncate">{f.name}</span>
+                            </button>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className={`flex items-end justify-between ${editFieldsLocked ? 'opacity-30 pointer-events-none' : ''}`}>
                   {(() => {
@@ -3427,7 +3578,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
       {showDeleteConfirm && (
         <div
           className="fixed inset-0 z-[10004] flex items-center justify-center"
-          style={{ background: 'rgba(0,0,0,0.6)' }}
+          style={{ background: 'rgba(0,0,0,0.6)', pointerEvents: 'auto' }}
           onClick={() => setShowDeleteConfirm(false)}
           data-testid="delete-course-confirm-overlay"
         >
