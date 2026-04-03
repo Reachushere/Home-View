@@ -28132,6 +28132,7 @@ export default function Dashboard() {
           );
         })()}
         {/* To Do / Automations Full Page - Degree Tracker sized */}
+        {createPortal(<>
         {isTodoFlyoutOpen && <div className="fixed inset-0 z-[10001] bg-black/50" onClick={() => setIsTodoFlyoutOpen(false)} />}
         <div 
           className={`fixed transition-[opacity,transform] ease-out ${isTodoFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
@@ -28722,6 +28723,7 @@ export default function Dashboard() {
             )}
           </section>
         </div>
+        </>, document.body)}
 
 
         {/* Projects Flyout - Burst from Left */}
