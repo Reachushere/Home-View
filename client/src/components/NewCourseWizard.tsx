@@ -798,6 +798,13 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, existin
         </div>
       )}
 
+      {(() => {
+        const semesterStartMonth = data.semesterType === 'fall' ? 8 : data.semesterType === 'winter' ? 0 : data.springSummerTerm === 'second_half' ? 5 : 4;
+        const semesterEndMonth = data.semesterType === 'fall' ? 11 : data.semesterType === 'winter' ? 3 : data.springSummerTerm === 'first_half' ? 5 : 7;
+        const yr = parseInt(data.semesterYear) || new Date().getFullYear();
+        const startDefault = data.startDate ? new Date(data.startDate + 'T12:00:00') : new Date(yr, semesterStartMonth, 1);
+        const endDefault = data.endDate ? new Date(data.endDate + 'T12:00:00') : new Date(yr, semesterEndMonth, 1);
+        return (
       <div className="grid grid-cols-2 gap-3 mt-3">
         <div>
           <Label className="text-[9px] text-white/60 mb-1 block">Course Start Date</Label>
@@ -821,6 +828,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, existin
               <Calendar
                 mode="single"
                 selected={data.startDate ? new Date(data.startDate + 'T12:00:00') : undefined}
+                defaultMonth={startDefault}
                 onSelect={(date) => {
                   if (date) {
                     const y = date.getFullYear();
@@ -857,6 +865,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, existin
               <Calendar
                 mode="single"
                 selected={data.endDate ? new Date(data.endDate + 'T12:00:00') : undefined}
+                defaultMonth={endDefault}
                 onSelect={(date) => {
                   if (date) {
                     const y = date.getFullYear();
@@ -872,6 +881,8 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, existin
           </Popover>
         </div>
       </div>
+        );
+      })()}
 
       <div className="border-t border-white/10 pt-3 mt-2">
         <Label className="text-[10px] font-medium mb-2 block flex items-center gap-1.5">
