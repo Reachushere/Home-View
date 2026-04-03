@@ -1475,7 +1475,7 @@ export default function Dashboard() {
     const screenHeight = window.screen.height;
     const pixelRatio = window.devicePixelRatio || 1;
     const deviceId = `device_${screenWidth}x${screenHeight}@${pixelRatio}`;
-    const resetKey = 'calendarHeight_reset_v18';
+    const resetKey = 'calendarHeight_reset_v19';
     if (!localStorage.getItem(resetKey)) {
       localStorage.removeItem('calendarHeight');
       localStorage.removeItem(`calendarHeight_${deviceId}`);
@@ -1677,7 +1677,7 @@ export default function Dashboard() {
     });
   };
   const [calendarReductionUserSet, setCalendarReductionUserSetRaw] = useState(() => {
-    const resetKey = 'calendarHeight_reset_v18';
+    const resetKey = 'calendarHeight_reset_v19';
     if (!localStorage.getItem(resetKey)) return false;
     if (localStorage.getItem('calendarReductionUserSet')) return true;
     if (localStorage.getItem('calendarReduction')) return true;
