@@ -17017,19 +17017,19 @@ export default function Dashboard() {
                       queryClient.invalidateQueries({ queryKey: ["/api/semesters"] });
                       queryClient.invalidateQueries({ queryKey: ["/api/semester"] });
                     });
-
-                    setSemesterCourseAssignments(prev => {
-                      const updated = { ...prev };
-                      for (const sk of Object.keys(updated)) {
-                        updated[sk] = (updated[sk] || []).filter(c => c.code.replace(/\s/g, '') !== codeNorm);
-                      }
-                      localStorage.setItem('semesterCourseAssignments', JSON.stringify(updated));
-                      return updated;
-                    });
                     break;
                   }
                 }
               }
+
+              setSemesterCourseAssignments(prev => {
+                const updated = { ...prev };
+                for (const sk of Object.keys(updated)) {
+                  updated[sk] = (updated[sk] || []).filter(c => c.code.replace(/\s/g, '') !== codeNorm);
+                }
+                localStorage.setItem('semesterCourseAssignments', JSON.stringify(updated));
+                return updated;
+              });
 
               startTransition(() => setSelectedCertCourse(null));
               toast({ title: "Course deleted", description: `${courseCode} has been removed.` });
