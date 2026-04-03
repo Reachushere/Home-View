@@ -14227,7 +14227,7 @@ export default function Dashboard() {
 
 
           {/* ── Tools ── */}
-          <div style={{ borderRadius: '26px', padding: '2px 3px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(50,120,210,0.6)', position: 'relative', top: '1px', margin: '0 0px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(40,110,210,0.5) 0%, rgba(25,80,180,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ borderRadius: '26px', padding: '2px 3px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(50,120,210,0.6)', position: 'relative', top: '1px', margin: '0 3px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(40,110,210,0.5) 0%, rgba(25,80,180,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           {isAdmin && (
             <Wrench className="h-[18px] w-[18px] text-white/70" style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px' }} />
           )}
@@ -14591,7 +14591,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── School ── */}
-          <div style={{ borderRadius: '26px', padding: '2px 3px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(80,200,120,0.6)', position: 'relative', top: '1px', margin: '0 0px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(70,190,110,0.5) 0%, rgba(50,160,90,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ borderRadius: '26px', padding: '2px 3px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(80,200,120,0.6)', position: 'relative', top: '1px', margin: '0 3px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(70,190,110,0.5) 0%, rgba(50,160,90,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           <GraduationCap className="h-[18px] w-[18px] text-white/70" style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px' }} />
           {/* Courses Button */}
           <div className="pill-button-hover" style={{ 
@@ -14693,7 +14693,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Entertainment ── */}
-          <div style={{ borderRadius: '26px', padding: '2px 3px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(160,100,240,0.6)', position: 'relative', top: '1px', margin: '0 0px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(150,90,235,0.5) 0%, rgba(120,60,210,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ borderRadius: '26px', padding: '2px 3px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(160,100,240,0.6)', position: 'relative', top: '1px', margin: '0 3px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(150,90,235,0.5) 0%, rgba(120,60,210,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           <img src={soundIconPath} alt="Sound" style={{ height: '22px', width: '22px', objectFit: 'contain', position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', opacity: 0.7 }} />
           {/* Spotify Button */}
           <div className="pill-button-hover" style={{ 
@@ -14783,7 +14783,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Tasks ── */}
-          <div style={{ borderRadius: '26px', padding: '2px 3px 2px 13px', paddingRight: '5px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(150,150,150,0.6)', position: 'relative', top: '1px', margin: '0 0px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(150,150,150,0.5) 0%, rgba(120,120,120,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ borderRadius: '26px', padding: '2px 3px 2px 13px', paddingRight: '5px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(150,150,150,0.6)', position: 'relative', top: '1px', margin: '0 3px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(150,150,150,0.5) 0%, rgba(120,120,120,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           <ListChecks className="h-[18px] w-[18px] text-white/70" style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px' }} />
           {/* Completed Tasks Button - Swapped with Graduation Hat */}
           <div className="pill-button-hover" style={{ 
