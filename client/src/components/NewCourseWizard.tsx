@@ -644,7 +644,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, existin
             className="w-full h-8 rounded bg-white/10 border border-white/20 text-white text-[10px] px-2"
             data-testid="wizard-select-semester-year"
           >
-            {[parseInt(currentYear) - 1, parseInt(currentYear), parseInt(currentYear) + 1, parseInt(currentYear) + 2].map(y => (
+            {[parseInt(currentYear) - 1, parseInt(currentYear), parseInt(currentYear) + 1, parseInt(currentYear) + 2, parseInt(currentYear) + 3].map(y => (
               <option key={y} value={String(y)} className="bg-gray-800">{y}</option>
             ))}
           </select>
