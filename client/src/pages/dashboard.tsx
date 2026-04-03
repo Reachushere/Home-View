@@ -27552,7 +27552,7 @@ export default function Dashboard() {
               }
             }
             return '0px';
-          })(), flex: 1, minHeight: 0, paddingBottom: '0px', overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', zIndex: 2 }}>
+          })(), flex: 1, minHeight: 0, paddingBottom: '0px', overflow: 'hidden', position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column' as const }}>
           <div style={{ width: '100%', height: '15px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', flexShrink: 0 }}>
             <span style={{ fontSize: '10px', fontWeight: 500, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
           </div>
