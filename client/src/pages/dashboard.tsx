@@ -25038,7 +25038,7 @@ export default function Dashboard() {
                                 {(() => {
                                   const hasBracketCourse = !task.courseName && task.title?.match(/^\[([^\]\s]+)/)?.[1];
                                   const hasCourseLink = !!(task.courseName || (hasBracketCourse && courseCode && dynamicCourseColors[courseCode]));
-                                  const effectiveType = (task.type === 'class' || (hasBracketCourse && courseCode && dynamicCourseColors[courseCode])) ? 'class' : hasCourseLink ? (task.type || 'other') : 'other';
+                                  const effectiveType = hasCourseLink ? (task.type || 'class') : 'other';
                                   const typeBarColor = calendarTypeBarColors[effectiveType] || calendarTypeBarColors.other;
                                   const TIcon = effectiveType === 'class' ? null : (iconMap[effectiveType] || null);
                                   return (
@@ -25227,7 +25227,7 @@ export default function Dashboard() {
                       {(() => {
                         const hasBracketCourse = !task.courseName && task.title?.match(/^\[([^\]\s]+)/)?.[1];
                         const hasCourseLink = !!(task.courseName || (hasBracketCourse && courseCode && dynamicCourseColors[courseCode]));
-                        const effectiveType = (task.type === 'class' || (hasBracketCourse && courseCode && dynamicCourseColors[courseCode])) ? 'class' : hasCourseLink ? (task.type || 'other') : 'other';
+                        const effectiveType = hasCourseLink ? (task.type || 'class') : 'other';
                         const typeBarColor = calendarTypeBarColors[effectiveType] || calendarTypeBarColors.other;
                         const TIcon = effectiveType === 'class' ? null : (iconMap[effectiveType] || null);
                         return (
