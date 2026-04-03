@@ -2132,6 +2132,14 @@ export default function Dashboard() {
     return () => { clearTimeout(timer); document.removeEventListener('click', handleClickOutside); };
   }, [isTopPillOpen, closeTopPill]);
 
+  useEffect(() => {
+    document.querySelectorAll<HTMLElement>('[data-tpo]').forEach(el => {
+      el.style.opacity = isTodoFlyoutOpen ? '0' : (el.dataset.tpoOpacity || '1');
+      el.style.pointerEvents = isTodoFlyoutOpen ? 'none' : 'auto';
+      el.style.transition = isTodoFlyoutOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out';
+    });
+  }, [isTodoFlyoutOpen]);
+
   const [newsHeadlines, setNewsHeadlines] = useState<{ title: string; source: string; link: string; publishedAt?: string }[]>([]);
 
   useEffect(() => {
