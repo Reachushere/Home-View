@@ -25069,7 +25069,7 @@ export default function Dashboard() {
                                   );
                                 })()}
                                 {/* Task body */}
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '1px 3px 2px 5px', flex: 1 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '1px 3px 2px 3px', flex: 1 }}>
                                   <Checkbox
                                     checked={task.isCompleted || false}
                                     onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
@@ -25258,7 +25258,7 @@ export default function Dashboard() {
                         );
                       })()}
                       {/* Task body */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '1px 4px 3px 6px', flex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '1px 4px 3px 4px', flex: 1 }}>
                         <Checkbox
                           checked={task.isCompleted || false}
                           onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
