@@ -22980,7 +22980,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`flex flex-col items-center justify-center h-full relative`}
-                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'visible' } : day.getDay() === 6 ? { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)' } : { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', borderLeft: '1px solid rgba(255,255,255,0.1)' }}
+                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'visible' } : day.getDay() === 6 ? { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)' } : { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', borderLeft: '0.5px solid rgba(255,255,255,0.08)' }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     
@@ -23820,7 +23820,7 @@ export default function Dashboard() {
                           handleCourseRowDrop(e, course.name, day);
                         }}
                       >
-                        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', borderLeft: '1px solid rgba(0,0,0,0.12)', zIndex: 5, pointerEvents: 'none' }} />
+                        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', borderLeft: '0.5px solid rgba(0,0,0,0.08)', zIndex: 5, pointerEvents: 'none' }} />
                         {/* Countdown bars removed — urgency info now shown via "Next Task Due In" badge and sidebar pills */}
                         {isDayToday && (() => {
                           const cCode2 = course.name;
@@ -24299,7 +24299,7 @@ export default function Dashboard() {
                           style={{ backgroundColor: otherCellBg, padding: isOtherToday ? '2px 1px 2px 3px' : '2px 1px 2px 1px', borderBottom: isOtherToday ? '1px dotted #666' : `1.5px dotted ${otherRowColors.borderColor}`, overflowY: otherHasScroll ? 'auto' : 'hidden', overflowX: 'hidden', scrollbarWidth: 'thin', maxHeight: `${otherRowHeight}px` }}
                           data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
                         >
-                          <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', borderLeft: '1px solid rgba(0,0,0,0.12)', zIndex: 5, pointerEvents: 'none' }} />
+                          <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', borderLeft: '0.5px solid rgba(0,0,0,0.08)', zIndex: 5, pointerEvents: 'none' }} />
                           {dayOtherTasks.map(task => {
                             const today = startOfDayET(new Date());
                             const tomorrow = addDays(today, 1);
@@ -24392,7 +24392,7 @@ export default function Dashboard() {
                     key={dayIdx} 
                     className={`relative p-0.5 flex flex-col gap-0.5 min-w-0 ${isSameDayET(day, new Date()) ? 'border-b border-black' : 'border-b border-border/50'}`}
                     style={{ 
-                      borderLeft: isSameDayET(day, new Date()) ? 'none' : '1px solid rgba(255,255,255,0.1)',
+                      borderLeft: isSameDayET(day, new Date()) ? 'none' : '0.5px solid rgba(255,255,255,0.08)',
                       backgroundColor: (() => {
                         if (isSameDayET(day, new Date())) return colorSettings.headerBar;
                         if (calendarWeekMode === 'current') {
@@ -24623,7 +24623,7 @@ export default function Dashboard() {
                           key={dayIdx} 
                           className={`relative p-0.5 ${dragOverSlot && isSameDayET(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "ring-2 ring-primary ring-inset" : ""}`}
                           style={{
-                            borderLeft: isSameDayET(day, new Date()) ? 'none' : `1px solid ${isCurrentHour ? 'rgba(0,0,0,0.15)' : 'hsl(var(--border) / 0.5)'}`,
+                            borderLeft: isSameDayET(day, new Date()) ? 'none' : `0.5px solid ${isCurrentHour ? 'rgba(0,0,0,0.1)' : 'hsl(var(--border) / 0.35)'}`,
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined,
                             backgroundColor: (() => {
                               if (isToday || isCurrentHour) return '#e4ecf5';
