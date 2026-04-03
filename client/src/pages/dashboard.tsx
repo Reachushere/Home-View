@@ -17957,60 +17957,62 @@ export default function Dashboard() {
                         <span className="text-white text-[13px]">Hide task from countdown box</span>
                       </label>
                       <div style={{ height: '1px', background: 'rgba(255,255,255,0.1)', margin: '4px 0' }} />
-                      <label className="flex items-center gap-3 cursor-pointer select-none bg-white/10 border border-white/15 rounded-lg px-4 py-3">
-                        <input
-                          type="checkbox"
-                          checked={quickAddData.showCountdownBar}
-                          onChange={(e) => startTransition(() => setQuickAddData(p => ({ ...p, showCountdownBar: e.target.checked })))}
-                          className="w-4 h-4 rounded accent-blue-500"
-                          data-testid="quick-add-countdown-bar"
-                        />
-                        <span className="text-white text-[13px]">Show countdown bar</span>
-                      </label>
-                      {quickAddData.showCountdownBar && (
-                        <div className="flex flex-col gap-2 pl-2">
-                          <div className="flex items-center gap-3">
-                            <label className="flex items-center gap-2 cursor-pointer select-none">
-                              <input
-                                type="checkbox"
-                                checked={quickAddData.showCountdownBarMain}
-                                onChange={(e) => startTransition(() => setQuickAddData(p => ({ ...p, showCountdownBarMain: e.target.checked })))}
-                                className="w-3.5 h-3.5 rounded accent-blue-500"
-                                data-testid="quick-add-countdown-bar-main"
-                              />
-                              <span className="text-white/70 text-[11px]">Main tasks</span>
-                            </label>
-                            <label className="flex items-center gap-2 cursor-pointer select-none">
-                              <input
-                                type="checkbox"
-                                checked={quickAddData.showCountdownBarSummary}
-                                onChange={(e) => startTransition(() => setQuickAddData(p => ({ ...p, showCountdownBarSummary: e.target.checked })))}
-                                className="w-3.5 h-3.5 rounded accent-blue-500"
-                                data-testid="quick-add-countdown-bar-summary"
-                              />
-                              <span className="text-white/70 text-[11px]">Summary tasks</span>
-                            </label>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-white/50 text-[11px]">Show for</span>
-                            <select
-                              value={quickAddData.countdownBarDays}
-                              onChange={(e) => startTransition(() => setQuickAddData(p => ({ ...p, countdownBarDays: parseInt(e.target.value) })))}
-                              className="bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
-                              data-testid="quick-add-countdown-bar-days"
-                            >
-                              <option value={0} style={{ color: 'black' }}>All days</option>
-                              <option value={3} style={{ color: 'black' }}>3 days</option>
-                              <option value={5} style={{ color: 'black' }}>5 days</option>
-                              <option value={7} style={{ color: 'black' }}>7 days</option>
-                              <option value={10} style={{ color: 'black' }}>10 days</option>
-                              <option value={14} style={{ color: 'black' }}>14 days</option>
-                              <option value={21} style={{ color: 'black' }}>21 days</option>
-                              <option value={30} style={{ color: 'black' }}>30 days</option>
-                            </select>
-                          </div>
-                        </div>
-                      )}
+                      <div className="bg-white/10 border border-white/15 rounded-lg px-4 py-3 flex flex-col gap-2">
+                        <label className="flex items-center gap-3 cursor-pointer select-none">
+                          <input
+                            type="checkbox"
+                            checked={quickAddData.showCountdownBar}
+                            onChange={(e) => startTransition(() => setQuickAddData(p => ({ ...p, showCountdownBar: e.target.checked })))}
+                            className="w-4 h-4 rounded accent-blue-500"
+                            data-testid="quick-add-countdown-bar"
+                          />
+                          <span className="text-white text-[13px]">Show countdown bar</span>
+                        </label>
+                        {quickAddData.showCountdownBar && (
+                          <>
+                            <div className="flex items-center gap-3 pl-7">
+                              <label className="flex items-center gap-2 cursor-pointer select-none">
+                                <input
+                                  type="checkbox"
+                                  checked={quickAddData.showCountdownBarMain}
+                                  onChange={(e) => startTransition(() => setQuickAddData(p => ({ ...p, showCountdownBarMain: e.target.checked })))}
+                                  className="w-3.5 h-3.5 rounded accent-blue-500"
+                                  data-testid="quick-add-countdown-bar-main"
+                                />
+                                <span className="text-white/70 text-[11px]">Main tasks</span>
+                              </label>
+                              <label className="flex items-center gap-2 cursor-pointer select-none">
+                                <input
+                                  type="checkbox"
+                                  checked={quickAddData.showCountdownBarSummary}
+                                  onChange={(e) => startTransition(() => setQuickAddData(p => ({ ...p, showCountdownBarSummary: e.target.checked })))}
+                                  className="w-3.5 h-3.5 rounded accent-blue-500"
+                                  data-testid="quick-add-countdown-bar-summary"
+                                />
+                                <span className="text-white/70 text-[11px]">Summary tasks</span>
+                              </label>
+                            </div>
+                            <div className="flex items-center gap-2 pl-7">
+                              <span className="text-white/50 text-[11px]">Show for</span>
+                              <select
+                                value={quickAddData.countdownBarDays}
+                                onChange={(e) => startTransition(() => setQuickAddData(p => ({ ...p, countdownBarDays: parseInt(e.target.value) })))}
+                                className="bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
+                                data-testid="quick-add-countdown-bar-days"
+                              >
+                                <option value={0} style={{ color: 'black' }}>All days</option>
+                                <option value={3} style={{ color: 'black' }}>3 days</option>
+                                <option value={5} style={{ color: 'black' }}>5 days</option>
+                                <option value={7} style={{ color: 'black' }}>7 days</option>
+                                <option value={10} style={{ color: 'black' }}>10 days</option>
+                                <option value={14} style={{ color: 'black' }}>14 days</option>
+                                <option value={21} style={{ color: 'black' }}>21 days</option>
+                                <option value={30} style={{ color: 'black' }}>30 days</option>
+                              </select>
+                            </div>
+                          </>
+                        )}
+                      </div>
                     </div>
                   )}
 
