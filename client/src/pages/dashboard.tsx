@@ -11392,15 +11392,15 @@ export default function Dashboard() {
                       data-testid={`alexa-item-${ann.id}`}
                     >
                       {/* Delete background (swipe left) */}
-                      <div className="absolute inset-0 flex items-center justify-end px-4 rounded-lg" style={{ background: 'rgba(239,68,68,0.3)' }}>
+                      {swipeX < 0 && <div className="absolute inset-0 flex items-center justify-end px-4 rounded-lg" style={{ background: 'rgba(239,68,68,0.3)' }}>
                         <div style={{ background: '#dc2626', borderRadius: '4px', padding: '3px 10px' }}>
                           <span className="text-white text-[10px] font-semibold">Delete</span>
                         </div>
-                      </div>
+                      </div>}
                       {/* Save/keep background (swipe right) */}
-                      <div className="absolute inset-0 flex items-center justify-start px-4 rounded-lg" style={{ background: 'rgba(6,182,212,0.3)' }}>
+                      {swipeX > 0 && <div className="absolute inset-0 flex items-center justify-start px-4 rounded-lg" style={{ background: 'rgba(6,182,212,0.3)' }}>
                         <span className="text-cyan-300 text-[9px] font-semibold">{ann.isEnabled ? 'Hide from HA' : 'Expose to HA'}</span>
-                      </div>
+                      </div>}
                       {/* Main item */}
                       <div
                         className="relative flex items-start gap-2 px-3 py-2 border border-white/10 rounded-lg transition-transform"
@@ -11461,7 +11461,7 @@ export default function Dashboard() {
                             <div className={`absolute top-[1.5px] w-[9px] h-[9px] rounded-full bg-white shadow transition-all ${ann.isEnabled ? 'left-[11px]' : 'left-[1.5px]'}`} />
                           </div>
                         </button>
-                        <div className="flex-1 min-w-0" style={{ marginLeft: '31px' }}>
+                        <div className="flex-1 min-w-0">
                           <p className="text-white text-[10px] leading-tight break-words">{ann.message}</p>
                           <div className="flex items-center gap-1.5 mt-0.5">
                             <span className="text-white/40 text-[8px]">
