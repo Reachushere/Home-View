@@ -27134,7 +27134,7 @@ export default function Dashboard() {
                                             flex: 1, minWidth: 0, height: '11px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
-                                            background: isDue ? dueBg : isToday ? todayCellBg : 'rgba(255,255,255,0.15)',
+                                            background: isDue ? dueBg : isToday ? todayCellBg : 'linear-gradient(180deg, #7AABCC 0%, #7AABCC 100%)',
                                             border: isDue ? `1px solid ${dueColors[0]}` : isToday ? '1px solid rgba(255,255,255,0.7)' : 'none',
                                           }} data-testid={`mini-cal-w10-date-${format(d, 'yyyy-MM-dd')}`}>
                                             {d.getDate()}
@@ -27314,7 +27314,7 @@ export default function Dashboard() {
                                             flex: 1, minWidth: 0, height: '11px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
-                                            background: isDue ? dueBg : isToday ? todayCellBg : 'rgba(255,255,255,0.15)',
+                                            background: isDue ? dueBg : isToday ? todayCellBg : 'linear-gradient(180deg, #7AABCC 0%, #7AABCC 100%)',
                                             border: isDue ? `1px solid ${dueColors[0]}` : isToday ? '1px solid rgba(255,255,255,0.7)' : 'none',
                                           }} data-testid={`mini-cal-w11-date-${format(d, 'yyyy-MM-dd')}`}>
                                             {d.getDate()}
@@ -27513,7 +27513,7 @@ export default function Dashboard() {
                                             flex: 1, minWidth: 0, height: '11px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
-                                            background: isDue ? dueBg : isToday ? todayCellBg : 'rgba(255,255,255,0.15)',
+                                            background: isDue ? dueBg : isToday ? todayCellBg : 'linear-gradient(180deg, #7AABCC 0%, #7AABCC 100%)',
                                             border: isDue ? `1px solid ${dueColors[0]}` : isToday ? '1px solid rgba(255,255,255,0.7)' : 'none',
                                           }} data-testid={`mini-cal-date-${format(d, 'yyyy-MM-dd')}`}>
                                             {d.getDate()}
@@ -27733,7 +27733,7 @@ export default function Dashboard() {
                                             flex: 1, minWidth: 0, height: '11px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
-                                            background: isDue ? dueBg : isToday ? todayCellBg : 'rgba(255,255,255,0.15)',
+                                            background: isDue ? dueBg : isToday ? todayCellBg : 'linear-gradient(180deg, #7AABCC 0%, #7AABCC 100%)',
                                             border: isDue ? `1px solid ${dueColors[0]}` : isToday ? '1px solid rgba(255,255,255,0.7)' : 'none',
                                           }} data-testid={`mini-cal-date-${format(d, 'yyyy-MM-dd')}`}>
                                             {d.getDate()}
