@@ -26548,41 +26548,29 @@ export default function Dashboard() {
                       <svg width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`} style={{ display: 'block', overflow: 'visible' }}>
                         {(() => {
                           const [c1, c2] = tab.colors;
-                          const pad = 3;
-                          const boxX = pad;
-                          const boxY = pad;
-                          const boxW = svgW - pad * 2;
-                          const boxH = svgH - pad * 2;
-                          const br = 5;
-                          const gradId = `tabBoxGrad-${tabIdx}`;
-                          const glossId = `tabGloss-${tabIdx}`;
-                          const shadowId = `tabShadow-${tabIdx}`;
-                          const cx = boxX + boxW / 2;
+                          const br = 6;
+                          const gradId = `tabGrad-${tabIdx}`;
+                          const topColor = isActive ? c1 : '#B8B8B8';
+                          const botColor = isActive ? c2 : '#8E8E8E';
+                          const cx = svgW / 2;
                           return (
                             <>
                               <defs>
                                 <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-                                  <stop offset="0%" stopColor={c1} />
-                                  <stop offset="100%" stopColor={c2} />
+                                  <stop offset="0%" stopColor={topColor} />
+                                  <stop offset="100%" stopColor={botColor} />
                                 </linearGradient>
-                                <linearGradient id={glossId} x1="0" y1="0" x2="0" y2="1">
-                                  <stop offset="0%" stopColor="rgba(255,255,255,0.45)" />
-                                  <stop offset="50%" stopColor="rgba(255,255,255,0.05)" />
-                                  <stop offset="51%" stopColor="rgba(0,0,0,0.05)" />
-                                  <stop offset="100%" stopColor="rgba(0,0,0,0.15)" />
-                                </linearGradient>
-                                <filter id={shadowId}><feDropShadow dx="1" dy="1" stdDeviation="1.5" floodColor="rgba(0,0,0,0.3)" /></filter>
                               </defs>
-                              <rect x={boxX} y={boxY} width={boxW} height={boxH} rx={br} fill={`url(#${gradId})`} filter={`url(#${shadowId})`} opacity={isActive ? 1 : 0.7} />
-                              <rect x={boxX} y={boxY} width={boxW} height={boxH} rx={br} fill={`url(#${glossId})`} />
-                              <rect x={boxX + 2.5} y={boxY + 2.5} width={boxW - 5} height={boxH - 5} rx={br - 1} fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="0.8" strokeDasharray="3 2" />
+                              <path d={`M0,0 L0,${svgH} L${svgW - br},${svgH} Q${svgW},${svgH} ${svgW},${svgH - br} L${svgW},${br} Q${svgW},0 ${svgW - br},0 Z`} fill={`url(#${gradId})`} />
+                              <path d={`M0,0 L${svgW - br},0 Q${svgW},0 ${svgW},${br} L${svgW},${svgH * 0.5}`} fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+                              <path d={`M${svgW},${svgH * 0.5} L${svgW},${svgH - br} Q${svgW},${svgH} ${svgW - br},${svgH} L0,${svgH}`} fill="none" stroke="rgba(0,0,0,0.15)" strokeWidth="1" />
                               {tab.topText ? (
                                 <>
-                                  <text x={cx} y={boxY + boxH * 0.28} textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.9)" fontSize={Math.min(5.5, boxH * 0.15)} fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.5">{tab.bottomText}</text>
-                                  <text x={cx} y={boxY + boxH * 0.62} textAnchor="middle" dominantBaseline="central" fill="#ffffff" fontSize={Math.min(14, boxH * 0.4)} fontWeight="700" fontFamily="system-ui, -apple-system, sans-serif">{tab.topText}</text>
+                                  <text x={cx} y={svgH * 0.28} textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.9)" fontSize={Math.min(5.5, svgH * 0.15)} fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.5">{tab.bottomText}</text>
+                                  <text x={cx} y={svgH * 0.62} textAnchor="middle" dominantBaseline="central" fill="#ffffff" fontSize={Math.min(14, svgH * 0.4)} fontWeight="700" fontFamily="system-ui, -apple-system, sans-serif">{tab.topText}</text>
                                 </>
                               ) : (
-                                <text x={cx} y={boxY + boxH / 2} textAnchor="middle" dominantBaseline="central" fill="#ffffff" fontSize={Math.min(7, boxH * 0.25)} fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.3">{tab.bottomText}</text>
+                                <text x={cx} y={svgH / 2} textAnchor="middle" dominantBaseline="central" fill="#ffffff" fontSize={Math.min(7, svgH * 0.25)} fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.3">{tab.bottomText}</text>
                               )}
                             </>
                           );
