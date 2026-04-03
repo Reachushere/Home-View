@@ -26550,8 +26550,8 @@ export default function Dashboard() {
                           const [c1, c2] = tab.colors;
                           const br = 6;
                           const gradId = `tabGrad-${tabIdx}`;
-                          const topColor = isActive ? c1 : '#B8B8B8';
-                          const botColor = isActive ? c2 : '#8E8E8E';
+                          const topColor = c1;
+                          const botColor = c2;
                           const cx = svgW / 2;
                           return (
                             <>
