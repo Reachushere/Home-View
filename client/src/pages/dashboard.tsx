@@ -26504,7 +26504,7 @@ export default function Dashboard() {
                     return scrollActiveSem === tab.semLabel;
                   })();
                   const tabW = 24;
-                  const tabGap = 0;
+                  const tabGap = -1;
                   const tabTop = topInset + tabIdx * (tabH + tabGap);
                   const svgH = Math.floor(tabH);
                   const svgW = tabW + 8;
