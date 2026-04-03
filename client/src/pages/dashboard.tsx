@@ -2133,16 +2133,6 @@ export default function Dashboard() {
     return () => { clearTimeout(timer); document.removeEventListener('click', handleClickOutside); };
   }, [isTopPillOpen, closeTopPill]);
 
-  useEffect(() => {
-    const anyFlyoutOpen = isSettingsPanelOpen || isTodoFlyoutOpen || isProjectsFlyoutOpen || isRadioDialogOpen || isCompletedTasksOpen || isQuickAddOpen;
-    if (anyFlyoutOpen) {
-      pillFlyoutWasOpenRef.current = true;
-    } else if (pillFlyoutWasOpenRef.current) {
-      pillFlyoutWasOpenRef.current = false;
-      setIsTopPillOpen(true);
-    }
-  }, [isSettingsPanelOpen, isTodoFlyoutOpen, isProjectsFlyoutOpen, isRadioDialogOpen, isCompletedTasksOpen, isQuickAddOpen]);
-
   const [newsHeadlines, setNewsHeadlines] = useState<{ title: string; source: string; link: string; publishedAt?: string }[]>([]);
 
   useEffect(() => {
@@ -2354,6 +2344,17 @@ export default function Dashboard() {
       el.style.transition = isTodoFlyoutOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out';
     });
   }, [isTodoFlyoutOpen]);
+
+  useEffect(() => {
+    const anyFlyoutOpen = isSettingsPanelOpen || isTodoFlyoutOpen || isProjectsFlyoutOpen || isRadioDialogOpen || isCompletedTasksOpen || isQuickAddOpen;
+    if (anyFlyoutOpen) {
+      pillFlyoutWasOpenRef.current = true;
+    } else if (pillFlyoutWasOpenRef.current) {
+      pillFlyoutWasOpenRef.current = false;
+      setIsTopPillOpen(true);
+    }
+  }, [isSettingsPanelOpen, isTodoFlyoutOpen, isProjectsFlyoutOpen, isRadioDialogOpen, isCompletedTasksOpen, isQuickAddOpen]);
+
   const [todoActiveTab, setTodoActiveTab] = useState<'reminders' | 'automations'>('reminders');
   const [showAutomationWizard, setShowAutomationWizard] = useState(false);
   const [wizardStep, setWizardStep] = useState(0);
