@@ -4665,6 +4665,52 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
+  app.post("/api/onedrive/rename-tbd-folder", async (req, res) => {
+    try {
+      const { semesterId, courseName, courseCode, springSummerTerm } = req.body;
+      if (!courseName && !courseCode) {
+        return res.status(400).json({ error: "Missing courseName or courseCode" });
+      }
+
+      let semester: any;
+      if (semesterId) {
+        const allSemesters = await storage.getAllSemesterSettings();
+        semester = allSemesters.find((s: any) => s.id === semesterId);
+      } else {
+        semester = await storage.getActiveSemesterSettings();
+      }
+      if (!semester) return res.status(404).json({ error: "Semester not found" });
+
+      const { listOneDriveFolderChildren, renameOneDriveItem } = await import("./onedrive");
+      const semType = getSemesterTypeFolder(semester.semesterType);
+      const startDate = semester.semesterStartDate ? new Date(semester.semesterStartDate) : new Date();
+      const year = startDate.getFullYear();
+      let semPath = `/School/1. TMU/Courses/${year}/${semType}`;
+
+      const term = (springSummerTerm || '').toLowerCase();
+      if (term === 'first_half') semPath += '/Summer - First Half';
+      else if (term === 'second_half') semPath += '/Summer - Second Half';
+      else if (term === 'full' && semType === 'Spring & Summer') semPath += '/Full Term';
+
+      const children = await listOneDriveFolderChildren(semPath);
+      const tbd = children.find((c: any) => c.folder && /^TBD\d*$/i.test(c.name.trim()));
+
+      if (!tbd) {
+        return res.json({ success: false, message: "No TBD folder found", path: semPath });
+      }
+
+      const code = (courseCode || '').replace(/\s/g, '');
+      const newFolderName = courseName ? `${code} - ${courseName}` : code;
+
+      await renameOneDriveItem(tbd.id, newFolderName);
+      console.log(`[OneDrive] Renamed TBD folder "${tbd.name}" → "${newFolderName}" in ${semPath}`);
+      res.json({ success: true, from: tbd.name, to: newFolderName, path: `${semPath}/${newFolderName}` });
+    } catch (err: any) {
+      console.error("Error renaming TBD folder:", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   app.post("/api/onedrive/rename-course-folder", async (req, res) => {
     try {
       const { semesterId, courseIndex, oldCode, oldName, newCode, newName } = req.body;
