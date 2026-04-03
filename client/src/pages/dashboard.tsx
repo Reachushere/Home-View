@@ -249,7 +249,7 @@ const calendarTypeIconColors: Record<string, string> = {
 };
 
 const calendarTypeBarColors: Record<string, string> = {
-  class: '#6d28d9',
+  class: 'rgb(0,190,160)',
   reading: 'rgb(56,130,255)',
   module: 'rgb(16,200,120)',
   essay: 'rgb(255,180,30)',
@@ -25041,7 +25041,7 @@ export default function Dashboard() {
                                     }}>
                                       <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 50%, transparent 100%)', pointerEvents: 'none' }} />
                                       {task.type === 'class' ? (
-                                        <img src={teacherIconPath} alt="Class" style={{ width: '10px', height: '10px', objectFit: 'contain', position: 'relative', zIndex: 1, filter: 'brightness(10)' }} data-testid={`type-icon-time-${task.id}`} />
+                                        <img src={teacherWhiteIconPath} alt="Class" style={{ width: '10px', height: '10px', objectFit: 'contain', position: 'relative', zIndex: 1 }} data-testid={`type-icon-time-${task.id}`} />
                                       ) : TIcon ? (
                                         <TIcon className="h-2.5 w-2.5 shrink-0" style={{ position: 'relative', zIndex: 1, color: 'rgba(255,255,255,0.9)' } as any} data-testid={`type-icon-time-${task.id}`} />
                                       ) : null}
@@ -25226,7 +25226,7 @@ export default function Dashboard() {
                           }}>
                             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 50%, transparent 100%)', pointerEvents: 'none' }} />
                             {task.type === 'class' ? (
-                              <img src={teacherIconPath} alt="Class" style={{ width: '11px', height: '11px', objectFit: 'contain', position: 'relative', zIndex: 1, filter: 'brightness(10)' }} data-testid={`type-icon-multi-${task.id}`} />
+                              <img src={teacherWhiteIconPath} alt="Class" style={{ width: '11px', height: '11px', objectFit: 'contain', position: 'relative', zIndex: 1 }} data-testid={`type-icon-multi-${task.id}`} />
                             ) : TIcon ? (
                               <TIcon className="h-3 w-3 shrink-0" style={{ position: 'relative', zIndex: 1, color: 'rgba(255,255,255,0.9)' } as any} data-testid={`type-icon-multi-${task.id}`} />
                             ) : null}
