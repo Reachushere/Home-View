@@ -11206,36 +11206,40 @@ export default function Dashboard() {
                       </button>
                     </PopoverTrigger>
                     <PopoverContent
-                      className="w-auto p-0 alexa-dark-calendar"
-                      style={{ zIndex: 10020, backgroundColor: '#1a1a2e', borderColor: 'rgba(255,255,255,0.2)', ['--popover' as any]: '240 20% 14%', ['--popover-foreground' as any]: '0 0% 100%', ['--background' as any]: '240 20% 14%', ['--foreground' as any]: '0 0% 100%', ['--accent' as any]: '240 20% 22%', ['--accent-foreground' as any]: '0 0% 100%', ['--muted-foreground' as any]: '0 0% 60%', ['--border' as any]: '0 0% 100% / 0.2', ['--input' as any]: '0 0% 100% / 0.2', ['--primary' as any]: '187 71% 46%', ['--primary-foreground' as any]: '0 0% 100%' }}
+                      className="w-auto p-0 border-0"
+                      style={{ zIndex: 10020, background: 'none', backgroundColor: 'transparent' }}
                       align="start"
                     >
-                      <CalendarPicker
-                        mode="single"
-                        selected={alexaDate ? new Date(alexaDate + 'T12:00:00') : undefined}
-                        onSelect={(date) => {
-                          if (date) {
-                            const y = date.getFullYear();
-                            const m = String(date.getMonth() + 1).padStart(2, '0');
-                            const d = String(date.getDate()).padStart(2, '0');
-                            setAlexaDate(`${y}-${m}-${d}`);
-                          } else {
-                            setAlexaDate('');
-                          }
-                          setAlexaCalendarOpen(false);
-                        }}
-                        className="p-3"
-                      />
-                      {alexaDate && (
-                        <div className="px-3 pb-2">
-                          <button
-                            onClick={() => { setAlexaDate(''); setAlexaCalendarOpen(false); }}
-                            className="text-[10px] text-white/40 hover:text-white/70 transition-colors"
-                          >
-                            Clear date
-                          </button>
+                      <div style={{ backgroundColor: '#1a1a2e', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', overflow: 'hidden' }}>
+                        <div style={{ ['--popover' as any]: '240 20% 14%', ['--popover-foreground' as any]: '0 0% 100%', ['--background' as any]: '240 20% 14%', ['--foreground' as any]: '0 0% 100%', ['--accent' as any]: '240 20% 22%', ['--accent-foreground' as any]: '0 0% 100%', ['--muted-foreground' as any]: '0 0% 60%', ['--border' as any]: '0 0% 100% / 0.2', ['--input' as any]: '0 0% 100% / 0.2', ['--primary' as any]: '187 71% 46%', ['--primary-foreground' as any]: '0 0% 100%' }} className="alexa-dark-calendar">
+                          <CalendarPicker
+                            mode="single"
+                            selected={alexaDate ? new Date(alexaDate + 'T12:00:00') : undefined}
+                            onSelect={(date) => {
+                              if (date) {
+                                const y = date.getFullYear();
+                                const m = String(date.getMonth() + 1).padStart(2, '0');
+                                const d = String(date.getDate()).padStart(2, '0');
+                                setAlexaDate(`${y}-${m}-${d}`);
+                              } else {
+                                setAlexaDate('');
+                              }
+                              setAlexaCalendarOpen(false);
+                            }}
+                            className="p-3"
+                          />
+                          {alexaDate && (
+                            <div className="px-3 pb-2">
+                              <button
+                                onClick={() => { setAlexaDate(''); setAlexaCalendarOpen(false); }}
+                                className="text-[10px] text-white/40 hover:text-white/70 transition-colors"
+                              >
+                                Clear date
+                              </button>
+                            </div>
+                          )}
                         </div>
-                      )}
+                      </div>
                     </PopoverContent>
                   </Popover>
                   <select
@@ -11312,36 +11316,40 @@ export default function Dashboard() {
                         </button>
                       </PopoverTrigger>
                       <PopoverContent
-                        className="w-auto p-0 alexa-dark-calendar"
-                        style={{ zIndex: 10020, backgroundColor: '#1a1a2e', borderColor: 'rgba(255,255,255,0.2)', ['--popover' as any]: '240 20% 14%', ['--popover-foreground' as any]: '0 0% 100%', ['--background' as any]: '240 20% 14%', ['--foreground' as any]: '0 0% 100%', ['--accent' as any]: '240 20% 22%', ['--accent-foreground' as any]: '0 0% 100%', ['--muted-foreground' as any]: '0 0% 60%', ['--border' as any]: '0 0% 100% / 0.2', ['--input' as any]: '0 0% 100% / 0.2', ['--primary' as any]: '187 71% 46%', ['--primary-foreground' as any]: '0 0% 100%' }}
+                        className="w-auto p-0 border-0"
+                        style={{ zIndex: 10020, background: 'none', backgroundColor: 'transparent' }}
                         align="start"
                       >
-                        <CalendarPicker
-                          mode="single"
-                          selected={alexaRepeatEndDate ? new Date(alexaRepeatEndDate + 'T12:00:00') : undefined}
-                          onSelect={(date) => {
-                            if (date) {
-                              const y = date.getFullYear();
-                              const m = String(date.getMonth() + 1).padStart(2, '0');
-                              const d = String(date.getDate()).padStart(2, '0');
-                              setAlexaRepeatEndDate(`${y}-${m}-${d}`);
-                            } else {
-                              setAlexaRepeatEndDate('');
-                            }
-                            setAlexaRepeatEndCalendarOpen(false);
-                          }}
-                          className="p-3"
-                        />
-                        {alexaRepeatEndDate && (
-                          <div className="px-3 pb-2">
-                            <button
-                              onClick={() => { setAlexaRepeatEndDate(''); setAlexaRepeatEndCalendarOpen(false); }}
-                              className="text-[10px] text-white/40 hover:text-white/70 transition-colors"
-                            >
-                              Clear end date
-                            </button>
+                        <div style={{ backgroundColor: '#1a1a2e', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', overflow: 'hidden' }}>
+                          <div style={{ ['--popover' as any]: '240 20% 14%', ['--popover-foreground' as any]: '0 0% 100%', ['--background' as any]: '240 20% 14%', ['--foreground' as any]: '0 0% 100%', ['--accent' as any]: '240 20% 22%', ['--accent-foreground' as any]: '0 0% 100%', ['--muted-foreground' as any]: '0 0% 60%', ['--border' as any]: '0 0% 100% / 0.2', ['--input' as any]: '0 0% 100% / 0.2', ['--primary' as any]: '187 71% 46%', ['--primary-foreground' as any]: '0 0% 100%' }} className="alexa-dark-calendar">
+                            <CalendarPicker
+                              mode="single"
+                              selected={alexaRepeatEndDate ? new Date(alexaRepeatEndDate + 'T12:00:00') : undefined}
+                              onSelect={(date) => {
+                                if (date) {
+                                  const y = date.getFullYear();
+                                  const m = String(date.getMonth() + 1).padStart(2, '0');
+                                  const d = String(date.getDate()).padStart(2, '0');
+                                  setAlexaRepeatEndDate(`${y}-${m}-${d}`);
+                                } else {
+                                  setAlexaRepeatEndDate('');
+                                }
+                                setAlexaRepeatEndCalendarOpen(false);
+                              }}
+                              className="p-3"
+                            />
+                            {alexaRepeatEndDate && (
+                              <div className="px-3 pb-2">
+                                <button
+                                  onClick={() => { setAlexaRepeatEndDate(''); setAlexaRepeatEndCalendarOpen(false); }}
+                                  className="text-[10px] text-white/40 hover:text-white/70 transition-colors"
+                                >
+                                  Clear end date
+                                </button>
+                              </div>
+                            )}
                           </div>
-                        )}
+                        </div>
                       </PopoverContent>
                     </Popover>
                   )}
