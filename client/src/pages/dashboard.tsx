@@ -54,6 +54,7 @@ import profilePhoto from "@assets/image_1772579486577.png";
 import pdfSearchLogo from "@assets/Adobe61_1772583825907.png";
 import pdfIconPath from "@assets/Adobee_1772801638235.png";
 import zoomCamPath from "@assets/Zoomcam_1773655084814.png";
+import pdfAttachIconPath from "@assets/image_1775209235777.png";
 import readerIconPath from "@assets/Headphones2_1774598197965.png";
 import hwPlayIconPath from "@assets/Headphones2_1774667878315.png";
 import hwPlayIconLightPath from "@assets/Headphone3_1774670459512.png";
@@ -25069,7 +25070,7 @@ export default function Dashboard() {
                                         {(() => { const raw = (task.title || '').replace(/^\[.*?\]\s*/, '').replace(/^online\s+/i, ''); const t = raw; const isModRead = /^(module|reading|module\s*(?:&|and)\s*reading)$/i.test(t.trim()); if (isModRead && task.courseName) { const cc = task.courseName.split(' - ')[0]?.trim(); if (cc) return `${cc} ${t}`; } return t; })()}
                                       </span>
                                       {(() => { const dm = courseDeliveryModes[courseCode] || ''; return dm === 'virtual' ? <div style={{ width: '14px', height: '14px', borderRadius: '3px', background: 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative', zIndex: 1 }}><img src={zoomCamPath} alt="Zoom" style={{ width: '10px', height: '10px', objectFit: 'contain' }} data-testid={`zoom-icon-time-${task.id}`} /></div> : null; })()}
-                                      {(() => { const hasAtt = (task.attachments?.length && task.attachments.some((att: any) => { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; return !!url; })) || task.referenceLink; return hasAtt ? <div style={{ width: '14px', height: '14px', borderRadius: '3px', background: 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative', zIndex: 1 }}><Paperclip className="h-2 w-2 text-gray-600" data-testid={`attachment-icon-time-${task.id}`} /></div> : null; })()}
+                                      {(() => { const hasAtt = (task.attachments?.length && task.attachments.some((att: any) => { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; return !!url; })) || task.referenceLink; return hasAtt ? <div style={{ width: '14px', height: '14px', borderRadius: '3px', background: 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative', zIndex: 1 }}><img src={pdfAttachIconPath} alt="PDF" style={{ width: '10px', height: '10px', objectFit: 'contain' }} data-testid={`attachment-icon-time-${task.id}`} /></div> : null; })()}
                                     </div>
                                   );
                                 })()}
