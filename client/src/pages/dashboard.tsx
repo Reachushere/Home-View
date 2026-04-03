@@ -26582,8 +26582,7 @@ export default function Dashboard() {
               </div>
             );
           })()}
-          <div className="absolute" style={{ top: 0, bottom: 0, right: -1, width: '2px', zIndex: 201, background: 'white', borderRadius: '0 12px 12px 0', pointerEvents: 'none', clipPath: 'inset(0 0 0 0)' }} />
-          <div className="absolute inset-0 rounded-[12px] overflow-hidden flex flex-col" style={{ pointerEvents: 'auto' }}>
+          <div className="absolute inset-0 rounded-[12px] overflow-hidden flex flex-col" style={{ pointerEvents: 'auto', zIndex: 1 }}>
           {/* Weather Overlay */}
           {weatherData && (() => {
             const wc = weatherData.code;
