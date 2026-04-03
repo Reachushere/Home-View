@@ -195,8 +195,17 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, existin
   const openFolderBrowser = async (target: 'module' | 'reading') => {
     setBrowsingFor(target);
     const currentPath = target === 'module' ? data.moduleFolder : data.readingFolder;
-    const semLabel = data.semesterType === 'fall' ? 'Fall' : data.semesterType === 'winter' ? 'Winter' : 'Spring-Summer';
-    const startPath = currentPath ? currentPath.split('/').slice(0, -1).join('/') || '/' : `/School/1. TMU/Courses/${data.semesterYear || new Date().getFullYear()}/${semLabel}`;
+    const yr = data.semesterYear || new Date().getFullYear();
+    let defaultPath = `/School/1. TMU/Courses/${yr}`;
+    if (data.semesterType === 'fall') defaultPath += '/Fall';
+    else if (data.semesterType === 'winter') defaultPath += '/Winter';
+    else if (data.semesterType === 'spring_summer') {
+      defaultPath += '/Spring-Summer';
+      if (data.springSummerTerm === 'first_half') defaultPath += '/Spring - First Half';
+      else if (data.springSummerTerm === 'second_half') defaultPath += '/Summer - Second Half';
+      else if (data.springSummerTerm === 'full') defaultPath += '/Full';
+    }
+    const startPath = currentPath ? currentPath.split('/').slice(0, -1).join('/') || '/' : defaultPath;
     setBrowsePath(startPath);
     await loadFolders(startPath);
   };
