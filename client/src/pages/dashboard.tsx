@@ -1465,14 +1465,14 @@ export default function Dashboard() {
     }
   }, []);
   const [calendarHeight, setCalendarHeight] = useState(() => {
-    const defaultHeight = window.innerHeight - 51;
+    const defaultHeight = window.innerHeight - 47;
     const minHeight = 200;
     const maxHeight = window.innerHeight - 100;
     const screenWidth = window.screen.width;
     const screenHeight = window.screen.height;
     const pixelRatio = window.devicePixelRatio || 1;
     const deviceId = `device_${screenWidth}x${screenHeight}@${pixelRatio}`;
-    const resetKey = 'calendarHeight_reset_v15';
+    const resetKey = 'calendarHeight_reset_v16';
     if (!localStorage.getItem(resetKey)) {
       localStorage.removeItem('calendarHeight');
       localStorage.removeItem(`calendarHeight_${deviceId}`);
@@ -1674,7 +1674,7 @@ export default function Dashboard() {
     });
   };
   const [calendarReductionUserSet, setCalendarReductionUserSetRaw] = useState(() => {
-    const resetKey = 'calendarHeight_reset_v15';
+    const resetKey = 'calendarHeight_reset_v16';
     if (!localStorage.getItem(resetKey)) return false;
     if (localStorage.getItem('calendarReductionUserSet')) return true;
     if (localStorage.getItem('calendarReduction')) return true;
