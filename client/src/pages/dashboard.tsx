@@ -21212,56 +21212,109 @@ export default function Dashboard() {
           {isNewCourseWizardOpen && (
             <NewCourseWizard
               existingSemesterType={newSemesterForm.semesterType || "winter"}
+              existingSemesterYear={(() => {
+                const active = allSemesterSettings?.find((s: any) => s.isActive);
+                const year = active?.semesterName?.match(/\d{4}/)?.[0];
+                return year || new Date().getFullYear().toString();
+              })()}
+              availableSemesters={(allSemesterSettings || []).map((s: any) => ({
+                id: s.id,
+                semesterType: s.semesterType,
+                semesterName: s.semesterName || '',
+                isActive: !!s.isActive,
+                course1Code: s.course1Code,
+                course2Code: s.course2Code,
+                course3Code: s.course3Code,
+              }))}
               colorSettings={{ mainBackground: colorSettings.mainBackground, mainBackgroundGradientEnd: colorSettings.mainBackgroundGradientEnd, headerBar: colorSettings.headerBar }}
               onClose={() => setIsNewCourseWizardOpen(false)}
-              onSave={(wizardData) => {
+              onSave={async (wizardData) => {
                 const fullName = `${wizardData.courseCode} - ${wizardData.courseName}`;
-                const updatedCourses = [...coursesData.courses];
-                const emptyIdx = updatedCourses.findIndex(c => !c.name.trim());
-                const targetIdx = emptyIdx !== -1 ? emptyIdx : updatedCourses.length;
-                if (emptyIdx !== -1) {
-                  updatedCourses[emptyIdx] = {
-                    name: fullName,
-                    color: wizardData.color,
-                    colorEnd: wizardData.colorEnd,
-                    professor: wizardData.professorName,
-                    professorEmail: wizardData.professorEmail,
-                  };
-                } else {
-                  updatedCourses.push({
-                    name: fullName,
-                    color: wizardData.color,
-                    colorEnd: wizardData.colorEnd,
-                    professor: wizardData.professorName,
-                    professorEmail: wizardData.professorEmail,
-                  });
+                
+                const typeLabel = wizardData.semesterType === 'winter' ? 'Winter' : wizardData.semesterType === 'fall' ? 'Fall' : 'Spring/Summer';
+                const targetSemName = `${typeLabel} ${wizardData.semesterYear}`;
+                const matchedSem = (allSemesterSettings || []).find((s: any) => 
+                  s.semesterName === targetSemName || (s.semesterType === wizardData.semesterType && s.semesterName?.includes(wizardData.semesterYear))
+                );
+                const isActiveSemester = matchedSem?.isActive || (!matchedSem && !(allSemesterSettings || []).length);
+                
+                if (isActiveSemester) {
+                  const updatedCourses = [...coursesData.courses];
+                  const emptyIdx = updatedCourses.findIndex(c => !c.name.trim());
+                  const targetIdx = emptyIdx !== -1 ? emptyIdx : updatedCourses.length;
+                  if (emptyIdx !== -1) {
+                    updatedCourses[emptyIdx] = {
+                      name: fullName,
+                      color: wizardData.color,
+                      colorEnd: wizardData.colorEnd,
+                      professor: wizardData.professorName,
+                      professorEmail: wizardData.professorEmail,
+                    };
+                  } else {
+                    updatedCourses.push({
+                      name: fullName,
+                      color: wizardData.color,
+                      colorEnd: wizardData.colorEnd,
+                      professor: wizardData.professorName,
+                      professorEmail: wizardData.professorEmail,
+                    });
+                  }
+                  setCoursesData({ courses: updatedCourses });
+                  localStorage.setItem('coursesData', JSON.stringify({ courses: updatedCourses }));
+                  saveDegreeToServer('coursesData', { courses: updatedCourses });
                 }
-                setCoursesData({ courses: updatedCourses });
-                localStorage.setItem('coursesData', JSON.stringify({ courses: updatedCourses }));
-                saveDegreeToServer('coursesData', { courses: updatedCourses });
 
-                const prefix = `course${targetIdx + 1}`;
-                if (targetIdx < 3) {
-                  const schedulePayload: Record<string, any> = {
-                    semesterType: wizardData.semesterType,
-                    [`${prefix}DeliveryMode`]: wizardData.deliveryMode || null,
-                    [`${prefix}ClassDay`]: wizardData.classDay || null,
-                    [`${prefix}ClassDay2`]: wizardData.classDay2 || null,
-                    [`${prefix}ClassTime`]: wizardData.classTime || null,
-                    [`${prefix}ClassEndTime`]: wizardData.classEndTime || null,
-                    [`${prefix}ClassTime2`]: (wizardData as any).classTime2 || null,
-                    [`${prefix}ClassEndTime2`]: (wizardData as any).classEndTime2 || null,
-                    [`${prefix}SpringSummerTerm`]: wizardData.springSummerTerm || null,
-                    [`${prefix}StartDate`]: wizardData.startDate ? new Date(wizardData.startDate).toISOString() : null,
-                    [`${prefix}EndDate`]: wizardData.endDate ? new Date(wizardData.endDate).toISOString() : null,
-                    [`${prefix}CourseType`]: wizardData.courseType || null,
-                    [`${prefix}ZoomLink`]: wizardData.zoomLink || null,
-                    [`${prefix}Color`]: wizardData.color || null,
-                    [`${prefix}ColorEnd`]: wizardData.colorEnd || null,
-                    [`${prefix}ModuleFolder`]: wizardData.moduleFolder || null,
-                    [`${prefix}ReadingFolder`]: wizardData.readingFolder || null,
-                  };
-                  saveSemesterScheduleMutation.mutate(schedulePayload);
+                const buildSchedulePayload = (prefix: string) => ({
+                  [`${prefix}Code`]: wizardData.courseCode || null,
+                  [`${prefix}DeliveryMode`]: wizardData.deliveryMode || null,
+                  [`${prefix}ClassDay`]: wizardData.classDay || null,
+                  [`${prefix}ClassDay2`]: wizardData.classDay2 || null,
+                  [`${prefix}ClassTime`]: wizardData.classTime || null,
+                  [`${prefix}ClassEndTime`]: wizardData.classEndTime || null,
+                  [`${prefix}ClassTime2`]: (wizardData as any).classTime2 || null,
+                  [`${prefix}ClassEndTime2`]: (wizardData as any).classEndTime2 || null,
+                  [`${prefix}SpringSummerTerm`]: wizardData.springSummerTerm || null,
+                  [`${prefix}StartDate`]: wizardData.startDate ? new Date(wizardData.startDate).toISOString() : null,
+                  [`${prefix}EndDate`]: wizardData.endDate ? new Date(wizardData.endDate).toISOString() : null,
+                  [`${prefix}CourseType`]: wizardData.courseType || null,
+                  [`${prefix}ZoomLink`]: wizardData.zoomLink || null,
+                  [`${prefix}Color`]: wizardData.color || null,
+                  [`${prefix}ColorEnd`]: wizardData.colorEnd || null,
+                  [`${prefix}ModuleFolder`]: wizardData.moduleFolder || null,
+                  [`${prefix}ReadingFolder`]: wizardData.readingFolder || null,
+                });
+
+                if (matchedSem) {
+                  const codes = [matchedSem.course1Code, matchedSem.course2Code, matchedSem.course3Code];
+                  const emptySlot = codes.findIndex(c => !c) + 1;
+                  const slotNum = emptySlot > 0 ? emptySlot : codes.length + 1;
+                  if (slotNum <= 3) {
+                    const prefix = `course${slotNum}`;
+                    const payload = { semesterType: wizardData.semesterType, ...buildSchedulePayload(prefix) };
+                    if (isActiveSemester) {
+                      saveSemesterScheduleMutation.mutate(payload);
+                    } else {
+                      try {
+                        await apiRequest("PATCH", `/api/semesters/${matchedSem.id}`, payload);
+                        queryClient.invalidateQueries({ queryKey: ["/api/semesters"] });
+                        toast({ title: "Schedule saved", description: `Course added to ${targetSemName}.` });
+                      } catch (err) {
+                        console.error("Failed to save to semester:", err);
+                      }
+                    }
+                  }
+                } else {
+                  try {
+                    await apiRequest("POST", "/api/semester", {
+                      semesterType: wizardData.semesterType,
+                      semesterName: targetSemName,
+                      ...buildSchedulePayload('course1'),
+                    });
+                    queryClient.invalidateQueries({ queryKey: ["/api/semesters"] });
+                    toast({ title: "Semester created", description: `${targetSemName} created with ${fullName}.` });
+                  } catch (err) {
+                    console.error("Failed to create semester:", err);
+                  }
                 }
 
                 setIsNewCourseWizardOpen(false);

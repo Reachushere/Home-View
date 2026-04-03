@@ -82,6 +82,7 @@ interface WizardData {
   courseRowColor: string;
   taskBgColor: string;
   semesterType: string;
+  semesterYear: string;
   deliveryMode: string;
   classDay: string;
   classDay2: string;
@@ -97,10 +98,22 @@ interface WizardData {
   tasks: WizardTask[];
 }
 
+interface SemesterOption {
+  id: number;
+  semesterType: string;
+  semesterName: string;
+  isActive: boolean;
+  course1Code?: string | null;
+  course2Code?: string | null;
+  course3Code?: string | null;
+}
+
 interface NewCourseWizardProps {
   onSave: (data: WizardData) => void;
   onClose: () => void;
   existingSemesterType?: string;
+  existingSemesterYear?: string;
+  availableSemesters?: SemesterOption[];
   colorSettings?: { mainBackground: string; mainBackgroundGradientEnd: string; headerBar: string };
 }
 
@@ -136,7 +149,8 @@ function createEmptyTask(): WizardTask {
   };
 }
 
-export function NewCourseWizard({ onSave, onClose, existingSemesterType, colorSettings }: NewCourseWizardProps) {
+export function NewCourseWizard({ onSave, onClose, existingSemesterType, existingSemesterYear, availableSemesters, colorSettings }: NewCourseWizardProps) {
+  const currentYear = new Date().getFullYear().toString();
   const [step, setStep] = useState(1);
   const [data, setData] = useState<WizardData>({
     courseCode: "",
@@ -151,6 +165,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, colorSe
     courseRowColor: "",
     taskBgColor: "",
     semesterType: existingSemesterType || "winter",
+    semesterYear: existingSemesterYear || currentYear,
     deliveryMode: "",
     classDay: "",
     classDay2: "",
@@ -567,9 +582,9 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, colorSe
         <p className="text-[9px] text-white/50 mt-1">Configure how this course fits in your semester</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-3 gap-3">
         <div>
-          <Label className="text-[9px] text-white/60 mb-1 block">Semester Type</Label>
+          <Label className="text-[9px] text-white/60 mb-1 block">Semester</Label>
           <select
             value={data.semesterType}
             onChange={(e) => updateField("semesterType", e.target.value)}
@@ -582,7 +597,20 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, colorSe
           </select>
         </div>
         <div>
-          <Label className="text-[9px] text-white/60 mb-1 block">Delivery Mode</Label>
+          <Label className="text-[9px] text-white/60 mb-1 block">Year</Label>
+          <select
+            value={data.semesterYear}
+            onChange={(e) => updateField("semesterYear", e.target.value)}
+            className="w-full h-8 rounded bg-white/10 border border-white/20 text-white text-[10px] px-2"
+            data-testid="wizard-select-semester-year"
+          >
+            {[parseInt(currentYear) - 1, parseInt(currentYear), parseInt(currentYear) + 1, parseInt(currentYear) + 2].map(y => (
+              <option key={y} value={String(y)} className="bg-gray-800">{y}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <Label className="text-[9px] text-white/60 mb-1 block">Delivery</Label>
           <select
             value={data.deliveryMode}
             onChange={(e) => updateField("deliveryMode", e.target.value)}
@@ -595,6 +623,24 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, colorSe
           </select>
         </div>
       </div>
+
+      {(() => {
+        const typeLabel = data.semesterType === 'winter' ? 'Winter' : data.semesterType === 'fall' ? 'Fall' : 'Spring/Summer';
+        const targetName = `${typeLabel} ${data.semesterYear}`;
+        const matched = availableSemesters?.find(s => s.semesterName === targetName || (s.semesterType === data.semesterType && s.semesterName?.includes(data.semesterYear)));
+        const filledSlots = matched ? [matched.course1Code, matched.course2Code, matched.course3Code].filter(Boolean).length : 0;
+        return (
+          <div className="rounded bg-white/5 border border-white/10 px-3 py-2 text-[9px]">
+            <span className="text-white/50">Assigning to: </span>
+            <span className="text-white font-medium">{targetName}</span>
+            {matched ? (
+              <span className="text-white/40 ml-1">({filledSlots}/3 course slots filled{matched.isActive ? ' — active' : ''})</span>
+            ) : (
+              <span className="text-yellow-400/80 ml-1">(new semester — will be created)</span>
+            )}
+          </div>
+        );
+      })()}
 
       {data.semesterType === "spring_summer" && (
         <div>
@@ -1014,7 +1060,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, colorSe
         <div className="bg-white/5 border border-white/10 rounded-lg p-3">
           <div className="text-[10px] font-medium text-white mb-2">Semester & Schedule</div>
           <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[9px]">
-            <div><span className="text-white/40">Semester:</span> <span className="text-white/80">{data.semesterType === 'winter' ? 'Winter' : data.semesterType === 'spring_summer' ? 'Spring/Summer' : data.semesterType === 'fall' ? 'Fall' : data.semesterType || 'Not set'}</span></div>
+            <div><span className="text-white/40">Semester:</span> <span className="text-white/80">{data.semesterType === 'winter' ? 'Winter' : data.semesterType === 'spring_summer' ? 'Spring/Summer' : data.semesterType === 'fall' ? 'Fall' : data.semesterType || 'Not set'} {data.semesterYear}</span></div>
             {data.springSummerTerm && <div><span className="text-white/40">Term:</span> <span className="text-white/80">{data.springSummerTerm === 'term1' ? 'Term 1' : data.springSummerTerm === 'term2' ? 'Term 2' : 'Full'}</span></div>}
             {data.startDate && <div><span className="text-white/40">Start Date:</span> <span className="text-white/80">{data.startDate}</span></div>}
             {data.endDate && <div><span className="text-white/40">End Date:</span> <span className="text-white/80">{data.endDate}</span></div>}
