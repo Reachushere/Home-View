@@ -32210,8 +32210,19 @@ function CoursesForm({
             const classEndTime = (semesterSettings as any)?.[`${prefix}ClassEndTime`] || '';
             const dayNames: Record<string, string> = { monday: 'Mon', tuesday: 'Tue', wednesday: 'Wed', thursday: 'Thu', friday: 'Fri', saturday: 'Sat', sunday: 'Sun' };
 
+            const currentCode = course.name.split(' - ')[0] || '';
+            const currentName = course.name.split(' - ').slice(1).join(' - ') || '';
+
+            const updateCourseName = (newCode: string, newName: string) => {
+              const combined = newName ? `${newCode} - ${newName}` : newCode;
+              const updatedCourses = [...courses];
+              updatedCourses[realIndex] = { ...updatedCourses[realIndex], name: combined };
+              setCourses(updatedCourses);
+              onSave({ courses: updatedCourses });
+            };
+
             return (
-              <div key={realIndex} className="border rounded p-3 space-y-1">
+              <div key={realIndex} className="border rounded p-3 space-y-2">
                 <div className="flex items-center gap-2">
                   <div className="relative flex-shrink-0">
                     <div className="w-3 h-3 rounded-full cursor-pointer" style={{ backgroundColor: course.color }} onClick={() => document.getElementById(`course-color-${realIndex}`)?.click()} />
@@ -32231,8 +32242,8 @@ function CoursesForm({
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-medium truncate">{course.name.split(' - ')[0]}</span>
-                      <span className="text-[9px] text-white/50 truncate">{course.name.split(' - ').slice(1).join(' - ')}</span>
+                      <span className="text-[11px] font-medium truncate">{currentCode}</span>
+                      <span className="text-[9px] text-white/50 truncate">{currentName}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0">
@@ -32252,6 +32263,30 @@ function CoursesForm({
                     >
                       <Trash2 className="h-3 w-3" />
                     </button>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 pl-5">
+                  <div className="flex-shrink-0">
+                    <label className="text-[8px] text-white/40 uppercase tracking-wider">Code</label>
+                    <input
+                      type="text"
+                      value={currentCode}
+                      onChange={(e) => updateCourseName(e.target.value.toUpperCase(), currentName)}
+                      className="block w-[80px] text-[10px] px-1.5 py-0.5 rounded border border-white/20 bg-white/10 text-white"
+                      placeholder="CPPA122"
+                      data-testid={`input-course-code-${realIndex}`}
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <label className="text-[8px] text-white/40 uppercase tracking-wider">Course Name</label>
+                    <input
+                      type="text"
+                      value={currentName}
+                      onChange={(e) => updateCourseName(currentCode, e.target.value)}
+                      className="block w-full text-[10px] px-1.5 py-0.5 rounded border border-white/20 bg-white/10 text-white"
+                      placeholder="Local Politics"
+                      data-testid={`input-course-name-${realIndex}`}
+                    />
                   </div>
                 </div>
                 <div className="flex items-center gap-3 text-[9px] text-white/50 pl-5">
