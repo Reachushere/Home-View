@@ -20593,7 +20593,7 @@ export default function Dashboard() {
 
                   const allDefCodes = new Set(semesterDefs.flatMap(s => s.courses.map(c => c.code.toUpperCase().replace(/\s/g, ''))));
                   const currentSemKey = (() => {
-                    const now = new Date();
+                    const now = new Date('2026-04-27T12:00:00'); // TEMP: preview as April 27, 2026
                     if (now >= new Date('2025-05-05') && now <= new Date('2025-08-08')) return 'ss2025';
                     if (now >= new Date('2025-09-08') && now <= new Date('2025-12-12')) return 'f2025';
                     if (now >= new Date('2026-01-12') && now <= new Date('2026-04-17')) return 'w2026';
