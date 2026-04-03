@@ -11145,7 +11145,7 @@ export default function Dashboard() {
                           }
                           setAlexaCalendarOpen(false);
                         }}
-                        className="text-white"
+                        className="text-white [&_button]:!bg-transparent [&_button]:!text-white/70 [&_button]:!border-white/20"
                         classNames={{
                           months: "flex flex-col",
                           month: "space-y-3",
@@ -11160,11 +11160,11 @@ export default function Dashboard() {
                           head_cell: "text-white/40 rounded-md w-8 font-normal text-[10px]",
                           row: "flex w-full mt-1",
                           cell: "h-8 w-8 text-center text-[11px] p-0 relative",
-                          day: "h-8 w-8 p-0 font-normal text-white/70 hover:bg-white/10 rounded-md inline-flex items-center justify-center cursor-pointer",
+                          day: "h-8 w-8 p-0 font-normal !bg-transparent !text-white/70 hover:!bg-white/10 rounded-md inline-flex items-center justify-center cursor-pointer",
                           day_selected: "!bg-cyan-500 !text-white hover:!bg-cyan-600",
-                          day_today: "bg-white/10 text-white font-semibold",
-                          day_outside: "text-white/20",
-                          day_disabled: "text-white/10",
+                          day_today: "!bg-white/10 !text-white font-semibold",
+                          day_outside: "!text-white/20",
+                          day_disabled: "!text-white/10",
                         }}
                       />
                       {alexaDate && (
@@ -11271,7 +11271,7 @@ export default function Dashboard() {
                             }
                             setAlexaRepeatEndCalendarOpen(false);
                           }}
-                          className="text-white"
+                          className="text-white [&_button]:!bg-transparent [&_button]:!text-white/70 [&_button]:!border-white/20"
                           classNames={{
                             months: "flex flex-col",
                             month: "space-y-3",
@@ -11286,11 +11286,11 @@ export default function Dashboard() {
                             head_cell: "text-white/40 rounded-md w-8 font-normal text-[10px]",
                             row: "flex w-full mt-1",
                             cell: "h-8 w-8 text-center text-[11px] p-0 relative",
-                            day: "h-8 w-8 p-0 font-normal text-white/70 hover:bg-white/10 rounded-md inline-flex items-center justify-center cursor-pointer",
+                            day: "h-8 w-8 p-0 font-normal !bg-transparent !text-white/70 hover:!bg-white/10 rounded-md inline-flex items-center justify-center cursor-pointer",
                             day_selected: "!bg-cyan-500 !text-white hover:!bg-cyan-600",
-                            day_today: "bg-white/10 text-white font-semibold",
-                            day_outside: "text-white/20",
-                            day_disabled: "text-white/10",
+                            day_today: "!bg-white/10 !text-white font-semibold",
+                            day_outside: "!text-white/20",
+                            day_disabled: "!text-white/10",
                           }}
                         />
                         {alexaRepeatEndDate && (
@@ -28289,7 +28289,7 @@ export default function Dashboard() {
                             }
                             setReminderCalendarOpen(false);
                           }}
-                          className="text-white"
+                          className="text-white [&_button]:!bg-transparent [&_button]:!text-white/70 [&_button]:!border-white/20"
                           classNames={{
                             months: "flex flex-col",
                             month: "space-y-3",
@@ -28304,11 +28304,11 @@ export default function Dashboard() {
                             head_cell: "text-white/40 rounded-md w-8 font-normal text-[10px]",
                             row: "flex w-full mt-1",
                             cell: "h-8 w-8 text-center text-[11px] p-0 relative",
-                            day: "h-8 w-8 p-0 font-normal text-white/70 hover:bg-white/10 rounded-md inline-flex items-center justify-center cursor-pointer",
+                            day: "h-8 w-8 p-0 font-normal !bg-transparent !text-white/70 hover:!bg-white/10 rounded-md inline-flex items-center justify-center cursor-pointer",
                             day_selected: "!bg-cyan-500 !text-white hover:!bg-cyan-600",
-                            day_today: "bg-white/10 text-white font-semibold",
-                            day_outside: "text-white/20",
-                            day_disabled: "text-white/10",
+                            day_today: "!bg-white/10 !text-white font-semibold",
+                            day_outside: "!text-white/20",
+                            day_disabled: "!text-white/10",
                           }}
                         />
                         {reminderDatePart && (
