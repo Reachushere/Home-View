@@ -22976,7 +22976,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`flex flex-col items-center justify-center h-full relative`}
-                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'hidden', borderLeft: `2px solid ${colorSettings.headerBar}` } : day.getDay() === 6 ? { background: `linear-gradient(0deg, color-mix(in srgb, ${colorSettings.mainBackground} 80%, white) 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 90%, black) 100%)`, borderLeft: `2px solid ${colorSettings.headerBar}` } : { background: `linear-gradient(0deg, color-mix(in srgb, ${colorSettings.mainBackground} 80%, white) 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 90%, black) 100%)`, borderLeft: '1px solid rgba(255,255,255,0.1)' }}
+                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'hidden', borderLeft: `2px solid ${colorSettings.headerBar}` } : day.getDay() === 6 ? { background: `linear-gradient(0deg, color-mix(in srgb, ${colorSettings.mainBackground} 60%, white) 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 90%, black) 100%)`, borderLeft: `2px solid ${colorSettings.headerBar}` } : { background: `linear-gradient(0deg, color-mix(in srgb, ${colorSettings.mainBackground} 60%, white) 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 90%, black) 100%)`, borderLeft: '1px solid rgba(255,255,255,0.1)' }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     
