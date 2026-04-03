@@ -21286,7 +21286,8 @@ export default function Dashboard() {
 
                 if (matchedSem) {
                   const codes = [matchedSem.course1Code, matchedSem.course2Code, matchedSem.course3Code];
-                  const emptySlot = codes.findIndex(c => !c) + 1;
+                  const isTBD = (c: string | null | undefined) => !c || /^TBD\d*$/i.test(c.trim());
+                  const emptySlot = codes.findIndex(c => isTBD(c)) + 1;
                   const slotNum = emptySlot > 0 ? emptySlot : codes.length + 1;
                   if (slotNum <= 3) {
                     const prefix = `course${slotNum}`;

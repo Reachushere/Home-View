@@ -2490,3 +2490,9 @@ input[type="date"]::-webkit-datetime-edit-year-field {
   border: 8px solid #ef4444;
   animation: pomodoro-alert-blink 1s ease-in-out infinite;
 }
+
+input.wizard-dark-input {
+  color: #333 !important;
+  background-color: white !important;
+  color-scheme: light !important;
+}
