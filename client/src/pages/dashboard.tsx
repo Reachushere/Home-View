@@ -27062,7 +27062,7 @@ export default function Dashboard() {
                                   <stop offset="100%" stopColor={botColor} />
                                 </linearGradient>
                               </defs>
-                              <defs><filter id={`tabShadow-${tabIdx}`}><feDropShadow dx="0" dy="0.5" stdDeviation="0.5" floodColor="rgba(0,0,0,0.07)" /></filter></defs>
+                              <defs><filter id={`tabShadow-${tabIdx}`}><feDropShadow dx="0" dy="0.3" stdDeviation="0.3" floodColor="rgba(0,0,0,0.03)" /></filter></defs>
                               <path d={`M0,0 L${displayW - br},0 Q${displayW},0 ${displayW},${br} L${displayW},${svgH - br} Q${displayW},${svgH} ${displayW - br},${svgH} L0,${svgH} Z`} fill={`url(#${gradId})`} filter={`url(#tabShadow-${tabIdx})`} />
                               {tab.topText ? (
                                 <>
