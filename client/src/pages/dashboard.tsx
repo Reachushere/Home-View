@@ -17682,7 +17682,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Content area */}
-                <div className="overflow-y-auto p-4 flex flex-col [&_p]:text-white [&_span]:text-white [&_label]:text-white [&_input]:text-white [&_input]:bg-white/10 [&_textarea]:text-white [&_textarea]:bg-white/10" style={{ scrollbarWidth: 'thin', height: '520px' }}>
+                <div className="overflow-y-auto p-4 flex flex-col [&_p]:text-white [&_span]:text-white [&_label]:text-white [&_input]:text-white [&_input]:bg-white/10 [&_textarea]:text-white [&_textarea]:bg-white/10" style={{ scrollbarWidth: 'none', flex: 1, minHeight: 0 }}>
                   {/* Step 0: Task Type */}
                   {quickAddStep === 0 && (
                     <div className="flex flex-col gap-2">
