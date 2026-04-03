@@ -22976,7 +22976,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`flex flex-col items-center justify-center h-full relative`}
-                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'hidden', borderLeft: `2px solid ${colorSettings.headerBar}` } : day.getDay() === 6 ? { background: 'linear-gradient(180deg, #74B6E3 0%, #053E80 100%)', borderLeft: `2px solid ${colorSettings.headerBar}` } : { background: 'linear-gradient(180deg, #74B6E3 0%, #053E80 100%)', borderLeft: '1px solid rgba(255,255,255,0.1)' }}
+                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'hidden', borderLeft: `2px solid ${colorSettings.headerBar}` } : day.getDay() === 6 ? { background: 'linear-gradient(180deg, #84C2EB 0%, #053E80 100%)', borderLeft: `2px solid ${colorSettings.headerBar}` } : { background: 'linear-gradient(180deg, #84C2EB 0%, #053E80 100%)', borderLeft: '1px solid rgba(255,255,255,0.1)' }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     
