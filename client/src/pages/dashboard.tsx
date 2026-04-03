@@ -17306,7 +17306,7 @@ export default function Dashboard() {
           bottom: '29px',
           left: '50%',
           transform: 'translateX(-50%)',
-          display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'block',
+          display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'block',
           textDecoration: 'none',
           zIndex: 10002,
         }}
@@ -17328,7 +17328,7 @@ export default function Dashboard() {
           top: '50vh',
           transform: 'translateY(-50%)',
           pointerEvents: 'auto',
-          display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined,
+          display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : undefined,
         }}
         onClick={() => {
           setIsAddChooserOpen(true);
@@ -17350,7 +17350,7 @@ export default function Dashboard() {
           top: '50vh',
           transform: 'translateY(-50%)',
           pointerEvents: 'auto',
-          display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined,
+          display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : undefined,
         }}
         onClick={() => {
           window.location.href = '/projects';
