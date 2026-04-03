@@ -4681,28 +4681,64 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       }
       if (!semester) return res.status(404).json({ error: "Semester not found" });
 
-      const { listOneDriveFolderChildren, renameOneDriveItem } = await import("./onedrive");
-      const semType = getSemesterTypeFolder(semester.semesterType);
+      const { listOneDriveFolderChildren, renameOneDriveItem, checkOneDriveFolderExists } = await import("./onedrive");
       const startDate = semester.semesterStartDate ? new Date(semester.semesterStartDate) : new Date();
       const year = startDate.getFullYear();
-      let semPath = `/School/1. TMU/Courses/${year}/${semType}`;
+      const basePath = `/School/1. TMU/Courses/${year}`;
+
+      const semTypeVariants = (() => {
+        const t = (semester.semesterType || 'winter').toLowerCase();
+        if (t.includes('spring') || t.includes('summer')) return ['Spring-Summer', 'Spring & Summer', 'Spring_Summer'];
+        if (t.includes('fall')) return ['Fall'];
+        return ['Winter'];
+      })();
 
       const term = (springSummerTerm || '').toLowerCase();
-      if (term === 'first_half') semPath += '/Summer - First Half';
-      else if (term === 'second_half') semPath += '/Summer - Second Half';
-      else if (term === 'full' && semType === 'Spring & Summer') semPath += '/Full Term';
+      const subFolders = [];
+      if (term === 'first_half') subFolders.push('Summer - First Half');
+      else if (term === 'second_half') subFolders.push('Summer - Second Half');
+      else if (term === 'full') subFolders.push('Full Term');
 
-      const children = await listOneDriveFolderChildren(semPath);
-      const tbd = children.find((c: any) => c.folder && /^TBD\d*$/i.test(c.name.trim()));
+      let semPath = '';
+      let children: any[] = [];
+      for (const variant of semTypeVariants) {
+        const candidatePaths = subFolders.length > 0
+          ? subFolders.map(sf => `${basePath}/${variant}/${sf}`)
+          : [`${basePath}/${variant}`];
+        for (const candidate of candidatePaths) {
+          const exists = await checkOneDriveFolderExists(candidate);
+          if (exists) {
+            children = await listOneDriveFolderChildren(candidate);
+            semPath = candidate;
+            break;
+          }
+        }
+        if (semPath) break;
+      }
+
+      if (!semPath) {
+        console.log(`[OneDrive] No matching semester folder found for ${year}, type=${semester.semesterType}, term=${springSummerTerm}`);
+        return res.json({ success: false, message: "Semester folder not found in OneDrive", triedVariants: semTypeVariants });
+      }
+
+      const tbd = children.find((c: any) => c.folder && /^TBD\d*(\s*-\s*.*)?$/i.test(c.name.trim()));
 
       if (!tbd) {
-        return res.json({ success: false, message: "No TBD folder found", path: semPath });
+        return res.json({ success: false, message: "No TBD folder found", path: semPath, folders: children.map((c: any) => c.name) });
       }
 
       const code = (courseCode || '').replace(/\s/g, '');
       const newFolderName = courseName ? `${code} - ${courseName}` : code;
 
-      await renameOneDriveItem(tbd.id, newFolderName);
+      try {
+        await renameOneDriveItem(tbd.id, newFolderName);
+      } catch (renameErr: any) {
+        if (renameErr.message?.includes('Name already exists') || renameErr.statusCode === 409) {
+          console.log(`[OneDrive] Folder "${newFolderName}" already exists in ${semPath}, skipping rename`);
+          return res.json({ success: true, action: 'already_exists', folder: newFolderName, path: `${semPath}/${newFolderName}` });
+        }
+        throw renameErr;
+      }
       console.log(`[OneDrive] Renamed TBD folder "${tbd.name}" → "${newFolderName}" in ${semPath}`);
 
       if (semester) {

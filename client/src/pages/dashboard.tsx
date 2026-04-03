@@ -23177,6 +23177,10 @@ export default function Dashboard() {
                 const dayForecast = weatherData.daily?.find(d => d.date === dateStr);
                 const isPast = day < startOfDayET(new Date());
                 const WMO_SHORT: Record<number, string> = { 0:'Clear',1:'Clear',2:'Cloudy',3:'Overcast',45:'Fog',48:'Fog',51:'Drizzle',53:'Drizzle',55:'Drizzle',61:'Rain',63:'Rain',65:'Rain',66:'Fr. Rain',67:'Fr. Rain',71:'Snow',73:'Snow',75:'Snow',77:'Snow',80:'Showers',81:'Showers',82:'Showers',85:'Snow',86:'Snow',95:'Storm',96:'Storm',99:'Storm' };
+                const isTodayForecast = isSameDayET(day, new Date());
+                const srTime = weatherData?.sunrise ? new Date(weatherData.sunrise) : null;
+                const afterSunrise = isTodayForecast && srTime && new Date() >= srTime;
+                const effectiveWCode = afterSunrise ? weatherData!.code : dayForecast?.weatherCode;
                 const wIcon = ((wc: number | undefined) => {
                   if (wc === undefined) return '';
                   if (wc === 0) return '☀️'; if (wc === 1) return '🌤️'; if (wc === 2) return '⛅'; if (wc === 3) return '☁️';
@@ -23186,9 +23190,8 @@ export default function Dashboard() {
                   if (wc >= 71 && wc <= 77) return '❄️'; if (wc >= 80 && wc <= 82) return '🌦️';
                   if (wc >= 85 && wc <= 86) return '🌨️'; if (wc >= 95) return '⛈️';
                   return '';
-                })(dayForecast?.weatherCode);
-                const desc = dayForecast?.weatherCode !== undefined ? (WMO_SHORT[dayForecast.weatherCode] || '') : '';
-                const isTodayForecast = isSameDayET(day, new Date());
+                })(effectiveWCode);
+                const desc = effectiveWCode !== undefined ? (WMO_SHORT[effectiveWCode] || '') : '';
                 return (
                   <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : 1 }} data-testid={`weather-above-${dateStr}`}>
                     {isTodayForecast && weatherAlerts.length > 0 && (
@@ -23196,7 +23199,7 @@ export default function Dashboard() {
                     )}
                     {dayForecast && (
                       <span className="text-[11px] text-white/90 whitespace-nowrap leading-none font-medium relative z-10" style={{ letterSpacing: '-0.2px' }}>
-                        {wIcon} {Math.round(dayForecast.low)}°/{Math.round(dayForecast.high)}° {desc}
+                        {wIcon} {afterSunrise ? `${Math.round(weatherData!.temp)}° ${desc}` : `${Math.round(dayForecast.low)}°/${Math.round(dayForecast.high)}° ${desc}`}
                       </span>
                     )}
                   </div>
@@ -23353,14 +23356,19 @@ export default function Dashboard() {
                             const isSunrisePhase = phase === 'preDawn' || phase === 'sunrise' || phase === 'morning';
                             const isSunsetPhase = phase === 'preSet' || phase === 'sunset' || phase === 'dusk';
 
+                            const isRainyWeather = wCode >= 51 && wCode <= 67 || wCode >= 80 && wCode <= 82 || wCode >= 95;
+                            const isSnowyWeather = wCode >= 71 && wCode <= 77 || wCode >= 85 && wCode <= 86;
+                            const isOvercastWeather = wCode === 3 || wCode === 45 || wCode === 48;
+                            const isActiveWeather = isRainyWeather || isSnowyWeather || isOvercastWeather;
+
                             const skyBg = (() => {
                               if (isNightPhase) return 'linear-gradient(180deg, #0a0e27 0%, #101740 40%, #1a2555 100%)';
                               if (phase === 'preDawn') return 'linear-gradient(180deg, #0f1535 0%, #1e2a5a 40%, #3d2b4a 70%, #5c3d4a 100%)';
-                              if (phase === 'sunrise') return 'linear-gradient(180deg, #2a3a6e 0%, #c97355 35%, #e8a55a 55%, #f0c66e 75%, #fdd878 100%)';
-                              if (phase === 'morning') return 'linear-gradient(180deg, #4a8ec7 0%, #7bb8e0 40%, #b8d8ef 70%, #edc261 100%)';
-                              if (phase === 'preSet') return 'linear-gradient(180deg, #5a95c8 0%, #8ab8d8 30%, #c9a96e 60%, #d4905a 100%)';
-                              if (phase === 'sunset') return 'linear-gradient(180deg, #2d3a6e 0%, #8a4a5c 25%, #d4724a 45%, #ecc47e 65%, #f9a523 85%, #c44a20 100%)';
-                              if (phase === 'dusk') return 'linear-gradient(180deg, #12183a 0%, #2a2050 30%, #5c3355 55%, #8a4a5c 75%, #3d2040 100%)';
+                              if (phase === 'sunrise') return isActiveWeather ? 'linear-gradient(180deg, #3a4060 0%, #7a6858 35%, #9a8868 55%, #8a8878 75%, #7a7a72 100%)' : 'linear-gradient(180deg, #2a3a6e 0%, #c97355 35%, #e8a55a 55%, #f0c66e 75%, #fdd878 100%)';
+                              if (phase === 'morning') return isActiveWeather ? 'linear-gradient(180deg, #4a5a6a 0%, #6a7a88 40%, #8a9098 70%, #7a8078 100%)' : 'linear-gradient(180deg, #4a8ec7 0%, #7bb8e0 40%, #b8d8ef 70%, #edc261 100%)';
+                              if (phase === 'preSet') return isActiveWeather ? 'linear-gradient(180deg, #4a5868 0%, #6a7580 30%, #7a7568 60%, #6a5a50 100%)' : 'linear-gradient(180deg, #5a95c8 0%, #8ab8d8 30%, #c9a96e 60%, #d4905a 100%)';
+                              if (phase === 'sunset') return isActiveWeather ? 'linear-gradient(180deg, #2a3050 0%, #5a4a50 25%, #7a5a48 45%, #6a6058 65%, #5a4a3a 100%)' : 'linear-gradient(180deg, #2d3a6e 0%, #8a4a5c 25%, #d4724a 45%, #ecc47e 65%, #f9a523 85%, #c44a20 100%)';
+                              if (phase === 'dusk') return isActiveWeather ? 'linear-gradient(180deg, #101825 0%, #1a1a30 30%, #2a2a3a 55%, #3a3540 75%, #201820 100%)' : 'linear-gradient(180deg, #12183a 0%, #2a2050 30%, #5c3355 55%, #8a4a5c 75%, #3d2040 100%)';
                               if (wCode >= 61) return 'linear-gradient(180deg, #4a5568 0%, #6b7a8d 40%, #8a95a5 100%)';
                               if (wCode >= 45 && wCode <= 48) return 'linear-gradient(180deg, #8a9aaa 0%, #b0b8c5 40%, #c8d0d8 100%)';
                               if (wCode === 3) return 'linear-gradient(180deg, #6a7a8e 0%, #8a98aa 40%, #a8b4c2 100%)';
@@ -23386,7 +23394,7 @@ export default function Dashboard() {
                             ).join('') : '';
 
                             const weatherEffectsHtml = (() => {
-                              if (isNightPhase || isSunrisePhase || isSunsetPhase) return '';
+                              if (isNightPhase) return '';
                               if (wCode >= 95) {
                                 const drops = Array.from({ length: 22 }, (_, i) => {
                                   const left = (i * 37 + 13) % 100;

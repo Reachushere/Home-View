@@ -1995,7 +1995,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     <FolderOpen className="h-3 w-3 text-blue-400" />
                     OneDrive File Folders
                   </label>
-                  <p className="text-[7px] text-white/40 mb-1.5">Set the OneDrive folder where the reader finds Module & Reading files.</p>
+                  <p className="text-[7px] text-white mb-1.5">Set the OneDrive folder where the reader finds Module & Reading files.</p>
                   <div className="space-y-1.5 mb-2">
                     {(['module', 'reading'] as const).map(type => {
                       const folder = type === 'module' ? editInfo.moduleFolder : editInfo.readingFolder;
@@ -2032,7 +2032,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                               </button>
                             )}
                           </div>
-                          {folder && <p className="text-[6px] text-white/25 mt-0.5 truncate">{folder}</p>}
+                          {folder && <p className="text-[6px] text-white mt-0.5 truncate">{folder}</p>}
                         </div>
                       );
                     })}
