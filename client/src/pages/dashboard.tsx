@@ -14686,7 +14686,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── School ── */}
-          <div style={{ borderRadius: '26px', padding: '2px 3px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(80,200,120,0.6)', position: 'relative', top: '1px', margin: '0 5px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(70,190,110,0.5) 0%, rgba(50,160,90,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ borderRadius: '26px', padding: '2px 3px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(34,197,94,0.7)', position: 'relative', top: '1px', margin: '0 5px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(34,197,94,0.55) 0%, rgba(22,163,74,0.4) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           <GraduationCap className="h-[18px] w-[18px] text-white/70" style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px' }} />
           {/* Courses Button */}
           <div className="pill-button-hover" style={{ 
