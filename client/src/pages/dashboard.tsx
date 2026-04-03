@@ -2359,14 +2359,11 @@ export default function Dashboard() {
   const [isProjectsFlyoutOpen, setIsProjectsFlyoutOpen] = useState(false);
 
   useEffect(() => {
-    const anyFlyoutOpen = isSettingsPanelOpen || isTodoFlyoutOpen || isProjectsFlyoutOpen || isRadioDialogOpen || isCompletedTasksOpen || isQuickAddOpen || isAlexaDialogOpen || isEmailWizardOpen || isKeyContactsOpen || isSystemHealthOpen || isFeedbackOpen || isSchoolCoursesDialogOpen || isNewCourseWizardOpen;
-    if (anyFlyoutOpen) {
+    const anyEarlyOpen = isSettingsPanelOpen || isTodoFlyoutOpen || isProjectsFlyoutOpen || isRadioDialogOpen || isCompletedTasksOpen || isQuickAddOpen || isAlexaDialogOpen || isEmailWizardOpen || isKeyContactsOpen || isFeedbackOpen;
+    if (anyEarlyOpen) {
       pillFlyoutWasOpenRef.current = true;
-    } else if (pillFlyoutWasOpenRef.current) {
-      pillFlyoutWasOpenRef.current = false;
-      setIsTopPillOpen(true);
     }
-  }, [isSettingsPanelOpen, isTodoFlyoutOpen, isProjectsFlyoutOpen, isRadioDialogOpen, isCompletedTasksOpen, isQuickAddOpen, isAlexaDialogOpen, isEmailWizardOpen, isKeyContactsOpen, isSystemHealthOpen, isFeedbackOpen, isSchoolCoursesDialogOpen, isNewCourseWizardOpen]);
+  }, [isSettingsPanelOpen, isTodoFlyoutOpen, isProjectsFlyoutOpen, isRadioDialogOpen, isCompletedTasksOpen, isQuickAddOpen, isAlexaDialogOpen, isEmailWizardOpen, isKeyContactsOpen, isFeedbackOpen]);
 
   const [flyoutZOrder, setFlyoutZOrder] = useState<string[]>(['files', 'projects', 'todo', 'addTask']);
   
@@ -4185,6 +4182,16 @@ export default function Dashboard() {
   const courseListFileRef = useRef<HTMLInputElement>(null);
   const [isNewCourseWizardOpen, setIsNewCourseWizardOpen] = useState(false);
   const newCourseDialogClosingRef = useRef(false);
+
+  useEffect(() => {
+    const anyDialogOpen = isSettingsPanelOpen || isTodoFlyoutOpen || isProjectsFlyoutOpen || isRadioDialogOpen || isCompletedTasksOpen || isQuickAddOpen || isAlexaDialogOpen || isEmailWizardOpen || isKeyContactsOpen || isFeedbackOpen || isSystemHealthOpen || isSchoolCoursesDialogOpen || isNewCourseWizardOpen;
+    if (anyDialogOpen) {
+      pillFlyoutWasOpenRef.current = true;
+    } else if (pillFlyoutWasOpenRef.current) {
+      pillFlyoutWasOpenRef.current = false;
+      setIsTopPillOpen(true);
+    }
+  }, [isSettingsPanelOpen, isTodoFlyoutOpen, isProjectsFlyoutOpen, isRadioDialogOpen, isCompletedTasksOpen, isQuickAddOpen, isAlexaDialogOpen, isEmailWizardOpen, isKeyContactsOpen, isFeedbackOpen, isSystemHealthOpen, isSchoolCoursesDialogOpen, isNewCourseWizardOpen]);
 
   const [aasSentStatus, setAasSentStatus] = useState<Record<string, boolean>>(() => {
     const saved = localStorage.getItem('aasSentStatus');
@@ -17806,34 +17813,53 @@ export default function Dashboard() {
                       >
                         No course
                       </button>
-                      {COURSES.map(course => (
-                        <button
-                          key={course.code}
-                          className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-opacity duration-200 ${quickAddData.courseName === `${course.code} - ${course.name}` ? 'bg-white/20 text-white border border-white/30' : 'bg-white/5 text-white/70 border border-white/10 hover:bg-white/20 hover:text-white'}`}
-                          onClick={() => { setQuickAddData(p => ({ ...p, courseName: `${course.code} - ${course.name}` })); setQuickAddStep(3); }}
-                          data-testid={`quick-add-course-${course.code}`}
-                        >
-                          {course.code} - {course.name}
-                        </button>
-                      ))}
+                      {(() => {
+                        const semCourses = semesterSettings ? [
+                          ...(semesterSettings.course1Code ? [{ code: semesterSettings.course1Code, name: semesterSettings.course1Name.replace(/^[A-Z]+\d+\s*-\s*/, '') }] : []),
+                          ...(semesterSettings.course2Code ? [{ code: semesterSettings.course2Code, name: semesterSettings.course2Name.replace(/^[A-Z]+\d+\s*-\s*/, '') }] : []),
+                          ...(semesterSettings.course3Code ? [{ code: semesterSettings.course3Code, name: semesterSettings.course3Name.replace(/^[A-Z]+\d+\s*-\s*/, '') }] : []),
+                        ] : COURSES.map(c => ({ code: c.code, name: c.name }));
+                        return semCourses.map(course => (
+                          <button
+                            key={course.code}
+                            className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-opacity duration-200 ${quickAddData.courseName === `${course.code} - ${course.name}` ? 'bg-white/20 text-white border border-white/30' : 'bg-white/5 text-white/70 border border-white/10 hover:bg-white/20 hover:text-white'}`}
+                            onClick={() => { setQuickAddData(p => ({ ...p, courseName: `${course.code} - ${course.name}` })); setQuickAddStep(3); }}
+                            data-testid={`quick-add-course-${course.code}`}
+                          >
+                            {course.code} - {course.name}
+                          </button>
+                        ));
+                      })()}
                     </div>
                   )}
 
                   {/* Step 3: Due Date + Start/End Time */}
                   {quickAddStep === 3 && (
                     <div className="flex flex-col gap-3">
-                      <div className="text-center mb-2">
-                        <Calendar className="h-8 w-8 text-amber-400 mx-auto mb-2" />
+                      <div className="text-center mb-1">
+                        <Calendar className="h-6 w-6 text-amber-400 mx-auto mb-1" />
                         <h3 className="text-sm font-medium text-white">Date & Time</h3>
-                        <p className="text-[9px] text-white/50 mt-1">When is it due?</p>
+                        <p className="text-[9px] text-white/50 mt-0.5">When is it due?</p>
                       </div>
-                      <input
-                        type="date"
-                        value={quickAddData.dueDate}
-                        onChange={(e) => { const v = e.target.value; startTransition(() => setQuickAddData(p => ({ ...p, dueDate: v }))); }}
-                        className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 text-white text-[13px] focus:outline-none focus:border-white/40 transition-colors [color-scheme:dark]"
-                        data-testid="quick-add-due-date"
-                      />
+                      <div className="flex justify-center" data-testid="quick-add-due-date">
+                        <CalendarPicker
+                          mode="single"
+                          selected={quickAddData.dueDate ? new Date(quickAddData.dueDate + 'T12:00:00') : undefined}
+                          onSelect={(date) => {
+                            if (date) {
+                              const y = date.getFullYear();
+                              const m = String(date.getMonth() + 1).padStart(2, '0');
+                              const d = String(date.getDate()).padStart(2, '0');
+                              startTransition(() => setQuickAddData(p => ({ ...p, dueDate: `${y}-${m}-${d}` })));
+                            }
+                          }}
+                          className="rounded-lg border border-white/15 bg-white/5 text-white [&_.rdp-day]:text-white [&_.rdp-head_cell]:text-white/50 [&_.rdp-caption_label]:text-white [&_.rdp-nav_button]:text-white/60 [&_.rdp-nav_button:hover]:text-white [&_.rdp-day_today]:bg-white/15 [&_.rdp-day_selected]:bg-sky-500 [&_.rdp-day_selected]:text-white [&_.rdp-day_outside]:text-white/20"
+                          classNames={{
+                            day_selected: "bg-sky-500 text-white hover:bg-sky-600 focus:bg-sky-600",
+                            day_today: "bg-white/15 text-white font-bold",
+                          }}
+                        />
+                      </div>
                       <div className="flex gap-2 items-center">
                         <span className="text-white/50 text-[11px]">Due time:</span>
                         <select
@@ -18638,7 +18664,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Footer with navigation */}
-                <div className="flex items-center justify-between px-4 py-3 border-t border-white/10 bg-black/20 flex-shrink-0" style={{ flexDirection: 'row-reverse' }}>
+                <div className="flex items-center justify-between px-4 py-3 border-t border-white/10 bg-black/20 flex-shrink-0">
                   <button
                     onClick={() => { if (quickAddStep > 0) setQuickAddStep(s => s - 1); else handleQuickAddClose(); }}
                     className="inline-flex items-center justify-center rounded-md px-3 py-1.5 text-white transition-opacity duration-200"
