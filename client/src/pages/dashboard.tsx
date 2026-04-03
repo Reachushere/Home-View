@@ -23320,11 +23320,11 @@ export default function Dashboard() {
                             type SkyPhase = 'night' | 'preDawn' | 'sunrise' | 'morning' | 'day' | 'preSet' | 'sunset' | 'dusk' | 'nightPost';
                             const phase: SkyPhase = (() => {
                               if (minutesSinceMidnight < srMin - 60) return 'night';
-                              if (minutesSinceMidnight < srMin - 15) return 'preDawn';
+                              if (minutesSinceMidnight < srMin) return 'preDawn';
                               if (minutesSinceMidnight < srMin + 30) return 'sunrise';
                               if (minutesSinceMidnight < srMin + 90) return 'morning';
                               if (minutesSinceMidnight < ssMin - 60) return 'day';
-                              if (minutesSinceMidnight < ssMin - 15) return 'preSet';
+                              if (minutesSinceMidnight < ssMin) return 'preSet';
                               if (minutesSinceMidnight < ssMin + 30) return 'sunset';
                               if (minutesSinceMidnight < ssMin + 60) return 'dusk';
                               return 'nightPost';
@@ -25266,7 +25266,7 @@ export default function Dashboard() {
                                     data-testid={`checkbox-time-${task.id}`}
                                   />
                                   <div style={{ flex: 1, minWidth: 0 }}>
-                                    <div style={{ fontSize: '8px', fontWeight: 400, color: 'rgba(255,255,255,0.8)', lineHeight: 1.2, position: 'relative', top: '1px' }}>
+                                    <div style={{ fontSize: '8px', fontWeight: 400, color: 'rgba(255,255,255,0.8)', lineHeight: 1.2, position: 'relative', top: '1px', fontStyle: 'italic' }}>
                                       {task.eventStartTime && task.eventEndTime ? `${formatTimeTo12Hour(task.eventStartTime)} - ${formatTimeTo12Hour(task.eventEndTime)}` : format(new Date(task.dueDate), "h:mm a")}
                                     </div>
                                   </div>
@@ -25304,7 +25304,7 @@ export default function Dashboard() {
                                   {event.title}
                                 </a>
                               </div>
-                              <div className="text-[8px] mt-0.5 mb-3 ml-[18px] text-muted-foreground">
+                              <div className="text-[8px] mt-0.5 mb-3 ml-[18px] text-muted-foreground italic">
                                 {format(new Date(event.startDate), "h:mm a")}
                               </div>
                             </div>
@@ -25451,7 +25451,7 @@ export default function Dashboard() {
                           onClick={(e) => e.stopPropagation()}
                         />
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: '9px', fontWeight: 400, color: 'rgba(255,255,255,0.8)', lineHeight: 1.2, position: 'relative', top: '1px' }}>
+                          <div style={{ fontSize: '9px', fontWeight: 400, color: 'rgba(255,255,255,0.8)', lineHeight: 1.2, position: 'relative', top: '1px', fontStyle: 'italic' }}>
                             {task.eventStartTime && task.eventEndTime ? `${formatTimeTo12Hour(task.eventStartTime)} - ${formatTimeTo12Hour(task.eventEndTime)}` : format(new Date(task.dueDate), "h:mm a")}
                           </div>
                         </div>
