@@ -17017,19 +17017,40 @@ export default function Dashboard() {
                       queryClient.invalidateQueries({ queryKey: ["/api/semesters"] });
                       queryClient.invalidateQueries({ queryKey: ["/api/semester"] });
                     });
+
+                    const courseParts = selectedCertCourse!.courseName || '';
+                    const spSuTerm = (sem as any)[`${prefix}SpringSummerTerm`] || '';
+                    fetch('/api/onedrive/revert-course-folder', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      credentials: 'include',
+                      body: JSON.stringify({
+                        semesterId: sem.id,
+                        courseCode: codeNorm,
+                        courseName: courseParts,
+                        springSummerTerm: spSuTerm,
+                        slotNumber: i,
+                      }),
+                    }).then(r => r.json()).then(result => {
+                      if (result.success) {
+                        console.log(`[OneDrive] Reverted folder: ${result.from} → ${result.to}`);
+                        queryClient.invalidateQueries({ queryKey: ['/api/onedrive'] });
+                        queryClient.invalidateQueries({ queryKey: ['/api/semester-settings'] });
+                      } else {
+                        console.log('[OneDrive] Revert skipped:', result.message);
+                      }
+                    }).catch(err => console.error('[OneDrive] Revert error:', err));
+
                     break;
                   }
                 }
               }
 
-              setSemesterCourseAssignments(prev => {
-                const updated = { ...prev };
-                for (const sk of Object.keys(updated)) {
-                  updated[sk] = (updated[sk] || []).filter(c => c.code.replace(/\s/g, '') !== codeNorm);
-                }
-                localStorage.setItem('semesterCourseAssignments', JSON.stringify(updated));
-                return updated;
-              });
+              const updatedAssignments = { ...semesterCourseAssignments };
+              for (const sk of Object.keys(updatedAssignments)) {
+                updatedAssignments[sk] = (updatedAssignments[sk] || []).filter(c => c.code.replace(/\s/g, '') !== codeNorm);
+              }
+              saveSemesterAssignments(updatedAssignments);
 
               startTransition(() => setSelectedCertCourse(null));
               toast({ title: "Course deleted", description: `${courseCode} has been removed.` });
@@ -20939,7 +20960,7 @@ export default function Dashboard() {
                                     );
                                   })()}
                                   {isCurrentSem && <span className="text-[7px] font-bold text-white bg-emerald-500/20 px-1 py-0.5 rounded-full border border-white">CURRENT</span>}
-                                  {(() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); return isPast ? <span className="text-[9px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded border" style={{ color: '#ffffff', background: colorSettings.headerBar, borderColor: 'rgba(255,255,255,0.2)' }}>COMPLETE</span> : null; })()}
+                                  {(() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); return isPast ? <span className="text-[7px] font-bold tracking-wider uppercase px-1 py-0 rounded border" style={{ color: '#ffffff', background: colorSettings.headerBar, borderColor: 'rgba(255,255,255,0.2)', lineHeight: '14px' }}>COMPLETE</span> : null; })()}
                                 </div>
                                 <span className="text-[10px] text-white whitespace-nowrap ml-1">{(() => {
                                   const letterToGpa: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D': 1.0, 'F': 0 };

@@ -4776,6 +4776,125 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
+  app.post("/api/onedrive/revert-course-folder", async (req, res) => {
+    try {
+      const { semesterId, courseCode, courseName, springSummerTerm, slotNumber } = req.body;
+      if (!courseCode) {
+        return res.status(400).json({ error: "Missing courseCode" });
+      }
+
+      let semester: any;
+      if (semesterId) {
+        const allSemesters = await storage.getAllSemesterSettings();
+        semester = allSemesters.find((s: any) => s.id === semesterId);
+      }
+      if (!semester) {
+        semester = await storage.getActiveSemesterSettings();
+      }
+      if (!semester) return res.status(404).json({ error: "Semester not found" });
+
+      const { renameOneDriveItem, checkOneDriveFolderExists, listOneDriveFolderChildren } = await import("./onedrive");
+
+      const startDate = semester.semesterStartDate ? new Date(semester.semesterStartDate) : new Date();
+      const year = startDate.getFullYear();
+      const basePath = `/School/1. TMU/Courses/${year}`;
+
+      const semTypeVariants = (() => {
+        const t = (semester.semesterType || 'winter').toLowerCase();
+        if (t.includes('spring') || t.includes('summer')) return ['Spring-Summer', 'Spring & Summer', 'Spring_Summer'];
+        if (t.includes('fall')) return ['Fall'];
+        return ['Winter'];
+      })();
+
+      const term = (springSummerTerm || '').toLowerCase();
+      const subFolders = [];
+      if (term === 'first_half') subFolders.push('Summer - First Half');
+      else if (term === 'second_half') subFolders.push('Summer - Second Half');
+      else if (term === 'full') subFolders.push('Full Term');
+
+      let semPath = '';
+      let children: any[] = [];
+      for (const variant of semTypeVariants) {
+        const candidatePaths = subFolders.length > 0
+          ? subFolders.map(sf => `${basePath}/${variant}/${sf}`)
+          : [`${basePath}/${variant}`];
+        for (const candidate of candidatePaths) {
+          const exists = await checkOneDriveFolderExists(candidate);
+          if (exists) {
+            children = await listOneDriveFolderChildren(candidate);
+            semPath = candidate;
+            break;
+          }
+        }
+        if (semPath) break;
+      }
+
+      if (!semPath) {
+        return res.json({ success: false, message: "Semester folder not found in OneDrive" });
+      }
+
+      const code = (courseCode || '').replace(/\s/g, '');
+      const folderName = courseName ? `${code} - ${courseName}` : code;
+
+      const courseFolder = children.find((c: any) => c.folder && c.name === folderName);
+      if (!courseFolder) {
+        return res.json({ success: false, message: `Course folder "${folderName}" not found`, path: semPath });
+      }
+
+      const slot = slotNumber || 1;
+      const existingTbdNums = children
+        .filter((c: any) => c.folder && /^TBD\d+/i.test(c.name))
+        .map((c: any) => {
+          const m = c.name.match(/^TBD(\d+)/i);
+          return m ? parseInt(m[1], 10) : 0;
+        });
+
+      let tbdNum = slot;
+      while (existingTbdNums.includes(tbdNum)) {
+        tbdNum++;
+      }
+      const revertName = `TBD${tbdNum} - TBD`;
+
+      try {
+        await renameOneDriveItem(courseFolder.id, revertName);
+      } catch (renameErr: any) {
+        if (renameErr.message?.includes('Name already exists') || renameErr.statusCode === 409) {
+          return res.json({ success: true, action: 'already_exists', folder: revertName });
+        }
+        throw renameErr;
+      }
+
+      console.log(`[OneDrive] Reverted course folder "${folderName}" → "${revertName}" in ${semPath}`);
+
+      if (semester) {
+        for (let i = 1; i <= 3; i++) {
+          const slotCode = ((semester as any)[`course${i}Code`] || '').replace(/\s/g, '').toUpperCase();
+          if (slotCode === code.toUpperCase()) {
+            const prefix = `course${i}`;
+            const updates: Record<string, any> = {};
+            const modFolder = (semester as any)[`${prefix}ModuleFolder`] || '';
+            const readFolder = (semester as any)[`${prefix}ReadingFolder`] || '';
+            if (modFolder && modFolder.includes(`/${folderName}/`)) {
+              updates[`${prefix}ModuleFolder`] = modFolder.replace(`/${folderName}/`, `/${revertName}/`);
+            }
+            if (readFolder && readFolder.includes(`/${folderName}/`)) {
+              updates[`${prefix}ReadingFolder`] = readFolder.replace(`/${folderName}/`, `/${revertName}/`);
+            }
+            if (Object.keys(updates).length > 0) {
+              await storage.updateSemesterSettings(semester.id, updates);
+            }
+            break;
+          }
+        }
+      }
+
+      res.json({ success: true, from: folderName, to: revertName, path: `${semPath}/${revertName}` });
+    } catch (err: any) {
+      console.error("Error reverting course folder:", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   app.post("/api/onedrive/rename-course-folder", async (req, res) => {
     try {
       const { semesterId, courseIndex, oldCode, oldName, newCode, newName } = req.body;
