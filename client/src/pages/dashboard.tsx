@@ -25024,8 +25024,10 @@ export default function Dashboard() {
                               >
                                 {/* Type bar with glass effect */}
                                 {(() => {
-                                  const typeBarColor = calendarTypeBarColors[task.type || ''] || calendarTypeBarColors.other;
-                                  const TIcon = task.type === 'class' ? null : (iconMap[task.type || ''] || null);
+                                  const hasBracketCourse = !task.courseName && task.title?.match(/^\[([^\]\s]+)/)?.[1];
+                                  const effectiveType = (task.type === 'class' || (hasBracketCourse && courseCode && dynamicCourseColors[courseCode])) ? 'class' : (task.type || '');
+                                  const typeBarColor = calendarTypeBarColors[effectiveType] || calendarTypeBarColors.other;
+                                  const TIcon = effectiveType === 'class' ? null : (iconMap[effectiveType] || null);
                                   return (
                                     <div style={{
                                       background: `linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%), ${typeBarColor}`,
@@ -25040,7 +25042,7 @@ export default function Dashboard() {
                                       overflow: 'hidden',
                                     }}>
                                       <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 50%, transparent 100%)', pointerEvents: 'none' }} />
-                                      {task.type === 'class' ? (
+                                      {effectiveType === 'class' ? (
                                         <img src={teacherWhiteIconPath} alt="Class" style={{ width: '10px', height: '10px', objectFit: 'contain', position: 'relative', zIndex: 1 }} data-testid={`type-icon-time-${task.id}`} />
                                       ) : TIcon ? (
                                         <TIcon className="h-2.5 w-2.5 shrink-0" style={{ position: 'relative', zIndex: 1, color: 'rgba(255,255,255,0.9)' } as any} data-testid={`type-icon-time-${task.id}`} />
@@ -25209,8 +25211,10 @@ export default function Dashboard() {
                     >
                       {/* Type bar with glass effect */}
                       {(() => {
-                        const typeBarColor = calendarTypeBarColors[task.type || ''] || calendarTypeBarColors.other;
-                        const TIcon = task.type === 'class' ? null : (iconMap[task.type || ''] || null);
+                        const hasBracketCourse = !task.courseName && task.title?.match(/^\[([^\]\s]+)/)?.[1];
+                        const effectiveType = (task.type === 'class' || (hasBracketCourse && courseCode && dynamicCourseColors[courseCode])) ? 'class' : (task.type || '');
+                        const typeBarColor = calendarTypeBarColors[effectiveType] || calendarTypeBarColors.other;
+                        const TIcon = effectiveType === 'class' ? null : (iconMap[effectiveType] || null);
                         return (
                           <div style={{
                             background: `linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%), ${typeBarColor}`,
@@ -25225,7 +25229,7 @@ export default function Dashboard() {
                             overflow: 'hidden',
                           }}>
                             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 50%, transparent 100%)', pointerEvents: 'none' }} />
-                            {task.type === 'class' ? (
+                            {effectiveType === 'class' ? (
                               <img src={teacherWhiteIconPath} alt="Class" style={{ width: '11px', height: '11px', objectFit: 'contain', position: 'relative', zIndex: 1 }} data-testid={`type-icon-multi-${task.id}`} />
                             ) : TIcon ? (
                               <TIcon className="h-3 w-3 shrink-0" style={{ position: 'relative', zIndex: 1, color: 'rgba(255,255,255,0.9)' } as any} data-testid={`type-icon-multi-${task.id}`} />
