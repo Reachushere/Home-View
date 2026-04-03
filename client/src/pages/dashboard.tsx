@@ -23008,53 +23008,63 @@ export default function Dashboard() {
                           {isToday && (() => {
                             const now = new Date();
                             const minutesSinceMidnight = now.getHours() * 60 + now.getMinutes();
-                            const pct = Math.min(100, Math.max(0, (minutesSinceMidnight / 1440) * 100));
                             const srTime = weatherData?.sunrise ? new Date(weatherData.sunrise) : null;
                             const ssTime = weatherData?.sunset ? new Date(weatherData.sunset) : null;
                             const srMin = srTime ? srTime.getHours() * 60 + srTime.getMinutes() : 420;
                             const ssMin = ssTime ? ssTime.getHours() * 60 + ssTime.getMinutes() : 1140;
-                            const srPct = (srMin / 1440) * 100;
-                            const ssPct = (ssMin / 1440) * 100;
-                            const preDawnPct = Math.max(0, srPct - 4);
-                            const dawnPct = Math.max(0, srPct - 2);
-                            const postDawnPct = srPct + 2;
-                            const dayStartPct = srPct + 5;
-                            const preDuskPct = ssPct - 4;
-                            const duskPct = ssPct - 2;
-                            const postDuskPct = ssPct + 2;
-                            const nightPct = Math.min(100, ssPct + 5);
-                            const skyStops = [
-                              { p: 0, c: '#01294D' }, { p: preDawnPct, c: '#01294D' }, { p: dawnPct, c: '#C97355' },
-                              { p: srPct, c: '#D6A276' }, { p: postDawnPct, c: '#EDC261' }, { p: dayStartPct, c: '#8AC3DF' },
-                              { p: (dayStartPct + preDuskPct) / 2, c: '#8AC3DF' }, { p: preDuskPct, c: '#8AC3DF' }, { p: duskPct, c: '#C0B9BC' },
-                              { p: ssPct, c: '#ECC47E' }, { p: postDuskPct, c: '#F9A523' }, { p: nightPct, c: '#01294D' },
-                              { p: 100, c: '#01294D' },
-                            ];
-                            const visibleStops = skyStops.filter(s => s.p <= pct);
-                            if (visibleStops.length === 0) visibleStops.push(skyStops[0]);
-                            const lastVisible = visibleStops[visibleStops.length - 1];
-                            const scaledStops = visibleStops.map(s => {
-                              const scaled = pct > 0 ? (s.p / pct * 100).toFixed(1) : '0';
-                              return `${s.c} ${scaled}%`;
-                            });
-                            scaledStops.push(`${lastVisible.c} 100%`);
                             const wCode = weatherData?.code ?? 0;
-                            const isNight = !weatherData?.isDay;
-                            const weatherOverlay = (() => {
-                              if (wCode >= 95) return { type: 'thunder', bg: 'rgba(0,0,0,0)' };
-                              if (wCode >= 80) return { type: 'showers', bg: 'rgba(60,70,90,0.35)' };
-                              if (wCode >= 71 && wCode <= 77) return { type: 'snow', bg: 'rgba(180,200,220,0.3)' };
-                              if (wCode >= 61 && wCode <= 67) return { type: 'rain', bg: 'rgba(50,60,80,0.4)' };
-                              if (wCode >= 51 && wCode <= 55) return { type: 'drizzle', bg: 'rgba(80,90,110,0.25)' };
-                              if (wCode === 45 || wCode === 48) return { type: 'fog', bg: 'rgba(180,180,190,0.45)' };
-                              if (wCode === 3) return { type: 'overcast', bg: 'rgba(120,130,140,0.3)' };
-                              if (wCode === 2) return { type: 'partlyCloudy', bg: 'rgba(0,0,0,0)' };
-                              if (wCode <= 1) return { type: 'clear', bg: 'rgba(0,0,0,0)' };
-                              return { type: 'clear', bg: 'rgba(0,0,0,0)' };
+
+                            type SkyPhase = 'night' | 'preDawn' | 'sunrise' | 'morning' | 'day' | 'preSet' | 'sunset' | 'dusk' | 'nightPost';
+                            const phase: SkyPhase = (() => {
+                              if (minutesSinceMidnight < srMin - 60) return 'night';
+                              if (minutesSinceMidnight < srMin - 15) return 'preDawn';
+                              if (minutesSinceMidnight < srMin + 30) return 'sunrise';
+                              if (minutesSinceMidnight < srMin + 90) return 'morning';
+                              if (minutesSinceMidnight < ssMin - 60) return 'day';
+                              if (minutesSinceMidnight < ssMin - 15) return 'preSet';
+                              if (minutesSinceMidnight < ssMin + 30) return 'sunset';
+                              if (minutesSinceMidnight < ssMin + 60) return 'dusk';
+                              return 'nightPost';
                             })();
-                            const weatherCss = (() => {
-                              const t = weatherOverlay.type;
-                              if (t === 'thunder') {
+                            const isNightPhase = phase === 'night' || phase === 'nightPost';
+                            const isSunrisePhase = phase === 'preDawn' || phase === 'sunrise' || phase === 'morning';
+                            const isSunsetPhase = phase === 'preSet' || phase === 'sunset' || phase === 'dusk';
+
+                            const skyBg = (() => {
+                              if (isNightPhase) return 'linear-gradient(180deg, #0a0e27 0%, #101740 40%, #1a2555 100%)';
+                              if (phase === 'preDawn') return 'linear-gradient(180deg, #0f1535 0%, #1e2a5a 40%, #3d2b4a 70%, #5c3d4a 100%)';
+                              if (phase === 'sunrise') return 'linear-gradient(180deg, #2a3a6e 0%, #c97355 35%, #e8a55a 55%, #f0c66e 75%, #fdd878 100%)';
+                              if (phase === 'morning') return 'linear-gradient(180deg, #4a8ec7 0%, #7bb8e0 40%, #b8d8ef 70%, #edc261 100%)';
+                              if (phase === 'preSet') return 'linear-gradient(180deg, #5a95c8 0%, #8ab8d8 30%, #c9a96e 60%, #d4905a 100%)';
+                              if (phase === 'sunset') return 'linear-gradient(180deg, #2d3a6e 0%, #8a4a5c 25%, #d4724a 45%, #ecc47e 65%, #f9a523 85%, #c44a20 100%)';
+                              if (phase === 'dusk') return 'linear-gradient(180deg, #12183a 0%, #2a2050 30%, #5c3355 55%, #8a4a5c 75%, #3d2040 100%)';
+                              if (wCode >= 61) return 'linear-gradient(180deg, #4a5568 0%, #6b7a8d 40%, #8a95a5 100%)';
+                              if (wCode >= 45 && wCode <= 48) return 'linear-gradient(180deg, #8a9aaa 0%, #b0b8c5 40%, #c8d0d8 100%)';
+                              if (wCode === 3) return 'linear-gradient(180deg, #6a7a8e 0%, #8a98aa 40%, #a8b4c2 100%)';
+                              if (wCode === 2) return 'linear-gradient(180deg, #5a8ec0 0%, #7ab5d8 40%, #a0d0ea 100%)';
+                              return 'linear-gradient(180deg, #3a7cc2 0%, #6aafe0 40%, #8ac3df 100%)';
+                            })();
+
+                            const starsSeed = [
+                              { x: 12, y: 15, s: 1.5, o: 0.9, d: 3 }, { x: 35, y: 8, s: 1, o: 0.7, d: 4 },
+                              { x: 55, y: 22, s: 1.2, o: 0.8, d: 2.5 }, { x: 78, y: 12, s: 1, o: 0.6, d: 5 },
+                              { x: 22, y: 35, s: 0.8, o: 0.5, d: 3.5 }, { x: 65, y: 40, s: 1.3, o: 0.7, d: 4.5 },
+                              { x: 88, y: 30, s: 0.9, o: 0.6, d: 3 }, { x: 8, y: 50, s: 1.1, o: 0.8, d: 2 },
+                              { x: 42, y: 55, s: 0.7, o: 0.5, d: 5.5 }, { x: 72, y: 58, s: 1.4, o: 0.9, d: 3.2 },
+                              { x: 30, y: 68, s: 0.8, o: 0.6, d: 4.2 }, { x: 90, y: 48, s: 1, o: 0.7, d: 2.8 },
+                              { x: 18, y: 78, s: 1.2, o: 0.8, d: 3.8 }, { x: 50, y: 75, s: 0.9, o: 0.5, d: 4.8 },
+                              { x: 82, y: 72, s: 1.1, o: 0.7, d: 2.2 }, { x: 45, y: 30, s: 0.6, o: 0.4, d: 6 },
+                            ];
+                            const showStars = isNightPhase || phase === 'preDawn' || phase === 'dusk';
+                            const starOpacity = isNightPhase ? 1 : phase === 'preDawn' ? 0.5 : phase === 'dusk' ? 0.6 : 0;
+
+                            const starsHtml = showStars ? starsSeed.map(s =>
+                              `<div style="position:absolute;left:${s.x}%;top:${s.y}%;width:${s.s}px;height:${s.s}px;background:white;border-radius:50%;opacity:${s.o * starOpacity};animation:twinkle ${s.d}s ease-in-out infinite"></div>`
+                            ).join('') : '';
+
+                            const weatherEffectsHtml = (() => {
+                              if (isNightPhase || isSunrisePhase || isSunsetPhase) return '';
+                              if (wCode >= 95) {
                                 const drops = Array.from({ length: 22 }, (_, i) => {
                                   const left = (i * 37 + 13) % 100;
                                   const delay = ((i * 0.13) % 0.8).toFixed(2);
@@ -23062,51 +23072,74 @@ export default function Dashboard() {
                                 }).join('');
                                 return drops + `<div style="position:absolute;inset:0;background:rgba(255,255,200,0.15);animation:lightningFlash 4s 1s ease-in-out infinite"></div>`;
                               }
-                              if (t === 'rain' || t === 'showers' || t === 'drizzle') {
-                                const density = t === 'showers' ? 20 : t === 'rain' ? 14 : 8;
-                                const drops = Array.from({ length: density }, (_, i) => {
+                              if (wCode >= 61 || (wCode >= 80 && wCode <= 82)) {
+                                const isShowers = wCode >= 80;
+                                const density = isShowers ? 20 : 14;
+                                return Array.from({ length: density }, (_, i) => {
                                   const left = (i * 37 + 13) % 100;
                                   const delay = ((i * 0.17) % 1.2).toFixed(2);
-                                  const dur = t === 'showers' ? '0.5s' : t === 'rain' ? '0.7s' : '1s';
-                                  const opacity = t === 'showers' ? 0.7 : t === 'rain' ? 0.5 : 0.35;
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1px;height:${t === 'drizzle' ? 4 : 6}px;background:rgba(200,210,230,${opacity});animation:rainDrop ${dur} ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1px;height:6px;background:rgba(200,210,230,0.6);animation:rainDrop ${isShowers ? '0.5s' : '0.7s'} ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
                                 }).join('');
-                                return drops;
                               }
-                              if (t === 'snow') {
-                                const flakes = Array.from({ length: 12 }, (_, i) => {
+                              if (wCode >= 51 && wCode <= 55) {
+                                return Array.from({ length: 8 }, (_, i) => {
+                                  const left = (i * 37 + 13) % 100;
+                                  const delay = ((i * 0.17) % 1.2).toFixed(2);
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1px;height:4px;background:rgba(200,210,230,0.35);animation:rainDrop 1s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                }).join('');
+                              }
+                              if (wCode >= 71 && wCode <= 77) {
+                                return Array.from({ length: 12 }, (_, i) => {
                                   const left = (i * 31 + 7) % 100;
                                   const delay = ((i * 0.25) % 2).toFixed(2);
                                   const size = 2 + (i % 2);
                                   return `<div style="position:absolute;left:${left}%;top:-3px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.7);border-radius:50%;animation:snowFall 2s ${delay}s linear infinite"></div>`;
                                 }).join('');
-                                return flakes;
                               }
-                              if (t === 'fog') {
+                              if (wCode === 45 || wCode === 48) {
                                 return `<div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(200,200,210,0.1) 0%,rgba(200,200,210,0.5) 30%,rgba(200,200,210,0.3) 60%,rgba(200,200,210,0.5) 100%);animation:fogDrift 6s ease-in-out infinite alternate"></div>`;
                               }
-                              if (t === 'overcast') {
-                                return `<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(140,145,155,0.4) 0%,rgba(160,165,175,0.2) 100%)"></div>`;
+                              if (wCode === 3) {
+                                return `<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(140,145,155,0.3) 0%,rgba(160,165,175,0.15) 100%)"></div>`;
                               }
-                              if (t === 'clear' && !isNight) {
-                                return `<div style="position:absolute;top:2px;right:4px;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle,rgba(255,230,100,0.9) 30%,rgba(255,200,50,0.3) 70%,transparent 100%);box-shadow:0 0 6px 2px rgba(255,220,80,0.4)"></div>`;
+                              if (wCode <= 1) {
+                                return `<div style="position:absolute;top:4px;right:6px;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle,rgba(255,230,100,0.95) 30%,rgba(255,200,50,0.4) 70%,transparent 100%);box-shadow:0 0 8px 3px rgba(255,220,80,0.35)"></div>`;
                               }
-                              if (t === 'partlyCloudy') {
-                                return `<div style="position:absolute;top:3px;right:5px;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,rgba(255,230,100,0.7) 30%,transparent 70%)"></div><div style="position:absolute;top:2px;right:2px;width:16px;height:8px;border-radius:6px;background:rgba(200,210,220,0.5)"></div>`;
+                              if (wCode === 2) {
+                                return `<div style="position:absolute;top:5px;right:7px;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle,rgba(255,230,100,0.8) 30%,transparent 70%)"></div><div style="position:absolute;top:4px;right:3px;width:18px;height:9px;border-radius:6px;background:rgba(220,225,235,0.5)"></div>`;
                               }
                               return '';
                             })();
+
+                            const sunriseSceneHtml = isSunrisePhase ? (() => {
+                              const sunProgress = phase === 'preDawn' ? 0 : phase === 'sunrise' ? 0.5 : 1;
+                              const sunY = 85 - sunProgress * 50;
+                              const sunSize = 14 + sunProgress * 4;
+                              const glowSize = sunSize + 8;
+                              return `<div style="position:absolute;bottom:${100 - sunY}%;left:50%;transform:translateX(-50%);width:${glowSize}px;height:${glowSize}px;border-radius:50%;background:radial-gradient(circle,rgba(255,200,80,0.4) 0%,transparent 70%)"></div><div style="position:absolute;bottom:${100 - sunY}%;left:50%;transform:translateX(-50%);width:${sunSize}px;height:${sunSize}px;border-radius:50%;background:radial-gradient(circle,#ffe070 0%,#f0a030 100%);box-shadow:0 0 10px 3px rgba(255,180,60,0.5)"></div>`;
+                            })() : '';
+
+                            const sunsetSceneHtml = isSunsetPhase ? (() => {
+                              const setProgress = phase === 'preSet' ? 0 : phase === 'sunset' ? 0.5 : 1;
+                              const sunY = 35 + setProgress * 55;
+                              const sunSize = 16 - setProgress * 6;
+                              const glowOpacity = 0.5 - setProgress * 0.3;
+                              return sunSize > 2 ? `<div style="position:absolute;bottom:${100 - sunY}%;left:50%;transform:translateX(-50%);width:${sunSize + 10}px;height:${sunSize + 10}px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,40,${glowOpacity}) 0%,transparent 70%)"></div><div style="position:absolute;bottom:${100 - sunY}%;left:50%;transform:translateX(-50%);width:${sunSize}px;height:${sunSize}px;border-radius:50%;background:radial-gradient(circle,#ff8844 0%,#cc4422 100%);box-shadow:0 0 8px 2px rgba(255,100,30,0.4)"></div>` : '';
+                            })() : '';
+
+                            const moonHtml = isNightPhase ? `<div style="position:absolute;top:8px;right:8px;width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#e8e4d4 0%,#d4cfc0 60%,#c0baa8 100%);box-shadow:0 0 6px 2px rgba(220,215,190,0.3)"></div><div style="position:absolute;top:9px;right:8px;width:7px;height:7px;border-radius:50%;background:#0a0e27;transform:translate(2px,-1px)"></div>` : '';
+
                             return (
                               <>
                                 <style>{`
+                                  @keyframes twinkle { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
                                   @keyframes rainDrop { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(50px); opacity: 0; } }
                                   @keyframes snowFall { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 15% { opacity: 1; } 100% { transform: translateY(50px) rotate(180deg); opacity: 0; } }
                                   @keyframes fogDrift { 0% { transform: translateX(-5px); } 100% { transform: translateX(5px); } }
                                   @keyframes lightningFlash { 0%,89%,91%,93%,100% { opacity: 0; } 90% { opacity: 1; } 92% { opacity: 0.6; } }
                                 `}</style>
-                                <div className="absolute left-0 right-0 bottom-0 z-10" style={{ top: '20px', background: `linear-gradient(to right, ${scaledStops.join(', ')})`, overflow: 'hidden' }}>
-                                  <div style={{ position: 'absolute', inset: 0, background: weatherOverlay.bg }} />
-                                  <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }} dangerouslySetInnerHTML={{ __html: weatherCss }} />
+                                <div className="absolute left-0 right-0 bottom-0 z-10" style={{ top: '20px', background: skyBg, overflow: 'hidden' }}>
+                                  <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }} dangerouslySetInnerHTML={{ __html: starsHtml + moonHtml + sunriseSceneHtml + sunsetSceneHtml + weatherEffectsHtml }} />
                                 </div>
                                 <div className="absolute left-0 right-0 z-15" style={{ top: 0, height: '20px', background: colorSettings.headerBar }} />
                                 <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '7px', overflow: 'hidden' }} data-testid="today-full-date">
@@ -23147,7 +23180,15 @@ export default function Dashboard() {
                             {isToday ? (() => {
                               const now = new Date();
                               const todayPct = Math.min(100, Math.max(0, (now.getHours() * 60 + now.getMinutes()) / 1440 * 100));
-                              const isDarkWeather = weatherData && (weatherData.code >= 51);
+                              const srTimeT = weatherData?.sunrise ? new Date(weatherData.sunrise) : null;
+                              const ssTimeT = weatherData?.sunset ? new Date(weatherData.sunset) : null;
+                              const srMinT = srTimeT ? srTimeT.getHours() * 60 + srTimeT.getMinutes() : 420;
+                              const ssMinT = ssTimeT ? ssTimeT.getHours() * 60 + ssTimeT.getMinutes() : 1140;
+                              const minsT = now.getHours() * 60 + now.getMinutes();
+                              const isNightText = minsT < srMinT - 60 || minsT >= ssMinT + 60;
+                              const isSunriseText = minsT >= srMinT - 60 && minsT < srMinT + 90;
+                              const isSunsetText = minsT >= ssMinT - 60 && minsT < ssMinT + 60;
+                              const isDarkWeather = isNightText || isSunriseText || isSunsetText || (weatherData && weatherData.code >= 51);
                             return (
                                 <>
                                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', alignSelf: 'stretch' }}>
