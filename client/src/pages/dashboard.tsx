@@ -26548,7 +26548,7 @@ export default function Dashboard() {
                       <svg width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`} style={{ display: 'block', overflow: 'visible' }}>
                         {(() => {
                           const [c1, c2] = tab.colors;
-                          const br = 4;
+                          const br = 7;
                           const gradId = `tabGrad-${tabIdx}`;
                           const topColor = c1;
                           const botColor = c2;
@@ -26561,7 +26561,8 @@ export default function Dashboard() {
                                   <stop offset="100%" stopColor={botColor} />
                                 </linearGradient>
                               </defs>
-                              <path d={`M0,0 L${svgW - br},0 Q${svgW},0 ${svgW},${br} L${svgW},${svgH - br} Q${svgW},${svgH} ${svgW - br},${svgH} L0,${svgH} Z`} fill={`url(#${gradId})`} />
+                              <defs><filter id={`tabShadow-${tabIdx}`}><feDropShadow dx="0" dy="2" stdDeviation="1.5" floodColor="rgba(0,0,0,0.35)" /></filter></defs>
+                              <path d={`M0,0 L${svgW - br},0 Q${svgW},0 ${svgW},${br} L${svgW},${svgH - br} Q${svgW},${svgH} ${svgW - br},${svgH} L0,${svgH} Z`} fill={`url(#${gradId})`} filter={`url(#tabShadow-${tabIdx})`} />
                               {tab.topText ? (
                                 <>
                                   <text x={cx} y={svgH * 0.28} textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.9)" fontSize={Math.min(8.5, svgH * 0.15 + 3)} fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.5">{tab.bottomText}</text>
