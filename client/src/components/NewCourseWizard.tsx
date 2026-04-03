@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,12 @@ import {
   MessageSquare,
   Vote,
   AlertCircle,
+  FolderOpen,
+  Folder,
+  ChevronUp,
+  Loader2,
+  AlertTriangle,
+  Check,
 } from "lucide-react";
 import { REMINDER_OPTIONS, TASK_TYPES } from "@shared/schema";
 
@@ -86,6 +92,8 @@ interface WizardData {
   endDate: string;
   springSummerTerm: string;
   zoomLink: string;
+  moduleFolder: string;
+  readingFolder: string;
   tasks: WizardTask[];
 }
 
@@ -153,8 +161,45 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, colorSe
     endDate: "",
     springSummerTerm: "",
     zoomLink: "",
+    moduleFolder: "",
+    readingFolder: "",
     tasks: [],
   });
+
+  const [browsingFor, setBrowsingFor] = useState<'module' | 'reading' | null>(null);
+  const [browsePath, setBrowsePath] = useState('/');
+  const [browseFolders, setBrowseFolders] = useState<Array<{ name: string; path: string }>>([]);
+  const [browseLoading, setBrowseLoading] = useState(false);
+
+  const openFolderBrowser = async (target: 'module' | 'reading') => {
+    setBrowsingFor(target);
+    const currentPath = target === 'module' ? data.moduleFolder : data.readingFolder;
+    const startPath = currentPath ? currentPath.split('/').slice(0, -1).join('/') || '/' : '/';
+    setBrowsePath(startPath);
+    await loadFolders(startPath);
+  };
+
+  const loadFolders = async (path: string) => {
+    setBrowseLoading(true);
+    try {
+      const res = await fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(path)}`);
+      const folders = await res.json();
+      setBrowseFolders(Array.isArray(folders) ? folders : []);
+    } catch { setBrowseFolders([]); }
+    setBrowseLoading(false);
+  };
+
+  const navigateToFolder = async (path: string) => {
+    setBrowsePath(path);
+    await loadFolders(path);
+  };
+
+  const selectFolder = (path: string) => {
+    if (browsingFor === 'module') updateField('moduleFolder', path);
+    else if (browsingFor === 'reading') updateField('readingFolder', path);
+    setBrowsingFor(null);
+    setBrowseFolders([]);
+  };
 
   const [wizardActiveGradientStop, setWizardActiveGradientStop] = useState<'start' | 'end' | number | null>(null);
   const wizardGradBarRef = useRef<HTMLDivElement>(null);
@@ -686,6 +731,95 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, colorSe
           />
         </div>
       </div>
+
+      <div className="border-t border-white/10 pt-3 mt-2">
+        <Label className="text-[10px] font-medium mb-2 block flex items-center gap-1.5">
+          <FolderOpen className="h-3.5 w-3.5 text-blue-400" />
+          OneDrive File Folders
+        </Label>
+        <p className="text-[8px] text-white/40 mb-2">Set the OneDrive course folder where the player finds Module &amp; Reading files (inside each Week subfolder).</p>
+        <div className="space-y-2">
+          <div>
+            <Label className="text-[9px] text-white/60 mb-1 block">Module Files Folder</Label>
+            <div className="flex items-center gap-1.5">
+              <div className="flex-1 min-w-0 h-8 rounded bg-white/5 border border-white/15 flex items-center px-2 overflow-hidden">
+                {data.moduleFolder ? (
+                  <span className="text-[9px] text-white/80 truncate">{data.moduleFolder.split('/').pop()}</span>
+                ) : (
+                  <span className="text-[9px] text-white/30">Not set</span>
+                )}
+              </div>
+              <button type="button" onClick={() => openFolderBrowser('module')} className="h-8 px-2.5 rounded bg-blue-600/30 border border-blue-500/40 text-[9px] text-blue-300 hover:bg-blue-600/50 transition-colors flex items-center gap-1 shrink-0" data-testid="wizard-btn-browse-module">
+                <FolderOpen className="h-3 w-3" /> Browse
+              </button>
+              {data.moduleFolder && (
+                <button type="button" onClick={() => updateField('moduleFolder', '')} className="h-8 px-1.5 rounded text-white/30 hover:text-red-400 transition-colors shrink-0" data-testid="wizard-btn-clear-module">
+                  <X className="h-3 w-3" />
+                </button>
+              )}
+            </div>
+            {data.moduleFolder && <p className="text-[7px] text-white/30 mt-0.5 truncate">{data.moduleFolder}</p>}
+          </div>
+          <div>
+            <Label className="text-[9px] text-white/60 mb-1 block">Reading Files Folder</Label>
+            <div className="flex items-center gap-1.5">
+              <div className="flex-1 min-w-0 h-8 rounded bg-white/5 border border-white/15 flex items-center px-2 overflow-hidden">
+                {data.readingFolder ? (
+                  <span className="text-[9px] text-white/80 truncate">{data.readingFolder.split('/').pop()}</span>
+                ) : (
+                  <span className="text-[9px] text-white/30">Not set</span>
+                )}
+              </div>
+              <button type="button" onClick={() => openFolderBrowser('reading')} className="h-8 px-2.5 rounded bg-blue-600/30 border border-blue-500/40 text-[9px] text-blue-300 hover:bg-blue-600/50 transition-colors flex items-center gap-1 shrink-0" data-testid="wizard-btn-browse-reading">
+                <FolderOpen className="h-3 w-3" /> Browse
+              </button>
+              {data.readingFolder && (
+                <button type="button" onClick={() => updateField('readingFolder', '')} className="h-8 px-1.5 rounded text-white/30 hover:text-red-400 transition-colors shrink-0" data-testid="wizard-btn-clear-reading">
+                  <X className="h-3 w-3" />
+                </button>
+              )}
+            </div>
+            {data.readingFolder && <p className="text-[7px] text-white/30 mt-0.5 truncate">{data.readingFolder}</p>}
+          </div>
+          {data.moduleFolder && data.readingFolder && data.moduleFolder === data.readingFolder && (
+            <p className="text-[8px] text-blue-300/70 flex items-center gap-1"><Check className="h-3 w-3" /> Both point to the same course folder (modules &amp; readings in each Week subfolder)</p>
+          )}
+        </div>
+      </div>
+
+      {browsingFor && (
+        <div className="mt-2 bg-black/40 border border-white/20 rounded-lg overflow-hidden">
+          <div className="flex items-center justify-between px-3 py-2 bg-white/5 border-b border-white/10">
+            <span className="text-[10px] text-white font-medium">Select {browsingFor === 'module' ? 'Module' : 'Reading'} Folder</span>
+            <button type="button" onClick={() => setBrowsingFor(null)} className="text-white/40 hover:text-white"><X className="h-3.5 w-3.5" /></button>
+          </div>
+          <div className="px-3 py-1.5 bg-white/3 border-b border-white/10 flex items-center gap-1.5">
+            {browsePath !== '/' && (
+              <button type="button" onClick={() => navigateToFolder(browsePath.split('/').slice(0, -1).join('/') || '/')} className="text-blue-400 hover:text-blue-300 shrink-0" data-testid="wizard-btn-folder-up">
+                <ChevronUp className="h-3.5 w-3.5" />
+              </button>
+            )}
+            <span className="text-[8px] text-white/50 truncate">{browsePath}</span>
+            <button type="button" onClick={() => selectFolder(browsePath)} className="ml-auto text-[8px] px-2 py-1 rounded bg-green-600/40 border border-green-500/50 text-green-300 hover:bg-green-600/60 shrink-0" data-testid="wizard-btn-select-current">
+              Select This Folder
+            </button>
+          </div>
+          <div className="max-h-[150px] overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+            {browseLoading ? (
+              <div className="flex items-center justify-center py-4"><Loader2 className="h-4 w-4 text-white/40 animate-spin" /></div>
+            ) : browseFolders.length === 0 ? (
+              <div className="text-[9px] text-white/30 text-center py-3">No subfolders here</div>
+            ) : (
+              browseFolders.map(f => (
+                <button key={f.path} type="button" onClick={() => navigateToFolder(f.path)} className="w-full flex items-center gap-2 px-3 py-1.5 text-left hover:bg-white/10 transition-colors" data-testid={`wizard-folder-${f.name}`}>
+                  <Folder className="h-3.5 w-3.5 text-yellow-400 shrink-0" />
+                  <span className="text-[9px] text-white/80 truncate">{f.name}</span>
+                </button>
+              ))
+            )}
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );

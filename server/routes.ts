@@ -4232,6 +4232,31 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
+  app.get("/api/onedrive/validate-folder", async (req, res) => {
+    try {
+      const folderPath = req.query.path as string;
+      if (!folderPath) return res.json({ valid: false, error: "No path provided" });
+      const items = await listOneDriveItems(folderPath);
+      res.json({ valid: true, folderCount: items.filter((i: any) => i.type === 'folder').length, fileCount: items.filter((i: any) => i.type === 'file').length });
+    } catch (err: any) {
+      res.json({ valid: false, error: err.message || "Folder not found" });
+    }
+  });
+
+  app.get("/api/onedrive/browse-folders", async (req, res) => {
+    try {
+      const parentPath = (req.query.path as string) || '/';
+      const items = await listOneDriveItems(parentPath);
+      const folders = items
+        .filter((i: any) => i.type === 'folder')
+        .map((i: any) => ({ name: i.name, path: i.path }));
+      res.json(folders);
+    } catch (err: any) {
+      console.error("Error browsing OneDrive folders:", err);
+      res.status(500).json({ error: err.message || "Failed to browse folders" });
+    }
+  });
+
   // GET /api/onedrive/file/:id - Get file details and download URL
   app.get("/api/onedrive/file/:id", async (req, res) => {
     try {
@@ -14433,6 +14458,16 @@ document.body.removeChild(a);
       const year = semester.semesterName?.match(/\d{4}/)?.[0] || '2026';
       const basePath = `/School/1. TMU/Courses/${year}/${semesterFolder}`;
       const courseCodes = [semester.course1Code, semester.course2Code, semester.course3Code].filter(Boolean) as string[];
+      const courseFolderOverrides: Record<string, { module?: string; reading?: string }> = {};
+      for (let i = 1; i <= 3; i++) {
+        const code = (semester as any)[`course${i}Code`];
+        if (code) {
+          courseFolderOverrides[code] = {
+            module: (semester as any)[`course${i}ModuleFolder`] || undefined,
+            reading: (semester as any)[`course${i}ReadingFolder`] || undefined,
+          };
+        }
+      }
       console.log(`[Sync] Using semester: ${semester.semesterName}, path: ${basePath}, courses: ${courseCodes.join(', ')}`);
       
       // Get all existing files once to avoid repeated DB queries
@@ -14449,15 +14484,23 @@ document.body.removeChild(a);
       
       for (const courseCode of courseCodes) {
         try {
-          const matchedFolder = baseFolders.find((f: any) => 
-            f.type === 'folder' && f.name.toUpperCase().startsWith(courseCode)
-          );
-          if (!matchedFolder) {
-            console.log(`No OneDrive folder found for ${courseCode}`);
-            continue;
+          const overrides = courseFolderOverrides[courseCode];
+          const overridePath = overrides?.module || overrides?.reading;
+          let coursePath: string;
+          if (overridePath) {
+            coursePath = overridePath;
+            console.log(`[Sync] Using stored folder path for ${courseCode}: ${coursePath}`);
+          } else {
+            const matchedFolder = baseFolders.find((f: any) => 
+              f.type === 'folder' && f.name.toUpperCase().startsWith(courseCode)
+            );
+            if (!matchedFolder) {
+              console.log(`No OneDrive folder found for ${courseCode}`);
+              continue;
+            }
+            coursePath = matchedFolder.path;
           }
           
-          const coursePath = matchedFolder.path;
           const weekFolders = await listOneDriveItems(coursePath);
           
           // Process ALL week folders (not just current week)

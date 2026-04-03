@@ -195,6 +195,7 @@ import {
   Users,
   MoreHorizontal,
   Wrench,
+  AlertTriangle,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
@@ -21257,6 +21258,8 @@ export default function Dashboard() {
                     [`${prefix}ZoomLink`]: wizardData.zoomLink || null,
                     [`${prefix}Color`]: wizardData.color || null,
                     [`${prefix}ColorEnd`]: wizardData.colorEnd || null,
+                    [`${prefix}ModuleFolder`]: wizardData.moduleFolder || null,
+                    [`${prefix}ReadingFolder`]: wizardData.readingFolder || null,
                   };
                   saveSemesterScheduleMutation.mutate(schedulePayload);
                 }
@@ -31819,6 +31822,8 @@ function CoursesForm({
     startDate: string;
     endDate: string;
     springSummerTerm: string;
+    moduleFolder?: string;
+    readingFolder?: string;
     deadlines: Array<{ title: string; type: string; dueDate: string; description: string }>;
     reminders: number[];
   }) => {
@@ -31870,6 +31875,8 @@ function CoursesForm({
         [`${prefix}SpringSummerTerm`]: courseData.springSummerTerm || null,
         [`${prefix}StartDate`]: courseData.startDate ? new Date(courseData.startDate).toISOString() : null,
         [`${prefix}EndDate`]: courseData.endDate ? new Date(courseData.endDate).toISOString() : null,
+        [`${prefix}ModuleFolder`]: courseData.moduleFolder || null,
+        [`${prefix}ReadingFolder`]: courseData.readingFolder || null,
       };
       onSaveSemesterSchedule(schedulePayload);
 
@@ -32083,6 +32090,8 @@ function CoursesForm({
             startDate: (semesterSettings as any)?.[`course${editingCourseIndex + 1}StartDate`] ? new Date((semesterSettings as any)[`course${editingCourseIndex + 1}StartDate`]).toISOString().split('T')[0] : '',
             endDate: (semesterSettings as any)?.[`course${editingCourseIndex + 1}EndDate`] ? new Date((semesterSettings as any)[`course${editingCourseIndex + 1}EndDate`]).toISOString().split('T')[0] : '',
             springSummerTerm: (semesterSettings as any)?.[`course${editingCourseIndex + 1}SpringSummerTerm`] || 'full',
+            moduleFolder: (semesterSettings as any)?.[`course${editingCourseIndex + 1}ModuleFolder`] || '',
+            readingFolder: (semesterSettings as any)?.[`course${editingCourseIndex + 1}ReadingFolder`] || '',
           } : undefined}
           onSave={handleSaveNewCourse}
           onClose={() => { setIsNewCourseOpen(false); setEditingCourseIndex(null); }}
@@ -32108,6 +32117,8 @@ type NewCourseDialogProps = {
     startDate: string;
     endDate: string;
     springSummerTerm: string;
+    moduleFolder?: string;
+    readingFolder?: string;
   };
   onSave: (data: {
     courseCode: string;
@@ -32124,6 +32135,8 @@ type NewCourseDialogProps = {
     startDate: string;
     endDate: string;
     springSummerTerm: string;
+    moduleFolder: string;
+    readingFolder: string;
     deadlines: Array<{ title: string; type: string; dueDate: string; description: string }>;
     reminders: number[];
   }) => void;
@@ -32143,6 +32156,15 @@ function NewCourseDialogInner({ existingCourse, onSave, onClose }: NewCourseDial
   const [classTime, setClassTime] = useState(existingCourse?.classTime || '');
   const [classEndTime, setClassEndTime] = useState(existingCourse?.classEndTime || '');
   const [startDate, setStartDate] = useState(existingCourse?.startDate || '');
+  const [moduleFolder, setModuleFolder] = useState(existingCourse?.moduleFolder || '');
+  const [readingFolder, setReadingFolder] = useState(existingCourse?.readingFolder || '');
+  const [moduleFolderValid, setModuleFolderValid] = useState<boolean | null>(null);
+  const [readingFolderValid, setReadingFolderValid] = useState<boolean | null>(null);
+  const [folderValidating, setFolderValidating] = useState(false);
+  const [browsingFor, setBrowsingFor] = useState<'module' | 'reading' | null>(null);
+  const [browsePath, setBrowsePath] = useState('/');
+  const [browseFolders, setBrowseFolders] = useState<Array<{ name: string; path: string }>>([]);
+  const [browseLoading, setBrowseLoading] = useState(false);
   const [endDate, setEndDate] = useState(existingCourse?.endDate || '');
   const [springSummerTerm, setSpringSummerTerm] = useState(existingCourse?.springSummerTerm || 'full');
   const [reminder1, setReminder1] = useState(15);
@@ -32166,6 +32188,59 @@ function NewCourseDialogInner({ existingCourse, onSave, onClose }: NewCourseDial
     setDeadlines(prev => prev.filter((_, i) => i !== index));
   };
 
+  useEffect(() => {
+    const validateFolders = async () => {
+      if (moduleFolder) {
+        setFolderValidating(true);
+        try {
+          const res = await fetch(`/api/onedrive/validate-folder?path=${encodeURIComponent(moduleFolder)}`);
+          const data = await res.json();
+          setModuleFolderValid(data.valid);
+        } catch { setModuleFolderValid(false); }
+      }
+      if (readingFolder) {
+        try {
+          const res = await fetch(`/api/onedrive/validate-folder?path=${encodeURIComponent(readingFolder)}`);
+          const data = await res.json();
+          setReadingFolderValid(data.valid);
+        } catch { setReadingFolderValid(false); }
+      }
+      setFolderValidating(false);
+    };
+    validateFolders();
+  }, []);
+
+  const openFolderBrowser = async (target: 'module' | 'reading') => {
+    setBrowsingFor(target);
+    const currentPath = target === 'module' ? moduleFolder : readingFolder;
+    const startPath = currentPath ? currentPath.split('/').slice(0, -1).join('/') || '/' : '/';
+    setBrowsePath(startPath);
+    setBrowseLoading(true);
+    try {
+      const res = await fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(startPath)}`);
+      const folders = await res.json();
+      setBrowseFolders(Array.isArray(folders) ? folders : []);
+    } catch { setBrowseFolders([]); }
+    setBrowseLoading(false);
+  };
+
+  const navigateBrowseFolder = async (path: string) => {
+    setBrowsePath(path);
+    setBrowseLoading(true);
+    try {
+      const res = await fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(path)}`);
+      const folders = await res.json();
+      setBrowseFolders(Array.isArray(folders) ? folders : []);
+    } catch { setBrowseFolders([]); }
+    setBrowseLoading(false);
+  };
+
+  const selectBrowseFolder = (path: string) => {
+    if (browsingFor === 'module') { setModuleFolder(path); setModuleFolderValid(true); }
+    else if (browsingFor === 'reading') { setReadingFolder(path); setReadingFolderValid(true); }
+    setBrowsingFor(null);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!courseCode.trim() || !courseName.trim()) return;
@@ -32184,6 +32259,8 @@ function NewCourseDialogInner({ existingCourse, onSave, onClose }: NewCourseDial
       startDate,
       endDate,
       springSummerTerm,
+      moduleFolder,
+      readingFolder,
       deadlines: deadlines.filter(d => d.title.trim() && d.dueDate),
       reminders: [15, ...(reminder2 > 0 ? [reminder2] : []), ...(reminder3 > 0 ? [reminder3] : [])],
     });
@@ -32470,6 +32547,90 @@ function NewCourseDialogInner({ existingCourse, onSave, onClose }: NewCourseDial
                 </select>
               </div>
             </div>
+          </div>
+
+          <div className="border-t border-white/10 pt-3">
+            <Label className="text-[10px] font-medium mb-2 block flex items-center gap-1.5">
+              <FolderOpen className="h-3.5 w-3.5 text-blue-400" />
+              OneDrive File Folders
+            </Label>
+            <p className="text-[8px] text-white/40 mb-2">Set the OneDrive course folder where the player finds Module &amp; Reading files.</p>
+            <div className="space-y-2 mb-3">
+              {(['module', 'reading'] as const).map(type => {
+                const folder = type === 'module' ? moduleFolder : readingFolder;
+                const valid = type === 'module' ? moduleFolderValid : readingFolderValid;
+                return (
+                  <div key={type}>
+                    <Label className="text-[9px] text-white/60 mb-1 block capitalize">{type} Files Folder</Label>
+                    <div className="flex items-center gap-1.5">
+                      <div className={`flex-1 min-w-0 h-8 rounded border flex items-center px-2 overflow-hidden ${
+                        !folder ? 'bg-white/5 border-white/15' :
+                        valid === false ? 'bg-red-900/20 border-red-500/50' :
+                        valid === true ? 'bg-green-900/10 border-green-500/30' :
+                        'bg-white/5 border-white/15'
+                      }`}>
+                        {folder ? (
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            {valid === false && <AlertTriangle className="h-3 w-3 text-red-400 shrink-0" />}
+                            {valid === true && <Check className="h-3 w-3 text-green-400 shrink-0" />}
+                            {valid === null && folderValidating && <Loader2 className="h-3 w-3 text-white/40 animate-spin shrink-0" />}
+                            <span className={`text-[9px] truncate ${valid === false ? 'text-red-400' : 'text-white/80'}`}>
+                              {valid === false ? 'ERROR — ' + folder.split('/').pop() : folder.split('/').pop()}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-[9px] text-white/30">Not set</span>
+                        )}
+                      </div>
+                      <button type="button" onClick={() => openFolderBrowser(type)} className="h-8 px-2.5 rounded bg-blue-600/30 border border-blue-500/40 text-[9px] text-blue-300 hover:bg-blue-600/50 transition-colors flex items-center gap-1 shrink-0" data-testid={`btn-browse-${type}-folder`}>
+                        <FolderOpen className="h-3 w-3" /> Browse
+                      </button>
+                      {folder && (
+                        <button type="button" onClick={() => { if (type === 'module') { setModuleFolder(''); setModuleFolderValid(null); } else { setReadingFolder(''); setReadingFolderValid(null); }}} className="h-8 px-1.5 rounded text-white/30 hover:text-red-400 transition-colors shrink-0" data-testid={`btn-clear-${type}-folder`}>
+                          <X className="h-3 w-3" />
+                        </button>
+                      )}
+                    </div>
+                    {folder && <p className="text-[7px] text-white/30 mt-0.5 truncate">{folder}</p>}
+                    {folder && valid === false && <p className="text-[8px] text-red-400 mt-0.5">This folder was not found on OneDrive. It may have been renamed or deleted.</p>}
+                  </div>
+                );
+              })}
+            </div>
+
+            {browsingFor && (
+              <div className="mb-3 bg-black/40 border border-white/20 rounded-lg overflow-hidden">
+                <div className="flex items-center justify-between px-3 py-2 bg-white/5 border-b border-white/10">
+                  <span className="text-[10px] text-white font-medium">Select {browsingFor === 'module' ? 'Module' : 'Reading'} Folder</span>
+                  <button type="button" onClick={() => setBrowsingFor(null)} className="text-white/40 hover:text-white"><X className="h-3.5 w-3.5" /></button>
+                </div>
+                <div className="px-3 py-1.5 bg-white/3 border-b border-white/10 flex items-center gap-1.5">
+                  {browsePath !== '/' && (
+                    <button type="button" onClick={() => navigateBrowseFolder(browsePath.split('/').slice(0, -1).join('/') || '/')} className="text-blue-400 hover:text-blue-300 shrink-0">
+                      <ChevronUp className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                  <span className="text-[8px] text-white/50 truncate">{browsePath}</span>
+                  <button type="button" onClick={() => selectBrowseFolder(browsePath)} className="ml-auto text-[8px] px-2 py-1 rounded bg-green-600/40 border border-green-500/50 text-green-300 hover:bg-green-600/60 shrink-0" data-testid="btn-select-current-folder">
+                    Select This Folder
+                  </button>
+                </div>
+                <div className="max-h-[150px] overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+                  {browseLoading ? (
+                    <div className="flex items-center justify-center py-4"><Loader2 className="h-4 w-4 text-white/40 animate-spin" /></div>
+                  ) : browseFolders.length === 0 ? (
+                    <div className="text-[9px] text-white/30 text-center py-3">No subfolders here</div>
+                  ) : (
+                    browseFolders.map(f => (
+                      <button key={f.path} type="button" onClick={() => navigateBrowseFolder(f.path)} className="w-full flex items-center gap-2 px-3 py-1.5 text-left hover:bg-white/10 transition-colors" data-testid={`browse-folder-${f.name}`}>
+                        <Folder className="h-3.5 w-3.5 text-yellow-400 shrink-0" />
+                        <span className="text-[9px] text-white/80 truncate">{f.name}</span>
+                      </button>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="border-t border-white/10 pt-3">
