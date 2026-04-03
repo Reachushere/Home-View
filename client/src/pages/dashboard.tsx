@@ -23072,10 +23072,10 @@ export default function Dashboard() {
                             })() : (
                               <>
                                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch', gap: '1px' }}>
-                                  <div className="text-[10px] font-medium tracking-wide" style={{ color: isNextSchoolWeek ? '#d0d6de' : 'rgba(255,255,255,0.6)', lineHeight: 1 }}>{dayName}</div>
-                                  <div className="text-[8px] font-medium tracking-wide" style={{ color: isNextSchoolWeek ? 'rgba(208,214,222,0.8)' : 'rgba(255,255,255,0.4)', lineHeight: 1, textTransform: 'uppercase' }}>{format(day, 'MMM')}</div>
+                                  <div className="text-[10px] font-medium tracking-wide" style={{ color: isNextSchoolWeek ? '#c0c8d0' : 'rgba(255,255,255,0.6)', lineHeight: 1 }}>{dayName}</div>
+                                  <div className="text-[8px] font-medium tracking-wide" style={{ color: isNextSchoolWeek ? 'rgba(192,200,208,0.8)' : 'rgba(255,255,255,0.4)', lineHeight: 1, textTransform: 'uppercase' }}>{format(day, 'MMM')}</div>
                                 </div>
-                                <div style={{ fontSize: '24px', fontWeight: 700, color: isNextSchoolWeek ? '#d0d6de' : '#fff', lineHeight: 1 }}>{dayNum}</div>
+                                <div style={{ fontSize: '24px', fontWeight: 700, color: isNextSchoolWeek ? '#c0c8d0' : '#fff', lineHeight: 1 }}>{dayNum}</div>
                               </>
                             )}
                           </div>
