@@ -26536,36 +26536,29 @@ export default function Dashboard() {
                       title={tab.semLabel}
                     >
                       <svg width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`} style={{ display: 'block', overflow: 'visible' }}>
-                        <defs>
-                          <filter id={`tabDrop-${tabIdx}`} x="-20%" y="-10%" width="140%" height="120%"><feDropShadow dx="1" dy="0" stdDeviation="1.5" floodColor="black" floodOpacity={isActive ? '0.4' : '0.2'} /></filter>
-                          <linearGradient id={`tabGrad-${tabIdx}`} x1="1" y1="0" x2="0" y2="0">
-                            <stop offset="0%" stopColor="#61A2CB" />
-                            <stop offset="100%" stopColor="#0F3A5C" />
-                          </linearGradient>
-                        </defs>
-                        <path d={`M0 0 L${svgW - 6} 0 Q${svgW} 0 ${svgW} 6 L${svgW} ${svgH - 6} Q${svgW} ${svgH} ${svgW - 6} ${svgH} L0 ${svgH} Z`} fill={`url(#tabGrad-${tabIdx})`} opacity={isActive ? 1 : 0.8} stroke={colorSettings.headerBar} strokeWidth="0.5" filter={`url(#tabDrop-${tabIdx})`} />
                         {(() => {
+                          const r = 7;
+                          const edgeInset = 5;
+                          const fillColor = isActive ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.14)';
+                          const strokeColor = 'rgba(255,255,255,0.35)';
+                          const textColor = isActive ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.5)';
+                          const tabPath = `M0,0 L0,${svgH} L${edgeInset},${svgH} Q${edgeInset},${svgH - r} ${edgeInset + r},${svgH - r} L${svgW - r},${svgH - r} Q${svgW},${svgH - r} ${svgW},${svgH - r - r} L${svgW},${r + r} Q${svgW},${r} ${svgW - r},${r} L${edgeInset + r},${r} Q${edgeInset},${r} ${edgeInset},0 Z`;
                           const midY = tab.topText ? Math.floor(svgH * 0.55) : svgH;
-                          const fillColor = isActive ? '#ffffff' : 'rgba(255,255,255,0.55)';
-                          const insetL = 2;
-                          const insetR = 4;
-                          const insetT = 2;
-                          const insetB = 2;
-                          const boxW = svgW - insetL - insetR;
+                          const contentL = edgeInset + 2;
+                          const contentR = svgW - 2;
+                          const contentW = contentR - contentL;
+                          const contentCX = contentL + contentW / 2;
                           return (
                             <>
+                              <path d={tabPath} fill={fillColor} stroke={strokeColor} strokeWidth="1.5" />
                               {tab.topText ? (
                                 <>
-                                  <rect x={insetL} y={insetT} width={boxW} height={midY - insetT - 1} rx="2" fill="none" stroke={fillColor} strokeWidth="0.5" opacity="0.5" />
-                                  <text x={insetL + boxW / 2} y={insetT + (midY - insetT - 1) / 2} textAnchor="middle" dominantBaseline="central" fill={fillColor} fontSize={Math.min(14, (midY - insetT - 4))} fontWeight="700" fontFamily="system-ui, -apple-system, sans-serif">{tab.topText}</text>
-                                  <rect x={insetL} y={midY + 1} width={boxW} height={svgH - midY - 1 - insetB} rx="2" fill="none" stroke={fillColor} strokeWidth="0.5" opacity="0.5" />
-                                  <text x={insetL + boxW / 2} y={midY + 1 + (svgH - midY - 1 - insetB) / 2} textAnchor="middle" dominantBaseline="central" fill={fillColor} fontSize={Math.min(6, (svgH - midY - insetB - 4))} fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.3">{tab.bottomText}</text>
+                                  <line x1={contentL} y1={midY} x2={contentR} y2={midY} stroke={strokeColor} strokeWidth="0.5" opacity="0.6" />
+                                  <text x={contentCX} y={r + (midY - r) / 2} textAnchor="middle" dominantBaseline="central" fill={textColor} fontSize={Math.min(14, (midY - r - 4))} fontWeight="700" fontFamily="system-ui, -apple-system, sans-serif">{tab.topText}</text>
+                                  <text x={contentCX} y={midY + (svgH - r - midY) / 2} textAnchor="middle" dominantBaseline="central" fill={textColor} fontSize={Math.min(6, (svgH - r - midY - 2))} fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.3">{tab.bottomText}</text>
                                 </>
                               ) : (
-                                <>
-                                  <rect x={insetL} y={insetT} width={boxW} height={svgH - insetT - insetB} rx="2" fill="none" stroke={fillColor} strokeWidth="0.5" opacity="0.5" />
-                                  <text x={insetL + boxW / 2} y={svgH / 2} textAnchor="middle" dominantBaseline="central" fill={fillColor} fontSize={Math.min(7, (svgH - insetT - insetB - 2))} fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.3">{tab.bottomText}</text>
-                                </>
+                                <text x={contentCX} y={svgH / 2} textAnchor="middle" dominantBaseline="central" fill={textColor} fontSize={Math.min(7, (svgH - 2 * r - 2))} fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.3">{tab.bottomText}</text>
                               )}
                             </>
                           );
