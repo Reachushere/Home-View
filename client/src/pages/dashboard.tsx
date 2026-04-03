@@ -248,6 +248,22 @@ const calendarTypeIconColors: Record<string, string> = {
   other: '#6b7280',
 };
 
+const calendarTypeBarColors: Record<string, string> = {
+  class: '#6d28d9',
+  reading: 'rgb(56,130,255)',
+  module: 'rgb(16,200,120)',
+  essay: 'rgb(255,180,30)',
+  project: 'rgb(255,60,60)',
+  discussion: 'rgb(160,80,255)',
+  poll: 'rgb(255,70,160)',
+  exam: 'rgb(220,30,30)',
+  quiz: 'rgb(180,160,40)',
+  reminder: 'rgb(0,210,240)',
+  meeting: 'rgb(80,80,240)',
+  other: 'rgb(120,130,140)',
+  partnerShifts: 'rgb(100,100,180)',
+};
+
 const courseColors: Record<string, { bg: string; border: string; text: string; dot: string; prepBg: string; prepBorder: string; prepText: string }> = {
   "CPPA101": { bg: "bg-blue-50 dark:bg-blue-900/30", border: "border-blue-400", text: "text-blue-600 dark:text-blue-300", dot: "bg-blue-400", prepBg: "bg-blue-50 dark:bg-blue-900/30", prepBorder: "border-blue-200", prepText: "text-blue-500 dark:text-blue-400" },
   "CPPA102": { bg: "bg-blue-50 dark:bg-blue-900/30", border: "border-blue-400", text: "text-blue-600 dark:text-blue-300", dot: "bg-blue-400", prepBg: "bg-blue-50 dark:bg-blue-900/30", prepBorder: "border-blue-200", prepText: "text-blue-500 dark:text-blue-400" },
@@ -24983,55 +24999,83 @@ export default function Dashboard() {
                                 } ${
                                   ""
                                 }`}
-                                style={{
-                                  top: `${topOffset}px`,
-                                  left: (() => { const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return hasNextDueBox ? `calc(${taskIdx * columnWidth / 2}% + 2px)` : `calc(${taskIdx * columnWidth}% + 2px)`; })(),
-                                  width: (() => { const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return hasNextDueBox ? `calc(${columnWidth / 2}% - 4px)` : `calc(${columnWidth}% - 4px)`; })(),
-                                  height: `${taskHeight}px`,
-                                  zIndex: hoveredCountdownTaskId === task.id ? 55 : (selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43)),
-                                  backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || (task.type === 'other' ? otherRowColors.taskBgColor : '#e5e7eb')),
-                                  border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1px solid ${task.isCompleted ? '#d1d5db' : (colors?.border || (task.type === 'other' ? otherRowColors.borderColor : '#9ca3af'))}`,
-                                  boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
-                                  transformOrigin: 'center center',
-                                }}
+                                style={(() => {
+                                  const gradColors = colors?.hex ? getCourseGradientColors(courseCode) : null;
+                                  const bgGradient = task.isCompleted ? '#e5e7eb' : gradColors ? `linear-gradient(135deg, ${gradColors.start}, ${gradColors.end})` : (task.type === 'other' ? `linear-gradient(135deg, ${otherRowColors.labelStart}, ${otherRowColors.labelEnd})` : 'linear-gradient(135deg, #6b7280, #9ca3af)');
+                                  const borderColor = task.isCompleted ? '#d1d5db' : gradColors ? gradColors.start : (task.type === 'other' ? otherRowColors.borderColor : '#6b7280');
+                                  return {
+                                    top: `${topOffset}px`,
+                                    left: (() => { const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return hasNextDueBox ? `calc(${taskIdx * columnWidth / 2}% + 2px)` : `calc(${taskIdx * columnWidth}% + 2px)`; })(),
+                                    width: (() => { const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return hasNextDueBox ? `calc(${columnWidth / 2}% - 4px)` : `calc(${columnWidth}% - 4px)`; })(),
+                                    height: `${taskHeight}px`,
+                                    zIndex: hoveredCountdownTaskId === task.id ? 55 : (selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43)),
+                                    background: bgGradient,
+                                    border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1.5px solid ${borderColor}`,
+                                    boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
+                                    transformOrigin: 'center center',
+                                    display: 'flex',
+                                    flexDirection: 'column' as const,
+                                  };
+                                })()}
                                 data-testid={`time-task-${task.id}`}
                                 data-cal-task-id={task.id}
                                 data-cal-date={format(day, 'yyyy-MM-dd')}
                               >
-                                {task.type === 'class' ? (
-                                  <img src={teacherIconPath} alt="Class" style={{ position: 'absolute', top: '1px', left: '1px', width: '12px', height: '12px', objectFit: 'contain', opacity: 0.7, zIndex: 3 }} data-testid={`type-icon-time-${task.id}`} />
-                                ) : (() => { const TIcon = iconMap[task.type || '']; return TIcon ? <TIcon className="h-2.5 w-2.5 shrink-0" style={{ position: 'absolute', top: '2px', left: '2px', opacity: 0.6, color: calendarTypeIconColors[task.type || ''] || '#6b7280', zIndex: 3 } as any} data-testid={`type-icon-time-${task.id}`} /> : null; })()}
-                                <div className="flex items-center gap-1.5 px-0.5 pt-0.5 pb-0">
-                                  <Checkbox
+                                {/* Type bar with glass effect */}
+                                {(() => {
+                                  const typeBarColor = calendarTypeBarColors[task.type || ''] || calendarTypeBarColors.other;
+                                  const TIcon = task.type === 'class' ? null : (iconMap[task.type || ''] || null);
+                                  return (
+                                    <div style={{
+                                      background: `linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%), ${typeBarColor}`,
+                                      borderBottom: `1px solid rgba(0,0,0,0.15)`,
+                                      padding: '1px 3px',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: '3px',
+                                      minHeight: '14px',
+                                      borderRadius: '2px 2px 0 0',
+                                      position: 'relative',
+                                      overflow: 'hidden',
+                                    }}>
+                                      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 50%, transparent 100%)', pointerEvents: 'none' }} />
+                                      {task.type === 'class' ? (
+                                        <img src={teacherIconPath} alt="Class" style={{ width: '10px', height: '10px', objectFit: 'contain', position: 'relative', zIndex: 1, filter: 'brightness(10)' }} data-testid={`type-icon-time-${task.id}`} />
+                                      ) : TIcon ? (
+                                        <TIcon className="h-2.5 w-2.5 shrink-0" style={{ position: 'relative', zIndex: 1, color: 'rgba(255,255,255,0.9)' } as any} data-testid={`type-icon-time-${task.id}`} />
+                                      ) : null}
+                                      <span style={{ fontSize: '7px', fontWeight: 700, color: 'white', textTransform: 'uppercase', letterSpacing: '0.3px', position: 'relative', zIndex: 1, textShadow: '0 1px 2px rgba(0,0,0,0.3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                                        {(() => { const t = task.title || ''; const isModRead = /^(module|reading|module\s*(?:&|and)\s*reading)$/i.test(t.trim()); if (isModRead && task.courseName) { const cc = task.courseName.split(' - ')[0]?.trim(); if (cc) return `${cc} ${t}`; } return t; })()}
+                                      </span>
+                                      {(() => { const cc = task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; return dm === 'virtual' ? <div style={{ width: '14px', height: '14px', borderRadius: '3px', background: 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative', zIndex: 1 }}><img src={zoomCamPath} alt="Zoom" style={{ width: '10px', height: '10px', objectFit: 'contain' }} data-testid={`zoom-icon-time-${task.id}`} /></div> : null; })()}
+                                      {(() => { const hasAtt = (task.attachments?.length && task.attachments.some((att: any) => { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; return !!url; })) || task.referenceLink; return hasAtt ? <div style={{ width: '14px', height: '14px', borderRadius: '3px', background: 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative', zIndex: 1 }}><Paperclip className="h-2 w-2 text-gray-600" data-testid={`attachment-icon-time-${task.id}`} /></div> : null; })()}
+                                    </div>
+                                  );
+                                })()}
+                                {/* Task body */}
+                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '2px', padding: '2px 3px 1px 3px', flex: 1 }}>
+                                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', paddingTop: '1px' }}>
+                                    <Checkbox
                                       checked={task.isCompleted || false}
                                       onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
                                       onClick={(e) => e.stopPropagation()}
-                                      className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                      className="h-3 w-3 shrink-0 border-white/60 data-[state=checked]:bg-white data-[state=checked]:border-white"
+                                      style={{ borderColor: 'rgba(255,255,255,0.6)' }}
                                       data-testid={`checkbox-time-${task.id}`}
                                     />
-                                  <div 
-                                    onClick={() => setEditingTask(task)}
-                                    className={`text-[8px] font-normal truncate cursor-pointer flex-1 ${
-                                      task.isCompleted ? "text-gray-400 line-through" : "text-black"
-                                    }`}
-                                  >
-                                    {(() => { const t = task.title || ''; const isModRead = /^(module|reading|module\s*(?:&|and)\s*reading)$/i.test(t.trim()); if (isModRead && task.courseName) { const cc = task.courseName.split(' - ')[0]?.trim(); if (cc) return `${cc} ${t}`; } return t; })()}
                                   </div>
-                                  <button
-                                    onClick={(e) => { e.stopPropagation(); hideFromSummaryMutation.mutate({ id: task.id, hideFromSummary: !task.hideFromSummary }); }}
-                                    className="shrink-0 p-0 border-0 bg-transparent cursor-pointer"
-                                    title={task.hideFromSummary ? "Hidden from summary" : "Showing in summary"}
-                                    data-testid={`hide-summary-toggle-${task.id}`}
-                                  >
-                                    {task.hideFromSummary ? <EyeOff className="h-2.5 w-2.5 text-red-400" /> : <Eye className="h-2.5 w-2.5 text-gray-400" />}
-                                  </button>
-                                  {(() => { const pdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null; return pdfUrl ? <img src={pdfIconPath} alt="Open PDF" style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', animation: 'none', zIndex: 2 }} onClick={(e) => { e.stopPropagation(); e.preventDefault(); if (pdfUrl.startsWith('http')) { window.open(`/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(pdfUrl)}&name=${encodeURIComponent(task.title)}&autoplay=1`, '_blank'); } else { const p = pdfUrl.startsWith('/') ? pdfUrl.slice(1) : encodeURIComponent(pdfUrl); window.open(`/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(p)}&name=${encodeURIComponent(task.title)}&autoplay=1`, '_blank'); } }} data-testid={`pdf-icon-time-${task.id}`} /> : null; })()}
-                                </div>
-                                <div 
-                                  className={`text-[9px] font-normal mt-0 mb-3 ml-[18px] px-0.5 ${task.isCompleted ? "text-gray-400" : "text-muted-foreground"}`}
-                                  style={{ animation: 'none' }}
-                                >
-                                  {format(new Date(task.dueDate), "h:mm a")}
+                                  <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+                                    <div
+                                      onClick={() => setEditingTask(task)}
+                                      style={{ fontSize: '8px', fontWeight: 700, color: task.isCompleted ? 'rgba(255,255,255,0.5)' : 'white', textDecoration: task.isCompleted ? 'line-through' : 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer', textShadow: '0 1px 2px rgba(0,0,0,0.3)', lineHeight: 1.2 }}
+                                      data-testid={`task-title-time-${task.id}`}
+                                    >
+                                      {(() => { const t = task.title || ''; const isModRead = /^(module|reading|module\s*(?:&|and)\s*reading)$/i.test(t.trim()); if (isModRead && task.courseName) { const cc = task.courseName.split(' - ')[0]?.trim(); if (cc) return `${cc} ${t}`; } return t; })()}
+                                    </div>
+                                    <div style={{ fontSize: '7px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.2 }}>
+                                      {task.eventStartTime && task.eventEndTime ? `${formatTimeTo12Hour(task.eventStartTime)} - ${formatTimeTo12Hour(task.eventEndTime)}` : format(new Date(task.dueDate), "h:mm a")}
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
                             );
@@ -25147,47 +25191,84 @@ export default function Dashboard() {
                       } ${
                         ""
                       }`}
-                      style={{
-                        top: `${topPx}px`,
-                        left: `calc(${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px + (${gridSizes.dayColumnWidths.slice(0, dayIdx).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px) + 2px)`,
-                        width: (() => { const now = new Date(); const currentHourNow = now.getHours(); const taskDay = weekDays[dayIdx]; const isTodayCol = isSameDayET(taskDay, now); const taskCoversCurrentHour = startHour <= currentHourNow && (endHour > currentHourNow || (endHour === currentHourNow && endMin > 0)); const isCurrentHourOverlap = isTodayCol && taskCoversCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return isCurrentHourOverlap ? `calc((${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px) / 2 - 4px)` : `calc((${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px) - 4px)`; })(),
-                        height: `${heightPx}px`,
-                        zIndex: hoveredCountdownTaskId === task.id ? 55 : (selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43)),
-                        backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || (task.type === 'other' ? otherRowColors.taskBgColor : '#e5e7eb')),
-                        borderColor: task.isCompleted ? '#d1d5db' : (colors?.hex || colors?.border || (task.type === 'other' ? otherRowColors.borderColor : '#9ca3af')),
-                        transform: hoveredCountdownTaskId === task.id ? 'scale(1.08)' : undefined,
-                        boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
-                        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                        transformOrigin: 'center center',
-                      }}
+                      style={(() => {
+                        const gradColors = colors?.hex ? getCourseGradientColors(courseCode) : null;
+                        const bgGradient = task.isCompleted ? '#e5e7eb' : gradColors ? `linear-gradient(135deg, ${gradColors.start}, ${gradColors.end})` : (task.type === 'other' ? `linear-gradient(135deg, ${otherRowColors.labelStart}, ${otherRowColors.labelEnd})` : 'linear-gradient(135deg, #6b7280, #9ca3af)');
+                        const borderColor = task.isCompleted ? '#d1d5db' : gradColors ? gradColors.start : (task.type === 'other' ? otherRowColors.borderColor : '#6b7280');
+                        return {
+                          top: `${topPx}px`,
+                          left: `calc(${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px + (${gridSizes.dayColumnWidths.slice(0, dayIdx).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px) + 2px)`,
+                          width: (() => { const now = new Date(); const currentHourNow = now.getHours(); const taskDay2 = weekDays[dayIdx]; const isTodayCol = isSameDayET(taskDay2, now); const taskCoversCurrentHour = startHour <= currentHourNow && (endHour > currentHourNow || (endHour === currentHourNow && endMin > 0)); const isCurrentHourOverlap = isTodayCol && taskCoversCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return isCurrentHourOverlap ? `calc((${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px) / 2 - 4px)` : `calc((${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px) - 4px)`; })(),
+                          height: `${heightPx}px`,
+                          zIndex: hoveredCountdownTaskId === task.id ? 55 : (selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43)),
+                          background: bgGradient,
+                          border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1.5px solid ${borderColor}`,
+                          transform: hoveredCountdownTaskId === task.id ? 'scale(1.08)' : undefined,
+                          boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
+                          transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                          transformOrigin: 'center center',
+                          display: 'flex',
+                          flexDirection: 'column' as const,
+                        };
+                      })()}
                       data-testid={`multi-hour-task-${task.id}`}
                       data-cal-task-id={task.id}
                       data-cal-date={format(taskDay, 'yyyy-MM-dd')}
                     >
-                      {task.type === 'class' ? (
-                        <img src={teacherIconPath} alt="Class" style={{ position: 'absolute', top: '2px', left: '2px', width: '14px', height: '14px', objectFit: 'contain', opacity: 0.7, zIndex: 3 }} data-testid={`type-icon-multi-${task.id}`} />
-                      ) : (() => { const TIcon = iconMap[task.type || '']; return TIcon ? <TIcon className="h-3 w-3 shrink-0" style={{ position: 'absolute', top: '2px', left: '2px', opacity: 0.6, color: calendarTypeIconColors[task.type || ''] || '#6b7280', zIndex: 3 } as any} data-testid={`type-icon-multi-${task.id}`} /> : null; })()}
-                      <div className="flex items-center gap-1.5 px-0.5 py-1">
-                        <Checkbox
+                      {/* Type bar with glass effect */}
+                      {(() => {
+                        const typeBarColor = calendarTypeBarColors[task.type || ''] || calendarTypeBarColors.other;
+                        const TIcon = task.type === 'class' ? null : (iconMap[task.type || ''] || null);
+                        return (
+                          <div style={{
+                            background: `linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%), ${typeBarColor}`,
+                            borderBottom: `1px solid rgba(0,0,0,0.15)`,
+                            padding: '2px 4px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '3px',
+                            minHeight: '16px',
+                            borderRadius: '2px 2px 0 0',
+                            position: 'relative',
+                            overflow: 'hidden',
+                          }}>
+                            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 50%, transparent 100%)', pointerEvents: 'none' }} />
+                            {task.type === 'class' ? (
+                              <img src={teacherIconPath} alt="Class" style={{ width: '11px', height: '11px', objectFit: 'contain', position: 'relative', zIndex: 1, filter: 'brightness(10)' }} data-testid={`type-icon-multi-${task.id}`} />
+                            ) : TIcon ? (
+                              <TIcon className="h-3 w-3 shrink-0" style={{ position: 'relative', zIndex: 1, color: 'rgba(255,255,255,0.9)' } as any} data-testid={`type-icon-multi-${task.id}`} />
+                            ) : null}
+                            <span style={{ fontSize: '8px', fontWeight: 700, color: 'white', textTransform: 'uppercase', letterSpacing: '0.3px', position: 'relative', zIndex: 1, textShadow: '0 1px 2px rgba(0,0,0,0.3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                              {(() => { const t = task.title || ''; const isModRead = /^(module|reading|module\s*(?:&|and)\s*reading)$/i.test(t.trim()); if (isModRead && task.courseName) { const cc2 = task.courseName.split(' - ')[0]?.trim(); if (cc2) return `${cc2} ${t}`; } return t; })()}
+                            </span>
+                            {(() => { const cc2 = task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc2] || ''; return dm === 'virtual' ? <div style={{ width: '16px', height: '16px', borderRadius: '3px', background: 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative', zIndex: 1 }}><img src={zoomCamPath} alt="Zoom" style={{ width: '11px', height: '11px', objectFit: 'contain' }} data-testid={`zoom-icon-multi-${task.id}`} /></div> : null; })()}
+                            {(() => { const hasAtt = (task.attachments?.length && task.attachments.some((att: any) => { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; return !!url; })) || task.referenceLink; return hasAtt ? <div style={{ width: '16px', height: '16px', borderRadius: '3px', background: 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative', zIndex: 1 }}><Paperclip className="h-2.5 w-2.5 text-gray-600" data-testid={`attachment-icon-multi-${task.id}`} /></div> : null; })()}
+                          </div>
+                        );
+                      })()}
+                      {/* Task body */}
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '3px', padding: '3px 4px 2px 4px', flex: 1 }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', paddingTop: '1px' }}>
+                          <Checkbox
                             checked={task.isCompleted || false}
                             onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                            className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                            className="h-3.5 w-3.5 shrink-0 border-white/60 data-[state=checked]:bg-white data-[state=checked]:border-white"
+                            style={{ borderColor: 'rgba(255,255,255,0.6)' }}
                             onClick={(e) => e.stopPropagation()}
                           />
-                        <span 
-                          onClick={() => setEditingTask(task)}
-                          className={`text-[9px] leading-tight font-normal line-clamp-2 cursor-pointer flex-1 ${task.isCompleted ? "line-through text-muted-foreground" : "text-black"}`}
-                        >
-                          {(() => { const t = task.title || ''; const isModRead = /^(module|reading|module\s*(?:&|and)\s*reading)$/i.test(t.trim()); if (isModRead && task.courseName) { const cc = task.courseName.split(' - ')[0]?.trim(); if (cc) return `${cc} ${t}`; } return t; })()}
-                        </span>
-                        {(() => { const cc = task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; return dm === 'virtual' ? <img src={zoomCamPath} alt="Zoom" style={{ width: '14px', height: '14px', objectFit: 'contain', animation: 'none', flexShrink: 0, borderRadius: '50%' }} data-testid={`zoom-icon-multi-${task.id}`} /> : null; })()}
-                        {(() => { const pdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null; return pdfUrl ? <img src={pdfIconPath} alt="Open PDF" style={{ width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', animation: 'none', flexShrink: 0 }} onClick={(e) => { e.stopPropagation(); e.preventDefault(); if (pdfUrl.startsWith('http')) { window.open(`/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(pdfUrl)}&name=${encodeURIComponent(task.title)}&autoplay=1`, '_blank'); } else { const p = pdfUrl.startsWith('/') ? pdfUrl.slice(1) : encodeURIComponent(pdfUrl); window.open(`/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(p)}&name=${encodeURIComponent(task.title)}&autoplay=1`, '_blank'); } }} data-testid={`pdf-icon-multi-${task.id}`} /> : null; })()}
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+                          <span
+                            onClick={() => setEditingTask(task)}
+                            style={{ fontSize: '9px', fontWeight: 700, color: task.isCompleted ? 'rgba(255,255,255,0.5)' : 'white', textDecoration: task.isCompleted ? 'line-through' : 'none', lineHeight: 1.3, cursor: 'pointer', textShadow: '0 1px 2px rgba(0,0,0,0.3)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' } as any}
+                            data-testid={`task-title-multi-${task.id}`}
+                          >
+                            {(() => { const t = task.title || ''; const isModRead = /^(module|reading|module\s*(?:&|and)\s*reading)$/i.test(t.trim()); if (isModRead && task.courseName) { const cc2 = task.courseName.split(' - ')[0]?.trim(); if (cc2) return `${cc2} ${t}`; } return t; })()}
+                          </span>
+                        </div>
                       </div>
                       {task.eventStartTime && task.eventEndTime && (
-                        <div 
-                          className="text-[8px] font-normal text-muted-foreground ml-[18px] px-0.5"
-                          style={{ animation: 'none' }}
-                        >
+                        <div style={{ fontSize: '8px', color: 'rgba(255,255,255,0.7)', paddingLeft: '20px', paddingBottom: '2px', lineHeight: 1.2 }}>
                           {formatTimeTo12Hour(task.eventStartTime)} - {formatTimeTo12Hour(task.eventEndTime)}
                         </div>
                       )}
