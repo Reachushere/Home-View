@@ -4637,6 +4637,75 @@ export default function Dashboard() {
   const [reminderDatePart, setReminderDatePart] = useState('');
   const [reminderHour, setReminderHour] = useState('09');
   const [reminderMinute, setReminderMinute] = useState('00');
+
+  const [todoPanelPos, setTodoPanelPos] = useState<{ x: number; y: number } | null>(null);
+  const [todoPanelSize, setTodoPanelSize] = useState<{ w: number; h: number } | null>(null);
+  const todoDragRef = useRef<{ startX: number; startY: number; origX: number; origY: number } | null>(null);
+  const todoResizeRef = useRef<{ startX: number; startY: number; origW: number; origH: number; origX: number; origY: number; edge: string } | null>(null);
+
+  const handleTodoDragStart = useCallback((e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('button, input, select, textarea, [role="dialog"]')) return;
+    e.preventDefault();
+    const panel = (e.currentTarget as HTMLElement).closest('[data-todo-panel]') as HTMLElement;
+    if (!panel) return;
+    const rect = panel.getBoundingClientRect();
+    const currentX = todoPanelPos?.x ?? rect.left;
+    const currentY = todoPanelPos?.y ?? rect.top;
+    todoDragRef.current = { startX: e.clientX, startY: e.clientY, origX: currentX, origY: currentY };
+    if (!todoPanelPos) setTodoPanelPos({ x: currentX, y: currentY });
+    if (!todoPanelSize) setTodoPanelSize({ w: rect.width, h: rect.height });
+    const onMove = (ev: MouseEvent) => {
+      if (!todoDragRef.current) return;
+      const dx = ev.clientX - todoDragRef.current.startX;
+      const dy = ev.clientY - todoDragRef.current.startY;
+      setTodoPanelPos({ x: todoDragRef.current.origX + dx, y: todoDragRef.current.origY + dy });
+    };
+    const onUp = () => {
+      todoDragRef.current = null;
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  }, [todoPanelPos, todoPanelSize]);
+
+  const handleTodoResizeStart = useCallback((e: React.MouseEvent, edge: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const panel = (e.currentTarget as HTMLElement).closest('[data-todo-panel]') as HTMLElement;
+    if (!panel) return;
+    const rect = panel.getBoundingClientRect();
+    const currentX = todoPanelPos?.x ?? rect.left;
+    const currentY = todoPanelPos?.y ?? rect.top;
+    const currentW = todoPanelSize?.w ?? rect.width;
+    const currentH = todoPanelSize?.h ?? rect.height;
+    todoResizeRef.current = { startX: e.clientX, startY: e.clientY, origW: currentW, origH: currentH, origX: currentX, origY: currentY, edge };
+    if (!todoPanelPos) setTodoPanelPos({ x: currentX, y: currentY });
+    if (!todoPanelSize) setTodoPanelSize({ w: currentW, h: currentH });
+    const onMove = (ev: MouseEvent) => {
+      if (!todoResizeRef.current) return;
+      const dx = ev.clientX - todoResizeRef.current.startX;
+      const dy = ev.clientY - todoResizeRef.current.startY;
+      const e = todoResizeRef.current.edge;
+      let newW = todoResizeRef.current.origW;
+      let newH = todoResizeRef.current.origH;
+      let newX = todoResizeRef.current.origX;
+      let newY = todoResizeRef.current.origY;
+      if (e.includes('r')) newW = Math.max(400, todoResizeRef.current.origW + dx);
+      if (e.includes('l')) { newW = Math.max(400, todoResizeRef.current.origW - dx); newX = todoResizeRef.current.origX + dx; }
+      if (e.includes('b')) newH = Math.max(300, todoResizeRef.current.origH + dy);
+      if (e.includes('t')) { newH = Math.max(300, todoResizeRef.current.origH - dy); newY = todoResizeRef.current.origY + dy; }
+      setTodoPanelSize({ w: newW, h: newH });
+      setTodoPanelPos({ x: newX, y: newY });
+    };
+    const onUp = () => {
+      todoResizeRef.current = null;
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  }, [todoPanelPos, todoPanelSize]);
   const [dragOverSlot, setDragOverSlot] = useState<{ day: Date; hour: number } | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const hoveredCountdownTaskIdRef = useRef<number | null>(null);
@@ -14847,7 +14916,7 @@ export default function Dashboard() {
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
             }}
             className={`pill-button-hover ${hasUnackedReminders ? 'animate-pill-reminder' : ''}`}
-            onClick={() => { if (!isTodoFlyoutOpen) bringFlyoutToFront('todo'); setIsTodoFlyoutOpen(!isTodoFlyoutOpen); }}
+            onClick={() => { if (!isTodoFlyoutOpen) { bringFlyoutToFront('todo'); setTodoPanelPos(null); setTodoPanelSize(null); } setIsTodoFlyoutOpen(!isTodoFlyoutOpen); }}
             data-testid="honeycomb-todo-header"
             title="Reminders"
           >
@@ -28152,23 +28221,35 @@ export default function Dashboard() {
         {createPortal(<>
         {isTodoFlyoutOpen && <div className="fixed inset-0 z-[10001] bg-black/50" onClick={() => setIsTodoFlyoutOpen(false)} />}
         <div 
-          className={`fixed transition-[opacity,transform] ease-out ${isTodoFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
+          data-todo-panel
+          className={`fixed ${isTodoFlyoutOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
           style={{ 
-            left: '50%',
-            transform: isTodoFlyoutOpen ? 'translateX(-50%) scale(1)' : 'translateX(-50%) scale(0)',
-            top: '0px',
-            width: 'calc(96vw + 24px)',
-            maxWidth: 'calc(96vw + 24px)',
-            bottom: 'calc(3vh + 32px)',
+            ...(todoPanelPos ? {
+              left: `${todoPanelPos.x}px`,
+              top: `${todoPanelPos.y}px`,
+              transform: isTodoFlyoutOpen ? 'scale(1)' : 'scale(0)',
+            } : {
+              left: '50%',
+              top: '0px',
+              transform: isTodoFlyoutOpen ? 'translateX(-50%) scale(1)' : 'translateX(-50%) scale(0)',
+              paddingTop: 'calc(3vh - 6px)',
+            }),
+            ...(todoPanelSize ? {
+              width: `${todoPanelSize.w}px`,
+              height: `${todoPanelSize.h}px`,
+            } : {
+              width: 'calc(96vw + 24px)',
+              maxWidth: 'calc(96vw + 24px)',
+              bottom: 'calc(3vh + 32px)',
+            }),
             transformOrigin: '50% 100%',
-            transitionDuration: '400ms',
+            transition: todoDragRef.current || todoResizeRef.current ? 'none' : 'opacity 400ms ease-out, transform 400ms ease-out',
             zIndex: 10001,
-            paddingTop: 'calc(3vh - 6px)',
           }}
           onClick={() => bringFlyoutToFront('todo')}
         >
           <section 
-            className="h-full overflow-hidden flex flex-col rounded-xl text-white" 
+            className="h-full overflow-hidden flex flex-col rounded-xl text-white relative" 
             style={{
               background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
               border: '1.5px solid rgba(255, 255, 255, 0.35)',
@@ -28176,8 +28257,17 @@ export default function Dashboard() {
             }}
             data-testid="section-todo"
           >
+            {/* Resize handles */}
+            <div onMouseDown={(e) => handleTodoResizeStart(e, 't')} style={{ position: 'absolute', top: 0, left: 8, right: 8, height: 5, cursor: 'ns-resize', zIndex: 2 }} />
+            <div onMouseDown={(e) => handleTodoResizeStart(e, 'b')} style={{ position: 'absolute', bottom: 0, left: 8, right: 8, height: 5, cursor: 'ns-resize', zIndex: 2 }} />
+            <div onMouseDown={(e) => handleTodoResizeStart(e, 'l')} style={{ position: 'absolute', left: 0, top: 8, bottom: 8, width: 5, cursor: 'ew-resize', zIndex: 2 }} />
+            <div onMouseDown={(e) => handleTodoResizeStart(e, 'r')} style={{ position: 'absolute', right: 0, top: 8, bottom: 8, width: 5, cursor: 'ew-resize', zIndex: 2 }} />
+            <div onMouseDown={(e) => handleTodoResizeStart(e, 'tl')} style={{ position: 'absolute', top: 0, left: 0, width: 10, height: 10, cursor: 'nwse-resize', zIndex: 3 }} />
+            <div onMouseDown={(e) => handleTodoResizeStart(e, 'tr')} style={{ position: 'absolute', top: 0, right: 0, width: 10, height: 10, cursor: 'nesw-resize', zIndex: 3 }} />
+            <div onMouseDown={(e) => handleTodoResizeStart(e, 'bl')} style={{ position: 'absolute', bottom: 0, left: 0, width: 10, height: 10, cursor: 'nesw-resize', zIndex: 3 }} />
+            <div onMouseDown={(e) => handleTodoResizeStart(e, 'br')} style={{ position: 'absolute', bottom: 0, right: 0, width: 10, height: 10, cursor: 'nwse-resize', zIndex: 3 }} />
             {/* Header with tabs */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
+            <div onMouseDown={handleTodoDragStart} className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ cursor: 'grab', backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
                   <CheckSquare className="text-white" style={{ width: '15px', height: '15px' }} />
