@@ -25059,8 +25059,7 @@ export default function Dashboard() {
                                       checked={task.isCompleted || false}
                                       onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
                                       onClick={(e) => e.stopPropagation()}
-                                      className="h-3 w-3 shrink-0 border-white/60 data-[state=checked]:bg-white data-[state=checked]:border-white"
-                                      style={{ borderColor: 'rgba(255,255,255,0.6)' }}
+                                      className="h-3 w-3 shrink-0 border-white bg-white data-[state=checked]:bg-white data-[state=checked]:border-white data-[state=checked]:text-black"
                                       data-testid={`checkbox-time-${task.id}`}
                                     />
                                   </div>
@@ -25252,8 +25251,7 @@ export default function Dashboard() {
                           <Checkbox
                             checked={task.isCompleted || false}
                             onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                            className="h-3.5 w-3.5 shrink-0 border-white/60 data-[state=checked]:bg-white data-[state=checked]:border-white"
-                            style={{ borderColor: 'rgba(255,255,255,0.6)' }}
+                            className="h-3.5 w-3.5 shrink-0 border-white bg-white data-[state=checked]:bg-white data-[state=checked]:border-white data-[state=checked]:text-black"
                             onClick={(e) => e.stopPropagation()}
                           />
                         </div>
