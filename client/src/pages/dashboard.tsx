@@ -18851,23 +18851,42 @@ export default function Dashboard() {
                   {quickAddStep < 11 && quickAddStep > 0 && (() => {
                     const canNext = !((quickAddStep === 1 && !quickAddData.title.trim()) || (quickAddStep === 3 && !quickAddData.dueDate));
                     return (
-                      <Button
-                        variant="outline"
-                        onClick={() => setQuickAddStep(s => s + 1)}
-                        disabled={!canNext}
-                        className="border !border-white/50 text-white transition-opacity duration-200 disabled:opacity-30"
-                        style={{
-                          boxShadow: canNext ? "0 0 6px rgba(255,255,255,0.4), 0 0 12px rgba(255,255,255,0.2)" : "none",
-                          fontSize: "11px",
-                        }}
-                        data-testid="quick-add-next"
-                      >
-                        Next <ChevronRight className="h-3 w-3 ml-1" />
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={handleQuickAddClose}
+                          className="inline-flex items-center justify-center rounded-md px-3 py-1.5 text-white/70 hover:text-white transition-colors duration-200"
+                          style={{ fontSize: "11px", border: '1px solid rgba(255,255,255,0.25)', background: 'rgba(255,255,255,0.06)' }}
+                          data-testid="quick-add-cancel"
+                        >
+                          Cancel
+                        </button>
+                        <Button
+                          variant="outline"
+                          onClick={() => setQuickAddStep(s => s + 1)}
+                          disabled={!canNext}
+                          className="border !border-white/50 text-white transition-opacity duration-200 disabled:opacity-30"
+                          style={{
+                            boxShadow: canNext ? "0 0 6px rgba(255,255,255,0.4), 0 0 12px rgba(255,255,255,0.2)" : "none",
+                            fontSize: "11px",
+                          }}
+                          data-testid="quick-add-next"
+                        >
+                          Next <ChevronRight className="h-3 w-3 ml-1" />
+                        </Button>
+                      </div>
                     );
                   })()}
 
                   {quickAddStep === 11 && (
+                    <div className="flex items-center gap-2">
+                    <button
+                      onClick={handleQuickAddClose}
+                      className="inline-flex items-center justify-center rounded-md px-3 py-1.5 text-white/70 hover:text-white transition-colors duration-200"
+                      style={{ fontSize: "11px", border: '1px solid rgba(255,255,255,0.25)', background: 'rgba(255,255,255,0.06)' }}
+                      data-testid="quick-add-cancel-review"
+                    >
+                      Cancel
+                    </button>
                     <Button
                       variant="outline"
                       className="border !border-white/50 text-white transition-opacity duration-200"
@@ -18955,6 +18974,7 @@ export default function Dashboard() {
                       <Plus className="h-3 w-3 mr-1" />
                       Add Task
                     </Button>
+                    </div>
                   )}
                 </div>
               </div>
@@ -33879,49 +33899,15 @@ function TaskForm({
               <div className="flex gap-1">
                 <Input
                   id="eventStartTime"
-                  type="text"
-                  placeholder="HH:MM"
-                  value={formData.eventStartTime ? (() => {
-                    const [h, m] = formData.eventStartTime.split(':');
-                    const hour = parseInt(h);
-                    const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-                    return `${hour12}:${m}`;
-                  })() : ''}
+                  type="time"
+                  value={formData.eventStartTime || ''}
                   onChange={(e) => {
-                    const val = e.target.value;
-                    if (/^[0-9:]*$/.test(val) && val.length <= 5) {
-                      const isPM = formData.eventStartTime ? parseInt(formData.eventStartTime.split(':')[0]) >= 12 : false;
-                      const [h, m] = val.split(':');
-                      if (h && m) {
-                        let hour24 = parseInt(h);
-                        if (isPM && hour24 < 12) hour24 += 12;
-                        if (!isPM && hour24 === 12) hour24 = 0;
-                        setFormData(prev => ({ ...prev, eventStartTime: `${hour24.toString().padStart(2, '0')}:${m}` }));
-                      } else {
-                        setFormData(prev => ({ ...prev, eventStartTime: val }));
-                      }
-                    }
+                    setFormData(prev => ({ ...prev, eventStartTime: e.target.value }));
                   }}
                   data-testid="input-start-time"
                   className="bg-white h-8 flex-1 font-normal"
                   style={{ color: 'black', fontSize: '11px' }}
                 />
-                <select
-                  value={formData.eventStartTime ? (parseInt(formData.eventStartTime.split(':')[0]) >= 12 ? 'PM' : 'AM') : 'AM'}
-                  onChange={(e) => {
-                    if (!formData.eventStartTime) return;
-                    const [h, m] = formData.eventStartTime.split(':');
-                    let hour = parseInt(h);
-                    if (e.target.value === 'PM' && hour < 12) hour += 12;
-                    if (e.target.value === 'AM' && hour >= 12) hour -= 12;
-                    setFormData(prev => ({ ...prev, eventStartTime: `${hour.toString().padStart(2, '0')}:${m}` }));
-                  }}
-                  className="h-8 rounded-md border border-input bg-white px-1 font-normal"
-                  style={{ color: 'black', fontSize: '11px' }}
-                >
-                  <option value="AM">AM</option>
-                  <option value="PM">PM</option>
-                </select>
               </div>
             </div>
             <div>
@@ -33929,49 +33915,15 @@ function TaskForm({
               <div className="flex gap-1">
                 <Input
                   id="eventEndTime"
-                  type="text"
-                  placeholder="HH:MM"
-                  value={formData.eventEndTime ? (() => {
-                    const [h, m] = formData.eventEndTime.split(':');
-                    const hour = parseInt(h);
-                    const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-                    return `${hour12}:${m}`;
-                  })() : ''}
+                  type="time"
+                  value={formData.eventEndTime || ''}
                   onChange={(e) => {
-                    const val = e.target.value;
-                    if (/^[0-9:]*$/.test(val) && val.length <= 5) {
-                      const isPM = formData.eventEndTime ? parseInt(formData.eventEndTime.split(':')[0]) >= 12 : false;
-                      const [h, m] = val.split(':');
-                      if (h && m) {
-                        let hour24 = parseInt(h);
-                        if (isPM && hour24 < 12) hour24 += 12;
-                        if (!isPM && hour24 === 12) hour24 = 0;
-                        setFormData(prev => ({ ...prev, eventEndTime: `${hour24.toString().padStart(2, '0')}:${m}` }));
-                      } else {
-                        setFormData(prev => ({ ...prev, eventEndTime: val }));
-                      }
-                    }
+                    setFormData(prev => ({ ...prev, eventEndTime: e.target.value }));
                   }}
                   data-testid="input-end-time"
                   className="bg-white h-8 flex-1 font-normal"
                   style={{ color: 'black', fontSize: '11px' }}
                 />
-                <select
-                  value={formData.eventEndTime ? (parseInt(formData.eventEndTime.split(':')[0]) >= 12 ? 'PM' : 'AM') : 'AM'}
-                  onChange={(e) => {
-                    if (!formData.eventEndTime) return;
-                    const [h, m] = formData.eventEndTime.split(':');
-                    let hour = parseInt(h);
-                    if (e.target.value === 'PM' && hour < 12) hour += 12;
-                    if (e.target.value === 'AM' && hour >= 12) hour -= 12;
-                    setFormData(prev => ({ ...prev, eventEndTime: `${hour.toString().padStart(2, '0')}:${m}` }));
-                  }}
-                  className="h-8 rounded-md border border-input bg-white px-1 font-normal"
-                  style={{ color: 'black', fontSize: '11px' }}
-                >
-                  <option value="AM">AM</option>
-                  <option value="PM">PM</option>
-                </select>
               </div>
             </div>
             <div className="flex items-end">
