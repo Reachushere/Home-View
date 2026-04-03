@@ -23206,11 +23206,11 @@ export default function Dashboard() {
                               );
                             })() : (
                               <>
-                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch', gap: '1px', marginBottom: '2px', position: 'relative', top: '-1px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', alignSelf: 'stretch' }}>
                                   <div className="text-[10px] font-medium tracking-wide" style={{ color: isNextSchoolWeek ? 'rgba(255,255,255,0.35)' : day.getDay() === 5 ? '#ffffff' : '#c0c8d0', lineHeight: 1 }}>{dayName}</div>
                                   <div className="text-[8px] font-medium tracking-wide" style={{ color: isNextSchoolWeek ? 'rgba(255,255,255,0.25)' : day.getDay() === 5 ? 'rgba(255,255,255,0.8)' : 'rgba(192,200,208,0.8)', lineHeight: 1, textTransform: 'uppercase' }}>{format(day, 'MMM')}</div>
                                 </div>
-                                <div style={{ fontSize: '24px', fontWeight: 700, color: isNextSchoolWeek ? 'rgba(255,255,255,0.35)' : day.getDay() === 5 ? '#ffffff' : '#c0c8d0', lineHeight: 1, position: 'relative', top: '1px' }}>{dayNum}</div>
+                                <div style={{ fontSize: '24px', fontWeight: 700, color: isNextSchoolWeek ? 'rgba(255,255,255,0.35)' : day.getDay() === 5 ? '#ffffff' : '#c0c8d0', lineHeight: 1 }}>{dayNum}</div>
                               </>
                             )}
                           </div>
