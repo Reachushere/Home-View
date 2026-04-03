@@ -14137,7 +14137,7 @@ export default function Dashboard() {
                     <span className="text-white" style={{ fontSize: '9px', fontWeight: '400', textTransform: 'uppercase', lineHeight: '1', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>{new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}</span>
                   </div>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flex: 1, alignItems: 'center' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', position: 'absolute', left: 0, right: 0, alignItems: 'center', pointerEvents: 'none' }}>
                   {(() => {
                     const prepDaysNum = prepDaysText === 'today' ? 0 : prepDaysText === 'now' ? -1 : Number(prepDaysText);
                   const showPrepFirst = prepDaysText && nextPrep && prepDaysNum < diffDays && diffDays > 0;
