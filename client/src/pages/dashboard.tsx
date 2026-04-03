@@ -28130,13 +28130,14 @@ export default function Dashboard() {
           style={{ 
             left: '50%',
             transform: isTodoFlyoutOpen ? 'translateX(-50%) scale(1)' : 'translateX(-50%) scale(0)',
-            top: 'calc(3vh - 6px)',
+            top: '0px',
             width: 'calc(96vw + 24px)',
             maxWidth: 'calc(96vw + 24px)',
             bottom: 'calc(3vh + 32px)',
             transformOrigin: '50% 100%',
             transitionDuration: '400ms',
-            zIndex: getFlyoutZIndex('todo')
+            zIndex: 9990,
+            paddingTop: 'calc(3vh - 6px)',
           }}
           onClick={() => bringFlyoutToFront('todo')}
         >
