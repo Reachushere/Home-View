@@ -2156,9 +2156,12 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
             const isWatch = /watch/i.test(rawTitle);
             const isAdvisory = /advisory|statement|special/i.test(rawTitle);
             const descParts: string[] = [];
-            if (a.alertBodyHeader) descParts.push(a.alertBodyHeader);
-            if (a.alertBody) descParts.push(a.alertBody);
-            if (a.alertBodyFooter) descParts.push(a.alertBodyFooter);
+            if (a.text) descParts.push(a.text);
+            if (!a.text) {
+              if (a.alertBodyHeader) descParts.push(a.alertBodyHeader);
+              if (a.alertBody) descParts.push(a.alertBody);
+              if (a.alertBodyFooter) descParts.push(a.alertBodyFooter);
+            }
             const description = descParts.join('\n\n')
               .replace(/<br\s*\/?>/gi, '\n')
               .replace(/<\/p>/gi, '\n\n')
