@@ -2132,14 +2132,6 @@ export default function Dashboard() {
     return () => { clearTimeout(timer); document.removeEventListener('click', handleClickOutside); };
   }, [isTopPillOpen, closeTopPill]);
 
-  useEffect(() => {
-    document.querySelectorAll<HTMLElement>('[data-tpo]').forEach(el => {
-      el.style.opacity = isTodoFlyoutOpen ? '0' : (el.dataset.tpoOpacity || '1');
-      el.style.pointerEvents = isTodoFlyoutOpen ? 'none' : 'auto';
-      el.style.transition = isTodoFlyoutOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out';
-    });
-  }, [isTodoFlyoutOpen]);
-
   const [newsHeadlines, setNewsHeadlines] = useState<{ title: string; source: string; link: string; publishedAt?: string }[]>([]);
 
   useEffect(() => {
@@ -2344,6 +2336,13 @@ export default function Dashboard() {
   const [isResizingFlyout2, setIsResizingFlyout2] = useState(false);
   const [isResizingWeeksFlyout, setIsResizingWeeksFlyout] = useState(false);
   const [isTodoFlyoutOpen, setIsTodoFlyoutOpen] = useState(false);
+  useEffect(() => {
+    document.querySelectorAll<HTMLElement>('[data-tpo]').forEach(el => {
+      el.style.opacity = isTodoFlyoutOpen ? '0' : (el.dataset.tpoOpacity || '1');
+      el.style.pointerEvents = isTodoFlyoutOpen ? 'none' : 'auto';
+      el.style.transition = isTodoFlyoutOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out';
+    });
+  }, [isTodoFlyoutOpen]);
   const [todoActiveTab, setTodoActiveTab] = useState<'reminders' | 'automations'>('reminders');
   const [showAutomationWizard, setShowAutomationWizard] = useState(false);
   const [wizardStep, setWizardStep] = useState(0);
