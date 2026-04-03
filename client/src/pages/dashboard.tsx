@@ -26458,7 +26458,7 @@ export default function Dashboard() {
             semTabs.push({ id: 'wk-next', topText: String(selectedWeek + 1), bottomText: 'W', semLabel: hwWeeklyTimeline[1]?.semLabel || 'Winter 2026', scrollTarget: 'nextweek', colors: getTabColors('Winter 2026') });
             semTabs.push({ id: 'wk-third', topText: String(selectedWeek + 2), bottomText: 'W', semLabel: hwWeeklyTimeline[2]?.semLabel || 'Winter 2026', scrollTarget: 'twoweeks', colors: getTabColors('Winter 2026') });
             if (now < semDates.ss2026Start) {
-              semTabs.push({ id: 'april-gap', topText: '', bottomText: 'APRIL', semLabel: 'Winter 2026', scrollTarget: 'threeweeks', colors: gapColor });
+              semTabs.push({ id: 'april-gap', topText: '', bottomText: 'APRIL', semLabel: 'Winter 2026', scrollTarget: 'threeweeks', colors: getTabColors('Winter 2026') });
             }
             if (now < semDates.f2026Start) {
               const ssMaxWk = now >= semDates.ss2026Start ? 6 : 6;
