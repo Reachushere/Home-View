@@ -29515,6 +29515,35 @@ export default function Dashboard() {
               <div className="flex items-center gap-2">
                 <Pencil className="h-3 w-3 text-white" />
                 <DialogTitle className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>EDIT TASK</DialogTitle>
+                {editingTask && (
+                  <div className="flex flex-wrap items-center gap-1.5 ml-2">
+                    {editingTask.calendarEventId && (
+                      <span className="text-[9px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(66,133,244,0.25)', border: '1px solid rgba(66,133,244,0.5)', color: 'rgba(180,210,255,1)' }} data-testid="badge-calendar-primary">
+                        Primary Google
+                      </span>
+                    )}
+                    {editingTask.secondAccountCalendarEventId && (
+                      <span className="text-[9px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(234,67,53,0.25)', border: '1px solid rgba(234,67,53,0.5)', color: 'rgba(255,180,175,1)' }} data-testid="badge-calendar-second">
+                        Second Google
+                      </span>
+                    )}
+                    {editingTask.secondaryCalendarEventId && (
+                      <span className="text-[9px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(251,188,4,0.25)', border: '1px solid rgba(251,188,4,0.5)', color: 'rgba(255,220,130,1)' }} data-testid="badge-calendar-secondary">
+                        Secondary Cal
+                      </span>
+                    )}
+                    {editingTask.prepCalendarEventId && (
+                      <span className="text-[9px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(52,168,83,0.25)', border: '1px solid rgba(52,168,83,0.5)', color: 'rgba(150,230,170,1)' }} data-testid="badge-calendar-prep">
+                        Prep Event
+                      </span>
+                    )}
+                    {!editingTask.calendarEventId && !editingTask.secondAccountCalendarEventId && !editingTask.secondaryCalendarEventId && (
+                      <span className="text-[9px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.5)' }} data-testid="badge-calendar-none">
+                        Not synced
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
               <div className="flex items-center gap-3">
                 {editingTask && editingTask.type === 'reminder' && !(editingTask as any).isAcknowledged && (
@@ -29560,35 +29589,6 @@ export default function Dashboard() {
                 )}
               </div>
             </DialogHeader>
-            {editingTask && (
-              <div className="flex flex-wrap items-center gap-1.5 px-1 -mt-3 mb-0">
-                {editingTask.calendarEventId && (
-                  <span className="text-[9px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(66,133,244,0.2)', border: '1px solid rgba(66,133,244,0.4)', color: 'rgba(66,133,244,0.9)' }} data-testid="badge-calendar-primary">
-                    Primary Google
-                  </span>
-                )}
-                {editingTask.secondAccountCalendarEventId && (
-                  <span className="text-[9px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(234,67,53,0.2)', border: '1px solid rgba(234,67,53,0.4)', color: 'rgba(234,67,53,0.9)' }} data-testid="badge-calendar-second">
-                    Second Google
-                  </span>
-                )}
-                {editingTask.secondaryCalendarEventId && (
-                  <span className="text-[9px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(251,188,4,0.2)', border: '1px solid rgba(251,188,4,0.4)', color: 'rgba(251,188,4,0.9)' }} data-testid="badge-calendar-secondary">
-                    Secondary Cal
-                  </span>
-                )}
-                {editingTask.prepCalendarEventId && (
-                  <span className="text-[9px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(52,168,83,0.2)', border: '1px solid rgba(52,168,83,0.4)', color: 'rgba(52,168,83,0.9)' }} data-testid="badge-calendar-prep">
-                    Prep Event
-                  </span>
-                )}
-                {!editingTask.calendarEventId && !editingTask.secondAccountCalendarEventId && !editingTask.secondaryCalendarEventId && (
-                  <span className="text-[9px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.4)' }} data-testid="badge-calendar-none">
-                    Not synced
-                  </span>
-                )}
-              </div>
-            )}
             {editingTask && (
               <>
               <TaskForm 
