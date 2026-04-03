@@ -12463,7 +12463,7 @@ export default function Dashboard() {
           className="absolute inset-0 pointer-events-none"
           style={{ 
             background: colorSettings.mainBackgroundGradient 
-              ? `linear-gradient(180deg, ${safeHex(colorSettings.mainBackground, '#3a8bbf')} 0%, ${safeHex(colorSettings.mainBackgroundGradientEnd, '#164a72')} 100%)`
+              ? `linear-gradient(0deg, ${safeHex(colorSettings.mainBackground, '#3a8bbf')} 0%, ${safeHex(colorSettings.mainBackgroundGradientEnd, '#164a72')} 100%)`
               : safeHex(colorSettings.mainBackground, '#3a8bbf'),
             opacity: colorSettings.backgroundPhoto ? 0.7 : 1,
             zIndex: 1
@@ -25079,7 +25079,7 @@ export default function Dashboard() {
                                     data-testid={`checkbox-time-${task.id}`}
                                   />
                                   <div style={{ flex: 1, minWidth: 0 }}>
-                                    <div style={{ fontSize: '8px', fontWeight: 400, color: 'rgba(255,255,255,0.8)', lineHeight: 1.2 }}>
+                                    <div style={{ fontSize: '8px', fontWeight: 400, color: 'rgba(255,255,255,0.8)', lineHeight: 1.2, position: 'relative', top: '1px' }}>
                                       {task.eventStartTime && task.eventEndTime ? `${formatTimeTo12Hour(task.eventStartTime)} - ${formatTimeTo12Hour(task.eventEndTime)}` : format(new Date(task.dueDate), "h:mm a")}
                                     </div>
                                   </div>
@@ -25266,7 +25266,7 @@ export default function Dashboard() {
                           onClick={(e) => e.stopPropagation()}
                         />
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: '9px', fontWeight: 400, color: 'rgba(255,255,255,0.8)', lineHeight: 1.2 }}>
+                          <div style={{ fontSize: '9px', fontWeight: 400, color: 'rgba(255,255,255,0.8)', lineHeight: 1.2, position: 'relative', top: '1px' }}>
                             {task.eventStartTime && task.eventEndTime ? `${formatTimeTo12Hour(task.eventStartTime)} - ${formatTimeTo12Hour(task.eventEndTime)}` : format(new Date(task.dueDate), "h:mm a")}
                           </div>
                         </div>
