@@ -14783,7 +14783,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Tasks ── */}
-          <div style={{ borderRadius: '26px', padding: '2px 3px 2px 13px', paddingRight: '5px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(150,150,150,0.6)', position: 'relative', top: '1px', margin: '0 5px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(150,150,150,0.5) 0%, rgba(120,120,120,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ borderRadius: '26px', padding: '2px 3px 2px 13px', paddingRight: '5px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(130,130,130,0.7)', position: 'relative', top: '1px', margin: '0 5px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(120,120,120,0.6) 0%, rgba(95,95,95,0.4) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           <ListChecks className="h-[18px] w-[18px] text-white/70" style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px' }} />
           {/* Completed Tasks Button - Swapped with Graduation Hat */}
           <div className="pill-button-hover" style={{ 
