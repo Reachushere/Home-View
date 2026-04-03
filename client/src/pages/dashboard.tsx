@@ -1506,6 +1506,7 @@ export default function Dashboard() {
   const [hwIsScrolling, setHwIsScrolling] = useState(false);
   const hwScrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [hwVisibleSemLabel, setHwVisibleSemLabel] = useState<string | null>(null);
+  const [hwVisibleSection, setHwVisibleSection] = useState<string | null>(null);
   const [hwScrolledDown, setHwScrolledDown] = useState(false);
   const [hwFloating, setHwFloatingRaw] = useState(() => {
     const saved = localStorage.getItem('hwFloating');
@@ -14136,7 +14137,7 @@ export default function Dashboard() {
                     <span className="text-white" style={{ fontSize: '9px', fontWeight: '400', textTransform: 'uppercase', lineHeight: '1', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>{new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}</span>
                   </div>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginLeft: '2px', flex: 1 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginLeft: '2px', flex: 1, alignItems: 'center' }}>
                   {(() => {
                     const prepDaysNum = prepDaysText === 'today' ? 0 : prepDaysText === 'now' ? -1 : Number(prepDaysText);
                   const showPrepFirst = prepDaysText && nextPrep && prepDaysNum < diffDays && diffDays > 0;
@@ -26499,9 +26500,11 @@ export default function Dashboard() {
                   const clipBottom = 0;
                   return semTabs.map((tab, tabIdx) => {
                   const isActive = (() => {
-                    if (tab.id === 'wk-current') return !hwVisibleSemLabel || hwVisibleSemLabel === tab.semLabel;
-                    if (tab.id === 'wk-next' || tab.id === 'wk-third') return false;
-                    if (tab.id === 'april-gap' || tab.id === 'aug-sept-gap') return false;
+                    if (tab.id === 'wk-current') return !hwVisibleSection || hwVisibleSection === 'thisweek' || hwVisibleSection === 'today';
+                    if (tab.id === 'wk-next') return hwVisibleSection === 'nextweek';
+                    if (tab.id === 'wk-third') return hwVisibleSection === 'twoweeks';
+                    if (tab.id === 'april-gap') return hwVisibleSection === 'threeweeks';
+                    if (tab.id === 'aug-sept-gap') return false;
                     if (tab.id.startsWith('ss26-wk')) return tab.id === 'ss26-wk1' && scrollActiveSem === tab.semLabel;
                     return scrollActiveSem === tab.semLabel;
                   })();
@@ -27059,7 +27062,7 @@ export default function Dashboard() {
           <div style={{ width: '100%', height: '15px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', flexShrink: 0 }}>
             <span style={{ fontSize: '10px', fontWeight: 500, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
           </div>
-          <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', background: 'linear-gradient(180deg, #154B96 0%, #ACD6F2 100%)' }} ref={homeworkScrollRef} onScroll={() => { setHwIsScrolling(true); if (hwScrollTimerRef.current) clearTimeout(hwScrollTimerRef.current); hwScrollTimerRef.current = setTimeout(() => setHwIsScrolling(false), 300); const sc = homeworkScrollRef.current; if (sc) { setHwScrolledDown(sc.scrollTop > 5); const sections = sc.querySelectorAll('[data-semester-label]'); let bestLabel: string | null = null; let bestDist = Infinity; const containerTop = sc.getBoundingClientRect().top; sections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestDist) { bestDist = dist; bestLabel = el.getAttribute('data-semester-label') || null; } }); if (bestLabel) setHwVisibleSemLabel(bestLabel); } }}>
+          <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', background: 'linear-gradient(180deg, #154B96 0%, #ACD6F2 100%)' }} ref={homeworkScrollRef} onScroll={() => { setHwIsScrolling(true); if (hwScrollTimerRef.current) clearTimeout(hwScrollTimerRef.current); hwScrollTimerRef.current = setTimeout(() => setHwIsScrolling(false), 300); const sc = homeworkScrollRef.current; if (sc) { setHwScrolledDown(sc.scrollTop > 5); const sections = sc.querySelectorAll('[data-semester-label]'); let bestLabel: string | null = null; let bestDist = Infinity; const containerTop = sc.getBoundingClientRect().top; sections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestDist) { bestDist = dist; bestLabel = el.getAttribute('data-semester-label') || null; } }); if (bestLabel) setHwVisibleSemLabel(bestLabel); const hwSections = sc.querySelectorAll('[data-homework-section]'); let bestSec: string | null = null; let bestSecDist = Infinity; hwSections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestSecDist) { bestSecDist = dist; bestSec = el.getAttribute('data-homework-section') || null; } }); setHwVisibleSection(bestSec); } }}>
             {isLoading ? (
               <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
             ) : (
