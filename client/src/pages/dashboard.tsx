@@ -21253,14 +21253,18 @@ export default function Dashboard() {
               colorSettings={{ mainBackground: colorSettings.mainBackground, mainBackgroundGradientEnd: colorSettings.mainBackgroundGradientEnd, headerBar: colorSettings.headerBar }}
               onClose={() => setIsNewCourseWizardOpen(false)}
               onSave={async (wizardData) => {
+                try {
                 const fullName = `${wizardData.courseCode} - ${wizardData.courseName}`;
                 
                 const typeLabel = wizardData.semesterType === 'winter' ? 'Winter' : wizardData.semesterType === 'fall' ? 'Fall' : 'Spring/Summer';
                 const targetSemName = `${typeLabel} ${wizardData.semesterYear}`;
+                console.log('[WizardSave] Target semester:', targetSemName, 'allSemesters count:', (allSemesterSettings || []).length);
                 const matchedSem = (allSemesterSettings || []).find((s: any) => 
                   s.semesterName === targetSemName
                 );
+                console.log('[WizardSave] matchedSem:', matchedSem ? `id=${matchedSem.id}, active=${matchedSem.isActive}, c1=${matchedSem.course1Code}` : 'NOT FOUND');
                 const isActiveSemester = matchedSem?.isActive || (!matchedSem && !(allSemesterSettings || []).length);
+                console.log('[WizardSave] isActiveSemester:', isActiveSemester);
                 
                 if (isActiveSemester) {
                   const updatedCourses = [...coursesData.courses];
@@ -21313,23 +21317,29 @@ export default function Dashboard() {
                   const isTBD = (c: string | null | undefined) => !c || /^TBD\d*$/i.test(c.trim());
                   const emptySlot = codes.findIndex(c => isTBD(c)) + 1;
                   const slotNum = emptySlot > 0 ? emptySlot : codes.length + 1;
+                  console.log('[WizardSave] codes:', codes, 'emptySlot:', emptySlot, 'slotNum:', slotNum);
                   if (slotNum <= 3) {
                     const prefix = `course${slotNum}`;
                     const payload = { semesterType: wizardData.semesterType, ...buildSchedulePayload(prefix) };
+                    console.log('[WizardSave] Saving to slot', slotNum, 'prefix:', prefix, 'payload keys:', Object.keys(payload), 'code:', payload[`${prefix}Code`]);
                     if (isActiveSemester) {
                       saveSemesterScheduleMutation.mutate(payload);
                     } else {
                       try {
+                        console.log('[WizardSave] PATCHing /api/semesters/' + matchedSem.id);
                         await apiRequest("PATCH", `/api/semesters/${matchedSem.id}`, payload);
                         queryClient.invalidateQueries({ queryKey: ["/api/semesters"] });
                         toast({ title: "Schedule saved", description: `Course added to ${targetSemName}.` });
                       } catch (err) {
-                        console.error("Failed to save to semester:", err);
+                        console.error("[WizardSave] Failed to save to semester:", err);
                       }
                     }
+                  } else {
+                    console.warn('[WizardSave] No available slot (slotNum > 3)');
                   }
                 } else {
                   try {
+                    console.log('[WizardSave] Creating new semester:', targetSemName);
                     await apiRequest("POST", "/api/semester", {
                       semesterType: wizardData.semesterType,
                       semesterName: targetSemName,
@@ -21338,12 +21348,17 @@ export default function Dashboard() {
                     queryClient.invalidateQueries({ queryKey: ["/api/semesters"] });
                     toast({ title: "Semester created", description: `${targetSemName} created with ${fullName}.` });
                   } catch (err) {
-                    console.error("Failed to create semester:", err);
+                    console.error("[WizardSave] Failed to create semester:", err);
                   }
                 }
 
                 setIsNewCourseWizardOpen(false);
                 toast({ title: "Course added", description: `${fullName} has been added.` });
+
+                startTransition(() => {
+                  setSchoolCoursesOpenSource('pill');
+                  startTransition(() => setIsSchoolCoursesDialogOpen(true));
+                });
 
                 const newCodeNorm = wizardData.courseCode.replace(/\s/g, '').toUpperCase();
                 const newCodeBase = newCodeNorm.replace(/^C(?=[A-Z]{2,})/, '');
@@ -21404,6 +21419,10 @@ export default function Dashboard() {
                       toast({ title: "Tasks created", description: `${created} task(s) added for ${wizardData.courseCode}.` });
                     }
                   })();
+                }
+                } catch (outerErr) {
+                  console.error("[WizardSave] Outer error in onSave:", outerErr);
+                  toast({ title: "Error", description: "Failed to save course. Check console for details.", variant: "destructive" });
                 }
               }}
             />
