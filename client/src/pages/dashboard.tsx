@@ -22883,7 +22883,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`flex flex-col items-center justify-center h-full relative`}
-                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'hidden', borderLeft: `2px solid ${colorSettings.headerBar}` } : day.getDay() === 6 ? { backgroundColor: isNextSchoolWeek ? undefined : colorSettings.headerBar, background: isNextSchoolWeek ? 'linear-gradient(180deg, #5596C0 0%, #8BB8D5 100%)' : undefined, borderLeft: `2px solid ${colorSettings.headerBar}` } : isNextSchoolWeek ? { background: 'linear-gradient(180deg, #5596C0 0%, #8BB8D5 100%)', borderLeft: '1px solid rgba(255,255,255,0.1)' } : { backgroundColor: colorSettings.headerBar, borderLeft: '1px solid rgba(255,255,255,0.1)' }}
+                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'hidden', borderLeft: `2px solid ${colorSettings.headerBar}` } : day.getDay() === 6 ? { backgroundColor: isNextSchoolWeek ? undefined : colorSettings.headerBar, background: isNextSchoolWeek ? 'linear-gradient(180deg, #5596C0 0%, #5596C0 55%, #8BB8D5 100%)' : undefined, borderLeft: `2px solid ${colorSettings.headerBar}` } : isNextSchoolWeek ? { background: 'linear-gradient(180deg, #5596C0 0%, #5596C0 55%, #8BB8D5 100%)', borderLeft: '1px solid rgba(255,255,255,0.1)' } : { backgroundColor: colorSettings.headerBar, borderLeft: '1px solid rgba(255,255,255,0.1)' }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     
@@ -27136,7 +27136,7 @@ export default function Dashboard() {
                                             flex: 1, minWidth: 0, height: '13px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', lineHeight: '1',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
-                                            background: isDue ? dueBg : isToday ? todayCellBg : 'linear-gradient(180deg, #7AABCC 0%, #6A9BBE 60%, #5A8BAE 100%)',
+                                            background: isDue ? dueBg : isToday ? todayCellBg : 'linear-gradient(180deg, #7AABCC 0%, #7AABCC 100%)',
                                             border: isDue ? `1px solid ${dueColors[0]}` : isToday ? '1px solid rgba(255,255,255,0.7)' : 'none',
                                           }} data-testid={`mini-cal-w10-date-${format(d, 'yyyy-MM-dd')}`}>
                                             {d.getDate()}
@@ -27316,7 +27316,7 @@ export default function Dashboard() {
                                             flex: 1, minWidth: 0, height: '13px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', lineHeight: '1',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
-                                            background: isDue ? dueBg : isToday ? todayCellBg : 'linear-gradient(180deg, #7AABCC 0%, #6A9BBE 60%, #5A8BAE 100%)',
+                                            background: isDue ? dueBg : isToday ? todayCellBg : 'linear-gradient(180deg, #7AABCC 0%, #7AABCC 100%)',
                                             border: isDue ? `1px solid ${dueColors[0]}` : isToday ? '1px solid rgba(255,255,255,0.7)' : 'none',
                                           }} data-testid={`mini-cal-w11-date-${format(d, 'yyyy-MM-dd')}`}>
                                             {d.getDate()}
@@ -27515,7 +27515,7 @@ export default function Dashboard() {
                                             flex: 1, minWidth: 0, height: '13px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', lineHeight: '1',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
-                                            background: isDue ? dueBg : isToday ? todayCellBg : 'linear-gradient(180deg, #7AABCC 0%, #6A9BBE 60%, #5A8BAE 100%)',
+                                            background: isDue ? dueBg : isToday ? todayCellBg : 'linear-gradient(180deg, #7AABCC 0%, #7AABCC 100%)',
                                             border: isDue ? `1px solid ${dueColors[0]}` : isToday ? '1px solid rgba(255,255,255,0.7)' : 'none',
                                           }} data-testid={`mini-cal-date-${format(d, 'yyyy-MM-dd')}`}>
                                             {d.getDate()}
@@ -27737,7 +27737,7 @@ export default function Dashboard() {
                                             flex: 1, minWidth: 0, height: '13px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', lineHeight: '1',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
-                                            background: isDue ? dueBg : isToday ? todayCellBg : 'linear-gradient(180deg, #7AABCC 0%, #6A9BBE 60%, #5A8BAE 100%)',
+                                            background: isDue ? dueBg : isToday ? todayCellBg : 'linear-gradient(180deg, #7AABCC 0%, #7AABCC 100%)',
                                             border: isDue ? `1px solid ${dueColors[0]}` : isToday ? '1px solid rgba(255,255,255,0.7)' : 'none',
                                           }} data-testid={`mini-cal-date-${format(d, 'yyyy-MM-dd')}`}>
                                             {d.getDate()}
