@@ -25063,15 +25063,8 @@ export default function Dashboard() {
                                       data-testid={`checkbox-time-${task.id}`}
                                     />
                                   </div>
-                                  <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-                                    <div
-                                      onClick={() => setEditingTask(task)}
-                                      style={{ fontSize: '8px', fontWeight: 700, color: task.isCompleted ? 'rgba(255,255,255,0.5)' : 'white', textDecoration: task.isCompleted ? 'line-through' : 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer', textShadow: '0 1px 2px rgba(0,0,0,0.3)', lineHeight: 1.2 }}
-                                      data-testid={`task-title-time-${task.id}`}
-                                    >
-                                      {(() => { const raw = (task.title || '').replace(/^\[.*?\]\s*/, ''); const t = raw; const isModRead = /^(module|reading|module\s*(?:&|and)\s*reading)$/i.test(t.trim()); if (isModRead && task.courseName) { const cc = task.courseName.split(' - ')[0]?.trim(); if (cc) return `${cc} ${t}`; } return t; })()}
-                                    </div>
-                                    <div style={{ fontSize: '7px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.2 }}>
+                                  <div style={{ flex: 1, minWidth: 0 }}>
+                                    <div style={{ fontSize: '7px', fontWeight: 400, color: 'rgba(255,255,255,0.8)', lineHeight: 1.2 }}>
                                       {task.eventStartTime && task.eventEndTime ? `${formatTimeTo12Hour(task.eventStartTime)} - ${formatTimeTo12Hour(task.eventEndTime)}` : format(new Date(task.dueDate), "h:mm a")}
                                     </div>
                                   </div>
@@ -25255,21 +25248,12 @@ export default function Dashboard() {
                             onClick={(e) => e.stopPropagation()}
                           />
                         </div>
-                        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-                          <span
-                            onClick={() => setEditingTask(task)}
-                            style={{ fontSize: '9px', fontWeight: 700, color: task.isCompleted ? 'rgba(255,255,255,0.5)' : 'white', textDecoration: task.isCompleted ? 'line-through' : 'none', lineHeight: 1.3, cursor: 'pointer', textShadow: '0 1px 2px rgba(0,0,0,0.3)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' } as any}
-                            data-testid={`task-title-multi-${task.id}`}
-                          >
-                            {(() => { const raw = (task.title || '').replace(/^\[.*?\]\s*/, ''); const t = raw; const isModRead = /^(module|reading|module\s*(?:&|and)\s*reading)$/i.test(t.trim()); if (isModRead && task.courseName) { const cc2 = task.courseName.split(' - ')[0]?.trim(); if (cc2) return `${cc2} ${t}`; } return t; })()}
-                          </span>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: '8px', fontWeight: 400, color: 'rgba(255,255,255,0.8)', lineHeight: 1.2 }}>
+                            {task.eventStartTime && task.eventEndTime ? `${formatTimeTo12Hour(task.eventStartTime)} - ${formatTimeTo12Hour(task.eventEndTime)}` : format(new Date(task.dueDate), "h:mm a")}
+                          </div>
                         </div>
                       </div>
-                      {task.eventStartTime && task.eventEndTime && (
-                        <div style={{ fontSize: '8px', color: 'rgba(255,255,255,0.7)', paddingLeft: '20px', paddingBottom: '2px', lineHeight: 1.2 }}>
-                          {formatTimeTo12Hour(task.eventStartTime)} - {formatTimeTo12Hour(task.eventEndTime)}
-                        </div>
-                      )}
                     </div>
                   );
                 })}
