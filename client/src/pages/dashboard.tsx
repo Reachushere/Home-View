@@ -23007,7 +23007,7 @@ export default function Dashboard() {
                                 <div className="absolute left-0 right-0 z-15" style={{ top: 0, height: '20px', background: colorSettings.headerBar }} />
                                 <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '7px', overflow: 'hidden' }} data-testid="today-full-date">
                                   <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 4px' }}>
-                                    {format(day, 'EEEE, MMMM d')}
+                                    {`Week ${selectedWeek}`}
                                   </span>
                                 </div>
                               </>
@@ -23046,18 +23046,26 @@ export default function Dashboard() {
                               const isDarkWeather = weatherData && (weatherData.code >= 51);
                             return (
                                 <>
-                                  <div className="text-[10px] font-medium tracking-wide" style={{ color: isDarkWeather ? '#ffffff' : '#000000' }}>
-                                    {dayName}
+                                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', alignSelf: 'stretch' }}>
+                                    <div className="text-[10px] font-medium tracking-wide" style={{ color: isDarkWeather ? '#ffffff' : '#000000', lineHeight: 1 }}>
+                                      {dayName}
+                                    </div>
+                                    <div className="text-[8px] font-medium tracking-wide" style={{ color: isDarkWeather ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.5)', lineHeight: 1, textTransform: 'uppercase' }}>
+                                      {format(day, 'MMM')}
+                                    </div>
                                   </div>
-                                  <div style={{ fontSize: '25px', fontWeight: 600, color: isDarkWeather ? '#ffffff' : '#000000' }}>
+                                  <div style={{ fontSize: '25px', fontWeight: 600, color: isDarkWeather ? '#ffffff' : '#000000', lineHeight: 1 }}>
                                     {dayNum}
                                   </div>
                                 </>
                               );
                             })() : (
                               <>
-                                <div className="text-[10px] font-medium tracking-wide" style={{ color: isNextSchoolWeek ? '#b0b8c4' : 'rgba(255,255,255,0.6)' }}>{dayName}</div>
-                                <div style={{ fontSize: '24px', fontWeight: 700, color: isNextSchoolWeek ? '#b0b8c4' : '#fff' }}>{dayNum}</div>
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', alignSelf: 'stretch' }}>
+                                  <div className="text-[10px] font-medium tracking-wide" style={{ color: isNextSchoolWeek ? '#b0b8c4' : 'rgba(255,255,255,0.6)', lineHeight: 1 }}>{dayName}</div>
+                                  <div className="text-[8px] font-medium tracking-wide" style={{ color: isNextSchoolWeek ? 'rgba(176,184,196,0.7)' : 'rgba(255,255,255,0.4)', lineHeight: 1, textTransform: 'uppercase' }}>{format(day, 'MMM')}</div>
+                                </div>
+                                <div style={{ fontSize: '24px', fontWeight: 700, color: isNextSchoolWeek ? '#b0b8c4' : '#fff', lineHeight: 1 }}>{dayNum}</div>
                               </>
                             )}
                           </div>
