@@ -23230,7 +23230,7 @@ export default function Dashboard() {
                 <div className="absolute pointer-events-none" style={{ top: '0px', height: '60px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px))`, width: `calc((${todayW} / ${totalDayW}) * (100% - ${fixedW}px))`, zIndex: 9990 }} />
               );
             })()}
-            {/* Red separator on left border of today column - only show when there are next-week columns to the left */}
+            {/* Red separator on left border of today column - only spans the day header height */}
             {(() => {
               const now = new Date();
               const todayIdx = weekDays.findIndex(d => isSameDayET(d, now));
@@ -23239,7 +23239,7 @@ export default function Dashboard() {
               const beforeW = gridSizes.dayColumnWidths.slice(0, todayIdx).reduce((a: number, b: number) => a + b, 0);
               const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
               return (
-                <div className="absolute top-0 bottom-0 z-50 pointer-events-none" style={{ left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px) - 1px)`, width: '3px', backgroundColor: colorSettings.headerBar }} />
+                <div className="absolute top-0 z-50 pointer-events-none" style={{ height: '60px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px) - 1px)`, width: '3px', backgroundColor: colorSettings.headerBar }} />
               );
             })()}
             
