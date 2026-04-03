@@ -2289,7 +2289,7 @@ input[type="date"]::-webkit-datetime-edit-year-field {
 }
 
 .weather-sheet-lightning {
-  animation: sheetLightning 7s ease-in-out infinite;
+  animation: sheetLightning 20s ease-in-out infinite;
   pointer-events: none;
   background: linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(180,180,255,0.4) 50%, transparent 100%);
 }
