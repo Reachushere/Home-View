@@ -923,7 +923,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, colorSe
   return createPortal(
     <div
       className="fixed inset-0 z-[10003] flex items-center justify-center bg-black/60"
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
         className="rounded-xl w-[560px] max-h-[90vh] overflow-hidden flex flex-col text-white shadow-2xl [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white"
