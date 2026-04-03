@@ -18158,10 +18158,22 @@ Return ONLY the JSON object, no markdown formatting.`;
         }
       }
 
+      const inferTypeFromTitle = (title: string): string => {
+        const t = title.toLowerCase();
+        if (/\]\s*module/i.test(title) || /^module\b/i.test(title)) return 'module';
+        if (/\]\s*reading/i.test(title) || /^reading\b/i.test(title)) return 'reading';
+        if (/\]\s*essay/i.test(title) || /^essay\b/i.test(title)) return 'essay';
+        if (/\]\s*quiz/i.test(title) || /^quiz\b/i.test(title)) return 'quiz';
+        if (/\]\s*exam/i.test(title) || /^exam\b/i.test(title) || t.includes('midterm') || t.includes('final exam')) return 'exam';
+        if (/\]\s*review poll/i.test(title) || /^review poll/i.test(title)) return 'poll';
+        if (/\]\s*discussion/i.test(title) || /^discussion\b/i.test(title)) return 'discussion';
+        if (/\]\s*project/i.test(title) || /^project\b/i.test(title)) return 'project';
+        return 'meeting';
+      };
       const overrides = req.body.overrides || {};
       const taskData: any = {
         title: item.title,
-        type: item.taskType || 'meeting',
+        type: item.taskType || inferTypeFromTitle(item.title || ''),
         courseName: item.courseName || null,
         dueDate: item.startDate || new Date(),
         eventStartTime: item.eventStartTime || null,
@@ -18239,9 +18251,21 @@ Return ONLY the JSON object, no markdown formatting.`;
           }
         }
         const mergedOverrides = overrides || {};
+        const inferType = (title: string): string => {
+          const t = title.toLowerCase();
+          if (/\]\s*module/i.test(title) || /^module\b/i.test(title)) return 'module';
+          if (/\]\s*reading/i.test(title) || /^reading\b/i.test(title)) return 'reading';
+          if (/\]\s*essay/i.test(title) || /^essay\b/i.test(title)) return 'essay';
+          if (/\]\s*quiz/i.test(title) || /^quiz\b/i.test(title)) return 'quiz';
+          if (/\]\s*exam/i.test(title) || /^exam\b/i.test(title) || t.includes('midterm') || t.includes('final exam')) return 'exam';
+          if (/\]\s*review poll/i.test(title) || /^review poll/i.test(title)) return 'poll';
+          if (/\]\s*discussion/i.test(title) || /^discussion\b/i.test(title)) return 'discussion';
+          if (/\]\s*project/i.test(title) || /^project\b/i.test(title)) return 'project';
+          return 'meeting';
+        };
         const taskData: any = {
           title: item.title,
-          type: item.taskType || 'meeting',
+          type: item.taskType || inferType(item.title || ''),
           courseName: item.courseName || null,
           dueDate: item.startDate || new Date(),
           eventStartTime: item.eventStartTime || null,
