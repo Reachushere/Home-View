@@ -23070,7 +23070,7 @@ export default function Dashboard() {
                                   const delay = ((i * 0.13) % 0.8).toFixed(2);
                                   return `<div style="position:absolute;left:${left}%;top:-4px;width:1.5px;height:8px;background:rgba(180,190,220,0.7);animation:rainDrop 0.4s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
                                 }).join('');
-                                return drops + `<div style="position:absolute;inset:0;background:rgba(255,255,200,0.15);animation:lightningFlash 4s 1s ease-in-out infinite"></div>`;
+                                return drops + `<div style="position:absolute;inset:0;background:rgba(255,255,200,0.15);animation:lightningFlash 15s 3s ease-in-out infinite"></div>`;
                               }
                               if (wCode >= 61 || (wCode >= 80 && wCode <= 82)) {
                                 const isShowers = wCode >= 80;
@@ -26711,13 +26711,22 @@ export default function Dashboard() {
             );
           })()}
           <div style={{ padding: '0 8px', height: courseRowRects.length > 0 ? `${courseRowRects[0].top - (calendarBorderTop || (calendarTop + 15)) - 1}px` : '45px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 46, overflow: 'hidden', marginBottom: '0px', boxShadow: '0 3px 6px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3)' }}>
-            {weatherData && weatherData.code >= 95 && weatherData.code <= 99 && (
-              <div className="absolute inset-0 weather-sheet-lightning" style={{ zIndex: 47 }} />
-            )}
             <div style={{ position: 'absolute', top: '21px', left: '22px', right: 0, height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)' }} />
             <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: '6px', bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Homework Progress</span>
             {/* Week label moved to countdown box */}
             <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: `${effectiveDividerPct}%`, bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', paddingLeft: '6px' }}>Most Urgent Assignments</span>
+            {weatherData && (
+              <div style={{ position: 'absolute', left: '28px', top: '5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span className="text-[9.5px] font-medium" style={{ color: 'rgba(255,255,255,1)' }} data-testid="homework-weather-temp">Current: {Math.round(weatherData.temp)}°C</span>
+                <span className="text-[9.5px]" style={{ color: 'rgba(255,255,255,1)' }} data-testid="homework-weather-desc">{(() => { const WMO: Record<number, string> = {0:'Clear',1:'Mostly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Rime Fog',51:'Lt Drizzle',53:'Drizzle',55:'Hvy Drizzle',61:'Lt Rain',63:'Rain',65:'Hvy Rain',66:'Frzg Rain',67:'Hvy Frzg Rain',71:'Lt Snow',73:'Snow',75:'Hvy Snow',77:'Snow Grains',80:'Lt Showers',81:'Showers',82:'Hvy Showers',85:'Lt Snow Shwrs',86:'Hvy Snow Shwrs',95:'T-Storm',96:'T-Storm Hail',99:'Svr T-Storm'}; return WMO[weatherData.code] || ''; })()}</span>
+              </div>
+            )}
+            {weatherData && (weatherData.sunrise || weatherData.sunset) && (
+              <div style={{ position: 'absolute', right: '15px', top: '6px', display: 'flex', alignItems: 'center', gap: '11px', lineHeight: 1 }}>
+                {weatherData.sunrise && <span className="text-[9.5px]" data-testid="homework-sunrise"><span style={{ color: '#FFFF00' }}>☀</span><span style={{ color: '#FFFF00', marginLeft: '3px' }}>↑</span><span style={{ color: 'rgba(255,255,255,1)', position: 'relative', top: '1px', marginLeft: '6px' }}>{(() => { const t = new Date(weatherData.sunrise); const h = t.getHours(); const m = t.getMinutes(); const ampm = h >= 12 ? 'PM' : 'AM'; return `${h === 0 ? 12 : h > 12 ? h - 12 : h}:${m.toString().padStart(2, '0')} ${ampm}`; })()}</span><span style={{ position: 'absolute', marginLeft: '12px', color: 'rgba(255,255,255,0.4)' }}>|</span></span>}
+                {weatherData.sunset && <span className="text-[9.5px]" style={{ marginLeft: '14px' }} data-testid="homework-sunset"><span style={{ color: '#FFFF00', display: 'inline-block', transform: 'scaleX(-1) rotate(30deg)' }}>☽</span><span style={{ color: '#FFFF00', marginLeft: '3px', position: 'relative', top: '-2px' }}>↓</span><span style={{ color: 'rgba(255,255,255,1)', position: 'relative', top: '1px', marginLeft: '6px' }}>{(() => { const t = new Date(weatherData.sunset); const h = t.getHours(); const m = t.getMinutes(); const ampm = h >= 12 ? 'PM' : 'AM'; return `${h === 0 ? 12 : h > 12 ? h - 12 : h}:${m.toString().padStart(2, '0')} ${ampm}`; })()}</span></span>}
+              </div>
+            )}
             <div ref={homeworkSpacerRef} style={{ position: 'absolute', right: '4px', top: 0, width: '0px', height: '100%', minHeight: '14px', backgroundColor: 'transparent' }} />
           </div>
           {courseRowRects.length > 0 && courseProgressDataRef.current.length > 0 && (() => {
