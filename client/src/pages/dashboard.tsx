@@ -16990,6 +16990,7 @@ export default function Dashboard() {
               saveCourses({ courses: updatedCourses });
 
               const sems = allSemesterSettingsRef.current || (semesterSettings ? [semesterSettings] : []);
+              let revertFired = false;
               for (const sem of sems) {
                 for (let i = 1; i <= 3; i++) {
                   const semCode = ((sem as any)[`course${i}Code`] || '').replace(/\s/g, '');
@@ -17041,6 +17042,48 @@ export default function Dashboard() {
                       }
                     }).catch(err => console.error('[OneDrive] Revert error:', err));
 
+                    revertFired = true;
+                    break;
+                  }
+                }
+                if (revertFired) break;
+              }
+
+              if (!revertFired) {
+                const semKeyOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029'];
+                for (const sk of Object.keys(semesterCourseAssignments)) {
+                  const courses = semesterCourseAssignments[sk] || [];
+                  const idx = courses.findIndex((c: any) => c.code.replace(/\s/g, '') === codeNorm);
+                  if (idx >= 0) {
+                    const semIdx = semKeyOrder.indexOf(sk);
+                    const matchedSem = sems[semIdx];
+                    const slotNum = idx + 1;
+                    const semId = matchedSem?.id;
+                    const courseParts = selectedCertCourse!.courseName || '';
+                    let spSuTerm = '';
+                    if (matchedSem && slotNum >= 1 && slotNum <= 3) {
+                      spSuTerm = (matchedSem as any)[`course${slotNum}SpringSummerTerm`] || '';
+                    }
+                    fetch('/api/onedrive/revert-course-folder', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      credentials: 'include',
+                      body: JSON.stringify({
+                        semesterId: semId,
+                        courseCode: codeNorm,
+                        courseName: courseParts,
+                        springSummerTerm: spSuTerm,
+                        slotNumber: slotNum,
+                      }),
+                    }).then(r => r.json()).then(result => {
+                      if (result.success) {
+                        console.log(`[OneDrive] Reverted folder (from assignments): ${result.from} → ${result.to}`);
+                        queryClient.invalidateQueries({ queryKey: ['/api/onedrive'] });
+                        queryClient.invalidateQueries({ queryKey: ['/api/semester-settings'] });
+                      } else {
+                        console.log('[OneDrive] Revert skipped (from assignments):', result.message);
+                      }
+                    }).catch(err => console.error('[OneDrive] Revert error (from assignments):', err));
                     break;
                   }
                 }
