@@ -195,7 +195,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, existin
   const openFolderBrowser = async (target: 'module' | 'reading') => {
     setBrowsingFor(target);
     const currentPath = target === 'module' ? data.moduleFolder : data.readingFolder;
-    const startPath = currentPath ? currentPath.split('/').slice(0, -1).join('/') || '/' : '/';
+    const startPath = currentPath ? currentPath.split('/').slice(0, -1).join('/') || '/' : `/School/TMU/Courses/${data.semesterYear || new Date().getFullYear()}`;
     setBrowsePath(startPath);
     await loadFolders(startPath);
   };
