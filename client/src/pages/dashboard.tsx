@@ -14441,8 +14441,500 @@ export default function Dashboard() {
           
 
 
+          {/* ── Tasks ── */}
+          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', paddingRight: '7px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(50,120,210,0.6)', position: 'relative', top: '1px', margin: '0 5px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(40,110,210,0.5) 0%, rgba(25,80,180,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
+          <ListChecks className="h-[18px] w-[18px] text-white/70" style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', top: '-10px' }} />
+          {/* Completed Tasks Button - Swapped with Graduation Hat */}
+          <div className="pill-button-hover" style={{ 
+            marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+            position: 'relative' as const, zIndex: 1,
+            border: '1.5px solid rgba(255,255,255,0.35)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
+              style={{ background: 'transparent' }}
+              data-testid="button-completed-tasks"
+              title="Completed"
+              onClick={() => { triggerButtonGlow('completed'); setIsCompletedTasksOpen(true); }}
+            >
+              <CheckSquare className="h-[18px] w-[18px] text-white" />
+            </Button>
+          </div>
+
+
+          {/* Todo Button (swapped from tall pill) */}
+          <div 
+            style={{ 
+              marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
+              background: hasUnackedReminders
+                ? 'linear-gradient(180deg, #FF9494 0%, #FF0000 100%)'
+                : 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+              position: 'relative' as const, zIndex: 1,
+              border: hasUnackedReminders ? '1.5px solid rgba(220, 38, 38, 0.8)' : '1.5px solid rgba(255,255,255,0.55)',
+              boxShadow: hasUnackedReminders
+                ? '0 0 12px rgba(220, 38, 38, 0.6), inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3)'
+                : '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+            }}
+            className={`pill-button-hover ${hasUnackedReminders ? 'animate-pill-reminder' : ''}`}
+            onClick={() => { if (!isTodoFlyoutOpen) { bringFlyoutToFront('todo'); setTodoPanelPos(null); setTodoPanelSize(null); } setIsTodoFlyoutOpen(!isTodoFlyoutOpen); }}
+            data-testid="honeycomb-todo-header"
+            title="Reminders"
+          >
+            <img src={remindersIconPath} alt="Reminders" style={{ height: '20px', width: '20px', objectFit: 'contain' }} />
+          </div>
+
+
+          {/* Projects Button */}
+          {desktopIsFull && <Button 
+            variant="ghost" 
+            size="sm" 
+            className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} 
+            style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} 
+            data-testid="button-projects"
+            onClick={() => { triggerButtonGlow('projects'); setEditingProject(null); setProjectWizardStep(0); setProjectWizardData({ name: '', description: '', color: '#6366F1', status: 'planning', targetDate: '', priority: 'medium' }); setProjectDialogOpen(true); }}
+          >
+            + Project
+          </Button>}
+
+
+          {/* Quick Add Button */}
+          {desktopIsFull && <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminder4DateTimeMode: false, reminder4Date: '', reminder4Hour: '09', reminder4Minute: '00', reminderEmail: false, reminderAlexa: false, reminderSms: false, reminder1Methods: '', reminder2Methods: '', reminder3Methods: '', reminder4Methods: '', attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '', repeatSpanDays: 1, shiftAdjust: false, hideFromSummary: false, hideFromCountdown: false }); setIsQuickAddOpen(true); }); }}>+ Add Task</Button>}
+
+          {authLevel === '4201' && <Button
+            variant="ghost"
+            size="sm"
+            className="!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover"
+            style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(139,92,246,0.35) 0%, rgba(139,92,246,0.18) 100%)', border: '1.5px solid rgba(139,92,246,0.45)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }}
+            data-testid="button-partner-shifts-4201"
+            onClick={() => { setPartnerWizardStep(0); setPartnerWizardDates([]); setPartnerWizardShiftType('day'); setPartnerWizardOpen(true); }}
+          >Partner Shifts</Button>}
+          </div>
+
+          {/* Radio Dialog */}
+          <Dialog open={isRadioDialogOpen} onOpenChange={setIsRadioDialogOpen}>
+            <DialogContent className="max-w-[260px] text-[10px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '55%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
+                <div className="flex items-center gap-2">
+                  <Radio className="text-white" style={{ width: '15px', height: '15px' }} />
+                  <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
+                    RADIO CONTROLS
+                  </h2>
+                </div>
+                <button
+                  onClick={() => setIsRadioDialogOpen(false)}
+                  className="text-white hover:text-white/80 transition-colors p-1"
+                  data-testid="button-close-radio"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="flex flex-col gap-3 p-4">
+                {/* Speaker Selection */}
+                <div className="flex flex-col gap-1">
+                  <Label className="text-white text-[10px]">Speaker</Label>
+                  <Select value={selectedSpeaker} onValueChange={setSelectedSpeaker}>
+                    <SelectTrigger data-testid="select-speaker" className="h-8 text-[10px] bg-black/50 border-white/30 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-900 max-h-[300px]">
+                      <SelectItem value="media_player.byhome">Apartment</SelectItem>
+                      <SelectItem value="media_player.cat_wash">Cat Wash</SelectItem>
+                      <SelectItem value="media_player.cat_wr">Cat Washroom Speakers</SelectItem>
+                      <SelectItem value="media_player.bathroom_speaker">Nest (Cat Washroom)</SelectItem>
+                      <SelectItem value="media_player.echo_cat_left_am">Cat Washroom Left</SelectItem>
+                      <SelectItem value="media_player.echo_cat_right_am">Cat Washroom Right</SelectItem>
+                      <SelectItem value="media_player.echo_cat_washroom_middle">Cat Washroom Middle</SelectItem>
+                      <SelectItem value="media_player.echo_closet_am">Closet</SelectItem>
+                      <SelectItem value="media_player.echo_lr_couch_r_am">Echo Corner</SelectItem>
+                      <SelectItem value="media_player.echo_hallway_entrance_am">Hallway Entrance</SelectItem>
+                      <SelectItem value="media_player.echo_king_l_am">King Left</SelectItem>
+                      <SelectItem value="media_player.echo_king_r_am">King Right</SelectItem>
+                      <SelectItem value="media_player.echo_king_tv_am">King TV</SelectItem>
+                      <SelectItem value="media_player.echo_kitchen_cupboards_left_am">Kitchen Cupboards Left</SelectItem>
+                      <SelectItem value="media_player.echo_kitchen_cupboards_r_am">Kitchen Cupboards Right</SelectItem>
+                      <SelectItem value="media_player.echo_kitchen_fridge_am">Kitchen Fridge</SelectItem>
+                      <SelectItem value="media_player.echo_kitchen_hutch_am">Kitchen Hutch</SelectItem>
+                      <SelectItem value="media_player.echo_kitchen_island_corner_am">Kitchen Island Corner</SelectItem>
+                      <SelectItem value="media_player.echo_kitchen_studio_black_am">Kitchen Studio Black</SelectItem>
+                      <SelectItem value="media_player.echo_lr_couch_l_am">Living Room Couch Left</SelectItem>
+                      <SelectItem value="media_player.echo_lr_hub_am">Living Room Hub</SelectItem>
+                      <SelectItem value="media_player.echo_lr_studio_white_am">Living Room Studio White</SelectItem>
+                      <SelectItem value="media_player.echo_lr_tv_shelf_am">Living Room TV Shelf</SelectItem>
+                      <SelectItem value="media_player.echo_queen_balcony_am">Queen Balcony</SelectItem>
+                      <SelectItem value="media_player.echo_queen_bed_l_am">Queen Bed Left</SelectItem>
+                      <SelectItem value="media_player.echo_queen_bed_r_am">Queen Bed Right</SelectItem>
+                      <SelectItem value="media_player.echo_show_pug_am">Echo Show Pug</SelectItem>
+                      <SelectItem value="media_player.everywhere_2">Everywhere</SelectItem>
+                      <SelectItem value="media_player.hallway">Hallway</SelectItem>
+                      <SelectItem value="media_player.king_bedroom">King Bedroom</SelectItem>
+                      <SelectItem value="media_player.queen_bedroom">Queen Bedroom</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Play/Stop Buttons */}
+                <div className="flex flex-col gap-1.5 items-center mt-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-6 w-[155px] text-[9px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-opacity duration-200"
+                    onClick={async () => {
+                      try {
+                        const response = await fetch('/api/media/play-radio', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ 
+                            stationId: 'CHUM FM',
+                            entityId: selectedSpeaker
+                          })
+                        });
+                        if (response.ok) {
+                          const speakerName = selectedSpeaker.replace('media_player.', '').replace(/_/g, ' ');
+                          toast({ title: "Playing CHUM FM", description: `on ${speakerName}` });
+                        } else {
+                          toast({ title: "Failed to play radio", variant: "destructive" });
+                        }
+                      } catch (error) {
+                        toast({ title: "Error playing radio", variant: "destructive" });
+                      }
+                    }}
+                    data-testid="button-play-chumfm"
+                  >
+                    <Play style={{ width: 12, height: 12 }} className="mr-1" />
+                    Play CHUM FM (select)
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-6 w-[155px] text-[9px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-opacity duration-200"
+                    onClick={async () => {
+                      try {
+                        const response = await fetch('/api/media/play-radio-all', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ stationId: 'CHUM FM' })
+                        });
+                        if (response.ok) {
+                          toast({ title: "Playing CHUM FM", description: "on all devices" });
+                        } else {
+                          toast({ title: "Failed to play radio", variant: "destructive" });
+                        }
+                      } catch (error) {
+                        toast({ title: "Error playing radio", variant: "destructive" });
+                      }
+                    }}
+                    data-testid="button-play-chumfm-all"
+                  >
+                    <Play style={{ width: 12, height: 12 }} className="mr-1" />
+                    Play CHUM FM (on all)
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="h-6 w-[155px] text-[9px] bg-[rgb(255,0,0)] hover:bg-[rgb(220,0,0)] border-[rgb(255,0,0)]"
+                    onClick={async () => {
+                      try {
+                        const response = await fetch('/api/media/stop-radio', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                        });
+                        if (response.ok) {
+                          toast({ title: "Radio stopped" });
+                        }
+                      } catch (error) {
+                        toast({ title: "Error stopping radio", variant: "destructive" });
+                      }
+                    }}
+                    data-testid="button-stop-radio"
+                  >
+                    <Square style={{ width: 10, height: 10 }} className="mr-1 fill-current" />
+                    Stop
+                  </Button>
+                </div>
+                
+                {/* Volume Controls - All Speakers */}
+                <div className="flex flex-col gap-1.5 mt-1">
+                  <Label className="text-white text-[10px]">Volume (All Speakers):</Label>
+                  <div className="flex items-center gap-1">
+                    <button
+                      className="text-white hover:text-white/70 text-base px-1"
+                      onClick={async () => {
+                        try {
+                          const res = await fetch('/api/media/volume-all', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ direction: 'down' })
+                          });
+                          const data = await res.json();
+                          if (data.newVolume !== undefined) {
+                            setRadioVolume(data.newVolume);
+                            toast({ title: `Volume set to ${data.newVolume}% on all speakers` });
+                          }
+                        } catch (error) {
+                          toast({ title: "Error adjusting volume", variant: "destructive" });
+                        }
+                      }}
+                      data-testid="button-volume-down-all"
+                    >
+                      −
+                    </button>
+                    <div className="flex-1 h-1 bg-white/20 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-green-500 rounded-full transition-opacity duration-200" 
+                        style={{ width: `${radioVolume}%` }}
+                      />
+                    </div>
+                    <button
+                      className="text-white hover:text-white/70 text-base px-1"
+                      onClick={async () => {
+                        try {
+                          const res = await fetch('/api/media/volume-all', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ direction: 'up' })
+                          });
+                          const data = await res.json();
+                          if (data.newVolume !== undefined) {
+                            setRadioVolume(data.newVolume);
+                            toast({ title: `Volume set to ${data.newVolume}% on all speakers` });
+                          }
+                        } catch (error) {
+                          toast({ title: "Error adjusting volume", variant: "destructive" });
+                        }
+                      }}
+                      data-testid="button-volume-up-all"
+                    >
+                      +
+                    </button>
+                    <button
+                      className="text-white/70 hover:text-white text-[9px] px-1"
+                      onClick={async () => {
+                        try {
+                          const res = await fetch('/api/media/volume-all', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ level: 0 })
+                          });
+                          const data = await res.json();
+                          if (data.newVolume !== undefined) {
+                            setRadioVolume(data.newVolume);
+                            toast({ title: "All speakers muted" });
+                          }
+                        } catch (error) {
+                          toast({ title: "Error muting", variant: "destructive" });
+                        }
+                      }}
+                      data-testid="button-mute-all"
+                    >
+                      mute
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+
+          {/* ── School ── */}
+          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(34,197,94,0.7)', position: 'relative', top: '1px', margin: '0 5px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(34,197,94,0.55) 0%, rgba(22,163,74,0.4) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
+          <GraduationCap className="h-[18px] w-[18px] text-white/70" style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', top: '-10px' }} />
+          {/* Courses Button */}
+          <div className="pill-button-hover" style={{ 
+            marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+            position: 'relative' as const, zIndex: 1,
+            border: '1.5px solid rgba(255,255,255,0.35)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
+              style={{ background: 'transparent' }}
+              data-testid="button-courses-pill"
+              title="Semesters and Courses"
+              onClick={() => {
+                startTransition(() => {
+                  setDraftPriorityBoth({ ...coursePlayPriority });
+                  setSchoolCoursesOpenSource('pill');
+                  startTransition(() => setIsSchoolCoursesDialogOpen(true));
+                });
+              }}
+            >
+              <BookOpen className="text-white" style={{ height: '20px', width: '20px' }} />
+            </Button>
+          </div>
+
+
+          {/* Graduation Hat - Swapped with Completed Tasks */}
+          <div className="pill-button-hover" style={{ 
+            marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+            position: 'relative' as const, zIndex: 1,
+            border: '1.5px solid rgba(255,255,255,0.35)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
+              style={{ background: 'transparent' }}
+              data-testid="button-settings-panel"
+              title="Degree Tracking"
+              onClick={() => {
+                triggerButtonGlow('settings');
+                startTransition(() => setIsSettingsPanelOpen(true));
+                const currentSemCodes = semesterSettings ? [1,2,3].map(i => (semesterSettings as any)[`course${i}Code`]).filter(Boolean) : [];
+                const activeCourses = coursesData.courses.filter(c => {
+                  const code = c.name.split(' - ')[0];
+                  return c.name.trim() && currentSemCodes.includes(code);
+                });
+                const uncheckedAas = activeCourses.filter(c => {
+                  const code = c.name.split(' - ')[0];
+                  return !aasSentStatus[code];
+                });
+                if (uncheckedAas.length > 0) {
+                  const lastShown = localStorage.getItem('aasReminderLastShown');
+                  const now = Date.now();
+                  if (!lastShown || now - parseInt(lastShown) > 24 * 60 * 60 * 1000) {
+                    setShowAasReminder(true);
+                    localStorage.setItem('aasReminderLastShown', String(now));
+                  }
+                }
+              }}
+            >
+              <img src={degreeIconPath} alt="Degree Tracking" style={{ height: '22px', width: '22px', objectFit: 'contain', filter: 'brightness(1.1)' }} />
+            </Button>
+          </div>
+
+
+          {/* Scholarships Button */}
+          <div className="pill-button-hover" style={{ 
+            marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+            position: 'relative' as const, zIndex: 1,
+            border: '1.5px solid rgba(255,255,255,0.35)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
+              style={{ background: 'transparent' }}
+              data-testid="button-scholarships"
+              title="Scholarships"
+              onClick={() => {
+                triggerButtonGlow('scholarships');
+                setIsScholarshipsOpen(true);
+              }}
+            >
+              <Award className="text-white" style={{ height: '22px', width: '22px' }} />
+            </Button>
+          </div>
+
+          </div>
+
+          {/* ── Entertainment ── */}
+          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(160,100,240,0.6)', position: 'relative', top: '1px', margin: '0 5px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(150,90,235,0.5) 0%, rgba(120,60,210,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
+          <img src={soundIconPath} alt="Sound" style={{ height: '22px', width: '22px', objectFit: 'contain', position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', opacity: 0.7, top: '-10px' }} />
+          {/* Spotify Button */}
+          <div className="pill-button-hover" style={{ 
+            marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+            position: 'relative' as const, zIndex: 1,
+            border: '1.5px solid rgba(255,255,255,0.35)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
+              style={{ background: 'transparent' }}
+              data-testid="button-spotify-pill"
+              title="Spotify Player"
+              onClick={() => {
+                triggerButtonGlow('spotify');
+                const params = new URLSearchParams(window.location.search);
+                const authParam = params.get('auth');
+                window.location.href = '/spotify' + (authParam ? `?auth=${authParam}` : '');
+              }}
+            >
+              <Music2 className="text-white" style={{ height: '20px', width: '20px' }} />
+            </Button>
+          </div>
+
+
+          {/* Radio Button (moved from bottom pill) */}
+          <div 
+            style={{ 
+              marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+              position: 'relative' as const, zIndex: 1,
+              border: '1.5px solid rgba(255,255,255,0.35)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+            }}
+            className="pill-button-hover"
+            onClick={() => { triggerButtonGlow('radio'); setIsRadioDialogOpen(true); }}
+            data-testid="button-radio-dialog"
+            title="Radio Controls"
+          >
+            <Radio className="text-white" style={{ height: '16px', width: '16px' }} />
+          </div>
+
+
+          {/* Bell Button (moved from bottom pill) */}
+          <div 
+            style={{ 
+              marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
+              background: isMuted ? 'linear-gradient(180deg, #FF9494 0%, #FF0000 100%)' : 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+              position: 'relative' as const, zIndex: 1,
+              border: '1.5px solid rgba(255,255,255,0.35)',
+              boxShadow: isMuted ? 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' : '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+            }}
+            className="pill-button-hover"
+            onClick={() => { triggerButtonGlow('bell'); toggleMute(); }}
+            data-testid="button-mute-toggle"
+            title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
+          >
+            {isMuted ? <BellOff className="h-[18px] w-[18px] text-white" /> : <Bell className="h-[18px] w-[18px] text-white" />}
+          </div>
+
+
+          {/* Kitchen Stop/Play Button (moved from bottom pill) */}
+          <div 
+            style={{ 
+              marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
+              background: isKitchenPlaying ? 'linear-gradient(180deg, #8B0000 0%, #DC143C 50%, #FF4500 100%)' : 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+              position: 'relative' as const, zIndex: 1,
+              border: '1.5px solid rgba(255,255,255,0.35)',
+              boxShadow: isKitchenPlaying ? 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 8px rgba(220,20,60,0.5)' : '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+              animation: isKitchenPlaying ? 'pulse 2s infinite' : 'none'
+            }}
+            className="pill-button-hover"
+            onClick={isKitchenPlaying ? handleKitchenStop : async () => { try { const r = await fetch('/api/kitchen/trigger', { method: 'POST' }); if (r.ok) setIsKitchenPlaying(true); } catch {} }}
+            data-testid="button-kitchen-stop"
+            title={isKitchenPlaying ? 'Stop' : 'Play'}
+          >
+            {isKitchenPlaying ? <Square className="text-white fill-white" style={{ height: '14px', width: '14px' }} /> : <Play className="text-white fill-white" style={{ height: '16px', width: '16px' }} />}
+          </div>
+
+          </div>
+
           {/* ── Tools ── */}
-          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(50,120,210,0.6)', position: 'relative', top: '1px', margin: '0 5px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(40,110,210,0.5) 0%, rgba(25,80,180,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(130,130,130,0.7)', position: 'relative', top: '1px', margin: '0 5px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(120,120,120,0.6) 0%, rgba(95,95,95,0.4) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           {isAdmin && (
             <Wrench className="h-[18px] w-[18px] text-white/70" style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', top: '-10px' }} />
           )}
@@ -14804,498 +15296,6 @@ export default function Dashboard() {
           </div>
 
           </div>
-
-          {/* ── School ── */}
-          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(34,197,94,0.7)', position: 'relative', top: '1px', margin: '0 5px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(34,197,94,0.55) 0%, rgba(22,163,74,0.4) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
-          <GraduationCap className="h-[18px] w-[18px] text-white/70" style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', top: '-10px' }} />
-          {/* Courses Button */}
-          <div className="pill-button-hover" style={{ 
-            marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
-            position: 'relative' as const, zIndex: 1,
-            border: '1.5px solid rgba(255,255,255,0.35)',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
-          }}>
-            <Button 
-              size="icon"
-              variant="ghost"
-              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
-              style={{ background: 'transparent' }}
-              data-testid="button-courses-pill"
-              title="Semesters and Courses"
-              onClick={() => {
-                startTransition(() => {
-                  setDraftPriorityBoth({ ...coursePlayPriority });
-                  setSchoolCoursesOpenSource('pill');
-                  startTransition(() => setIsSchoolCoursesDialogOpen(true));
-                });
-              }}
-            >
-              <BookOpen className="text-white" style={{ height: '20px', width: '20px' }} />
-            </Button>
-          </div>
-
-
-          {/* Graduation Hat - Swapped with Completed Tasks */}
-          <div className="pill-button-hover" style={{ 
-            marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
-            position: 'relative' as const, zIndex: 1,
-            border: '1.5px solid rgba(255,255,255,0.35)',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
-          }}>
-            <Button 
-              size="icon"
-              variant="ghost"
-              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
-              style={{ background: 'transparent' }}
-              data-testid="button-settings-panel"
-              title="Degree Tracking"
-              onClick={() => {
-                triggerButtonGlow('settings');
-                startTransition(() => setIsSettingsPanelOpen(true));
-                const currentSemCodes = semesterSettings ? [1,2,3].map(i => (semesterSettings as any)[`course${i}Code`]).filter(Boolean) : [];
-                const activeCourses = coursesData.courses.filter(c => {
-                  const code = c.name.split(' - ')[0];
-                  return c.name.trim() && currentSemCodes.includes(code);
-                });
-                const uncheckedAas = activeCourses.filter(c => {
-                  const code = c.name.split(' - ')[0];
-                  return !aasSentStatus[code];
-                });
-                if (uncheckedAas.length > 0) {
-                  const lastShown = localStorage.getItem('aasReminderLastShown');
-                  const now = Date.now();
-                  if (!lastShown || now - parseInt(lastShown) > 24 * 60 * 60 * 1000) {
-                    setShowAasReminder(true);
-                    localStorage.setItem('aasReminderLastShown', String(now));
-                  }
-                }
-              }}
-            >
-              <img src={degreeIconPath} alt="Degree Tracking" style={{ height: '22px', width: '22px', objectFit: 'contain', filter: 'brightness(1.1)' }} />
-            </Button>
-          </div>
-
-
-          {/* Scholarships Button */}
-          <div className="pill-button-hover" style={{ 
-            marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
-            position: 'relative' as const, zIndex: 1,
-            border: '1.5px solid rgba(255,255,255,0.35)',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
-          }}>
-            <Button 
-              size="icon"
-              variant="ghost"
-              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
-              style={{ background: 'transparent' }}
-              data-testid="button-scholarships"
-              title="Scholarships"
-              onClick={() => {
-                triggerButtonGlow('scholarships');
-                setIsScholarshipsOpen(true);
-              }}
-            >
-              <Award className="text-white" style={{ height: '22px', width: '22px' }} />
-            </Button>
-          </div>
-
-          </div>
-
-          {/* ── Entertainment ── */}
-          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(160,100,240,0.6)', position: 'relative', top: '1px', margin: '0 5px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(150,90,235,0.5) 0%, rgba(120,60,210,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
-          <img src={soundIconPath} alt="Sound" style={{ height: '22px', width: '22px', objectFit: 'contain', position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', opacity: 0.7, top: '-10px' }} />
-          {/* Spotify Button */}
-          <div className="pill-button-hover" style={{ 
-            marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
-            position: 'relative' as const, zIndex: 1,
-            border: '1.5px solid rgba(255,255,255,0.35)',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
-          }}>
-            <Button 
-              size="icon"
-              variant="ghost"
-              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
-              style={{ background: 'transparent' }}
-              data-testid="button-spotify-pill"
-              title="Spotify Player"
-              onClick={() => {
-                triggerButtonGlow('spotify');
-                const params = new URLSearchParams(window.location.search);
-                const authParam = params.get('auth');
-                window.location.href = '/spotify' + (authParam ? `?auth=${authParam}` : '');
-              }}
-            >
-              <Music2 className="text-white" style={{ height: '20px', width: '20px' }} />
-            </Button>
-          </div>
-
-
-          {/* Radio Button (moved from bottom pill) */}
-          <div 
-            style={{ 
-              marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
-              background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
-              position: 'relative' as const, zIndex: 1,
-              border: '1.5px solid rgba(255,255,255,0.35)',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
-            }}
-            className="pill-button-hover"
-            onClick={() => { triggerButtonGlow('radio'); setIsRadioDialogOpen(true); }}
-            data-testid="button-radio-dialog"
-            title="Radio Controls"
-          >
-            <Radio className="text-white" style={{ height: '16px', width: '16px' }} />
-          </div>
-
-
-          {/* Bell Button (moved from bottom pill) */}
-          <div 
-            style={{ 
-              marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
-              background: isMuted ? 'linear-gradient(180deg, #FF9494 0%, #FF0000 100%)' : 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
-              position: 'relative' as const, zIndex: 1,
-              border: '1.5px solid rgba(255,255,255,0.35)',
-              boxShadow: isMuted ? 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' : '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
-            }}
-            className="pill-button-hover"
-            onClick={() => { triggerButtonGlow('bell'); toggleMute(); }}
-            data-testid="button-mute-toggle"
-            title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
-          >
-            {isMuted ? <BellOff className="h-[18px] w-[18px] text-white" /> : <Bell className="h-[18px] w-[18px] text-white" />}
-          </div>
-
-
-          {/* Kitchen Stop/Play Button (moved from bottom pill) */}
-          <div 
-            style={{ 
-              marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
-              background: isKitchenPlaying ? 'linear-gradient(180deg, #8B0000 0%, #DC143C 50%, #FF4500 100%)' : 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
-              position: 'relative' as const, zIndex: 1,
-              border: '1.5px solid rgba(255,255,255,0.35)',
-              boxShadow: isKitchenPlaying ? 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 8px rgba(220,20,60,0.5)' : '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-              animation: isKitchenPlaying ? 'pulse 2s infinite' : 'none'
-            }}
-            className="pill-button-hover"
-            onClick={isKitchenPlaying ? handleKitchenStop : async () => { try { const r = await fetch('/api/kitchen/trigger', { method: 'POST' }); if (r.ok) setIsKitchenPlaying(true); } catch {} }}
-            data-testid="button-kitchen-stop"
-            title={isKitchenPlaying ? 'Stop' : 'Play'}
-          >
-            {isKitchenPlaying ? <Square className="text-white fill-white" style={{ height: '14px', width: '14px' }} /> : <Play className="text-white fill-white" style={{ height: '16px', width: '16px' }} />}
-          </div>
-
-          </div>
-
-          {/* ── Tasks ── */}
-          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', paddingRight: '7px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(130,130,130,0.7)', position: 'relative', top: '1px', margin: '0 5px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(120,120,120,0.6) 0%, rgba(95,95,95,0.4) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
-          <ListChecks className="h-[18px] w-[18px] text-white/70" style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', top: '-10px' }} />
-          {/* Completed Tasks Button - Swapped with Graduation Hat */}
-          <div className="pill-button-hover" style={{ 
-            marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
-            position: 'relative' as const, zIndex: 1,
-            border: '1.5px solid rgba(255,255,255,0.35)',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
-          }}>
-            <Button 
-              size="icon"
-              variant="ghost"
-              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
-              style={{ background: 'transparent' }}
-              data-testid="button-completed-tasks"
-              title="Completed"
-              onClick={() => { triggerButtonGlow('completed'); setIsCompletedTasksOpen(true); }}
-            >
-              <CheckSquare className="h-[18px] w-[18px] text-white" />
-            </Button>
-          </div>
-
-
-          {/* Todo Button (swapped from tall pill) */}
-          <div 
-            style={{ 
-              marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
-              background: hasUnackedReminders
-                ? 'linear-gradient(180deg, #FF9494 0%, #FF0000 100%)'
-                : 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
-              position: 'relative' as const, zIndex: 1,
-              border: hasUnackedReminders ? '1.5px solid rgba(220, 38, 38, 0.8)' : '1.5px solid rgba(255,255,255,0.55)',
-              boxShadow: hasUnackedReminders
-                ? '0 0 12px rgba(220, 38, 38, 0.6), inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3)'
-                : '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
-            }}
-            className={`pill-button-hover ${hasUnackedReminders ? 'animate-pill-reminder' : ''}`}
-            onClick={() => { if (!isTodoFlyoutOpen) { bringFlyoutToFront('todo'); setTodoPanelPos(null); setTodoPanelSize(null); } setIsTodoFlyoutOpen(!isTodoFlyoutOpen); }}
-            data-testid="honeycomb-todo-header"
-            title="Reminders"
-          >
-            <img src={remindersIconPath} alt="Reminders" style={{ height: '20px', width: '20px', objectFit: 'contain' }} />
-          </div>
-
-
-          {/* Projects Button */}
-          {desktopIsFull && <Button 
-            variant="ghost" 
-            size="sm" 
-            className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} 
-            style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} 
-            data-testid="button-projects"
-            onClick={() => { triggerButtonGlow('projects'); setEditingProject(null); setProjectWizardStep(0); setProjectWizardData({ name: '', description: '', color: '#6366F1', status: 'planning', targetDate: '', priority: 'medium' }); setProjectDialogOpen(true); }}
-          >
-            + Project
-          </Button>}
-
-
-          {/* Quick Add Button */}
-          {desktopIsFull && <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminder4DateTimeMode: false, reminder4Date: '', reminder4Hour: '09', reminder4Minute: '00', reminderEmail: false, reminderAlexa: false, reminderSms: false, reminder1Methods: '', reminder2Methods: '', reminder3Methods: '', reminder4Methods: '', attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '', repeatSpanDays: 1, shiftAdjust: false, hideFromSummary: false, hideFromCountdown: false }); setIsQuickAddOpen(true); }); }}>+ Add Task</Button>}
-
-          {authLevel === '4201' && <Button
-            variant="ghost"
-            size="sm"
-            className="!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover"
-            style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(139,92,246,0.35) 0%, rgba(139,92,246,0.18) 100%)', border: '1.5px solid rgba(139,92,246,0.45)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }}
-            data-testid="button-partner-shifts-4201"
-            onClick={() => { setPartnerWizardStep(0); setPartnerWizardDates([]); setPartnerWizardShiftType('day'); setPartnerWizardOpen(true); }}
-          >Partner Shifts</Button>}
-          </div>
-
-          {/* Radio Dialog */}
-          <Dialog open={isRadioDialogOpen} onOpenChange={setIsRadioDialogOpen}>
-            <DialogContent className="max-w-[260px] text-[10px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '55%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
-              <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
-                <div className="flex items-center gap-2">
-                  <Radio className="text-white" style={{ width: '15px', height: '15px' }} />
-                  <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
-                    RADIO CONTROLS
-                  </h2>
-                </div>
-                <button
-                  onClick={() => setIsRadioDialogOpen(false)}
-                  className="text-white hover:text-white/80 transition-colors p-1"
-                  data-testid="button-close-radio"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-              <div className="flex flex-col gap-3 p-4">
-                {/* Speaker Selection */}
-                <div className="flex flex-col gap-1">
-                  <Label className="text-white text-[10px]">Speaker</Label>
-                  <Select value={selectedSpeaker} onValueChange={setSelectedSpeaker}>
-                    <SelectTrigger data-testid="select-speaker" className="h-8 text-[10px] bg-black/50 border-white/30 text-white">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-900 max-h-[300px]">
-                      <SelectItem value="media_player.byhome">Apartment</SelectItem>
-                      <SelectItem value="media_player.cat_wash">Cat Wash</SelectItem>
-                      <SelectItem value="media_player.cat_wr">Cat Washroom Speakers</SelectItem>
-                      <SelectItem value="media_player.bathroom_speaker">Nest (Cat Washroom)</SelectItem>
-                      <SelectItem value="media_player.echo_cat_left_am">Cat Washroom Left</SelectItem>
-                      <SelectItem value="media_player.echo_cat_right_am">Cat Washroom Right</SelectItem>
-                      <SelectItem value="media_player.echo_cat_washroom_middle">Cat Washroom Middle</SelectItem>
-                      <SelectItem value="media_player.echo_closet_am">Closet</SelectItem>
-                      <SelectItem value="media_player.echo_lr_couch_r_am">Echo Corner</SelectItem>
-                      <SelectItem value="media_player.echo_hallway_entrance_am">Hallway Entrance</SelectItem>
-                      <SelectItem value="media_player.echo_king_l_am">King Left</SelectItem>
-                      <SelectItem value="media_player.echo_king_r_am">King Right</SelectItem>
-                      <SelectItem value="media_player.echo_king_tv_am">King TV</SelectItem>
-                      <SelectItem value="media_player.echo_kitchen_cupboards_left_am">Kitchen Cupboards Left</SelectItem>
-                      <SelectItem value="media_player.echo_kitchen_cupboards_r_am">Kitchen Cupboards Right</SelectItem>
-                      <SelectItem value="media_player.echo_kitchen_fridge_am">Kitchen Fridge</SelectItem>
-                      <SelectItem value="media_player.echo_kitchen_hutch_am">Kitchen Hutch</SelectItem>
-                      <SelectItem value="media_player.echo_kitchen_island_corner_am">Kitchen Island Corner</SelectItem>
-                      <SelectItem value="media_player.echo_kitchen_studio_black_am">Kitchen Studio Black</SelectItem>
-                      <SelectItem value="media_player.echo_lr_couch_l_am">Living Room Couch Left</SelectItem>
-                      <SelectItem value="media_player.echo_lr_hub_am">Living Room Hub</SelectItem>
-                      <SelectItem value="media_player.echo_lr_studio_white_am">Living Room Studio White</SelectItem>
-                      <SelectItem value="media_player.echo_lr_tv_shelf_am">Living Room TV Shelf</SelectItem>
-                      <SelectItem value="media_player.echo_queen_balcony_am">Queen Balcony</SelectItem>
-                      <SelectItem value="media_player.echo_queen_bed_l_am">Queen Bed Left</SelectItem>
-                      <SelectItem value="media_player.echo_queen_bed_r_am">Queen Bed Right</SelectItem>
-                      <SelectItem value="media_player.echo_show_pug_am">Echo Show Pug</SelectItem>
-                      <SelectItem value="media_player.everywhere_2">Everywhere</SelectItem>
-                      <SelectItem value="media_player.hallway">Hallway</SelectItem>
-                      <SelectItem value="media_player.king_bedroom">King Bedroom</SelectItem>
-                      <SelectItem value="media_player.queen_bedroom">Queen Bedroom</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Play/Stop Buttons */}
-                <div className="flex flex-col gap-1.5 items-center mt-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-6 w-[155px] text-[9px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-opacity duration-200"
-                    onClick={async () => {
-                      try {
-                        const response = await fetch('/api/media/play-radio', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ 
-                            stationId: 'CHUM FM',
-                            entityId: selectedSpeaker
-                          })
-                        });
-                        if (response.ok) {
-                          const speakerName = selectedSpeaker.replace('media_player.', '').replace(/_/g, ' ');
-                          toast({ title: "Playing CHUM FM", description: `on ${speakerName}` });
-                        } else {
-                          toast({ title: "Failed to play radio", variant: "destructive" });
-                        }
-                      } catch (error) {
-                        toast({ title: "Error playing radio", variant: "destructive" });
-                      }
-                    }}
-                    data-testid="button-play-chumfm"
-                  >
-                    <Play style={{ width: 12, height: 12 }} className="mr-1" />
-                    Play CHUM FM (select)
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-6 w-[155px] text-[9px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-opacity duration-200"
-                    onClick={async () => {
-                      try {
-                        const response = await fetch('/api/media/play-radio-all', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ stationId: 'CHUM FM' })
-                        });
-                        if (response.ok) {
-                          toast({ title: "Playing CHUM FM", description: "on all devices" });
-                        } else {
-                          toast({ title: "Failed to play radio", variant: "destructive" });
-                        }
-                      } catch (error) {
-                        toast({ title: "Error playing radio", variant: "destructive" });
-                      }
-                    }}
-                    data-testid="button-play-chumfm-all"
-                  >
-                    <Play style={{ width: 12, height: 12 }} className="mr-1" />
-                    Play CHUM FM (on all)
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    className="h-6 w-[155px] text-[9px] bg-[rgb(255,0,0)] hover:bg-[rgb(220,0,0)] border-[rgb(255,0,0)]"
-                    onClick={async () => {
-                      try {
-                        const response = await fetch('/api/media/stop-radio', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                        });
-                        if (response.ok) {
-                          toast({ title: "Radio stopped" });
-                        }
-                      } catch (error) {
-                        toast({ title: "Error stopping radio", variant: "destructive" });
-                      }
-                    }}
-                    data-testid="button-stop-radio"
-                  >
-                    <Square style={{ width: 10, height: 10 }} className="mr-1 fill-current" />
-                    Stop
-                  </Button>
-                </div>
-                
-                {/* Volume Controls - All Speakers */}
-                <div className="flex flex-col gap-1.5 mt-1">
-                  <Label className="text-white text-[10px]">Volume (All Speakers):</Label>
-                  <div className="flex items-center gap-1">
-                    <button
-                      className="text-white hover:text-white/70 text-base px-1"
-                      onClick={async () => {
-                        try {
-                          const res = await fetch('/api/media/volume-all', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ direction: 'down' })
-                          });
-                          const data = await res.json();
-                          if (data.newVolume !== undefined) {
-                            setRadioVolume(data.newVolume);
-                            toast({ title: `Volume set to ${data.newVolume}% on all speakers` });
-                          }
-                        } catch (error) {
-                          toast({ title: "Error adjusting volume", variant: "destructive" });
-                        }
-                      }}
-                      data-testid="button-volume-down-all"
-                    >
-                      −
-                    </button>
-                    <div className="flex-1 h-1 bg-white/20 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-green-500 rounded-full transition-opacity duration-200" 
-                        style={{ width: `${radioVolume}%` }}
-                      />
-                    </div>
-                    <button
-                      className="text-white hover:text-white/70 text-base px-1"
-                      onClick={async () => {
-                        try {
-                          const res = await fetch('/api/media/volume-all', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ direction: 'up' })
-                          });
-                          const data = await res.json();
-                          if (data.newVolume !== undefined) {
-                            setRadioVolume(data.newVolume);
-                            toast({ title: `Volume set to ${data.newVolume}% on all speakers` });
-                          }
-                        } catch (error) {
-                          toast({ title: "Error adjusting volume", variant: "destructive" });
-                        }
-                      }}
-                      data-testid="button-volume-up-all"
-                    >
-                      +
-                    </button>
-                    <button
-                      className="text-white/70 hover:text-white text-[9px] px-1"
-                      onClick={async () => {
-                        try {
-                          const res = await fetch('/api/media/volume-all', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ level: 0 })
-                          });
-                          const data = await res.json();
-                          if (data.newVolume !== undefined) {
-                            setRadioVolume(data.newVolume);
-                            toast({ title: "All speakers muted" });
-                          }
-                        } catch (error) {
-                          toast({ title: "Error muting", variant: "destructive" });
-                        }
-                      }}
-                      data-testid="button-mute-all"
-                    >
-                      mute
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-
 
           {/* Return-from-break reading prompt (dev only) */}
           {isAdmin && window.location.hostname === 'localhost' && (
