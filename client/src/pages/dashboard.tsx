@@ -26565,7 +26565,7 @@ export default function Dashboard() {
                               <path d={`M0,0 L${svgW - br},0 Q${svgW},0 ${svgW},${br} L${svgW},${svgH - br} Q${svgW},${svgH} ${svgW - br},${svgH} L0,${svgH} Z`} fill={`url(#${gradId})`} filter={`url(#tabShadow-${tabIdx})`} />
                               {tab.topText ? (
                                 <>
-                                  <text x={cx} y={svgH * 0.28} textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.9)" fontSize={Math.min(8.5, svgH * 0.15 + 3)} fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.5">{tab.bottomText}</text>
+                                  <text x={cx} y={svgH * 0.28 + 2} textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.9)" fontSize={Math.min(8.5, svgH * 0.15 + 3)} fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.5">{tab.bottomText}</text>
                                   <text x={cx} y={svgH * 0.62} textAnchor="middle" dominantBaseline="central" fill="#ffffff" fontSize={Math.min(12, svgH * 0.4 - 2)} fontWeight="700" fontFamily="system-ui, -apple-system, sans-serif">{tab.topText}</text>
                                 </>
                               ) : (
