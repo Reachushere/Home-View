@@ -22976,7 +22976,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`flex flex-col items-center justify-center h-full relative`}
-                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'hidden', borderLeft: `2px solid ${colorSettings.headerBar}` } : day.getDay() === 6 ? { background: 'linear-gradient(180deg, #1458A6 0%, #9ED0F2 100%)', borderLeft: `2px solid ${colorSettings.headerBar}` } : { background: 'linear-gradient(180deg, #1458A6 0%, #9ED0F2 100%)', borderLeft: '1px solid rgba(255,255,255,0.1)' }}
+                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'hidden', borderLeft: `2px solid ${colorSettings.headerBar}` } : day.getDay() === 6 ? { background: 'linear-gradient(180deg, #1F65B5 0%, #9ED0F2 100%)', borderLeft: `2px solid ${colorSettings.headerBar}` } : { background: 'linear-gradient(180deg, #1F65B5 0%, #9ED0F2 100%)', borderLeft: '1px solid rgba(255,255,255,0.1)' }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     
@@ -26706,7 +26706,7 @@ export default function Dashboard() {
                   left: `${effectiveDividerPct}%`,
                   right: 0,
                   height: `${rowHeight}px`,
-                  background: 'linear-gradient(180deg, #1458A6 0%, #9ED0F2 100%)',
+                  background: 'linear-gradient(180deg, #1F65B5 0%, #9ED0F2 100%)',
                   zIndex: 41,
                   borderBottom: '0.5px solid rgba(255,255,255,0.2)',
                   overflow: 'hidden',
@@ -27047,7 +27047,7 @@ export default function Dashboard() {
           <div style={{ width: '100%', height: '15px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', flexShrink: 0 }}>
             <span style={{ fontSize: '10px', fontWeight: 500, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
           </div>
-          <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', background: 'linear-gradient(180deg, #1458A6 0%, #9ED0F2 100%)' }} ref={homeworkScrollRef} onScroll={() => { setHwIsScrolling(true); if (hwScrollTimerRef.current) clearTimeout(hwScrollTimerRef.current); hwScrollTimerRef.current = setTimeout(() => setHwIsScrolling(false), 300); const sc = homeworkScrollRef.current; if (sc) { setHwScrolledDown(sc.scrollTop > 5); const sections = sc.querySelectorAll('[data-semester-label]'); let bestLabel: string | null = null; let bestDist = Infinity; const containerTop = sc.getBoundingClientRect().top; sections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestDist) { bestDist = dist; bestLabel = el.getAttribute('data-semester-label') || null; } }); if (bestLabel) setHwVisibleSemLabel(bestLabel); } }}>
+          <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', background: 'linear-gradient(180deg, #1F65B5 0%, #9ED0F2 100%)' }} ref={homeworkScrollRef} onScroll={() => { setHwIsScrolling(true); if (hwScrollTimerRef.current) clearTimeout(hwScrollTimerRef.current); hwScrollTimerRef.current = setTimeout(() => setHwIsScrolling(false), 300); const sc = homeworkScrollRef.current; if (sc) { setHwScrolledDown(sc.scrollTop > 5); const sections = sc.querySelectorAll('[data-semester-label]'); let bestLabel: string | null = null; let bestDist = Infinity; const containerTop = sc.getBoundingClientRect().top; sections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestDist) { bestDist = dist; bestLabel = el.getAttribute('data-semester-label') || null; } }); if (bestLabel) setHwVisibleSemLabel(bestLabel); } }}>
             {isLoading ? (
               <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
             ) : (
