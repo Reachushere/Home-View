@@ -17036,7 +17036,7 @@ export default function Dashboard() {
       {weatherAlertDialogOpen && selectedWeatherAlert && (
         <div className="fixed inset-0 z-[10000] flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }} onClick={() => setWeatherAlertDialogOpen(false)} data-testid="weather-alert-dialog-overlay">
           <div className="relative rounded-lg shadow-2xl" style={{ width: '600px', maxWidth: '90vw', maxHeight: '80vh', background: 'linear-gradient(180deg, #1a1a2e 0%, #16213e 100%)', border: '1px solid rgba(255,255,255,0.15)' }} onClick={(e) => e.stopPropagation()} data-testid="weather-alert-dialog">
-            <div className="flex items-center justify-between px-5 py-3 border-b border-white/10" style={{ background: selectedWeatherAlert.type === 'warning' ? 'rgba(255,50,50,0.3)' : selectedWeatherAlert.type === 'watch' ? 'rgba(255,165,0,0.3)' : 'rgba(255,255,0,0.2)', borderRadius: '8px 8px 0 0' }}>
+            <div className="flex items-center justify-between px-5 py-3 border-b border-white/10" style={{ background: '#cc0000', borderRadius: '8px 8px 0 0' }}>
               <div className="flex items-center gap-2">
                 <span style={{ fontSize: '20px' }}>⚠️</span>
                 <span className="text-white font-bold text-[15px]" data-testid="weather-alert-dialog-title">{selectedWeatherAlert.title}</span>
