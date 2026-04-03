@@ -26443,25 +26443,25 @@ export default function Dashboard() {
               f2026Start: new Date(2026, 8, 8), f2026End: new Date(2026, 11, 11),
               w2027Start: new Date(2027, 0, 11),
             };
-            const semTabs: Array<{ id: string; line1: string; line2: string; semLabel: string; scrollTarget: string }> = [];
-            semTabs.push({ id: 'wk-current', line1: 'Winter', line2: `Week ${selectedWeek}`, semLabel: hwWeeklyTimeline[0]?.semLabel || 'Winter 2026', scrollTarget: 'thisweek' });
-            semTabs.push({ id: 'wk-next', line1: 'Winter', line2: `Week ${selectedWeek + 1}`, semLabel: hwWeeklyTimeline[1]?.semLabel || 'Winter 2026', scrollTarget: 'nextweek' });
-            semTabs.push({ id: 'wk-third', line1: 'Winter', line2: `Week ${selectedWeek + 2}`, semLabel: hwWeeklyTimeline[2]?.semLabel || 'Winter 2026', scrollTarget: 'twoweeks' });
+            const semTabs: Array<{ id: string; topText: string; bottomText: string; semLabel: string; scrollTarget: string }> = [];
+            semTabs.push({ id: 'wk-current', topText: String(selectedWeek), bottomText: 'WINTER', semLabel: hwWeeklyTimeline[0]?.semLabel || 'Winter 2026', scrollTarget: 'thisweek' });
+            semTabs.push({ id: 'wk-next', topText: String(selectedWeek + 1), bottomText: 'WINTER', semLabel: hwWeeklyTimeline[1]?.semLabel || 'Winter 2026', scrollTarget: 'nextweek' });
+            semTabs.push({ id: 'wk-third', topText: String(selectedWeek + 2), bottomText: 'WINTER', semLabel: hwWeeklyTimeline[2]?.semLabel || 'Winter 2026', scrollTarget: 'twoweeks' });
             if (now < semDates.ss2026Start) {
-              semTabs.push({ id: 'april-gap', line1: 'APRIL', line2: '', semLabel: 'Winter 2026', scrollTarget: 'threeweeks' });
+              semTabs.push({ id: 'april-gap', topText: '', bottomText: 'APRIL', semLabel: 'Winter 2026', scrollTarget: 'threeweeks' });
             }
             if (now < semDates.f2026Start) {
               const ssMaxWk = now >= semDates.ss2026Start ? 6 : 6;
               for (let w = 1; w <= ssMaxWk; w++) {
-                semTabs.push({ id: `ss26-wk${w}`, line1: 'Spring', line2: `Week ${w}`, semLabel: 'Spring/Summer 2026', scrollTarget: w === 1 ? 'sem-ss2026' : `sem-ss2026-wk${w}` });
+                semTabs.push({ id: `ss26-wk${w}`, topText: String(w), bottomText: 'SPRING', semLabel: 'Spring/Summer 2026', scrollTarget: w === 1 ? 'sem-ss2026' : `sem-ss2026-wk${w}` });
               }
             }
             if (now >= semDates.ss2026End && now < semDates.f2026Start) {
-              semTabs.push({ id: 'aug-sept-gap', line1: 'AUG', line2: 'SEPT', semLabel: 'Spring/Summer 2026', scrollTarget: 'sem-ss2026' });
+              semTabs.push({ id: 'aug-sept-gap', topText: '', bottomText: 'AUG-SEP', semLabel: 'Spring/Summer 2026', scrollTarget: 'sem-ss2026' });
             }
-            semTabs.push({ id: 'f-2026', line1: 'Fall', line2: '2026', semLabel: 'Fall 2026', scrollTarget: 'sem-f2026' });
+            semTabs.push({ id: 'f-2026', topText: '', bottomText: 'FALL', semLabel: 'Fall 2026', scrollTarget: 'sem-f2026' });
             for (let y = currentYear + 1; y <= 2029; y++) {
-              semTabs.push({ id: `year-${y}`, line1: 'Winter', line2: String(y), semLabel: `Winter ${y}`, scrollTarget: `sem-w${y}` });
+              semTabs.push({ id: `year-${y}`, topText: '', bottomText: String(y), semLabel: `Winter ${y}`, scrollTarget: `sem-w${y}` });
             }
             const currentSemLabel = hwWeeklyTimeline[0]?.semLabel || null;
             const scrollActiveSem = hwVisibleSemLabel || currentSemLabel;
@@ -26545,16 +26545,30 @@ export default function Dashboard() {
                         </defs>
                         <path d={`M0 0 L${svgW - 6} 0 Q${svgW} 0 ${svgW} 6 L${svgW} ${svgH - 6} Q${svgW} ${svgH} ${svgW - 6} ${svgH} L0 ${svgH} Z`} fill={`url(#tabGrad-${tabIdx})`} opacity={isActive ? 1 : 0.8} stroke={colorSettings.headerBar} strokeWidth="0.5" filter={`url(#tabDrop-${tabIdx})`} />
                         {(() => {
-                          const centerX = svgW / 2;
-                          const centerY = svgH / 2;
-                          return tab.line2 ? (
-                              <>
-                                <text x={centerX + 5} y={centerY - 4} textAnchor="middle" dominantBaseline="central" fill={isActive ? '#ffffff' : 'rgba(255,255,255,0.55)'} fontSize="7" fontWeight={isActive ? '600' : '400'} fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.3" transform={`rotate(90, ${centerX + 5}, ${centerY - 4})`}>{tab.line1}</text>
-                                <text x={centerX + 5} y={centerY + 5} textAnchor="middle" dominantBaseline="central" fill={isActive ? '#ffffff' : 'rgba(255,255,255,0.55)'} fontSize="7" fontWeight={isActive ? '600' : '400'} fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.3" transform={`rotate(90, ${centerX + 5}, ${centerY + 5})`}>{tab.line2}</text>
-                              </>
-                            ) : (
-                              <text x={centerX + 5} y={centerY} textAnchor="middle" dominantBaseline="central" fill={isActive ? '#ffffff' : 'rgba(255,255,255,0.55)'} fontSize="8" fontWeight={isActive ? '600' : '400'} fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.3" transform={`rotate(90, ${centerX + 5}, ${centerY})`}>{tab.line1}</text>
-                            );
+                          const midY = tab.topText ? Math.floor(svgH * 0.55) : svgH;
+                          const fillColor = isActive ? '#ffffff' : 'rgba(255,255,255,0.55)';
+                          const insetL = 2;
+                          const insetR = 4;
+                          const insetT = 2;
+                          const insetB = 2;
+                          const boxW = svgW - insetL - insetR;
+                          return (
+                            <>
+                              {tab.topText ? (
+                                <>
+                                  <rect x={insetL} y={insetT} width={boxW} height={midY - insetT - 1} rx="2" fill="none" stroke={fillColor} strokeWidth="0.5" opacity="0.5" />
+                                  <text x={insetL + boxW / 2} y={insetT + (midY - insetT - 1) / 2} textAnchor="middle" dominantBaseline="central" fill={fillColor} fontSize={Math.min(14, (midY - insetT - 4))} fontWeight="700" fontFamily="system-ui, -apple-system, sans-serif">{tab.topText}</text>
+                                  <rect x={insetL} y={midY + 1} width={boxW} height={svgH - midY - 1 - insetB} rx="2" fill="none" stroke={fillColor} strokeWidth="0.5" opacity="0.5" />
+                                  <text x={insetL + boxW / 2} y={midY + 1 + (svgH - midY - 1 - insetB) / 2} textAnchor="middle" dominantBaseline="central" fill={fillColor} fontSize={Math.min(6, (svgH - midY - insetB - 4))} fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.3">{tab.bottomText}</text>
+                                </>
+                              ) : (
+                                <>
+                                  <rect x={insetL} y={insetT} width={boxW} height={svgH - insetT - insetB} rx="2" fill="none" stroke={fillColor} strokeWidth="0.5" opacity="0.5" />
+                                  <text x={insetL + boxW / 2} y={svgH / 2} textAnchor="middle" dominantBaseline="central" fill={fillColor} fontSize={Math.min(7, (svgH - insetT - insetB - 2))} fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.3">{tab.bottomText}</text>
+                                </>
+                              )}
+                            </>
+                          );
                         })()}
                       </svg>
                     </div>
