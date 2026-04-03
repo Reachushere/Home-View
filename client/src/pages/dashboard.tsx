@@ -27033,7 +27033,7 @@ export default function Dashboard() {
                             <div style={{ position: 'absolute', top: '2px', left: 0, right: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px', zIndex: 5 }}>
                               <span style={{ fontSize: '9px', fontWeight: 400, color: item.dark ? '#ffffff' : '#000000', letterSpacing: '0.5px', fontFamily: "'Raleway', sans-serif" }}>{item.label}</span>
                               {item.p.hasFiles && item.unread > 0 && item.p.percent < 100 && (
-                                <div className="bg-[#FF0000] text-white text-[6px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white">
+                                <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 shadow-lg border border-white">
                                   {item.unread}
                                 </div>
                               )}
@@ -28218,7 +28218,7 @@ export default function Dashboard() {
                                   </div>
                                   <div className="cursor-pointer" style={{ position: 'relative', opacity: item.p.percent === 100 ? 0.5 : 1, marginLeft: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }} data-testid={item.testPlay}>
                                     {item.p.hasFiles && item.unread > 0 && item.p.percent < 100 && (
-                                      <div className="bg-[#FF0000] text-white text-[6px] font-bold rounded-full min-w-[12px] h-[12px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ position: 'absolute', top: '-5px', right: '-5px', zIndex: 10 }}>
+                                      <div className="bg-[#FF0000] text-white text-[7px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 shadow-lg border border-white" style={{ position: 'absolute', top: '-5px', right: '-5px', zIndex: 10 }}>
                                         {item.unread}
                                       </div>
                                     )}
