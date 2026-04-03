@@ -15485,7 +15485,7 @@ export default function Dashboard() {
             </button>
             </div>
           </div>
-          <div ref={clockContainerRef} data-testid="pomodoro-timer" style={{ position: 'relative', cursor: 'pointer' }} onClick={togglePomodoro}>
+          <div ref={clockContainerRef} data-testid="pomodoro-timer" style={{ position: 'relative', cursor: 'pointer', marginLeft: '10px' }} onClick={togglePomodoro}>
             {(() => {
               const totalSec = pomodoroMode === 'work' ? 25 * 60 : pomodoroMode === 'shortBreak' ? 5 * 60 : 15 * 60;
               const elapsed = totalSec - pomodoroTime;
