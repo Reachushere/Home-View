@@ -1779,6 +1779,7 @@ export default function Dashboard() {
   const [editR4CalendarOpen, setEditR4CalendarOpen] = useState(false);
   const [alexaRepeatEndCalendarOpen, setAlexaRepeatEndCalendarOpen] = useState(false);
   const [alexaSwipeStates, setAlexaSwipeStates] = useState<Record<number, number>>({});
+  const [alexaPendingDeleteId, setAlexaPendingDeleteId] = useState<number | null>(null);
   const alexaSwipeStartRef = useRef<{ id: number; x: number } | null>(null);
   const ALEXA_MAX_CHARS = 250;
   const ECHO_SPEAKER_OPTIONS: Record<string, string> = {
@@ -11206,7 +11207,7 @@ export default function Dashboard() {
                     </PopoverTrigger>
                     <PopoverContent
                       className="w-auto p-0 alexa-dark-calendar"
-                      style={{ zIndex: 10020, backgroundColor: '#1a1a2e', borderColor: 'rgba(255,255,255,0.2)' }}
+                      style={{ zIndex: 10020, backgroundColor: '#1a1a2e', borderColor: 'rgba(255,255,255,0.2)', ['--popover' as any]: '240 20% 14%', ['--popover-foreground' as any]: '0 0% 100%', ['--background' as any]: '240 20% 14%', ['--foreground' as any]: '0 0% 100%', ['--accent' as any]: '240 20% 22%', ['--accent-foreground' as any]: '0 0% 100%', ['--muted-foreground' as any]: '0 0% 60%', ['--border' as any]: '0 0% 100% / 0.2', ['--input' as any]: '0 0% 100% / 0.2', ['--primary' as any]: '187 71% 46%', ['--primary-foreground' as any]: '0 0% 100%' }}
                       align="start"
                     >
                       <CalendarPicker
@@ -11312,7 +11313,7 @@ export default function Dashboard() {
                       </PopoverTrigger>
                       <PopoverContent
                         className="w-auto p-0 alexa-dark-calendar"
-                        style={{ zIndex: 10020, backgroundColor: '#1a1a2e', borderColor: 'rgba(255,255,255,0.2)' }}
+                        style={{ zIndex: 10020, backgroundColor: '#1a1a2e', borderColor: 'rgba(255,255,255,0.2)', ['--popover' as any]: '240 20% 14%', ['--popover-foreground' as any]: '0 0% 100%', ['--background' as any]: '240 20% 14%', ['--foreground' as any]: '0 0% 100%', ['--accent' as any]: '240 20% 22%', ['--accent-foreground' as any]: '0 0% 100%', ['--muted-foreground' as any]: '0 0% 60%', ['--border' as any]: '0 0% 100% / 0.2', ['--input' as any]: '0 0% 100% / 0.2', ['--primary' as any]: '187 71% 46%', ['--primary-foreground' as any]: '0 0% 100%' }}
                         align="start"
                       >
                         <CalendarPicker
@@ -11461,10 +11462,12 @@ export default function Dashboard() {
                           const dx = e.touches[0].clientX - alexaSwipeStartRef.current.x;
                           setAlexaSwipeStates(prev => ({ ...prev, [ann.id]: Math.max(-120, Math.min(120, dx)) }));
                         }}
-                        onTouchEnd={() => {
-                          const dx = alexaSwipeStates[ann.id] || 0;
+                        onTouchEnd={(e) => {
+                          if (!alexaSwipeStartRef.current) return;
+                          const lastTouch = e.changedTouches[0];
+                          const dx = Math.max(-120, Math.min(120, lastTouch.clientX - alexaSwipeStartRef.current.x));
                           if (dx < -60) {
-                            deleteAlexaMutation.mutate(ann.id);
+                            setAlexaPendingDeleteId(ann.id);
                           } else if (dx > 60) {
                             toggleAlexaMutation.mutate({ id: ann.id, isEnabled: !ann.isEnabled });
                           }
@@ -11472,16 +11475,17 @@ export default function Dashboard() {
                           alexaSwipeStartRef.current = null;
                         }}
                         onMouseDown={(e) => {
-                          alexaSwipeStartRef.current = { id: ann.id, x: e.clientX };
+                          const startX = e.clientX;
+                          alexaSwipeStartRef.current = { id: ann.id, x: startX };
                           const onMove = (ev: MouseEvent) => {
                             if (!alexaSwipeStartRef.current || alexaSwipeStartRef.current.id !== ann.id) return;
                             const dx = ev.clientX - alexaSwipeStartRef.current.x;
                             setAlexaSwipeStates(prev => ({ ...prev, [ann.id]: Math.max(-120, Math.min(120, dx)) }));
                           };
-                          const onUp = () => {
-                            const dx = alexaSwipeStates[ann.id] || 0;
+                          const onUp = (ev: MouseEvent) => {
+                            const dx = Math.max(-120, Math.min(120, ev.clientX - startX));
                             if (dx < -60) {
-                              deleteAlexaMutation.mutate(ann.id);
+                              setAlexaPendingDeleteId(ann.id);
                             } else if (dx > 60) {
                               toggleAlexaMutation.mutate({ id: ann.id, isEnabled: !ann.isEnabled });
                             }
@@ -11538,6 +11542,38 @@ export default function Dashboard() {
                 })
               )}
             </div>
+
+            {alexaPendingDeleteId !== null && (
+              <div className="absolute inset-0 flex items-center justify-center z-50" style={{ background: 'rgba(0,0,0,0.6)', borderRadius: '12px' }}>
+                <div className="flex flex-col items-center gap-3 px-6 py-5 rounded-lg" style={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.15)' }}>
+                  <p className="text-white text-[12px] text-center">Delete this announcement?</p>
+                  <p className="text-white/50 text-[10px] text-center max-w-[200px] break-words">
+                    {scheduledAlexaList.find((a: any) => a.id === alexaPendingDeleteId)?.message?.slice(0, 80) || ''}
+                  </p>
+                  <div className="flex gap-3 mt-1">
+                    <button
+                      onClick={() => setAlexaPendingDeleteId(null)}
+                      className="px-4 py-1.5 rounded text-white/70 text-[11px] hover:text-white transition-colors"
+                      style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}
+                      data-testid="alexa-delete-cancel"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => {
+                        deleteAlexaMutation.mutate(alexaPendingDeleteId);
+                        setAlexaPendingDeleteId(null);
+                      }}
+                      className="px-4 py-1.5 rounded text-white text-[11px] font-semibold hover:opacity-90 transition-opacity"
+                      style={{ background: '#dc2626' }}
+                      data-testid="alexa-delete-confirm"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Footer */}
             <div className="flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
