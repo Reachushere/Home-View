@@ -11206,45 +11206,47 @@ export default function Dashboard() {
                     </PopoverTrigger>
                     <PopoverContent
                       className="w-auto p-0"
-                      style={{ zIndex: 10020, background: '#1a1a2e', border: '1px solid rgba(255,255,255,0.2)' }}
+                      style={{ zIndex: 10020, background: '#1a1a2e', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: '#1a1a2e' }}
                       align="start"
                     >
-                      <CalendarPicker
-                        mode="single"
-                        selected={alexaDate ? new Date(alexaDate + 'T12:00:00') : undefined}
-                        onSelect={(date) => {
-                          if (date) {
-                            const y = date.getFullYear();
-                            const m = String(date.getMonth() + 1).padStart(2, '0');
-                            const d = String(date.getDate()).padStart(2, '0');
-                            setAlexaDate(`${y}-${m}-${d}`);
-                          } else {
-                            setAlexaDate('');
-                          }
-                          setAlexaCalendarOpen(false);
-                        }}
-                        className="text-white [&_button]:!bg-transparent [&_button]:!text-white/70 [&_button]:!border-white/20"
-                        classNames={{
-                          months: "flex flex-col",
-                          month: "space-y-3",
-                          caption: "flex justify-center pt-1 relative items-center",
-                          caption_label: "text-[13px] font-medium text-white",
-                          nav: "space-x-1 flex items-center",
-                          nav_button: "h-7 w-7 bg-transparent border border-white/20 rounded-md p-0 opacity-60 hover:opacity-100 hover:bg-white/10 inline-flex items-center justify-center text-white",
-                          nav_button_previous: "absolute left-1",
-                          nav_button_next: "absolute right-1",
-                          table: "w-full border-collapse",
-                          head_row: "flex",
-                          head_cell: "text-white/40 rounded-md w-8 font-normal text-[10px]",
-                          row: "flex w-full mt-1",
-                          cell: "h-8 w-8 text-center text-[11px] p-0 relative",
-                          day: "h-8 w-8 p-0 font-normal !bg-transparent !text-white/70 hover:!bg-white/10 rounded-md inline-flex items-center justify-center cursor-pointer",
-                          day_selected: "!bg-cyan-500 !text-white hover:!bg-cyan-600",
-                          day_today: "!bg-white/10 !text-white font-semibold",
-                          day_outside: "!text-white/20",
-                          day_disabled: "!text-white/10",
-                        }}
-                      />
+                      <div style={{ background: '#1a1a2e', borderRadius: '8px' }}>
+                        <CalendarPicker
+                          mode="single"
+                          selected={alexaDate ? new Date(alexaDate + 'T12:00:00') : undefined}
+                          onSelect={(date) => {
+                            if (date) {
+                              const y = date.getFullYear();
+                              const m = String(date.getMonth() + 1).padStart(2, '0');
+                              const d = String(date.getDate()).padStart(2, '0');
+                              setAlexaDate(`${y}-${m}-${d}`);
+                            } else {
+                              setAlexaDate('');
+                            }
+                            setAlexaCalendarOpen(false);
+                          }}
+                          className="alexa-dark-calendar p-3"
+                          classNames={{
+                            months: "flex flex-col",
+                            month: "space-y-3",
+                            caption: "flex justify-center pt-1 relative items-center",
+                            caption_label: "text-[13px] font-medium",
+                            nav: "space-x-1 flex items-center",
+                            nav_button: "h-7 w-7 rounded-md p-0 opacity-60 hover:opacity-100 inline-flex items-center justify-center",
+                            nav_button_previous: "absolute left-1",
+                            nav_button_next: "absolute right-1",
+                            table: "w-full border-collapse",
+                            head_row: "flex",
+                            head_cell: "rounded-md w-8 font-normal text-[10px]",
+                            row: "flex w-full mt-1",
+                            cell: "h-8 w-8 text-center text-[11px] p-0 relative",
+                            day: "h-8 w-8 p-0 font-normal rounded-md inline-flex items-center justify-center cursor-pointer",
+                            day_selected: "alexa-cal-selected",
+                            day_today: "alexa-cal-today",
+                            day_outside: "alexa-cal-outside",
+                            day_disabled: "alexa-cal-disabled",
+                          }}
+                        />
+                      </div>
                       {alexaDate && (
                         <div className="px-3 pb-2">
                           <button

@@ -2491,6 +2491,40 @@ input[type="date"]::-webkit-datetime-edit-year-field {
   animation: pomodoro-alert-blink 1s ease-in-out infinite;
 }
 
+.alexa-dark-calendar {
+  background: #1a1a2e !important;
+  color: white !important;
+}
+.alexa-dark-calendar button {
+  background: transparent !important;
+  color: rgba(255,255,255,0.7) !important;
+  border-color: rgba(255,255,255,0.2) !important;
+}
+.alexa-dark-calendar button:hover {
+  background: rgba(255,255,255,0.1) !important;
+  color: white !important;
+}
+.alexa-dark-calendar .alexa-cal-selected,
+.alexa-dark-calendar button[aria-selected="true"] {
+  background: #06b6d4 !important;
+  color: white !important;
+}
+.alexa-dark-calendar .alexa-cal-selected:hover,
+.alexa-dark-calendar button[aria-selected="true"]:hover {
+  background: #0891b2 !important;
+}
+.alexa-dark-calendar .alexa-cal-today {
+  background: rgba(255,255,255,0.1) !important;
+  color: white !important;
+  font-weight: 600;
+}
+.alexa-dark-calendar .alexa-cal-outside {
+  color: rgba(255,255,255,0.2) !important;
+}
+.alexa-dark-calendar .alexa-cal-disabled {
+  color: rgba(255,255,255,0.1) !important;
+}
+
 .wizard-white-text {
   color: white;
 }
