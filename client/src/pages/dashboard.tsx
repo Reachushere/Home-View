@@ -1,4 +1,17 @@
 import React, { useState, useRef, useCallback, useEffect, useMemo, memo, startTransition } from "react";
+
+// TEMP: Preview as April 4, 2026
+const _OrigDate = Date;
+const _fakeNow = new _OrigDate('2026-04-04T12:00:00').getTime();
+const _offset = _fakeNow - _OrigDate.now();
+// @ts-ignore
+globalThis.Date = class extends _OrigDate {
+  constructor(...args: any[]) {
+    if (args.length === 0) { super(_OrigDate.now() + _offset); } else { // @ts-ignore
+      super(...args); }
+  }
+  static now() { return _OrigDate.now() + _offset; }
+} as any;
 import { createPortal } from "react-dom";
 import Cropper from "react-easy-crop";
 import { NewCourseWizard } from "@/components/NewCourseWizard";
