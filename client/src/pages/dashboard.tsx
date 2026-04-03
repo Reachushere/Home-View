@@ -23832,10 +23832,10 @@ export default function Dashboard() {
                                         marginBottom: '2px',
                                         backgroundColor: task.isCompleted ? '#e5e7eb' : 'white',
                                         border: `1px solid ${task.isCompleted ? '#d1d5db' : course.darkColor}`,
-                                        transform: hoveredCountdownTaskId === task.id ? 'scale(1.12)' : undefined,
-                                        boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
+                                        filter: hoveredCountdownTaskId === task.id ? 'brightness(1.15)' : undefined,
+                                        boxShadow: hoveredCountdownTaskId === task.id ? '0 2px 8px rgba(0,0,0,0.35)' : undefined,
                                         zIndex: hoveredCountdownTaskId === task.id ? 55 : undefined,
-                                        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                                        transition: 'filter 0.2s ease, box-shadow 0.2s ease',
                                       }}
                                       data-testid={`course-fullweek-task-today-${task.id}`}
                                     >
@@ -24212,9 +24212,9 @@ export default function Dashboard() {
                                     backgroundColor: (() => { const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === course.name); if (cMatch?.taskBgColor) return cMatch.taskBgColor; const cEnd = cMatch?.colorEnd; const endRgb = hexToRgb(cEnd || course.darkColor); return `rgb(${Math.max(0,endRgb.r-12)},${Math.max(0,endRgb.g-12)},${Math.max(0,endRgb.b-12)})`; })(),
                                     borderColor: course.darkColor,
                                     zIndex: hoveredCountdownTaskId === task.id ? 55 : 1,
-                                    transform: hoveredCountdownTaskId === task.id ? 'scale(1.12)' : undefined,
-                                    boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
-                                    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                                    filter: hoveredCountdownTaskId === task.id ? 'brightness(1.15)' : undefined,
+                                    boxShadow: hoveredCountdownTaskId === task.id ? '0 2px 8px rgba(0,0,0,0.35)' : undefined,
+                                    transition: 'filter 0.2s ease, box-shadow 0.2s ease',
                                     overflow: 'hidden',
                                     position: 'relative',
                                   }}
@@ -24258,9 +24258,9 @@ export default function Dashboard() {
                               style={{ 
                                 backgroundColor: (() => { const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === course.name); if (cMatch?.taskBgColor) return cMatch.taskBgColor; const cEnd = cMatch?.colorEnd; const endRgb = hexToRgb(cEnd || course.darkColor); return `rgb(${Math.max(0,endRgb.r-12)},${Math.max(0,endRgb.g-12)},${Math.max(0,endRgb.b-12)})`; })(),
                                 borderColor: course.darkColor,
-                                transform: hoveredCountdownTaskId === task.id ? 'scale(1.12)' : undefined,
-                                boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
-                                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                                filter: hoveredCountdownTaskId === task.id ? 'brightness(1.15)' : undefined,
+                                boxShadow: hoveredCountdownTaskId === task.id ? '0 2px 8px rgba(0,0,0,0.35)' : undefined,
+                                transition: 'filter 0.2s ease, box-shadow 0.2s ease',
                                 paddingRight: dueModulePdfUrl && courseDeliveryModes[task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''] === 'virtual' ? '54px' : dueModulePdfUrl ? '30px' : courseDeliveryModes[task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''] === 'virtual' ? '26px' : undefined,
                                 position: 'relative',
                               }}
