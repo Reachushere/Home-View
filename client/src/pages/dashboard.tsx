@@ -24218,7 +24218,8 @@ export default function Dashboard() {
                                     overflow: 'hidden',
                                     position: 'relative',
                                   }}
-                                  onClick={() => setEditingTask(task)}
+                                  onClick={(e) => { e.stopPropagation(); setEditingTask(task); }}
+                                  onDoubleClick={(e) => { e.stopPropagation(); setEditingTask(task); }}
                                   title={`Prep Day - ${task.title}`}
                                 >
                                   {(() => { const totalPrepDays = differenceInCalendarDays(prepDueDate, prepStartDate); const showCount = totalPrepDays > 3; const daysLeft = showCount ? differenceInCalendarDays(prepDueDate, cellDate) : 0; const prepUrgent = showCount && daysLeft <= 2; return <span className="flex flex-col items-center justify-center whitespace-nowrap font-bold shrink-0" style={{ backgroundColor: course.darkColor, color: '#ffffff', letterSpacing: showCount ? '0.5px' : '1px', padding: showCount ? '0px 3px 0 2px' : '1px 3px 0 2px', fontSize: showCount ? '7px' : '8px', WebkitTextStroke: '0', alignSelf: 'stretch', lineHeight: showCount ? '1.1' : undefined, marginTop: showCount ? '-1px' : undefined, minWidth: '30px' }}><span style={{ marginTop: showCount ? '1px' : undefined, fontFamily: "system-ui, sans-serif", fontWeight: 500 }}>PREP</span>{showCount && <span style={{ color: prepUrgent ? '#FFFF00' : '#e0e0e0', fontSize: '8px', fontWeight: 550, WebkitTextStroke: '0', letterSpacing: '0.3px', lineHeight: '1', marginTop: '0px', fontFamily: "system-ui, sans-serif" }}>{daysLeft}d</span>}</span>; })()}
@@ -24264,6 +24265,8 @@ export default function Dashboard() {
                                 position: 'relative',
                               }}
                               title={task.title}
+                              onClick={(e) => { e.stopPropagation(); setEditingTask(task); }}
+                              onDoubleClick={(e) => { e.stopPropagation(); setEditingTask(task); }}
                             >
                               <div className="flex items-center gap-0.5">
                               <Checkbox
