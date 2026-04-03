@@ -2345,16 +2345,6 @@ export default function Dashboard() {
     });
   }, [isTodoFlyoutOpen]);
 
-  useEffect(() => {
-    const anyFlyoutOpen = isSettingsPanelOpen || isTodoFlyoutOpen || isProjectsFlyoutOpen || isRadioDialogOpen || isCompletedTasksOpen || isQuickAddOpen;
-    if (anyFlyoutOpen) {
-      pillFlyoutWasOpenRef.current = true;
-    } else if (pillFlyoutWasOpenRef.current) {
-      pillFlyoutWasOpenRef.current = false;
-      setIsTopPillOpen(true);
-    }
-  }, [isSettingsPanelOpen, isTodoFlyoutOpen, isProjectsFlyoutOpen, isRadioDialogOpen, isCompletedTasksOpen, isQuickAddOpen]);
-
   const [todoActiveTab, setTodoActiveTab] = useState<'reminders' | 'automations'>('reminders');
   const [showAutomationWizard, setShowAutomationWizard] = useState(false);
   const [wizardStep, setWizardStep] = useState(0);
@@ -2365,6 +2355,17 @@ export default function Dashboard() {
   const [wizardActions, setWizardActions] = useState<any[]>([]);
   const [editingAutomationId, setEditingAutomationId] = useState<number | null>(null);
   const [isProjectsFlyoutOpen, setIsProjectsFlyoutOpen] = useState(false);
+
+  useEffect(() => {
+    const anyFlyoutOpen = isSettingsPanelOpen || isTodoFlyoutOpen || isProjectsFlyoutOpen || isRadioDialogOpen || isCompletedTasksOpen || isQuickAddOpen;
+    if (anyFlyoutOpen) {
+      pillFlyoutWasOpenRef.current = true;
+    } else if (pillFlyoutWasOpenRef.current) {
+      pillFlyoutWasOpenRef.current = false;
+      setIsTopPillOpen(true);
+    }
+  }, [isSettingsPanelOpen, isTodoFlyoutOpen, isProjectsFlyoutOpen, isRadioDialogOpen, isCompletedTasksOpen, isQuickAddOpen]);
+
   const [flyoutZOrder, setFlyoutZOrder] = useState<string[]>(['files', 'projects', 'todo', 'addTask']);
   
   const bringFlyoutToFront = (flyoutId: string) => {
