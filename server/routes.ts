@@ -2159,7 +2159,19 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
             if (a.alertBodyHeader) descParts.push(a.alertBodyHeader);
             if (a.alertBody) descParts.push(a.alertBody);
             if (a.alertBodyFooter) descParts.push(a.alertBodyFooter);
-            const description = descParts.join('\n\n').replace(/<[^>]*>/g, '').trim() || a.issueTimeText || '';
+            const description = descParts.join('\n\n')
+              .replace(/<br\s*\/?>/gi, '\n')
+              .replace(/<\/p>/gi, '\n\n')
+              .replace(/<\/div>/gi, '\n')
+              .replace(/<\/li>/gi, '\n')
+              .replace(/<[^>]*>/g, '')
+              .replace(/&amp;/g, '&')
+              .replace(/&lt;/g, '<')
+              .replace(/&gt;/g, '>')
+              .replace(/&quot;/g, '"')
+              .replace(/&#39;/g, "'")
+              .replace(/\n{3,}/g, '\n\n')
+              .trim() || a.issueTimeText || '';
             alerts.push({
               title,
               summary: (a.issueTimeText || '').slice(0, 300),
