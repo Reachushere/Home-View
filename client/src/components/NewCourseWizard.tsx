@@ -195,7 +195,8 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, existin
   const openFolderBrowser = async (target: 'module' | 'reading') => {
     setBrowsingFor(target);
     const currentPath = target === 'module' ? data.moduleFolder : data.readingFolder;
-    const startPath = currentPath ? currentPath.split('/').slice(0, -1).join('/') || '/' : `/School/TMU/Courses/${data.semesterYear || new Date().getFullYear()}`;
+    const semLabel = data.semesterType === 'fall' ? 'Fall' : data.semesterType === 'winter' ? 'Winter' : 'Spring-Summer';
+    const startPath = currentPath ? currentPath.split('/').slice(0, -1).join('/') || '/' : `/School/1. TMU/Courses/${data.semesterYear || new Date().getFullYear()}/${semLabel}`;
     setBrowsePath(startPath);
     await loadFolders(startPath);
   };
