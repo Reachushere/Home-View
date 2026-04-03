@@ -26569,7 +26569,7 @@ export default function Dashboard() {
                                   <text x={cx} y={svgH * 0.62} textAnchor="middle" dominantBaseline="central" fill="#ffffff" fontSize={Math.min(14, svgH * 0.4)} fontWeight="700" fontFamily="system-ui, -apple-system, sans-serif">{tab.topText}</text>
                                 </>
                               ) : (
-                                <text x={cx} y={svgH / 2} textAnchor="middle" dominantBaseline="central" fill="#ffffff" fontSize={Math.min(9, svgH * 0.25 + 2)} fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.3" transform={`rotate(90, ${cx}, ${svgH / 2})`}>{tab.bottomText}</text>
+                                <text x={cx + 2} y={svgH / 2} textAnchor="middle" dominantBaseline="central" fill="#ffffff" fontSize={Math.min(9, svgH * 0.25 + 2)} fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.3" transform={`rotate(90, ${cx}, ${svgH / 2})`}>{tab.bottomText}</text>
                               )}
                             </>
                           );
