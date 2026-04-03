@@ -14304,13 +14304,13 @@ export default function Dashboard() {
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+          background: 'linear-gradient(180deg, rgba(200,205,215,0.45) 0%, rgba(180,185,195,0.28) 100%)',
           backdropFilter: 'blur(12px)',
           WebkitBackdropFilter: 'blur(12px)',
           borderRadius: '12px',
-          border: '1.5px solid rgba(255,255,255,0.35)',
-          borderTop: '1.5px solid rgba(255,255,255,0.55)',
-          boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+          border: '1.5px solid rgba(200,205,215,0.4)',
+          borderTop: '1.5px solid rgba(220,225,235,0.55)',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.06)',
           pointerEvents: 'none',
         }} />
         
