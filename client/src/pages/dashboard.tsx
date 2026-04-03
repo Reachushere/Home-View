@@ -22976,7 +22976,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`flex flex-col items-center justify-center h-full relative`}
-                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'hidden', borderLeft: `2px solid ${colorSettings.headerBar}` } : day.getDay() === 6 ? { backgroundColor: isNextSchoolWeek ? colorSettings.headerBar : undefined, background: isNextSchoolWeek ? undefined : 'linear-gradient(180deg, #5596C0 0%, #5596C0 55%, #8BB8D5 100%)', borderLeft: `2px solid ${colorSettings.headerBar}` } : isNextSchoolWeek ? { backgroundColor: colorSettings.headerBar, borderLeft: '1px solid rgba(255,255,255,0.1)' } : { background: 'linear-gradient(180deg, #5596C0 0%, #5596C0 55%, #8BB8D5 100%)', borderLeft: '1px solid rgba(255,255,255,0.1)' }}
+                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'hidden', borderLeft: `2px solid ${colorSettings.headerBar}` } : day.getDay() === 6 ? { background: `linear-gradient(0deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, borderLeft: `2px solid ${colorSettings.headerBar}` } : { background: `linear-gradient(0deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, borderLeft: '1px solid rgba(255,255,255,0.1)' }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     
@@ -23118,7 +23118,7 @@ export default function Dashboard() {
                           })()}
                           {day.getDay() === 6 && !isToday && (
                             <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '8px' }}>
-                              <span style={{ display: 'block', fontSize: 'min(9.5px, 1.4vw)', fontWeight: 400, color: isNextSchoolWeek ? '#ffffff' : '#000000', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{`New School Week (${selectedWeek + 1})`}</span>
+                              <span style={{ display: 'block', fontSize: 'min(9.5px, 1.4vw)', fontWeight: 400, color: '#c0c8d0', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{`New School Week (${selectedWeek + 1})`}</span>
                             </div>
                           )}
                           {!isToday && (() => {
@@ -23165,10 +23165,10 @@ export default function Dashboard() {
                             })() : (
                               <>
                                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch', gap: '1px' }}>
-                                  <div className="text-[10px] font-medium tracking-wide" style={{ color: isNextSchoolWeek ? 'rgba(255,255,255,0.6)' : '#c0c8d0', lineHeight: 1 }}>{dayName}</div>
-                                  <div className="text-[8px] font-medium tracking-wide" style={{ color: isNextSchoolWeek ? 'rgba(255,255,255,0.4)' : 'rgba(192,200,208,0.8)', lineHeight: 1, textTransform: 'uppercase' }}>{format(day, 'MMM')}</div>
+                                  <div className="text-[10px] font-medium tracking-wide" style={{ color: isNextSchoolWeek ? 'rgba(255,255,255,0.35)' : '#c0c8d0', lineHeight: 1 }}>{dayName}</div>
+                                  <div className="text-[8px] font-medium tracking-wide" style={{ color: isNextSchoolWeek ? 'rgba(255,255,255,0.25)' : 'rgba(192,200,208,0.8)', lineHeight: 1, textTransform: 'uppercase' }}>{format(day, 'MMM')}</div>
                                 </div>
-                                <div style={{ fontSize: '24px', fontWeight: 700, color: isNextSchoolWeek ? '#fff' : '#c0c8d0', lineHeight: 1 }}>{dayNum}</div>
+                                <div style={{ fontSize: '24px', fontWeight: 700, color: isNextSchoolWeek ? 'rgba(255,255,255,0.35)' : '#c0c8d0', lineHeight: 1 }}>{dayNum}</div>
                               </>
                             )}
                           </div>
