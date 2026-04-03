@@ -1839,7 +1839,7 @@ button[role="combobox"] > span {
 [data-radix-dropdown-menu-item],
 [role="listbox"],
 [role="option"],
-[data-radix-popper-content-wrapper] [data-radix-select-content] div,
+[data-radix-popper-content-wrapper] div,
 [data-radix-collection-item] {
   background-color: white !important;
   color: black !important;
@@ -1850,7 +1850,7 @@ button[role="combobox"] > span {
 [role="option"] *,
 [role="option"] span,
 [data-radix-collection-item] *,
-[data-radix-popper-content-wrapper] [data-radix-select-content] span {
+[data-radix-popper-content-wrapper] span {
   color: black !important;
 }
 
