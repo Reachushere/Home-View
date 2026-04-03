@@ -26615,13 +26615,10 @@ export default function Dashboard() {
                       onClick={() => {
                         if (homeworkScrollRef.current) {
                           const scrollContainer = homeworkScrollRef.current;
-                          const weekSections: Record<string, string> = { thisweek: 'thisweek', nextweek: 'nextweek', twoweeks: 'twoweeks' };
-                          if (weekSections[tab.scrollTarget]) {
-                            const el = scrollContainer.querySelector(`[data-homework-section="${weekSections[tab.scrollTarget]}"]`);
-                            if (el) {
-                              const elTop = (el as HTMLElement).offsetTop - scrollContainer.offsetTop;
-                              scrollContainer.scrollTo({ top: elTop - 4, behavior: 'smooth' });
-                            }
+                          const el = scrollContainer.querySelector(`[data-homework-section="${tab.scrollTarget}"]`);
+                          if (el) {
+                            const elTop = (el as HTMLElement).offsetTop - scrollContainer.offsetTop;
+                            scrollContainer.scrollTo({ top: elTop - 4, behavior: 'smooth' });
                           } else {
                             const semLabelTarget = tab.semLabel;
                             const allSemLabels = scrollContainer.querySelectorAll('[data-semester-label]');
@@ -27857,8 +27854,21 @@ export default function Dashboard() {
                       const group = { key: tlEntry.weekStart.toISOString(), tasks: weekTasks, weeks: [tlEntry.weekStart] };
                       const groupIdx = tlIdx;
                       const dueDates = weekTasks.map(t => ({ date: startOfDayET(new Date(t.dueDate)), courseCode: t.courseName?.split(' - ')[0]?.toUpperCase() || '' }));
+                        const sectionId = (() => {
+                          if (!tlEntry.semLabel || !tlEntry.weekNum) return undefined;
+                          const sl = tlEntry.semLabel;
+                          if (sl === 'Spring/Summer 2026') return tlEntry.weekNum === 1 ? 'sem-ss2026' : `sem-ss2026-wk${tlEntry.weekNum}`;
+                          if (sl === 'Fall 2026') return tlEntry.weekNum === 1 ? 'sem-f2026' : `sem-f2026-wk${tlEntry.weekNum}`;
+                          const wMatch = sl.match(/Winter (\d+)/);
+                          if (wMatch) return tlEntry.weekNum === 1 ? `sem-w${wMatch[1]}` : `sem-w${wMatch[1]}-wk${tlEntry.weekNum}`;
+                          const ssMatch = sl.match(/Spring\/Summer (\d+)/);
+                          if (ssMatch) return tlEntry.weekNum === 1 ? `sem-ss${ssMatch[1]}` : `sem-ss${ssMatch[1]}-wk${tlEntry.weekNum}`;
+                          const fMatch = sl.match(/Fall (\d+)/);
+                          if (fMatch) return tlEntry.weekNum === 1 ? `sem-f${fMatch[1]}` : `sem-f${fMatch[1]}-wk${tlEntry.weekNum}`;
+                          return undefined;
+                        })();
                         return (
-                          <div key={group.key} data-semester-label={tlEntry.semLabel || ''}>
+                          <div key={group.key} data-semester-label={tlEntry.semLabel || ''} {...(sectionId ? { 'data-homework-section': sectionId } : {})}>
                           {groupIdx === 0 && (() => {
                             const prevYear = hwWeeklyTimeline[3]?.weekStart?.getFullYear();
                             const showYearSep = prevYear && tlEntry.weekStart.getFullYear() !== prevYear;
