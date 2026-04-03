@@ -25000,9 +25000,10 @@ export default function Dashboard() {
                                   ""
                                 }`}
                                 style={(() => {
-                                  const gradColors = colors?.hex ? getCourseGradientColors(courseCode) : null;
-                                  const bgGradient = task.isCompleted ? '#e5e7eb' : gradColors ? `linear-gradient(135deg, ${gradColors.start}, ${gradColors.end})` : (task.type === 'other' ? `linear-gradient(135deg, ${otherRowColors.labelStart}, ${otherRowColors.labelEnd})` : 'linear-gradient(135deg, #6b7280, #9ca3af)');
-                                  const borderColor = task.isCompleted ? '#d1d5db' : gradColors ? gradColors.start : (task.type === 'other' ? otherRowColors.borderColor : '#6b7280');
+                                  const gradColors = courseCode ? getCourseGradientColors(courseCode) : null;
+                                  const hasCourseGrad = gradColors && gradColors.start !== '#6b7280';
+                                  const bgGradient = task.isCompleted ? '#e5e7eb' : hasCourseGrad ? `linear-gradient(135deg, ${gradColors.start}, ${gradColors.end})` : (task.type === 'other' || !courseCode ? `linear-gradient(135deg, ${otherRowColors.labelStart}, ${otherRowColors.labelEnd})` : 'linear-gradient(135deg, #6b7280, #9ca3af)');
+                                  const borderColor = task.isCompleted ? '#d1d5db' : hasCourseGrad ? gradColors.start : (task.type === 'other' ? otherRowColors.borderColor : '#6b7280');
                                   return {
                                     top: `${topOffset}px`,
                                     left: (() => { const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return hasNextDueBox ? `calc(${taskIdx * columnWidth / 2}% + 2px)` : `calc(${taskIdx * columnWidth}% + 2px)`; })(),
@@ -25053,7 +25054,7 @@ export default function Dashboard() {
                                   );
                                 })()}
                                 {/* Task body */}
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '2px', padding: '2px 3px 1px 5px', flex: 1 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '2px', padding: '1px 3px 2px 5px', flex: 1 }}>
                                   <Checkbox
                                     checked={task.isCompleted || false}
                                     onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
@@ -25182,9 +25183,10 @@ export default function Dashboard() {
                         ""
                       }`}
                       style={(() => {
-                        const gradColors = colors?.hex ? getCourseGradientColors(courseCode) : null;
-                        const bgGradient = task.isCompleted ? '#e5e7eb' : gradColors ? `linear-gradient(135deg, ${gradColors.start}, ${gradColors.end})` : (task.type === 'other' ? `linear-gradient(135deg, ${otherRowColors.labelStart}, ${otherRowColors.labelEnd})` : 'linear-gradient(135deg, #6b7280, #9ca3af)');
-                        const borderColor = task.isCompleted ? '#d1d5db' : gradColors ? gradColors.start : (task.type === 'other' ? otherRowColors.borderColor : '#6b7280');
+                        const gradColors = courseCode ? getCourseGradientColors(courseCode) : null;
+                        const hasCourseGrad = gradColors && gradColors.start !== '#6b7280';
+                        const bgGradient = task.isCompleted ? '#e5e7eb' : hasCourseGrad ? `linear-gradient(135deg, ${gradColors.start}, ${gradColors.end})` : (task.type === 'other' || !courseCode ? `linear-gradient(135deg, ${otherRowColors.labelStart}, ${otherRowColors.labelEnd})` : 'linear-gradient(135deg, #6b7280, #9ca3af)');
+                        const borderColor = task.isCompleted ? '#d1d5db' : hasCourseGrad ? gradColors.start : (task.type === 'other' ? otherRowColors.borderColor : '#6b7280');
                         return {
                           top: `${topPx}px`,
                           left: `calc(${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px + (${gridSizes.dayColumnWidths.slice(0, dayIdx).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px) + 2px)`,
@@ -25237,7 +25239,7 @@ export default function Dashboard() {
                         );
                       })()}
                       {/* Task body */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '3px 4px 2px 6px', flex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '1px 4px 3px 6px', flex: 1 }}>
                         <Checkbox
                           checked={task.isCompleted || false}
                           onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
