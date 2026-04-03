@@ -738,11 +738,11 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, existin
         </div>
         <div>
           <Label className="text-[9px] text-white/60 mb-1 block">Zoom Link</Label>
-          <Input
+          <input
             value={data.zoomLink}
             onChange={(e) => updateField("zoomLink", e.target.value)}
             placeholder="https://tmuni.zoom.us/j/..."
-            className="h-8 text-[10px] bg-white/10 border-white/20 text-white placeholder:text-white/30"
+            className="h-7 w-full rounded-md bg-white/10 border border-white/20 text-[9px] text-white placeholder:text-white/30 px-2"
             data-testid="wizard-input-zoom-link"
           />
         </div>
@@ -756,7 +756,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, existin
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3 mt-3">
         <div>
           <Label className="text-[9px] text-white/60 mb-1 block">Course Start Date</Label>
           <input
