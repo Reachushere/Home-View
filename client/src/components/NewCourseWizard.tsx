@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
 import {
   GraduationCap,
   ChevronLeft,
@@ -24,6 +27,7 @@ import {
   Loader2,
   AlertTriangle,
   Check,
+  Calendar as CalendarIcon,
 } from "lucide-react";
 import { REMINDER_OPTIONS, TASK_TYPES } from "@shared/schema";
 
@@ -152,6 +156,8 @@ function createEmptyTask(): WizardTask {
 export function NewCourseWizard({ onSave, onClose, existingSemesterType, existingSemesterYear, availableSemesters, colorSettings }: NewCourseWizardProps) {
   const currentYear = new Date().getFullYear().toString();
   const [step, setStep] = useState(1);
+  const [startDateOpen, setStartDateOpen] = useState(false);
+  const [endDateOpen, setEndDateOpen] = useState(false);
   const [data, setData] = useState<WizardData>({
     courseCode: "",
     courseName: "",
@@ -731,8 +737,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, existin
               type="time"
               value={data.classTime}
               onChange={(e) => updateField("classTime", e.target.value)}
-              className="h-8 w-full rounded-md border border-input px-3 text-[10px]"
-              style={{ color: '#333', backgroundColor: 'white', colorScheme: 'light' }}
+              className="h-8 w-full rounded-md bg-white/10 border border-white/20 text-white text-[10px] px-3"
               data-testid="wizard-input-start-time"
             />
           </div>
@@ -742,45 +747,46 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, existin
               type="time"
               value={data.classEndTime}
               onChange={(e) => updateField("classEndTime", e.target.value)}
-              className="h-8 w-full rounded-md border border-input px-3 text-[10px]"
-              style={{ color: '#333', backgroundColor: 'white', colorScheme: 'light' }}
+              className="h-8 w-full rounded-md bg-white/10 border border-white/20 text-white text-[10px] px-3"
               data-testid="wizard-input-end-time"
             />
           </div>
         </div>
-        <div>
-          <Label className="text-[9px] text-white/60 mb-1 block">Timezone</Label>
-          <select
-            value={data.classTimezone}
-            onChange={(e) => updateField("classTimezone", e.target.value)}
-            className="w-full h-8 rounded-md bg-white/10 border border-white/20 text-white text-[10px] px-2"
-            data-testid="wizard-select-timezone"
-          >
-            <option value="America/Toronto" className="bg-gray-800">Eastern (Toronto)</option>
-            <option value="America/New_York" className="bg-gray-800">Eastern (New York)</option>
-            <option value="America/Chicago" className="bg-gray-800">Central (Chicago)</option>
-            <option value="America/Denver" className="bg-gray-800">Mountain (Denver)</option>
-            <option value="America/Los_Angeles" className="bg-gray-800">Pacific (Los Angeles)</option>
-            <option value="America/Vancouver" className="bg-gray-800">Pacific (Vancouver)</option>
-            <option value="America/Edmonton" className="bg-gray-800">Mountain (Edmonton)</option>
-            <option value="America/Winnipeg" className="bg-gray-800">Central (Winnipeg)</option>
-            <option value="America/Halifax" className="bg-gray-800">Atlantic (Halifax)</option>
-            <option value="America/St_Johns" className="bg-gray-800">Newfoundland (St. John's)</option>
-            <option value="Europe/London" className="bg-gray-800">GMT (London)</option>
-            <option value="Europe/Paris" className="bg-gray-800">CET (Paris)</option>
-            <option value="Asia/Tokyo" className="bg-gray-800">JST (Tokyo)</option>
-            <option value="UTC" className="bg-gray-800">UTC</option>
-          </select>
-        </div>
-        <div>
-          <Label className="text-[9px] text-white/60 mb-1 block">Zoom Link</Label>
-          <input
-            value={data.zoomLink}
-            onChange={(e) => updateField("zoomLink", e.target.value)}
-            placeholder="https://tmuni.zoom.us/j/..."
-            className="h-7 w-full rounded-md bg-white/10 border border-white/20 text-[9px] text-white placeholder:text-white/30 px-2"
-            data-testid="wizard-input-zoom-link"
-          />
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label className="text-[9px] text-white/60 mb-1 block">Timezone</Label>
+            <select
+              value={data.classTimezone}
+              onChange={(e) => updateField("classTimezone", e.target.value)}
+              className="w-full h-8 rounded-md bg-white/10 border border-white/20 text-white text-[10px] px-2"
+              data-testid="wizard-select-timezone"
+            >
+              <option value="America/Toronto" className="bg-gray-800">Eastern (Toronto)</option>
+              <option value="America/New_York" className="bg-gray-800">Eastern (New York)</option>
+              <option value="America/Chicago" className="bg-gray-800">Central (Chicago)</option>
+              <option value="America/Denver" className="bg-gray-800">Mountain (Denver)</option>
+              <option value="America/Los_Angeles" className="bg-gray-800">Pacific (Los Angeles)</option>
+              <option value="America/Vancouver" className="bg-gray-800">Pacific (Vancouver)</option>
+              <option value="America/Edmonton" className="bg-gray-800">Mountain (Edmonton)</option>
+              <option value="America/Winnipeg" className="bg-gray-800">Central (Winnipeg)</option>
+              <option value="America/Halifax" className="bg-gray-800">Atlantic (Halifax)</option>
+              <option value="America/St_Johns" className="bg-gray-800">Newfoundland (St. John's)</option>
+              <option value="Europe/London" className="bg-gray-800">GMT (London)</option>
+              <option value="Europe/Paris" className="bg-gray-800">CET (Paris)</option>
+              <option value="Asia/Tokyo" className="bg-gray-800">JST (Tokyo)</option>
+              <option value="UTC" className="bg-gray-800">UTC</option>
+            </select>
+          </div>
+          <div>
+            <Label className="text-[9px] text-white/60 mb-1 block">Zoom Link</Label>
+            <input
+              value={data.zoomLink}
+              onChange={(e) => updateField("zoomLink", e.target.value)}
+              placeholder="https://tmuni.zoom.us/j/..."
+              className="h-8 w-full rounded-md bg-white/10 border border-white/20 text-[9px] text-white placeholder:text-white/30 px-2"
+              data-testid="wizard-input-zoom-link"
+            />
+          </div>
         </div>
         </>
       )}
@@ -795,25 +801,75 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, existin
       <div className="grid grid-cols-2 gap-3 mt-3">
         <div>
           <Label className="text-[9px] text-white/60 mb-1 block">Course Start Date</Label>
-          <input
-            type="date"
-            value={data.startDate}
-            onChange={(e) => updateField("startDate", e.target.value)}
-            className="h-8 w-full rounded-md border border-input px-3 text-[10px]"
-            style={{ color: '#333', backgroundColor: 'white', colorScheme: 'light' }}
-            data-testid="wizard-input-start-date"
-          />
+          <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
+            <PopoverTrigger asChild>
+              <button
+                className="h-8 w-full rounded-md bg-white/10 border border-white/20 px-3 text-[10px] text-left flex items-center gap-2"
+                data-testid="wizard-input-start-date"
+              >
+                <CalendarIcon className="h-3 w-3 text-white/40" />
+                <span className={data.startDate ? 'text-white' : 'text-white/40'}>
+                  {data.startDate ? format(new Date(data.startDate + 'T12:00:00'), 'MMM d, yyyy') : 'Pick date...'}
+                </span>
+              </button>
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-auto p-0 alexa-dark-calendar"
+              style={{ zIndex: 10020, backgroundColor: '#1a1a2e', borderColor: 'rgba(255,255,255,0.2)', ['--popover' as any]: '240 20% 14%', ['--popover-foreground' as any]: '0 0% 100%', ['--background' as any]: '240 20% 14%', ['--foreground' as any]: '0 0% 100%', ['--accent' as any]: '240 20% 22%', ['--accent-foreground' as any]: '0 0% 100%', ['--muted-foreground' as any]: '0 0% 60%', ['--border' as any]: '0 0% 100% / 0.2', ['--input' as any]: '0 0% 100% / 0.2', ['--primary' as any]: '187 71% 46%', ['--primary-foreground' as any]: '0 0% 100%' }}
+              align="start"
+            >
+              <Calendar
+                mode="single"
+                selected={data.startDate ? new Date(data.startDate + 'T12:00:00') : undefined}
+                onSelect={(date) => {
+                  if (date) {
+                    const y = date.getFullYear();
+                    const m = String(date.getMonth() + 1).padStart(2, '0');
+                    const d = String(date.getDate()).padStart(2, '0');
+                    updateField("startDate", `${y}-${m}-${d}`);
+                  }
+                  setStartDateOpen(false);
+                }}
+                className="p-3"
+              />
+            </PopoverContent>
+          </Popover>
         </div>
         <div>
           <Label className="text-[9px] text-white/60 mb-1 block">Course End Date</Label>
-          <input
-            type="date"
-            value={data.endDate}
-            onChange={(e) => updateField("endDate", e.target.value)}
-            className="h-8 w-full rounded-md border border-input px-3 text-[10px]"
-            style={{ color: '#333', backgroundColor: 'white', colorScheme: 'light' }}
-            data-testid="wizard-input-end-date"
-          />
+          <Popover open={endDateOpen} onOpenChange={setEndDateOpen}>
+            <PopoverTrigger asChild>
+              <button
+                className="h-8 w-full rounded-md bg-white/10 border border-white/20 px-3 text-[10px] text-left flex items-center gap-2"
+                data-testid="wizard-input-end-date"
+              >
+                <CalendarIcon className="h-3 w-3 text-white/40" />
+                <span className={data.endDate ? 'text-white' : 'text-white/40'}>
+                  {data.endDate ? format(new Date(data.endDate + 'T12:00:00'), 'MMM d, yyyy') : 'Pick date...'}
+                </span>
+              </button>
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-auto p-0 alexa-dark-calendar"
+              style={{ zIndex: 10020, backgroundColor: '#1a1a2e', borderColor: 'rgba(255,255,255,0.2)', ['--popover' as any]: '240 20% 14%', ['--popover-foreground' as any]: '0 0% 100%', ['--background' as any]: '240 20% 14%', ['--foreground' as any]: '0 0% 100%', ['--accent' as any]: '240 20% 22%', ['--accent-foreground' as any]: '0 0% 100%', ['--muted-foreground' as any]: '0 0% 60%', ['--border' as any]: '0 0% 100% / 0.2', ['--input' as any]: '0 0% 100% / 0.2', ['--primary' as any]: '187 71% 46%', ['--primary-foreground' as any]: '0 0% 100%' }}
+              align="start"
+            >
+              <Calendar
+                mode="single"
+                selected={data.endDate ? new Date(data.endDate + 'T12:00:00') : undefined}
+                onSelect={(date) => {
+                  if (date) {
+                    const y = date.getFullYear();
+                    const m = String(date.getMonth() + 1).padStart(2, '0');
+                    const d = String(date.getDate()).padStart(2, '0');
+                    updateField("endDate", `${y}-${m}-${d}`);
+                  }
+                  setEndDateOpen(false);
+                }}
+                className="p-3"
+              />
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 
