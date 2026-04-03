@@ -25029,7 +25029,7 @@ export default function Dashboard() {
                                     <div style={{
                                       background: `linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%), ${typeBarColor}`,
                                       borderBottom: `1px solid rgba(0,0,0,0.15)`,
-                                      padding: '1px 3px',
+                                      padding: '1px 3px 1px 5px',
                                       display: 'flex',
                                       alignItems: 'center',
                                       gap: '3px',
@@ -25053,16 +25053,14 @@ export default function Dashboard() {
                                   );
                                 })()}
                                 {/* Task body */}
-                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '2px', padding: '2px 3px 1px 3px', flex: 1 }}>
-                                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', paddingTop: '1px' }}>
-                                    <Checkbox
-                                      checked={task.isCompleted || false}
-                                      onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                      onClick={(e) => e.stopPropagation()}
-                                      className="h-3 w-3 shrink-0 border-white bg-white data-[state=checked]:bg-white data-[state=checked]:border-white data-[state=checked]:text-black"
-                                      data-testid={`checkbox-time-${task.id}`}
-                                    />
-                                  </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '2px', padding: '2px 3px 1px 5px', flex: 1 }}>
+                                  <Checkbox
+                                    checked={task.isCompleted || false}
+                                    onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="h-3 w-3 shrink-0 border-white bg-white data-[state=checked]:bg-white data-[state=checked]:border-white data-[state=checked]:text-black"
+                                    data-testid={`checkbox-time-${task.id}`}
+                                  />
                                   <div style={{ flex: 1, minWidth: 0 }}>
                                     <div style={{ fontSize: '7px', fontWeight: 400, color: 'rgba(255,255,255,0.8)', lineHeight: 1.2 }}>
                                       {task.eventStartTime && task.eventEndTime ? `${formatTimeTo12Hour(task.eventStartTime)} - ${formatTimeTo12Hour(task.eventEndTime)}` : format(new Date(task.dueDate), "h:mm a")}
@@ -25215,7 +25213,7 @@ export default function Dashboard() {
                           <div style={{
                             background: `linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%), ${typeBarColor}`,
                             borderBottom: `1px solid rgba(0,0,0,0.15)`,
-                            padding: '2px 4px',
+                            padding: '2px 4px 2px 6px',
                             display: 'flex',
                             alignItems: 'center',
                             gap: '3px',
@@ -25239,15 +25237,13 @@ export default function Dashboard() {
                         );
                       })()}
                       {/* Task body */}
-                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '3px', padding: '3px 4px 2px 4px', flex: 1 }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', paddingTop: '1px' }}>
-                          <Checkbox
-                            checked={task.isCompleted || false}
-                            onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                            className="h-3.5 w-3.5 shrink-0 border-white bg-white data-[state=checked]:bg-white data-[state=checked]:border-white data-[state=checked]:text-black"
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                        </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '3px 4px 2px 6px', flex: 1 }}>
+                        <Checkbox
+                          checked={task.isCompleted || false}
+                          onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                          className="h-3.5 w-3.5 shrink-0 border-white bg-white data-[state=checked]:bg-white data-[state=checked]:border-white data-[state=checked]:text-black"
+                          onClick={(e) => e.stopPropagation()}
+                        />
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ fontSize: '8px', fontWeight: 400, color: 'rgba(255,255,255,0.8)', lineHeight: 1.2 }}>
                             {task.eventStartTime && task.eventEndTime ? `${formatTimeTo12Hour(task.eventStartTime)} - ${formatTimeTo12Hour(task.eventEndTime)}` : format(new Date(task.dueDate), "h:mm a")}
