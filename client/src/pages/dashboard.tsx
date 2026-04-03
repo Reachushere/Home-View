@@ -24541,7 +24541,7 @@ export default function Dashboard() {
                   >
                     {/* All-day tasks */}
                     {allDayTasks.map(task => {
-                      const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || (task.title?.match(/^\[([^\]\s]+)/)?.[1]?.toUpperCase() || "");
+                      const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || (task.title?.match(/^\[([^\]\s]+)/)?.[1]?.toUpperCase() || (() => { const t = (task.title || '').toUpperCase(); const alpha = t.match(/^([A-Z]+)/)?.[1]; if (!alpha) return ''; return Object.keys(dynamicCourseColors).find(k => k.startsWith(alpha) && k.length > alpha.length) || ''; })());
                       const colors = dynamicCourseColors[courseCode];
                       const today = startOfDayET(new Date());
                       const tomorrow = addDays(today, 1);
@@ -24929,7 +24929,7 @@ export default function Dashboard() {
                             }
                             return true;
                           }).map((task, taskIdx) => {
-                            const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || (task.title?.match(/^\[([^\]\s]+)/)?.[1]?.toUpperCase() || "");
+                            const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || (task.title?.match(/^\[([^\]\s]+)/)?.[1]?.toUpperCase() || (() => { const t = (task.title || '').toUpperCase(); const alpha = t.match(/^([A-Z]+)/)?.[1]; if (!alpha) return ''; return Object.keys(dynamicCourseColors).find(k => k.startsWith(alpha) && k.length > alpha.length) || ''; })());
                             const colors = dynamicCourseColors[courseCode];
                             const today = startOfDayET(new Date());
                             const tomorrow = addDays(today, 1);
@@ -25041,8 +25041,7 @@ export default function Dashboard() {
                               >
                                 {/* Type bar with glass effect */}
                                 {(() => {
-                                  const hasBracketCourse = !task.courseName && task.title?.match(/^\[([^\]\s]+)/)?.[1];
-                                  const hasCourseLink = !!(task.courseName || (hasBracketCourse && courseCode && dynamicCourseColors[courseCode]));
+                                  const hasCourseLink = !!(task.courseName || (courseCode && dynamicCourseColors[courseCode]));
                                   const effectiveType = hasCourseLink ? (task.type || 'class') : 'other';
                                   const typeBarColor = calendarTypeBarColors[effectiveType] || calendarTypeBarColors.other;
                                   const TIcon = effectiveType === 'class' ? null : (iconMap[effectiveType] || null);
@@ -25163,7 +25162,7 @@ export default function Dashboard() {
                     heightPx += (endMin / 60) * endHourHeight;
                   }
                   
-                  const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || (task.title?.match(/^\[([^\]\s]+)/)?.[1]?.toUpperCase() || "");
+                  const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || (task.title?.match(/^\[([^\]\s]+)/)?.[1]?.toUpperCase() || (() => { const t = (task.title || '').toUpperCase(); const alpha = t.match(/^([A-Z]+)/)?.[1]; if (!alpha) return ''; return Object.keys(dynamicCourseColors).find(k => k.startsWith(alpha) && k.length > alpha.length) || ''; })());
                   const colors = dynamicCourseColors[courseCode];
                   const today = startOfDayET(new Date());
                   const tomorrow = addDays(today, 1);
@@ -25230,8 +25229,7 @@ export default function Dashboard() {
                     >
                       {/* Type bar with glass effect */}
                       {(() => {
-                        const hasBracketCourse = !task.courseName && task.title?.match(/^\[([^\]\s]+)/)?.[1];
-                        const hasCourseLink = !!(task.courseName || (hasBracketCourse && courseCode && dynamicCourseColors[courseCode]));
+                        const hasCourseLink = !!(task.courseName || (courseCode && dynamicCourseColors[courseCode]));
                         const effectiveType = hasCourseLink ? (task.type || 'class') : 'other';
                         const typeBarColor = calendarTypeBarColors[effectiveType] || calendarTypeBarColors.other;
                         const TIcon = effectiveType === 'class' ? null : (iconMap[effectiveType] || null);
@@ -26115,7 +26113,7 @@ export default function Dashboard() {
                           </div>
                           <div className="space-y-0.5">
                             {dayTasks.slice(0, 3).map((task) => {
-                              const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || (task.title?.match(/^\[([^\]\s]+)/)?.[1]?.toUpperCase() || "");
+                              const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || (task.title?.match(/^\[([^\]\s]+)/)?.[1]?.toUpperCase() || (() => { const t = (task.title || '').toUpperCase(); const alpha = t.match(/^([A-Z]+)/)?.[1]; if (!alpha) return ''; return Object.keys(dynamicCourseColors).find(k => k.startsWith(alpha) && k.length > alpha.length) || ''; })());
                               const colors = dynamicCourseColors[courseCode];
                               return (
                                 <div
