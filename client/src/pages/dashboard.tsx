@@ -26503,7 +26503,7 @@ export default function Dashboard() {
                     if (tab.id.startsWith('ss26-wk')) return tab.id === 'ss26-wk1' && scrollActiveSem === tab.semLabel;
                     return scrollActiveSem === tab.semLabel;
                   })();
-                  const tabW = 18;
+                  const tabW = 15;
                   const tabGap = -2;
                   const tabTop = topInset + tabIdx * (tabH + tabGap);
                   const svgH = Math.floor(tabH);
