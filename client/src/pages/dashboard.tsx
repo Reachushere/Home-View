@@ -26444,12 +26444,12 @@ export default function Dashboard() {
               w2027Start: new Date(2027, 0, 11),
             };
             const semTabColors: Record<string, [string, string]> = {
-              'Winter 2026': ['#8DC63F', '#5A9E1F'],
-              'Spring/Summer 2026': ['#E8673C', '#C04B25'],
-              'Fall 2026': ['#9B59B6', '#7D3C98'],
-              'Winter 2027': ['#3498DB', '#2471A3'],
-              'Winter 2028': ['#E74C8B', '#C0397A'],
-              'Winter 2029': ['#1ABC9C', '#148F77'],
+              'Winter 2026': ['#7EC845', '#5BA630'],
+              'Spring/Summer 2026': ['#C063A0', '#9B3F7E'],
+              'Fall 2026': ['#E8733C', '#C8552A'],
+              'Winter 2027': ['#B5D63F', '#8DB82A'],
+              'Winter 2028': ['#4FC1E9', '#2FA0C8'],
+              'Winter 2029': ['#C063A0', '#9B3F7E'],
             };
             const getTabColors = (sem: string): [string, string] => semTabColors[sem] || ['#8DC63F', '#5A9E1F'];
             const gapColor: [string, string] = ['#95A5A6', '#7F8C8D'];
