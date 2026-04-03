@@ -2110,6 +2110,7 @@ export default function Dashboard() {
       el.style.transition = val ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out';
     });
   }, []);
+  const pillFlyoutWasOpenRef = useRef(false);
   const closeTopPill = useCallback(() => {
     setIsTopPillOpen(false);
   }, []);
@@ -2131,6 +2132,16 @@ export default function Dashboard() {
     const timer = setTimeout(() => document.addEventListener('click', handleClickOutside), 100);
     return () => { clearTimeout(timer); document.removeEventListener('click', handleClickOutside); };
   }, [isTopPillOpen, closeTopPill]);
+
+  useEffect(() => {
+    const anyFlyoutOpen = isSettingsPanelOpen || isTodoFlyoutOpen || isProjectsFlyoutOpen || isRadioDialogOpen || isCompletedTasksOpen || isQuickAddOpen;
+    if (anyFlyoutOpen) {
+      pillFlyoutWasOpenRef.current = true;
+    } else if (pillFlyoutWasOpenRef.current) {
+      pillFlyoutWasOpenRef.current = false;
+      setIsTopPillOpen(true);
+    }
+  }, [isSettingsPanelOpen, isTodoFlyoutOpen, isProjectsFlyoutOpen, isRadioDialogOpen, isCompletedTasksOpen, isQuickAddOpen]);
 
   const [newsHeadlines, setNewsHeadlines] = useState<{ title: string; source: string; link: string; publishedAt?: string }[]>([]);
 
@@ -14203,14 +14214,14 @@ export default function Dashboard() {
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
           if (topPillInitDoneRef.current) {
             topPillTimeoutRef.current = setTimeout(() => {
-              if (!topPillHoveredRef.current) closeTopPill();
+              if (!topPillHoveredRef.current && !isSettingsPanelOpen && !isTodoFlyoutOpen && !isProjectsFlyoutOpen && !isRadioDialogOpen && !isCompletedTasksOpen && !isQuickAddOpen) closeTopPill();
             }, 1500);
           }
         }}
       >
         <div style={{ position: 'absolute', top: '-40px', left: '-20px', right: '-20px', bottom: '-20px', pointerEvents: isTopPillOpen ? 'auto' : 'none', zIndex: -1 }}
           onMouseEnter={() => { topPillHoveredRef.current = true; if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); }}
-          onMouseLeave={() => { topPillHoveredRef.current = false; if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); topPillTimeoutRef.current = setTimeout(() => { if (!topPillHoveredRef.current) closeTopPill(); }, 1500); }}
+          onMouseLeave={() => { topPillHoveredRef.current = false; if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); topPillTimeoutRef.current = setTimeout(() => { if (!topPillHoveredRef.current && !isSettingsPanelOpen && !isTodoFlyoutOpen && !isProjectsFlyoutOpen && !isRadioDialogOpen && !isCompletedTasksOpen && !isQuickAddOpen) closeTopPill(); }, 1500); }}
         />
         {/* Glass pill background */}
         <div style={{
