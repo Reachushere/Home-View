@@ -26991,10 +26991,10 @@ export default function Dashboard() {
                                   style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'flex', alignItems: 'center', gap: '3px', color: '#ffffff' }}
                                 >
                                   {task.type === 'class' && <img src={teacherIconPath} alt="" style={{ width: '11px', height: '11px', objectFit: 'contain', opacity: 0.85, flexShrink: 0, filter: 'invert(1)' }} />}
-                                  <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title; })() : task.title}</span>
+                                  <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title; })() : task.title.replace(/^\[.*?\]\s*/, '')}</span>
                                 </button>
                                 <div className="text-[9px]" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '0px', whiteSpace: 'nowrap', color: '#ffffff' }}>
-                                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName.replace(/^\[|\]$/g, '')}</span>
+                                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName.replace(/\[|\]/g, '')}</span>
                                 </div>
                               </div>
                               {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (task.type === 'module' || task.type === 'reading') && (
@@ -27116,8 +27116,8 @@ export default function Dashboard() {
                                             flex: 1, minWidth: 0, height: '11px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
-                                            background: isToday ? todayCellBg : isDue ? dueBg : 'rgba(255,255,255,0.15)',
-                                            border: isDue && !isToday ? `1px solid ${dueColors[0]}` : 'none',
+                                            background: isDue ? dueBg : isToday ? todayCellBg : 'rgba(255,255,255,0.15)',
+                                            border: isDue ? `1px solid ${dueColors[0]}` : isToday ? '1px solid rgba(255,255,255,0.7)' : 'none',
                                           }} data-testid={`mini-cal-w10-date-${format(d, 'yyyy-MM-dd')}`}>
                                             {d.getDate()}
                                           </div>
@@ -27180,10 +27180,10 @@ export default function Dashboard() {
                                               style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'flex', alignItems: 'center', gap: '3px', color: '#ffffff' }}
                                             >
                                               {task.type === 'class' && <img src={teacherIconPath} alt="" style={{ width: '11px', height: '11px', objectFit: 'contain', opacity: 0.85, flexShrink: 0, filter: 'invert(1)' }} />}
-                                              <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title; })() : task.title}</span>
+                                              <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title; })() : task.title.replace(/^\[.*?\]\s*/, '')}</span>
                                             </button>
                                             <div className="text-[9px]" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '2px', whiteSpace: 'nowrap', color: '#ffffff' }}>
-                                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName.replace(/^\[|\]$/g, '')}</span>
+                                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName.replace(/\[|\]/g, '')}</span>
                                             </div>
                                           </div>
                                           {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (task.type === 'module' || task.type === 'reading') && (
@@ -27296,8 +27296,8 @@ export default function Dashboard() {
                                             flex: 1, minWidth: 0, height: '11px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
-                                            background: isToday ? todayCellBg : isDue ? dueBg : 'rgba(255,255,255,0.15)',
-                                            border: isDue && !isToday ? `1px solid ${dueColors[0]}` : 'none',
+                                            background: isDue ? dueBg : isToday ? todayCellBg : 'rgba(255,255,255,0.15)',
+                                            border: isDue ? `1px solid ${dueColors[0]}` : isToday ? '1px solid rgba(255,255,255,0.7)' : 'none',
                                           }} data-testid={`mini-cal-w11-date-${format(d, 'yyyy-MM-dd')}`}>
                                             {d.getDate()}
                                           </div>
@@ -27360,10 +27360,10 @@ export default function Dashboard() {
                                               style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'flex', alignItems: 'center', gap: '3px', color: '#ffffff' }}
                                             >
                                               {task.type === 'class' && <img src={teacherIconPath} alt="" style={{ width: '11px', height: '11px', objectFit: 'contain', opacity: 0.85, flexShrink: 0, filter: 'invert(1)' }} />}
-                                              <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title; })() : task.title}</span>
+                                              <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title; })() : task.title.replace(/^\[.*?\]\s*/, '')}</span>
                                             </button>
                                             <div className="text-[9px]" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '4px', whiteSpace: 'nowrap', overflow: 'hidden', color: '#ffffff' }}>
-                                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName.replace(/^\[|\]$/g, '')}</span>
+                                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName.replace(/\[|\]/g, '')}</span>
                                             </div>
                                           </div>
                                           {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (task.type === 'module' || task.type === 'reading') && (
@@ -27495,8 +27495,8 @@ export default function Dashboard() {
                                             flex: 1, minWidth: 0, height: '11px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
-                                            background: isToday ? todayCellBg : isDue ? dueBg : 'rgba(255,255,255,0.15)',
-                                            border: isDue && !isToday ? `1px solid ${dueColors[0]}` : 'none',
+                                            background: isDue ? dueBg : isToday ? todayCellBg : 'rgba(255,255,255,0.15)',
+                                            border: isDue ? `1px solid ${dueColors[0]}` : isToday ? '1px solid rgba(255,255,255,0.7)' : 'none',
                                           }} data-testid={`mini-cal-date-${format(d, 'yyyy-MM-dd')}`}>
                                             {d.getDate()}
                                           </div>
@@ -27558,10 +27558,10 @@ export default function Dashboard() {
                                               style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'flex', alignItems: 'center', gap: '3px', color: '#ffffff' }}
                                             >
                                               {task.type === 'class' && <img src={teacherIconPath} alt="" style={{ width: '11px', height: '11px', objectFit: 'contain', opacity: 0.85, flexShrink: 0, filter: 'invert(1)' }} />}
-                                              <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title; })() : task.title}</span>
+                                              <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title; })() : task.title.replace(/^\[.*?\]\s*/, '')}</span>
                                             </button>
                                             <div className="text-[9px]" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '4px', whiteSpace: 'nowrap', overflow: 'hidden', color: '#ffffff' }}>
-                                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{(task.courseName?.split(' - ').slice(1).join(' - ') || task.courseName?.split(' - ')[0] || '').replace(/^\[|\]$/g, '')}</span>
+                                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{(task.courseName?.split(' - ').slice(1).join(' - ') || task.courseName?.split(' - ')[0] || '').replace(/\[|\]/g, '')}</span>
                                             </div>
                                           </div>
                                         </div>
@@ -27715,8 +27715,8 @@ export default function Dashboard() {
                                             flex: 1, minWidth: 0, height: '11px', borderRadius: '2px', fontSize: '8px', fontWeight: (isToday || isDue) ? 700 : 400,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                                             color: (isToday || isDue) ? '#fff' : 'rgba(255,255,255,0.85)',
-                                            background: isToday ? todayCellBg : isDue ? dueBg : 'rgba(255,255,255,0.15)',
-                                            border: isDue && !isToday ? `1px solid ${dueColors[0]}` : 'none',
+                                            background: isDue ? dueBg : isToday ? todayCellBg : 'rgba(255,255,255,0.15)',
+                                            border: isDue ? `1px solid ${dueColors[0]}` : isToday ? '1px solid rgba(255,255,255,0.7)' : 'none',
                                           }} data-testid={`mini-cal-date-${format(d, 'yyyy-MM-dd')}`}>
                                             {d.getDate()}
                                           </div>
@@ -27778,10 +27778,10 @@ export default function Dashboard() {
                                               style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'flex', alignItems: 'center', gap: '3px', color: '#ffffff' }}
                                             >
                                               {task.type === 'class' && <img src={teacherIconPath} alt="" style={{ width: '11px', height: '11px', objectFit: 'contain', opacity: 0.85, flexShrink: 0, filter: 'invert(1)' }} />}
-                                              <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title; })() : task.title}</span>
+                                              <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title; })() : task.title.replace(/^\[.*?\]\s*/, '')}</span>
                                             </button>
                                             <div className="text-[9px]" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '4px', whiteSpace: 'nowrap', overflow: 'hidden', color: '#ffffff' }}>
-                                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName.replace(/^\[|\]$/g, '')}</span>
+                                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{courseName.replace(/\[|\]/g, '')}</span>
                                             </div>
                                           </div>
                                         </div>
