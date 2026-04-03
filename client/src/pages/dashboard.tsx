@@ -25074,10 +25074,10 @@ export default function Dashboard() {
                                     }}>
                                       <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 50%, transparent 100%)', pointerEvents: 'none' }} />
                                       {effectiveType === 'class' ? (
-                                        <img src={teacherWhiteIconPath} alt="Class" style={{ width: '10px', height: '10px', objectFit: 'contain', position: 'relative', zIndex: 1 }} data-testid={`type-icon-time-${task.id}`} />
+                                        <div style={{ width: '10px', height: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative', zIndex: 1 }}><img src={teacherWhiteIconPath} alt="Class" style={{ width: '10px', height: '10px', objectFit: 'contain' }} data-testid={`type-icon-time-${task.id}`} /></div>
                                       ) : TIcon ? (
-                                        <TIcon className="h-2.5 w-2.5 shrink-0" style={{ position: 'relative', zIndex: 1, color: 'rgba(255,255,255,0.9)' } as any} data-testid={`type-icon-time-${task.id}`} />
-                                      ) : null}
+                                        <div style={{ width: '10px', height: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative', zIndex: 1 }}><TIcon style={{ width: '10px', height: '10px', color: 'rgba(255,255,255,0.9)' } as any} data-testid={`type-icon-time-${task.id}`} /></div>
+                                      ) : <div style={{ width: '10px', height: '10px', flexShrink: 0 }} />}
                                       <span style={{ fontSize: '7px', fontWeight: 700, color: 'white', textTransform: 'uppercase', letterSpacing: '0.3px', position: 'relative', zIndex: 1, textShadow: '0 1px 2px rgba(0,0,0,0.3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
                                         {(() => { const raw = (task.title || '').replace(/^\[.*?\]\s*/, '').replace(/^online\s+/i, ''); const t = raw; const isModRead = /^(module|reading|module\s*(?:&|and)\s*reading)$/i.test(t.trim()); if (isModRead && task.courseName) { const cc = task.courseName.split(' - ')[0]?.trim(); if (cc) return `${cc} ${t}`; } return t; })()}
                                       </span>
