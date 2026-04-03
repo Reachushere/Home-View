@@ -216,6 +216,40 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, existin
     setBrowseFolders([]);
   };
 
+  const renderFolderBrowser = () => (
+    <div className="mt-1 mb-1 bg-black/40 border border-white/20 rounded-lg overflow-hidden">
+      <div className="flex items-center justify-between px-3 py-2 bg-white/5 border-b border-white/10">
+        <span className="text-[10px] text-white font-medium">Select {browsingFor === 'module' ? 'Module' : 'Reading'} Folder</span>
+        <button type="button" onClick={() => setBrowsingFor(null)} className="text-white/40 hover:text-white"><X className="h-3.5 w-3.5" /></button>
+      </div>
+      <div className="px-3 py-1.5 bg-white/3 border-b border-white/10 flex items-center gap-1.5">
+        {browsePath !== '/' && (
+          <button type="button" onClick={() => navigateToFolder(browsePath.split('/').slice(0, -1).join('/') || '/')} className="text-blue-400 hover:text-blue-300 shrink-0" data-testid="wizard-btn-folder-up">
+            <ChevronUp className="h-3.5 w-3.5" />
+          </button>
+        )}
+        <span className="text-[8px] text-white/50 truncate">{browsePath}</span>
+        <button type="button" onClick={() => selectFolder(browsePath)} className="ml-auto text-[8px] px-2 py-1 rounded bg-green-600/40 border border-green-500/50 text-green-300 hover:bg-green-600/60 shrink-0" data-testid="wizard-btn-select-current">
+          Select This Folder
+        </button>
+      </div>
+      <div className="max-h-[150px] overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+        {browseLoading ? (
+          <div className="flex items-center justify-center py-4"><Loader2 className="h-4 w-4 text-white/40 animate-spin" /></div>
+        ) : browseFolders.length === 0 ? (
+          <div className="text-[9px] text-white/30 text-center py-3">No subfolders here</div>
+        ) : (
+          browseFolders.map(f => (
+            <button key={f.path} type="button" onClick={() => navigateToFolder(f.path)} className="w-full flex items-center gap-2 px-3 py-1.5 text-left hover:bg-white/10 transition-colors" data-testid={`wizard-folder-${f.name}`}>
+              <Folder className="h-3.5 w-3.5 text-yellow-400 shrink-0" />
+              <span className="text-[9px] text-white/80 truncate">{f.name}</span>
+            </button>
+          ))
+        )}
+      </div>
+    </div>
+  );
+
   const [wizardActiveGradientStop, setWizardActiveGradientStop] = useState<'start' | 'end' | number | null>(null);
   const wizardGradBarRef = useRef<HTMLDivElement>(null);
 
@@ -807,6 +841,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, existin
             </div>
             {data.moduleFolder && <p className="text-[7px] text-white/30 mt-0.5 truncate">{data.moduleFolder}</p>}
           </div>
+          {browsingFor === 'module' && renderFolderBrowser()}
           <div>
             <Label className="text-[9px] text-white/60 mb-1 block">Reading Files Folder</Label>
             <div className="flex items-center gap-1.5">
@@ -828,45 +863,12 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, existin
             </div>
             {data.readingFolder && <p className="text-[7px] text-white/30 mt-0.5 truncate">{data.readingFolder}</p>}
           </div>
+          {browsingFor === 'reading' && renderFolderBrowser()}
           {data.moduleFolder && data.readingFolder && data.moduleFolder === data.readingFolder && (
             <p className="text-[8px] text-blue-300/70 flex items-center gap-1"><Check className="h-3 w-3" /> Both point to the same course folder (modules &amp; readings in each Week subfolder)</p>
           )}
         </div>
       </div>
-
-      {browsingFor && (
-        <div className="mt-2 bg-black/40 border border-white/20 rounded-lg overflow-hidden">
-          <div className="flex items-center justify-between px-3 py-2 bg-white/5 border-b border-white/10">
-            <span className="text-[10px] text-white font-medium">Select {browsingFor === 'module' ? 'Module' : 'Reading'} Folder</span>
-            <button type="button" onClick={() => setBrowsingFor(null)} className="text-white/40 hover:text-white"><X className="h-3.5 w-3.5" /></button>
-          </div>
-          <div className="px-3 py-1.5 bg-white/3 border-b border-white/10 flex items-center gap-1.5">
-            {browsePath !== '/' && (
-              <button type="button" onClick={() => navigateToFolder(browsePath.split('/').slice(0, -1).join('/') || '/')} className="text-blue-400 hover:text-blue-300 shrink-0" data-testid="wizard-btn-folder-up">
-                <ChevronUp className="h-3.5 w-3.5" />
-              </button>
-            )}
-            <span className="text-[8px] text-white/50 truncate">{browsePath}</span>
-            <button type="button" onClick={() => selectFolder(browsePath)} className="ml-auto text-[8px] px-2 py-1 rounded bg-green-600/40 border border-green-500/50 text-green-300 hover:bg-green-600/60 shrink-0" data-testid="wizard-btn-select-current">
-              Select This Folder
-            </button>
-          </div>
-          <div className="max-h-[150px] overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
-            {browseLoading ? (
-              <div className="flex items-center justify-center py-4"><Loader2 className="h-4 w-4 text-white/40 animate-spin" /></div>
-            ) : browseFolders.length === 0 ? (
-              <div className="text-[9px] text-white/30 text-center py-3">No subfolders here</div>
-            ) : (
-              browseFolders.map(f => (
-                <button key={f.path} type="button" onClick={() => navigateToFolder(f.path)} className="w-full flex items-center gap-2 px-3 py-1.5 text-left hover:bg-white/10 transition-colors" data-testid={`wizard-folder-${f.name}`}>
-                  <Folder className="h-3.5 w-3.5 text-yellow-400 shrink-0" />
-                  <span className="text-[9px] text-white/80 truncate">{f.name}</span>
-                </button>
-              ))
-            )}
-          </div>
-        </div>
-      )}
       </div>
     </div>
   );
