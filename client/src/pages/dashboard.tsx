@@ -26443,25 +26443,25 @@ export default function Dashboard() {
               f2026Start: new Date(2026, 8, 8), f2026End: new Date(2026, 11, 11),
               w2027Start: new Date(2027, 0, 11),
             };
-            const semTabs: Array<{ id: string; label: string; semLabel: string; scrollTarget: string }> = [];
-            semTabs.push({ id: 'wk-current', label: `Wk ${selectedWeek}`, semLabel: hwWeeklyTimeline[0]?.semLabel || 'Winter 2026', scrollTarget: 'thisweek' });
-            semTabs.push({ id: 'wk-next', label: `Wk ${selectedWeek + 1}`, semLabel: hwWeeklyTimeline[1]?.semLabel || 'Winter 2026', scrollTarget: 'nextweek' });
-            semTabs.push({ id: 'wk-third', label: `Wk ${selectedWeek + 2}`, semLabel: hwWeeklyTimeline[2]?.semLabel || 'Winter 2026', scrollTarget: 'twoweeks' });
+            const semTabs: Array<{ id: string; line1: string; line2: string; semLabel: string; scrollTarget: string }> = [];
+            semTabs.push({ id: 'wk-current', line1: 'Winter', line2: `Week ${selectedWeek}`, semLabel: hwWeeklyTimeline[0]?.semLabel || 'Winter 2026', scrollTarget: 'thisweek' });
+            semTabs.push({ id: 'wk-next', line1: 'Winter', line2: `Week ${selectedWeek + 1}`, semLabel: hwWeeklyTimeline[1]?.semLabel || 'Winter 2026', scrollTarget: 'nextweek' });
+            semTabs.push({ id: 'wk-third', line1: 'Winter', line2: `Week ${selectedWeek + 2}`, semLabel: hwWeeklyTimeline[2]?.semLabel || 'Winter 2026', scrollTarget: 'twoweeks' });
             if (now < semDates.ss2026Start) {
-              semTabs.push({ id: 'april-gap', label: 'APRIL', semLabel: 'Winter 2026', scrollTarget: 'threeweeks' });
+              semTabs.push({ id: 'april-gap', line1: 'APRIL', line2: '', semLabel: 'Winter 2026', scrollTarget: 'threeweeks' });
             }
             if (now < semDates.f2026Start) {
               const ssMaxWk = now >= semDates.ss2026Start ? 6 : 6;
               for (let w = 1; w <= ssMaxWk; w++) {
-                semTabs.push({ id: `ss26-wk${w}`, label: `S Wk ${w}`, semLabel: 'Spring/Summer 2026', scrollTarget: w === 1 ? 'sem-ss2026' : `sem-ss2026-wk${w}` });
+                semTabs.push({ id: `ss26-wk${w}`, line1: 'Spring', line2: `Week ${w}`, semLabel: 'Spring/Summer 2026', scrollTarget: w === 1 ? 'sem-ss2026' : `sem-ss2026-wk${w}` });
               }
             }
             if (now >= semDates.ss2026End && now < semDates.f2026Start) {
-              semTabs.push({ id: 'aug-sept-gap', label: 'AUG-SEPT', semLabel: 'Spring/Summer 2026', scrollTarget: 'sem-ss2026' });
+              semTabs.push({ id: 'aug-sept-gap', line1: 'AUG', line2: 'SEPT', semLabel: 'Spring/Summer 2026', scrollTarget: 'sem-ss2026' });
             }
-            semTabs.push({ id: 'f-2026', label: 'F 2026', semLabel: 'Fall 2026', scrollTarget: 'sem-f2026' });
+            semTabs.push({ id: 'f-2026', line1: 'Fall', line2: '2026', semLabel: 'Fall 2026', scrollTarget: 'sem-f2026' });
             for (let y = currentYear + 1; y <= 2029; y++) {
-              semTabs.push({ id: `year-${y}`, label: String(y), semLabel: `Winter ${y}`, scrollTarget: `sem-w${y}` });
+              semTabs.push({ id: `year-${y}`, line1: 'Winter', line2: String(y), semLabel: `Winter ${y}`, scrollTarget: `sem-w${y}` });
             }
             const currentSemLabel = hwWeeklyTimeline[0]?.semLabel || null;
             const scrollActiveSem = hwVisibleSemLabel || currentSemLabel;
@@ -26547,9 +26547,14 @@ export default function Dashboard() {
                         {(() => {
                           const centerX = svgW / 2;
                           const centerY = svgH / 2;
-                          return (
-                            <text x={centerX + 5} y={centerY} textAnchor="middle" dominantBaseline="central" fill={isActive ? '#ffffff' : 'rgba(255,255,255,0.55)'} fontSize="10" fontWeight={isActive ? '600' : '400'} fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.3" transform={`rotate(90, ${centerX + 5}, ${centerY})`}>{tab.label}</text>
-                          );
+                          return tab.line2 ? (
+                              <>
+                                <text x={centerX + 5} y={centerY - 4} textAnchor="middle" dominantBaseline="central" fill={isActive ? '#ffffff' : 'rgba(255,255,255,0.55)'} fontSize="7" fontWeight={isActive ? '600' : '400'} fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.3" transform={`rotate(90, ${centerX + 5}, ${centerY - 4})`}>{tab.line1}</text>
+                                <text x={centerX + 5} y={centerY + 5} textAnchor="middle" dominantBaseline="central" fill={isActive ? '#ffffff' : 'rgba(255,255,255,0.55)'} fontSize="7" fontWeight={isActive ? '600' : '400'} fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.3" transform={`rotate(90, ${centerX + 5}, ${centerY + 5})`}>{tab.line2}</text>
+                              </>
+                            ) : (
+                              <text x={centerX + 5} y={centerY} textAnchor="middle" dominantBaseline="central" fill={isActive ? '#ffffff' : 'rgba(255,255,255,0.55)'} fontSize="8" fontWeight={isActive ? '600' : '400'} fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.3" transform={`rotate(90, ${centerX + 5}, ${centerY})`}>{tab.line1}</text>
+                            );
                         })()}
                       </svg>
                     </div>
