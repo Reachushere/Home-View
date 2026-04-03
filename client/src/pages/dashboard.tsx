@@ -15464,8 +15464,8 @@ export default function Dashboard() {
         transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out',
         pointerEvents: isTopPillOpen ? 'none' : 'auto',
       }} data-tpo data-tpo-opacity="1" data-testid="timer-bar">
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end', gap: '16px' }}>
-          <div className="flex flex-col items-center" style={{ marginBottom: '4px', marginLeft: '-10px' }}>
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end', gap: '16px', marginLeft: '6px' }}>
+          <div className="flex flex-col items-center" style={{ marginBottom: '4px' }}>
             <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.7)', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase', lineHeight: 1, marginBottom: '10px', marginTop: '-33px' }}>Pomodoro Timer</span>
             <div className="flex flex-row items-center gap-[16px]">
             <div className="flex items-center gap-[4px]">
@@ -15485,7 +15485,7 @@ export default function Dashboard() {
             </button>
             </div>
           </div>
-          <div ref={clockContainerRef} data-testid="pomodoro-timer" style={{ position: 'relative', cursor: 'pointer', marginLeft: '10px' }} onClick={togglePomodoro}>
+          <div ref={clockContainerRef} data-testid="pomodoro-timer" style={{ position: 'relative', cursor: 'pointer' }} onClick={togglePomodoro}>
             {(() => {
               const totalSec = pomodoroMode === 'work' ? 25 * 60 : pomodoroMode === 'shortBreak' ? 5 * 60 : 15 * 60;
               const elapsed = totalSec - pomodoroTime;
