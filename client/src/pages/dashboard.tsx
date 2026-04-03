@@ -26538,7 +26538,7 @@ export default function Dashboard() {
                       <svg width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`} style={{ display: 'block', overflow: 'visible' }}>
                         <defs>
                           <filter id={`tabDrop-${tabIdx}`} x="-20%" y="-10%" width="140%" height="120%"><feDropShadow dx="1" dy="0" stdDeviation="1.5" floodColor="black" floodOpacity={isActive ? '0.4' : '0.2'} /></filter>
-                          <linearGradient id={`tabGrad-${tabIdx}`} x1="0" y1="0" x2="1" y2="0">
+                          <linearGradient id={`tabGrad-${tabIdx}`} x1="1" y1="0" x2="0" y2="0">
                             <stop offset="0%" stopColor="#61A2CB" />
                             <stop offset="100%" stopColor="#0F3A5C" />
                           </linearGradient>
