@@ -18080,25 +18080,27 @@ export default function Dashboard() {
                       </div>
                       <div className="border-t border-white/10 pt-3 mt-1">
                         <p className="text-white/50 text-[11px] mb-2">Event time block (optional)</p>
-                        <div className="flex gap-2 items-center">
-                          <span className="text-white/50 text-[11px] w-[38px]">Start:</span>
-                          <input
-                            type="time"
-                            value={quickAddData.eventStartTime}
-                            onChange={(e) => { const v = e.target.value; startTransition(() => setQuickAddData(p => ({ ...p, eventStartTime: v }))); }}
-                            className="flex-1 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
-                            data-testid="quick-add-start-time"
-                          />
-                        </div>
-                        <div className="flex gap-2 items-center mt-2">
-                          <span className="text-white/50 text-[11px] w-[38px]">End:</span>
-                          <input
-                            type="time"
-                            value={quickAddData.eventEndTime}
-                            onChange={(e) => { const v = e.target.value; startTransition(() => setQuickAddData(p => ({ ...p, eventEndTime: v }))); }}
-                            className="flex-1 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
-                            data-testid="quick-add-end-time"
-                          />
+                        <div className="flex gap-3 items-center">
+                          <div className="flex gap-2 items-center flex-1 min-w-0">
+                            <span className="text-white/50 text-[11px] flex-shrink-0">Start:</span>
+                            <input
+                              type="time"
+                              value={quickAddData.eventStartTime}
+                              onChange={(e) => { const v = e.target.value; startTransition(() => setQuickAddData(p => ({ ...p, eventStartTime: v }))); }}
+                              className="flex-1 min-w-0 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
+                              data-testid="quick-add-start-time"
+                            />
+                          </div>
+                          <div className="flex gap-2 items-center flex-1 min-w-0">
+                            <span className="text-white/50 text-[11px] flex-shrink-0">End:</span>
+                            <input
+                              type="time"
+                              value={quickAddData.eventEndTime}
+                              onChange={(e) => { const v = e.target.value; startTransition(() => setQuickAddData(p => ({ ...p, eventEndTime: v }))); }}
+                              className="flex-1 min-w-0 bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
+                              data-testid="quick-add-end-time"
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
