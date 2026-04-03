@@ -23192,8 +23192,8 @@ export default function Dashboard() {
             </div>
           <div ref={calendarBorderRef} className="shadow-lg flex flex-col relative" style={{ background: 'transparent', borderRadius: '8px', overflow: 'hidden', height: 'calc(100%)', width: 'calc(100%)', marginLeft: '2px', marginTop: '-2px' }}>
             <div className="absolute inset-0 rounded-[8px] border border-white pointer-events-none" style={{ zIndex: 101 }} />
-            {/* Progress/Saturday divider line - grey separator on left border of Saturday column */}
-            <div className="absolute top-0 bottom-0 z-50 pointer-events-none overflow-hidden" style={{ left: `calc(${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px + (${gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px) - 1px)`, width: '3px', backgroundColor: colorSettings.headerBar }}>
+            {/* Progress/Saturday divider line - grey separator on left border of Saturday column, starts below orange homework bar */}
+            <div className="absolute bottom-0 z-50 pointer-events-none overflow-hidden" style={{ top: courseRowRects.length > 0 ? `${courseRowRects[0].top - (calendarBorderTop || (calendarTop + 15)) - 1}px` : '45px', left: `calc(${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px + (${gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px) - 1px)`, width: '3px', backgroundColor: colorSettings.headerBar }}>
             </div>
             {/* Black border around today column - always show */}
             {(() => {
