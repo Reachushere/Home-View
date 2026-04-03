@@ -17131,7 +17131,7 @@ export default function Dashboard() {
       {/* Navigation Arrows with week dates - now in top tab on glass box */}
       
       {/* Voice Input Floating Button */}
-      <div className="fixed z-[9999]" style={{ bottom: '43px', left: '5px' }}>
+      <div className="fixed z-[9999]" style={{ bottom: '43px', left: '5px', display: isSchoolCoursesDialogOpen ? 'none' : undefined }}>
         <button
           onClick={() => isVoiceListening ? stopVoiceInput() : startVoiceInput()}
           className={`flex items-center gap-2 rounded-full shadow-lg transition-all duration-300 ${isVoiceListening ? 'bg-red-500 hover:bg-red-600 pr-4' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md border border-white/20'}`}
@@ -21548,6 +21548,26 @@ export default function Dashboard() {
 
                 setIsNewCourseWizardOpen(false);
                 toast({ title: "Course added", description: `${fullName} has been added.` });
+
+                fetch('/api/onedrive/rename-tbd-folder', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    semesterId: matchedSem?.id || null,
+                    courseCode: wizardData.courseCode,
+                    courseName: wizardData.courseName,
+                    springSummerTerm: wizardData.springSummerTerm || null,
+                  }),
+                }).then(r => r.json()).then(result => {
+                  if (result.success) {
+                    console.log(`[OneDrive] Renamed TBD folder: ${result.from} → ${result.to}`);
+                    queryClient.invalidateQueries({ queryKey: ['/api/onedrive'] });
+                    queryClient.invalidateQueries({ queryKey: ['/api/semester-settings'] });
+                    queryClient.invalidateQueries({ queryKey: ['/api/semesters'] });
+                  } else {
+                    console.log('[OneDrive] No TBD folder to rename:', result.message);
+                  }
+                }).catch(err => console.error('[OneDrive] TBD rename error:', err));
 
                 const semKeyPrefix = wizardData.semesterType === 'winter' ? 'w' : wizardData.semesterType === 'fall' ? 'f' : 'ss';
                 const semKey = `${semKeyPrefix}${wizardData.semesterYear}`;

@@ -4704,6 +4704,35 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
       await renameOneDriveItem(tbd.id, newFolderName);
       console.log(`[OneDrive] Renamed TBD folder "${tbd.name}" → "${newFolderName}" in ${semPath}`);
+
+      if (semester) {
+        const codeNorm = code.toUpperCase();
+        for (let i = 1; i <= 3; i++) {
+          const slotCode = ((semester as any)[`course${i}Code`] || '').replace(/\s/g, '').toUpperCase();
+          if (slotCode === codeNorm) {
+            const prefix = `course${i}`;
+            const updates: Record<string, any> = {};
+            const modFolder = (semester as any)[`${prefix}ModuleFolder`] || '';
+            const readFolder = (semester as any)[`${prefix}ReadingFolder`] || '';
+            if (modFolder && modFolder.includes(`/${tbd.name}/`)) {
+              updates[`${prefix}ModuleFolder`] = modFolder.replace(`/${tbd.name}/`, `/${newFolderName}/`);
+            } else if (!modFolder) {
+              updates[`${prefix}ModuleFolder`] = `${semPath}/${newFolderName}/Module`;
+            }
+            if (readFolder && readFolder.includes(`/${tbd.name}/`)) {
+              updates[`${prefix}ReadingFolder`] = readFolder.replace(`/${tbd.name}/`, `/${newFolderName}/`);
+            } else if (!readFolder) {
+              updates[`${prefix}ReadingFolder`] = `${semPath}/${newFolderName}/Reading`;
+            }
+            if (Object.keys(updates).length > 0) {
+              await storage.updateSemesterSettings(semester.id, updates);
+              console.log(`[OneDrive] Updated folder paths for slot ${i}:`, updates);
+            }
+            break;
+          }
+        }
+      }
+
       res.json({ success: true, from: tbd.name, to: newFolderName, path: `${semPath}/${newFolderName}` });
     } catch (err: any) {
       console.error("Error renaming TBD folder:", err);
