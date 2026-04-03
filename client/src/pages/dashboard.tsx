@@ -27685,8 +27685,10 @@ export default function Dashboard() {
                           })()}
                           {(
                             <div data-semester-label={tlEntry.semLabel || ''} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 0 6px 0', borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: tlIdx === 0 ? '20px' : (tlIdx > 0 && beyondTimeline[tlIdx - 1] && tlEntry.weekStart.getFullYear() !== beyondTimeline[tlIdx - 1].weekStart.getFullYear() ? '4px' : '20px') }}>
-                              <span className="text-[12px] font-semibold" style={{ color: '#ffffff', flexShrink: 0 }}>{groupWeekLabel}</span>
-                              <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', flexShrink: 0 }}>({group.tasks.length})</span>
+                              <div style={{ display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
+                                <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{groupWeekLabel}</span>
+                                <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1 }}>({group.tasks.length})</span>
+                              </div>
                               {/Week\s+\d/i.test(groupWeekLabel) && tlEntry.weekStart && tlEntry.weekEnd && (
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0, marginLeft: '2px' }}>
                                   <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
