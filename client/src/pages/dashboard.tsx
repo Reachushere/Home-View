@@ -27054,7 +27054,7 @@ export default function Dashboard() {
               const lastRect = courseRowRects[courseRowRects.length - 1];
               if (lastRect) {
                 const otherTop = lastRect.top + lastRect.height - upcomingTop;
-                return `${Math.max(0, otherTop - 1)}px`;
+                return `${Math.max(0, otherTop)}px`;
               }
             }
             return '0px';
