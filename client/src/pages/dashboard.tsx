@@ -23264,19 +23264,26 @@ export default function Dashboard() {
                             })();
 
                             const sunriseSceneHtml = isSunrisePhase ? (() => {
-                              const sunProgress = phase === 'preDawn' ? 0 : phase === 'sunrise' ? 0.5 : 1;
-                              const sunY = 85 - sunProgress * 50;
-                              const sunSize = 14 + sunProgress * 4;
-                              const glowSize = sunSize + 8;
-                              return `<div style="position:absolute;bottom:${100 - sunY}%;left:50%;transform:translateX(-50%);width:${glowSize}px;height:${glowSize}px;border-radius:50%;background:radial-gradient(circle,rgba(255,200,80,0.4) 0%,transparent 70%)"></div><div style="position:absolute;bottom:${100 - sunY}%;left:50%;transform:translateX(-50%);width:${sunSize}px;height:${sunSize}px;border-radius:50%;background:radial-gradient(circle,#ffe070 0%,#f0a030 100%);box-shadow:0 0 10px 3px rgba(255,180,60,0.5)"></div>`;
+                              const totalDuration = 150;
+                              const riseStart = srMin - 60;
+                              const elapsed = minutesSinceMidnight - riseStart;
+                              const sunProgress = Math.max(0, Math.min(1, elapsed / totalDuration));
+                              const sunY = 95 - sunProgress * 60;
+                              const sunSize = 12 + sunProgress * 6;
+                              const glowSize = sunSize + 10;
+                              const glowOpacity = 0.2 + sunProgress * 0.3;
+                              return `<div style="position:absolute;bottom:${100 - sunY}%;left:18%;transform:translateX(-50%);width:${glowSize}px;height:${glowSize}px;border-radius:50%;background:radial-gradient(circle,rgba(255,200,80,${glowOpacity}) 0%,transparent 70%)"></div><div style="position:absolute;bottom:${100 - sunY}%;left:18%;transform:translateX(-50%);width:${sunSize}px;height:${sunSize}px;border-radius:50%;background:radial-gradient(circle,#ffe070 0%,#f0a030 100%);box-shadow:0 0 ${8 + sunProgress * 6}px ${2 + sunProgress * 3}px rgba(255,180,60,${0.3 + sunProgress * 0.3})"></div>`;
                             })() : '';
 
                             const sunsetSceneHtml = isSunsetPhase ? (() => {
-                              const setProgress = phase === 'preSet' ? 0 : phase === 'sunset' ? 0.5 : 1;
-                              const sunY = 35 + setProgress * 55;
-                              const sunSize = 16 - setProgress * 6;
-                              const glowOpacity = 0.5 - setProgress * 0.3;
-                              return sunSize > 2 ? `<div style="position:absolute;bottom:${100 - sunY}%;left:50%;transform:translateX(-50%);width:${sunSize + 10}px;height:${sunSize + 10}px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,40,${glowOpacity}) 0%,transparent 70%)"></div><div style="position:absolute;bottom:${100 - sunY}%;left:50%;transform:translateX(-50%);width:${sunSize}px;height:${sunSize}px;border-radius:50%;background:radial-gradient(circle,#ff8844 0%,#cc4422 100%);box-shadow:0 0 8px 2px rgba(255,100,30,0.4)"></div>` : '';
+                              const totalDuration = 120;
+                              const setStart = ssMin - 60;
+                              const elapsed = minutesSinceMidnight - setStart;
+                              const setProgress = Math.max(0, Math.min(1, elapsed / totalDuration));
+                              const sunY = 30 + setProgress * 65;
+                              const sunSize = Math.max(2, 16 - setProgress * 10);
+                              const glowOpacity = Math.max(0, 0.5 - setProgress * 0.4);
+                              return sunSize > 2 ? `<div style="position:absolute;bottom:${100 - sunY}%;left:18%;transform:translateX(-50%);width:${sunSize + 10}px;height:${sunSize + 10}px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,40,${glowOpacity}) 0%,transparent 70%)"></div><div style="position:absolute;bottom:${100 - sunY}%;left:18%;transform:translateX(-50%);width:${sunSize}px;height:${sunSize}px;border-radius:50%;background:radial-gradient(circle,#ff8844 0%,#cc4422 100%);box-shadow:0 0 8px 2px rgba(255,100,30,${glowOpacity})"></div>` : '';
                             })() : '';
 
                             const moonHtml = isNightPhase ? `<div style="position:absolute;top:8px;right:8px;width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#e8e4d4 0%,#d4cfc0 60%,#c0baa8 100%);box-shadow:0 0 6px 2px rgba(220,215,190,0.3)"></div><div style="position:absolute;top:9px;right:8px;width:7px;height:7px;border-radius:50%;background:#0a0e27;transform:translate(2px,-1px)"></div>` : '';
