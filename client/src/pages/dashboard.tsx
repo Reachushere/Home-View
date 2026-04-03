@@ -21234,7 +21234,7 @@ export default function Dashboard() {
                 const typeLabel = wizardData.semesterType === 'winter' ? 'Winter' : wizardData.semesterType === 'fall' ? 'Fall' : 'Spring/Summer';
                 const targetSemName = `${typeLabel} ${wizardData.semesterYear}`;
                 const matchedSem = (allSemesterSettings || []).find((s: any) => 
-                  s.semesterName === targetSemName || (s.semesterType === wizardData.semesterType && s.semesterName?.includes(wizardData.semesterYear))
+                  s.semesterName === targetSemName
                 );
                 const isActiveSemester = matchedSem?.isActive || (!matchedSem && !(allSemesterSettings || []).length);
                 

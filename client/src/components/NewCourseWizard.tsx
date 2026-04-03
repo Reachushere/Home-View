@@ -627,7 +627,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, existin
       {(() => {
         const typeLabel = data.semesterType === 'winter' ? 'Winter' : data.semesterType === 'fall' ? 'Fall' : 'Spring/Summer';
         const targetName = `${typeLabel} ${data.semesterYear}`;
-        const matched = availableSemesters?.find(s => s.semesterName === targetName || (s.semesterType === data.semesterType && s.semesterName?.includes(data.semesterYear)));
+        const matched = availableSemesters?.find(s => s.semesterName === targetName);
         const filledSlots = matched ? [matched.course1Code, matched.course2Code, matched.course3Code].filter(Boolean).length : 0;
         return (
           <div className="rounded bg-white/5 border border-white/10 px-3 py-2 text-[9px]">
@@ -692,21 +692,23 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, existin
           </div>
           <div>
             <Label className="text-[9px] text-white/60 mb-1 block">Start Time</Label>
-            <Input
+            <input
               type="time"
               value={data.classTime}
               onChange={(e) => updateField("classTime", e.target.value)}
-              className="h-8 !text-[10px] !text-black"
+              className="h-8 w-full rounded-md border border-input px-3 text-[10px]"
+              style={{ colorScheme: 'light', color: '#333', backgroundColor: 'white' }}
               data-testid="wizard-input-start-time"
             />
           </div>
           <div>
             <Label className="text-[9px] text-white/60 mb-1 block">End Time</Label>
-            <Input
+            <input
               type="time"
               value={data.classEndTime}
               onChange={(e) => updateField("classEndTime", e.target.value)}
-              className="h-8 !text-[10px] !text-black"
+              className="h-8 w-full rounded-md border border-input px-3 text-[10px]"
+              style={{ colorScheme: 'light', color: '#333', backgroundColor: 'white' }}
               data-testid="wizard-input-end-time"
             />
           </div>
@@ -758,21 +760,23 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, existin
       <div className="grid grid-cols-2 gap-3">
         <div>
           <Label className="text-[9px] text-white/60 mb-1 block">Course Start Date</Label>
-          <Input
+          <input
             type="date"
             value={data.startDate}
             onChange={(e) => updateField("startDate", e.target.value)}
-            className="h-8 !text-[10px] !text-black"
+            className="h-8 w-full rounded-md border border-input px-3 text-[10px]"
+            style={{ colorScheme: 'light', color: '#333', backgroundColor: 'white' }}
             data-testid="wizard-input-start-date"
           />
         </div>
         <div>
           <Label className="text-[9px] text-white/60 mb-1 block">Course End Date</Label>
-          <Input
+          <input
             type="date"
             value={data.endDate}
             onChange={(e) => updateField("endDate", e.target.value)}
-            className="h-8 !text-[10px] !text-black"
+            className="h-8 w-full rounded-md border border-input px-3 text-[10px]"
+            style={{ colorScheme: 'light', color: '#333', backgroundColor: 'white' }}
             data-testid="wizard-input-end-date"
           />
         </div>
@@ -932,21 +936,23 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, existin
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <Label className="text-[9px] text-white/50 mb-0.5 block">Due Date</Label>
-                <Input
+                <input
                   type="date"
                   value={task.dueDate}
                   onChange={(e) => updateTask(index, "dueDate", e.target.value)}
-                  className="h-7 !text-[10px] !text-black"
+                  className="h-7 w-full rounded-md border border-input px-3 text-[10px]"
+                  style={{ colorScheme: 'light', color: '#333', backgroundColor: 'white' }}
                   data-testid={`wizard-task-due-${index}`}
                 />
               </div>
               <div>
                 <Label className="text-[9px] text-white/50 mb-0.5 block">Due Time</Label>
-                <Input
+                <input
                   type="time"
                   value={task.dueTime}
                   onChange={(e) => updateTask(index, "dueTime", e.target.value)}
-                  className="h-7 !text-[10px] !text-black"
+                  className="h-7 w-full rounded-md border border-input px-3 text-[10px]"
+                  style={{ colorScheme: 'light', color: '#333', backgroundColor: 'white' }}
                   data-testid={`wizard-task-time-${index}`}
                 />
               </div>
@@ -1106,7 +1112,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, existin
       onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
-        className="rounded-xl w-[560px] max-h-[90vh] overflow-hidden flex flex-col text-white shadow-2xl [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white"
+        className="rounded-xl w-[560px] max-h-[90vh] overflow-hidden flex flex-col text-white shadow-2xl [&_*]:text-white [&_label]:text-white [&_input:not([type=date]):not([type=time])]:text-white [&_select]:text-white"
         style={{
           background: colorSettings ? `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` : 'linear-gradient(180deg, #0a0f1e 0%, #060b14 100%)',
           border: '1px solid rgba(255, 255, 255, 0.2)',
