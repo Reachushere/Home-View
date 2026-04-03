@@ -25062,7 +25062,7 @@ export default function Dashboard() {
                                     data-testid={`checkbox-time-${task.id}`}
                                   />
                                   <div style={{ flex: 1, minWidth: 0 }}>
-                                    <div style={{ fontSize: '7px', fontWeight: 400, color: 'rgba(255,255,255,0.8)', lineHeight: 1.2 }}>
+                                    <div style={{ fontSize: '8px', fontWeight: 400, color: 'rgba(255,255,255,0.8)', lineHeight: 1.2 }}>
                                       {task.eventStartTime && task.eventEndTime ? `${formatTimeTo12Hour(task.eventStartTime)} - ${formatTimeTo12Hour(task.eventEndTime)}` : format(new Date(task.dueDate), "h:mm a")}
                                     </div>
                                   </div>
@@ -25245,7 +25245,7 @@ export default function Dashboard() {
                           onClick={(e) => e.stopPropagation()}
                         />
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: '8px', fontWeight: 400, color: 'rgba(255,255,255,0.8)', lineHeight: 1.2 }}>
+                          <div style={{ fontSize: '9px', fontWeight: 400, color: 'rgba(255,255,255,0.8)', lineHeight: 1.2 }}>
                             {task.eventStartTime && task.eventEndTime ? `${formatTimeTo12Hour(task.eventStartTime)} - ${formatTimeTo12Hour(task.eventEndTime)}` : format(new Date(task.dueDate), "h:mm a")}
                           </div>
                         </div>
