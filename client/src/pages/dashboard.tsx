@@ -25045,7 +25045,7 @@ export default function Dashboard() {
                                     <div style={{
                                       background: `linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%), ${typeBarColor}`,
                                       borderBottom: `1px solid rgba(0,0,0,0.15)`,
-                                      padding: '1px 3px 1px 5px',
+                                      padding: '1px 3px 1px 3px',
                                       display: 'flex',
                                       alignItems: 'center',
                                       gap: '3px',
@@ -25234,7 +25234,7 @@ export default function Dashboard() {
                           <div style={{
                             background: `linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%), ${typeBarColor}`,
                             borderBottom: `1px solid rgba(0,0,0,0.15)`,
-                            padding: '2px 4px 2px 6px',
+                            padding: '2px 4px 2px 4px',
                             display: 'flex',
                             alignItems: 'center',
                             gap: '3px',
