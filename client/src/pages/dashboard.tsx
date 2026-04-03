@@ -21390,6 +21390,18 @@ export default function Dashboard() {
                 setIsNewCourseWizardOpen(false);
                 toast({ title: "Course added", description: `${fullName} has been added.` });
 
+                const semKeyPrefix = wizardData.semesterType === 'winter' ? 'w' : wizardData.semesterType === 'fall' ? 'f' : 'ss';
+                const semKey = `${semKeyPrefix}${wizardData.semesterYear}`;
+                const codeNorm = wizardData.courseCode.replace(/\s/g, '').toUpperCase();
+                const alreadyAssigned = Object.values(semesterCourseAssignments).flat().some(c => c.code.toUpperCase().replace(/\s/g, '') === codeNorm);
+                if (!alreadyAssigned) {
+                  const updatedAssignments = { ...semesterCourseAssignments };
+                  const semCourses = [...(updatedAssignments[semKey] || [])];
+                  semCourses.push({ code: wizardData.courseCode, name: wizardData.courseCode, fullName: wizardData.courseName, period: '' });
+                  updatedAssignments[semKey] = semCourses;
+                  saveSemesterAssignments(updatedAssignments);
+                }
+
                 startTransition(() => {
                   setSchoolCoursesOpenSource('pill');
                   startTransition(() => setIsSchoolCoursesDialogOpen(true));
