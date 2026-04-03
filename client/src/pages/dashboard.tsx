@@ -218,6 +218,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   quiz: ClipboardCheck,
   reminder: Bell,
   meeting: Users,
+  scholarship: Award,
   other: MoreHorizontal,
 };
 
@@ -231,6 +232,7 @@ const typeColors: Record<string, string> = {
   exam: "bg-red-500/20 text-red-600 dark:text-red-400",
   quiz: "bg-amber-500/20 text-amber-600 dark:text-amber-400",
   reminder: "bg-teal-500/20 text-teal-600 dark:text-teal-400",
+  scholarship: "bg-yellow-500/20 text-yellow-600 dark:text-yellow-400",
 };
 
 const calendarTypeIconColors: Record<string, string> = {
@@ -245,6 +247,7 @@ const calendarTypeIconColors: Record<string, string> = {
   quiz: '#d97706',
   reminder: '#0d9488',
   meeting: '#6366f1',
+  scholarship: '#ca8a04',
   other: '#6b7280',
 };
 
@@ -260,6 +263,7 @@ const calendarTypeBarColors: Record<string, string> = {
   quiz: 'rgb(180,160,40)',
   reminder: 'rgb(0,210,240)',
   meeting: 'rgb(80,80,240)',
+  scholarship: 'rgb(202,138,4)',
   other: 'rgb(120,130,140)',
   partnerShifts: 'rgb(100,100,180)',
 };
@@ -17740,7 +17744,7 @@ export default function Dashboard() {
                           <img src={teacherWhiteIconPath} alt="Course" className="h-3.5 w-3.5" style={{ filter: 'brightness(1)' }} />
                           Course
                         </button>
-                        {(["module", "reading", "essay", "discussion", "poll", "quiz", "exam", "project", "reminder", "meeting", "other"] as const).map(type => {
+                        {(["module", "reading", "essay", "discussion", "poll", "quiz", "exam", "project", "reminder", "meeting", "scholarship", "other"] as const).map(type => {
                           const TypeIcon = iconMap[type] || FileText;
                           const typeColors: Record<string, { bg: string; border: string; hover: string }> = {
                             reading: { bg: 'rgba(56,130,255,0.25)', border: 'rgba(56,130,255,0.55)', hover: 'rgba(56,130,255,0.35)' },
@@ -17753,6 +17757,7 @@ export default function Dashboard() {
                             quiz: { bg: 'rgba(180,160,40,0.25)', border: 'rgba(180,160,40,0.55)', hover: 'rgba(180,160,40,0.35)' },
                             reminder: { bg: 'rgba(0,210,240,0.25)', border: 'rgba(0,210,240,0.55)', hover: 'rgba(0,210,240,0.35)' },
                             meeting: { bg: 'rgba(80,80,240,0.25)', border: 'rgba(80,80,240,0.55)', hover: 'rgba(80,80,240,0.35)' },
+                            scholarship: { bg: 'rgba(202,138,4,0.25)', border: 'rgba(202,138,4,0.55)', hover: 'rgba(202,138,4,0.35)' },
                             other: { bg: 'rgba(160,170,180,0.2)', border: 'rgba(160,170,180,0.5)', hover: 'rgba(160,170,180,0.3)' },
                           };
                           const tc = typeColors[type] || { bg: 'rgba(255,255,255,0.05)', border: 'rgba(255,255,255,0.1)', hover: 'rgba(255,255,255,0.2)' };
@@ -17767,7 +17772,7 @@ export default function Dashboard() {
                               }}
                               onMouseEnter={(e) => { e.currentTarget.style.background = tc.hover; }}
                               onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = tc.bg; }}
-                              onClick={() => { setQuickAddData(p => ({ ...p, type })); setQuickAddStep(1); }}
+                              onClick={() => { if (type === 'scholarship') { setIsQuickAddOpen(false); setTimeout(() => setIsScholarshipsOpen(true), 50); } else { setQuickAddData(p => ({ ...p, type })); setQuickAddStep(1); } }}
                               data-testid={`quick-add-type-${type}`}
                             >
                               <TypeIcon className="h-3.5 w-3.5" />

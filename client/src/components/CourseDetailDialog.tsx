@@ -37,6 +37,7 @@ import {
   ArrowDown,
   Flag,
   ClipboardList,
+  Award,
 } from "lucide-react";
 import zoomLogoPath from "@assets/Zoom2_1773776262533.png";
 import wifiLogoPath from "@assets/Wifi_1773656687145.png";
@@ -56,6 +57,7 @@ const TASK_TYPE_OPTIONS = [
   { value: "project", label: "Project", icon: FileText },
   { value: "module", label: "Module", icon: BookOpen },
   { value: "class", label: "Class", icon: Video },
+  { value: "scholarship", label: "Scholarship", icon: Award },
   { value: "other", label: "Other", icon: FileText },
 ];
 
