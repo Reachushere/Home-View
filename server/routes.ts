@@ -7576,9 +7576,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       }
       if (toTranslate.length > 0) {
         const OpenAI = (await import("openai")).default;
-        const _tApiKey = process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY;
+        const _tApiKey = process.env.OPENAI_API_KEY || process.env.AI_INTEGRATIONS_OPENAI_API_KEY;
         const _tCfg: any = { apiKey: _tApiKey };
-        if (process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL) {
+        if (!process.env.OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL) {
           _tCfg.baseURL = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
         }
         const openai = new OpenAI(_tCfg);
@@ -17135,12 +17135,13 @@ document.body.removeChild(a);
       }
 
       const OpenAI = (await import('openai')).default;
-      const _apiKey = process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY;
+      const _apiKey = process.env.OPENAI_API_KEY || process.env.AI_INTEGRATIONS_OPENAI_API_KEY;
       const _cfg: any = { apiKey: _apiKey };
-      if (process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL) {
+      if (!process.env.OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL) {
         _cfg.baseURL = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
       }
       const openai = new OpenAI(_cfg);
+      console.log(`[Syllabus Parse] Using ${process.env.OPENAI_API_KEY ? 'user OPENAI_API_KEY' : 'AI_INTEGRATIONS key'}`);
 
       const prompt = `You are analyzing a university course syllabus for "${courseName}" (${courseCode || ''}).
 
@@ -17270,9 +17271,9 @@ Return ONLY the JSON object, no markdown formatting.`;
       }
 
       const OpenAI = (await import('openai')).default;
-      const _apiKey = process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY;
+      const _apiKey = process.env.OPENAI_API_KEY || process.env.AI_INTEGRATIONS_OPENAI_API_KEY;
       const _cfg: any = { apiKey: _apiKey };
-      if (process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL) {
+      if (!process.env.OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL) {
         _cfg.baseURL = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
       }
       const openai = new OpenAI(_cfg);
@@ -19154,9 +19155,9 @@ Return ONLY the JSON object, no markdown formatting.`;
       if (!code || !language) return res.status(400).json({ error: "code and language required" });
 
       const OpenAI = (await import("openai")).default;
-      const _cApiKey = process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY;
+      const _cApiKey = process.env.OPENAI_API_KEY || process.env.AI_INTEGRATIONS_OPENAI_API_KEY;
       const _cCfg: any = { apiKey: _cApiKey };
-      if (process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL) {
+      if (!process.env.OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL) {
         _cCfg.baseURL = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
       }
       const openai = new OpenAI(_cCfg);
