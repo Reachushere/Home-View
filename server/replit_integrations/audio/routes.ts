@@ -1,12 +1,17 @@
 import express, { type Express, type Request, type Response } from "express";
+import OpenAI from "openai";
 import { chatStorage } from "../chat/storage";
 import { openai, speechToText, ensureCompatibleFormat } from "./client";
 
-// Body parser with 50MB limit for audio payloads
 const audioBodyParser = express.json({ limit: "50mb" });
 
+function getPersonalOpenAI(): OpenAI | null {
+  const key = process.env.OPENAI_API_KEY;
+  if (!key) return null;
+  return new OpenAI({ apiKey: key });
+}
+
 export function registerAudioRoutes(app: Express): void {
-  // Get all conversations
   app.get("/api/conversations", async (req: Request, res: Response) => {
     try {
       const conversations = await chatStorage.getAllConversations();
@@ -17,7 +22,6 @@ export function registerAudioRoutes(app: Express): void {
     }
   });
 
-  // Get single conversation with messages
   app.get("/api/conversations/:id", async (req: Request, res: Response) => {
     try {
       const id = parseInt(String(req.params.id));
@@ -33,7 +37,6 @@ export function registerAudioRoutes(app: Express): void {
     }
   });
 
-  // Create new conversation
   app.post("/api/conversations", async (req: Request, res: Response) => {
     try {
       const { title } = req.body;
@@ -45,7 +48,6 @@ export function registerAudioRoutes(app: Express): void {
     }
   });
 
-  // Delete conversation
   app.delete("/api/conversations/:id", async (req: Request, res: Response) => {
     try {
       const id = parseInt(String(req.params.id));
@@ -57,9 +59,6 @@ export function registerAudioRoutes(app: Express): void {
     }
   });
 
-  // Send voice message and get streaming audio response
-  // Auto-detects audio format and converts WebM/MP4/OGG to WAV
-  // Uses gpt-4o-mini-transcribe for STT, gpt-audio for voice response
   app.post("/api/conversations/:id/messages", audioBodyParser, async (req: Request, res: Response) => {
     try {
       const conversationId = parseInt(String(req.params.id));
@@ -69,38 +68,54 @@ export function registerAudioRoutes(app: Express): void {
         return res.status(400).json({ error: "Audio data (base64) is required" });
       }
 
-      // 1. Auto-detect format and convert to OpenAI-compatible format
       const rawBuffer = Buffer.from(audio, "base64");
       const { buffer: audioBuffer, format: inputFormat } = await ensureCompatibleFormat(rawBuffer);
 
-      // 2. Transcribe user audio
       const userTranscript = await speechToText(audioBuffer, inputFormat);
 
-      // 3. Save user message
       await chatStorage.createMessage(conversationId, "user", userTranscript);
 
-      // 4. Get conversation history
       const existingMessages = await chatStorage.getMessagesByConversation(conversationId);
       const chatHistory = existingMessages.map((m) => ({
         role: m.role as "user" | "assistant",
         content: m.content,
       }));
 
-      // 5. Set up SSE
       res.setHeader("Content-Type", "text/event-stream");
       res.setHeader("Cache-Control", "no-cache");
       res.setHeader("Connection", "keep-alive");
 
       res.write(`data: ${JSON.stringify({ type: "user_transcript", data: userTranscript })}\n\n`);
 
-      // 6. Stream audio response from gpt-audio
-      const stream = await openai.chat.completions.create({
-        model: "gpt-audio",
-        modalities: ["text", "audio"],
-        audio: { voice, format: "pcm16" },
-        messages: chatHistory,
-        stream: true,
-      });
+      let stream: any;
+      try {
+        stream = await openai.chat.completions.create({
+          model: "gpt-audio",
+          modalities: ["text", "audio"],
+          audio: { voice, format: "pcm16" },
+          messages: chatHistory,
+          stream: true,
+        });
+      } catch (err: any) {
+        const is429 = err?.status === 429 || err?.message?.includes('429') || err?.message?.includes('Rate limit');
+        if (is429) {
+          const personal = getPersonalOpenAI();
+          if (personal) {
+            console.log(`[Audio] Replit OpenAI rate limited — falling back to personal OpenAI`);
+            stream = await personal.chat.completions.create({
+              model: "gpt-4o-mini-audio-preview",
+              modalities: ["text", "audio"],
+              audio: { voice, format: "pcm16" },
+              messages: chatHistory,
+              stream: true,
+            });
+          } else {
+            throw err;
+          }
+        } else {
+          throw err;
+        }
+      }
 
       let assistantTranscript = "";
 
@@ -118,7 +133,6 @@ export function registerAudioRoutes(app: Express): void {
         }
       }
 
-      // 7. Save assistant message
       await chatStorage.createMessage(conversationId, "assistant", assistantTranscript);
 
       res.write(`data: ${JSON.stringify({ type: "done", transcript: assistantTranscript })}\n\n`);
