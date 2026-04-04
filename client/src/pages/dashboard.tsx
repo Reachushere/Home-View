@@ -24982,7 +24982,7 @@ export default function Dashboard() {
                                   title={`Prep Day - ${task.title}`}
                                 >
                                   {(() => { const totalPrepDays = differenceInCalendarDays(prepDueDate, prepStartDate); const showCount = totalPrepDays > 3; const daysLeft = showCount ? differenceInCalendarDays(prepDueDate, cellDate) : 0; const prepUrgent = showCount && daysLeft <= 2; return <span className="flex flex-col items-center justify-center whitespace-nowrap font-bold shrink-0" style={{ backgroundColor: course.darkColor, color: '#ffffff', letterSpacing: showCount ? '0.5px' : '1px', padding: showCount ? '0px 3px 0 2px' : '1px 3px 0 2px', fontSize: showCount ? '7px' : '8px', WebkitTextStroke: '0', alignSelf: 'stretch', lineHeight: showCount ? '1.1' : undefined, marginTop: showCount ? '-1px' : undefined, minWidth: '30px' }}><span style={{ marginTop: showCount ? '1px' : undefined, fontFamily: "system-ui, sans-serif", fontWeight: 500 }}>PREP</span>{showCount && <span style={{ color: prepUrgent ? '#FFFF00' : '#e0e0e0', fontSize: '8px', fontWeight: 550, WebkitTextStroke: '0', letterSpacing: '0.3px', lineHeight: '1', marginTop: '0px', fontFamily: "system-ui, sans-serif" }}>{daysLeft}d</span>}</span>; })()}
-                                  <span className="truncate pl-[3px] py-0.5 flex-1 min-w-0" style={{ fontSize: '9px', transform: 'translateY(1px)', color: '#000000', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", fontWeight: 500 }}>{task.title}</span>
+                                  <span className="truncate pl-[3px] py-0.5 flex-1 min-w-0" style={{ fontSize: '9px', transform: 'translateY(1px)', color: '#000000', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", fontWeight: 500 }}>{(task.title || '').replace(/[\[\]]/g, '')}</span>
                                 </div>
                               </div>
                             );
@@ -25040,7 +25040,7 @@ export default function Dashboard() {
                                 style={{ fontWeight: 400, fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textShadow: 'none', WebkitTextStroke: '0', letterSpacing: '0.1px' }}
                                 onClick={() => setEditingTask(task)}
                               >
-                                {task.title?.replace(/^\[?[A-Z]{2,5}\d{3}\s*-?\s*/, '').replace(/^\]\s*/, '').replace(/^-\s*/, '') || task.title}
+                                {(() => { const stripped = (task.title || '').replace(/[\[\]]/g, '').replace(/^[A-Z]{2,5}\d{3}\s*-\s*/, '').replace(/^-\s*/, ''); return stripped || task.title?.replace(/[\[\]]/g, '') || task.title; })()}
                               </span>
                               {dueAttachmentLink && !dueModulePdfUrl && (
                                 <a href={dueAttachmentLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={dueAttachmentLink} data-testid={`att-link-icon-task-${task.id}`}>
@@ -25399,7 +25399,7 @@ export default function Dashboard() {
                                   className={`truncate text-black flex-1 min-w-0 cursor-pointer hover:opacity-80 ${task.isCompleted ? "line-through" : ""}`}
                                   style={{ fontWeight: 400 }}
                                 >
-                                  {task.title}
+                                  {(task.title || '').replace(/[\[\]]/g, '')}
                                 </span>
                                 {task.referenceLink && (
                                   <a href={task.referenceLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={task.referenceLink} data-testid={`link-icon-other-${task.id}`}>
@@ -25539,7 +25539,7 @@ export default function Dashboard() {
                               className={`cursor-pointer hover:opacity-80 truncate flex-1 ${task.isCompleted ? "line-through" : ""}`}
                               style={{ fontWeight: 400 }}
                             >
-                              {task.title}
+                              {(task.title || '').replace(/[\[\]]/g, '')}
                             </span>
                             {task.referenceLink && (
                               <a href={task.referenceLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={task.referenceLink} data-testid={`link-icon-allday-${task.id}`}>
@@ -27159,7 +27159,7 @@ export default function Dashboard() {
                                   }}
                                   title={task.title}
                                 >
-                                  {task.title}
+                                  {(task.title || '').replace(/[\[\]]/g, '')}
                                 </div>
                               );
                             })}
