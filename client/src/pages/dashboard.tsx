@@ -15690,7 +15690,12 @@ export default function Dashboard() {
       </div>
 
       {/* D2L Announcement Ticker - fixed at very top of page, matches bottom news ticker style */}
-      {weatherAlerts.length > 0 && <div style={{ position: 'fixed', top: '37px', left: 0, right: 0, height: '3px', backgroundColor: '#ff0000', zIndex: 112, pointerEvents: 'none' }} />}
+      {weatherAlerts.length > 0 && (
+        <>
+          <div style={{ position: 'fixed', top: '37px', left: 0, width: 'calc(50% - 70px - 52px)', height: '3px', backgroundColor: '#ff0000', zIndex: 112, pointerEvents: 'none' }} />
+          <div style={{ position: 'fixed', top: '37px', left: 'calc(50% + 63px + 38px)', right: 0, height: '3px', backgroundColor: '#ff0000', zIndex: 112, pointerEvents: 'none' }} />
+        </>
+      )}
       <div className="fixed left-0 right-0 overflow-hidden flex" style={{ top: 0, height: '38px', zIndex: 111, backgroundColor: '#000000', background: 'linear-gradient(90deg, #000000 0%, #14141e 50%, #000000 100%)', borderBottom: '1px solid rgba(255,255,255,0.15)' }} data-testid="announcement-ticker">
         <div className="flex-shrink-0 flex items-center justify-center cursor-pointer" style={{ height: '38px', width: 'auto' }} onClick={() => setTickerDialogOpen(true)} data-testid="button-ticker-manage">
           <img src={d2lTickerLabel} alt="D2L" style={{ height: '38px', width: 'auto', objectFit: 'contain' }} />
@@ -17432,7 +17437,7 @@ export default function Dashboard() {
       {/* Weather / Alert labels on D2L ticker, flanking center tab */}
       {weatherAlerts.length > 0 && (
         <>
-          <div className="fixed z-[9999]" style={{ top: '25px', left: '50%', transform: 'translateX(calc(-50% - 68px))', pointerEvents: 'none' }} data-testid="weather-alert-label-left">
+          <div className="fixed z-[9999]" style={{ top: '25px', left: '50%', transform: 'translateX(calc(-50% - 70px))', pointerEvents: 'none' }} data-testid="weather-alert-label-left">
             <span style={{ color: '#ffffff', fontSize: '12px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px' }}>WEATHER</span>
           </div>
           <div className="fixed z-[9999]" style={{ top: '25px', left: '50%', transform: 'translateX(calc(-50% + 63px))', pointerEvents: 'none' }} data-testid="weather-alert-label-right">
