@@ -28238,17 +28238,7 @@ export default function Dashboard() {
 
             return rows;
           })()}
-          <div className="flex-1 flex flex-col" style={{ paddingLeft: '0px', paddingRight: '0px', marginTop: (() => {
-            const upcomingTop = calendarBorderTop || (calendarTop + 15);
-            if (courseRowRects.length > 0) {
-              const lastRect = courseRowRects[courseRowRects.length - 1];
-              if (lastRect) {
-                const otherTop = lastRect.top + lastRect.height - upcomingTop;
-                return `${Math.max(0, otherTop)}px`;
-              }
-            }
-            return '0px';
-          })(), flex: 1, minHeight: 0, paddingBottom: '0px', overflow: 'hidden', position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column' as const }}>
+          <div className="flex-1 flex flex-col" style={{ paddingLeft: '0px', paddingRight: '0px', marginTop: '0px', flex: 1, minHeight: 0, paddingBottom: '0px', overflow: 'hidden', position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column' as const }}>
           <div style={{ width: '100%', height: '15px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', flexShrink: 0 }}>
             <span style={{ fontSize: '10px', fontWeight: 500, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
           </div>
