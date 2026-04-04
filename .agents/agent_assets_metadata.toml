@@ -1,5 +1,10 @@
 uploads = []
-generated = []
+
+[[generated]]
+id = "U3Se8yOmtR3Nepvvqn9bW"
+uri = "file://attached_assets/selby_building_night.png"
+type = "image"
+title = "The Selby building night"
 
 [[outputs]]
 id = "YFf1AFzLkqTG8aZXkvxoF"
