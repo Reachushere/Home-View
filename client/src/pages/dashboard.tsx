@@ -28573,7 +28573,7 @@ export default function Dashboard() {
                     position: 'absolute',
                     top: `${otherTop}px`,
                     left: 0,
-                    right: 0,
+                    width: `${effectiveDividerPct}%`,
                     height: `${otherRowHeight}px`,
                     zIndex: 41,
                     borderTop: `1.5px dotted ${otherRowColors.borderColor}`,
@@ -28585,7 +28585,7 @@ export default function Dashboard() {
                     scrollbarWidth: 'none',
                     padding: '0',
                   }}>
-                    <div style={{ width: `${effectiveDividerPct}%`, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', padding: '0 4px', background: (() => { const stops = otherRowColors.labelStops ? (() => { try { return JSON.parse(otherRowColors.labelStops); } catch { return []; } })() : []; const allStops = [{ position: 0, color: otherRowColors.labelStart }, ...stops, { position: 100, color: otherRowColors.labelEnd }]; return `linear-gradient(180deg, ${allStops.map((s: any) => `${s.color} ${s.position}%`).join(', ')})`; })() }}>
+                    <div style={{ width: '30%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', padding: '0 4px', background: (() => { const stops = otherRowColors.labelStops ? (() => { try { return JSON.parse(otherRowColors.labelStops); } catch { return []; } })() : []; const allStops = [{ position: 0, color: otherRowColors.labelStart }, ...stops, { position: 100, color: otherRowColors.labelEnd }]; return `linear-gradient(180deg, ${allStops.map((s: any) => `${s.color} ${s.position}%`).join(', ')})`; })() }}>
                       <span className="text-[8px] font-[785] uppercase tracking-wide" style={{ color: '#ffffff', marginLeft: '2px' }}>Other</span>
                     </div>
                     <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '1px 6px 0px 6px', overflowY: 'auto', scrollbarWidth: 'none', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}
