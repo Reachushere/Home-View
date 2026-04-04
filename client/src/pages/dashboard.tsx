@@ -23833,14 +23833,77 @@ export default function Dashboard() {
                   return null;
                 })(effectiveWCode);
                 const desc = effectiveWCode !== undefined ? (WMO_SHORT[effectiveWCode] || '') : '';
+                const todayDate = startOfDayET(new Date());
+                const dayDate = startOfDayET(day);
+                const diffDays = Math.round((dayDate.getTime() - todayDate.getTime()) / (1000 * 60 * 60 * 24));
+                const showForecastWeather = !isPast && diffDays >= 0 && effectiveWCode !== undefined;
+                const fwSkyBg = showForecastWeather ? (() => {
+                  const wc = effectiveWCode!;
+                  if (wc >= 95) return 'linear-gradient(180deg, #1a1a2e 0%, #2d2d44 50%, #3a3a50 100%)';
+                  if (wc >= 71 && wc <= 77) return 'linear-gradient(180deg, #4a5060 0%, #6a7080 50%, #8a90a0 100%)';
+                  if (wc >= 85 && wc <= 86) return 'linear-gradient(180deg, #3a4050 0%, #5a6070 50%, #7a8090 100%)';
+                  if ((wc >= 61 && wc <= 67) || (wc >= 80 && wc <= 82)) return 'linear-gradient(180deg, #3a4a5a 0%, #4a5a6a 50%, #5a6a7a 100%)';
+                  if (wc >= 51 && wc <= 55) return 'linear-gradient(180deg, #4a5a68 0%, #5a6a78 50%, #6a7a88 100%)';
+                  if (wc >= 45 && wc <= 48) return 'linear-gradient(180deg, #5a5a6a 0%, #7a7a8a 100%)';
+                  if (wc === 3) return 'linear-gradient(180deg, #4a5a6a 0%, #6a7a8a 100%)';
+                  if (wc === 2) return 'linear-gradient(180deg, #2a5a9a 0%, #4a8ac8 50%, #7ab8e0 100%)';
+                  return 'linear-gradient(180deg, #2a6aaa 0%, #4a9ad8 50%, #7ac0e8 100%)';
+                })() : null;
+                const fwEffectsHtml = showForecastWeather ? (() => {
+                  const wc = effectiveWCode!;
+                  if (wc >= 95) {
+                    const drops = Array.from({ length: 8 }, (_, i) => {
+                      const left = (i * 37 + 13) % 100;
+                      const delay = ((i * 0.13) % 0.8).toFixed(2);
+                      return `<div style="position:absolute;left:${left}%;top:-2px;width:1px;height:5px;background:rgba(180,190,220,0.5);animation:rainDrop 0.4s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                    }).join('');
+                    return drops;
+                  }
+                  if (wc >= 71 && wc <= 77) {
+                    return Array.from({ length: 8 }, (_, i) => {
+                      const left = (i * 23 + 5) % 100;
+                      const delay = ((i * 0.2) % 2).toFixed(2);
+                      const size = 2 + (i % 2);
+                      return `<div style="position:absolute;left:${left}%;top:-2px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.9);border-radius:50%;animation:snowFall 2s ${delay}s linear infinite"></div>`;
+                    }).join('');
+                  }
+                  if (wc >= 85 && wc <= 86) {
+                    return Array.from({ length: 10 }, (_, i) => {
+                      const left = (i * 23 + 5) % 100;
+                      const delay = ((i * 0.2) % 2).toFixed(2);
+                      const size = 2 + (i % 2);
+                      return `<div style="position:absolute;left:${left}%;top:-2px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.9);border-radius:50%;animation:snowFall ${1.5 + (i % 2)}s ${delay}s linear infinite"></div>`;
+                    }).join('');
+                  }
+                  if ((wc >= 61 && wc <= 67) || (wc >= 80 && wc <= 82)) {
+                    return Array.from({ length: 8 }, (_, i) => {
+                      const left = (i * 23 + 5) % 100;
+                      const delay = ((i * 0.14) % 1.2).toFixed(2);
+                      return `<div style="position:absolute;left:${left}%;top:-2px;width:1px;height:5px;background:rgba(200,210,230,0.6);animation:rainDrop 0.6s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                    }).join('');
+                  }
+                  if (wc >= 51 && wc <= 55) {
+                    return Array.from({ length: 6 }, (_, i) => {
+                      const left = (i * 29 + 7) % 100;
+                      const delay = ((i * 0.17) % 1.2).toFixed(2);
+                      return `<div style="position:absolute;left:${left}%;top:-2px;width:1px;height:4px;background:rgba(200,210,230,0.4);animation:rainDrop 1s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                    }).join('');
+                  }
+                  return '';
+                })() : '';
                 return (
                   <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : 1 }} data-testid={`weather-above-${dateStr}`}>
+                    {showForecastWeather && fwSkyBg && (
+                      <div className="absolute inset-0 z-0" style={{ background: fwSkyBg, overflow: 'hidden', pointerEvents: 'none', opacity: isTodayForecast ? 1 : 0.7 }}>
+                        {fwEffectsHtml && <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }} dangerouslySetInnerHTML={{ __html: fwEffectsHtml }} />}
+                      </div>
+                    )}
                     {isTodayForecast && weatherAlerts.length > 0 && (
                       <div className="absolute inset-0 weather-alert-box-pulse" style={{ backgroundColor: 'rgb(255,0,0)', left: '1px', right: '-2px' }} />
                     )}
                     {dayForecast && (
                       <span className="text-[11px] text-white/90 whitespace-nowrap leading-none font-medium relative z-10 inline-flex items-center gap-[2px]" style={{ letterSpacing: '-0.2px' }}>
-                        {wIconEl} {afterSunrise ? `${Math.round(weatherData!.temp)}° ${desc}` : `${Math.round(dayForecast.low)}°/${Math.round(dayForecast.high)}° ${desc}`}
+                        {afterSunrise ? `${Math.round(weatherData!.temp)}° ${desc}` : `${Math.round(dayForecast.low)}°/${Math.round(dayForecast.high)}° ${desc}`}
                       </span>
                     )}
                   </div>
@@ -24159,7 +24222,7 @@ export default function Dashboard() {
                               </>
                             );
                           })()}
-                          {!isToday && weatherData?.daily && (() => {
+                          {false && !isToday && weatherData?.daily && (() => {
                             const todayDate = startOfDayET(new Date());
                             const dayDate = startOfDayET(day);
                             const diffDays = Math.round((dayDate.getTime() - todayDate.getTime()) / (1000 * 60 * 60 * 24));
