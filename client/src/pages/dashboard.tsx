@@ -24316,7 +24316,7 @@ export default function Dashboard() {
                                 </div>
                                 {weatherEffectsHtml && <div className="absolute left-0 right-0 bottom-0 z-[11]" style={{ top: 0, overflow: 'hidden', pointerEvents: 'none' }} dangerouslySetInnerHTML={{ __html: weatherEffectsHtml }} />}
 
-                                <div className="absolute right-0 text-center z-20" style={{ padding: '0', top: '7px', left: '15px', overflow: 'hidden', pointerEvents: 'none' }} data-testid="today-full-date">
+                                <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '7px', paddingLeft: '15px', overflow: 'hidden', pointerEvents: 'none' }} data-testid="today-full-date">
                                   <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 4px' }}>
                                     {`Week ${selectedWeek}`}
                                   </span>
