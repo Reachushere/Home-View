@@ -3202,6 +3202,200 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
+  // POST /api/tasks/essay-template - Copy & customize essay template from OneDrive for a new essay task
+  app.post("/api/tasks/essay-template", async (req, res) => {
+    try {
+      const { taskId, assignmentName, courseCode, courseName, dueDate } = req.body;
+      if (!taskId || !assignmentName || !courseCode) {
+        return res.status(400).json({ error: "taskId, assignmentName, and courseCode are required" });
+      }
+
+      let professorName = "";
+      let professorEmail = "";
+      const activeSemesterForProf = await storage.getActiveSemesterSettings();
+      if (activeSemesterForProf) {
+        for (let i = 1; i <= 7; i++) {
+          const code = String(activeSemesterForProf[`course${i}Code` as keyof typeof activeSemesterForProf] || "");
+          if (code.toUpperCase() === courseCode.toUpperCase()) {
+            professorName = String(activeSemesterForProf[`course${i}Professor` as keyof typeof activeSemesterForProf] || "");
+            professorEmail = String(activeSemesterForProf[`course${i}ProfessorEmail` as keyof typeof activeSemesterForProf] || "");
+            break;
+          }
+        }
+      }
+
+      const PizZip = (await import("pizzip")).default;
+      const Docxtemplater = (await import("docxtemplater")).default;
+      const { format } = await import("date-fns");
+
+      const templatePath = "/School/1. TMU/Courses/Essay Template.docx";
+      let templateItem: any;
+      try {
+        templateItem = await getOneDriveItemByPath(templatePath);
+      } catch (e) {
+        return res.status(404).json({ error: "Essay Template.docx not found at " + templatePath });
+      }
+
+      const client = await (await import("./onedrive")).getOneDriveClient();
+      const contentStream = await client.api(`/me/drive/items/${templateItem.id}/content`).get();
+      let fileBuffer: Buffer;
+      if (Buffer.isBuffer(contentStream)) {
+        fileBuffer = contentStream;
+      } else if (contentStream instanceof ArrayBuffer) {
+        fileBuffer = Buffer.from(contentStream);
+      } else if (contentStream.arrayBuffer) {
+        fileBuffer = Buffer.from(await contentStream.arrayBuffer());
+      } else if (contentStream.pipe) {
+        const chunks: Buffer[] = [];
+        for await (const chunk of contentStream) {
+          chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+        }
+        fileBuffer = Buffer.concat(chunks);
+      } else {
+        fileBuffer = Buffer.from(contentStream);
+      }
+
+      const zip = new PizZip(fileBuffer);
+      const doc = new Docxtemplater(zip, {
+        paragraphLoop: true,
+        linebreaks: true,
+        delimiters: { start: "{{", end: "}}" },
+      });
+
+      const dueDateFormatted = dueDate ? format(new Date(dueDate), "MMMM d, yyyy") : "TBD";
+      const fullCourseLine = courseName ? `${courseCode} \u2013 ${courseName}` : courseCode;
+
+      const xmlFiles = ["word/document.xml", "word/header1.xml", "word/header2.xml", "word/header3.xml", "word/footer1.xml", "word/footer2.xml", "word/footer3.xml"];
+
+      const replaceInText = (text: string): string => {
+        let t = text;
+        t = t.replace(/Assignment 2 – Municipal Issues Policy Paper/g, assignmentName);
+        t = t.replace(/Assignment 2 \u2013 Municipal Issues Policy Paper/g, assignmentName);
+        t = t.replace(/Representation, Council Size, and Democratic Participation in Canadian Municipal Governance/g, "INSERT TITLE HERE");
+        t = t.replace(/CPPA122 – Local Government and Politics/g, fullCourseLine);
+        t = t.replace(/CPPA122 \u2013 Local Government and Politics/g, fullCourseLine);
+        t = t.replace(/Professor Caryl Arundel/g, professorName || "Professor TBD");
+        t = t.replace(/carundel@torontomu\.ca/g, professorEmail || "email@torontomu.ca");
+        t = t.replace(/March 30, 2026/g, dueDateFormatted);
+        return t;
+      };
+
+      const mergeAndReplace = (xml: string): string => {
+        return xml.replace(/<w:p\b[^>]*>[\s\S]*?<\/w:p>/g, (paragraph) => {
+          const textParts: { fullMatch: string; text: string }[] = [];
+          const runRegex = /<w:r\b[^>]*>[\s\S]*?<\/w:r>/g;
+          let runMatch;
+          while ((runMatch = runRegex.exec(paragraph)) !== null) {
+            const textMatch = runMatch[0].match(/<w:t[^>]*>([\s\S]*?)<\/w:t>/);
+            if (textMatch) {
+              textParts.push({ fullMatch: runMatch[0], text: textMatch[1] });
+            }
+          }
+          if (textParts.length === 0) return paragraph;
+
+          const combined = textParts.map(p => p.text).join("");
+          const replaced = replaceInText(combined);
+
+          if (combined === replaced) return paragraph;
+
+          let result = paragraph;
+          for (let i = 0; i < textParts.length; i++) {
+            if (i === 0) {
+              result = result.replace(
+                textParts[i].fullMatch,
+                textParts[i].fullMatch.replace(
+                  /<w:t[^>]*>[\s\S]*?<\/w:t>/,
+                  `<w:t xml:space="preserve">${replaced}</w:t>`
+                )
+              );
+            } else {
+              result = result.replace(textParts[i].fullMatch, "");
+            }
+          }
+          return result;
+        });
+      };
+
+      for (const xmlFile of xmlFiles) {
+        const f = zip.file(xmlFile);
+        if (f) {
+          const content = f.asText();
+          const modified = mergeAndReplace(content);
+          if (modified !== content) {
+            zip.file(xmlFile, modified);
+          }
+        }
+      }
+      const outputBuffer = Buffer.from(zip.generate({ type: "nodebuffer" }));
+
+      const activeSemester = await storage.getActiveSemesterSettings();
+      if (!activeSemester) {
+        return res.status(400).json({ error: "No active semester found" });
+      }
+      const semType = (() => {
+        const t = (activeSemester.semesterType || "winter").toLowerCase();
+        if (t.includes("spring") || t.includes("summer")) return "Spring & Summer";
+        if (t.includes("fall")) return "Fall";
+        return "Winter";
+      })();
+      const year = activeSemester.semesterStartDate
+        ? new Date(activeSemester.semesterStartDate).getFullYear()
+        : new Date().getFullYear();
+
+      let courseFullName = "";
+      for (let i = 1; i <= 7; i++) {
+        const code = activeSemester[`course${i}Code` as keyof typeof activeSemester];
+        const name = activeSemester[`course${i}Name` as keyof typeof activeSemester];
+        if (String(code || "").toUpperCase() === courseCode.toUpperCase()) {
+          courseFullName = `${code} - ${name}`;
+          break;
+        }
+      }
+      if (!courseFullName) courseFullName = courseCode;
+
+      const courseFolderPath = `/School/1. TMU/Courses/${year}/${semType}/${courseFullName}`;
+
+      try {
+        await createOneDriveFolder(courseFolderPath, "Essays");
+      } catch (e: any) {
+        if (!e.message?.includes("nameAlreadyExists") && e.statusCode !== 409) {
+          console.log("Essays folder may already exist or creation note:", e.message);
+        }
+      }
+
+      const essaysFolderPath = `${courseFolderPath}/Essays`;
+      const sanitizedName = assignmentName.replace(/[<>:"/\\|?*]/g, "_").trim();
+      const fileName = `BrynKaiHendricks_${sanitizedName}.docx`;
+
+      const uploaded = await (await import("./onedrive")).uploadOneDriveFile(
+        essaysFolderPath,
+        fileName,
+        outputBuffer,
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      );
+
+      const oneDrivePath = `${essaysFolderPath}/${fileName}`;
+      const attachmentJson = JSON.stringify({ url: oneDrivePath, name: fileName, type: "onedrive" });
+
+      const existingTask = await storage.getTask(taskId);
+      const currentAttachments = existingTask?.attachments || [];
+      await storage.updateTask(taskId, {
+        attachments: [...currentAttachments, attachmentJson],
+      });
+
+      res.json({
+        success: true,
+        fileName,
+        oneDrivePath,
+        webUrl: uploaded.webUrl,
+        fileId: uploaded.id,
+      });
+    } catch (err: any) {
+      console.error("Error creating essay template:", err);
+      res.status(500).json({ error: "Failed to create essay template: " + (err.message || err) });
+    }
+  });
+
   // POST /api/tasks/auto-create-file-tasks - Auto-create tasks for module/reading files without corresponding tasks
   app.post("/api/tasks/auto-create-file-tasks", async (req, res) => {
     try {
