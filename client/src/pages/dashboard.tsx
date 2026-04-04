@@ -24316,7 +24316,7 @@ export default function Dashboard() {
                                 </div>
                                 {weatherEffectsHtml && <div className="absolute left-0 right-0 bottom-0 z-[11]" style={{ top: 0, overflow: 'hidden', pointerEvents: 'none' }} dangerouslySetInnerHTML={{ __html: weatherEffectsHtml }} />}
 
-                                <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '7px', overflow: 'hidden', pointerEvents: 'none' }} data-testid="today-full-date">
+                                <div className="absolute right-0 text-center z-20" style={{ padding: '0', top: '7px', left: '15px', overflow: 'hidden', pointerEvents: 'none' }} data-testid="today-full-date">
                                   <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 4px' }}>
                                     {`Week ${selectedWeek}`}
                                   </span>
@@ -24464,15 +24464,15 @@ export default function Dashboard() {
                               <div className="absolute z-20 flex flex-col" style={{ top: 1, bottom: 1, left: 1, width: '46px', gap: '1px', pointerEvents: 'none' }} data-testid="today-hourly-forecast">
                                 {forecasts.map((fc, i) => (
                                   <div key={i} className="flex items-center justify-center gap-[3px]" style={{ flex: 1, background: '#ffffff', borderRadius: '3px', padding: '0 3px', minHeight: 0 }} data-testid={`hourly-forecast-${fc.offset}h`}>
-                                    <span style={{ fontSize: '8px', color: 'rgba(0,0,0,0.5)', fontWeight: 600, lineHeight: 1 }}>{fc.offset}h</span>
-                                    <span style={{ fontSize: '10px', lineHeight: 1 }}>{wmoMini[fc.code] || '🌤'}</span>
+                                    <span style={{ fontSize: '8px', color: '#000000', fontWeight: 700, lineHeight: 1 }}>{fc.offset}h</span>
+                                    <span style={{ fontSize: '13px', lineHeight: 1 }}>{wmoMini[fc.code] || '🌤'}</span>
                                     <span style={{ fontSize: '9px', color: '#000000', fontWeight: 700, lineHeight: 1 }}>{fc.temp}°</span>
                                   </div>
                                 ))}
                               </div>
                             );
                           })()}
-                          <div className="flex items-center gap-1.5" style={{ marginTop: '13px', position: 'relative', zIndex: 15 }}>
+                          <div className="flex items-center gap-1.5" style={{ marginTop: '13px', marginLeft: '15px', position: 'relative', zIndex: 15 }}>
                             {isToday ? (() => {
                               const now = new Date();
                               const todayPct = Math.min(100, Math.max(0, (now.getHours() * 60 + now.getMinutes()) / 1440 * 100));
