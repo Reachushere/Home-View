@@ -2520,6 +2520,14 @@ input[type="date"]::-webkit-datetime-edit-year-field {
   animation: countdownBarPulse 1.5s ease-in-out infinite;
 }
 
+.side-tab-hover-left:hover {
+  left: 0px !important;
+}
+
+.side-tab-hover-right:hover {
+  right: 0px !important;
+}
+
 .section-dim > *:not(.no-dim) {
   opacity: 0.45;
 }

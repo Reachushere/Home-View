@@ -17869,13 +17869,14 @@ export default function Dashboard() {
       </a>
       {/* Left binder tab - Add */}
       <div
-        className={`fixed z-[10002] cursor-pointer${tabBounceEnabled ? ' left-tab-bounce' : ''}`}
+        className={`fixed z-[10002] cursor-pointer side-tab-hover-left${tabBounceEnabled ? ' left-tab-bounce' : ''}`}
         style={{
           left: '-10px',
           top: '50vh',
           transform: 'translateY(-50%)',
           pointerEvents: 'auto',
           display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : undefined,
+          transition: 'left 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
         }}
         onClick={() => {
           setIsAddChooserOpen(true);
@@ -17891,13 +17892,14 @@ export default function Dashboard() {
 
       {/* Right binder tab - Projects */}
       <div
-        className={`fixed z-[10002] cursor-pointer${tabBounceEnabled ? ' right-tab-bounce' : ''}`}
+        className={`fixed z-[10002] cursor-pointer side-tab-hover-right${tabBounceEnabled ? ' right-tab-bounce' : ''}`}
         style={{
           right: '-10px',
           top: '50vh',
           transform: 'translateY(-50%)',
           pointerEvents: 'auto',
           display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : undefined,
+          transition: 'right 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
         }}
         onClick={() => {
           window.location.href = '/projects';
