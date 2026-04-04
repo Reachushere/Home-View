@@ -2394,30 +2394,39 @@ export default function Dashboard() {
       }
       setIsVoiceListening(false);
       const text = voiceFinalTextRef.current;
-      if (text && voiceTargetRef.current) {
+      if (text && voiceTargetRef.current && voiceTargetRef.current.isConnected) {
         const el = voiceTargetRef.current;
         el.focus();
-        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
-          el.tagName === 'TEXTAREA' ? window.HTMLTextAreaElement.prototype : window.HTMLInputElement.prototype,
-          'value'
-        )?.set;
-        const start = el.selectionStart ?? el.value.length;
-        const end = el.selectionEnd ?? el.value.length;
-        const newValue = el.value.substring(0, start) + text + el.value.substring(end);
-        if (nativeInputValueSetter) {
-          nativeInputValueSetter.call(el, newValue);
-        } else {
-          el.value = newValue;
+        try {
+          const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+            el.tagName === 'TEXTAREA' ? window.HTMLTextAreaElement.prototype : window.HTMLInputElement.prototype,
+            'value'
+          )?.set;
+          const start = el.selectionStart ?? el.value.length;
+          const end = el.selectionEnd ?? el.value.length;
+          const newValue = el.value.substring(0, start) + text + el.value.substring(end);
+          if (nativeInputValueSetter) {
+            nativeInputValueSetter.call(el, newValue);
+          } else {
+            el.value = newValue;
+          }
+          el.selectionStart = el.selectionEnd = start + text.length;
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+          el.dispatchEvent(new Event('change', { bubbles: true }));
+          toast({ title: 'Voice inserted', description: text.length > 60 ? text.substring(0, 60) + '...' : text });
+        } catch (err) {
+          console.error('[Voice] Insert failed:', err);
+          navigator.clipboard?.writeText(text);
+          toast({ title: 'Copied to clipboard instead', description: text.length > 60 ? text.substring(0, 60) + '...' : text });
         }
-        el.selectionStart = el.selectionEnd = start + text.length;
-        el.dispatchEvent(new Event('input', { bubbles: true }));
-        el.dispatchEvent(new Event('change', { bubbles: true }));
       } else if (text) {
         navigator.clipboard?.writeText(text).then(() => {
-          toast({ title: 'Copied to clipboard', description: text.length > 80 ? text.substring(0, 80) + '...' : text });
+          toast({ title: 'No text field selected — copied to clipboard', description: text.length > 80 ? text.substring(0, 80) + '...' : text });
         }).catch(() => {
-          toast({ title: 'Voice transcript', description: text });
+          toast({ title: 'Voice transcript (no field targeted)', description: text });
         });
+      } else {
+        toast({ title: 'No speech detected' });
       }
       setVoiceTranscript('');
       voiceTargetRef.current = null;
