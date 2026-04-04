@@ -17436,7 +17436,7 @@ export default function Dashboard() {
 
       {/* Weather Alert label above ticker, right of mic */}
       {weatherAlerts.length > 0 && (
-        <div className="fixed z-[9999]" style={{ bottom: '33px', left: '48px', display: isSchoolCoursesDialogOpen ? 'none' : undefined, pointerEvents: 'none' }} data-testid="weather-alert-label">
+        <div className="fixed z-[9999]" style={{ bottom: '33px', left: `${calendarLeft + 17}px`, display: isSchoolCoursesDialogOpen ? 'none' : undefined, pointerEvents: 'none' }} data-testid="weather-alert-label">
           <span style={{ color: '#ff0000', fontSize: '13px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 0 6px rgba(255,0,0,0.4)', letterSpacing: '0.5px' }}>WEATHER ALERT</span>
         </div>
       )}
