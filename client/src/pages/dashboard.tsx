@@ -14949,7 +14949,7 @@ export default function Dashboard() {
 
           {/* ── School ── */}
           <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(34,197,94,0.7)', position: 'relative', top: '1px', margin: '0 7.5px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(34,197,94,0.55) 0%, rgba(22,163,74,0.4) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
-          <GraduationCap className="h-[18px] w-[18px] text-white/70" style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', top: '-10px' }} />
+          <GraduationCap className="h-[20px] w-[20px] text-white/70" style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', top: '-10px' }} />
           {/* Courses Button */}
           <div className="pill-button-hover" style={{ 
             marginTop: '1px', width: '44px', height: '44px', borderRadius: '50%',
