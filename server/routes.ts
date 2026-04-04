@@ -7360,10 +7360,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       }
       if (toTranslate.length > 0) {
         const OpenAI = (await import("openai")).default;
-        const openai = new OpenAI({
-          apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-          baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-        });
+        const _tApiKey = process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY;
+        const _tCfg: any = { apiKey: _tApiKey };
+        if (process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL) {
+          _tCfg.baseURL = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
+        }
+        const openai = new OpenAI(_tCfg);
         const batch = toTranslate.slice(0, 20);
         const prompt = batch.map((t, i) => `${i + 1}. ${t}`).join("\n");
         const completion = await openai.chat.completions.create({
@@ -9050,10 +9052,10 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       checks.oneDrive = { status: 'down', message: e.message || 'Connection failed' };
     }
 
-    const hasOpenAI = !!(process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL);
+    const hasOpenAI = !!(process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY);
     checks.openAI = {
       status: hasOpenAI ? 'ok' : 'unconfigured',
-      message: hasOpenAI ? 'Configured' : 'Missing API key or base URL',
+      message: hasOpenAI ? 'Configured' : 'Missing API key',
     };
 
     try {
@@ -16917,10 +16919,12 @@ document.body.removeChild(a);
       }
 
       const OpenAI = (await import('openai')).default;
-      const openai = new OpenAI({
-        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-      });
+      const _apiKey = process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY;
+      const _cfg: any = { apiKey: _apiKey };
+      if (process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL) {
+        _cfg.baseURL = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
+      }
+      const openai = new OpenAI(_cfg);
 
       const prompt = `You are analyzing a university course syllabus for "${courseName}" (${courseCode || ''}).
 
@@ -17032,10 +17036,12 @@ Return ONLY the JSON object, no markdown formatting.`;
       }
 
       const OpenAI = (await import('openai')).default;
-      const openai = new OpenAI({
-        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-      });
+      const _apiKey = process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY;
+      const _cfg: any = { apiKey: _apiKey };
+      if (process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL) {
+        _cfg.baseURL = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
+      }
+      const openai = new OpenAI(_cfg);
 
       const prompt = `Extract assignment details from this academic document. Return a JSON object with these fields:
 - title: string (the assignment name, e.g. "Assignment 2 - Municipal Issues Policy Paper")
@@ -18896,10 +18902,12 @@ Return ONLY the JSON object, no markdown formatting.`;
       if (!code || !language) return res.status(400).json({ error: "code and language required" });
 
       const OpenAI = (await import("openai")).default;
-      const openai = new OpenAI({
-        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-      });
+      const _cApiKey = process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY;
+      const _cCfg: any = { apiKey: _cApiKey };
+      if (process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL) {
+        _cCfg.baseURL = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
+      }
+      const openai = new OpenAI(_cCfg);
 
       const completion = await openai.chat.completions.create({
         model: "gpt-4o-mini",
