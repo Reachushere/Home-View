@@ -5424,14 +5424,21 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       }
 
       const allSemesters = await storage.getAllSemesterSettings();
+      console.log(`[rename-week-folders] Looking for courseCode="${courseCode}", found ${(allSemesters || []).length} semesters`);
+      for (const sem of allSemesters || []) {
+        for (let ci = 1; ci <= 3; ci++) {
+          const c = sem[`course${ci}Code` as keyof typeof sem];
+          if (c) console.log(`[rename-week-folders] sem ${(sem as any).id}: course${ci}Code="${c}"`);
+        }
+      }
       const { listOneDriveFolderChildren, renameOneDriveItem } = await import("./onedrive");
 
       let targetSemester: any = null;
       let courseIndex = -1;
       for (const sem of allSemesters || []) {
-        for (let i = 1; i <= 5; i++) {
+        for (let i = 1; i <= 3; i++) {
           const code = sem[`course${i}Code` as keyof typeof sem];
-          if (code && String(code).toLowerCase() === courseCode.toLowerCase()) {
+          if (code && String(code).replace(/\s/g, '').toLowerCase() === courseCode.replace(/\s/g, '').toLowerCase()) {
             targetSemester = sem;
             courseIndex = i;
             break;
@@ -17099,7 +17106,7 @@ document.body.removeChild(a);
 
   app.post("/api/syllabus/parse", async (req, res) => {
     try {
-      const { objectPath, courseName, courseCode, fileName } = req.body;
+      const { objectPath, courseName, courseCode, fileName, semesterStartDate, readingWeekStart } = req.body;
       if (!objectPath || !courseName) {
         return res.status(400).json({ error: "objectPath and courseName are required" });
       }
@@ -17143,50 +17150,63 @@ document.body.removeChild(a);
       const openai = new OpenAI(_cfg);
       console.log(`[Syllabus Parse] Using ${process.env.OPENAI_API_KEY ? 'user OPENAI_API_KEY' : 'AI_INTEGRATIONS key'}`);
 
-      const prompt = `You are analyzing a university course syllabus for "${courseName}" (${courseCode || ''}).
+      const semesterInfo = semesterStartDate
+        ? `\n\nIMPORTANT SEMESTER DATES:
+- Semester starts: ${semesterStartDate} (this is Week 1)
+- Reading/break week starts: ${readingWeekStart || 'unknown'}
+- Each week starts on Monday. Week 1 starts on the Monday of ${semesterStartDate}.
+- Use these dates to calculate the exact ISO date for every item. For example, if something is due "Week 5", calculate the Friday of Week 5 from the semester start date.
+- If the syllabus says "Week 3" or "Unit 3" with no specific date, calculate the date based on the semester start.`
+        : '';
 
-Extract ALL of the following information from this syllabus. Be thorough — do not skip anything.
+      const prompt = `You are analyzing a university course syllabus/schedule for "${courseName}" (${courseCode || ''}).${semesterInfo}
+
+CRITICAL: Look very carefully for a COURSE SCHEDULE, WEEKLY SCHEDULE, WEEK-BY-WEEK OUTLINE, or similar table/list that shows what happens each week. This is often on the first page or first few pages. Extract EVERY item from it — each homework, quiz, exam, assignment, reading, discussion, activity, or deadline listed for each week.
+
+Extract ALL of the following information. Be thorough — do not skip anything.
 
 Return a JSON object with these fields:
 
 1. "courseInfo": {
-  "professor": string or null (professor/instructor name),
-  "professorEmail": string or null (professor email),
-  "officeHours": string or null (office hours description),
-  "textbook": string or null (required textbook/materials),
-  "description": string or null (course description summary)
+  "professor": string or null,
+  "professorEmail": string or null,
+  "officeHours": string or null,
+  "textbook": string or null,
+  "description": string or null
 }
 
-2. "gradingBreakdown": array of objects, each with:
-  - "component": string (e.g. "Midterm Exam", "Final Paper", "Participation")
-  - "weight": number (percentage, e.g. 30 for 30%)
-  - "description": string or null (any details about this component)
+2. "gradingBreakdown": array of { "component": string, "weight": number (e.g. 30 for 30%), "description": string or null }
 
-3. "items": array of ALL deadlines, assignments, exams, quizzes, discussions, projects, and important dates found. Each item:
-  - "title": string (e.g. "Assignment 1 - Essay on Policy")
+3. "items": array of ALL deadlines, assignments, exams, quizzes, homework, discussions, projects found. Extract EVERY SINGLE item from the weekly schedule if one exists. Each item:
+  - "title": string (use the exact name from the syllabus, e.g. "Homework 1:6 - WRITE THE NUMBER", "Unit 1 Knowledge Quiz", "Reflection Paper")
   - "type": string (one of: reading, essay, exam, quiz, discussion, poll, project, module, assignment, other)
-  - "date": string or null (ISO date if found, e.g. "2026-01-30", or null if no specific date)
-  - "dateDescription": string or null (date as written in syllabus, e.g. "Week 5, Friday 11:59pm")
-  - "time": string or null (time if specified, e.g. "23:59")
-  - "weight": number or null (grade percentage weight if mentioned)
-  - "description": string (details, requirements, word count, format, etc.)
+  - "date": string or null (MUST be an ISO date like "2026-02-14". Calculate from the week number and semester start date. If the syllabus says "Week 5" and semester starts ${semesterStartDate || '2026-01-12'}, then Week 5 starts on the 5th Monday from semester start. Use the Friday of that week as the default due date unless another day is specified.)
+  - "weekNumber": number or null (which week of the semester this item falls in, 1-13)
+  - "dateDescription": string or null (date as written in syllabus, e.g. "Week 5", "March 7")
+  - "time": string or null (e.g. "23:59")
+  - "weight": number or null (grade percentage weight. If the syllabus says "10 homeworks worth 0.4% each", set weight to 0.4 for each homework)
+  - "description": string (details about this item)
   - "category": string (one of: assignment, exam, deadline, event, policy)
 
-4. "policies": array of notable course policies, each with:
-  - "title": string (e.g. "Late Submission Policy")
-  - "description": string (summary of the policy)
+4. "policies": array of { "title": string, "description": string }
 
 5. "weekNumbering": {
-  - "style": string (one of: "skip_break" if the course skips the break/reading week number so Week 6 is followed by Week 7 after break, "include_break" if the course counts break week as a numbered week like Week 7 = Reading Week then Week 8, or "continuous" if weeks just count 1-13 regardless of breaks)
-  - "breakWeekLabel": string or null (how the syllabus labels the break/reading week, e.g. "Reading Week", "Study Week", "Break", "Week 7 - No Class")
-  - "totalWeeks": number or null (total number of instructional weeks mentioned)
-  - "evidence": string (quote or describe the part of the syllabus that shows how weeks are numbered around the break)
+  "style": string ("skip_break", "include_break", or "continuous"),
+  "breakWeekLabel": string or null,
+  "totalWeeks": number or null,
+  "evidence": string
 }
 
-Be extremely thorough. Include EVERY assignment, deadline, exam, quiz, discussion post, and important date mentioned anywhere in the syllabus — even if found in a weekly schedule/outline table.
+IMPORTANT RULES:
+- Extract EVERY homework, quiz, and assignment individually — do NOT group them.
+- If the schedule lists "Homework 1:6, 1:7, 1:8" for a week, create THREE separate items.
+- If items have specific due dates in the schedule, use those exact dates.
+- If items only show a week number, calculate the date from the semester start (${semesterStartDate || 'unknown'}).
+- Include unit quizzes, comprehension quizzes, knowledge quizzes, dialogue quizzes — ALL of them.
+- Include final exams, midterms, reflection papers, language backgrounds, etc.
 
 Syllabus text:
-${pdfText.substring(0, 12000)}
+${pdfText.substring(0, 15000)}
 
 Return ONLY the JSON object, no markdown formatting.`;
 

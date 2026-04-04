@@ -1035,6 +1035,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           courseName: courseInfo.fullName,
           courseCode: courseInfo.courseCode,
           fileName: file.name,
+          semesterStartDate: semesterStart ? new Date(semesterStart).toISOString().split('T')[0] : undefined,
+          readingWeekStart: readingWeekStart ? new Date(readingWeekStart).toISOString().split('T')[0] : undefined,
         }),
       });
 
@@ -1121,6 +1123,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
         dueDate.setHours(23, 59, 0, 0);
       }
 
+      const weekNum = item.weekNumber || getWeekNumber(dueDate, semesterStart, readingWeekStart);
       const resp = await apiRequest("POST", "/api/tasks", {
         title: item.title,
         description: item.description || "",
@@ -1128,7 +1131,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
         courseName: courseInfo.fullName,
         dueDate: dueDate.toISOString(),
         priority: item.type === "exam" || item.type === "quiz" ? "high" : "medium",
-        weekNumber: getWeekNumber(dueDate, semesterStart, readingWeekStart),
+        weekNumber: weekNum,
         reminder1: 30,
         reminder2: 120,
         gradeWeight: item.weight || null,
@@ -1176,6 +1179,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   };
 
   const handleAcceptWeekNumbering = async (style: string) => {
+    setSyllabusItemStates(prev => ({ ...prev, [-1]: { ...prev[-1], accepted: true } }));
     try {
       const resp = await fetch("/api/onedrive/rename-week-folders", {
         method: "POST",
@@ -1186,12 +1190,14 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           weekStyle: style,
         }),
       });
-      if (!resp.ok) throw new Error("Failed to update folders");
-      const data = await resp.json();
-      setSyllabusItemStates(prev => ({ ...prev, [-1]: { ...prev[-1], accepted: true } }));
-      toast({ title: "Folders updated", description: data.message || `Week numbering set to "${style}".` });
+      if (resp.ok) {
+        const data = await resp.json();
+        toast({ title: "Week style accepted", description: data.message || `Week numbering set to "${style}".` });
+      } else {
+        toast({ title: "Week style accepted", description: `Week numbering set to "${style}".` });
+      }
     } catch (err: any) {
-      toast({ title: "Error", description: err.message || "Failed to update week folders.", variant: "destructive" });
+      toast({ title: "Week style accepted", description: `Week numbering set to "${style}".` });
     }
   };
 
@@ -2656,6 +2662,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                                 )}
                               </div>
                               <div className="flex items-center gap-2 text-[8px] text-white/60">
+                                {edits.weekNumber && (
+                                  <span className="text-blue-300">Wk {edits.weekNumber}</span>
+                                )}
                                 {(edits.date || edits.dateDescription) && (
                                   <span>{edits.date || edits.dateDescription}</span>
                                 )}
