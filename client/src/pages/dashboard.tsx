@@ -24786,6 +24786,7 @@ export default function Dashboard() {
                               />
                               <span 
                                 className="truncate cursor-pointer hover:opacity-80 pl-1 flex-1 min-w-0"
+                                style={{ fontWeight: 400 }}
                                 onClick={() => setEditingTask(task)}
                               >
                                 {task.title?.replace(/^\[?[A-Z]{2,5}\d{3}\s*-?\s*/, '').replace(/^\]\s*/, '').replace(/^-\s*/, '') || task.title}
@@ -25125,7 +25126,8 @@ export default function Dashboard() {
                                 />
                                 <span
                                   onClick={() => setEditingTask(task)}
-                                  className={`truncate font-bold text-black flex-1 min-w-0 cursor-pointer hover:opacity-80 ${task.isCompleted ? "line-through" : ""}`}
+                                  className={`truncate text-black flex-1 min-w-0 cursor-pointer hover:opacity-80 ${task.isCompleted ? "line-through" : ""}`}
+                                  style={{ fontWeight: 400 }}
                                 >
                                   {task.title}
                                 </span>
@@ -25157,7 +25159,7 @@ export default function Dashboard() {
                                 data-testid={`other-project-${proj.id}`}
                               >
                                 <FolderKanban className="h-3 w-3 shrink-0" style={{ color: proj.color || '#6b7280' }} />
-                                <span className="truncate font-bold text-black pl-0.5 flex-1 min-w-0">{proj.name}</span>
+                                <span className="truncate text-black pl-0.5 flex-1 min-w-0" style={{ fontWeight: 400 }}>{proj.name}</span>
                               </div>
                             );
                           })}
@@ -25264,7 +25266,8 @@ export default function Dashboard() {
                               />
                             )}
                             <span 
-                              className={`cursor-pointer hover:opacity-80 truncate flex-1 font-bold ${task.isCompleted ? "line-through" : ""}`}
+                              className={`cursor-pointer hover:opacity-80 truncate flex-1 ${task.isCompleted ? "line-through" : ""}`}
+                              style={{ fontWeight: 400 }}
                             >
                               {task.title}
                             </span>
