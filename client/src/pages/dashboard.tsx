@@ -25226,34 +25226,44 @@ export default function Dashboard() {
               {countdownBarTasks.length > 0 && countdownBarTasks.map((cbt, cbtIdx) => {
                 const { task, daysUntilDue, barIndices, endsThisWeek, courseColor, courseCode } = cbt;
                 const today = startOfDayET(new Date());
-                const totalDays = Math.max(1, daysUntilDue);
-                const elapsed = totalDays > 0 ? Math.max(0, 1 - (daysUntilDue / Math.max(totalDays, 7))) : 1;
-                const barHeight = 18;
+                const barHeight = 20;
                 const urgencyColor = daysUntilDue <= 1 ? '#ef4444' : daysUntilDue <= 3 ? '#f59e0b' : courseColor;
+                const cleanTitle = task.title?.replace(/^\[?[A-Z]{2,5}\d{3}\s*-?\s*/, '').replace(/^\]\s*/, '').replace(/^-\s*/, '') || task.title;
+                const due = startOfDayET(new Date(task.dueDate));
+                const firstVisibleIdx = weekDays.findIndex(d => { const cd = startOfDayET(d); return cd >= today && cd <= due; });
                 return (
-                  <div key={`cbar-${task.id}`} className="grid w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${barHeight}px` }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7px', fontWeight: 700, color: '#fff', background: urgencyColor, letterSpacing: '0.5px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', padding: '0 2px' }}>
+                  <div key={`cbar-${task.id}`} className="grid w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${barHeight}px` }} data-testid={`countdown-bar-${task.id}`}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '8px', fontWeight: 800, color: '#fff', background: urgencyColor, letterSpacing: '0.5px', overflow: 'hidden', whiteSpace: 'nowrap', padding: '0 2px' }}>
                       {daysUntilDue}d
                     </div>
-                    {gridSizes.moduleColumnWidth > 0 && <div style={{ background: urgencyColor, opacity: 0.15 }} />}
+                    {gridSizes.moduleColumnWidth > 0 && <div style={{ background: urgencyColor, opacity: 0.2 }} />}
                     {weekDays.map((day, dayIdx) => {
                       const cellDate = startOfDayET(day);
-                      const due = startOfDayET(new Date(task.dueDate));
                       const isInRange = cellDate >= today && cellDate <= due;
                       const isDueDay = isSameDayET(cellDate, due);
                       const isPast = cellDate < today;
-                      if (!isInRange && !isPast) return <div key={dayIdx} style={{ borderBottom: '1px solid rgba(0,0,0,0.1)' }} />;
-                      if (isPast) return <div key={dayIdx} style={{ borderBottom: '1px solid rgba(0,0,0,0.1)' }} />;
+                      const isFirstBar = dayIdx === firstVisibleIdx;
+                      if (!isInRange) return <div key={dayIdx} style={{ borderBottom: '1px solid rgba(0,0,0,0.08)', background: isPast ? 'transparent' : 'transparent' }} />;
                       return (
-                        <div key={dayIdx} style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(0,0,0,0.1)', cursor: 'pointer' }} onClick={() => setEditingTask(task)} onMouseEnter={() => setHoveredCountdownTaskId(task.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)} title={`${task.title} — ${daysUntilDue}d`}>
-                          <div style={{ position: 'absolute', inset: 0, background: urgencyColor, opacity: isDueDay ? 0.9 : 0.35 }} />
-                          <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', height: '100%', padding: '0 3px', overflow: 'hidden' }}>
-                            {isDueDay && <span style={{ fontSize: '8px', fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{task.title?.replace(/^\[?[A-Z]{2,5}\d{3}\s*-?\s*/, '').replace(/^\]\s*/, '').replace(/^-\s*/, '') || task.title}</span>}
+                        <div key={dayIdx} style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(0,0,0,0.08)', cursor: 'pointer' }} onClick={() => setEditingTask(task)} onMouseEnter={() => setHoveredCountdownTaskId(task.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)} title={`${courseCode} — ${cleanTitle} — due in ${daysUntilDue}d`}>
+                          <div style={{ position: 'absolute', inset: 0, background: urgencyColor, opacity: isDueDay ? 0.85 : 0.3 }} />
+                          {isDueDay && <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '3px', background: urgencyColor }} />}
+                          <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', height: '100%', padding: '0 4px', overflow: 'hidden' }}>
+                            {isFirstBar && (
+                              <span style={{ fontSize: '8px', fontWeight: 600, color: isDueDay ? '#fff' : '#000', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+                                <span style={{ fontWeight: 800, marginRight: '4px' }}>{courseCode}</span>{cleanTitle}
+                              </span>
+                            )}
+                            {isDueDay && !isFirstBar && (
+                              <span style={{ fontSize: '8px', fontWeight: 700, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+                                DUE
+                              </span>
+                            )}
                           </div>
                         </div>
                       );
                     })}
-                    <div style={{ background: urgencyColor, opacity: 0.15, borderBottom: '1px solid rgba(0,0,0,0.1)' }} />
+                    <div style={{ background: urgencyColor, opacity: 0.15, borderBottom: '1px solid rgba(0,0,0,0.08)' }} />
                   </div>
                 );
               })}
