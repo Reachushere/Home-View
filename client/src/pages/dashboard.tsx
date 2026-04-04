@@ -997,7 +997,8 @@ export default function Dashboard() {
     if (isLO && isMD) return false;
     return isMD && h >= w;
   });
-  const isMobileView = isMobileLandscape || isMobilePortrait;
+  const [forceDesktop, setForceDesktop] = useState(false);
+  const isMobileView = forceDesktop ? false : (isMobileLandscape || isMobilePortrait);
   const [mobileAuth, setMobileAuth] = useState<string | null>(() => {
     const stored = localStorage.getItem('mobileAuth');
     if (stored === '5747' || stored === '4201' || stored === '1010') return stored;
@@ -1456,7 +1457,11 @@ export default function Dashboard() {
   const [rescheduleTask, setRescheduleTask] = useState<Task | null>(null);
   const [isTodayExpanded, setIsTodayExpanded] = useState(false);
   const [bookAnimState, setBookAnimState] = useState<{ isOpen: boolean; courseCode: string; title: string; color: string; onDone: () => void } | null>(null);
-  const [bookReaderOverlay, setBookReaderOverlay] = useState<{ url: string; courseCode: string; title: string; color: string } | null>(null);
+  const [bookReaderOverlay, setBookReaderOverlayRaw] = useState<{ url: string; courseCode: string; title: string; color: string } | null>(null);
+  const setBookReaderOverlay = useCallback((val: { url: string; courseCode: string; title: string; color: string } | null) => {
+    if (val) setForceDesktop(true);
+    setBookReaderOverlayRaw(val);
+  }, []);
   const [hwUploadingState, setHwUploadingState] = useState<Record<string, boolean>>({});
   const [hwDragOverTarget, setHwDragOverTarget] = useState<string | null>(null);
   const semesterSettingsRef = useRef<any>(null);
