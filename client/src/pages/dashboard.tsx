@@ -17458,13 +17458,14 @@ export default function Dashboard() {
                     });
                   })()}
                   {planets.filter(p => p.visible).map((p, i) => (
-                    <div key={p.name} style={{ position: 'absolute', left: `${p.x}%`, top: `${p.y}%` }}>
+                    <div key={p.name} style={{ position: 'absolute', left: `${p.x}%`, top: `${p.y}%`, cursor: 'pointer', zIndex: 5 }} onClick={() => setSkyMapPlanet(p.name)} data-testid={`sky-planet-${p.name.toLowerCase()}`}>
+                      <div style={{ position: 'absolute', top: '-12px', left: '-12px', width: '24px', height: '24px', borderRadius: '50%' }} />
                       <div style={{ width: `${p.size * 2}px`, height: `${p.size * 2}px`, borderRadius: '50%', background: p.color, boxShadow: `0 0 ${p.size * 3}px ${p.size}px ${p.color}40`, transform: 'translate(-50%, -50%)' }} />
-                      <div style={{ position: 'absolute', top: `${p.size + 4}px`, left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap', cursor: 'pointer' }} onClick={() => setSkyMapPlanet(p.name)} data-testid={`sky-planet-label-${p.name.toLowerCase()}`}>
+                      <div style={{ position: 'absolute', top: `${p.size + 4}px`, left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }} data-testid={`sky-planet-label-${p.name.toLowerCase()}`}>
                         <div className="text-[10px] font-bold text-white hover:text-blue-300" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.8)', textAlign: 'center', transition: 'color 0.2s' }}>{p.name}</div>
                         <div className="text-[8px] text-white/50" style={{ textAlign: 'center' }}>mag {p.mag}</div>
                       </div>
-                      <svg style={{ position: 'absolute', top: `${p.size + 2}px`, left: '50%', transform: 'translateX(-50%)' }} width="8" height="6" viewBox="0 0 8 6"><path d="M4 0L4 6" stroke={p.color} strokeWidth="1" opacity="0.5"/></svg>
+                      <svg style={{ position: 'absolute', top: `${p.size + 2}px`, left: '50%', transform: 'translateX(-50%)', pointerEvents: 'none' }} width="8" height="6" viewBox="0 0 8 6"><path d="M4 0L4 6" stroke={p.color} strokeWidth="1" opacity="0.5"/></svg>
                     </div>
                   ))}
                   {constellations.map((c) => (
@@ -17498,10 +17499,10 @@ export default function Dashboard() {
                     <div className="text-[8px] text-blue-300/80" data-testid="star-catalog-info">Yale Bright Star Catalog · {(() => { void skyMapTick; const vd = (() => { if (skyMapDate) { const d = skyMapDate instanceof Date ? skyMapDate : new Date(skyMapDate + 'T22:00:00'); const today = new Date(); if (d.toDateString() === today.toDateString()) return new Date(); return d; } return new Date(); })(); return computeStarPositions(vd, 43.67, -79.39, 0, 5.0).filter(s => starToSkyMapXY(s.az, s.alt) !== null).length; })()} stars in view · Live</div>
                   </div>
                   {planets.map(p => (
-                    <div key={p.name} className="mb-3 rounded-lg p-2" style={{ background: p.visible ? 'rgba(59,130,246,0.1)' : 'rgba(255,255,255,0.03)', border: `1px solid ${p.visible ? 'rgba(59,130,246,0.2)' : 'rgba(255,255,255,0.05)'}` }}>
+                    <div key={p.name} className="mb-3 rounded-lg p-2 cursor-pointer hover:brightness-125" style={{ background: p.visible ? 'rgba(59,130,246,0.1)' : 'rgba(255,255,255,0.03)', border: `1px solid ${p.visible ? 'rgba(59,130,246,0.2)' : 'rgba(255,255,255,0.05)'}`, transition: 'filter 0.2s, border-color 0.2s' }} onClick={() => setSkyMapPlanet(p.name)} data-testid={`sky-panel-planet-${p.name.toLowerCase()}`}>
                       <div className="flex items-center gap-2">
                         <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: p.color, boxShadow: `0 0 4px ${p.color}` }} />
-                        <span className="text-[11px] text-white font-medium cursor-pointer hover:text-blue-300" style={{ transition: 'color 0.2s' }} onClick={() => setSkyMapPlanet(p.name)} data-testid={`sky-panel-planet-${p.name.toLowerCase()}`}>{p.name}</span>
+                        <span className="text-[11px] text-white font-medium">{p.name}</span>
                         {p.visible ? <span className="text-[8px] text-green-400 ml-auto">VISIBLE</span> : <span className="text-[8px] text-white ml-auto">NOT VISIBLE</span>}
                       </div>
                       <div className="text-[9px] text-white/80 mt-1">{p.direction} · {p.altitude}</div>
