@@ -24902,7 +24902,7 @@ export default function Dashboard() {
                             const todayDayIdx = weekDays.findIndex(wd => isSameDayET(wd, today));
                             const isFirstCell = dayIdx === (todayDayIdx >= 0 ? todayDayIdx : 0);
                             const slot = taskSlotMap.get(t.id) ?? 0;
-                            const barY = 2 + slot * 22 + 18;
+                            const barY = 2 + slot * 22 + 18 + (isDayToday ? 15 : 0);
                             return (
                               <div
                                 key={`cbar-${t.id}`}
