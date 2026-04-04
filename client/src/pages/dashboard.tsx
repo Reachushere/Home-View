@@ -23892,7 +23892,7 @@ export default function Dashboard() {
                               const horizonOpacity = Math.max(0, 0.6 - p * 0.3);
                               const warmOpacity = Math.max(0, 0.4 - p * 0.2);
                               const sunBottom = Math.max(0, -4 + p * 40);
-                              const sunLeft = 10 + p * 30;
+                              const sunLeft = 5 + p * 20;
                               const sunOpacity = p > 0.2 ? Math.min(1, (p - 0.2) * 2.5) : 0;
                               return `<div style="position:absolute;bottom:0;left:0;right:0;height:40%;background:linear-gradient(180deg,transparent 0%,rgba(255,180,100,${horizonOpacity}) 60%,rgba(255,140,60,${horizonOpacity * 0.8}) 100%)"></div><div style="position:absolute;bottom:0;left:0;right:0;height:20%;background:linear-gradient(180deg,transparent 0%,rgba(255,100,50,${warmOpacity}) 100%)"></div>${sunOpacity > 0 ? `<div style="position:absolute;bottom:${sunBottom}px;left:${sunLeft}%;transform:translateX(-50%);width:10px;height:10px;border-radius:50%;background:#fde047;box-shadow:0 0 12px 4px rgba(255,220,80,${sunOpacity * 0.6}),0 0 24px 8px rgba(255,180,60,${sunOpacity * 0.3});opacity:${sunOpacity}"></div>` : ''}`;
                             })() : '';
