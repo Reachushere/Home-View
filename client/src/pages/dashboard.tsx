@@ -26105,8 +26105,8 @@ export default function Dashboard() {
                                     checked={task.isCompleted || false}
                                     onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
                                     onClick={(e) => e.stopPropagation()}
-                                    className="shrink-0 border-0 bg-white data-[state=checked]:bg-white data-[state=checked]:border-0 data-[state=checked]:text-black"
-                                    style={{ width: '10px', height: '10px' }}
+                                    className="shrink-0 bg-white data-[state=checked]:bg-white data-[state=checked]:text-black"
+                                    style={{ width: '10px', height: '10px', border: '1px solid black' }}
                                     data-testid={`checkbox-time-${task.id}`}
                                   />
                                   {(() => { const hasAtt = (task.attachments?.length && task.attachments.some((att: any) => { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; return !!url; })) || task.referenceLink; return hasAtt ? <img src={pdfAttachIconPath} alt="PDF" style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0 }} data-testid={`attachment-icon-time-${task.id}`} /> : null; })()}
@@ -26294,7 +26294,8 @@ export default function Dashboard() {
                         <Checkbox
                           checked={task.isCompleted || false}
                           onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                          className="h-3.5 w-3.5 shrink-0 border-white bg-white data-[state=checked]:bg-white data-[state=checked]:border-white data-[state=checked]:text-black"
+                          className="h-3.5 w-3.5 shrink-0 bg-white data-[state=checked]:bg-white data-[state=checked]:text-black"
+                          style={{ border: '1px solid black' }}
                           onClick={(e) => e.stopPropagation()}
                         />
                         {(() => { const hasAtt = (task.attachments?.length && task.attachments.some((att: any) => { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; return !!url; })) || task.referenceLink; return hasAtt ? <img src={pdfAttachIconPath} alt="PDF" style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0 }} data-testid={`attachment-icon-multi-${task.id}`} /> : null; })()}
