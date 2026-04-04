@@ -15860,8 +15860,8 @@ export default function Dashboard() {
         </div>
         {weatherAlerts.length > 0 && (
           <>
-            <span style={{ position: 'absolute', right: '100%', top: '50%', transform: 'translateY(-50%)', marginRight: '6px', color: '#ff0000', fontSize: '10px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 0 6px rgba(255,0,0,0.4)', letterSpacing: '0.5px', pointerEvents: 'none', whiteSpace: 'nowrap' }} data-testid="tab-weather-label">WEATHER</span>
-            <span style={{ position: 'absolute', left: '100%', top: '50%', transform: 'translateY(-50%)', marginLeft: '6px', color: '#ff0000', fontSize: '10px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 0 6px rgba(255,0,0,0.4)', letterSpacing: '0.5px', pointerEvents: 'none', whiteSpace: 'nowrap' }} data-testid="tab-alert-label">ALERT</span>
+            <span style={{ position: 'absolute', right: '100%', top: '50%', transform: 'translateY(calc(-50% - 6px))', marginRight: '6px', color: '#ffffff', fontSize: '10px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px', pointerEvents: 'none', whiteSpace: 'nowrap' }} data-testid="tab-weather-label">WEATHER</span>
+            <span style={{ position: 'absolute', left: '100%', top: '50%', transform: 'translateY(calc(-50% - 6px))', marginLeft: '6px', color: '#ffffff', fontSize: '10px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px', pointerEvents: 'none', whiteSpace: 'nowrap' }} data-testid="tab-alert-label">ALERT</span>
           </>
         )}
       </div>
@@ -24285,58 +24285,6 @@ export default function Dashboard() {
                 });
                 const maxCourseRowHeight = 3 * 20 + 2 * 2 + 4;
 
-                const countdownBarTasks = (() => {
-                  const today = startOfDayET(new Date());
-                  const sortedDayIndices = weekDays.map((d, i) => ({ date: startOfDayET(d), idx: i }))
-                    .sort((a, b) => a.date.getTime() - b.date.getTime());
-                  const todaySortedPos = sortedDayIndices.findIndex(d => d.date >= today);
-                  const visibleIndices = todaySortedPos >= 0 ? sortedDayIndices.slice(todaySortedPos).map(d => d.idx) : [];
-                  return allTasks
-                    .filter(t => {
-                      if (!t.showCountdownBar) return false;
-                      if (t.showCountdownBarMain === false) return false;
-                      if (t.isCompleted) return false;
-                      const due = startOfDayET(new Date(t.dueDate));
-                      if (due < today) return false;
-                      if (t.countdownBarDays && t.countdownBarDays > 0) {
-                        const daysUntil = Math.round((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-                        if (daysUntil > t.countdownBarDays) return false;
-                      }
-                      return true;
-                    })
-                    .map(t => {
-                      const due = startOfDayET(new Date(t.dueDate));
-                      const daysUntilDue = Math.round((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-                      const barIndices = visibleIndices.filter(i => {
-                        const dayDate = startOfDayET(weekDays[i]);
-                        return dayDate >= today && dayDate <= due;
-                      });
-                      if (barIndices.length === 0) return null;
-                      const endsThisWeek = barIndices.some(i => isSameDayET(startOfDayET(weekDays[i]), due));
-                      const courseCode = t.courseName?.split(' - ')[0]?.toUpperCase() || (() => {
-                        const m = t.title?.match(/^\[([A-Z]{2,}[0-9]*)/);
-                        if (m) return m[1];
-                        const courseMatch = filteredCourses.find(c => {
-                          const code = c.name.split(' - ')[0]?.toUpperCase();
-                          return code && t.title?.toUpperCase().includes(code);
-                        });
-                        return courseMatch ? courseMatch.name.split(' - ')[0]?.toUpperCase() : '';
-                      })();
-                      const courseInfo = filteredCourses.find(c => c.name.split(' - ')[0]?.toUpperCase() === courseCode);
-                      return {
-                        task: t,
-                        daysUntilDue,
-                        barIndices,
-                        endsThisWeek,
-                        courseColor: courseInfo?.color || '#666',
-                        courseCode,
-                      };
-                    })
-                    .filter(Boolean)
-                    .sort((a, b) => a!.daysUntilDue - b!.daysUntilDue)
-                    .slice(0, 6) as { task: any; daysUntilDue: number; barIndices: number[]; endsThisWeek: boolean; courseColor: string; courseCode: string }[];
-                })();
-
                 return (
               <>
               <div ref={courseRowsRef} data-testid="course-rows-container" style={{ borderTop: '1px solid black', marginTop: '-2px' }}>
@@ -25021,6 +24969,23 @@ export default function Dashboard() {
                                   />
                                 )}
                               </div>
+                              {task.showCountdownBar && task.showCountdownBarMain !== false && !task.isCompleted && (() => {
+                                const cToday = startOfDayET(new Date());
+                                const cDue = startOfDayET(new Date(task.dueDate));
+                                const cDaysLeft = Math.max(0, Math.round((cDue.getTime() - cToday.getTime()) / (1000*60*60*24)));
+                                if (cDue < cToday) return null;
+                                const cUrgency = cDaysLeft <= 1 ? '#ef4444' : cDaysLeft <= 3 ? '#f59e0b' : course.darkColor;
+                                const cStartDate = task.startDate ? startOfDayET(new Date(task.startDate)) : cToday;
+                                const cTotalSpan = Math.max(1, Math.round((cDue.getTime() - cStartDate.getTime()) / (1000*60*60*24)));
+                                const cElapsed = Math.max(0, Math.round((cToday.getTime() - cStartDate.getTime()) / (1000*60*60*24)));
+                                const cPct = Math.min(100, Math.round((cElapsed / cTotalSpan) * 100));
+                                return (
+                                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '3px', background: 'rgba(0,0,0,0.1)', borderRadius: '0 0 3px 3px', overflow: 'hidden' }} data-testid={`countdown-bar-${task.id}`}>
+                                    <div style={{ width: `${cPct}%`, height: '100%', background: cUrgency, borderRadius: '0 0 0 3px', transition: 'width 0.3s ease' }} />
+                                    <span style={{ position: 'absolute', right: '2px', top: '-1px', fontSize: '6px', fontWeight: 800, color: cUrgency, lineHeight: 1, textShadow: '0 0 2px rgba(255,255,255,0.8)' }}>{cDaysLeft}d</span>
+                                  </div>
+                                );
+                              })()}
                             </div>
                             </div>
                           );
@@ -25222,51 +25187,7 @@ export default function Dashboard() {
                 );
               })}
 
-              {/* Countdown Bars */}
-              {countdownBarTasks.length > 0 && countdownBarTasks.map((cbt, cbtIdx) => {
-                const { task, daysUntilDue, barIndices, endsThisWeek, courseColor, courseCode } = cbt;
-                const today = startOfDayET(new Date());
-                const barHeight = 20;
-                const urgencyColor = daysUntilDue <= 1 ? '#ef4444' : daysUntilDue <= 3 ? '#f59e0b' : courseColor;
-                const cleanTitle = task.title?.replace(/^\[?[A-Z]{2,5}\d{3}\s*-?\s*/, '').replace(/^\]\s*/, '').replace(/^-\s*/, '') || task.title;
-                const due = startOfDayET(new Date(task.dueDate));
-                const firstVisibleIdx = weekDays.findIndex(d => { const cd = startOfDayET(d); return cd >= today && cd <= due; });
-                return (
-                  <div key={`cbar-${task.id}`} className="grid w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${barHeight}px` }} data-testid={`countdown-bar-${task.id}`}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '8px', fontWeight: 800, color: '#fff', background: urgencyColor, letterSpacing: '0.5px', overflow: 'hidden', whiteSpace: 'nowrap', padding: '0 2px' }}>
-                      {daysUntilDue}d
-                    </div>
-                    {gridSizes.moduleColumnWidth > 0 && <div style={{ background: urgencyColor, opacity: 0.2 }} />}
-                    {weekDays.map((day, dayIdx) => {
-                      const cellDate = startOfDayET(day);
-                      const isInRange = cellDate >= today && cellDate <= due;
-                      const isDueDay = isSameDayET(cellDate, due);
-                      const isPast = cellDate < today;
-                      const isFirstBar = dayIdx === firstVisibleIdx;
-                      if (!isInRange) return <div key={dayIdx} style={{ borderBottom: '1px solid rgba(0,0,0,0.08)', background: isPast ? 'transparent' : 'transparent' }} />;
-                      return (
-                        <div key={dayIdx} style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(0,0,0,0.08)', cursor: 'pointer' }} onClick={() => setEditingTask(task)} onMouseEnter={() => setHoveredCountdownTaskId(task.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)} title={`${courseCode} — ${cleanTitle} — due in ${daysUntilDue}d`}>
-                          <div style={{ position: 'absolute', inset: 0, background: urgencyColor, opacity: isDueDay ? 0.85 : 0.3 }} />
-                          {isDueDay && <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '3px', background: urgencyColor }} />}
-                          <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', height: '100%', padding: '0 4px', overflow: 'hidden' }}>
-                            {isFirstBar && (
-                              <span style={{ fontSize: '8px', fontWeight: 600, color: isDueDay ? '#fff' : '#000', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
-                                <span style={{ fontWeight: 800, marginRight: '4px' }}>{courseCode}</span>{cleanTitle}
-                              </span>
-                            )}
-                            {isDueDay && !isFirstBar && (
-                              <span style={{ fontSize: '8px', fontWeight: 700, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
-                                DUE
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                    <div style={{ background: urgencyColor, opacity: 0.15, borderBottom: '1px solid rgba(0,0,0,0.08)' }} />
-                  </div>
-                );
-              })}
+              
 
               {/* Other Tasks Summary Row - black background, only shows tasks with type "other" */}
               {(() => {
