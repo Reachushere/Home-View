@@ -24461,12 +24461,12 @@ export default function Dashboard() {
                               return { offset: h, temp: closest.temp, code: closest.weatherCode };
                             });
                             return (
-                              <div className="absolute left-[1px] right-[1px] z-20 flex flex-col" style={{ top: 0, bottom: 0, pointerEvents: 'none' }} data-testid="today-hourly-forecast">
+                              <div className="absolute z-20 flex flex-col" style={{ top: 1, bottom: 1, right: 1, width: '32px', gap: '1px', pointerEvents: 'none' }} data-testid="today-hourly-forecast">
                                 {forecasts.map((fc, i) => (
-                                  <div key={i} className="flex items-center justify-center" style={{ flex: 1, padding: '0 1px', minWidth: 0 }} data-testid={`hourly-forecast-${fc.offset}h`}>
-                                    <span style={{ fontSize: '7px', color: '#ffffff', marginRight: '2px', fontWeight: 600 }}>+{fc.offset}h</span>
-                                    <span style={{ fontSize: '8px', lineHeight: 1 }}>{wmoMini[fc.code] || '🌤'}</span>
-                                    <span style={{ fontSize: '8px', color: '#fff', fontWeight: 600, marginLeft: '1px' }}>{fc.temp}°</span>
+                                  <div key={i} className="flex flex-col items-center justify-center" style={{ flex: 1, background: 'rgba(0,0,0,0.35)', borderRadius: '3px', padding: '1px 0', minHeight: 0 }} data-testid={`hourly-forecast-${fc.offset}h`}>
+                                    <span style={{ fontSize: '6.5px', color: 'rgba(255,255,255,0.7)', fontWeight: 600, lineHeight: 1 }}>+{fc.offset}h</span>
+                                    <span style={{ fontSize: '9px', lineHeight: 1, margin: '1px 0' }}>{wmoMini[fc.code] || '🌤'}</span>
+                                    <span style={{ fontSize: '7.5px', color: '#fff', fontWeight: 700, lineHeight: 1 }}>{fc.temp}°</span>
                                   </div>
                                 ))}
                               </div>
@@ -28214,10 +28214,9 @@ export default function Dashboard() {
               </div>
             );
           })()}
-          <div style={{ padding: '0 8px', height: courseRowRects.length > 0 ? `${courseRowRects[0].top - (calendarBorderTop || (calendarTop + 15)) - 1}px` : '45px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 46, overflow: 'hidden', marginBottom: '0px', boxShadow: '0 3px 6px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3)' }}>
-            <div style={{ position: 'absolute', top: '21px', left: '22px', right: 0, height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)', zIndex: 2 }} />
-            <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: '6px', bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', zIndex: 2 }}>Homework Progress</span>
-            <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: `${effectiveDividerPct}%`, bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', paddingLeft: '6px', zIndex: 2 }}>Most Urgent Assignments</span>
+          <div style={{ padding: '0 8px', height: '21px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 46, overflow: 'hidden', marginBottom: '0px', boxShadow: '0 3px 6px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center' }}>
+            <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: '6px', letterSpacing: '0.3px', whiteSpace: 'nowrap', zIndex: 2 }}>Homework Progress</span>
+            <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: `${effectiveDividerPct}%`, letterSpacing: '0.3px', whiteSpace: 'nowrap', paddingLeft: '6px', zIndex: 2 }}>Most Urgent Assignments</span>
             <div style={{ position: 'absolute', top: 0, left: '14px', right: '4px', height: '21px', perspective: '400px', overflow: 'hidden', zIndex: 1 }}>
               <div style={{ width: '100%', height: '100%', position: 'relative', transformStyle: 'preserve-3d', transition: 'transform 0.8s cubic-bezier(0.4, 0.2, 0.2, 1)', transform: hwHeaderFlipped ? 'rotateX(-180deg)' : 'rotateX(0deg)' }}>
                 <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', display: 'flex', alignItems: 'center', padding: '0 6px' }}>
