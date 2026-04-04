@@ -24411,9 +24411,8 @@ export default function Dashboard() {
                                 style={{
                                   margin: '2px 2px 2px 2px',
                                   marginRight: '0px',
-                                  backgroundColor: task.isCompleted ? '#e5e7eb' : 'white',
-                                  borderColor: task.isCompleted ? '#d1d5db' : course.darkColor,
-                                  borderLeft: task.isCompleted ? undefined : `3px solid ${course.darkColor}`
+                                  backgroundColor: task.isCompleted ? '#e5e7eb' : (() => { const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === course.name); if (cMatch?.taskBgColor) return cMatch.taskBgColor; const cEnd = cMatch?.colorEnd; const endRgb = hexToRgb(cEnd || course.darkColor); return `rgb(${Math.max(0,endRgb.r-12)},${Math.max(0,endRgb.g-12)},${Math.max(0,endRgb.b-12)})`; })(),
+                                  borderColor: task.isCompleted ? '#d1d5db' : course.darkColor
                                 }}
                                 data-testid={`course-module-task-static-${task.id}`}
                               >
