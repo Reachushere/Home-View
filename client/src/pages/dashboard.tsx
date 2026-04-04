@@ -23809,9 +23809,8 @@ export default function Dashboard() {
                     })()}
                     <div
                       className="absolute inset-0"
-                      style={{ zIndex: 25 }}
-                      onClick={(e) => { if (shiftForDay) { e.stopPropagation(); updateSleepDisabledDays(shiftDateStr); } }}
-                      onDoubleClick={(e) => { e.stopPropagation(); setSkyMapDate(day); setSkyMapOpen(true); }}
+                      style={{ zIndex: 25, cursor: 'pointer' }}
+                      onClick={(e) => { e.stopPropagation(); setSkyMapDate(day); setSkyMapOpen(true); }}
                       data-testid={`sky-map-trigger-${format(day, "yyyy-MM-dd")}`}
                     />
                     {idx < 6 && (
