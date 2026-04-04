@@ -42,6 +42,7 @@ import {
   Folder,
   ChevronUp,
   AlertTriangle,
+  Undo2,
 } from "lucide-react";
 import zoomLogoPath from "@assets/Zoom2_1773776262533.png";
 import wifiLogoPath from "@assets/Wifi_1773656687145.png";
@@ -291,6 +292,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   const [syllabusData, setSyllabusData] = useState<any>(null);
   const [syllabusItemStates, setSyllabusItemStates] = useState<Record<number, { accepted: boolean | null; editing: boolean; edits: any }>>({});
   const [syllabusObjectPath, setSyllabusObjectPath] = useState<string>('');
+  const [syllabusCreatedTaskIds, setSyllabusCreatedTaskIds] = useState<number[]>([]);
+  const [isUndoingSyllabus, setIsUndoingSyllabus] = useState(false);
 
   useEffect(() => {
     fetch('/api/syllabus/paths')
@@ -1118,7 +1121,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
         dueDate.setHours(23, 59, 0, 0);
       }
 
-      await apiRequest("POST", "/api/tasks", {
+      const resp = await apiRequest("POST", "/api/tasks", {
         title: item.title,
         description: item.description || "",
         type: item.type || "other",
@@ -1132,6 +1135,11 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
         excludeFromGpa: true,
       });
 
+      const created = await resp.json();
+      if (created?.id) {
+        setSyllabusCreatedTaskIds(prev => [...prev, created.id]);
+      }
+
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
       setSyllabusItemStates(prev => ({ ...prev, [idx]: { ...prev[idx], accepted: true } }));
       toast({ title: "Added", description: `"${item.title}" added to assignments and calendar.` });
@@ -1142,6 +1150,29 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
 
   const handleDeclineSyllabusItem = (idx: number) => {
     setSyllabusItemStates(prev => ({ ...prev, [idx]: { ...prev[idx], accepted: false } }));
+  };
+
+  const handleUndoSyllabus = async () => {
+    if (syllabusCreatedTaskIds.length === 0) return;
+    setIsUndoingSyllabus(true);
+    try {
+      let deleted = 0;
+      for (const taskId of syllabusCreatedTaskIds) {
+        try {
+          await apiRequest("DELETE", `/api/tasks/${taskId}`);
+          deleted++;
+        } catch {}
+      }
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+      setSyllabusCreatedTaskIds([]);
+      setSyllabusData(null);
+      setSyllabusItemStates({});
+      toast({ title: "Syllabus undone", description: `Removed ${deleted} task${deleted !== 1 ? 's' : ''} added from syllabus.` });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Failed to undo syllabus.", variant: "destructive" });
+    } finally {
+      setIsUndoingSyllabus(false);
+    }
   };
 
   const handleAcceptWeekNumbering = async (style: string) => {
@@ -1806,6 +1837,17 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         {isParsingSyllabus ? 'Parsing...' : 'Add Syllabus'}
                       </div>
                     </label>
+                    {syllabusCreatedTaskIds.length > 0 && (
+                      <button
+                        className="h-6 px-2 text-[9px] bg-red-600/30 hover:bg-red-600/50 text-white border border-red-400/30 rounded-md flex items-center gap-1 transition-colors whitespace-nowrap"
+                        onClick={handleUndoSyllabus}
+                        disabled={isUndoingSyllabus}
+                        data-testid="button-undo-syllabus"
+                      >
+                        {isUndoingSyllabus ? <Loader2 className="h-3 w-3 animate-spin" /> : <Undo2 className="h-3 w-3" />}
+                        {isUndoingSyllabus ? 'Undoing...' : `Undo Syllabus (${syllabusCreatedTaskIds.length})`}
+                      </button>
+                    )}
                     <Paperclip
                       className={`h-3.5 w-3.5 ${syllabusObjectPath ? 'text-white/40' : 'text-white'} ${syllabusObjectPath ? 'cursor-pointer hover:opacity-70' : ''} transition-opacity`}
                       onClick={() => {
