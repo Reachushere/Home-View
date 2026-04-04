@@ -2322,6 +2322,18 @@ export default function Dashboard() {
   const [voiceTranscript, setVoiceTranscript] = useState('');
   const voiceRecognitionRef = useRef<any>(null);
   const voiceTargetRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
+  const lastFocusedInputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
+
+  useEffect(() => {
+    const trackFocus = (e: FocusEvent) => {
+      const el = e.target as HTMLElement;
+      if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) {
+        lastFocusedInputRef.current = el as HTMLInputElement | HTMLTextAreaElement;
+      }
+    };
+    document.addEventListener('focusin', trackFocus);
+    return () => document.removeEventListener('focusin', trackFocus);
+  }, []);
 
   const voiceStoppingRef = useRef(false);
   const voiceFinalTextRef = useRef('');
@@ -2335,6 +2347,8 @@ export default function Dashboard() {
     const activeEl = document.activeElement as HTMLInputElement | HTMLTextAreaElement | null;
     if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA')) {
       voiceTargetRef.current = activeEl;
+    } else if (lastFocusedInputRef.current) {
+      voiceTargetRef.current = lastFocusedInputRef.current;
     } else {
       voiceTargetRef.current = null;
     }
