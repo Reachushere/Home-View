@@ -14643,8 +14643,8 @@ export default function Dashboard() {
         {/* Weather Alert labels on pill edges */}
         {weatherAlerts.length > 0 && (
           <>
-            <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#ff0000', fontSize: '11px', fontWeight: 800, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 0 6px rgba(255,0,0,0.4)', letterSpacing: '1px', zIndex: 5, pointerEvents: 'none', animation: 'tickerAlertBlink 1s ease-in-out infinite' }} data-testid="pill-weather-label">WEATHER</span>
-            <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#ff0000', fontSize: '11px', fontWeight: 800, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 0 6px rgba(255,0,0,0.4)', letterSpacing: '1px', zIndex: 5, pointerEvents: 'none', animation: 'tickerAlertBlink 1s ease-in-out infinite' }} data-testid="pill-alert-label">ALERT</span>
+            <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#ff0000', fontSize: '11px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 0 8px rgba(255,0,0,0.5)', letterSpacing: '1px', zIndex: 10, pointerEvents: 'none' }} data-testid="pill-weather-label">WEATHER</span>
+            <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#ff0000', fontSize: '11px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 0 8px rgba(255,0,0,0.5)', letterSpacing: '1px', zIndex: 10, pointerEvents: 'none' }} data-testid="pill-alert-label">ALERT</span>
           </>
         )}
 
@@ -17436,8 +17436,8 @@ export default function Dashboard() {
 
       {/* Weather Alert label above ticker, right of mic */}
       {weatherAlerts.length > 0 && (
-        <div className="fixed z-[9999]" style={{ bottom: '43px', left: '48px', display: isSchoolCoursesDialogOpen ? 'none' : undefined, pointerEvents: 'none' }} data-testid="weather-alert-label">
-          <span style={{ color: '#ff0000', fontSize: '13px', fontWeight: 700, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 0 6px rgba(255,0,0,0.4)', letterSpacing: '0.5px', animation: 'tickerAlertBlink 1s ease-in-out infinite' }}>WEATHER ALERT</span>
+        <div className="fixed z-[9999]" style={{ bottom: '33px', left: '48px', display: isSchoolCoursesDialogOpen ? 'none' : undefined, pointerEvents: 'none' }} data-testid="weather-alert-label">
+          <span style={{ color: '#ff0000', fontSize: '13px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 0 6px rgba(255,0,0,0.4)', letterSpacing: '0.5px' }}>WEATHER ALERT</span>
         </div>
       )}
 
@@ -25218,6 +25218,42 @@ export default function Dashboard() {
                     onTouchStart={(e) => handleRowResizeStart(e, 'course')}
                     data-testid={`course-row-resize-handle-${course.name}`}
                   />
+                  </div>
+                );
+              })}
+
+              {/* Countdown Bars */}
+              {countdownBarTasks.length > 0 && countdownBarTasks.map((cbt, cbtIdx) => {
+                const { task, daysUntilDue, barIndices, endsThisWeek, courseColor, courseCode } = cbt;
+                const today = startOfDayET(new Date());
+                const totalDays = Math.max(1, daysUntilDue);
+                const elapsed = totalDays > 0 ? Math.max(0, 1 - (daysUntilDue / Math.max(totalDays, 7))) : 1;
+                const barHeight = 18;
+                const urgencyColor = daysUntilDue <= 1 ? '#ef4444' : daysUntilDue <= 3 ? '#f59e0b' : courseColor;
+                return (
+                  <div key={`cbar-${task.id}`} className="grid w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${barHeight}px` }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7px', fontWeight: 700, color: '#fff', background: urgencyColor, letterSpacing: '0.5px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', padding: '0 2px' }}>
+                      {daysUntilDue}d
+                    </div>
+                    {gridSizes.moduleColumnWidth > 0 && <div style={{ background: urgencyColor, opacity: 0.15 }} />}
+                    {weekDays.map((day, dayIdx) => {
+                      const cellDate = startOfDayET(day);
+                      const due = startOfDayET(new Date(task.dueDate));
+                      const isInRange = cellDate >= today && cellDate <= due;
+                      const isDueDay = isSameDayET(cellDate, due);
+                      const isPast = cellDate < today;
+                      if (!isInRange && !isPast) return <div key={dayIdx} style={{ borderBottom: '1px solid rgba(0,0,0,0.1)' }} />;
+                      if (isPast) return <div key={dayIdx} style={{ borderBottom: '1px solid rgba(0,0,0,0.1)' }} />;
+                      return (
+                        <div key={dayIdx} style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(0,0,0,0.1)', cursor: 'pointer' }} onClick={() => setEditingTask(task)} onMouseEnter={() => setHoveredCountdownTaskId(task.id)} onMouseLeave={() => setHoveredCountdownTaskId(null)} title={`${task.title} — ${daysUntilDue}d`}>
+                          <div style={{ position: 'absolute', inset: 0, background: urgencyColor, opacity: isDueDay ? 0.9 : 0.35 }} />
+                          <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', height: '100%', padding: '0 3px', overflow: 'hidden' }}>
+                            {isDueDay && <span style={{ fontSize: '8px', fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{task.title?.replace(/^\[?[A-Z]{2,5}\d{3}\s*-?\s*/, '').replace(/^\]\s*/, '').replace(/^-\s*/, '') || task.title}</span>}
+                          </div>
+                        </div>
+                      );
+                    })}
+                    <div style={{ background: urgencyColor, opacity: 0.15, borderBottom: '1px solid rgba(0,0,0,0.1)' }} />
                   </div>
                 );
               })}
