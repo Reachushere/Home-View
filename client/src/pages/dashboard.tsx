@@ -27752,7 +27752,7 @@ export default function Dashboard() {
             );
           })()}
           <div className="absolute inset-0 rounded-[12px] pointer-events-none" style={{ zIndex: 2, border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)' }} />
-          <div className="absolute inset-0 rounded-[12px] overflow-hidden flex flex-col" style={{ pointerEvents: 'auto' }}>
+          <div className="absolute inset-0 rounded-[12px] overflow-hidden flex flex-col" style={{ pointerEvents: 'auto', zIndex: 1 }}>
           {/* Weather Overlay */}
           {weatherData && (() => {
             const wc = weatherData.code;
@@ -28248,7 +28248,7 @@ export default function Dashboard() {
             return rows;
           })()}
           <div className="flex-1 flex flex-col" style={{ paddingLeft: '0px', paddingRight: '0px', marginTop: '-1px', flex: 1, minHeight: 0, paddingBottom: '0px', overflow: 'hidden', position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column' as const }}>
-          <div style={{ width: '100%', height: '15px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', flexShrink: 0 }}>
+          <div style={{ width: '100%', height: '15px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', flexShrink: 0, position: 'relative', zIndex: 3, border: '0.5px solid rgba(255,255,255,0.15)' }}>
             <span style={{ fontSize: '10px', fontWeight: 500, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
           </div>
           <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }} ref={homeworkScrollRef} onScroll={() => { setHwIsScrolling(true); if (hwScrollTimerRef.current) clearTimeout(hwScrollTimerRef.current); hwScrollTimerRef.current = setTimeout(() => setHwIsScrolling(false), 300); const sc = homeworkScrollRef.current; if (sc) { setHwScrolledDown(sc.scrollTop > 5); const sections = sc.querySelectorAll('[data-semester-label]'); let bestLabel: string | null = null; let bestDist = Infinity; const containerTop = sc.getBoundingClientRect().top; sections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestDist) { bestDist = dist; bestLabel = el.getAttribute('data-semester-label') || null; } }); if (bestLabel) setHwVisibleSemLabel(bestLabel); const hwSections = sc.querySelectorAll('[data-homework-section]'); let bestSec: string | null = null; let bestSecDist = Infinity; hwSections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestSecDist) { bestSecDist = dist; bestSec = el.getAttribute('data-homework-section') || null; } }); setHwVisibleSection(bestSec); } }}>
