@@ -27763,19 +27763,21 @@ export default function Dashboard() {
                   )}
                 </div>
                 <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateX(180deg)', display: 'flex', alignItems: 'center', padding: '0 6px', background: 'linear-gradient(90deg, rgba(20,20,40,0.95), rgba(15,15,35,0.95))' }}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, marginRight: '8px' }}><path d="M2 12h3l3-8 4 16 3-12 2 4h5" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, marginRight: '8px', marginLeft: '10px' }}><path d="M2 12h3l3-8 4 16 3-12 2 4h5" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   {earthquakeData.length > 0 ? (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', overflow: 'hidden', flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden', flex: 1 }}>
                       {earthquakeData.slice(0, 3).map((eq, i) => {
                         const magColor = eq.mag >= 4 ? '#ef4444' : eq.mag >= 3 ? '#f59e0b' : '#22c55e';
                         const ago = Math.round((Date.now() - eq.time) / 3600000);
                         const agoStr = ago < 1 ? '<1h ago' : ago < 24 ? `${ago}h ago` : `${Math.round(ago / 24)}d ago`;
+                        const placeName = eq.place?.replace(/^.+? of /, '') || 'Unknown';
+                        const shortPlace = placeName.length > 18 ? placeName.slice(0, 16) + '…' : placeName;
                         return (
-                          <span key={i} className="text-[9px]" style={{ whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <span key={i} className="text-[9px]" style={{ whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '3px' }}>
                             <span style={{ color: magColor, fontWeight: 700 }}>M{eq.mag.toFixed(1)}</span>
-                            <span style={{ color: 'rgba(255,255,255,0.7)' }}>{eq.place?.replace(/^.+? of /, '') || 'Unknown'}</span>
-                            <span style={{ color: 'rgba(255,255,255,0.35)' }}>{agoStr}</span>
-                            {i < Math.min(earthquakeData.length, 3) - 1 && <span style={{ color: 'rgba(255,255,255,0.15)', marginLeft: '8px' }}>|</span>}
+                            <span style={{ color: 'rgba(255,255,255,0.7)' }}>{shortPlace}</span>
+                            <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: '8px' }}>{agoStr}</span>
+                            {i < Math.min(earthquakeData.length, 3) - 1 && <span style={{ color: 'rgba(255,255,255,0.15)', marginLeft: '3px' }}>|</span>}
                           </span>
                         );
                       })}
