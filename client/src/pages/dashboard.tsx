@@ -24002,9 +24002,10 @@ export default function Dashboard() {
                               if (isNightPhase) return 'linear-gradient(180deg, #0a0e27 0%, #101740 40%, #1a2555 100%)';
                               if (phase === 'preDawn') return 'linear-gradient(180deg, #0f1535 0%, #1e2a5a 40%, #3d2b4a 70%, #5c3d4a 100%)';
                               if (phase === 'sunrise') return isActiveWeather ? 'linear-gradient(180deg, #3a4060 0%, #7a6858 35%, #9a8868 55%, #8a8878 75%, #7a7a72 100%)' : 'linear-gradient(180deg, #2a3a6e 0%, #c97355 35%, #e8a55a 55%, #f0c66e 75%, #fdd878 100%)';
-                              if (phase === 'morning') return isActiveWeather ? 'linear-gradient(180deg, #4a5a6a 0%, #6a7a88 40%, #8a9098 70%, #7a8078 100%)' : 'linear-gradient(180deg, #4a8ec7 0%, #7bb8e0 40%, #b8d8ef 70%, #edc261 100%)';
-                              if (phase === 'preSet') return isActiveWeather ? 'linear-gradient(180deg, #4a5868 0%, #6a7580 30%, #7a7568 60%, #6a5a50 100%)' : 'linear-gradient(180deg, #5a95c8 0%, #8ab8d8 30%, #c9a96e 60%, #d4905a 100%)';
-                              if (phase === 'sunset') return isActiveWeather ? 'linear-gradient(180deg, #2a3050 0%, #5a4a50 25%, #7a5a48 45%, #6a6058 65%, #5a4a3a 100%)' : 'linear-gradient(180deg, #2d3a6e 0%, #8a4a5c 25%, #d4724a 45%, #ecc47e 65%, #f9a523 85%, #c44a20 100%)';
+                              if (phase === 'morning') return isActiveWeather ? 'linear-gradient(180deg, #3a4a5a 0%, #4a5a6a 40%, #5a6a7a 70%, #5a6878 100%)' : 'linear-gradient(180deg, #4a8ec7 0%, #7bb8e0 40%, #b8d8ef 70%, #edc261 100%)';
+                              if (phase === 'day' && isActiveWeather) return 'linear-gradient(180deg, #3a4a5a 0%, #4a5a6a 40%, #5a6a7a 100%)';
+                              if (phase === 'preSet') return isActiveWeather ? 'linear-gradient(180deg, #3a4858 0%, #4a5a6a 30%, #5a6570 60%, #4a5058 100%)' : 'linear-gradient(180deg, #5a95c8 0%, #8ab8d8 30%, #c9a96e 60%, #d4905a 100%)';
+                              if (phase === 'sunset') return isActiveWeather ? 'linear-gradient(180deg, #2a3050 0%, #3a4558 25%, #4a5a68 45%, #4a5565 65%, #3a4550 100%)' : 'linear-gradient(180deg, #2d3a6e 0%, #8a4a5c 25%, #d4724a 45%, #ecc47e 65%, #f9a523 85%, #c44a20 100%)';
                               if (phase === 'dusk') return isActiveWeather ? 'linear-gradient(180deg, #101825 0%, #1a1a30 30%, #2a2a3a 55%, #3a3540 75%, #201820 100%)' : 'linear-gradient(180deg, #12183a 0%, #2a2050 30%, #5c3355 55%, #8a4a5c 75%, #3d2040 100%)';
                               if (wCode >= 71 && wCode <= 77) return 'linear-gradient(180deg, #4a5060 0%, #6a7080 40%, #8a90a0 100%)';
                               if (wCode >= 85 && wCode <= 86) return 'linear-gradient(180deg, #3a4050 0%, #5a6070 40%, #7a8090 100%)';
