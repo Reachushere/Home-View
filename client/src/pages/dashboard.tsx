@@ -17369,7 +17369,7 @@ export default function Dashboard() {
         const floor42Top = 100 - (42 * floorHeight);
         return (
           <div className="fixed inset-0 z-[10001] flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }} onClick={() => setSkyMapOpen(false)} data-testid="sky-map-overlay">
-            <div className="relative rounded-xl shadow-2xl overflow-hidden" style={{ width: '900px', maxWidth: '95vw', height: '600px', maxHeight: '90vh', background: 'linear-gradient(180deg, #0a0e27 0%, #111827 30%, #1a1a2e 100%)' }} onClick={(e) => e.stopPropagation()} data-testid="sky-map-dialog">
+            <div className="relative rounded-xl shadow-2xl overflow-hidden" style={{ width: '900px', maxWidth: '95vw', height: '660px', maxHeight: '90vh', background: 'linear-gradient(180deg, #0a0e27 0%, #111827 30%, #1a1a2e 100%)' }} onClick={(e) => e.stopPropagation()} data-testid="sky-map-dialog">
               <div className="flex items-center justify-between px-5 py-3" style={{ background: 'linear-gradient(90deg, rgba(30,40,80,0.9), rgba(20,30,60,0.9))', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                 <div className="flex items-center gap-3">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#60a5fa" strokeWidth="1.5"/><circle cx="12" cy="12" r="1" fill="#60a5fa"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="#60a5fa" strokeWidth="1" strokeLinecap="round"/></svg>
