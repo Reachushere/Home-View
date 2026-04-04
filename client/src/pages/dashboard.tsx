@@ -24408,8 +24408,9 @@ export default function Dashboard() {
                                 style={{
                                   margin: '2px 2px 2px 2px',
                                   marginRight: '0px',
-                                  backgroundColor: task.isCompleted ? '#e5e7eb' : (() => { const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === course.name); if (cMatch?.taskBgColor) return cMatch.taskBgColor; const cEnd = cMatch?.colorEnd; const endRgb = hexToRgb(cEnd || course.darkColor); return `rgb(${Math.max(0,endRgb.r-12)},${Math.max(0,endRgb.g-12)},${Math.max(0,endRgb.b-12)})`; })(),
-                                  borderColor: task.isCompleted ? '#d1d5db' : course.darkColor
+                                  backgroundColor: task.isCompleted ? '#e5e7eb' : 'white',
+                                  borderColor: task.isCompleted ? '#d1d5db' : course.darkColor,
+                                  borderLeft: task.isCompleted ? undefined : `3px solid ${course.darkColor}`
                                 }}
                                 data-testid={`course-module-task-static-${task.id}`}
                               >
@@ -24945,8 +24946,9 @@ export default function Dashboard() {
                                 <div
                                   className="flex items-center text-[9px] rounded border cursor-pointer relative w-full"
                                   style={{ 
-                                    backgroundColor: (() => { const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === course.name); if (cMatch?.taskBgColor) return cMatch.taskBgColor; const cEnd = cMatch?.colorEnd; const endRgb = hexToRgb(cEnd || course.darkColor); return `rgb(${Math.max(0,endRgb.r-12)},${Math.max(0,endRgb.g-12)},${Math.max(0,endRgb.b-12)})`; })(),
+                                    backgroundColor: 'white',
                                     borderColor: course.darkColor,
+                                    borderLeft: `3px solid ${course.darkColor}`,
                                     zIndex: hoveredCountdownTaskId === task.id ? 55 : 1,
                                     filter: hoveredCountdownTaskId === task.id ? 'brightness(1.15)' : undefined,
                                     boxShadow: hoveredCountdownTaskId === task.id ? '0 2px 8px rgba(0,0,0,0.35)' : undefined,
@@ -24992,8 +24994,9 @@ export default function Dashboard() {
                             <div 
                               className={`flex flex-col gap-0 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer w-full min-w-0 ${isDueTomorrow ? "animate-slow-blink" : ""}`}
                               style={{ 
-                                backgroundColor: (() => { const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === course.name); if (cMatch?.taskBgColor) return cMatch.taskBgColor; const cEnd = cMatch?.colorEnd; const endRgb = hexToRgb(cEnd || course.darkColor); return `rgb(${Math.max(0,endRgb.r-12)},${Math.max(0,endRgb.g-12)},${Math.max(0,endRgb.b-12)})`; })(),
+                                backgroundColor: 'white',
                                 borderColor: course.darkColor,
+                                borderLeft: `3px solid ${course.darkColor}`,
                                 filter: hoveredCountdownTaskId === task.id ? 'brightness(1.15)' : undefined,
                                 boxShadow: hoveredCountdownTaskId === task.id ? '0 2px 8px rgba(0,0,0,0.35)' : undefined,
                                 transition: 'filter 0.2s ease, box-shadow 0.2s ease',
@@ -25014,7 +25017,7 @@ export default function Dashboard() {
                               />
                               <span 
                                 className="truncate cursor-pointer hover:opacity-80 pl-1 flex-1 min-w-0"
-                                style={{ fontWeight: 400, fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textShadow: 'none', WebkitTextStroke: '0', letterSpacing: '0.1px' }}
+                                style={{ fontWeight: 400, fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textShadow: 'none', WebkitTextStroke: '0', letterSpacing: '0.1px', color: '#374151' }}
                                 onClick={() => setEditingTask(task)}
                               >
                                 {task.title?.replace(/^\[?[A-Z]{2,5}\d{3}\s*-?\s*/, '').replace(/^\]\s*/, '').replace(/^-\s*/, '') || task.title}
