@@ -2189,6 +2189,7 @@ export default function Dashboard() {
   const [weatherAlerts, setWeatherAlerts] = useState<{ title: string; summary: string; description: string; type: string; url: string }[]>([]);
   const [weatherAlertDialogOpen, setWeatherAlertDialogOpen] = useState(false);
   const [skyMapOpen, setSkyMapOpen] = useState(false);
+  const [skyMapPlanet, setSkyMapPlanet] = useState<string | null>(null);
   const [skyMapDate, setSkyMapDate] = useState<Date>(new Date());
   const [hwHeaderFlipped, setHwHeaderFlipped] = useState(false);
   const [earthquakeData, setEarthquakeData] = useState<{ place: string; mag: number; time: number; url: string }[]>([]);
@@ -17352,11 +17353,11 @@ export default function Dashboard() {
         const sunsetStr = ssTime ? new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/Toronto' }).format(ssTime) : '~7:45 PM';
         const sunriseStr = srTime ? new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/Toronto' }).format(srTime) : '~6:50 AM';
         const planets = [
-          { name: 'Venus', mag: -3.8, desc: 'Evening Star', x: 25, y: 38, color: '#fef3c7', size: 6, visible: true, direction: 'WSW', altitude: '22°', info: 'Brilliant evening star, visible ~1.5 hrs after sunset' },
-          { name: 'Jupiter', mag: -2.0, desc: 'Gas Giant', x: 38, y: 28, color: '#fde68a', size: 5, visible: true, direction: 'SW', altitude: '35°', info: 'Bright in southwest at dusk, in Gemini' },
-          { name: 'Uranus', mag: 5.8, desc: 'Ice Giant', x: 22, y: 42, color: '#a7f3d0', size: 2, visible: false, direction: 'W', altitude: '18°', info: 'Needs binoculars, near Venus in early April' },
-          { name: 'Mars', mag: 1.2, desc: 'Red Planet', x: 82, y: 65, color: '#fca5a5', size: 3, visible: false, direction: 'Pre-dawn E', altitude: 'Low', info: 'Morning sky only, rises before sunrise' },
-          { name: 'Saturn', mag: 0.9, desc: 'Ringed Planet', x: 85, y: 70, color: '#fcd34d', size: 3, visible: false, direction: 'Pre-dawn E', altitude: 'Low', info: 'Morning sky only, in Pisces' },
+          { name: 'Venus', mag: -3.8, desc: 'Evening Star', x: 25, y: 38, color: '#fef3c7', size: 6, visible: true, direction: 'WSW', altitude: '22°', info: 'Brilliant evening star, visible ~1.5 hrs after sunset', photo: 'https://upload.wikimedia.org/wikipedia/commons/b/b2/Venus_Globe_-_GPN-2000-000078.jpg', diameter: '12,104 km', distance: '61M km from Earth', orbitalPeriod: '225 days', surfaceTemp: '462°C (hottest planet)', moons: 0, detail: 'Venus is the second planet from the Sun and Earth\'s closest neighbor. It\'s shrouded in thick sulfuric acid clouds, trapping heat in a runaway greenhouse effect. In April 2026, Venus blazes at magnitude −3.8 in the evening sky after sunset, setting about 1.5 hours after the Sun.' },
+          { name: 'Jupiter', mag: -2.0, desc: 'Gas Giant', x: 38, y: 28, color: '#fde68a', size: 5, visible: true, direction: 'SW', altitude: '35°', info: 'Bright in southwest at dusk, in Gemini', photo: 'https://upload.wikimedia.org/wikipedia/commons/c/c1/Jupiter_New_Horizons.jpg', diameter: '139,820 km', distance: '680M km from Earth', orbitalPeriod: '11.9 years', surfaceTemp: '−110°C (cloud tops)', moons: 95, detail: 'Jupiter is the largest planet in the solar system — more than 1,300 Earths could fit inside. Its Great Red Spot is a storm larger than Earth that has raged for centuries. Currently at magnitude −2.0 in Gemini, it\'s the second brightest object in the evening sky after Venus.' },
+          { name: 'Uranus', mag: 5.8, desc: 'Ice Giant', x: 22, y: 42, color: '#a7f3d0', size: 2, visible: false, direction: 'W', altitude: '18°', info: 'Needs binoculars, near Venus in early April', photo: 'https://upload.wikimedia.org/wikipedia/commons/6/69/Uranus_Voyager2_color_calibrated.png', diameter: '50,724 km', distance: '2.9B km from Earth', orbitalPeriod: '84 years', surfaceTemp: '−224°C', moons: 27, detail: 'Uranus is an ice giant tilted almost completely on its side, rolling along its orbit. Its blue-green color comes from methane in the atmosphere. At magnitude 5.8 it\'s invisible to the naked eye but findable with binoculars near Venus in early April 2026. On April 23, Venus passes very close to Uranus.' },
+          { name: 'Mars', mag: 1.2, desc: 'Red Planet', x: 82, y: 65, color: '#fca5a5', size: 3, visible: false, direction: 'Pre-dawn E', altitude: 'Low', info: 'Morning sky only, rises before sunrise', photo: 'https://upload.wikimedia.org/wikipedia/commons/0/0c/Mars_-_August_30_2021_-_Flickr_-_Kevin_M._Gill.png', diameter: '6,779 km', distance: '285M km from Earth', orbitalPeriod: '687 days', surfaceTemp: '−63°C average', moons: 2, detail: 'Mars, the Red Planet, has the tallest volcano (Olympus Mons, 21.9 km) and deepest canyon (Valles Marineris, 7 km) in the solar system. In April 2026 Mars is a morning object, rising in the east before sunrise. Its distinctive reddish hue comes from iron oxide (rust) on its surface.' },
+          { name: 'Saturn', mag: 0.9, desc: 'Ringed Planet', x: 85, y: 70, color: '#fcd34d', size: 3, visible: false, direction: 'Pre-dawn E', altitude: 'Low', info: 'Morning sky only, in Pisces', photo: 'https://upload.wikimedia.org/wikipedia/commons/c/c7/Saturn_during_Equinox.jpg', diameter: '116,460 km', distance: '1.4B km from Earth', orbitalPeriod: '29.5 years', surfaceTemp: '−178°C', moons: 146, detail: 'Saturn is famous for its stunning ring system, made of billions of ice and rock particles ranging from grains to house-sized chunks. It\'s the least dense planet — it would float in water. In April 2026, Saturn is a morning planet in Pisces, visible low in the pre-dawn eastern sky.' },
         ];
         const constellations = [
           { name: 'Orion', x: 30, y: 50, stars: [[0,0],[3,-8],[6,0],[3,3],[3,-3],[3,-8],[1,-12],[5,-13],[3,-8]] },
@@ -17413,8 +17414,8 @@ export default function Dashboard() {
                   {planets.filter(p => p.visible).map((p, i) => (
                     <div key={p.name} style={{ position: 'absolute', left: `${p.x}%`, top: `${p.y}%` }}>
                       <div style={{ width: `${p.size * 2}px`, height: `${p.size * 2}px`, borderRadius: '50%', background: p.color, boxShadow: `0 0 ${p.size * 3}px ${p.size}px ${p.color}40`, transform: 'translate(-50%, -50%)' }} />
-                      <div style={{ position: 'absolute', top: `${p.size + 4}px`, left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>
-                        <div className="text-[10px] font-bold text-white" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.8)', textAlign: 'center' }}>{p.name}</div>
+                      <div style={{ position: 'absolute', top: `${p.size + 4}px`, left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap', cursor: 'pointer' }} onClick={() => setSkyMapPlanet(p.name)} data-testid={`sky-planet-label-${p.name.toLowerCase()}`}>
+                        <div className="text-[10px] font-bold text-white hover:text-blue-300" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.8)', textAlign: 'center', transition: 'color 0.2s' }}>{p.name}</div>
                         <div className="text-[8px] text-white/50" style={{ textAlign: 'center' }}>mag {p.mag}</div>
                       </div>
                       <svg style={{ position: 'absolute', top: `${p.size + 2}px`, left: '50%', transform: 'translateX(-50%)' }} width="8" height="6" viewBox="0 0 8 6"><path d="M4 0L4 6" stroke={p.color} strokeWidth="1" opacity="0.5"/></svg>
@@ -17451,7 +17452,7 @@ export default function Dashboard() {
                     <div key={p.name} className="mb-3 rounded-lg p-2" style={{ background: p.visible ? 'rgba(59,130,246,0.1)' : 'rgba(255,255,255,0.03)', border: `1px solid ${p.visible ? 'rgba(59,130,246,0.2)' : 'rgba(255,255,255,0.05)'}` }}>
                       <div className="flex items-center gap-2">
                         <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: p.color, boxShadow: `0 0 4px ${p.color}` }} />
-                        <span className="text-[11px] text-white font-medium">{p.name}</span>
+                        <span className="text-[11px] text-white font-medium cursor-pointer hover:text-blue-300" style={{ transition: 'color 0.2s' }} onClick={() => setSkyMapPlanet(p.name)} data-testid={`sky-panel-planet-${p.name.toLowerCase()}`}>{p.name}</span>
                         {p.visible ? <span className="text-[8px] text-green-400 ml-auto">VISIBLE</span> : <span className="text-[8px] text-white ml-auto">NOT VISIBLE</span>}
                       </div>
                       <div className="text-[9px] text-white/80 mt-1">{p.direction} · {p.altitude}</div>
@@ -17468,6 +17469,70 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
+              {skyMapPlanet && (() => {
+                const p = planets.find(pl => pl.name === skyMapPlanet);
+                if (!p) return null;
+                return (
+                  <div className="absolute inset-0 z-10 flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)' }} onClick={() => setSkyMapPlanet(null)} data-testid="planet-detail-overlay">
+                    <div className="rounded-xl overflow-hidden" style={{ width: '520px', maxWidth: '90%', maxHeight: '85%', background: 'linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%)', border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 20px 60px rgba(0,0,0,0.8)' }} onClick={(e) => e.stopPropagation()} data-testid={`planet-detail-${p.name.toLowerCase()}`}>
+                      <div style={{ position: 'relative', height: '220px', overflow: 'hidden', background: '#000' }}>
+                        <img src={p.photo} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 50%, rgba(13,17,23,0.95) 100%)' }} />
+                        <button onClick={() => setSkyMapPlanet(null)} className="absolute top-3 right-3 text-white/60 hover:text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10" style={{ fontSize: '18px', fontWeight: 700 }} data-testid="button-close-planet-detail">&times;</button>
+                        <div style={{ position: 'absolute', bottom: '12px', left: '16px' }}>
+                          <div className="flex items-center gap-3">
+                            <div style={{ width: '14px', height: '14px', borderRadius: '50%', background: p.color, boxShadow: `0 0 10px 3px ${p.color}60` }} />
+                            <span className="text-white font-bold text-[22px]" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>{p.name}</span>
+                            <span className="text-white/60 text-[13px] italic">{p.desc}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div style={{ padding: '16px', overflowY: 'auto', maxHeight: '300px' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '14px' }}>
+                          <div className="rounded-lg p-2.5" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                            <div className="text-[8px] text-white/40 uppercase" style={{ letterSpacing: '1px' }}>Diameter</div>
+                            <div className="text-[13px] text-white font-medium mt-0.5">{p.diameter}</div>
+                          </div>
+                          <div className="rounded-lg p-2.5" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                            <div className="text-[8px] text-white/40 uppercase" style={{ letterSpacing: '1px' }}>Distance</div>
+                            <div className="text-[13px] text-white font-medium mt-0.5">{p.distance}</div>
+                          </div>
+                          <div className="rounded-lg p-2.5" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                            <div className="text-[8px] text-white/40 uppercase" style={{ letterSpacing: '1px' }}>Orbital Period</div>
+                            <div className="text-[13px] text-white font-medium mt-0.5">{p.orbitalPeriod}</div>
+                          </div>
+                          <div className="rounded-lg p-2.5" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                            <div className="text-[8px] text-white/40 uppercase" style={{ letterSpacing: '1px' }}>Surface Temp</div>
+                            <div className="text-[13px] text-white font-medium mt-0.5">{p.surfaceTemp}</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4 mb-3" style={{ padding: '8px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                          <div>
+                            <span className="text-[8px] text-white/40 uppercase" style={{ letterSpacing: '1px' }}>Moons</span>
+                            <div className="text-[15px] text-white font-bold">{p.moons}</div>
+                          </div>
+                          <div style={{ width: '1px', height: '28px', background: 'rgba(255,255,255,0.1)' }} />
+                          <div>
+                            <span className="text-[8px] text-white/40 uppercase" style={{ letterSpacing: '1px' }}>Magnitude</span>
+                            <div className="text-[15px] text-white font-bold">{p.mag}</div>
+                          </div>
+                          <div style={{ width: '1px', height: '28px', background: 'rgba(255,255,255,0.1)' }} />
+                          <div>
+                            <span className="text-[8px] text-white/40 uppercase" style={{ letterSpacing: '1px' }}>Direction</span>
+                            <div className="text-[15px] text-white font-bold">{p.direction}</div>
+                          </div>
+                          <div style={{ width: '1px', height: '28px', background: 'rgba(255,255,255,0.1)' }} />
+                          <div>
+                            <span className="text-[8px] text-white/40 uppercase" style={{ letterSpacing: '1px' }}>Status</span>
+                            <div className={`text-[13px] font-bold ${p.visible ? 'text-green-400' : 'text-red-400'}`}>{p.visible ? 'Visible' : 'Not Visible'}</div>
+                          </div>
+                        </div>
+                        <p className="text-[12px] text-white/80 leading-relaxed">{p.detail}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           </div>
         );
