@@ -28393,7 +28393,7 @@ export default function Dashboard() {
                     left: 0,
                     right: 0,
                     height: `${otherRowHeight}px`,
-                    background: otherRowColors.courseRowColor || otherRowColors.cellBg,
+                    background: (() => { const stops = otherRowColors.labelStops ? (() => { try { return JSON.parse(otherRowColors.labelStops); } catch { return []; } })() : []; const allStops = [{ position: 0, color: otherRowColors.labelStart }, ...stops, { position: 100, color: otherRowColors.labelEnd }]; return `linear-gradient(180deg, ${allStops.map((s: any) => `${s.color} ${s.position}%`).join(', ')})`; })(),
                     zIndex: 41,
                     borderTop: `1.5px dotted ${otherRowColors.borderColor}`,
                     borderBottom: `1.5px dotted ${otherRowColors.borderColor}`,
