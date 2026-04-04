@@ -24797,19 +24797,22 @@ export default function Dashboard() {
                             if (tc !== courseCodeUpper) return false;
                             const tDue = startOfDayET(new Date(t.dueDate));
                             if (tDue < today) return false;
-                            const tDueDayIdx = weekDays.findIndex(wd => isSameDayET(wd, tDue));
-                            if (tDueDayIdx < 0) return false;
+                            const weekStart = startOfDayET(weekDays[0]);
+                            const weekEnd = startOfDayET(addDays(weekDays[weekDays.length - 1], 1));
+                            if (today >= weekEnd) return false;
                             const todayDayIdx = weekDays.findIndex(wd => isSameDayET(wd, today));
+                            const tDueDayIdx = weekDays.findIndex(wd => isSameDayET(wd, tDue));
                             const barStart = todayDayIdx >= 0 ? todayDayIdx : 0;
-                            return dayIdx >= barStart && dayIdx <= tDueDayIdx;
+                            const barEnd = tDueDayIdx >= 0 ? tDueDayIdx : weekDays.length - 1;
+                            return dayIdx >= barStart && dayIdx <= barEnd;
                           });
                           if (countdownTasks.length === 0) return null;
                           return countdownTasks.map(t => {
                             const tDue = startOfDayET(new Date(t.dueDate));
                             const daysLeft = Math.max(0, Math.round((tDue.getTime() - today.getTime()) / (1000*60*60*24)));
                             const barColor = t.countdownBarColor || (daysLeft <= 1 ? '#ef4444' : daysLeft <= 3 ? '#f59e0b' : course.darkColor);
-                            const tDueDayIdx = weekDays.findIndex(wd => isSameDayET(wd, tDue));
-                            const isLastCell = dayIdx === tDueDayIdx;
+                            const tDueDayIdx2 = weekDays.findIndex(wd => isSameDayET(wd, tDue));
+                            const isLastCell = tDueDayIdx2 >= 0 ? dayIdx === tDueDayIdx2 : dayIdx === weekDays.length - 1;
                             const todayDayIdx = weekDays.findIndex(wd => isSameDayET(wd, today));
                             const isFirstCell = dayIdx === (todayDayIdx >= 0 ? todayDayIdx : 0);
                             const slot = taskSlotMap.get(t.id) ?? 0;
