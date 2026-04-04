@@ -17366,7 +17366,7 @@ export default function Dashboard() {
         ];
         const totalFloors = 50;
         const floorHeight = 100 / totalFloors;
-        const floor42Top = 100 - (42 * floorHeight);
+        const floor42Top = 100 - (50 * floorHeight);
         return (
           <div className="fixed inset-0 z-[10001] flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }} onClick={() => setSkyMapOpen(false)} data-testid="sky-map-overlay">
             <div className="relative rounded-xl shadow-2xl overflow-hidden" style={{ width: '900px', maxWidth: '95vw', height: '700px', maxHeight: '90vh', background: 'linear-gradient(180deg, #0a0e27 0%, #111827 30%, #1a1a2e 100%)' }} onClick={(e) => e.stopPropagation()} data-testid="sky-map-dialog">
@@ -17390,9 +17390,9 @@ export default function Dashboard() {
                   </div>
                   <div style={{ position: 'absolute', top: `${floor42Top - 1}%`, left: '-4px', width: '8px', height: '8px', borderRadius: '50%', background: '#3b82f6', border: '2px solid #1e3a5f', zIndex: 6, transform: 'translateY(-2.5px)' }} />
                   <div style={{ position: 'absolute', bottom: '8px', left: 0, right: 0, textAlign: 'center', zIndex: 5 }}>
-                    <span className="text-[10px] text-white/60 font-medium" style={{ letterSpacing: '1px' }}>THE SELBY</span>
+                    <span className="text-[10px] text-white font-medium" style={{ letterSpacing: '1px' }}>THE SELBY</span>
                     <br/>
-                    <span className="text-[8px] text-white/40">50 STOREYS</span>
+                    <span className="text-[8px] text-white/80">50 STOREYS</span>
                   </div>
                 </div>
                 <div className="flex-1 relative overflow-hidden" style={{ background: 'linear-gradient(180deg, #0a0e27 0%, #0d1230 30%, #111d40 60%, #1a2744 80%, #2a3a5a 95%, #3a4a6a 100%)' }}>
@@ -17430,41 +17430,41 @@ export default function Dashboard() {
                           <circle key={si} cx={s[0] * 4} cy={s[1] * 4} r={si === 0 ? 2 : 1.2} fill="rgba(255,255,255,0.7)" />
                         ))}
                       </svg>
-                      <span className="text-[8px] text-white/30 absolute" style={{ top: '-12px', left: '0', letterSpacing: '1px', textTransform: 'uppercase' }}>{c.name}</span>
+                      <span className="text-[8px] text-white/60 absolute" style={{ top: '-12px', left: '0', letterSpacing: '1px', textTransform: 'uppercase' }}>{c.name}</span>
                     </div>
                   ))}
                   <svg style={{ position: 'absolute', top: '8px', right: '8px', filter: 'drop-shadow(0 0 6px rgba(255,250,210,0.4))' }} width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M20.354 15.354A9 9 0 0 1 8.646 3.646 9.003 9.003 0 0 0 12 21a9.003 9.003 0 0 0 8.354-5.646z" fill="#fef9c3" stroke="rgba(255,250,200,0.3)" strokeWidth="0.5"/></svg>
                   <div style={{ position: 'absolute', bottom: '14%', left: 0, right: 0, display: 'flex', justifyContent: 'space-between', padding: '0 20px' }}>
                     {['SE', 'SSE', 'S', 'SSW', 'SW'].map(dir => (
-                      <span key={dir} className="text-[9px] text-white/30 font-medium" style={{ letterSpacing: '1px' }}>{dir}</span>
+                      <span key={dir} className="text-[9px] text-white/70 font-medium" style={{ letterSpacing: '1px' }}>{dir}</span>
                     ))}
                   </div>
                   <div style={{ position: 'absolute', top: '12px', left: '12px' }}>
-                    <div className="text-[11px] text-white/70 font-medium">Evening Sky — Facing South</div>
-                    <div className="text-[9px] text-white/40 mt-0.5">Lat 43.67°N · Long 79.39°W · Alt: ~130m</div>
-                    <div className="text-[9px] text-white/40">Sunset: {sunsetStr} · Sunrise: {sunriseStr}</div>
+                    <div className="text-[11px] text-white font-medium">Evening Sky — Facing South</div>
+                    <div className="text-[9px] text-white/80 mt-0.5">Lat 43.67°N · Long 79.39°W · Alt: ~130m</div>
+                    <div className="text-[9px] text-white/80">Sunset: {sunsetStr} · Sunrise: {sunriseStr}</div>
                   </div>
                 </div>
                 <div style={{ width: '200px', flexShrink: 0, borderLeft: '1px solid rgba(255,255,255,0.08)', background: 'rgba(10,14,39,0.9)', overflowY: 'auto', padding: '12px' }}>
-                  <div className="text-[11px] text-white/60 font-semibold mb-3" style={{ letterSpacing: '1px', textTransform: 'uppercase' }}>Visible Tonight</div>
+                  <div className="text-[11px] text-white font-semibold mb-3" style={{ letterSpacing: '1px', textTransform: 'uppercase' }}>Visible Tonight</div>
                   {planets.map(p => (
                     <div key={p.name} className="mb-3 rounded-lg p-2" style={{ background: p.visible ? 'rgba(59,130,246,0.1)' : 'rgba(255,255,255,0.03)', border: `1px solid ${p.visible ? 'rgba(59,130,246,0.2)' : 'rgba(255,255,255,0.05)'}` }}>
                       <div className="flex items-center gap-2">
                         <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: p.color, boxShadow: `0 0 4px ${p.color}` }} />
                         <span className="text-[11px] text-white font-medium">{p.name}</span>
-                        {p.visible ? <span className="text-[8px] text-green-400 ml-auto">VISIBLE</span> : <span className="text-[8px] text-white/30 ml-auto">NOT VISIBLE</span>}
+                        {p.visible ? <span className="text-[8px] text-green-400 ml-auto">VISIBLE</span> : <span className="text-[8px] text-white/60 ml-auto">NOT VISIBLE</span>}
                       </div>
-                      <div className="text-[9px] text-white/50 mt-1">{p.direction} · {p.altitude}</div>
-                      <div className="text-[9px] text-white/40 mt-0.5">{p.info}</div>
+                      <div className="text-[9px] text-white/80 mt-1">{p.direction} · {p.altitude}</div>
+                      <div className="text-[9px] text-white/70 mt-0.5">{p.info}</div>
                     </div>
                   ))}
                   <div className="mt-4 pt-3 border-t border-white/10">
-                    <div className="text-[11px] text-white/60 font-semibold mb-2" style={{ letterSpacing: '1px', textTransform: 'uppercase' }}>April Highlights</div>
-                    <div className="text-[9px] text-white/50 mb-1.5">🌕 Apr 2 — Full "Pink Moon"</div>
-                    <div className="text-[9px] text-white/50 mb-1.5">🌑 Apr 17 — New Moon (best dark sky)</div>
-                    <div className="text-[9px] text-white/50 mb-1.5">🌙 Apr 18-19 — Moon-Venus pairing</div>
-                    <div className="text-[9px] text-white/50 mb-1.5">☄️ Apr 22 — Lyrid meteor shower peak</div>
-                    <div className="text-[9px] text-white/50 mb-1.5">🔭 Apr 23 — Venus near Uranus + Pleiades</div>
+                    <div className="text-[11px] text-white font-semibold mb-2" style={{ letterSpacing: '1px', textTransform: 'uppercase' }}>April Highlights</div>
+                    <div className="text-[9px] text-white/80 mb-1.5">🌕 Apr 2 — Full "Pink Moon"</div>
+                    <div className="text-[9px] text-white/80 mb-1.5">🌑 Apr 17 — New Moon (best dark sky)</div>
+                    <div className="text-[9px] text-white/80 mb-1.5">🌙 Apr 18-19 — Moon-Venus pairing</div>
+                    <div className="text-[9px] text-white/80 mb-1.5">☄️ Apr 22 — Lyrid meteor shower peak</div>
+                    <div className="text-[9px] text-white/80 mb-1.5">🔭 Apr 23 — Venus near Uranus + Pleiades</div>
                   </div>
                 </div>
               </div>
