@@ -1818,6 +1818,10 @@ export default function Dashboard() {
   const [dupDeleting, setDupDeleting] = useState(false);
   const [dupDiffTimeEvents, setDupDiffTimeEvents] = useState<any[]>([]);
   const [dupShowDiffTime, setDupShowDiffTime] = useState(false);
+  const [similarTasksOpen, setSimilarTasksOpen] = useState(false);
+  const [similarTasks, setSimilarTasks] = useState<Task[]>([]);
+  const [similarSelected, setSimilarSelected] = useState<Set<number>>(new Set());
+  const [similarDeleting, setSimilarDeleting] = useState(false);
   const [isEmailWizardOpen, setIsEmailWizardOpen] = useState(false);
   const [emailWizardStep, setEmailWizardStep] = useState(0);
   const [emailWizardAccount, setEmailWizardAccount] = useState<string>('all');
@@ -30191,6 +30195,88 @@ export default function Dashboard() {
           </DialogContent>
         </Dialog>
 
+        {/* Similar Tasks Dialog */}
+        <Dialog open={similarTasksOpen} onOpenChange={(open) => { if (!open) { setSimilarTasksOpen(false); setSimilarDeleting(false); } }}>
+          <DialogContent className="max-w-md text-white" style={{ maxHeight: '70vh', display: 'flex', flexDirection: 'column' }}>
+            <DialogHeader>
+              <DialogTitle className="text-white text-sm">Similar Tasks ({similarTasks.length})</DialogTitle>
+            </DialogHeader>
+            <p className="text-white/60 text-[10px]">Uncheck any tasks you want to keep, then press Delete Selected.</p>
+            <div style={{ flex: 1, overflowY: 'auto', maxHeight: '45vh' }} className="space-y-1 pr-1">
+              {similarTasks.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()).map((t) => (
+                <label key={t.id} className="flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer hover:bg-white/5 transition-colors" data-testid={`similar-task-${t.id}`}>
+                  <input
+                    type="checkbox"
+                    checked={similarSelected.has(t.id)}
+                    onChange={() => {
+                      setSimilarSelected(prev => {
+                        const next = new Set(prev);
+                        if (next.has(t.id)) next.delete(t.id);
+                        else next.add(t.id);
+                        return next;
+                      });
+                    }}
+                    className="accent-red-500 w-3.5 h-3.5"
+                    data-testid={`checkbox-similar-${t.id}`}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <span className="text-white text-[11px] block truncate">{t.title}</span>
+                    <span className="text-white/40 text-[9px]">
+                      {new Date(t.dueDate).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'America/Toronto' })}
+                      {t.eventStartTime ? ` at ${t.eventStartTime}` : ''}
+                      {t.isCompleted ? ' ✓' : ''}
+                    </span>
+                  </div>
+                </label>
+              ))}
+            </div>
+            <div className="flex gap-2 pt-2 border-t border-white/10">
+              <button
+                className="flex-1 inline-flex items-center justify-center rounded-md px-3 py-2 text-white/60 text-xs hover:text-white/80 transition-colors"
+                onClick={() => {
+                  if (similarSelected.size === similarTasks.length) setSimilarSelected(new Set());
+                  else setSimilarSelected(new Set(similarTasks.map(t => t.id)));
+                }}
+                data-testid="button-toggle-all-similar"
+              >
+                {similarSelected.size === similarTasks.length ? 'Deselect All' : 'Select All'}
+              </button>
+              <button
+                className="flex-1 inline-flex items-center justify-center rounded-md px-3 py-2 text-red-300 text-xs transition-opacity duration-200"
+                style={{
+                  border: '1.5px solid rgba(239,68,68,0.6)',
+                  background: 'linear-gradient(180deg, rgba(239,68,68,0.38) 0%, rgba(239,68,68,0.15) 48%, rgba(239,68,68,0.06) 52%, rgba(239,68,68,0.22) 100%)',
+                  opacity: similarSelected.size === 0 || similarDeleting ? 0.5 : 1,
+                }}
+                disabled={similarSelected.size === 0 || similarDeleting}
+                onClick={async () => {
+                  if (!confirm(`Delete ${similarSelected.size} task${similarSelected.size !== 1 ? 's' : ''}? This cannot be undone.`)) return;
+                  setSimilarDeleting(true);
+                  try {
+                    await apiRequest('POST', '/api/tasks/batch-delete', { taskIds: Array.from(similarSelected) });
+                    queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+                    setSimilarTasksOpen(false);
+                    setSimilarDeleting(false);
+                    setEditingTask(null);
+                  } catch {
+                    setSimilarDeleting(false);
+                  }
+                }}
+                data-testid="button-delete-selected-similar"
+              >
+                {similarDeleting ? 'Deleting...' : `Delete Selected (${similarSelected.size})`}
+              </button>
+              <button
+                className="inline-flex items-center justify-center rounded-md px-3 py-2 text-white/40 text-xs hover:text-white/60"
+                onClick={() => setSimilarTasksOpen(false)}
+                data-testid="button-cancel-similar"
+              >
+                Cancel
+              </button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
         {/* Recurring Edit Confirmation Dialog */}
         <Dialog open={!!recurringEditPending} onOpenChange={(open) => !open && setRecurringEditPending(null)}>
           <DialogContent className="max-w-sm text-white">
@@ -30355,6 +30441,26 @@ export default function Dashboard() {
                     Acknowledge
                   </Button>
                 )}
+                {editingTask && (() => {
+                  const count = allTasks.filter(t => t.title.trim() === editingTask.title.trim() && t.id !== editingTask.id).length;
+                  return count > 0 ? (
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="text-white/60 hover:text-blue-400 hover:bg-blue-500/10 transition-all duration-200 h-7 w-7"
+                      title={`Find ${count} similar task${count !== 1 ? 's' : ''}`}
+                      onClick={() => {
+                        const matches = allTasks.filter(t => t.title.trim() === editingTask.title.trim());
+                        setSimilarTasks(matches);
+                        setSimilarSelected(new Set(matches.map(t => t.id)));
+                        setSimilarTasksOpen(true);
+                      }}
+                      data-testid="button-find-similar-tasks"
+                    >
+                      <Search className="h-3.5 w-3.5" />
+                    </Button>
+                  ) : null;
+                })()}
                 {editingTask && (
                   <Button
                     size="icon"

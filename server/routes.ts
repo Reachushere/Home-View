@@ -1646,6 +1646,37 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
     res.status(204).end();
   });
 
+  // POST /api/tasks/batch-delete - Delete specific task IDs
+  app.post("/api/tasks/batch-delete", async (req, res) => {
+    const { taskIds } = req.body;
+    if (!Array.isArray(taskIds) || taskIds.length === 0) {
+      return res.status(400).json({ message: 'taskIds array required' });
+    }
+
+    let deleted = 0;
+    for (const id of taskIds) {
+      const task = await storage.getTask(Number(id));
+      if (!task) continue;
+      if (task.calendarEventId) {
+        try { await deleteCalendarEvent(task.calendarEventId); } catch {}
+      }
+      if (task.secondAccountCalendarEventId) {
+        try { await deleteEventFromSecondAccount(task.secondAccountCalendarEventId); } catch {}
+      }
+      if (task.prepCalendarEventId) {
+        try { await deleteCalendarEvent(task.prepCalendarEventId); } catch {}
+      }
+      if (task.secondAccountPrepEventId) {
+        try { await deleteEventFromSecondAccount(task.secondAccountPrepEventId); } catch {}
+      }
+      await storage.deleteSubtasksByTask(Number(id));
+      await storage.deleteTask(Number(id));
+      deleted++;
+    }
+
+    res.json({ deleted });
+  });
+
   // DELETE /api/tasks/:id/all-same-title - Delete this task and all tasks with the same title
   app.delete("/api/tasks/:id/all-same-title", async (req, res) => {
     const taskId = Number(req.params.id);
