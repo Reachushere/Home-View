@@ -24946,9 +24946,8 @@ export default function Dashboard() {
                                 <div
                                   className="flex items-center text-[9px] rounded border cursor-pointer relative w-full"
                                   style={{ 
-                                    backgroundColor: 'white',
+                                    backgroundColor: (() => { const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === course.name); if (cMatch?.taskBgColor) return cMatch.taskBgColor; const cEnd = cMatch?.colorEnd; const endRgb = hexToRgb(cEnd || course.darkColor); return `rgb(${Math.max(0,endRgb.r-12)},${Math.max(0,endRgb.g-12)},${Math.max(0,endRgb.b-12)})`; })(),
                                     borderColor: course.darkColor,
-                                    borderLeft: `3px solid ${course.darkColor}`,
                                     zIndex: hoveredCountdownTaskId === task.id ? 55 : 1,
                                     filter: hoveredCountdownTaskId === task.id ? 'brightness(1.15)' : undefined,
                                     boxShadow: hoveredCountdownTaskId === task.id ? '0 2px 8px rgba(0,0,0,0.35)' : undefined,
@@ -24994,9 +24993,8 @@ export default function Dashboard() {
                             <div 
                               className={`flex flex-col gap-0 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer w-full min-w-0 ${isDueTomorrow ? "animate-slow-blink" : ""}`}
                               style={{ 
-                                backgroundColor: 'white',
+                                backgroundColor: (() => { const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === course.name); if (cMatch?.taskBgColor) return cMatch.taskBgColor; const cEnd = cMatch?.colorEnd; const endRgb = hexToRgb(cEnd || course.darkColor); return `rgb(${Math.max(0,endRgb.r-12)},${Math.max(0,endRgb.g-12)},${Math.max(0,endRgb.b-12)})`; })(),
                                 borderColor: course.darkColor,
-                                borderLeft: `3px solid ${course.darkColor}`,
                                 filter: hoveredCountdownTaskId === task.id ? 'brightness(1.15)' : undefined,
                                 boxShadow: hoveredCountdownTaskId === task.id ? '0 2px 8px rgba(0,0,0,0.35)' : undefined,
                                 transition: 'filter 0.2s ease, box-shadow 0.2s ease',
@@ -25017,7 +25015,7 @@ export default function Dashboard() {
                               />
                               <span 
                                 className="truncate cursor-pointer hover:opacity-80 pl-1 flex-1 min-w-0"
-                                style={{ fontWeight: 400, fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textShadow: 'none', WebkitTextStroke: '0', letterSpacing: '0.1px', color: '#374151' }}
+                                style={{ fontWeight: 400, fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textShadow: 'none', WebkitTextStroke: '0', letterSpacing: '0.1px' }}
                                 onClick={() => setEditingTask(task)}
                               >
                                 {task.title?.replace(/^\[?[A-Z]{2,5}\d{3}\s*-?\s*/, '').replace(/^\]\s*/, '').replace(/^-\s*/, '') || task.title}
@@ -27522,11 +27520,12 @@ export default function Dashboard() {
             width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1 - 5 - 2 - 1 - 3}px`,
             top: `${(calendarBorderTop || (calendarTop + 15))}px`,
             height: `${window.innerHeight - (calendarBorderTop || (calendarTop + 15)) - calendarBottom}px`,
-            background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
-            boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08)',
-            border: '1px solid white',
-            outline: '1px solid white',
-            outlineOffset: '-1px',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)',
+            backdropFilter: 'blur(40px)',
+            WebkitBackdropFilter: 'blur(40px)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)',
+            border: '0.5px solid rgba(255,255,255,0.5)',
+            borderTop: '0.5px solid rgba(255,255,255,0.7)',
             opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : 1,
             pointerEvents: (isPillMenuOpen && !sidePillIdle) ? 'none' : 'auto',
             transition: 'opacity 0.2s ease'
