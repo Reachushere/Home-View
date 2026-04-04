@@ -17444,7 +17444,7 @@ export default function Dashboard() {
             <span style={{ color: '#ffffff', fontSize: '12px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px' }}>ALERT</span>
           </div>
           <div className="fixed z-[9999]" style={{ bottom: '33px', left: '48px', display: isSchoolCoursesDialogOpen ? 'none' : undefined, pointerEvents: 'none' }} data-testid="weather-alert-label-bottom">
-            <span style={{ color: '#ff0000', fontSize: '13px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 0 6px rgba(255,0,0,0.4)', letterSpacing: '0.5px' }}>WEATHER ALERT</span>
+            <span style={{ color: '#ffffff', fontSize: '13px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px' }}>WEATHER ALERT</span>
           </div>
         </>
       )}
