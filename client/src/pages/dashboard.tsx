@@ -23523,10 +23523,10 @@ export default function Dashboard() {
                                 return `<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(140,145,155,0.3) 0%,rgba(160,165,175,0.15) 100%)"></div>`;
                               }
                               if (wCode <= 1) {
-                                return `<div style="position:absolute;top:4px;right:6px;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle,rgba(255,230,100,0.95) 30%,rgba(255,200,50,0.4) 70%,transparent 100%);box-shadow:0 0 8px 3px rgba(255,220,80,0.35)"></div>`;
+                                return `<div style="position:absolute;top:4px;right:6px;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle,rgba(255,230,100,0.95) 30%,rgba(255,200,50,0.4) 70%,transparent 100%);box-shadow:0 0 6px 2px rgba(255,220,80,0.3)"></div>`;
                               }
                               if (wCode === 2) {
-                                return `<div style="position:absolute;top:5px;right:7px;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle,rgba(255,230,100,0.8) 30%,transparent 70%)"></div><div style="position:absolute;top:4px;right:3px;width:18px;height:9px;border-radius:6px;background:rgba(220,225,235,0.5)"></div>`;
+                                return `<div style="position:absolute;top:4px;right:10px;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,rgba(255,230,100,0.9) 30%,rgba(255,200,50,0.3) 70%,transparent 100%);box-shadow:0 0 5px 1px rgba(255,220,80,0.25)"></div><svg style="position:absolute;top:6px;right:4px" width="16" height="10" viewBox="0 0 24 16"><path d="M4 12a5 5 0 0 1 5-5h6a4 4 0 0 1 0 8H6a3.5 3.5 0 0 1 0-7" fill="rgba(230,235,245,0.6)"/></svg>`;
                               }
                               return '';
                             })();
