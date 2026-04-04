@@ -17443,10 +17443,10 @@ export default function Dashboard() {
           <div className="fixed z-[9999]" style={{ top: '25px', left: '50%', transform: 'translateX(calc(-50% + 73px))', pointerEvents: 'none' }} data-testid="weather-alert-label-right">
             <span style={{ color: '#ffffff', fontSize: '12px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px' }}>ALERT</span>
           </div>
-          <div className="fixed z-[10002]" style={{ bottom: '31px', left: '50%', transform: 'translateX(calc(-50% - 81px))', display: isSchoolCoursesDialogOpen ? 'none' : undefined, pointerEvents: 'none' }} data-testid="weather-alert-label-bottom-left">
+          <div className="fixed z-[10002]" style={{ bottom: '26px', left: '50%', transform: 'translateX(calc(-50% - 81px))', display: isSchoolCoursesDialogOpen ? 'none' : undefined, pointerEvents: 'none' }} data-testid="weather-alert-label-bottom-left">
             <span style={{ color: '#ffffff', fontSize: '12px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px' }}>WEATHER</span>
           </div>
-          <div className="fixed z-[10002]" style={{ bottom: '31px', left: '50%', transform: 'translateX(calc(-50% + 73px))', display: isSchoolCoursesDialogOpen ? 'none' : undefined, pointerEvents: 'none' }} data-testid="weather-alert-label-bottom-right">
+          <div className="fixed z-[10002]" style={{ bottom: '26px', left: '50%', transform: 'translateX(calc(-50% + 73px))', display: isSchoolCoursesDialogOpen ? 'none' : undefined, pointerEvents: 'none' }} data-testid="weather-alert-label-bottom-right">
             <span style={{ color: '#ffffff', fontSize: '12px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px' }}>ALERT</span>
           </div>
         </>
@@ -28335,7 +28335,7 @@ export default function Dashboard() {
 
             return rows;
           })()}
-          <div className="flex-1 flex flex-col" style={{ paddingLeft: '0px', paddingRight: '0px', marginTop: '261px', flex: 1, minHeight: 0, paddingBottom: '0px', overflow: 'hidden', position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column' as const }}>
+          <div className="flex-1 flex flex-col" style={{ paddingLeft: '0px', paddingRight: '0px', marginTop: (() => { if (courseRowRects.length > 0) { const lastRect = courseRowRects[courseRowRects.length - 1]; if (lastRect) { const upcomingTopLocal = calendarBorderTop || (calendarTop + 15); const otherTop = lastRect.top + lastRect.height - upcomingTopLocal; const otherRowH = Math.max(57, gridSizes.otherRowHeight || 57); return `${otherTop + otherRowH + 2}px`; } } return '261px'; })(), flex: 1, minHeight: 0, paddingBottom: '0px', overflow: 'hidden', position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column' as const }}>
           <div style={{ width: '100%', height: '15px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', flexShrink: 0, position: 'relative', zIndex: 3, border: '0.5px solid rgba(255,255,255,0.15)' }}>
             <span style={{ fontSize: '10px', fontWeight: 500, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
           </div>
