@@ -24780,7 +24780,72 @@ export default function Dashboard() {
                         }}
                       >
                         <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', borderLeft: '1.5px dotted rgba(0,0,0,0.25)', zIndex: 5, pointerEvents: 'none' }} />
-                        {/* Countdown bars removed — urgency info now shown via "Next Task Due In" badge and sidebar pills */}
+                        {/* Countdown bars spanning from today to task due date */}
+                        {(() => {
+                          const today = startOfDayET(new Date());
+                          const cdCell = startOfDayET(day);
+                          const countdownTasks = (allTasks || []).filter(t => {
+                            if (!t.showCountdownBar || t.showCountdownBarMain === false || t.isCompleted) return false;
+                            let tc = t.courseName?.split(' - ')[0]?.trim().toUpperCase() || '';
+                            if (!tc && t.title) {
+                              const bm = t.title.match(/^\[([A-Z]{3,4}\d{3})/i);
+                              if (bm) tc = bm[1].toUpperCase();
+                            }
+                            if (tc !== courseCodeUpper) return false;
+                            const tDue = startOfDayET(new Date(t.dueDate));
+                            if (tDue < today) return false;
+                            const tDueDayIdx = weekDays.findIndex(wd => isSameDayET(wd, tDue));
+                            if (tDueDayIdx < 0) return false;
+                            const todayDayIdx = weekDays.findIndex(wd => isSameDayET(wd, today));
+                            const barStart = todayDayIdx >= 0 ? todayDayIdx : 0;
+                            return dayIdx >= barStart && dayIdx <= tDueDayIdx;
+                          });
+                          if (countdownTasks.length === 0) return null;
+                          return countdownTasks.map(t => {
+                            const tDue = startOfDayET(new Date(t.dueDate));
+                            const daysLeft = Math.max(0, Math.round((tDue.getTime() - today.getTime()) / (1000*60*60*24)));
+                            const barColor = t.countdownBarColor || (daysLeft <= 1 ? '#ef4444' : daysLeft <= 3 ? '#f59e0b' : course.darkColor);
+                            const tDueDayIdx = weekDays.findIndex(wd => isSameDayET(wd, tDue));
+                            const isLastCell = dayIdx === tDueDayIdx;
+                            const todayDayIdx = weekDays.findIndex(wd => isSameDayET(wd, today));
+                            const isFirstCell = dayIdx === (todayDayIdx >= 0 ? todayDayIdx : 0);
+                            const slot = taskSlotMap.get(t.id) ?? 0;
+                            const barY = 2 + slot * 22 + 18;
+                            return (
+                              <div
+                                key={`cbar-${t.id}`}
+                                style={{
+                                  position: 'absolute',
+                                  left: 0,
+                                  right: 0,
+                                  top: `${barY}px`,
+                                  height: '3px',
+                                  background: barColor,
+                                  opacity: 0.7,
+                                  zIndex: 6,
+                                  pointerEvents: 'none',
+                                  borderRadius: isFirstCell && isLastCell ? '2px' : isFirstCell ? '2px 0 0 2px' : isLastCell ? '0 2px 2px 0' : '0',
+                                }}
+                                data-testid={`countdown-span-${t.id}-day-${dayIdx}`}
+                              >
+                                {isLastCell && (
+                                  <span style={{
+                                    position: 'absolute',
+                                    right: '1px',
+                                    top: '-9px',
+                                    fontSize: '7px',
+                                    fontWeight: 800,
+                                    color: barColor,
+                                    lineHeight: 1,
+                                    whiteSpace: 'nowrap',
+                                    textShadow: '0 0 3px rgba(0,0,0,0.6)',
+                                    opacity: 1,
+                                  }}>{daysLeft}d</span>
+                                )}
+                              </div>
+                            );
+                          });
+                        })()}
                         {isDayToday && (() => {
                           const cCode2 = course.name;
                           const nextTask = (allTasks || []).filter(t => {
