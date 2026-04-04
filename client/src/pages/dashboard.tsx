@@ -6019,6 +6019,23 @@ export default function Dashboard() {
     
     let lastMinute = new Date().getMinutes();
     let lastDate = new Date().getDate();
+    const secTimer = setInterval(() => {
+      const now = new Date();
+      const secEl = document.getElementById('clock-seconds');
+      if (secEl) secEl.textContent = ':' + String(now.getSeconds()).padStart(2, '0');
+      if (now.getMinutes() !== lastMinute) {
+        lastMinute = now.getMinutes();
+        const hmEl = document.getElementById('clock-hm');
+        const ampmEl = document.getElementById('clock-ampm');
+        const tz = displayTimezoneRef.current;
+        if (hmEl) {
+          hmEl.textContent = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: tz }).format(now).replace(/\s?(AM|PM)$/i, '');
+        }
+        if (ampmEl) {
+          ampmEl.textContent = new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: tz }).format(now).replace(/^\d+\s*/, '');
+        }
+      }
+    }, 1000);
     const timer = setInterval(() => {
       const now = new Date();
       const currentDate = now.getDate();
@@ -6039,26 +6056,12 @@ export default function Dashboard() {
           }
         }
       }
-      const secEl = document.getElementById('clock-seconds');
-      if (secEl) secEl.textContent = ':' + String(now.getSeconds()).padStart(2, '0');
-      if (now.getMinutes() !== lastMinute) {
-        lastMinute = now.getMinutes();
-        const hmEl = document.getElementById('clock-hm');
-        const ampmEl = document.getElementById('clock-ampm');
-        const tz = displayTimezoneRef.current;
-        if (hmEl) {
-          hmEl.textContent = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: tz }).format(now).replace(/\s?(AM|PM)$/i, '');
-        }
-        if (ampmEl) {
-          ampmEl.textContent = new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: tz }).format(now).replace(/^\d+\s*/, '');
-        }
-      }
       if (currentDate !== lastDate) {
         lastDate = currentDate;
         setCurrentTime(now);
       }
     }, 10000);
-    return () => clearInterval(timer);
+    return () => { clearInterval(secTimer); clearInterval(timer); };
   }, [speakNewWeek, speakNewDay]);
 
   // Check if mute period has expired
