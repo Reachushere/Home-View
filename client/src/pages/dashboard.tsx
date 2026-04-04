@@ -14640,13 +14640,7 @@ export default function Dashboard() {
         
         {/* Down arrow placeholder - actual tab moved outside pill container */}
 
-        {/* Weather Alert labels on pill edges */}
-        {weatherAlerts.length > 0 && (
-          <>
-            <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#ff0000', fontSize: '11px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 0 8px rgba(255,0,0,0.5)', letterSpacing: '1px', zIndex: 10, pointerEvents: 'none' }} data-testid="pill-weather-label">WEATHER</span>
-            <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#ff0000', fontSize: '11px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 0 8px rgba(255,0,0,0.5)', letterSpacing: '1px', zIndex: 10, pointerEvents: 'none' }} data-testid="pill-alert-label">ALERT</span>
-          </>
-        )}
+        
 
         {/* Icon buttons and task buttons with adjustable spacing */}
         <div className="flex items-center flex-nowrap [&>*]:flex-shrink-0" onMouseEnter={() => { topPillHoveredRef.current = true; if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); }} onMouseLeave={() => { if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); topPillTimeoutRef.current = setTimeout(() => { topPillHoveredRef.current = false; if (!isSettingsPanelOpen && !isTodoFlyoutOpen && !isProjectsFlyoutOpen && !isRadioDialogOpen && !isCompletedTasksOpen && !isQuickAddOpen && !isAlexaDialogOpen && !isEmailWizardOpen && !isKeyContactsOpen && !isSystemHealthOpen && !isFeedbackOpen && !isSchoolCoursesDialogOpen && !isNewCourseWizardOpen) closeTopPill(); }, 1500); }} style={{ gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 26)}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '2px', paddingRight: '2px', width: '100%', overflow: 'visible', pointerEvents: isTopPillOpen ? 'auto' : 'none' }}>
@@ -15864,6 +15858,12 @@ export default function Dashboard() {
         <div style={{ position: 'absolute', left: '50%', top: '6px', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', borderRadius: '50%', width: '20px', height: '20px' }}>
           <LayoutGrid className="h-[13px] w-[13px]" strokeWidth={2.5} style={{ color: 'rgba(255,255,255,0.8)', filter: 'drop-shadow(0 0 1px rgba(255,255,255,0.3))' }} />
         </div>
+        {weatherAlerts.length > 0 && (
+          <>
+            <span style={{ position: 'absolute', right: '100%', top: '50%', transform: 'translateY(-50%)', marginRight: '6px', color: '#ff0000', fontSize: '10px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 0 6px rgba(255,0,0,0.4)', letterSpacing: '0.5px', pointerEvents: 'none', whiteSpace: 'nowrap' }} data-testid="tab-weather-label">WEATHER</span>
+            <span style={{ position: 'absolute', left: '100%', top: '50%', transform: 'translateY(-50%)', marginLeft: '6px', color: '#ff0000', fontSize: '10px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 0 6px rgba(255,0,0,0.4)', letterSpacing: '0.5px', pointerEvents: 'none', whiteSpace: 'nowrap' }} data-testid="tab-alert-label">ALERT</span>
+          </>
+        )}
       </div>
 
       {/* Share Button - fixed position, bottom right beside copyright */}
