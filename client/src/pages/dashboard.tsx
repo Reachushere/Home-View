@@ -23554,7 +23554,7 @@ export default function Dashboard() {
                               return sunSize > 2 ? `<div style="position:absolute;bottom:${100 - sunY}%;left:18%;transform:translateX(-50%);width:${sunSize + 10}px;height:${sunSize + 10}px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,40,${glowOpacity}) 0%,transparent 70%)"></div><div style="position:absolute;bottom:${100 - sunY}%;left:18%;transform:translateX(-50%);width:${sunSize}px;height:${sunSize}px;border-radius:50%;background:radial-gradient(circle,#ff8844 0%,#cc4422 100%);box-shadow:0 0 8px 2px rgba(255,100,30,${glowOpacity})"></div>` : '';
                             })() : '';
 
-                            const moonHtml = isNightPhase ? `<div style="position:absolute;top:8px;right:8px;width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#e8e4d4 0%,#d4cfc0 60%,#c0baa8 100%);box-shadow:0 0 6px 2px rgba(220,215,190,0.3)"></div><div style="position:absolute;top:9px;right:8px;width:7px;height:7px;border-radius:50%;background:#0a0e27;transform:translate(2px,-1px)"></div>` : '';
+                            const moonHtml = isNightPhase ? `<svg style="position:absolute;top:6px;right:6px;filter:drop-shadow(0 0 4px rgba(255,250,220,0.4))" width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="#f5f0d0" stroke="#e8e0b0" stroke-width="1"/></svg>` : '';
 
                             return (
                               <>
