@@ -23807,12 +23807,14 @@ export default function Dashboard() {
                         </>
                       );
                     })()}
-                    <div
-                      className="absolute inset-0"
-                      style={{ zIndex: 25, cursor: 'pointer' }}
-                      onClick={(e) => { e.stopPropagation(); setSkyMapDate(day); setSkyMapOpen(true); }}
-                      data-testid={`sky-map-trigger-${format(day, "yyyy-MM-dd")}`}
-                    />
+                    {isToday && (
+                      <div
+                        className="absolute inset-0"
+                        style={{ zIndex: 25, cursor: 'pointer' }}
+                        onClick={(e) => { e.stopPropagation(); setSkyMapDate(day); setSkyMapOpen(true); }}
+                        data-testid={`sky-map-trigger-${format(day, "yyyy-MM-dd")}`}
+                      />
+                    )}
                     {idx < 6 && (
                       <div
                         className="absolute right-0 top-0 bottom-0 w-[1px] cursor-col-resize bg-white/20 hover:bg-white/50"
