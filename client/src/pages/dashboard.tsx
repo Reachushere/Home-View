@@ -24135,6 +24135,92 @@ export default function Dashboard() {
                               </>
                             );
                           })()}
+                          {!isToday && weatherData?.daily && (() => {
+                            const todayDate = startOfDayET(new Date());
+                            const dayDate = startOfDayET(day);
+                            const diffDays = Math.round((dayDate.getTime() - todayDate.getTime()) / (1000 * 60 * 60 * 24));
+                            if (diffDays < 1 || diffDays > 3) return null;
+                            const dailyEntry = weatherData.daily.find(d => d.date === format(day, 'yyyy-MM-dd'));
+                            if (!dailyEntry || dailyEntry.weatherCode === undefined) return null;
+                            const wc = dailyEntry.weatherCode;
+                            const forecastEffectsHtml = (() => {
+                              if (wc >= 95) {
+                                const drops = Array.from({ length: 16 }, (_, i) => {
+                                  const left = (i * 37 + 13) % 100;
+                                  const delay = ((i * 0.13) % 0.8).toFixed(2);
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1.5px;height:8px;background:rgba(180,190,220,0.5);animation:rainDrop 0.4s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                }).join('');
+                                return drops + `<div style="position:absolute;inset:0;background:rgba(255,255,200,0.1);animation:lightningFlash 15s 3s ease-in-out infinite"></div>`;
+                              }
+                              if (wc >= 61 || (wc >= 80 && wc <= 82)) {
+                                const density = wc >= 80 ? 14 : 10;
+                                return Array.from({ length: density }, (_, i) => {
+                                  const left = (i * 37 + 13) % 100;
+                                  const delay = ((i * 0.17) % 1.2).toFixed(2);
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1px;height:6px;background:rgba(200,210,230,0.4);animation:rainDrop ${wc >= 80 ? '0.5s' : '0.7s'} ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                }).join('');
+                              }
+                              if (wc >= 51 && wc <= 55) {
+                                return Array.from({ length: 6 }, (_, i) => {
+                                  const left = (i * 37 + 13) % 100;
+                                  const delay = ((i * 0.17) % 1.2).toFixed(2);
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1px;height:4px;background:rgba(200,210,230,0.25);animation:rainDrop 1s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                }).join('');
+                              }
+                              if (wc >= 66 && wc <= 67) {
+                                return Array.from({ length: 12 }, (_, i) => {
+                                  const left = (i * 37 + 13) % 100;
+                                  const delay = ((i * 0.17) % 1.2).toFixed(2);
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1px;height:5px;background:rgba(180,210,255,0.45);animation:rainDrop 0.6s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                }).join('');
+                              }
+                              if (wc >= 71 && wc <= 77) {
+                                return Array.from({ length: 10 }, (_, i) => {
+                                  const left = (i * 31 + 7) % 100;
+                                  const delay = ((i * 0.25) % 2).toFixed(2);
+                                  const size = 2 + (i % 2);
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.5);border-radius:50%;animation:snowFall ${2 + (i % 3)}s ${delay}s linear infinite"></div>`;
+                                }).join('');
+                              }
+                              if (wc >= 85 && wc <= 86) {
+                                return Array.from({ length: 12 }, (_, i) => {
+                                  const left = (i * 31 + 7) % 100;
+                                  const delay = ((i * 0.25) % 2).toFixed(2);
+                                  const size = 2 + (i % 2);
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.5);border-radius:50%;animation:snowFall ${1.5 + (i % 2)}s ${delay}s linear infinite"></div>`;
+                                }).join('');
+                              }
+                              if (wc >= 45 && wc <= 48) {
+                                return `<div style="position:absolute;inset:0;background:rgba(200,200,210,0.12);backdrop-filter:blur(0.5px)"></div>`;
+                              }
+                              if (wc === 3) {
+                                return `<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(140,145,155,0.2) 0%,rgba(160,165,175,0.1) 100%)"></div>`;
+                              }
+                              if (wc <= 1) {
+                                return `<svg style="position:absolute;top:3px;right:4px;filter:drop-shadow(0 0 3px rgba(255,220,80,0.3));opacity:0.6" width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" fill="#fde047"/><g stroke="#fde047" stroke-width="1.5" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="6.76" y2="6.76"/><line x1="17.24" y1="17.24" x2="19.07" y2="19.07"/><line x1="4.93" y1="19.07" x2="6.76" y2="17.24"/><line x1="17.24" y1="6.76" x2="19.07" y2="4.93"/></g></svg>`;
+                              }
+                              if (wc === 2) {
+                                return `<svg style="position:absolute;top:3px;right:3px;filter:drop-shadow(0 0 2px rgba(255,220,80,0.2));opacity:0.6" width="16" height="13" viewBox="0 0 28 20" fill="none"><circle cx="10" cy="7" r="3.5" fill="#fde047"/><g stroke="#fde047" stroke-width="1.2" stroke-linecap="round"><line x1="10" y1="1" x2="10" y2="2.5"/><line x1="10" y1="11.5" x2="10" y2="13"/><line x1="4" y1="7" x2="5.5" y2="7"/><line x1="14.5" y1="7" x2="16" y2="7"/><line x1="5.76" y1="2.76" x2="6.82" y2="3.82"/><line x1="13.18" y1="10.18" x2="14.24" y2="11.24"/><line x1="5.76" y1="11.24" x2="6.82" y2="10.18"/><line x1="13.18" y1="3.82" x2="14.24" y2="2.76"/></g><path d="M10 16a4 4 0 0 1 4-4h5a3 3 0 0 1 0 6H11.5a2.5 2.5 0 0 1 0-5" fill="rgba(220,225,240,0.45)" stroke="rgba(200,210,230,0.3)" stroke-width="0.5"/></svg>`;
+                              }
+                              return '';
+                            })();
+                            const skyBg = wc >= 95 ? 'linear-gradient(180deg, #1a1a2e 0%, #2d2d44 50%, #3a3a50 100%)'
+                              : (wc >= 61 || (wc >= 80 && wc <= 82) || (wc >= 66 && wc <= 67)) ? 'linear-gradient(180deg, #3a4a5a 0%, #4a5a6a 50%, #5a6a7a 100%)'
+                              : (wc >= 51 && wc <= 55) ? 'linear-gradient(180deg, #4a5a68 0%, #5a6a78 50%, #6a7a88 100%)'
+                              : (wc >= 71 && wc <= 77) ? 'linear-gradient(180deg, #4a5060 0%, #6a7080 50%, #8a90a0 100%)'
+                              : (wc >= 85 && wc <= 86) ? 'linear-gradient(180deg, #3a4050 0%, #5a6070 50%, #7a8090 100%)'
+                              : (wc >= 45 && wc <= 48) ? 'linear-gradient(180deg, #5a5a6a 0%, #7a7a8a 100%)'
+                              : wc === 3 ? 'linear-gradient(180deg, #4a5a6a 0%, #6a7a8a 100%)'
+                              : wc === 2 ? 'linear-gradient(180deg, #2a5a9a 0%, #4a8ac8 50%, #7ab8e0 100%)'
+                              : 'linear-gradient(180deg, #2a6aaa 0%, #4a9ad8 50%, #7ac0e8 100%)';
+                            return (
+                              <>
+                                <div className="absolute left-0 right-0 bottom-0 z-[5]" style={{ top: 0, background: skyBg, overflow: 'hidden', pointerEvents: 'none', opacity: 0.55 }}>
+                                  <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }} dangerouslySetInnerHTML={{ __html: forecastEffectsHtml }} />
+                                </div>
+                              </>
+                            );
+                          })()}
                           {day.getDay() === 6 && !isToday && (
                             <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '8px' }}>
                               <span style={{ display: 'block', fontSize: 'min(9.5px, 1.4vw)', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{`New School Week (${selectedWeek + 1})`}</span>
