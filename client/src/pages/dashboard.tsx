@@ -17443,7 +17443,7 @@ export default function Dashboard() {
           <div className="fixed z-[9999]" style={{ top: '25px', left: '50%', transform: 'translateX(calc(-50% + 73px))', pointerEvents: 'none' }} data-testid="weather-alert-label-right">
             <span style={{ color: '#ffffff', fontSize: '12px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px' }}>ALERT</span>
           </div>
-          <div className="fixed z-[9999]" style={{ bottom: '33px', left: '48px', display: isSchoolCoursesDialogOpen ? 'none' : undefined, pointerEvents: 'none' }} data-testid="weather-alert-label-bottom">
+          <div className="fixed z-[9999]" style={{ bottom: '33px', left: `${calendarLeft + 9}px`, display: isSchoolCoursesDialogOpen ? 'none' : undefined, pointerEvents: 'none' }} data-testid="weather-alert-label-bottom">
             <span style={{ color: '#ffffff', fontSize: '13px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px' }}>WEATHER ALERT</span>
           </div>
         </>
