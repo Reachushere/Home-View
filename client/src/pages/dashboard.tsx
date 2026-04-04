@@ -26132,7 +26132,7 @@ export default function Dashboard() {
                                       ) : <div style={{ width: '10px', height: '10px', flexShrink: 0 }} />}
                                       </div>
                                       <span style={{ fontSize: '8px', fontWeight: 500, color: 'white', letterSpacing: '0.3px', textShadow: '0 1px 2px rgba(0,0,0,0.3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, padding: '1px 3px' }}>
-                                        {(() => { const raw = (task.title || '').replace(/^\[.*?\]\s*/, '').replace(/^online\s+/i, ''); const t = raw; const isModRead = /^(module|reading|module\s*(?:&|and)\s*reading)$/i.test(t.trim()); if (isModRead && task.courseName) { const cc = task.courseName.split(' - ')[0]?.trim(); if (cc) return `${cc} ${t}`; } return t; })()}
+                                        {(() => { const raw = (task.title || '').replace(/[\[\]]/g, '').replace(/^\s+/, '').replace(/^online\s+/i, ''); const t = raw; const isModRead = /^(module|reading|module\s*(?:&|and)\s*reading)$/i.test(t.trim()); if (isModRead && task.courseName) { const cc = task.courseName.split(' - ')[0]?.trim(); if (cc) return `${cc} ${t}`; } return t; })()}
                                       </span>
                                       
                                     </div>
