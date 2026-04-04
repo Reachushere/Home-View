@@ -24472,7 +24472,7 @@ export default function Dashboard() {
                               </div>
                             );
                           })()}
-                          <div className="flex items-center gap-1.5" style={{ marginTop: '13px', marginLeft: '15px', position: 'relative', zIndex: 15 }}>
+                          <div className="flex items-center gap-1.5" style={{ marginTop: '13px', position: 'relative', zIndex: 15 }}>
                             {isToday ? (() => {
                               const now = new Date();
                               const todayPct = Math.min(100, Math.max(0, (now.getHours() * 60 + now.getMinutes()) / 1440 * 100));
@@ -24487,7 +24487,7 @@ export default function Dashboard() {
                               const isDarkWeather = isNightText || isSunriseText || isSunsetText || (weatherData && weatherData.code >= 51);
                             return (
                                 <>
-                                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', alignSelf: 'stretch', padding: '2px 0' }}>
+                                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', alignSelf: 'stretch', padding: '2px 0', marginLeft: '15px' }}>
                                     <div className="text-[10px] font-medium tracking-wide" style={{ color: isDarkWeather ? '#ffffff' : '#000000', lineHeight: 1 }}>
                                       {dayName}
                                     </div>
