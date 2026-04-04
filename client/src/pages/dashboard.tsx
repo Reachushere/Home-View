@@ -24458,17 +24458,15 @@ export default function Dashboard() {
                                 const diff = Math.abs(entryMs - targetMs);
                                 if (diff < minDiff) { minDiff = diff; closest = entry; }
                               }
-                              const targetDate = new Date(targetMs);
-                              const timeLabel = `${targetDate.getHours() % 12 || 12}${targetDate.getHours() >= 12 ? 'p' : 'a'}`;
-                              return { offset: h, temp: closest.temp, code: closest.weatherCode, timeLabel };
+                              return { offset: h, temp: closest.temp, code: closest.weatherCode };
                             });
                             return (
-                              <div className="absolute left-[2px] z-20 flex flex-col gap-[2px]" style={{ top: '8px', bottom: '3px', pointerEvents: 'none' }} data-testid="today-hourly-forecast">
+                              <div className="absolute left-[1px] right-[1px] z-20 flex flex-col" style={{ top: 0, bottom: 0, pointerEvents: 'none' }} data-testid="today-hourly-forecast">
                                 {forecasts.map((fc, i) => (
-                                  <div key={i} className="flex items-center justify-center" style={{ flex: 1, background: 'rgba(0,0,0,0.35)', borderRadius: '3px', padding: '0 2px', minWidth: '38px', backdropFilter: 'blur(2px)' }} data-testid={`hourly-forecast-${fc.offset}h`}>
-                                    <span style={{ fontSize: '7.5px', color: 'rgba(255,255,255,0.6)', marginRight: '2px', fontWeight: 500 }}>{fc.timeLabel}</span>
+                                  <div key={i} className="flex items-center justify-center" style={{ flex: 1, padding: '0 1px', minWidth: 0 }} data-testid={`hourly-forecast-${fc.offset}h`}>
+                                    <span style={{ fontSize: '7px', color: '#ffffff', marginRight: '2px', fontWeight: 600 }}>+{fc.offset}h</span>
                                     <span style={{ fontSize: '8px', lineHeight: 1 }}>{wmoMini[fc.code] || '🌤'}</span>
-                                    <span style={{ fontSize: '8.5px', color: '#fff', fontWeight: 600, marginLeft: '1px' }}>{fc.temp}°</span>
+                                    <span style={{ fontSize: '8px', color: '#fff', fontWeight: 600, marginLeft: '1px' }}>{fc.temp}°</span>
                                   </div>
                                 ))}
                               </div>
