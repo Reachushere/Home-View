@@ -24044,41 +24044,41 @@ export default function Dashboard() {
                                 return drops + `<div style="position:absolute;inset:0;background:rgba(255,255,200,0.15);animation:lightningFlash 15s 3s ease-in-out infinite"></div>`;
                               }
                               if (wCode >= 71 && wCode <= 77) {
-                                return Array.from({ length: 12 }, (_, i) => {
-                                  const left = (i * 31 + 7) % 100;
-                                  const delay = ((i * 0.25) % 2).toFixed(2);
-                                  const size = 2 + (i % 2);
-                                  return `<div style="position:absolute;left:${left}%;top:-3px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.7);border-radius:50%;animation:snowFall 2s ${delay}s linear infinite"></div>`;
+                                return Array.from({ length: 16 }, (_, i) => {
+                                  const left = (i * 23 + 5) % 100;
+                                  const delay = ((i * 0.2) % 2).toFixed(2);
+                                  const size = 2.5 + (i % 2);
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.85);border-radius:50%;animation:snowFall 2s ${delay}s linear infinite"></div>`;
                                 }).join('');
                               }
                               if (wCode >= 85 && wCode <= 86) {
-                                return Array.from({ length: 14 }, (_, i) => {
-                                  const left = (i * 31 + 7) % 100;
-                                  const delay = ((i * 0.25) % 2).toFixed(2);
-                                  const size = 2 + (i % 2);
-                                  return `<div style="position:absolute;left:${left}%;top:-3px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.7);border-radius:50%;animation:snowFall ${1.5 + (i % 2)}s ${delay}s linear infinite"></div>`;
+                                return Array.from({ length: 18 }, (_, i) => {
+                                  const left = (i * 23 + 5) % 100;
+                                  const delay = ((i * 0.2) % 2).toFixed(2);
+                                  const size = 2.5 + (i % 2);
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.85);border-radius:50%;animation:snowFall ${1.5 + (i % 2)}s ${delay}s linear infinite"></div>`;
                                 }).join('');
                               }
                               if (wCode >= 66 && wCode <= 67) {
-                                return Array.from({ length: 12 }, (_, i) => {
-                                  const left = (i * 37 + 13) % 100;
-                                  const delay = ((i * 0.17) % 1.2).toFixed(2);
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1px;height:5px;background:rgba(180,210,255,0.45);animation:rainDrop 0.6s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                return Array.from({ length: 16 }, (_, i) => {
+                                  const left = (i * 23 + 5) % 100;
+                                  const delay = ((i * 0.14) % 1.2).toFixed(2);
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1.5px;height:6px;background:rgba(180,210,255,0.6);animation:rainDrop 0.6s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
                                 }).join('');
                               }
                               if ((wCode >= 61 && wCode <= 65) || (wCode >= 80 && wCode <= 82)) {
-                                const density = wCode >= 80 ? 14 : 10;
+                                const density = wCode >= 80 ? 18 : 14;
                                 return Array.from({ length: density }, (_, i) => {
-                                  const left = (i * 37 + 13) % 100;
-                                  const delay = ((i * 0.17) % 1.2).toFixed(2);
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1px;height:6px;background:rgba(200,210,230,0.4);animation:rainDrop ${wCode >= 80 ? '0.5s' : '0.7s'} ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                  const left = (i * 23 + 5) % 100;
+                                  const delay = ((i * 0.14) % 1.2).toFixed(2);
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1.5px;height:7px;background:rgba(200,210,230,0.6);animation:rainDrop ${wCode >= 80 ? '0.5s' : '0.7s'} ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
                                 }).join('');
                               }
                               if (wCode >= 51 && wCode <= 55) {
-                                return Array.from({ length: 6 }, (_, i) => {
-                                  const left = (i * 37 + 13) % 100;
+                                return Array.from({ length: 10 }, (_, i) => {
+                                  const left = (i * 29 + 7) % 100;
                                   const delay = ((i * 0.17) % 1.2).toFixed(2);
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1px;height:4px;background:rgba(200,210,230,0.25);animation:rainDrop 1s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1px;height:5px;background:rgba(200,210,230,0.4);animation:rainDrop 1s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
                                 }).join('');
                               }
                               if (wCode === 45 || wCode === 48) {
@@ -24170,41 +24170,41 @@ export default function Dashboard() {
                                 return drops + `<div style="position:absolute;inset:0;background:rgba(255,255,200,0.1);animation:lightningFlash 15s 3s ease-in-out infinite"></div>`;
                               }
                               if (wc >= 71 && wc <= 77) {
-                                return Array.from({ length: 10 }, (_, i) => {
-                                  const left = (i * 31 + 7) % 100;
-                                  const delay = ((i * 0.25) % 2).toFixed(2);
-                                  const size = 2 + (i % 2);
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.5);border-radius:50%;animation:snowFall ${2 + (i % 3)}s ${delay}s linear infinite"></div>`;
+                                return Array.from({ length: 16 }, (_, i) => {
+                                  const left = (i * 23 + 5) % 100;
+                                  const delay = ((i * 0.2) % 2).toFixed(2);
+                                  const size = 2.5 + (i % 2);
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.85);border-radius:50%;animation:snowFall ${2 + (i % 3)}s ${delay}s linear infinite"></div>`;
                                 }).join('');
                               }
                               if (wc >= 85 && wc <= 86) {
-                                return Array.from({ length: 12 }, (_, i) => {
-                                  const left = (i * 31 + 7) % 100;
-                                  const delay = ((i * 0.25) % 2).toFixed(2);
-                                  const size = 2 + (i % 2);
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.5);border-radius:50%;animation:snowFall ${1.5 + (i % 2)}s ${delay}s linear infinite"></div>`;
+                                return Array.from({ length: 18 }, (_, i) => {
+                                  const left = (i * 23 + 5) % 100;
+                                  const delay = ((i * 0.2) % 2).toFixed(2);
+                                  const size = 2.5 + (i % 2);
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.85);border-radius:50%;animation:snowFall ${1.5 + (i % 2)}s ${delay}s linear infinite"></div>`;
                                 }).join('');
                               }
                               if (wc >= 66 && wc <= 67) {
-                                return Array.from({ length: 12 }, (_, i) => {
-                                  const left = (i * 37 + 13) % 100;
-                                  const delay = ((i * 0.17) % 1.2).toFixed(2);
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1px;height:5px;background:rgba(180,210,255,0.45);animation:rainDrop 0.6s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                return Array.from({ length: 16 }, (_, i) => {
+                                  const left = (i * 23 + 5) % 100;
+                                  const delay = ((i * 0.14) % 1.2).toFixed(2);
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1.5px;height:6px;background:rgba(180,210,255,0.6);animation:rainDrop 0.6s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
                                 }).join('');
                               }
                               if ((wc >= 61 && wc <= 65) || (wc >= 80 && wc <= 82)) {
-                                const density = wc >= 80 ? 14 : 10;
+                                const density = wc >= 80 ? 18 : 14;
                                 return Array.from({ length: density }, (_, i) => {
-                                  const left = (i * 37 + 13) % 100;
-                                  const delay = ((i * 0.17) % 1.2).toFixed(2);
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1px;height:6px;background:rgba(200,210,230,0.4);animation:rainDrop ${wc >= 80 ? '0.5s' : '0.7s'} ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                  const left = (i * 23 + 5) % 100;
+                                  const delay = ((i * 0.14) % 1.2).toFixed(2);
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1.5px;height:7px;background:rgba(200,210,230,0.6);animation:rainDrop ${wc >= 80 ? '0.5s' : '0.7s'} ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
                                 }).join('');
                               }
                               if (wc >= 51 && wc <= 55) {
-                                return Array.from({ length: 6 }, (_, i) => {
-                                  const left = (i * 37 + 13) % 100;
+                                return Array.from({ length: 10 }, (_, i) => {
+                                  const left = (i * 29 + 7) % 100;
                                   const delay = ((i * 0.17) % 1.2).toFixed(2);
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1px;height:4px;background:rgba(200,210,230,0.25);animation:rainDrop 1s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1px;height:5px;background:rgba(200,210,230,0.4);animation:rainDrop 1s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
                                 }).join('');
                               }
                               if (wc >= 45 && wc <= 48) {
