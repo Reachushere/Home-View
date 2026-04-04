@@ -17452,7 +17452,7 @@ export default function Dashboard() {
                       <div className="flex items-center gap-2">
                         <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: p.color, boxShadow: `0 0 4px ${p.color}` }} />
                         <span className="text-[11px] text-white font-medium">{p.name}</span>
-                        {p.visible ? <span className="text-[8px] text-green-400 ml-auto">VISIBLE</span> : <span className="text-[8px] text-white/60 ml-auto">NOT VISIBLE</span>}
+                        {p.visible ? <span className="text-[8px] text-green-400 ml-auto">VISIBLE</span> : <span className="text-[8px] text-white ml-auto">NOT VISIBLE</span>}
                       </div>
                       <div className="text-[9px] text-white/80 mt-1">{p.direction} · {p.altitude}</div>
                       <div className="text-[9px] text-white/70 mt-0.5">{p.info}</div>
