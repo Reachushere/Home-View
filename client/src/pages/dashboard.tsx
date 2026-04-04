@@ -23523,10 +23523,10 @@ export default function Dashboard() {
                                 return `<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(140,145,155,0.3) 0%,rgba(160,165,175,0.15) 100%)"></div>`;
                               }
                               if (wCode <= 1) {
-                                return `<div style="position:absolute;top:4px;right:6px;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle,rgba(255,230,100,0.95) 30%,rgba(255,200,50,0.4) 70%,transparent 100%);box-shadow:0 0 6px 2px rgba(255,220,80,0.3)"></div>`;
+                                return `<svg style="position:absolute;top:3px;right:4px;filter:drop-shadow(0 0 3px rgba(255,220,80,0.5))" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" fill="#fde047"/><g stroke="#fde047" stroke-width="1.5" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="6.76" y2="6.76"/><line x1="17.24" y1="17.24" x2="19.07" y2="19.07"/><line x1="4.93" y1="19.07" x2="6.76" y2="17.24"/><line x1="17.24" y1="6.76" x2="19.07" y2="4.93"/></g></svg>`;
                               }
                               if (wCode === 2) {
-                                return `<div style="position:absolute;top:4px;right:10px;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,rgba(255,230,100,0.9) 30%,rgba(255,200,50,0.3) 70%,transparent 100%);box-shadow:0 0 5px 1px rgba(255,220,80,0.25)"></div><svg style="position:absolute;top:6px;right:4px" width="16" height="10" viewBox="0 0 24 16"><path d="M4 12a5 5 0 0 1 5-5h6a4 4 0 0 1 0 8H6a3.5 3.5 0 0 1 0-7" fill="rgba(230,235,245,0.6)"/></svg>`;
+                                return `<svg style="position:absolute;top:3px;right:3px;filter:drop-shadow(0 0 2px rgba(255,220,80,0.3))" width="20" height="16" viewBox="0 0 28 20" fill="none"><circle cx="10" cy="7" r="3.5" fill="#fde047"/><g stroke="#fde047" stroke-width="1.2" stroke-linecap="round"><line x1="10" y1="1" x2="10" y2="2.5"/><line x1="10" y1="11.5" x2="10" y2="13"/><line x1="4" y1="7" x2="5.5" y2="7"/><line x1="14.5" y1="7" x2="16" y2="7"/><line x1="5.76" y1="2.76" x2="6.82" y2="3.82"/><line x1="13.18" y1="10.18" x2="14.24" y2="11.24"/><line x1="5.76" y1="11.24" x2="6.82" y2="10.18"/><line x1="13.18" y1="3.82" x2="14.24" y2="2.76"/></g><path d="M10 16a4 4 0 0 1 4-4h5a3 3 0 0 1 0 6H11.5a2.5 2.5 0 0 1 0-5" fill="rgba(220,225,240,0.65)" stroke="rgba(200,210,230,0.4)" stroke-width="0.5"/></svg>`;
                               }
                               return '';
                             })();
@@ -23535,27 +23535,32 @@ export default function Dashboard() {
                               const totalDuration = 150;
                               const riseStart = srMin - 60;
                               const elapsed = minutesSinceMidnight - riseStart;
-                              const sunProgress = Math.max(0, Math.min(1, elapsed / totalDuration));
-                              const sunY = 95 - sunProgress * 60;
-                              const sunSize = 12 + sunProgress * 6;
-                              const glowSize = sunSize + 10;
-                              const glowOpacity = 0.2 + sunProgress * 0.3;
-                              return `<div style="position:absolute;bottom:${100 - sunY}%;left:18%;transform:translateX(-50%);width:${glowSize}px;height:${glowSize}px;border-radius:50%;background:radial-gradient(circle,rgba(255,200,80,${glowOpacity}) 0%,transparent 70%)"></div><div style="position:absolute;bottom:${100 - sunY}%;left:18%;transform:translateX(-50%);width:${sunSize}px;height:${sunSize}px;border-radius:50%;background:radial-gradient(circle,#ffe070 0%,#f0a030 100%);box-shadow:0 0 ${8 + sunProgress * 6}px ${2 + sunProgress * 3}px rgba(255,180,60,${0.3 + sunProgress * 0.3})"></div>`;
+                              const p = Math.max(0, Math.min(1, elapsed / totalDuration));
+                              const horizonOpacity = Math.max(0, 0.6 - p * 0.3);
+                              const warmOpacity = Math.max(0, 0.4 - p * 0.2);
+                              const sunBottom = Math.max(0, -4 + p * 20);
+                              const sunOpacity = p > 0.3 ? Math.min(1, (p - 0.3) * 2.5) : 0;
+                              return `<div style="position:absolute;bottom:0;left:0;right:0;height:40%;background:linear-gradient(180deg,transparent 0%,rgba(255,180,100,${horizonOpacity}) 60%,rgba(255,140,60,${horizonOpacity * 0.8}) 100%)"></div><div style="position:absolute;bottom:0;left:0;right:0;height:20%;background:linear-gradient(180deg,transparent 0%,rgba(255,100,50,${warmOpacity}) 100%)"></div>${sunOpacity > 0 ? `<div style="position:absolute;bottom:${sunBottom}px;left:50%;transform:translateX(-50%);width:10px;height:10px;border-radius:50%;background:#fde047;box-shadow:0 0 12px 4px rgba(255,220,80,${sunOpacity * 0.6}),0 0 24px 8px rgba(255,180,60,${sunOpacity * 0.3});opacity:${sunOpacity}"></div>` : ''}`;
                             })() : '';
 
                             const sunsetSceneHtml = isSunsetPhase ? (() => {
                               const totalDuration = 120;
                               const setStart = ssMin - 60;
                               const elapsed = minutesSinceMidnight - setStart;
-                              const setProgress = Math.max(0, Math.min(1, elapsed / totalDuration));
-                              const sunY = 30 + setProgress * 65;
-                              const sunSize = Math.max(2, 16 - setProgress * 10);
-                              const glowOpacity = Math.max(0, 0.5 - setProgress * 0.4);
-                              return sunSize > 2 ? `<div style="position:absolute;bottom:${100 - sunY}%;left:18%;transform:translateX(-50%);width:${sunSize + 10}px;height:${sunSize + 10}px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,40,${glowOpacity}) 0%,transparent 70%)"></div><div style="position:absolute;bottom:${100 - sunY}%;left:18%;transform:translateX(-50%);width:${sunSize}px;height:${sunSize}px;border-radius:50%;background:radial-gradient(circle,#ff8844 0%,#cc4422 100%);box-shadow:0 0 8px 2px rgba(255,100,30,${glowOpacity})"></div>` : '';
+                              const p = Math.max(0, Math.min(1, elapsed / totalDuration));
+                              const warmth = p < 0.5 ? p * 2 : 1;
+                              const fade = p > 0.5 ? (p - 0.5) * 2 : 0;
+                              const sunBottom = Math.max(-6, 12 - p * 20);
+                              const sunOpacity = Math.max(0, 1 - fade * 1.5);
+                              const horizonR = Math.round(255 - fade * 60);
+                              const horizonG = Math.round(120 - fade * 80);
+                              const horizonB = Math.round(60 + fade * 40);
+                              const horizonOpacity = Math.max(0.1, 0.7 - fade * 0.4);
+                              const purpleOpacity = warmth * 0.25;
+                              return `<div style="position:absolute;bottom:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(80,40,100,${purpleOpacity}) 0%,rgba(${horizonR},${horizonG},${horizonB},${horizonOpacity}) 70%,rgba(255,80,30,${horizonOpacity * 0.6}) 100%)"></div>${sunOpacity > 0.05 ? `<div style="position:absolute;bottom:${sunBottom}px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:linear-gradient(180deg,#fde047,#f97316);box-shadow:0 0 8px 3px rgba(255,160,50,${sunOpacity * 0.5}),0 -2px 16px 6px rgba(255,100,30,${sunOpacity * 0.3});opacity:${sunOpacity}"></div>` : ''}`;
                             })() : '';
 
-                            const moonBg = skyBg.includes('0a0e27') ? '#0a0e27' : skyBg.includes('0d1117') ? '#0d1117' : '#111827';
-                            const moonHtml = isNightPhase ? `<div style="position:absolute;top:5px;right:5px;width:14px;height:14px"><div style="position:absolute;top:0;left:0;width:14px;height:14px;border-radius:50%;background:#fef3c7;box-shadow:0 0 8px 3px rgba(255,250,200,0.3)"></div><div style="position:absolute;top:-2px;left:-3px;width:14px;height:14px;border-radius:50%;background:${moonBg}"></div></div>` : '';
+                            const moonHtml = isNightPhase ? `<svg style="position:absolute;top:5px;right:5px;filter:drop-shadow(0 0 4px rgba(255,250,210,0.35))" width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M20.354 15.354A9 9 0 0 1 8.646 3.646 9.003 9.003 0 0 0 12 21a9.003 9.003 0 0 0 8.354-5.646z" fill="#fef9c3" stroke="rgba(255,250,200,0.5)" stroke-width="0.5"/></svg>` : '';
 
                             return (
                               <>
