@@ -16973,11 +16973,29 @@ ${pdfText.substring(0, 12000)}
 
 Return ONLY the JSON object, no markdown formatting.`;
 
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.1,
-      });
+      let completion: any;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          completion = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [{ role: "user", content: prompt }],
+            temperature: 0.1,
+          });
+          break;
+        } catch (retryErr: any) {
+          const is429 = retryErr?.status === 429 || retryErr?.message?.includes('429') || retryErr?.message?.includes('Rate limit');
+          if (is429 && attempt < 2) {
+            const waitMs = (attempt + 1) * 15000;
+            console.log(`[Syllabus Parse] Rate limited, retrying in ${waitMs / 1000}s (attempt ${attempt + 1}/3)`);
+            await new Promise(r => setTimeout(r, waitMs));
+          } else {
+            throw retryErr;
+          }
+        }
+      }
+      if (!completion) {
+        return res.status(429).json({ error: "Rate limit exceeded after retries. Please try again in a minute." });
+      }
 
       const responseText = completion.choices[0]?.message?.content || '';
       let parsed: any;
@@ -17057,11 +17075,29 @@ ${pdfText.substring(0, 4000)}
 
 Return ONLY the JSON object, no markdown formatting.`;
 
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.1,
-      });
+      let completion: any;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          completion = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [{ role: "user", content: prompt }],
+            temperature: 0.1,
+          });
+          break;
+        } catch (retryErr: any) {
+          const is429 = retryErr?.status === 429 || retryErr?.message?.includes('429') || retryErr?.message?.includes('Rate limit');
+          if (is429 && attempt < 2) {
+            const waitMs = (attempt + 1) * 15000;
+            console.log(`[Doc Parse] Rate limited, retrying in ${waitMs / 1000}s (attempt ${attempt + 1}/3)`);
+            await new Promise(r => setTimeout(r, waitMs));
+          } else {
+            throw retryErr;
+          }
+        }
+      }
+      if (!completion) {
+        return res.status(429).json({ error: "Rate limit exceeded after retries. Please try again in a minute." });
+      }
 
       const responseText = completion.choices[0]?.message?.content || '';
       let parsed: any;
