@@ -17437,7 +17437,7 @@ export default function Dashboard() {
       {/* Weather / Alert labels on D2L ticker, flanking center tab */}
       {weatherAlerts.length > 0 && (
         <>
-          <div className="fixed z-[9999]" style={{ top: '25px', left: '50%', transform: 'translateX(calc(-50% - 80px))', pointerEvents: 'none' }} data-testid="weather-alert-label-left">
+          <div className="fixed z-[9999]" style={{ top: '25px', left: '50%', transform: 'translateX(calc(-50% - 81px))', pointerEvents: 'none' }} data-testid="weather-alert-label-left">
             <span style={{ color: '#ffffff', fontSize: '12px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px' }}>WEATHER</span>
           </div>
           <div className="fixed z-[9999]" style={{ top: '25px', left: '50%', transform: 'translateX(calc(-50% + 73px))', pointerEvents: 'none' }} data-testid="weather-alert-label-right">
