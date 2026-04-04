@@ -23554,7 +23554,8 @@ export default function Dashboard() {
                               return sunSize > 2 ? `<div style="position:absolute;bottom:${100 - sunY}%;left:18%;transform:translateX(-50%);width:${sunSize + 10}px;height:${sunSize + 10}px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,40,${glowOpacity}) 0%,transparent 70%)"></div><div style="position:absolute;bottom:${100 - sunY}%;left:18%;transform:translateX(-50%);width:${sunSize}px;height:${sunSize}px;border-radius:50%;background:radial-gradient(circle,#ff8844 0%,#cc4422 100%);box-shadow:0 0 8px 2px rgba(255,100,30,${glowOpacity})"></div>` : '';
                             })() : '';
 
-                            const moonHtml = isNightPhase ? `<div style="position:absolute;top:5px;right:5px;width:14px;height:14px;border-radius:50%;background:#fef3c7;box-shadow:0 0 6px 2px rgba(255,250,200,0.35);clip-path:polygon(100% 0%,100% 100%,0% 100%,0% 0%);-webkit-mask-image:radial-gradient(circle 8px at 4px 6px,transparent 50%,black 51%);mask-image:radial-gradient(circle 8px at 4px 6px,transparent 50%,black 51%)"></div>` : '';
+                            const moonBg = skyBg.includes('0a0e27') ? '#0a0e27' : skyBg.includes('0d1117') ? '#0d1117' : '#111827';
+                            const moonHtml = isNightPhase ? `<div style="position:absolute;top:5px;right:5px;width:14px;height:14px"><div style="position:absolute;top:0;left:0;width:14px;height:14px;border-radius:50%;background:#fef3c7;box-shadow:0 0 8px 3px rgba(255,250,200,0.3)"></div><div style="position:absolute;top:-2px;left:-3px;width:14px;height:14px;border-radius:50%;background:${moonBg}"></div></div>` : '';
 
                             return (
                               <>
