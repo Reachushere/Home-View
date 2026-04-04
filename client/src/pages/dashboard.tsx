@@ -4724,10 +4724,10 @@ export default function Dashboard() {
       colors[courseCode] = {
         hex,
         hexEnd,
-        bg: `rgb(${Math.round(endRgb.r + (255 - endRgb.r) * 0.55)}, ${Math.round(endRgb.g + (255 - endRgb.g) * 0.55)}, ${Math.round(endRgb.b + (255 - endRgb.b) * 0.55)})`,
+        bg: `rgb(${Math.max(0, endRgb.r - 12)}, ${Math.max(0, endRgb.g - 12)}, ${Math.max(0, endRgb.b - 12)})`,
         mid: `rgb(${midR}, ${midG}, ${midB})`,
         border: displayHex,
-        text: displayHex,
+        text: '#ffffff',
         dot: displayHex,
         prepBg: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1)`,
         prepBorder: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.4)`,
@@ -25952,9 +25952,11 @@ export default function Dashboard() {
                                   ""
                                 }`}
                                 style={(() => {
+                                  const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode);
+                                  const taskBg = cMatch?.taskBgColor || (colors?.bg) || null;
                                   const gradColors = courseCode ? getCourseGradientColors(courseCode) : null;
                                   const hasCourseGrad = gradColors && gradColors.start !== '#6b7280';
-                                  const bgGradient = task.isCompleted ? '#e5e7eb' : hasCourseGrad ? `linear-gradient(180deg, ${gradColors.start}, ${gradColors.end})` : (task.type === 'other' || !courseCode ? `linear-gradient(180deg, ${otherRowColors.labelStart}, ${otherRowColors.labelEnd})` : 'linear-gradient(180deg, #6b7280, #9ca3af)');
+                                  const bgGradient = task.isCompleted ? '#e5e7eb' : taskBg ? taskBg : (task.type === 'other' || !courseCode ? `linear-gradient(180deg, ${otherRowColors.labelStart}, ${otherRowColors.labelEnd})` : 'linear-gradient(180deg, #6b7280, #9ca3af)');
                                   const borderColor = task.isCompleted ? '#d1d5db' : hasCourseGrad ? gradColors.start : (task.type === 'other' ? otherRowColors.borderColor : '#6b7280');
                                   return {
                                     top: `${topOffset}px`,
@@ -26138,9 +26140,11 @@ export default function Dashboard() {
                         ""
                       }`}
                       style={(() => {
+                        const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode);
+                        const taskBg = cMatch?.taskBgColor || (colors?.bg) || null;
                         const gradColors = courseCode ? getCourseGradientColors(courseCode) : null;
                         const hasCourseGrad = gradColors && gradColors.start !== '#6b7280';
-                        const bgGradient = task.isCompleted ? '#e5e7eb' : hasCourseGrad ? `linear-gradient(180deg, ${gradColors.start}, ${gradColors.end})` : (task.type === 'other' || !courseCode ? `linear-gradient(180deg, ${otherRowColors.labelStart}, ${otherRowColors.labelEnd})` : 'linear-gradient(180deg, #6b7280, #9ca3af)');
+                        const bgGradient = task.isCompleted ? '#e5e7eb' : taskBg ? taskBg : (task.type === 'other' || !courseCode ? `linear-gradient(180deg, ${otherRowColors.labelStart}, ${otherRowColors.labelEnd})` : 'linear-gradient(180deg, #6b7280, #9ca3af)');
                         const borderColor = task.isCompleted ? '#d1d5db' : hasCourseGrad ? gradColors.start : (task.type === 'other' ? otherRowColors.borderColor : '#6b7280');
                         return {
                           top: `${topPx}px`,
