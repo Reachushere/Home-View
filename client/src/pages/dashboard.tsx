@@ -15693,7 +15693,7 @@ export default function Dashboard() {
       {weatherAlerts.length > 0 && (
         <>
           <div style={{ position: 'fixed', top: '37px', left: 0, width: 'calc(50% - 70px - 52px)', height: '3px', backgroundColor: '#ff0000', zIndex: 112, pointerEvents: 'none' }} />
-          <div style={{ position: 'fixed', top: '37px', left: 'calc(50% + 63px + 38px)', right: 0, height: '3px', backgroundColor: '#ff0000', zIndex: 112, pointerEvents: 'none' }} />
+          <div style={{ position: 'fixed', top: '37px', left: 'calc(50% + 63px + 35px)', right: 0, height: '3px', backgroundColor: '#ff0000', zIndex: 112, pointerEvents: 'none' }} />
         </>
       )}
       <div className="fixed left-0 right-0 overflow-hidden flex" style={{ top: 0, height: '38px', zIndex: 111, backgroundColor: '#000000', background: 'linear-gradient(90deg, #000000 0%, #14141e 50%, #000000 100%)', borderBottom: '1px solid rgba(255,255,255,0.15)' }} data-testid="announcement-ticker">
