@@ -454,7 +454,7 @@ function NewsTickerPortal({ headlines, onAlertClick }: { headlines: Array<{ titl
       el.style.bottom = '0';
       el.style.left = '0';
       el.style.right = '0';
-      el.style.zIndex = '9998';
+      el.style.zIndex = '9997';
       el.style.height = '0';
       el.style.overflow = 'visible';
       document.body.appendChild(el);
@@ -477,7 +477,7 @@ function NewsTickerPortal({ headlines, onAlertClick }: { headlines: Array<{ titl
     prevHeadlinesKeyRef.current = headlinesKey;
     renderedRef.current = true;
     const hasAlerts = headlines.some(h => h.source === '_ALERT_');
-    const html = `<div class="fixed left-0 right-0 z-[9998] overflow-hidden flex" style="bottom:0;height:38px;background:linear-gradient(90deg,#000000 0%,#14141e 50%,#000000 100%);border-top:1px solid rgba(255,255,255,0.15)" data-testid="news-ticker">${hasAlerts ? '<div style="position:absolute;top:0;left:0;width:calc(50% - 70px - 52px);height:3px;background:#ff0000;z-index:9999"></div><div style="position:absolute;top:0;left:calc(50% + 63px + 38px);right:0;height:3px;background:#ff0000;z-index:9999"></div>' : ''}<div class="flex-shrink-0 flex items-center justify-center" style="height:38px;width:auto"><img src="${newsTickerLabel}" alt="NEWS" style="height:38px;width:auto;object-fit:contain" /></div><div class="flex-1 overflow-hidden relative h-full"><div class="flex items-center h-full whitespace-nowrap news-ticker-scroll" style="position:relative;padding-top:3px"><span style="display:inline-block;width:40px;flex-shrink:0"></span>${headlines.map((item, i) => {
+    const html = `<div class="fixed left-0 right-0 z-[9997] overflow-hidden flex" style="bottom:0;height:38px;background:linear-gradient(90deg,#000000 0%,#14141e 50%,#000000 100%);border-top:1px solid rgba(255,255,255,0.15)" data-testid="news-ticker">${hasAlerts ? '<div style="position:absolute;top:0;left:0;width:calc(50% - 70px - 52px);height:3px;background:#ff0000;z-index:9999"></div><div style="position:absolute;top:0;left:calc(50% + 63px + 38px);right:0;height:3px;background:#ff0000;z-index:9999"></div>' : ''}<div class="flex-shrink-0 flex items-center justify-center" style="height:38px;width:auto"><img src="${newsTickerLabel}" alt="NEWS" style="height:38px;width:auto;object-fit:contain" /></div><div class="flex-1 overflow-hidden relative h-full"><div class="flex items-center h-full whitespace-nowrap news-ticker-scroll" style="position:relative;padding-top:3px"><span style="display:inline-block;width:40px;flex-shrink:0"></span>${headlines.map((item, i) => {
       if (item.source === '_ALERT_') {
         const safeTitle = item.title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
         const alertIdx = (item as any).alertIndex ?? '';
@@ -24002,8 +24002,8 @@ export default function Dashboard() {
                               if (isNightPhase) return 'linear-gradient(180deg, #0a0e27 0%, #101740 40%, #1a2555 100%)';
                               if (phase === 'preDawn') return 'linear-gradient(180deg, #0f1535 0%, #1e2a5a 40%, #3d2b4a 70%, #5c3d4a 100%)';
                               if (phase === 'sunrise') return isActiveWeather ? 'linear-gradient(180deg, #3a4060 0%, #7a6858 35%, #9a8868 55%, #8a8878 75%, #7a7a72 100%)' : 'linear-gradient(180deg, #2a3a6e 0%, #c97355 35%, #e8a55a 55%, #f0c66e 75%, #fdd878 100%)';
-                              if (phase === 'morning') return isActiveWeather ? 'linear-gradient(180deg, #3a4a5a 0%, #4a5a6a 40%, #5a6a7a 70%, #5a6878 100%)' : 'linear-gradient(180deg, #4a8ec7 0%, #7bb8e0 40%, #b8d8ef 70%, #edc261 100%)';
-                              if (phase === 'day' && isActiveWeather) return 'linear-gradient(180deg, #3a4a5a 0%, #4a5a6a 40%, #5a6a7a 100%)';
+                              if (phase === 'morning') return isActiveWeather ? 'linear-gradient(180deg, #405868 0%, #506878 40%, #607888 70%, #5a7080 100%)' : 'linear-gradient(180deg, #4a8ec7 0%, #7bb8e0 40%, #b8d8ef 70%, #edc261 100%)';
+                              if (phase === 'day' && isActiveWeather) return 'linear-gradient(180deg, #4a5e72 0%, #5a6e82 40%, #6a7e92 100%)';
                               if (phase === 'preSet') return isActiveWeather ? 'linear-gradient(180deg, #3a4858 0%, #4a5a6a 30%, #5a6570 60%, #4a5058 100%)' : 'linear-gradient(180deg, #5a95c8 0%, #8ab8d8 30%, #c9a96e 60%, #d4905a 100%)';
                               if (phase === 'sunset') return isActiveWeather ? 'linear-gradient(180deg, #2a3050 0%, #3a4558 25%, #4a5a68 45%, #4a5565 65%, #3a4550 100%)' : 'linear-gradient(180deg, #2d3a6e 0%, #8a4a5c 25%, #d4724a 45%, #ecc47e 65%, #f9a523 85%, #c44a20 100%)';
                               if (phase === 'dusk') return isActiveWeather ? 'linear-gradient(180deg, #101825 0%, #1a1a30 30%, #2a2a3a 55%, #3a3540 75%, #201820 100%)' : 'linear-gradient(180deg, #12183a 0%, #2a2050 30%, #5c3355 55%, #8a4a5c 75%, #3d2040 100%)';
@@ -28361,7 +28361,7 @@ export default function Dashboard() {
 
             return rows;
           })()}
-          <div className="flex-1 flex flex-col" style={{ paddingLeft: '0px', paddingRight: '0px', position: 'absolute', left: 0, right: 0, top: (() => { if (courseRowRects.length > 0) { const lastRect = courseRowRects[courseRowRects.length - 1]; if (lastRect) { const upcomingTopLocal = calendarBorderTop || (calendarTop + 15); const otherTop = lastRect.top + lastRect.height - upcomingTopLocal; const otherRowH = Math.max(57, gridSizes.otherRowHeight || 57); return `${otherTop + otherRowH + 2}px`; } } return '261px'; })(), bottom: '0px', minHeight: 0, paddingBottom: '0px', overflow: 'hidden', zIndex: 2, display: 'flex', flexDirection: 'column' as const }}>
+          <div className="flex-1 flex flex-col" style={{ paddingLeft: '0px', paddingRight: '0px', position: 'absolute', left: 0, right: 0, top: (() => { if (courseRowRects.length > 0) { const lastRect = courseRowRects[courseRowRects.length - 1]; if (lastRect) { const upcomingTopLocal = calendarBorderTop || (calendarTop + 15); const otherTop = lastRect.top + lastRect.height - upcomingTopLocal; const otherRowH = Math.max(57, gridSizes.otherRowHeight || 57); return `${otherTop + otherRowH - 2}px`; } } return '261px'; })(), bottom: '0px', minHeight: 0, paddingBottom: '0px', overflow: 'hidden', zIndex: 2, display: 'flex', flexDirection: 'column' as const }}>
           <div style={{ width: '100%', height: '15px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', flexShrink: 0, position: 'relative', zIndex: 3, border: '0.5px solid rgba(255,255,255,0.15)' }}>
             <span style={{ fontSize: '10px', fontWeight: 500, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
           </div>
