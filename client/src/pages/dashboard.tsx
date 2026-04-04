@@ -25799,7 +25799,7 @@ export default function Dashboard() {
                                   return h;
                                 }
                                 const d = new Date(t.dueDate);
-                                const h = d.getHours();
+                                const h = getETHours(d);
                                 return h === 0 ? 18 : h;
                               })();
                               if (tDueHour !== hour) return false;
