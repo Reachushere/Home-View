@@ -17432,10 +17432,10 @@ export default function Dashboard() {
       {/* Weather / Alert labels on D2L ticker, flanking center tab */}
       {weatherAlerts.length > 0 && (
         <>
-          <div className="fixed z-[9999]" style={{ top: '23px', left: '50%', transform: 'translateX(calc(-50% - 58px))', pointerEvents: 'none' }} data-testid="weather-alert-label-left">
+          <div className="fixed z-[9999]" style={{ top: '23px', left: '50%', transform: 'translateX(calc(-50% - 63px))', pointerEvents: 'none' }} data-testid="weather-alert-label-left">
             <span style={{ color: '#ffffff', fontSize: '10px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px' }}>WEATHER</span>
           </div>
-          <div className="fixed z-[9999]" style={{ top: '23px', left: '50%', transform: 'translateX(calc(-50% + 58px))', pointerEvents: 'none' }} data-testid="weather-alert-label-right">
+          <div className="fixed z-[9999]" style={{ top: '23px', left: '50%', transform: 'translateX(calc(-50% + 63px))', pointerEvents: 'none' }} data-testid="weather-alert-label-right">
             <span style={{ color: '#ffffff', fontSize: '10px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px' }}>ALERT</span>
           </div>
           <div className="fixed z-[9999]" style={{ bottom: '33px', left: '48px', display: isSchoolCoursesDialogOpen ? 'none' : undefined, pointerEvents: 'none' }} data-testid="weather-alert-label-bottom">
