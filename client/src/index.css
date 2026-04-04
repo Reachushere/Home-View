@@ -20,6 +20,8 @@ html, body {
   max-height: 100% !important;
   overflow: hidden !important;
   overscroll-behavior: none !important;
+  position: relative;
+  z-index: 9998;
 }
 
 
