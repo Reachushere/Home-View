@@ -28573,7 +28573,7 @@ export default function Dashboard() {
                     position: 'absolute',
                     top: `${otherTop}px`,
                     left: 0,
-                    width: `${effectiveDividerPct}%`,
+                    right: 0,
                     height: `${otherRowHeight}px`,
                     zIndex: 41,
                     borderTop: `1.5px dotted ${otherRowColors.borderColor}`,
