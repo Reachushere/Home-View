@@ -2323,6 +2323,9 @@ export default function Dashboard() {
   const voiceRecognitionRef = useRef<any>(null);
   const voiceTargetRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
 
+  const voiceStoppingRef = useRef(false);
+  const voiceFinalTextRef = useRef('');
+
   const startVoiceInput = useCallback(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
@@ -2335,36 +2338,51 @@ export default function Dashboard() {
     } else {
       voiceTargetRef.current = null;
     }
+    voiceStoppingRef.current = false;
+    voiceFinalTextRef.current = '';
     const recognition = new SpeechRecognition();
     recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = 'en-US';
-    let finalText = '';
     recognition.onresult = (event: any) => {
       let interim = '';
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const t = event.results[i][0].transcript;
         if (event.results[i].isFinal) {
-          finalText += t;
+          voiceFinalTextRef.current += t;
         } else {
           interim += t;
         }
       }
-      setVoiceTranscript(finalText + interim);
+      setVoiceTranscript(voiceFinalTextRef.current + interim);
     };
     recognition.onerror = (event: any) => {
       console.error('[Voice] Recognition error:', event.error);
+      if (event.error === 'no-speech' || event.error === 'audio-capture') {
+        return;
+      }
+      if (event.error === 'aborted') return;
+      voiceStoppingRef.current = true;
       setIsVoiceListening(false);
     };
     recognition.onend = () => {
+      if (!voiceStoppingRef.current) {
+        try {
+          recognition.start();
+          return;
+        } catch (e) {
+          console.warn('[Voice] Failed to restart recognition:', e);
+        }
+      }
       setIsVoiceListening(false);
-      if (finalText && voiceTargetRef.current) {
+      if (voiceFinalTextRef.current && voiceTargetRef.current) {
         const el = voiceTargetRef.current;
         el.focus();
-        document.execCommand('insertText', false, finalText);
+        document.execCommand('insertText', false, voiceFinalTextRef.current);
       }
       setVoiceTranscript('');
       voiceTargetRef.current = null;
+      voiceFinalTextRef.current = '';
     };
     voiceRecognitionRef.current = recognition;
     recognition.start();
@@ -2373,6 +2391,7 @@ export default function Dashboard() {
   }, [toast]);
 
   const stopVoiceInput = useCallback(() => {
+    voiceStoppingRef.current = true;
     if (voiceRecognitionRef.current) {
       voiceRecognitionRef.current.stop();
       voiceRecognitionRef.current = null;
