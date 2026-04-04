@@ -26580,17 +26580,17 @@ export default function Dashboard() {
                         );
                       })()}
                       {/* Task body */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '1px 4px 3px 4px', flex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '3px', padding: '2px 4px 3px 4px' }}>
                         <Checkbox
                           checked={task.isCompleted || false}
                           onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
                           className="h-3.5 w-3.5 shrink-0 bg-white data-[state=checked]:bg-white data-[state=checked]:text-black"
-                          style={{ border: '1px solid black' }}
+                          style={{ border: '1px solid black', marginTop: '1px' }}
                           onClick={(e) => e.stopPropagation()}
                         />
                         {(() => { const hasAtt = (task.attachments?.length && task.attachments.some((att: any) => { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; return !!url; })) || task.referenceLink; return hasAtt ? <img src={pdfAttachIconPath} alt="PDF" style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0 }} data-testid={`attachment-icon-multi-${task.id}`} /> : null; })()}
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: '9px', fontWeight: 400, color: '#000000', lineHeight: 1.2, position: 'relative', top: '1px', fontStyle: 'italic' }}>
+                          <div style={{ fontSize: '9px', fontWeight: 400, color: '#000000', lineHeight: 1.2, fontStyle: 'italic' }}>
                             {task.eventStartTime && task.eventEndTime ? `${formatTimeTo12Hour(task.eventStartTime)} - ${formatTimeTo12Hour(task.eventEndTime)}` : format(new Date(task.dueDate), "h:mm a")}
                           </div>
                         </div>
