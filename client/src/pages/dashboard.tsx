@@ -141,6 +141,7 @@ import {
   Pause,
   SkipForward,
   SkipBack,
+  FastForward,
   RotateCcw,
   RotateCw,
   Gauge,
@@ -982,7 +983,8 @@ export default function Dashboard() {
     const h = window.innerHeight;
     const ot = screen?.orientation?.type || '';
     const isLO = ot.includes('landscape') || (window.orientation !== undefined && (window.orientation === 90 || window.orientation === -90));
-    const isMD = w < 940 || h < 640 || (w <= 1024 && h <= 768);
+    const isTablet = ('ontouchstart' in window || navigator.maxTouchPoints > 0) && Math.min(w, h) >= 600;
+    const isMD = isTablet ? false : (w < 940 || h < 640 || (w <= 1024 && h <= 768));
     return isMD && (isLO || w > h);
   });
   const [isMobilePortrait, setIsMobilePortrait] = useState(() => {
@@ -990,7 +992,8 @@ export default function Dashboard() {
     const h = window.innerHeight;
     const ot = screen?.orientation?.type || '';
     const isLO = ot.includes('landscape') || (window.orientation !== undefined && (window.orientation === 90 || window.orientation === -90));
-    const isMD = w < 940 || h < 640 || (w <= 1024 && h <= 768);
+    const isTablet = ('ontouchstart' in window || navigator.maxTouchPoints > 0) && Math.min(w, h) >= 600;
+    const isMD = isTablet ? false : (w < 940 || h < 640 || (w <= 1024 && h <= 768));
     if (isLO && isMD) return false;
     return isMD && h >= w;
   });
@@ -1030,7 +1033,8 @@ export default function Dashboard() {
       const orientationType = screen?.orientation?.type || '';
       const isLandscapeOrientation = orientationType.includes('landscape') || (window.orientation !== undefined && (window.orientation === 90 || window.orientation === -90));
       setIsMobile(w < 640);
-      const isMobileDimensions = w < 940 || h < 640 || (w <= 1024 && h <= 768);
+      const isTablet = ('ontouchstart' in window || navigator.maxTouchPoints > 0) && Math.min(w, h) >= 600;
+      const isMobileDimensions = isTablet ? false : (w < 940 || h < 640 || (w <= 1024 && h <= 768));
       if (isLandscapeOrientation && isMobileDimensions) {
         setIsMobileLandscape(true);
         setIsMobilePortrait(false);
@@ -29021,6 +29025,53 @@ export default function Dashboard() {
                     { id: 'hw-ctrl-next', icon: <SkipForward className="h-3.5 w-3.5 text-white" />, label: 'Next' },
                     { id: 'hw-ctrl-forward', icon: <RotateCw className="h-3.5 w-3.5 text-white" />, label: '+15s' },
                     { id: 'hw-ctrl-stop', icon: <Square className="h-3.5 w-3.5 text-white fill-white" />, label: 'Stop' },
+                    { id: 'hw-ctrl-skip-file', icon: <FastForward className="h-3.5 w-3.5 text-white" />, label: 'Skip File', onClick: () => {
+                      const iframe = document.querySelector('iframe[name="pdf-reader-frame"]') as HTMLIFrameElement;
+                      if (iframe?.contentWindow) iframe.contentWindow.postMessage({ type: 'tts-stop' }, '*');
+                      if (!bookReaderOverlay) return;
+                      const currentUrl = bookReaderOverlay.url;
+                      const currentIdMatch = currentUrl.match(/\/pdf-reader\/(\d+)/);
+                      const currentOneDriveMatch = currentUrl.match(/oneDriveUrl=([^&]+)/);
+                      const currentFileId = currentIdMatch ? parseInt(currentIdMatch[1], 10) : null;
+                      const currentOneDriveUrl = currentOneDriveMatch ? decodeURIComponent(currentOneDriveMatch[1]) : null;
+                      const buildFileList = () => {
+                        const files: Array<{ file: typeof allFiles[0]; courseCode: string; color: string; type: 'module' | 'reading' }> = [];
+                        courseProgressDataRef.current.forEach((pd) => {
+                          if (!pd) return;
+                          const cc = pd.courseCode.toLowerCase();
+                          const moduleFolder = `week-${selectedWeek}-${cc}-module`;
+                          const readingFolder = `week-${selectedWeek}-${cc}-reading`;
+                          const moduleFiles = allFiles.filter(f => f.folder === moduleFolder);
+                          const readingFiles = allFiles.filter(f => f.folder === readingFolder);
+                          moduleFiles.forEach(f => files.push({ file: f, courseCode: pd.courseCode, color: pd.progressStartColor, type: 'module' }));
+                          readingFiles.forEach(f => files.push({ file: f, courseCode: pd.courseCode, color: pd.progressStartColor, type: 'reading' }));
+                        });
+                        return files;
+                      };
+                      const orderedFiles = buildFileList();
+                      const currentIdx = orderedFiles.findIndex(entry => {
+                        if (currentFileId && entry.file.id === currentFileId) return true;
+                        if (currentOneDriveUrl && entry.file.objectPath === currentOneDriveUrl) return true;
+                        return false;
+                      });
+                      let nextEntry = null;
+                      if (currentIdx >= 0 && currentIdx < orderedFiles.length - 1) {
+                        nextEntry = orderedFiles[currentIdx + 1];
+                      } else {
+                        nextEntry = orderedFiles.find(entry => !entry.file.listened);
+                      }
+                      if (nextEntry) {
+                        const f = nextEntry.file;
+                        const readerUrl = f.objectPath?.startsWith('http')
+                          ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(f.objectPath || '')}&name=${encodeURIComponent(f.displayName || f.originalName)}&autoplay=1`
+                          : `/pdf-reader/${f.id}?autoplay=1`;
+                        const fileName = f.displayName || f.originalName || nextEntry.type;
+                        setBookReaderOverlay({ url: readerUrl, courseCode: nextEntry.courseCode, title: fileName, color: nextEntry.color });
+                        toast({ title: `Skipped to: ${fileName}` });
+                      } else {
+                        toast({ title: 'No more files to play', variant: 'destructive' });
+                      }
+                    }},
                   ].map(btn => (
                     <div key={btn.id} className="flex flex-col items-center" style={{ width: '32px' }}>
                       <button className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors" data-testid={btn.id} title={btn.label}>
