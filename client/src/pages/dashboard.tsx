@@ -27657,6 +27657,7 @@ export default function Dashboard() {
           }}
           data-testid="section-coming-up"
         >
+          <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', border: '1.5px solid rgba(255,255,255,0.5)', pointerEvents: 'none', zIndex: 9999 }} />
           {/* Date navigation tab above glass box */}
           <div
             className="absolute z-[60]"
