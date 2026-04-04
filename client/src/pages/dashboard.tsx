@@ -25466,7 +25466,14 @@ export default function Dashboard() {
                             setIsAddDialogOpen(true);
                           }}
                         >
-                          {/* Background layer - sits below tasks so they don't get covered */}
+                          {isToday && isCurrentHour && (
+                            <div className="absolute inset-0 z-[1] pointer-events-none" style={{
+                              border: '2px solid rgba(59, 130, 246, 0.6)',
+                              borderRadius: '4px',
+                              boxShadow: 'inset 0 0 12px rgba(59, 130, 246, 0.15), 0 0 8px rgba(59, 130, 246, 0.2)',
+                              background: 'linear-gradient(180deg, rgba(59, 130, 246, 0.08) 0%, rgba(59, 130, 246, 0.04) 100%)',
+                            }} />
+                          )}
                           <div 
                             className={`absolute inset-0 z-0 ${hasAnyTasks && !isToday && !isCurrentHour ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDayET(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20" : ""}`}
                             style={{
