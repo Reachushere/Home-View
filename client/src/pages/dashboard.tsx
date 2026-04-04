@@ -17443,10 +17443,10 @@ export default function Dashboard() {
           <div className="fixed z-[9999]" style={{ top: '25px', left: '50%', transform: 'translateX(calc(-50% + 73px))', pointerEvents: 'none' }} data-testid="weather-alert-label-right">
             <span style={{ color: '#ffffff', fontSize: '12px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px' }}>ALERT</span>
           </div>
-          <div className="fixed z-[10000]" style={{ bottom: '25px', left: '50%', transform: 'translateX(calc(-50% - 81px))', display: isSchoolCoursesDialogOpen ? 'none' : undefined, pointerEvents: 'none' }} data-testid="weather-alert-label-bottom-left">
+          <div className="fixed z-[10001]" style={{ bottom: '39px', left: '50%', transform: 'translateX(calc(-50% - 81px))', display: isSchoolCoursesDialogOpen ? 'none' : undefined, pointerEvents: 'none' }} data-testid="weather-alert-label-bottom-left">
             <span style={{ color: '#ffffff', fontSize: '12px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px' }}>WEATHER</span>
           </div>
-          <div className="fixed z-[10000]" style={{ bottom: '25px', left: '50%', transform: 'translateX(calc(-50% + 73px))', display: isSchoolCoursesDialogOpen ? 'none' : undefined, pointerEvents: 'none' }} data-testid="weather-alert-label-bottom-right">
+          <div className="fixed z-[10001]" style={{ bottom: '39px', left: '50%', transform: 'translateX(calc(-50% + 73px))', display: isSchoolCoursesDialogOpen ? 'none' : undefined, pointerEvents: 'none' }} data-testid="weather-alert-label-bottom-right">
             <span style={{ color: '#ffffff', fontSize: '12px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px' }}>ALERT</span>
           </div>
         </>
