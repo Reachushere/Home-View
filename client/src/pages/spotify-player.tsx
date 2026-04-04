@@ -1467,7 +1467,7 @@ export default function SpotifyPlayerPage() {
             </div>
           );
         }
-        const greeting = h < 12 ? "Good Morning" : h < 18 ? "Good Afternoon" : "Good Evening";
+        const greeting = h < 12 ? "Good Morning," : h < 18 ? "Good Afternoon," : "Good Evening,";
         if (activeProfile === "bryn") {
           return (
             <div className="absolute top-5 z-50 pointer-events-none text-right flex items-start gap-3" style={{ right: '2%' }} data-testid="bryn-greeting">

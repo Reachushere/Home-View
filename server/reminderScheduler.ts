@@ -284,7 +284,7 @@ export async function checkDailyDigest() {
       const isTravelling = getIsTravellingMode();
       if (!isTravelling) {
         const hour = getEasternHour(new Date());
-        const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+        const greeting = hour < 12 ? "Good morning," : hour < 17 ? "Good afternoon," : "Good evening,";
 
         const todayMid = easternMidnight();
         const tomorrowDateStr = easternDateStr(addDays(todayMid, 1));

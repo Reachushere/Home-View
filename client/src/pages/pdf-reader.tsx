@@ -1577,7 +1577,7 @@ export default function PDFReaderPage() {
 
     if (catWashFollow && file) {
       const hour = new Date().getHours();
-      const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+      const greeting = hour < 12 ? "Good morning," : hour < 17 ? "Good afternoon," : "Good evening,";
       const folder = file.folder || '';
       const weekMatch = folder.match(/week-(\d+)/i);
       const weekNum = weekMatch ? weekMatch[1] : null;
