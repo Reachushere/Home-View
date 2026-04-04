@@ -1,0 +1,254 @@
+# ============================================================
+# RASCAL INSULIN REMINDER — Home Assistant Configuration
+# ============================================================
+# Add each section to the corresponding file in your HA config.
+# After adding, restart Home Assistant or reload the relevant
+# integrations (input_boolean, timer, automation, etc.).
+# ============================================================
+
+
+# ──────────────────────────────────────────────────────────────
+# 1. INPUT BOOLEANS — add to configuration.yaml
+# ──────────────────────────────────────────────────────────────
+
+input_boolean:
+  rascal_insulin_pending:
+    name: "Rascal Insulin Pending"
+    icon: mdi:needle
+
+
+# ──────────────────────────────────────────────────────────────
+# 2. TIMER — add to configuration.yaml
+# ──────────────────────────────────────────────────────────────
+
+timer:
+  rascal_next_insulin:
+    name: "Next Insulin Shot"
+    duration: "12:00:00"
+    icon: mdi:timer-outline
+
+
+# ──────────────────────────────────────────────────────────────
+# 3. AUTOMATIONS — add to automations.yaml
+# ──────────────────────────────────────────────────────────────
+
+# --- 3a. Trigger at 7:30 AM and 7:30 PM ---
+- id: rascal_insulin_start_reminder
+  alias: "Rascal Insulin - Start Reminder"
+  trigger:
+    - platform: time
+      at: "07:30:00"
+    - platform: time
+      at: "19:30:00"
+  action:
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.rascal_insulin_pending
+    - service: notify.alexa_media
+      data:
+        message: "It's time to give Rascal his insulin shot."
+        data:
+          type: announce
+          method: speak
+        target:
+          # List every Alexa device EXCEPT King Bedroom
+          # Replace these with your actual media_player entity IDs
+          - media_player.living_room_echo
+          - media_player.kitchen_echo
+          - media_player.office_echo
+          - media_player.bathroom_echo
+          # Add any other rooms here, just leave out King Bedroom
+
+# --- 3b. Repeat every 15 minutes while pending ---
+- id: rascal_insulin_repeat_reminder
+  alias: "Rascal Insulin - Repeat Every 15 Min"
+  trigger:
+    - platform: time_pattern
+      minutes: "/15"
+  condition:
+    - condition: state
+      entity_id: input_boolean.rascal_insulin_pending
+      state: "on"
+  action:
+    - service: notify.alexa_media
+      data:
+        message: "Reminder: Rascal still needs his insulin shot."
+        data:
+          type: announce
+          method: speak
+        target:
+          - media_player.living_room_echo
+          - media_player.kitchen_echo
+          - media_player.office_echo
+          - media_player.bathroom_echo
+
+# --- 3c. When button is pressed (insulin given) ---
+- id: rascal_insulin_given
+  alias: "Rascal Insulin - Mark as Given"
+  trigger:
+    - platform: state
+      entity_id: input_boolean.rascal_insulin_pending
+      from: "on"
+      to: "off"
+  action:
+    - service: timer.start
+      target:
+        entity_id: timer.rascal_next_insulin
+      data:
+        duration: "12:00:00"
+    - service: notify.alexa_media
+      data:
+        message: "Rascal's insulin has been given. Next dose in 12 hours."
+        data:
+          type: announce
+          method: speak
+        target:
+          - media_player.living_room_echo
+          - media_player.kitchen_echo
+          - media_player.office_echo
+          - media_player.bathroom_echo
+
+
+# ──────────────────────────────────────────────────────────────
+# 4. DASHBOARD CARD — add to your Lovelace dashboard YAML
+# ──────────────────────────────────────────────────────────────
+#
+# This uses a Picture Elements card. If you prefer to add it
+# via the UI editor, switch to YAML mode on the card and paste
+# the content below.
+#
+# You will need a background image. Replace the image path
+# with your own (e.g., a photo of Rascal or a simple background).
+# ──────────────────────────────────────────────────────────────
+
+# --- Lovelace Card YAML ---
+
+type: picture-elements
+image: /local/images/rascal_bg.png   # <-- replace with your background image path
+elements:
+
+  # Blinking syringe icon — visible only when insulin is PENDING
+  - type: state-icon
+    entity: input_boolean.rascal_insulin_pending
+    icon: mdi:needle
+    tap_action:
+      action: toggle
+    style:
+      top: 40%
+      left: 50%
+      "--paper-item-icon-color": red
+      "--paper-item-icon-active-color": red
+      animation: >-
+        {% if is_state('input_boolean.rascal_insulin_pending', 'on') %}
+          blink 1s ease infinite
+        {% else %}
+          none
+        {% endif %}
+      transform: scale(2.5)
+
+  # Status text — changes based on state
+  - type: conditional
+    conditions:
+      - entity: input_boolean.rascal_insulin_pending
+        state: "on"
+    elements:
+      - type: state-label
+        entity: input_boolean.rascal_insulin_pending
+        style:
+          top: 65%
+          left: 50%
+          color: red
+          font-size: 16px
+          font-weight: bold
+        prefix: "⚠️ INSULIN NEEDED"
+
+  # Countdown timer — visible only AFTER insulin is given
+  - type: conditional
+    conditions:
+      - entity: input_boolean.rascal_insulin_pending
+        state: "off"
+    elements:
+      - type: state-label
+        entity: timer.rascal_next_insulin
+        style:
+          top: 65%
+          left: 50%
+          color: white
+          font-size: 14px
+          font-weight: bold
+        prefix: "Next dose in: "
+
+  # "Insulin Given" button label
+  - type: conditional
+    conditions:
+      - entity: input_boolean.rascal_insulin_pending
+        state: "on"
+    elements:
+      - type: state-label
+        entity: input_boolean.rascal_insulin_pending
+        tap_action:
+          action: toggle
+        style:
+          top: 80%
+          left: 50%
+          color: white
+          font-size: 12px
+          background-color: "rgba(0,128,0,0.7)"
+          padding: 6px 16px
+          border-radius: 8px
+          cursor: pointer
+        prefix: "✅ Mark Insulin Given"
+
+
+# ──────────────────────────────────────────────────────────────
+# 5. CSS FOR BLINK ANIMATION — add to your HA theme or
+#    custom CSS via card-mod / lovelace-card-mod
+# ──────────────────────────────────────────────────────────────
+#
+# If the built-in `animation: blink` doesn't work in your HA
+# version, install "card-mod" from HACS and add this CSS:
+#
+#   @keyframes blink {
+#     0%, 100% { opacity: 1; }
+#     50% { opacity: 0.2; }
+#   }
+#
+# Then in card-mod on the icon element:
+#
+#   card_mod:
+#     style: |
+#       :host {
+#         animation: blink 1s ease infinite;
+#       }
+#
+
+
+# ──────────────────────────────────────────────────────────────
+# 6. NOTES
+# ──────────────────────────────────────────────────────────────
+#
+# ALEXA DEVICE NAMES:
+#   Replace the media_player.* entity IDs in the automations
+#   with your actual Alexa device entity IDs. You can find them
+#   in HA under Developer Tools > States, filtered by
+#   "media_player". Just leave out the King Bedroom one.
+#
+# ALEXA MEDIA PLAYER INTEGRATION:
+#   This requires the "Alexa Media Player" custom integration
+#   from HACS. If you use a different Alexa integration, adjust
+#   the service calls accordingly.
+#
+# BACKGROUND IMAGE:
+#   Place an image at /config/www/images/rascal_bg.png
+#   (accessible as /local/images/rascal_bg.png in Lovelace).
+#   A photo of Rascal would be perfect!
+#
+# TIMER BEHAVIOR:
+#   The 12-hour timer starts when you press the button. It
+#   counts down and shows remaining time on the dashboard.
+#   At the next 7:30 trigger, the cycle resets automatically.
+#
+# TESTING:
+#   Toggle input_boolean.rascal_insulin_pending from Developer
+#   Tools > States to test the blinking and timer behavior
+#   without waiting for 7:30.
