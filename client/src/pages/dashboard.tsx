@@ -36,6 +36,7 @@ import abcNewsLogoPath from "@assets/ABC_1773609250051.png";
 import weatherAlertLogoPath from "@assets/Weather_Alert_1773608511887.png";
 import bbcNewsLogoPath from "@assets/BBC_1773609711103.png";
 import forecastIconPath from "@assets/Forecast2_1773897989398.png";
+import selbyBuildingPath from "@assets/image_1775263840386.png";
 import cnTowerPath from "@assets/CN2_1773897525570.png";
 import newspaperIconPath from "@assets/Newspaper2_1773898792176.png";
 import foxNewsLogoPath from "@assets/Fox_News_1773610204651.png";
@@ -2187,6 +2188,11 @@ export default function Dashboard() {
   const [pollenData, setPollenData] = useState<{ tree: { value: number; level: string }; grass: { value: number; level: string }; weed: { value: number; level: string }; overall: { value: number; level: string }; aqi: number } | null>(null);
   const [weatherAlerts, setWeatherAlerts] = useState<{ title: string; summary: string; description: string; type: string; url: string }[]>([]);
   const [weatherAlertDialogOpen, setWeatherAlertDialogOpen] = useState(false);
+  const [skyMapOpen, setSkyMapOpen] = useState(false);
+  const [skyMapDate, setSkyMapDate] = useState<Date>(new Date());
+  const [hwHeaderFlipped, setHwHeaderFlipped] = useState(false);
+  const [earthquakeData, setEarthquakeData] = useState<{ place: string; mag: number; time: number; url: string }[]>([]);
+  const hwHeaderFlipRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [selectedWeatherAlert, setSelectedWeatherAlert] = useState<{ title: string; summary: string; description: string; type: string; url: string } | null>(null);
   const weatherParticles = useMemo(() => Array.from({ length: 70 }, () => ({
     left: Math.random() * 110 - 5,
@@ -2255,13 +2261,31 @@ export default function Dashboard() {
         console.error('[Weather Alerts] Failed to fetch:', e);
       }
     };
+    const fetchEarthquakes = async () => {
+      try {
+        const res = await fetch('/api/earthquakes');
+        const data = await res.json();
+        if (data.earthquakes) {
+          setEarthquakeData(data.earthquakes);
+        }
+      } catch (e) { console.error('[Earthquakes] fetch error:', e); }
+    };
     fetchWeather();
     fetchPollen();
     fetchWeatherAlerts();
+    fetchEarthquakes();
     const weatherInterval = setInterval(fetchWeather, 15 * 60 * 1000);
     const pollenInterval = setInterval(fetchPollen, 30 * 60 * 1000);
     const alertsInterval = setInterval(fetchWeatherAlerts, 5 * 60 * 1000);
-    return () => { clearInterval(weatherInterval); clearInterval(pollenInterval); clearInterval(alertsInterval); };
+    const quakeInterval = setInterval(fetchEarthquakes, 30 * 60 * 1000);
+    return () => { clearInterval(weatherInterval); clearInterval(pollenInterval); clearInterval(alertsInterval); clearInterval(quakeInterval); };
+  }, []);
+
+  useEffect(() => {
+    hwHeaderFlipRef.current = setInterval(() => {
+      setHwHeaderFlipped(prev => !prev);
+    }, 12000);
+    return () => { if (hwHeaderFlipRef.current) clearInterval(hwHeaderFlipRef.current); };
   }, []);
 
   const [isVoiceListening, setIsVoiceListening] = useState(false);
@@ -17319,6 +17343,136 @@ export default function Dashboard() {
         </div>
       )}
 
+      {skyMapOpen && (() => {
+        const d = skyMapDate;
+        const dateStr = format(d, 'EEEE, MMMM d, yyyy');
+        const dayForecast = weatherData?.daily?.find(f => f.date === format(d, 'yyyy-MM-dd'));
+        const ssTime = dayForecast?.sunset ? new Date(dayForecast.sunset) : null;
+        const srTime = dayForecast?.sunrise ? new Date(dayForecast.sunrise) : null;
+        const sunsetStr = ssTime ? new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/Toronto' }).format(ssTime) : '~7:45 PM';
+        const sunriseStr = srTime ? new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/Toronto' }).format(srTime) : '~6:50 AM';
+        const planets = [
+          { name: 'Venus', mag: -3.8, desc: 'Evening Star', x: 25, y: 38, color: '#fef3c7', size: 6, visible: true, direction: 'WSW', altitude: '22°', info: 'Brilliant evening star, visible ~1.5 hrs after sunset' },
+          { name: 'Jupiter', mag: -2.0, desc: 'Gas Giant', x: 38, y: 28, color: '#fde68a', size: 5, visible: true, direction: 'SW', altitude: '35°', info: 'Bright in southwest at dusk, in Gemini' },
+          { name: 'Uranus', mag: 5.8, desc: 'Ice Giant', x: 22, y: 42, color: '#a7f3d0', size: 2, visible: false, direction: 'W', altitude: '18°', info: 'Needs binoculars, near Venus in early April' },
+          { name: 'Mars', mag: 1.2, desc: 'Red Planet', x: 82, y: 65, color: '#fca5a5', size: 3, visible: false, direction: 'Pre-dawn E', altitude: 'Low', info: 'Morning sky only, rises before sunrise' },
+          { name: 'Saturn', mag: 0.9, desc: 'Ringed Planet', x: 85, y: 70, color: '#fcd34d', size: 3, visible: false, direction: 'Pre-dawn E', altitude: 'Low', info: 'Morning sky only, in Pisces' },
+        ];
+        const constellations = [
+          { name: 'Orion', x: 30, y: 50, stars: [[0,0],[3,-8],[6,0],[3,3],[3,-3],[3,-8],[1,-12],[5,-13],[3,-8]] },
+          { name: 'Gemini', x: 42, y: 22, stars: [[0,0],[2,-4],[5,-6],[8,-5],[4,2],[6,5],[9,4]] },
+          { name: 'Canis Major', x: 22, y: 60, stars: [[0,0],[3,4],[6,2],[3,-3],[0,-5]] },
+          { name: 'Leo', x: 60, y: 25, stars: [[0,0],[3,-4],[7,-3],[10,-5],[7,0],[4,2],[0,0]] },
+        ];
+        const totalFloors = 50;
+        const floorHeight = 100 / totalFloors;
+        const floor42Top = 100 - (42 * floorHeight);
+        return (
+          <div className="fixed inset-0 z-[10001] flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }} onClick={() => setSkyMapOpen(false)} data-testid="sky-map-overlay">
+            <div className="relative rounded-xl shadow-2xl overflow-hidden" style={{ width: '900px', maxWidth: '95vw', height: '600px', maxHeight: '90vh', background: 'linear-gradient(180deg, #0a0e27 0%, #111827 30%, #1a1a2e 100%)' }} onClick={(e) => e.stopPropagation()} data-testid="sky-map-dialog">
+              <div className="flex items-center justify-between px-5 py-3" style={{ background: 'linear-gradient(90deg, rgba(30,40,80,0.9), rgba(20,30,60,0.9))', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                <div className="flex items-center gap-3">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#60a5fa" strokeWidth="1.5"/><circle cx="12" cy="12" r="1" fill="#60a5fa"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="#60a5fa" strokeWidth="1" strokeLinecap="round"/></svg>
+                  <div>
+                    <span className="text-white font-semibold text-[15px]" data-testid="sky-map-title">Night Sky — 25 Selby St, 42nd Floor South View</span>
+                    <span className="text-white/50 text-[12px] ml-3">{dateStr}</span>
+                  </div>
+                </div>
+                <button onClick={() => setSkyMapOpen(false)} className="text-white/50 hover:text-white text-xl font-bold leading-none w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10" data-testid="button-close-sky-map">&times;</button>
+              </div>
+              <div className="flex h-[calc(100%-48px)]">
+                <div className="relative" style={{ width: '180px', flexShrink: 0, borderRight: '1px solid rgba(255,255,255,0.08)' }}>
+                  <img src={selbyBuildingPath} alt="The Selby - 25 Selby Street" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', filter: 'brightness(0.4) contrast(1.1)' }} />
+                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(10,14,39,0.7) 0%, rgba(10,14,39,0.3) 40%, rgba(10,14,39,0.5) 100%)' }} />
+                  <div style={{ position: 'absolute', top: `${floor42Top - 1}%`, left: 0, right: 0, height: '3px', background: '#3b82f6', boxShadow: '0 0 8px 2px rgba(59,130,246,0.6)', zIndex: 5 }} />
+                  <div style={{ position: 'absolute', top: `${floor42Top - 3.5}%`, right: '8px', zIndex: 5, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span className="text-[9px] font-bold text-blue-400" style={{ textShadow: '0 0 4px rgba(59,130,246,0.5)', letterSpacing: '0.5px' }}>42F ←</span>
+                  </div>
+                  <div style={{ position: 'absolute', top: `${floor42Top - 1}%`, left: '-4px', width: '8px', height: '8px', borderRadius: '50%', background: '#3b82f6', border: '2px solid #1e3a5f', zIndex: 6, transform: 'translateY(-2.5px)' }} />
+                  <div style={{ position: 'absolute', bottom: '8px', left: 0, right: 0, textAlign: 'center', zIndex: 5 }}>
+                    <span className="text-[10px] text-white/60 font-medium" style={{ letterSpacing: '1px' }}>THE SELBY</span>
+                    <br/>
+                    <span className="text-[8px] text-white/40">50 STOREYS</span>
+                  </div>
+                </div>
+                <div className="flex-1 relative overflow-hidden" style={{ background: 'linear-gradient(180deg, #0a0e27 0%, #0d1230 30%, #111d40 60%, #1a2744 80%, #2a3a5a 95%, #3a4a6a 100%)' }}>
+                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '12%', background: 'linear-gradient(180deg, transparent 0%, rgba(40,50,70,0.8) 60%, rgba(30,35,50,0.95) 100%)' }}>
+                    <div style={{ position: 'absolute', bottom: '2px', left: 0, right: 0, height: '1px', background: 'rgba(255,255,255,0.06)' }} />
+                    {Array.from({ length: 30 }, (_, i) => (
+                      <div key={i} style={{ position: 'absolute', bottom: `${2 + Math.random() * 8}%`, left: `${(i / 30) * 100 + Math.random() * 3}%`, width: `${1 + Math.random() * 2}px`, height: `${1 + Math.random() * 3}px`, background: `rgba(255,200,100,${0.15 + Math.random() * 0.25})`, borderRadius: '1px' }} />
+                    ))}
+                  </div>
+                  {Array.from({ length: 80 }, (_, i) => {
+                    const sx = Math.random() * 100;
+                    const sy = Math.random() * 85;
+                    const ss = 0.5 + Math.random() * 1.5;
+                    const so = 0.3 + Math.random() * 0.7;
+                    const sd = 2 + Math.random() * 4;
+                    return <div key={i} style={{ position: 'absolute', left: `${sx}%`, top: `${sy}%`, width: `${ss}px`, height: `${ss}px`, borderRadius: '50%', background: '#ffffff', opacity: so, animation: `twinkle ${sd}s ${Math.random() * sd}s ease-in-out infinite` }} />;
+                  })}
+                  {planets.filter(p => p.visible).map((p, i) => (
+                    <div key={p.name} style={{ position: 'absolute', left: `${p.x}%`, top: `${p.y}%` }}>
+                      <div style={{ width: `${p.size * 2}px`, height: `${p.size * 2}px`, borderRadius: '50%', background: p.color, boxShadow: `0 0 ${p.size * 3}px ${p.size}px ${p.color}40`, transform: 'translate(-50%, -50%)' }} />
+                      <div style={{ position: 'absolute', top: `${p.size + 4}px`, left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>
+                        <div className="text-[10px] font-bold text-white" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.8)', textAlign: 'center' }}>{p.name}</div>
+                        <div className="text-[8px] text-white/50" style={{ textAlign: 'center' }}>mag {p.mag}</div>
+                      </div>
+                      <svg style={{ position: 'absolute', top: `${p.size + 2}px`, left: '50%', transform: 'translateX(-50%)' }} width="8" height="6" viewBox="0 0 8 6"><path d="M4 0L4 6" stroke={p.color} strokeWidth="1" opacity="0.5"/></svg>
+                    </div>
+                  ))}
+                  {constellations.map((c) => (
+                    <div key={c.name} style={{ position: 'absolute', left: `${c.x}%`, top: `${c.y}%` }}>
+                      <svg width="60" height="60" style={{ overflow: 'visible', opacity: 0.35 }}>
+                        {c.stars.map((s, si) => si > 0 && (
+                          <line key={si} x1={c.stars[si-1][0] * 4} y1={c.stars[si-1][1] * 4} x2={s[0] * 4} y2={s[1] * 4} stroke="rgba(255,255,255,0.3)" strokeWidth="0.5" />
+                        ))}
+                        {c.stars.map((s, si) => (
+                          <circle key={si} cx={s[0] * 4} cy={s[1] * 4} r={si === 0 ? 2 : 1.2} fill="rgba(255,255,255,0.7)" />
+                        ))}
+                      </svg>
+                      <span className="text-[8px] text-white/30 absolute" style={{ top: '-12px', left: '0', letterSpacing: '1px', textTransform: 'uppercase' }}>{c.name}</span>
+                    </div>
+                  ))}
+                  <svg style={{ position: 'absolute', top: '8px', right: '8px', filter: 'drop-shadow(0 0 6px rgba(255,250,210,0.4))' }} width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M20.354 15.354A9 9 0 0 1 8.646 3.646 9.003 9.003 0 0 0 12 21a9.003 9.003 0 0 0 8.354-5.646z" fill="#fef9c3" stroke="rgba(255,250,200,0.3)" strokeWidth="0.5"/></svg>
+                  <div style={{ position: 'absolute', bottom: '14%', left: 0, right: 0, display: 'flex', justifyContent: 'space-between', padding: '0 20px' }}>
+                    {['SE', 'SSE', 'S', 'SSW', 'SW'].map(dir => (
+                      <span key={dir} className="text-[9px] text-white/30 font-medium" style={{ letterSpacing: '1px' }}>{dir}</span>
+                    ))}
+                  </div>
+                  <div style={{ position: 'absolute', top: '12px', left: '12px' }}>
+                    <div className="text-[11px] text-white/70 font-medium">Evening Sky — Facing South</div>
+                    <div className="text-[9px] text-white/40 mt-0.5">Lat 43.67°N · Long 79.39°W · Alt: ~130m</div>
+                    <div className="text-[9px] text-white/40">Sunset: {sunsetStr} · Sunrise: {sunriseStr}</div>
+                  </div>
+                </div>
+                <div style={{ width: '200px', flexShrink: 0, borderLeft: '1px solid rgba(255,255,255,0.08)', background: 'rgba(10,14,39,0.9)', overflowY: 'auto', padding: '12px' }}>
+                  <div className="text-[11px] text-white/60 font-semibold mb-3" style={{ letterSpacing: '1px', textTransform: 'uppercase' }}>Visible Tonight</div>
+                  {planets.map(p => (
+                    <div key={p.name} className="mb-3 rounded-lg p-2" style={{ background: p.visible ? 'rgba(59,130,246,0.1)' : 'rgba(255,255,255,0.03)', border: `1px solid ${p.visible ? 'rgba(59,130,246,0.2)' : 'rgba(255,255,255,0.05)'}` }}>
+                      <div className="flex items-center gap-2">
+                        <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: p.color, boxShadow: `0 0 4px ${p.color}` }} />
+                        <span className="text-[11px] text-white font-medium">{p.name}</span>
+                        {p.visible ? <span className="text-[8px] text-green-400 ml-auto">VISIBLE</span> : <span className="text-[8px] text-white/30 ml-auto">NOT VISIBLE</span>}
+                      </div>
+                      <div className="text-[9px] text-white/50 mt-1">{p.direction} · {p.altitude}</div>
+                      <div className="text-[9px] text-white/40 mt-0.5">{p.info}</div>
+                    </div>
+                  ))}
+                  <div className="mt-4 pt-3 border-t border-white/10">
+                    <div className="text-[11px] text-white/60 font-semibold mb-2" style={{ letterSpacing: '1px', textTransform: 'uppercase' }}>April Highlights</div>
+                    <div className="text-[9px] text-white/50 mb-1.5">🌕 Apr 2 — Full "Pink Moon"</div>
+                    <div className="text-[9px] text-white/50 mb-1.5">🌑 Apr 17 — New Moon (best dark sky)</div>
+                    <div className="text-[9px] text-white/50 mb-1.5">🌙 Apr 18-19 — Moon-Venus pairing</div>
+                    <div className="text-[9px] text-white/50 mb-1.5">☄️ Apr 22 — Lyrid meteor shower peak</div>
+                    <div className="text-[9px] text-white/50 mb-1.5">🔭 Apr 23 — Venus near Uranus + Pleiades</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Bottom Wide Pill Panel - Slides up from bottom edge */}
       {desktopShowWidePill && (() => {
         const btnCount = 1;
@@ -23407,6 +23561,7 @@ export default function Dashboard() {
                         className="absolute inset-0 cursor-pointer z-10"
                         style={{ opacity: sleepDisabledDays.has(shiftDateStr) ? 0.3 : 0 }}
                         onClick={(e) => { e.stopPropagation(); updateSleepDisabledDays(shiftDateStr); }}
+                        onDoubleClick={(e) => { e.stopPropagation(); setSkyMapDate(day); setSkyMapOpen(true); }}
                         data-testid={`toggle-sleep-${shiftDateStr}`}
                       />
                     )}
@@ -23522,11 +23677,13 @@ export default function Dashboard() {
                               if (wCode === 3) {
                                 return `<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(140,145,155,0.3) 0%,rgba(160,165,175,0.15) 100%)"></div>`;
                               }
-                              if (wCode <= 1) {
-                                return `<svg style="position:absolute;top:3px;right:4px;filter:drop-shadow(0 0 3px rgba(255,220,80,0.5))" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" fill="#fde047"/><g stroke="#fde047" stroke-width="1.5" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="6.76" y2="6.76"/><line x1="17.24" y1="17.24" x2="19.07" y2="19.07"/><line x1="4.93" y1="19.07" x2="6.76" y2="17.24"/><line x1="17.24" y1="6.76" x2="19.07" y2="4.93"/></g></svg>`;
-                              }
-                              if (wCode === 2) {
-                                return `<svg style="position:absolute;top:3px;right:3px;filter:drop-shadow(0 0 2px rgba(255,220,80,0.3))" width="20" height="16" viewBox="0 0 28 20" fill="none"><circle cx="10" cy="7" r="3.5" fill="#fde047"/><g stroke="#fde047" stroke-width="1.2" stroke-linecap="round"><line x1="10" y1="1" x2="10" y2="2.5"/><line x1="10" y1="11.5" x2="10" y2="13"/><line x1="4" y1="7" x2="5.5" y2="7"/><line x1="14.5" y1="7" x2="16" y2="7"/><line x1="5.76" y1="2.76" x2="6.82" y2="3.82"/><line x1="13.18" y1="10.18" x2="14.24" y2="11.24"/><line x1="5.76" y1="11.24" x2="6.82" y2="10.18"/><line x1="13.18" y1="3.82" x2="14.24" y2="2.76"/></g><path d="M10 16a4 4 0 0 1 4-4h5a3 3 0 0 1 0 6H11.5a2.5 2.5 0 0 1 0-5" fill="rgba(220,225,240,0.65)" stroke="rgba(200,210,230,0.4)" stroke-width="0.5"/></svg>`;
+                              if (!isNightPhase && !isSunsetPhase && !isSunrisePhase) {
+                                if (wCode <= 1) {
+                                  return `<svg style="position:absolute;top:3px;right:4px;filter:drop-shadow(0 0 3px rgba(255,220,80,0.5))" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" fill="#fde047"/><g stroke="#fde047" stroke-width="1.5" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="6.76" y2="6.76"/><line x1="17.24" y1="17.24" x2="19.07" y2="19.07"/><line x1="4.93" y1="19.07" x2="6.76" y2="17.24"/><line x1="17.24" y1="6.76" x2="19.07" y2="4.93"/></g></svg>`;
+                                }
+                                if (wCode === 2) {
+                                  return `<svg style="position:absolute;top:3px;right:3px;filter:drop-shadow(0 0 2px rgba(255,220,80,0.3))" width="20" height="16" viewBox="0 0 28 20" fill="none"><circle cx="10" cy="7" r="3.5" fill="#fde047"/><g stroke="#fde047" stroke-width="1.2" stroke-linecap="round"><line x1="10" y1="1" x2="10" y2="2.5"/><line x1="10" y1="11.5" x2="10" y2="13"/><line x1="4" y1="7" x2="5.5" y2="7"/><line x1="14.5" y1="7" x2="16" y2="7"/><line x1="5.76" y1="2.76" x2="6.82" y2="3.82"/><line x1="13.18" y1="10.18" x2="14.24" y2="11.24"/><line x1="5.76" y1="11.24" x2="6.82" y2="10.18"/><line x1="13.18" y1="3.82" x2="14.24" y2="2.76"/></g><path d="M10 16a4 4 0 0 1 4-4h5a3 3 0 0 1 0 6H11.5a2.5 2.5 0 0 1 0-5" fill="rgba(220,225,240,0.65)" stroke="rgba(200,210,230,0.4)" stroke-width="0.5"/></svg>`;
+                                }
                               }
                               return '';
                             })();
@@ -23571,11 +23728,11 @@ export default function Dashboard() {
                                   @keyframes fogDrift { 0% { transform: translateX(-5px); } 100% { transform: translateX(5px); } }
                                   @keyframes lightningFlash { 0%,89%,91%,93%,100% { opacity: 0; } 90% { opacity: 1; } 92% { opacity: 0.6; } }
                                 `}</style>
-                                <div className="absolute left-0 right-0 bottom-0 z-10" style={{ top: 0, background: skyBg, overflow: 'hidden' }}>
+                                <div className="absolute left-0 right-0 bottom-0 z-10" style={{ top: 0, background: skyBg, overflow: 'hidden', pointerEvents: 'none' }}>
                                   <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }} dangerouslySetInnerHTML={{ __html: starsHtml + moonHtml + sunriseSceneHtml + sunsetSceneHtml + weatherEffectsHtml }} />
                                 </div>
 
-                                <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '7px', overflow: 'hidden' }} data-testid="today-full-date">
+                                <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '7px', overflow: 'hidden', pointerEvents: 'none' }} data-testid="today-full-date">
                                   <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 4px' }}>
                                     {`Week ${selectedWeek}`}
                                   </span>
@@ -23650,6 +23807,13 @@ export default function Dashboard() {
                         </>
                       );
                     })()}
+                    <div
+                      className="absolute inset-0"
+                      style={{ zIndex: 25 }}
+                      onClick={(e) => { if (shiftForDay) { e.stopPropagation(); updateSleepDisabledDays(shiftDateStr); } }}
+                      onDoubleClick={(e) => { e.stopPropagation(); setSkyMapDate(day); setSkyMapOpen(true); }}
+                      data-testid={`sky-map-trigger-${format(day, "yyyy-MM-dd")}`}
+                    />
                     {idx < 6 && (
                       <div
                         className="absolute right-0 top-0 bottom-0 w-[1px] cursor-col-resize bg-white/20 hover:bg-white/50"
@@ -27196,22 +27360,55 @@ export default function Dashboard() {
             );
           })()}
           <div style={{ padding: '0 8px', height: courseRowRects.length > 0 ? `${courseRowRects[0].top - (calendarBorderTop || (calendarTop + 15)) - 1}px` : '45px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 46, overflow: 'hidden', marginBottom: '0px', boxShadow: '0 3px 6px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3)' }}>
-            <div style={{ position: 'absolute', top: '21px', left: '22px', right: 0, height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)' }} />
-            <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: '6px', bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Homework Progress</span>
-            {/* Week label moved to countdown box */}
-            <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: `${effectiveDividerPct}%`, bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', paddingLeft: '6px' }}>Most Urgent Assignments</span>
-            {weatherData && (
-              <div style={{ position: 'absolute', left: '28px', top: '5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span className="text-[9.5px] font-medium" style={{ color: 'rgba(255,255,255,1)' }} data-testid="homework-weather-temp">Current: {Math.round(weatherData.temp)}°C</span>
-                <span className="text-[9.5px]" style={{ color: 'rgba(255,255,255,1)' }} data-testid="homework-weather-desc">{(() => { const WMO: Record<number, string> = {0:'Clear',1:'Mostly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Rime Fog',51:'Lt Drizzle',53:'Drizzle',55:'Hvy Drizzle',61:'Lt Rain',63:'Rain',65:'Hvy Rain',66:'Frzg Rain',67:'Hvy Frzg Rain',71:'Lt Snow',73:'Snow',75:'Hvy Snow',77:'Snow Grains',80:'Lt Showers',81:'Showers',82:'Hvy Showers',85:'Lt Snow Shwrs',86:'Hvy Snow Shwrs',95:'T-Storm',96:'T-Storm Hail',99:'Svr T-Storm'}; return WMO[weatherData.code] || ''; })()}</span>
+            <div style={{ position: 'absolute', top: '21px', left: '22px', right: 0, height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)', zIndex: 2 }} />
+            <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: '6px', bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', zIndex: 2 }}>Homework Progress</span>
+            <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: `${effectiveDividerPct}%`, bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', paddingLeft: '6px', zIndex: 2 }}>Most Urgent Assignments</span>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '21px', perspective: '400px', overflow: 'hidden', zIndex: 1 }}>
+              <div style={{ width: '100%', height: '100%', position: 'relative', transformStyle: 'preserve-3d', transition: 'transform 0.8s cubic-bezier(0.4, 0.2, 0.2, 1)', transform: hwHeaderFlipped ? 'rotateX(-180deg)' : 'rotateX(0deg)' }}>
+                <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', display: 'flex', alignItems: 'center', padding: '0 20px' }}>
+                  {weatherData && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span className="text-[9.5px] font-medium" style={{ color: 'rgba(255,255,255,1)' }} data-testid="homework-weather-temp">Current: {Math.round(weatherData.temp)}°C</span>
+                      <span className="text-[9.5px]" style={{ color: 'rgba(255,255,255,1)' }} data-testid="homework-weather-desc">{(() => { const WMO: Record<number, string> = {0:'Clear',1:'Mostly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Rime Fog',51:'Lt Drizzle',53:'Drizzle',55:'Hvy Drizzle',61:'Lt Rain',63:'Rain',65:'Hvy Rain',66:'Frzg Rain',67:'Hvy Frzg Rain',71:'Lt Snow',73:'Snow',75:'Hvy Snow',77:'Snow Grains',80:'Lt Showers',81:'Showers',82:'Hvy Showers',85:'Lt Snow Shwrs',86:'Hvy Snow Shwrs',95:'T-Storm',96:'T-Storm Hail',99:'Svr T-Storm'}; return WMO[weatherData.code] || ''; })()}</span>
+                    </div>
+                  )}
+                  {weatherData && (weatherData.sunrise || weatherData.sunset) && (
+                    <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '11px', lineHeight: 1, paddingRight: '8px' }}>
+                      {weatherData.sunrise && <span className="text-[9.5px]" data-testid="homework-sunrise"><span style={{ color: '#FFFF00' }}>☀</span><span style={{ color: '#FFFF00', marginLeft: '3px' }}>↑</span><span style={{ color: 'rgba(255,255,255,1)', position: 'relative', top: '1px', marginLeft: '6px' }}>{(() => { const t = new Date(weatherData.sunrise); const h = t.getHours(); const m = t.getMinutes(); const ampm = h >= 12 ? 'PM' : 'AM'; return `${h === 0 ? 12 : h > 12 ? h - 12 : h}:${m.toString().padStart(2, '0')} ${ampm}`; })()}</span><span style={{ position: 'absolute', marginLeft: '12px', color: 'rgba(255,255,255,0.4)' }}>|</span></span>}
+                      {weatherData.sunset && <span className="text-[9.5px]" style={{ marginLeft: '14px' }} data-testid="homework-sunset"><span style={{ color: '#FFFF00', display: 'inline-block', transform: 'scaleX(-1) rotate(30deg)' }}>☽</span><span style={{ color: '#FFFF00', marginLeft: '3px', position: 'relative', top: '-2px' }}>↓</span><span style={{ color: 'rgba(255,255,255,1)', position: 'relative', top: '1px', marginLeft: '6px' }}>{(() => { const t = new Date(weatherData.sunset); const h = t.getHours(); const m = t.getMinutes(); const ampm = h >= 12 ? 'PM' : 'AM'; return `${h === 0 ? 12 : h > 12 ? h - 12 : h}:${m.toString().padStart(2, '0')} ${ampm}`; })()}</span></span>}
+                    </div>
+                  )}
+                </div>
+                <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateX(180deg)', display: 'flex', alignItems: 'center', padding: '0 20px', background: 'linear-gradient(90deg, rgba(20,20,40,0.95), rgba(15,15,35,0.95))' }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, marginRight: '8px' }}><path d="M2 12h3l3-8 4 16 3-12 2 4h5" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  {earthquakeData.length > 0 ? (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', overflow: 'hidden', flex: 1 }}>
+                      {earthquakeData.slice(0, 3).map((eq, i) => {
+                        const magColor = eq.mag >= 4 ? '#ef4444' : eq.mag >= 3 ? '#f59e0b' : '#22c55e';
+                        const ago = Math.round((Date.now() - eq.time) / 3600000);
+                        const agoStr = ago < 1 ? '<1h ago' : ago < 24 ? `${ago}h ago` : `${Math.round(ago / 24)}d ago`;
+                        return (
+                          <span key={i} className="text-[9px]" style={{ whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <span style={{ color: magColor, fontWeight: 700 }}>M{eq.mag.toFixed(1)}</span>
+                            <span style={{ color: 'rgba(255,255,255,0.7)' }}>{eq.place?.replace(/^.+? of /, '') || 'Unknown'}</span>
+                            <span style={{ color: 'rgba(255,255,255,0.35)' }}>{agoStr}</span>
+                            {i < Math.min(earthquakeData.length, 3) - 1 && <span style={{ color: 'rgba(255,255,255,0.15)', marginLeft: '8px' }}>|</span>}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.5)' }}>No recent earthquakes near Toronto</span>
+                  )}
+                  {weatherAlerts.length > 0 && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginLeft: 'auto' }}>
+                      <span style={{ color: '#ef4444', fontSize: '10px' }}>⚠</span>
+                      <span className="text-[9px]" style={{ color: '#fca5a5', whiteSpace: 'nowrap' }}>{weatherAlerts.length} alert{weatherAlerts.length > 1 ? 's' : ''}</span>
+                    </div>
+                  )}
+                </div>
               </div>
-            )}
-            {weatherData && (weatherData.sunrise || weatherData.sunset) && (
-              <div style={{ position: 'absolute', right: '15px', top: '6px', display: 'flex', alignItems: 'center', gap: '11px', lineHeight: 1 }}>
-                {weatherData.sunrise && <span className="text-[9.5px]" data-testid="homework-sunrise"><span style={{ color: '#FFFF00' }}>☀</span><span style={{ color: '#FFFF00', marginLeft: '3px' }}>↑</span><span style={{ color: 'rgba(255,255,255,1)', position: 'relative', top: '1px', marginLeft: '6px' }}>{(() => { const t = new Date(weatherData.sunrise); const h = t.getHours(); const m = t.getMinutes(); const ampm = h >= 12 ? 'PM' : 'AM'; return `${h === 0 ? 12 : h > 12 ? h - 12 : h}:${m.toString().padStart(2, '0')} ${ampm}`; })()}</span><span style={{ position: 'absolute', marginLeft: '12px', color: 'rgba(255,255,255,0.4)' }}>|</span></span>}
-                {weatherData.sunset && <span className="text-[9.5px]" style={{ marginLeft: '14px' }} data-testid="homework-sunset"><span style={{ color: '#FFFF00', display: 'inline-block', transform: 'scaleX(-1) rotate(30deg)' }}>☽</span><span style={{ color: '#FFFF00', marginLeft: '3px', position: 'relative', top: '-2px' }}>↓</span><span style={{ color: 'rgba(255,255,255,1)', position: 'relative', top: '1px', marginLeft: '6px' }}>{(() => { const t = new Date(weatherData.sunset); const h = t.getHours(); const m = t.getMinutes(); const ampm = h >= 12 ? 'PM' : 'AM'; return `${h === 0 ? 12 : h > 12 ? h - 12 : h}:${m.toString().padStart(2, '0')} ${ampm}`; })()}</span></span>}
-              </div>
-            )}
+            </div>
             <div ref={homeworkSpacerRef} style={{ position: 'absolute', right: '4px', top: 0, width: '0px', height: '100%', minHeight: '14px', backgroundColor: 'transparent' }} />
           </div>
           {courseRowRects.length > 0 && courseProgressDataRef.current.length > 0 && (() => {

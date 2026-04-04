@@ -2323,6 +2323,11 @@ input[type="date"]::-webkit-datetime-edit-year-field {
   72% { opacity: 0; }
 }
 
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
 .weather-sheet-lightning {
   animation: sheetLightning 20s ease-in-out infinite;
   pointer-events: none;

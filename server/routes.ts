@@ -2254,6 +2254,24 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
     return alerts;
   }
 
+  app.get("/api/earthquakes", async (_req, res) => {
+    try {
+      const url = 'https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&latitude=43.67&longitude=-79.39&maxradiuskm=2000&minmagnitude=2.0&limit=5&orderby=time';
+      const response = await fetch(url);
+      const data = await response.json();
+      const earthquakes = (data.features || []).map((f: any) => ({
+        place: f.properties.place,
+        mag: f.properties.mag,
+        time: f.properties.time,
+        url: f.properties.url,
+      }));
+      res.json({ earthquakes });
+    } catch (err) {
+      console.error("Error fetching earthquakes:", err);
+      res.json({ earthquakes: [] });
+    }
+  });
+
   app.get("/api/weather-alerts", async (_req, res) => {
     try {
       const now = Date.now();
