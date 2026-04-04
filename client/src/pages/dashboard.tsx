@@ -26529,35 +26529,51 @@ export default function Dashboard() {
                       data-cal-task-id={task.id}
                       data-cal-date={format(taskDay, 'yyyy-MM-dd')}
                     >
-                      {/* Type bar with glass effect */}
+                      {/* Type bar with icon-only color strip + module-colored title area */}
                       {(() => {
                         const hasCourseLink = !!(task.courseName || (courseCode && dynamicCourseColors[courseCode]));
                         const effectiveType = hasCourseLink ? (task.type || 'class') : 'other';
                         const typeBarColor = calendarTypeBarColors[effectiveType] || calendarTypeBarColors.other;
                         const TIcon = effectiveType === 'class' ? null : (iconMap[effectiveType] || null);
+                        const cMatchBar = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode);
+                        const moduleBoxColor = cMatchBar?.color || colors?.bg || typeBarColor;
                         return (
                           <div style={{
-                            background: `linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%), ${typeBarColor}`,
-                            borderBottom: `1px solid rgba(0,0,0,0.15)`,
-                            padding: '2px 4px 2px 4px',
                             display: 'flex',
-                            alignItems: 'center',
-                            gap: '3px',
+                            alignItems: 'stretch',
                             minHeight: '16px',
                             borderRadius: '2px 2px 0 0',
-                            position: 'relative',
                             overflow: 'hidden',
+                            borderBottom: `1px solid rgba(0,0,0,0.15)`,
                           }}>
-                            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 50%, transparent 100%)', pointerEvents: 'none' }} />
-                            {effectiveType === 'class' ? (
-                              <img src={teacherWhiteIconPath} alt="Class" style={{ width: '11px', height: '11px', objectFit: 'contain', position: 'relative', zIndex: 1 }} data-testid={`type-icon-multi-${task.id}`} />
-                            ) : TIcon ? (
-                              <TIcon className="h-3 w-3 shrink-0" style={{ position: 'relative', zIndex: 1, color: 'rgba(255,255,255,0.9)' } as any} data-testid={`type-icon-multi-${task.id}`} />
-                            ) : null}
-                            <span style={{ fontSize: '8px', fontWeight: 700, color: 'white', textTransform: 'uppercase', letterSpacing: '0.3px', position: 'relative', zIndex: 1, textShadow: '0 1px 2px rgba(0,0,0,0.3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
-                              {(() => { const raw = (task.title || '').replace(/^\[.*?\]\s*/, '').replace(/^online\s+/i, ''); const t = raw; const isModRead = /^(module|reading|module\s*(?:&|and)\s*reading)$/i.test(t.trim()); if (isModRead && task.courseName) { const cc2 = task.courseName.split(' - ')[0]?.trim(); if (cc2) return `${cc2} ${t}`; } return t; })()}
-                            </span>
-                            
+                            <div style={{
+                              background: `linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%), ${typeBarColor}`,
+                              padding: '2px 4px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              position: 'relative',
+                              flexShrink: 0,
+                            }}>
+                              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 50%, transparent 100%)', pointerEvents: 'none' }} />
+                              {effectiveType === 'class' ? (
+                                <img src={teacherWhiteIconPath} alt="Class" style={{ width: '11px', height: '11px', objectFit: 'contain', position: 'relative', zIndex: 1 }} data-testid={`type-icon-multi-${task.id}`} />
+                              ) : TIcon ? (
+                                <TIcon className="h-3 w-3 shrink-0" style={{ position: 'relative', zIndex: 1, color: 'rgba(255,255,255,0.9)' } as any} data-testid={`type-icon-multi-${task.id}`} />
+                              ) : null}
+                            </div>
+                            <div style={{
+                              background: moduleBoxColor,
+                              padding: '2px 4px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              flex: 1,
+                              minWidth: 0,
+                            }}>
+                              <span style={{ fontSize: '8px', fontWeight: 700, color: 'white', textTransform: 'uppercase', letterSpacing: '0.3px', textShadow: '0 1px 2px rgba(0,0,0,0.3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                                {(() => { const raw = (task.title || '').replace(/^\[.*?\]\s*/, '').replace(/^online\s+/i, ''); const t = raw; const isModRead = /^(module|reading|module\s*(?:&|and)\s*reading)$/i.test(t.trim()); if (isModRead && task.courseName) { const cc2 = task.courseName.split(' - ')[0]?.trim(); if (cc2) return `${cc2} ${t}`; } return t; })()}
+                              </span>
+                            </div>
                           </div>
                         );
                       })()}
