@@ -26572,7 +26572,7 @@ export default function Dashboard() {
                               flex: 1,
                               minWidth: 0,
                             }}>
-                              <span style={{ fontSize: '8px', fontWeight: 700, color: 'white', textTransform: 'uppercase', letterSpacing: '0.3px', textShadow: '0 1px 2px rgba(0,0,0,0.3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                              <span style={{ fontSize: '8px', fontWeight: 700, color: 'white', letterSpacing: '0.3px', textShadow: '0 1px 2px rgba(0,0,0,0.3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
                                 {(() => { const raw = (task.title || '').replace(/^\[.*?\]\s*/, '').replace(/^online\s+/i, ''); const t = raw || (task.courseName || ''); const isModRead = /^(module|reading|module\s*(?:&|and)\s*reading)$/i.test(t.trim()); if (isModRead && task.courseName) { const cc2 = task.courseName.split(' - ')[0]?.trim(); if (cc2) return `${cc2} ${t}`; } return t; })()}
                               </span>
                             </div>
