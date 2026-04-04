@@ -17430,13 +17430,13 @@ export default function Dashboard() {
                           <circle key={si} cx={s[0] * 4} cy={s[1] * 4} r={si === 0 ? 2 : 1.2} fill="rgba(255,255,255,0.7)" />
                         ))}
                       </svg>
-                      <span className="text-[8px] text-white/60 absolute" style={{ top: '-12px', left: '0', letterSpacing: '1px', textTransform: 'uppercase' }}>{c.name}</span>
+                      <span className="text-[8px] text-white absolute" style={{ top: '-12px', left: '0', letterSpacing: '1px', textTransform: 'uppercase' }}>{c.name}</span>
                     </div>
                   ))}
                   <svg style={{ position: 'absolute', top: '8px', right: '8px', filter: 'drop-shadow(0 0 6px rgba(255,250,210,0.4))' }} width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M20.354 15.354A9 9 0 0 1 8.646 3.646 9.003 9.003 0 0 0 12 21a9.003 9.003 0 0 0 8.354-5.646z" fill="#fef9c3" stroke="rgba(255,250,200,0.3)" strokeWidth="0.5"/></svg>
                   <div style={{ position: 'absolute', bottom: '14%', left: 0, right: 0, display: 'flex', justifyContent: 'space-between', padding: '0 20px' }}>
                     {['SE', 'SSE', 'S', 'SSW', 'SW'].map(dir => (
-                      <span key={dir} className="text-[9px] text-white/70 font-medium" style={{ letterSpacing: '1px' }}>{dir}</span>
+                      <span key={dir} className="text-[9px] text-white font-medium" style={{ letterSpacing: '1px' }}>{dir}</span>
                     ))}
                   </div>
                   <div style={{ position: 'absolute', top: '12px', left: '12px' }}>
