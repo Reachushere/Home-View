@@ -351,6 +351,11 @@ button[role="combobox"] > span {
   animation: semester-tab-nudge 6s 6s ease-in-out infinite;
 }
 
+.semester-tab-hover:hover {
+  transform: translateX(6px) !important;
+  filter: brightness(1.15);
+}
+
 @keyframes semester-tab-nudge {
   0%, 40% { transform: var(--tab-base-transform); }
   44% { transform: var(--tab-base-transform) translateX(4px); }
