@@ -17496,12 +17496,6 @@ export default function Dashboard() {
             const todayDateStr = format(new Date(), 'yyyy-MM-dd');
             const todayIdx = weatherData.daily.findIndex(d => d.date === todayDateStr);
             const forecastSlice = todayIdx >= 0 ? weatherData.daily.slice(todayIdx, todayIdx + 3) : weatherData.daily.slice(0, 3);
-            const forecastParts = forecastSlice.map(d => {
-              const dt = new Date(d.date + 'T12:00:00');
-              const dayName = dayNames[dt.getDay()];
-              return `${dayName}: ${Math.round(d.high)}°/${Math.round(d.low)}°`;
-            });
-            items.push({ title: `<img src="${forecastIconPath}" style="height:20px;width:auto;display:inline-block;vertical-align:middle;margin-left:3px;margin-right:9px;position:relative;top:-2px" />3-Day Forecast: ${forecastParts.join('  •  ')}`, source: '_FORECAST_', link: '' });
             const briefParts: string[] = [];
             const todayD = forecastSlice[0] || weatherData.daily[0];
             const tomorrowD = forecastSlice[1] || weatherData.daily[1];
