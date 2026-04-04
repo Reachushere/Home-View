@@ -24017,7 +24017,7 @@ export default function Dashboard() {
                 });
               }}
               className="absolute cursor-pointer hover:opacity-80 transition-opacity"
-              style={{ left: '-13px', top: '-13px', zIndex: 60, background: 'none', border: 'none', padding: 0 }}
+              style={{ left: '-14px', top: '-13px', zIndex: 60, background: 'none', border: 'none', padding: 0 }}
               data-testid="button-calendar-settings-cog"
               title="Calendar Settings"
             >
