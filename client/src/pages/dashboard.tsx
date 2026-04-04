@@ -17375,7 +17375,7 @@ export default function Dashboard() {
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#60a5fa" strokeWidth="1.5"/><circle cx="12" cy="12" r="1" fill="#60a5fa"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="#60a5fa" strokeWidth="1" strokeLinecap="round"/></svg>
                   <div>
                     <span className="text-white font-semibold text-[15px]" data-testid="sky-map-title">Night Sky — 25 Selby St, 42nd Floor South View</span>
-                    <span className="text-white/50 text-[12px] ml-3">{dateStr}</span>
+                    <span className="text-white text-[12px] ml-3">{dateStr}</span>
                   </div>
                 </div>
                 <button onClick={() => setSkyMapOpen(false)} className="text-white/50 hover:text-white text-xl font-bold leading-none w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10" data-testid="button-close-sky-map">&times;</button>
