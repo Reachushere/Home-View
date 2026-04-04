@@ -25765,14 +25765,15 @@ export default function Dashboard() {
                                   writingMode: 'vertical-rl',
                                   textOrientation: 'mixed',
                                   transform: 'rotate(180deg)',
-                                  fontSize: isFirstDayShiftMorning ? '32px' : '48px',
+                                  fontSize: isFirstDayShiftMorning ? '28px' : '36px',
                                   fontWeight: 900,
-                                  letterSpacing: isFirstDayShiftMorning ? '4px' : '8px',
+                                  letterSpacing: isFirstDayShiftMorning ? '4px' : '6px',
                                   color: 'rgba(150, 150, 150, 0.07)',
                                   userSelect: 'none',
                                   fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
                                   textTransform: 'uppercase',
-                                  whiteSpace: 'nowrap'
+                                  whiteSpace: 'nowrap',
+                                  maxWidth: '100%',
                                 }}>SLEEP</span>
                               )}
                             </div>
