@@ -2207,7 +2207,7 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  const [weatherData, setWeatherData] = useState<{ code: number; temp: number; windSpeed: number; isDay: boolean; sunrise?: string; sunset?: string; daily?: { date: string; high: number; low: number; weatherCode?: number; sunrise?: string; sunset?: string }[] } | null>(null);
+  const [weatherData, setWeatherData] = useState<{ code: number; temp: number; windSpeed: number; isDay: boolean; sunrise?: string; sunset?: string; daily?: { date: string; high: number; low: number; weatherCode?: number; sunrise?: string; sunset?: string }[]; hourly?: { time: string; temp: number; weatherCode: number }[] } | null>(null);
   const [pollenData, setPollenData] = useState<{ tree: { value: number; level: string }; grass: { value: number; level: string }; weed: { value: number; level: string }; overall: { value: number; level: string }; aqi: number } | null>(null);
   const [weatherAlerts, setWeatherAlerts] = useState<{ title: string; summary: string; description: string; type: string; url: string }[]>([]);
   const [weatherAlertDialogOpen, setWeatherAlertDialogOpen] = useState(false);
@@ -2259,6 +2259,11 @@ export default function Dashboard() {
           })) : [];
           const todayStr = new Date().toISOString().split('T')[0];
           const todayDaily = daily.find((d: any) => d.date === todayStr);
+          const hourly = data.hourly ? data.hourly.time.map((t: string, i: number) => ({
+            time: t,
+            temp: Math.round(data.hourly.temperature_2m[i]),
+            weatherCode: data.hourly.weather_code[i] ?? 0,
+          })) : [];
           setWeatherData({
             code: data.current.weather_code,
             temp: data.current.temperature_2m,
@@ -2267,6 +2272,7 @@ export default function Dashboard() {
             sunrise: todayDaily?.sunrise,
             sunset: todayDaily?.sunset,
             daily,
+            hourly,
           });
         }
       } catch (e) {
@@ -24432,6 +24438,36 @@ export default function Dashboard() {
                               <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`Week ${selectedWeek}`}</span>
                             </div>
                           )}
+                          {isToday && weatherData?.hourly && weatherData.hourly.length > 0 && (() => {
+                            const now = new Date();
+                            const nowMs = now.getTime();
+                            const offsets = [2, 5, 10];
+                            const wmoMini: Record<number, string> = { 0:'☀️',1:'🌤',2:'⛅',3:'☁️',45:'🌫',48:'🌫',51:'🌧',53:'🌧',55:'🌧',61:'🌧',63:'🌧',65:'🌧',66:'🧊',67:'🧊',71:'🌨',73:'🌨',75:'🌨',77:'🌨',80:'🌧',81:'🌧',82:'🌧',85:'🌨',86:'🌨',95:'⛈',96:'⛈',99:'⛈' };
+                            const forecasts = offsets.map(h => {
+                              const targetMs = nowMs + h * 3600000;
+                              let closest = weatherData.hourly![0];
+                              let minDiff = Infinity;
+                              for (const entry of weatherData.hourly!) {
+                                const entryMs = new Date(entry.time).getTime();
+                                const diff = Math.abs(entryMs - targetMs);
+                                if (diff < minDiff) { minDiff = diff; closest = entry; }
+                              }
+                              const targetDate = new Date(targetMs);
+                              const timeLabel = `${targetDate.getHours() % 12 || 12}${targetDate.getHours() >= 12 ? 'p' : 'a'}`;
+                              return { offset: h, temp: closest.temp, code: closest.weatherCode, timeLabel };
+                            });
+                            return (
+                              <div className="absolute left-[2px] z-20 flex flex-col gap-[2px]" style={{ top: '8px', bottom: '3px', pointerEvents: 'none' }} data-testid="today-hourly-forecast">
+                                {forecasts.map((fc, i) => (
+                                  <div key={i} className="flex items-center justify-center" style={{ flex: 1, background: 'rgba(0,0,0,0.35)', borderRadius: '3px', padding: '0 2px', minWidth: '38px', backdropFilter: 'blur(2px)' }} data-testid={`hourly-forecast-${fc.offset}h`}>
+                                    <span style={{ fontSize: '7.5px', color: 'rgba(255,255,255,0.6)', marginRight: '2px', fontWeight: 500 }}>{fc.timeLabel}</span>
+                                    <span style={{ fontSize: '8px', lineHeight: 1 }}>{wmoMini[fc.code] || '🌤'}</span>
+                                    <span style={{ fontSize: '8.5px', color: '#fff', fontWeight: 600, marginLeft: '1px' }}>{fc.temp}°</span>
+                                  </div>
+                                ))}
+                              </div>
+                            );
+                          })()}
                           <div className="flex items-center gap-1.5" style={{ marginTop: '13px', position: 'relative', zIndex: 15 }}>
                             {isToday ? (() => {
                               const now = new Date();

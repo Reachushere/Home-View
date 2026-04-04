@@ -2077,18 +2077,20 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
         'exceptional': 0,
       };
 
-      const [stateRes, forecastRes, sunRes] = await Promise.all([
+      const [stateRes, forecastRes, sunRes, hourlyRes] = await Promise.all([
         fetch(`${haUrl}/api/states/weather.toronto_forecast`, { headers }),
         fetch(`${haUrl}/api/services/weather/get_forecasts?return_response`, {
           method: 'POST', headers,
           body: JSON.stringify({ entity_id: 'weather.toronto_forecast', type: 'daily' }),
         }),
         fetch('https://api.open-meteo.com/v1/forecast?latitude=43.6275&longitude=-79.3962&daily=sunrise,sunset,weather_code,temperature_2m_max,temperature_2m_min&timezone=America/Toronto&forecast_days=10&past_days=7'),
+        fetch('https://api.open-meteo.com/v1/forecast?latitude=43.6275&longitude=-79.3962&hourly=temperature_2m,weather_code&timezone=America/Toronto&forecast_days=2'),
       ]);
 
       const stateData = await stateRes.json();
       const forecastData = await forecastRes.json();
       const sunData = await sunRes.json();
+      const hourlyData = await hourlyRes.json();
 
       const attrs = stateData.attributes || {};
       const currentCondition = stateData.state || 'cloudy';
@@ -2163,6 +2165,11 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
           temperature_2m_min: dailyEntries.map(d => d.low),
           sunrise: dailyEntries.map(d => d.sunrise || ''),
           sunset: dailyEntries.map(d => d.sunset || ''),
+        },
+        hourly: {
+          time: hourlyData?.hourly?.time || [],
+          temperature_2m: hourlyData?.hourly?.temperature_2m || [],
+          weather_code: hourlyData?.hourly?.weather_code || [],
         },
         _source: 'environment_canada_ha',
       };
