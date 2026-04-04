@@ -14116,7 +14116,7 @@ export default function Dashboard() {
         <div style={{ width: '1.5px', height: '28px', backgroundColor: 'rgba(255,255,255,0.45)', borderRadius: '1px', flexShrink: 0, marginLeft: '10px', marginRight: '10px' }} />
         <img src={profilePhotoUrl || profilePhoto} alt="Profile" style={{ width: '35px', height: '35px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, marginRight: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.2)', cursor: 'pointer' }} onClick={() => startTransition(() => setIsProfileDialogOpen(true))} data-testid="button-profile-photo" />
         <div className="flex flex-col">
-          <span className="text-white font-bold text-[11.5px] leading-tight">Schedule for {profileData.firstName}{profileData.lastName ? ` ${profileData.lastName}` : ''}</span>
+          <span className="text-white font-bold text-[11.5px] leading-tight">{(() => { const h = new Date().getHours(); return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'; })()} {profileData.firstName}</span>
           <span className="text-white text-[10px] leading-tight" style={{ fontWeight: 300 }}>{schoolData.schoolName || 'Toronto Metropolitan University'}</span>
         </div>
       </div>
