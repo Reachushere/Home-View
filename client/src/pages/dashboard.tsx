@@ -3303,6 +3303,41 @@ export default function Dashboard() {
       return parsed;
     } catch { return {}; }
   });
+  const [allAssignmentsAddedMap, setAllAssignmentsAddedMap] = useState<Record<string, boolean>>(() => {
+    try {
+      const saved = localStorage.getItem('allAssignmentsAdded');
+      return saved ? JSON.parse(saved) : {};
+    } catch { return {}; }
+  });
+  const setAllAssignmentsAdded = useCallback((courseCode: string, val: boolean) => {
+    setAllAssignmentsAddedMap(prev => {
+      const updated = { ...prev, [courseCode]: val };
+      localStorage.setItem('allAssignmentsAdded', JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
+
+  const [semesterEndConfirmed, setSemesterEndConfirmed] = useState<Record<string, boolean>>(() => {
+    try {
+      const saved = localStorage.getItem('semesterEndConfirmed');
+      return saved ? JSON.parse(saved) : {};
+    } catch { return {}; }
+  });
+  const [semesterStartConfirmed, setSemesterStartConfirmed] = useState<Record<string, boolean>>(() => {
+    try {
+      const saved = localStorage.getItem('semesterStartConfirmed');
+      return saved ? JSON.parse(saved) : {};
+    } catch { return {}; }
+  });
+  const [semEndDialogKey, setSemEndDialogKey] = useState<string | null>(null);
+  const [semEndDialogDismissUntil, setSemEndDialogDismissUntil] = useState<Record<string, string>>(() => {
+    try {
+      const saved = localStorage.getItem('semEndDialogDismissUntil');
+      return saved ? JSON.parse(saved) : {};
+    } catch { return {}; }
+  });
+  const [semStartDialogKey, setSemStartDialogKey] = useState<string | null>(null);
+
   const SEMESTER_COURSE_DEFS = [
     { key: 'ss2025', start: '2025-05-05', end: '2025-08-08', codes: ['CPPA101','CPPA120','CPPA102'] },
     { key: 'f2025', start: '2025-09-08', end: '2025-12-12', codes: ['CPPA125','CGCM738','CPPA121'] },
@@ -3335,6 +3370,36 @@ export default function Dashboard() {
       return () => clearTimeout(timer);
     }
   }, [coursePlayPriority]);
+
+  useEffect(() => {
+    const now = new Date();
+    const nowStr = now.toISOString();
+    for (const sem of SEMESTER_COURSE_DEFS) {
+      const endDate = new Date(sem.end + 'T23:59:59');
+      if (now >= endDate && !semesterEndConfirmed[sem.key]) {
+        const dismissUntil = semEndDialogDismissUntil[sem.key];
+        if (dismissUntil && now < new Date(dismissUntil)) continue;
+        setSemEndDialogKey(sem.key);
+        break;
+      }
+    }
+    for (const sem of SEMESTER_COURSE_DEFS) {
+      const startDate = new Date(sem.start);
+      const fridayBefore = new Date(startDate);
+      fridayBefore.setDate(fridayBefore.getDate() - (startDate.getDay() + 2) % 7);
+      if (fridayBefore.getDay() !== 5) {
+        fridayBefore.setDate(startDate.getDate() - ((startDate.getDay() + 2) % 7 || 7));
+      }
+      const semOrder = SEMESTER_COURSE_DEFS.map(s => s.key);
+      const semIdx = semOrder.indexOf(sem.key);
+      const prevSem = semIdx > 0 ? SEMESTER_COURSE_DEFS[semIdx - 1] : null;
+      const prevEnded = !prevSem || semesterEndConfirmed[prevSem.key];
+      if (now >= fridayBefore && now <= new Date(sem.end) && !semesterStartConfirmed[sem.key] && prevEnded) {
+        setSemStartDialogKey(sem.key);
+        break;
+      }
+    }
+  }, [semesterEndConfirmed, semesterStartConfirmed, semEndDialogDismissUntil]);
 
   const CERTIFICATE_TYPE_OPTIONS = [
     { group: 'Certificate 1', options: [
@@ -16842,6 +16907,11 @@ export default function Dashboard() {
                 handlePriorityChange(pk, val);
               }
             }}
+            allAssignmentsAdded={allAssignmentsAddedMap[selectedCertCourse!.courseCode.replace(/\s/g, '').toUpperCase()] || false}
+            onAllAssignmentsAddedChange={(val) => {
+              const cc = selectedCertCourse!.courseCode.replace(/\s/g, '').toUpperCase();
+              setAllAssignmentsAdded(cc, val);
+            }}
             onClose={() => {
               startTransition(() => setSelectedCertCourse(null));
               if (isSchoolCoursesDialogOpen) {
@@ -21142,11 +21212,13 @@ export default function Dashboard() {
                       return used;
                     };
 
+                    const courseNotAllAdded = isCurrentCourse && !allAssignmentsAddedMap[codeNorm] && !allAssignmentsAddedMap[semCourse.code];
+
                     return (
                       <div
                         key={semCourse.code}
-                        className="items-center px-2 py-1.5 rounded bg-white/5 border border-white/10 hover:border-white/25 cursor-grab transition-all overflow-hidden"
-                        style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                        className="items-center px-2 py-1.5 rounded bg-white/5 border hover:border-white/25 cursor-grab transition-all overflow-hidden"
+                        style={{ display: 'flex', alignItems: 'center', gap: '6px', borderColor: courseNotAllAdded ? 'rgba(239,68,68,0.5)' : 'rgba(255,255,255,0.1)', background: courseNotAllAdded ? 'rgba(239,68,68,0.08)' : undefined }}
                         draggable
                         onDragStart={(e) => {
                           dragCourseRef.current = { code: semCourse.code, fromSemKey: semKey };
@@ -21342,7 +21414,18 @@ export default function Dashboard() {
                                 }
                               }}
                             >
-                              <div className="border-b flex-shrink-0" style={{ background: isCurrentSem ? 'rgba(10,15,30,0.85)' : (() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); return isPast ? 'rgba(160,160,160,0.35)' : 'transparent'; })(), borderColor: isCurrentSem ? '#ffffff' : (() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); return isPast ? 'rgba(150,150,150,0.5)' : 'rgba(255,255,255,0.3)'; })(), ...(isCurrentSem ? { boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)' } : {}), position: 'relative' }}>
+                              <div className="border-b flex-shrink-0" style={(() => {
+                                const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })();
+                                const isEnded = semesterEndConfirmed[sem.key];
+                                const semDef = SEMESTER_COURSE_DEFS.find(s => s.key === sem.key);
+                                const semHasStarted = semDef ? new Date() >= new Date(semDef.start) : false;
+                                const allCoursesAdded = semDef ? semDef.codes.every(c => allAssignmentsAddedMap[c] || allAssignmentsAddedMap[c.toUpperCase()]) : true;
+                                const needsRedBorder = isCurrentSem && semHasStarted && !allCoursesAdded;
+                                const borderCol = isCurrentSem ? (needsRedBorder ? '#ef4444' : '#ffffff') : isPast || isEnded ? 'rgba(150,150,150,0.5)' : 'rgba(255,255,255,0.3)';
+                                const bgCol = isCurrentSem ? 'rgba(10,15,30,0.85)' : isPast || isEnded ? 'rgba(160,160,160,0.35)' : 'transparent';
+                                const shadow = isCurrentSem ? (needsRedBorder ? { boxShadow: '0 0 6px rgba(239,68,68,0.6), 0 0 12px rgba(239,68,68,0.4), 0 0 18px rgba(239,68,68,0.3)' } : { boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)' }) : {};
+                                return { background: bgCol, borderColor: borderCol, ...shadow, position: 'relative' as const, borderWidth: isCurrentSem ? '2px' : undefined };
+                              })()}>
                                 <div className="px-2 py-1.5 flex items-center justify-between">
                                 <div className="flex items-center gap-1.5 flex-wrap">
                                   <Settings
@@ -21371,7 +21454,7 @@ export default function Dashboard() {
                                     );
                                   })()}
                                   {isCurrentSem && <span className="text-[7px] font-bold text-white bg-emerald-500/20 px-1 py-0.5 rounded-full border border-white">CURRENT</span>}
-                                  {(() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); return isPast ? <span className="text-[7px] font-bold tracking-wider uppercase px-1 py-0 rounded border" style={{ color: '#ffffff', background: colorSettings.headerBar, borderColor: 'rgba(255,255,255,0.2)', lineHeight: '14px' }}>COMPLETE</span> : null; })()}
+                                  {(() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); const isConfirmedEnded = semesterEndConfirmed[sem.key]; return (isPast || isConfirmedEnded) ? <span className="text-[7px] font-bold tracking-wider uppercase px-1 py-0 rounded border" style={{ color: '#ffffff', background: colorSettings.headerBar, borderColor: 'rgba(255,255,255,0.2)', lineHeight: '14px' }}>COMPLETE</span> : null; })()}
                                 </div>
                                 <span className="text-[10px] text-white whitespace-nowrap ml-1">{(() => {
                                   const letterToGpa: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D': 1.0, 'F': 0 };
@@ -21574,6 +21657,94 @@ export default function Dashboard() {
                 );
               })()}
             </div>
+            </div>,
+            document.body
+          )}
+
+          {semEndDialogKey && createPortal(
+            <div>
+              <div className="fixed inset-0 z-[10005] bg-black/60" />
+              <div className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-[10005] w-[380px] max-w-[90vw] rounded-lg text-white p-5" style={{ background: 'linear-gradient(180deg, #1a1f3a 0%, #0d1025 100%)', border: '2px solid rgba(255,255,255,0.3)', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }} data-testid="semester-end-dialog">
+                <h3 className="text-sm font-bold mb-3" style={{ letterSpacing: '0.5px' }}>Semester Ended</h3>
+                <p className="text-[11px] text-white/70 mb-4">
+                  Has <span className="font-bold text-white">{SEMESTER_COURSE_DEFS.find(s => s.key === semEndDialogKey)?.key.replace(/^ss/, 'Spring/Summer ').replace(/^f/, 'Fall ').replace(/^w/, 'Winter ').replace(/(\d{4})/, ' $1').trim()}</span> ended? Confirming will remove course rows from the calendar and mark the semester as complete.
+                </p>
+                <div className="flex gap-2 mb-3">
+                  <button
+                    className="flex-1 py-2 rounded text-[11px] font-bold border cursor-pointer transition-all hover:brightness-110"
+                    style={{ background: 'rgba(34,197,94,0.25)', borderColor: 'rgba(34,197,94,0.5)', color: '#4ade80' }}
+                    onClick={() => {
+                      const updated = { ...semesterEndConfirmed, [semEndDialogKey]: true };
+                      setSemesterEndConfirmed(updated);
+                      localStorage.setItem('semesterEndConfirmed', JSON.stringify(updated));
+                      setSemEndDialogKey(null);
+                    }}
+                    data-testid="button-confirm-semester-end"
+                  >Yes, Semester is Complete</button>
+                  <button
+                    className="flex-1 py-2 rounded text-[11px] font-bold border cursor-pointer transition-all hover:brightness-110"
+                    style={{ background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)', color: 'white' }}
+                    onClick={() => {
+                      const dismissInput = document.getElementById('sem-end-dismiss-datetime') as HTMLInputElement;
+                      if (dismissInput?.value) {
+                        const updated = { ...semEndDialogDismissUntil, [semEndDialogKey]: dismissInput.value };
+                        setSemEndDialogDismissUntil(updated);
+                        localStorage.setItem('semEndDialogDismissUntil', JSON.stringify(updated));
+                      } else {
+                        const tomorrow = new Date();
+                        tomorrow.setDate(tomorrow.getDate() + 1);
+                        const updated = { ...semEndDialogDismissUntil, [semEndDialogKey]: tomorrow.toISOString() };
+                        setSemEndDialogDismissUntil(updated);
+                        localStorage.setItem('semEndDialogDismissUntil', JSON.stringify(updated));
+                      }
+                      setSemEndDialogKey(null);
+                    }}
+                    data-testid="button-dismiss-semester-end"
+                  >Not Yet</button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="text-[9px] text-white/50 whitespace-nowrap">Remind me at:</label>
+                  <input
+                    id="sem-end-dismiss-datetime"
+                    type="datetime-local"
+                    className="flex-1 text-[10px] px-2 py-1 rounded bg-white/10 border border-white/20 text-white"
+                    style={{ colorScheme: 'dark' }}
+                    data-testid="input-dismiss-datetime"
+                  />
+                </div>
+              </div>
+            </div>,
+            document.body
+          )}
+
+          {semStartDialogKey && createPortal(
+            <div>
+              <div className="fixed inset-0 z-[10005] bg-black/60" />
+              <div className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-[10005] w-[380px] max-w-[90vw] rounded-lg text-white p-5" style={{ background: 'linear-gradient(180deg, #1a1f3a 0%, #0d1025 100%)', border: '2px solid rgba(255,255,255,0.3)', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }} data-testid="semester-start-dialog">
+                <h3 className="text-sm font-bold mb-3" style={{ letterSpacing: '0.5px' }}>New Semester Starting</h3>
+                <p className="text-[11px] text-white/70 mb-4">
+                  <span className="font-bold text-white">{SEMESTER_COURSE_DEFS.find(s => s.key === semStartDialogKey)?.key.replace(/^ss/, 'Spring/Summer ').replace(/^f/, 'Fall ').replace(/^w/, 'Winter ').replace(/(\d{4})/, ' $1').trim()}</span> is about to begin. Would you like to activate this semester and add the course rows to the calendar?
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    className="flex-1 py-2 rounded text-[11px] font-bold border cursor-pointer transition-all hover:brightness-110"
+                    style={{ background: 'rgba(59,130,246,0.25)', borderColor: 'rgba(59,130,246,0.5)', color: '#93c5fd' }}
+                    onClick={() => {
+                      const updated = { ...semesterStartConfirmed, [semStartDialogKey]: true };
+                      setSemesterStartConfirmed(updated);
+                      localStorage.setItem('semesterStartConfirmed', JSON.stringify(updated));
+                      setSemStartDialogKey(null);
+                    }}
+                    data-testid="button-confirm-semester-start"
+                  >Yes, Activate Semester</button>
+                  <button
+                    className="flex-1 py-2 rounded text-[11px] font-bold border cursor-pointer transition-all hover:brightness-110"
+                    style={{ background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)', color: 'white' }}
+                    onClick={() => setSemStartDialogKey(null)}
+                    data-testid="button-dismiss-semester-start"
+                  >Not Yet</button>
+                </div>
+              </div>
             </div>,
             document.body
           )}
@@ -24044,7 +24215,7 @@ export default function Dashboard() {
                   { code: 'CFNF400', endDate: '2026-04-17' },
                   { code: 'CASL101', endDate: '2026-04-17' },
                 ];
-                const winterCourses = coursesData.courses.filter(c => {
+                const winterCourses = semesterEndConfirmed['w2026'] ? [] : coursesData.courses.filter(c => {
                   if (!c.name) return false;
                   const code = c.name.split(' - ')[0]?.trim().toUpperCase();
                   const def = winterCourseDefs.find(d => code === d.code);
@@ -24063,19 +24234,40 @@ export default function Dashboard() {
                   { name: 'CFNF400 - Human Sexuality', color: '#DE1864', colorEnd: '#FA67B3', professor: 'Alex McKay', professorEmail: 'a4mckay@torontomu.ca' },
                   { name: 'CASL101 - ASL', color: '#974B8A', colorEnd: '#B045A2', professor: 'Christina Moreau', professorEmail: 'christina.moreau@torontomu.ca' },
                 ];
-                for (const dwc of defaultWinterCourses) {
-                  const dwcCode = dwc.name.split(' - ')[0]?.trim().toUpperCase();
-                  const dwcDef = winterCourseDefs.find(d => d.code === dwcCode);
-                  if (dwcDef && currentWeekStart <= new Date(dwcDef.endDate + 'T23:59:59')) {
-                    const alreadyHas = allDisplayCourses.some(c => c.name.split(' - ')[0]?.trim().toUpperCase() === dwcCode);
-                    if (!alreadyHas) allDisplayCourses.push(dwc);
+                if (!semesterEndConfirmed['w2026']) {
+                  for (const dwc of defaultWinterCourses) {
+                    const dwcCode = dwc.name.split(' - ')[0]?.trim().toUpperCase();
+                    const dwcDef = winterCourseDefs.find(d => d.code === dwcCode);
+                    if (dwcDef && currentWeekStart <= new Date(dwcDef.endDate + 'T23:59:59')) {
+                      const alreadyHas = allDisplayCourses.some(c => c.name.split(' - ')[0]?.trim().toUpperCase() === dwcCode);
+                      if (!alreadyHas) allDisplayCourses.push(dwc);
+                    }
                   }
                 }
-                for (const sc of activeSpringSummerCourses) {
-                  const alreadyExists = allDisplayCourses.some(c => c.name.split(' - ')[0]?.trim().toUpperCase() === sc.name.split(' - ')[0]?.trim().toUpperCase());
-                  if (!alreadyExists) allDisplayCourses.push(sc);
+                if (!semesterEndConfirmed['ss2026']) {
+                  for (const sc of activeSpringSummerCourses) {
+                    const alreadyExists = allDisplayCourses.some(c => c.name.split(' - ')[0]?.trim().toUpperCase() === sc.name.split(' - ')[0]?.trim().toUpperCase());
+                    if (!alreadyExists) allDisplayCourses.push(sc);
+                  }
                 }
-                const filteredCourses = allDisplayCourses;
+                const filteredCourses = [...allDisplayCourses].sort((a, b) => {
+                  const getCode = (c: any) => c.name.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') || '';
+                  const getSemKey = (c: any) => {
+                    const code = getCode(c);
+                    const wDef = winterCourseDefs.find(d => d.code === code);
+                    if (wDef) return 'w2026';
+                    if (activeSpringSummerCourses.some(sc => sc.name.split(' - ')[0]?.trim().toUpperCase() === code)) return 'ss2026';
+                    return '';
+                  };
+                  const semKeyA = getSemKey(a);
+                  const semKeyB = getSemKey(b);
+                  const priA = coursePlayPriority[`${semKeyA}:${getCode(a)}`] || 0;
+                  const priB = coursePlayPriority[`${semKeyB}:${getCode(b)}`] || 0;
+                  if (priA === 0 && priB === 0) return 0;
+                  if (priA === 0) return 1;
+                  if (priB === 0) return -1;
+                  return priA - priB;
+                });
                 const maxCourseRowHeight = 3 * 20 + 2 * 2 + 4;
 
                 const countdownBarTasks = (() => {

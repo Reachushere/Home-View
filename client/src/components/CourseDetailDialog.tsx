@@ -128,6 +128,8 @@ interface CourseDetailDialogProps {
   usedRanksB?: number[];
   onRankChange?: (suffix: string, val: number) => void;
   semesterSettings?: Record<string, { week1StartDate?: string; springStartDate?: string; springEndDate?: string; summerStartDate?: string; summerEndDate?: string }>;
+  allAssignmentsAdded?: boolean;
+  onAllAssignmentsAddedChange?: (val: boolean) => void;
 }
 
 interface NewTaskForm {
@@ -243,7 +245,7 @@ function semesterKeyFromTermYear(term?: string, year?: string): string {
   return '';
 }
 
-export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLiveColorChange, onGradeCalculated, onDeleteCourse, onOpenEditTask, semesterStart, readingWeekStart, certificateName, onPushUndo, initialEditMode, courseRank, usedRanks, isSpringSummer, courseSpSuTerm, courseRankA, courseRankB, usedRanksA, usedRanksB, onRankChange, semesterSettings }: CourseDetailDialogProps) {
+export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLiveColorChange, onGradeCalculated, onDeleteCourse, onOpenEditTask, semesterStart, readingWeekStart, certificateName, onPushUndo, initialEditMode, courseRank, usedRanks, isSpringSummer, courseSpSuTerm, courseRankA, courseRankB, usedRanksA, usedRanksB, onRankChange, semesterSettings, allAssignmentsAdded, onAllAssignmentsAddedChange }: CourseDetailDialogProps) {
   const { toast } = useToast();
   const [showAddForm, setShowAddForm] = useState(false);
   const [newTask, setNewTask] = useState<NewTaskForm>(createEmptyTaskForm());
@@ -3113,6 +3115,33 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               </div>
               <div className="flex items-center gap-1.5">
                 {showAssignments && (
+                  <>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onAllAssignmentsAddedChange?.(!allAssignmentsAdded); }}
+                    className="flex items-center gap-1 px-1.5 text-[8px] rounded border cursor-pointer transition-all"
+                    style={{
+                      height: '19px',
+                      marginBottom: '5px',
+                      background: allAssignmentsAdded ? 'rgba(34,197,94,0.25)' : 'rgba(255,255,255,0.05)',
+                      borderColor: allAssignmentsAdded ? 'rgba(34,197,94,0.6)' : 'rgba(255,255,255,0.15)',
+                      color: allAssignmentsAdded ? '#4ade80' : 'rgba(255,255,255,0.45)',
+                    }}
+                    data-testid="toggle-all-assignments-added"
+                  >
+                    <div style={{
+                      width: '24px', height: '12px', borderRadius: '6px', position: 'relative',
+                      background: allAssignmentsAdded ? '#22c55e' : 'rgba(255,255,255,0.2)',
+                      transition: 'background 0.2s',
+                    }}>
+                      <div style={{
+                        width: '10px', height: '10px', borderRadius: '50%', position: 'absolute', top: '1px',
+                        left: allAssignmentsAdded ? '13px' : '1px',
+                        background: '#ffffff',
+                        transition: 'left 0.2s',
+                      }} />
+                    </div>
+                    <span style={{ whiteSpace: 'nowrap' }}>All Added</span>
+                  </button>
                   <Button
                     size="sm"
                     onClick={(e) => { e.stopPropagation(); setShowAddForm(!showAddForm); }}
@@ -3123,6 +3152,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     <Plus className="h-3 w-3 mr-1" />
                     Add
                   </Button>
+                  </>
                 )}
                 {showAssignments ? <ChevronDown className="h-3 w-3 text-white/50" /> : <ChevronRight className="h-3 w-3 text-white/50" />}
               </div>
