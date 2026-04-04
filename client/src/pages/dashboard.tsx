@@ -17444,13 +17444,13 @@ export default function Dashboard() {
             <span style={{ color: '#ffffff', fontSize: '12px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px' }}>ALERT</span>
           </div>
           {createPortal(
-            <div className="fixed" style={{ bottom: '26px', left: '50%', transform: 'translateX(calc(-50% - 81px))', display: isSchoolCoursesDialogOpen ? 'none' : undefined, pointerEvents: 'none', zIndex: 10003 }} data-testid="weather-alert-label-bottom-left">
+            <div className="fixed" style={{ bottom: '25px', left: '50%', transform: 'translateX(calc(-50% - 81px))', display: isSchoolCoursesDialogOpen ? 'none' : undefined, pointerEvents: 'none', zIndex: 10003 }} data-testid="weather-alert-label-bottom-left">
               <span style={{ color: '#ffffff', fontSize: '12px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px' }}>WEATHER</span>
             </div>,
             document.body
           )}
           {createPortal(
-            <div className="fixed" style={{ bottom: '26px', left: '50%', transform: 'translateX(calc(-50% + 73px))', display: isSchoolCoursesDialogOpen ? 'none' : undefined, pointerEvents: 'none', zIndex: 10003 }} data-testid="weather-alert-label-bottom-right">
+            <div className="fixed" style={{ bottom: '25px', left: '50%', transform: 'translateX(calc(-50% + 73px))', display: isSchoolCoursesDialogOpen ? 'none' : undefined, pointerEvents: 'none', zIndex: 10003 }} data-testid="weather-alert-label-bottom-right">
               <span style={{ color: '#ffffff', fontSize: '12px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px' }}>ALERT</span>
             </div>,
             document.body
