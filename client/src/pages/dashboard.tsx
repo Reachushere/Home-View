@@ -25810,8 +25810,14 @@ export default function Dashboard() {
                                 const h = getETHours(d);
                                 return h === 0 ? 18 : h;
                               })();
-                              if (tDueHour !== hour) return false;
                               const tDueDayIdx = weekDays.findIndex(wd => isSameDayET(wd, tDue));
+                              const isDueDay = dayIdx === tDueDayIdx;
+                              if (isDueDay) {
+                                if (tDueHour !== hour) return false;
+                              } else {
+                                const displayHour = timeSlots[0] ?? 8;
+                                if (hour !== displayHour) return false;
+                              }
                               const barStart = todayDayIdx >= 0 ? todayDayIdx : 0;
                               const barEnd = tDueDayIdx >= 0 ? tDueDayIdx : weekDays.length - 1;
                               return dayIdx >= barStart && dayIdx <= barEnd;
