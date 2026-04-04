@@ -481,7 +481,7 @@ function NewsTickerPortal({ headlines, onAlertClick }: { headlines: Array<{ titl
       if (item.source === '_ALERT_') {
         const safeTitle = item.title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
         const alertIdx = (item as any).alertIndex ?? '';
-        return `<span class="inline-flex items-center gap-1.5" style="animation:tickerAlertBlink 1s ease-in-out infinite;margin-left:16px;margin-right:48px;cursor:pointer" data-testid="weather-alert-${i}" data-alert-index="${alertIdx}"><img src="${weatherAlertLogoPath}" alt="Weather Alert" class="rounded-sm" style="height:28px;width:auto;object-fit:contain" /><span class="text-[16px] font-bold" style="color:#ff4444;text-shadow:0 0 6px rgba(255,68,68,0.5)">${safeTitle}</span><span class="text-white/20 mx-2">|</span></span>`;
+        return `<span class="inline-flex items-center gap-1.5" style="animation:tickerAlertBlink 1s ease-in-out infinite;margin-left:16px;margin-right:48px;cursor:pointer" data-testid="weather-alert-${i}" data-alert-index="${alertIdx}"><img src="${weatherAlertLogoPath}" alt="Weather Alert" class="rounded-sm" style="height:28px;width:auto;object-fit:contain" /><span class="text-[13.5px] font-bold" style="color:#ff4444;text-shadow:0 0 6px rgba(255,68,68,0.5)">${safeTitle}</span><span class="text-white/20 mx-2">|</span></span>`;
       }
       if (item.source === '_FORECAST_' || item.source === '_FORECAST_NOSEP_') {
         const forecastHtml = item.title.replace(/(<b>[^<]*<\/b>:?|(?:Toronto Forecast|3-Day Forecast:|Forecast Brief:|Pollen):?)/, '<span style="color:rgb(0,255,0);text-shadow:0 0 4px rgba(0,255,0,0.3)">$1</span>');
