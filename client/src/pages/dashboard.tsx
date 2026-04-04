@@ -24463,10 +24463,10 @@ export default function Dashboard() {
                             return (
                               <div className="absolute z-20 flex flex-col" style={{ top: 1, bottom: 1, left: 1, width: '32px', gap: '1px', pointerEvents: 'none' }} data-testid="today-hourly-forecast">
                                 {forecasts.map((fc, i) => (
-                                  <div key={i} className="flex flex-col items-center justify-center" style={{ flex: 1, background: '#ffffff', borderRadius: '3px', padding: '1px 0', minHeight: 0 }} data-testid={`hourly-forecast-${fc.offset}h`}>
+                                  <div key={i} className="flex items-center justify-center gap-[2px]" style={{ flex: 1, background: '#ffffff', borderRadius: '3px', padding: '0 2px', minHeight: 0 }} data-testid={`hourly-forecast-${fc.offset}h`}>
                                     <span style={{ fontSize: '6.5px', color: 'rgba(0,0,0,0.5)', fontWeight: 600, lineHeight: 1 }}>{fc.offset}h</span>
-                                    <span style={{ fontSize: '9px', lineHeight: 1, margin: '1px 0' }}>{wmoMini[fc.code] || '🌤'}</span>
-                                    <span style={{ fontSize: '7.5px', color: '#000000', fontWeight: 700, lineHeight: 1 }}>{fc.temp}°</span>
+                                    <span style={{ fontSize: '8px', lineHeight: 1 }}>{wmoMini[fc.code] || '🌤'}</span>
+                                    <span style={{ fontSize: '7px', color: '#000000', fontWeight: 700, lineHeight: 1 }}>{fc.temp}°</span>
                                   </div>
                                 ))}
                               </div>
@@ -28584,16 +28584,14 @@ export default function Dashboard() {
                     scrollbarWidth: 'none',
                     padding: '0',
                   }}>
-                    <div style={{ width: '30%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', padding: '0 4px', background: (() => { const stops = otherRowColors.labelStops ? (() => { try { return JSON.parse(otherRowColors.labelStops); } catch { return []; } })() : []; const allStops = [{ position: 0, color: otherRowColors.labelStart }, ...stops, { position: 100, color: otherRowColors.labelEnd }]; return `linear-gradient(180deg, ${allStops.map((s: any) => `${s.color} ${s.position}%`).join(', ')})`; })() }}>
-                      <span className="text-[8px] font-[785] uppercase tracking-wide" style={{ color: '#ffffff', marginLeft: '2px' }}>Other</span>
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '1px 6px 0px 6px', overflowY: 'auto', scrollbarWidth: 'none', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}
+                    <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '1px 6px 0px 6px', overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', background: (() => { const stops = otherRowColors.labelStops ? (() => { try { return JSON.parse(otherRowColors.labelStops); } catch { return []; } })() : []; const allStops = [{ position: 0, color: otherRowColors.labelStart }, ...stops, { position: 100, color: otherRowColors.labelEnd }]; return `linear-gradient(180deg, ${allStops.map((s: any) => `${s.color} ${s.position}%`).join(', ')})`; })() }}
                       onWheel={(e) => {
                         e.stopPropagation();
                         e.currentTarget.scrollTop += e.deltaY;
                         e.preventDefault();
                       }}
                     >
+                    <span className="text-[8px] font-[785] uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.8)', position: 'absolute', top: '2px', left: '6px' }}>Other</span>
                     {otherProgressTasks.length === 0 && (
                       <span className="text-[10px] italic" style={{ color: 'rgba(255,255,255,0.4)', textAlign: 'center', pointerEvents: 'none' }}>No upcoming items</span>
                     )}
