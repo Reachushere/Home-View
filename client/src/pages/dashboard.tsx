@@ -2347,11 +2347,15 @@ export default function Dashboard() {
     const activeEl = document.activeElement as HTMLInputElement | HTMLTextAreaElement | null;
     if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA')) {
       voiceTargetRef.current = activeEl;
-    } else if (lastFocusedInputRef.current) {
+    } else if (lastFocusedInputRef.current && lastFocusedInputRef.current.isConnected) {
       voiceTargetRef.current = lastFocusedInputRef.current;
     } else {
       voiceTargetRef.current = null;
     }
+    const targetInfo = voiceTargetRef.current
+      ? `${voiceTargetRef.current.tagName}[${voiceTargetRef.current.getAttribute('data-testid') || voiceTargetRef.current.name || voiceTargetRef.current.placeholder || 'unknown'}]`
+      : 'NO TARGET';
+    console.log('[Voice] Starting recognition, target:', targetInfo);
     voiceStoppingRef.current = false;
     voiceFinalTextRef.current = '';
     const recognition = new SpeechRecognition();
@@ -2389,10 +2393,31 @@ export default function Dashboard() {
         }
       }
       setIsVoiceListening(false);
-      if (voiceFinalTextRef.current && voiceTargetRef.current) {
+      const text = voiceFinalTextRef.current;
+      if (text && voiceTargetRef.current) {
         const el = voiceTargetRef.current;
         el.focus();
-        document.execCommand('insertText', false, voiceFinalTextRef.current);
+        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+          el.tagName === 'TEXTAREA' ? window.HTMLTextAreaElement.prototype : window.HTMLInputElement.prototype,
+          'value'
+        )?.set;
+        const start = el.selectionStart ?? el.value.length;
+        const end = el.selectionEnd ?? el.value.length;
+        const newValue = el.value.substring(0, start) + text + el.value.substring(end);
+        if (nativeInputValueSetter) {
+          nativeInputValueSetter.call(el, newValue);
+        } else {
+          el.value = newValue;
+        }
+        el.selectionStart = el.selectionEnd = start + text.length;
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+      } else if (text) {
+        navigator.clipboard?.writeText(text).then(() => {
+          toast({ title: 'Copied to clipboard', description: text.length > 80 ? text.substring(0, 80) + '...' : text });
+        }).catch(() => {
+          toast({ title: 'Voice transcript', description: text });
+        });
       }
       setVoiceTranscript('');
       voiceTargetRef.current = null;
