@@ -26106,26 +26106,32 @@ export default function Dashboard() {
                                   const effectiveType = hasCourseLink ? (task.type || 'class') : 'other';
                                   const typeBarColor = calendarTypeBarColors[effectiveType] || calendarTypeBarColors.other;
                                   const TIcon = effectiveType === 'class' ? null : (iconMap[effectiveType] || null);
+                                  const moduleBoxColor = (() => {
+                                    const cMatch2 = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode.toUpperCase());
+                                    if (cMatch2?.taskBgColor) return cMatch2.taskBgColor;
+                                    const cEnd2 = cMatch2?.colorEnd;
+                                    const endRgb2 = hexToRgb(cEnd2 || (gradColors?.start || '#6b7280'));
+                                    return `rgb(${Math.max(0,endRgb2.r-12)},${Math.max(0,endRgb2.g-12)},${Math.max(0,endRgb2.b-12)})`;
+                                  })();
                                   return (
                                     <div style={{
-                                      background: `linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%), ${typeBarColor}`,
+                                      background: moduleBoxColor,
                                       borderBottom: `1px solid rgba(0,0,0,0.15)`,
-                                      padding: '1px 3px 1px 3px',
                                       display: 'flex',
                                       alignItems: 'center',
-                                      gap: '3px',
                                       minHeight: '14px',
                                       borderRadius: '2px 2px 0 0',
                                       position: 'relative',
                                       overflow: 'hidden',
                                     }}>
-                                      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 50%, transparent 100%)', pointerEvents: 'none' }} />
+                                      <div style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%), ${typeBarColor}`, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1px 3px', flexShrink: 0, alignSelf: 'stretch' }}>
                                       {effectiveType === 'class' ? (
-                                        <div style={{ width: '10px', height: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative', zIndex: 1 }}><img src={teacherWhiteIconPath} alt="Class" style={{ width: '10px', height: '10px', objectFit: 'contain' }} data-testid={`type-icon-time-${task.id}`} /></div>
+                                        <div style={{ width: '10px', height: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><img src={teacherWhiteIconPath} alt="Class" style={{ width: '10px', height: '10px', objectFit: 'contain' }} data-testid={`type-icon-time-${task.id}`} /></div>
                                       ) : TIcon ? (
-                                        <div style={{ width: '10px', height: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative', zIndex: 1 }}><TIcon style={{ width: '10px', height: '10px', color: 'rgba(255,255,255,0.9)' } as any} data-testid={`type-icon-time-${task.id}`} /></div>
+                                        <div style={{ width: '10px', height: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><TIcon style={{ width: '10px', height: '10px', color: 'rgba(255,255,255,0.9)' } as any} data-testid={`type-icon-time-${task.id}`} /></div>
                                       ) : <div style={{ width: '10px', height: '10px', flexShrink: 0 }} />}
-                                      <span style={{ fontSize: '7px', fontWeight: 700, color: 'white', textTransform: 'uppercase', letterSpacing: '0.3px', position: 'relative', zIndex: 1, textShadow: '0 1px 2px rgba(0,0,0,0.3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                                      </div>
+                                      <span style={{ fontSize: '8px', fontWeight: 500, color: 'white', letterSpacing: '0.3px', textShadow: '0 1px 2px rgba(0,0,0,0.3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, padding: '1px 3px' }}>
                                         {(() => { const raw = (task.title || '').replace(/^\[.*?\]\s*/, '').replace(/^online\s+/i, ''); const t = raw; const isModRead = /^(module|reading|module\s*(?:&|and)\s*reading)$/i.test(t.trim()); if (isModRead && task.courseName) { const cc = task.courseName.split(' - ')[0]?.trim(); if (cc) return `${cc} ${t}`; } return t; })()}
                                       </span>
                                       
