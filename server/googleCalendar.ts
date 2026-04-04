@@ -841,6 +841,18 @@ export async function syncGoogleEventsToReview(): Promise<{ added: number; skipp
 
     const classInfo = isClassEvent(event.summary || '');
     if (classInfo.isClass && startTime && endTime) {
+      const classDedup = `${classInfo.courseCode}||${dateKey}||${startTime}`;
+      const allExistingTasks = await storage.getTasks();
+      const alreadyHasClass = allExistingTasks.some(t => {
+        if (t.type !== 'class' || t.isCompleted) return false;
+        const tCode = t.courseName?.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') || '';
+        const tDate = t.dueDate ? new Date(t.dueDate).toISOString().split('T')[0] : '';
+        return tCode === classInfo.courseCode && tDate === dateKey && t.eventStartTime === startTime;
+      });
+      if (alreadyHasClass) {
+        skipped++;
+        continue;
+      }
       const dueDate = `${startDt.getFullYear()}-${String(startDt.getMonth() + 1).padStart(2, '0')}-${String(startDt.getDate()).padStart(2, '0')}T12:00:00`;
       await storage.createTask({
         title: `${event.summary || 'Class'}`,
