@@ -18087,7 +18087,7 @@ export default function Dashboard() {
                           checked={true}
                           onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })}
                           className="h-4 w-4 rounded-sm cursor-pointer flex-shrink-0"
-                          style={{ accentColor: getCourseColor(task.courseName) }}
+                          style={{ accentColor: getCourseColor(task.courseName), outline: '1px solid black', outlineOffset: '-1px' }}
                           data-testid={`completed-checkbox-${task.id}`}
                         />
                         <div className="flex-1 min-w-0">
