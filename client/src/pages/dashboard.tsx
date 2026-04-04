@@ -23733,7 +23733,7 @@ export default function Dashboard() {
                 const thisSaturday = startOfDayET(addDays(nowForWeek, todayDowForWeek === 6 ? 7 : (6 - todayDowForWeek)));
                 const todayIdx = weekDays.findIndex(d => isSameDayET(d, new Date()));
                 const isTodaySaturday = new Date().getDay() === 6;
-                const isNextSchoolWeek = calendarWeekMode === 'current' && (startOfDayET(day) >= thisSaturday || (todayIdx >= 0 && idx < todayIdx && !isToday && !isTodaySaturday && day.getDay() !== 6));
+                const isNextSchoolWeek = calendarWeekMode === 'current' && day.getDay() !== 6 && (startOfDayET(day) >= thisSaturday || (todayIdx >= 0 && idx < todayIdx && !isToday && !isTodaySaturday));
                 const dayName = format(day, "EEE").toUpperCase();
                 const dayNum = format(day, "d");
                 const hasTodayTasks = isToday && allTasks.some(t => 
@@ -24282,7 +24282,7 @@ export default function Dashboard() {
                               const mrNow = new Date();
                               const mrDow = mrNow.getDay();
                               const mrSat = startOfDayET(addDays(mrNow, mrDow === 6 ? 7 : (6 - mrDow)));
-                              const isMrNextSchoolWeek = !isActualToday && startOfDayET(day) >= mrSat;
+                              const isMrNextSchoolWeek = !isActualToday && day.getDay() !== 6 && startOfDayET(day) >= mrSat;
                               const cellBg = isActualToday ? '#e4ecf5' : isMrNextSchoolWeek ? dimColor(course.bg, 0.375) : isActuallyPast ? dimColor(course.bg) : course.bg;
                               
                               // If this day is before today, show empty cell
@@ -24566,7 +24566,7 @@ export default function Dashboard() {
                     const nwNow = new Date();
                     const nwDow = nwNow.getDay();
                     const nwSat = startOfDayET(addDays(nwNow, nwDow === 6 ? 7 : (6 - nwDow)));
-                    const isDayNextSchoolWeek = !isDayToday && startOfDayET(day) >= nwSat;
+                    const isDayNextSchoolWeek = !isDayToday && day.getDay() !== 6 && startOfDayET(day) >= nwSat;
                     const cellBgColor = isDayToday ? '#e4ecf5' : isDayNextSchoolWeek ? dimColor(course.bg, 0.75) : course.bg;
                     const cellDate = startOfDayET(day);
                     
@@ -25089,7 +25089,7 @@ export default function Dashboard() {
                       const onwNow = new Date();
                       const onwDow = onwNow.getDay();
                       const onwSat = startOfDayET(addDays(onwNow, onwDow === 6 ? 7 : (6 - onwDow)));
-                      const isOtherNextSchoolWeek = !isOtherToday && startOfDayET(day) >= onwSat;
+                      const isOtherNextSchoolWeek = !isOtherToday && day.getDay() !== 6 && startOfDayET(day) >= onwSat;
                       const otherCellBg = isOtherToday ? '#e4ecf5' : isOtherNextSchoolWeek ? dimColor(otherBaseBg, 0.75) : otherBaseBg;
                       return (
                         <div
@@ -25199,7 +25199,7 @@ export default function Dashboard() {
                           const adDow = adNow.getDay();
                           const adSat = startOfDayET(addDays(adNow, adDow === 6 ? 7 : (6 - adDow)));
                           const adTodayIdx = weekDays.findIndex(d => isSameDayET(d, adNow));
-                          if (startOfDayET(day) >= adSat || (adTodayIdx >= 0 && dayIdx < adTodayIdx && day.getDay() !== 6)) return '#edf3f9';
+                          if (day.getDay() !== 6 && (startOfDayET(day) >= adSat || (adTodayIdx >= 0 && dayIdx < adTodayIdx))) return '#edf3f9';
                         }
                         return '#faf8f5';
                       })(),
@@ -25433,7 +25433,7 @@ export default function Dashboard() {
                                 const hsNow = new Date();
                                 const hsDow = hsNow.getDay();
                                 const hsSat = startOfDayET(addDays(hsNow, hsDow === 6 ? 7 : (6 - hsDow)));
-                                if (startOfDayET(day) >= hsSat) return '#edf3f9';
+                                if (day.getDay() !== 6 && startOfDayET(day) >= hsSat) return '#edf3f9';
                               }
                               return '#faf8f5';
                             })(),
