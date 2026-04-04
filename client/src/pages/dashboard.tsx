@@ -14640,6 +14640,14 @@ export default function Dashboard() {
         
         {/* Down arrow placeholder - actual tab moved outside pill container */}
 
+        {/* Weather Alert labels on pill edges */}
+        {weatherAlerts.length > 0 && (
+          <>
+            <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#ff0000', fontSize: '11px', fontWeight: 800, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 0 6px rgba(255,0,0,0.4)', letterSpacing: '1px', zIndex: 5, pointerEvents: 'none', animation: 'tickerAlertBlink 1s ease-in-out infinite' }} data-testid="pill-weather-label">WEATHER</span>
+            <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#ff0000', fontSize: '11px', fontWeight: 800, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 0 6px rgba(255,0,0,0.4)', letterSpacing: '1px', zIndex: 5, pointerEvents: 'none', animation: 'tickerAlertBlink 1s ease-in-out infinite' }} data-testid="pill-alert-label">ALERT</span>
+          </>
+        )}
+
         {/* Icon buttons and task buttons with adjustable spacing */}
         <div className="flex items-center flex-nowrap [&>*]:flex-shrink-0" onMouseEnter={() => { topPillHoveredRef.current = true; if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); }} onMouseLeave={() => { if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); topPillTimeoutRef.current = setTimeout(() => { topPillHoveredRef.current = false; if (!isSettingsPanelOpen && !isTodoFlyoutOpen && !isProjectsFlyoutOpen && !isRadioDialogOpen && !isCompletedTasksOpen && !isQuickAddOpen && !isAlexaDialogOpen && !isEmailWizardOpen && !isKeyContactsOpen && !isSystemHealthOpen && !isFeedbackOpen && !isSchoolCoursesDialogOpen && !isNewCourseWizardOpen) closeTopPill(); }, 1500); }} style={{ gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 26)}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '2px', paddingRight: '2px', width: '100%', overflow: 'visible', pointerEvents: isTopPillOpen ? 'auto' : 'none' }}>
           
@@ -17425,6 +17433,13 @@ export default function Dashboard() {
           )}
         </button>
       </div>
+
+      {/* Weather Alert label above ticker, right of mic */}
+      {weatherAlerts.length > 0 && (
+        <div className="fixed z-[9999]" style={{ bottom: '43px', left: '48px', display: isSchoolCoursesDialogOpen ? 'none' : undefined, pointerEvents: 'none' }} data-testid="weather-alert-label">
+          <span style={{ color: '#ff0000', fontSize: '13px', fontWeight: 700, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 0 6px rgba(255,0,0,0.4)', letterSpacing: '0.5px', animation: 'tickerAlertBlink 1s ease-in-out infinite' }}>WEATHER ALERT</span>
+        </div>
+      )}
 
       {/* News Ticker */}
       <NewsTickerPortal headlines={[
