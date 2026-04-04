@@ -27364,9 +27364,9 @@ export default function Dashboard() {
             <div style={{ position: 'absolute', top: '21px', left: '22px', right: 0, height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)', zIndex: 2 }} />
             <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: '6px', bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', zIndex: 2 }}>Homework Progress</span>
             <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: `${effectiveDividerPct}%`, bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', paddingLeft: '6px', zIndex: 2 }}>Most Urgent Assignments</span>
-            <div style={{ position: 'absolute', top: 0, left: '6px', right: '10px', height: '21px', perspective: '400px', overflow: 'hidden', zIndex: 1 }}>
+            <div style={{ position: 'absolute', top: 0, left: '14px', right: '18px', height: '21px', perspective: '400px', overflow: 'hidden', zIndex: 1 }}>
               <div style={{ width: '100%', height: '100%', position: 'relative', transformStyle: 'preserve-3d', transition: 'transform 0.8s cubic-bezier(0.4, 0.2, 0.2, 1)', transform: hwHeaderFlipped ? 'rotateX(-180deg)' : 'rotateX(0deg)' }}>
-                <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', display: 'flex', alignItems: 'center', padding: '0 14px' }}>
+                <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', display: 'flex', alignItems: 'center', padding: '0 6px' }}>
                   {weatherData && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <span className="text-[9.5px] font-medium" style={{ color: 'rgba(255,255,255,1)' }} data-testid="homework-weather-temp">Current: {Math.round(weatherData.temp)}°C</span>
@@ -27380,7 +27380,7 @@ export default function Dashboard() {
                     </div>
                   )}
                 </div>
-                <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateX(180deg)', display: 'flex', alignItems: 'center', padding: '0 14px', background: 'linear-gradient(90deg, rgba(20,20,40,0.95), rgba(15,15,35,0.95))' }}>
+                <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateX(180deg)', display: 'flex', alignItems: 'center', padding: '0 6px', background: 'linear-gradient(90deg, rgba(20,20,40,0.95), rgba(15,15,35,0.95))' }}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, marginRight: '8px' }}><path d="M2 12h3l3-8 4 16 3-12 2 4h5" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   {earthquakeData.length > 0 ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px', overflow: 'hidden', flex: 1 }}>
