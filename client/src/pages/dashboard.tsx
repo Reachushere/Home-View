@@ -28490,7 +28490,7 @@ export default function Dashboard() {
                             style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1px', position: 'relative', flex: '1 1 0', alignSelf: 'stretch', minWidth: 0, background: item.bg, padding: '4px 1px 3px', borderRadius: '6px', overflow: 'visible', outline: isDragOver ? '2px solid rgba(255,255,255,0.8)' : 'none', outlineOffset: '-2px', transition: 'outline 0.15s ease' }}
                             data-testid={`drop-${item.type}-${pd.courseCode.toLowerCase()}`}>
                             <div style={{ position: 'absolute', top: '2px', left: 0, right: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2px', zIndex: 5, flexWrap: 'nowrap', overflow: 'hidden' }}>
-                              <span style={{ fontSize: '7px', fontWeight: 400, color: item.dark ? '#ffffff' : '#000000', letterSpacing: '0px', fontFamily: "'Raleway', sans-serif", whiteSpace: 'nowrap', flexShrink: 0 }}>{item.label}</span>
+                              <span style={{ fontSize: '10px', fontWeight: 400, color: item.dark ? '#ffffff' : '#000000', letterSpacing: '0.5px', fontFamily: "'Raleway', sans-serif", whiteSpace: 'nowrap', flexShrink: 0 }}>{item.label}</span>
                               {item.p.hasFiles && item.unread > 0 && item.p.percent < 100 && (
                                 <div className="bg-[#FF0000] text-white text-[6px] font-bold rounded-full flex items-center justify-center shadow-lg border border-white" style={{ width: '12px', height: '12px', flexShrink: 0, padding: 0, lineHeight: 1 }}>
                                   {item.unread}
