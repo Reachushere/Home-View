@@ -454,7 +454,7 @@ function NewsTickerPortal({ headlines, onAlertClick }: { headlines: Array<{ titl
       el.style.bottom = '0';
       el.style.left = '0';
       el.style.right = '0';
-      el.style.zIndex = '9997';
+      el.style.zIndex = '9998';
       el.style.height = '0';
       el.style.overflow = 'visible';
       document.body.appendChild(el);
@@ -477,7 +477,7 @@ function NewsTickerPortal({ headlines, onAlertClick }: { headlines: Array<{ titl
     prevHeadlinesKeyRef.current = headlinesKey;
     renderedRef.current = true;
     const hasAlerts = headlines.some(h => h.source === '_ALERT_');
-    const html = `<div class="fixed left-0 right-0 z-[9997] overflow-hidden flex" style="bottom:0;height:38px;background:linear-gradient(90deg,#000000 0%,#14141e 50%,#000000 100%);border-top:1px solid rgba(255,255,255,0.15)" data-testid="news-ticker">${hasAlerts ? '<div style="position:absolute;top:0;left:0;width:calc(50% - 70px - 52px);height:3px;background:#ff0000;z-index:9999"></div><div style="position:absolute;top:0;left:calc(50% + 63px + 38px);right:0;height:3px;background:#ff0000;z-index:9999"></div>' : ''}<div class="flex-shrink-0 flex items-center justify-center" style="height:38px;width:auto"><img src="${newsTickerLabel}" alt="NEWS" style="height:38px;width:auto;object-fit:contain" /></div><div class="flex-1 overflow-hidden relative h-full"><div class="flex items-center h-full whitespace-nowrap news-ticker-scroll" style="position:relative;padding-top:3px"><span style="display:inline-block;width:40px;flex-shrink:0"></span>${headlines.map((item, i) => {
+    const html = `<div class="fixed left-0 right-0 z-[9998] overflow-hidden flex" style="bottom:0;height:38px;background:linear-gradient(90deg,#000000 0%,#14141e 50%,#000000 100%);border-top:1px solid rgba(255,255,255,0.15)" data-testid="news-ticker">${hasAlerts ? '<div style="position:absolute;top:0;left:0;width:calc(50% - 70px - 52px);height:3px;background:#ff0000;z-index:9999"></div><div style="position:absolute;top:0;left:calc(50% + 63px + 38px);right:0;height:3px;background:#ff0000;z-index:9999"></div>' : ''}<div class="flex-shrink-0 flex items-center justify-center" style="height:38px;width:auto"><img src="${newsTickerLabel}" alt="NEWS" style="height:38px;width:auto;object-fit:contain" /></div><div class="flex-1 overflow-hidden relative h-full"><div class="flex items-center h-full whitespace-nowrap news-ticker-scroll" style="position:relative;padding-top:3px"><span style="display:inline-block;width:40px;flex-shrink:0"></span>${headlines.map((item, i) => {
       if (item.source === '_ALERT_') {
         const safeTitle = item.title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
         const alertIdx = (item as any).alertIndex ?? '';
@@ -17443,12 +17443,18 @@ export default function Dashboard() {
           <div className="fixed z-[9999]" style={{ top: '25px', left: '50%', transform: 'translateX(calc(-50% + 73px))', pointerEvents: 'none' }} data-testid="weather-alert-label-right">
             <span style={{ color: '#ffffff', fontSize: '12px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px' }}>ALERT</span>
           </div>
-          <div className="fixed z-[10003]" style={{ bottom: '26px', left: '50%', transform: 'translateX(calc(-50% - 81px))', display: isSchoolCoursesDialogOpen ? 'none' : undefined, pointerEvents: 'none' }} data-testid="weather-alert-label-bottom-left">
-            <span style={{ color: '#ffffff', fontSize: '12px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px' }}>WEATHER</span>
-          </div>
-          <div className="fixed z-[10003]" style={{ bottom: '26px', left: '50%', transform: 'translateX(calc(-50% + 73px))', display: isSchoolCoursesDialogOpen ? 'none' : undefined, pointerEvents: 'none' }} data-testid="weather-alert-label-bottom-right">
-            <span style={{ color: '#ffffff', fontSize: '12px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px' }}>ALERT</span>
-          </div>
+          {createPortal(
+            <div className="fixed" style={{ bottom: '26px', left: '50%', transform: 'translateX(calc(-50% - 81px))', display: isSchoolCoursesDialogOpen ? 'none' : undefined, pointerEvents: 'none', zIndex: 10003 }} data-testid="weather-alert-label-bottom-left">
+              <span style={{ color: '#ffffff', fontSize: '12px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px' }}>WEATHER</span>
+            </div>,
+            document.body
+          )}
+          {createPortal(
+            <div className="fixed" style={{ bottom: '26px', left: '50%', transform: 'translateX(calc(-50% + 73px))', display: isSchoolCoursesDialogOpen ? 'none' : undefined, pointerEvents: 'none', zIndex: 10003 }} data-testid="weather-alert-label-bottom-right">
+              <span style={{ color: '#ffffff', fontSize: '12px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px' }}>ALERT</span>
+            </div>,
+            document.body
+          )}
         </>
       )}
 
