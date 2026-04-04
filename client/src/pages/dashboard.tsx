@@ -23830,7 +23830,7 @@ export default function Dashboard() {
                 return (
                   <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : 1 }} data-testid={`weather-above-${dateStr}`}>
                     {isTodayForecast && weatherAlerts.length > 0 && (
-                      <div className="absolute inset-0 weather-alert-box-pulse" style={{ backgroundColor: 'rgb(255,0,0)', left: '3px', right: '-2px' }} />
+                      <div className="absolute inset-0 weather-alert-box-pulse" style={{ backgroundColor: 'rgb(255,0,0)', left: '1px', right: '-2px' }} />
                     )}
                     {dayForecast && (
                       <span className="text-[11px] text-white/90 whitespace-nowrap leading-none font-medium relative z-10 inline-flex items-center gap-[2px]" style={{ letterSpacing: '-0.2px' }}>
