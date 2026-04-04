@@ -25790,7 +25790,6 @@ export default function Dashboard() {
                             const todayDayIdx = weekDays.findIndex(wd => isSameDayET(wd, today));
                             const countdownTasks = (allTasks || []).filter(t => {
                               if (t.showCountdownBar === false || t.showCountdownBarMain === false || t.isCompleted) return false;
-                              if (!t.courseName) return false;
                               const tDue = startOfDayET(new Date(t.dueDate));
                               if (tDue < today) return false;
                               const tDueHour = (() => {
@@ -25827,9 +25826,9 @@ export default function Dashboard() {
                                     left: 0,
                                     right: 0,
                                     bottom: `${barY}%`,
-                                    height: '3px',
+                                    height: '4px',
                                     background: barColor,
-                                    opacity: 0.6,
+                                    opacity: 0.8,
                                     zIndex: 4,
                                     pointerEvents: 'none',
                                     borderRadius: isFirstCell && isLastCell ? '2px' : isFirstCell ? '2px 0 0 2px' : isLastCell ? '0 2px 2px 0' : '0',
