@@ -25719,8 +25719,8 @@ export default function Dashboard() {
                           {isToday && isCurrentHour && (
                             <div className="absolute z-[4] pointer-events-none" style={{
                               top: 0,
-                              left: 0,
-                              right: 0,
+                              left: '2px',
+                              right: '2px',
                               bottom: 0,
                               border: '2px solid rgba(59, 130, 246, 0.6)',
                               borderRadius: '4px',
