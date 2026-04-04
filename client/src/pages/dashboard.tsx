@@ -17481,16 +17481,19 @@ export default function Dashboard() {
           items.push({ title: `<img src="${cnTowerPath}" style="height:34px;width:auto;display:inline-block;vertical-align:middle;margin-right:9px" />Toronto Forecast: ${Math.round(weatherData.temp)}°C — ${desc}  |  Wind: ${Math.round(weatherData.windSpeed)} km/h`, source: '_FORECAST_NOSEP_', link: '' });
           if (weatherData.daily && weatherData.daily.length >= 3) {
             const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-            const forecastParts = weatherData.daily.slice(0, 3).map(d => {
+            const todayDateStr = format(new Date(), 'yyyy-MM-dd');
+            const todayIdx = weatherData.daily.findIndex(d => d.date === todayDateStr);
+            const forecastSlice = todayIdx >= 0 ? weatherData.daily.slice(todayIdx, todayIdx + 3) : weatherData.daily.slice(0, 3);
+            const forecastParts = forecastSlice.map(d => {
               const dt = new Date(d.date + 'T12:00:00');
               const dayName = dayNames[dt.getDay()];
               return `${dayName}: ${Math.round(d.high)}°/${Math.round(d.low)}°`;
             });
             items.push({ title: `<img src="${forecastIconPath}" style="height:20px;width:auto;display:inline-block;vertical-align:middle;margin-left:3px;margin-right:9px;position:relative;top:-2px" />3-Day Forecast: ${forecastParts.join('  •  ')}`, source: '_FORECAST_', link: '' });
             const briefParts: string[] = [];
-            const todayD = weatherData.daily[0];
-            const tomorrowD = weatherData.daily[1];
-            const day3D = weatherData.daily[2];
+            const todayD = forecastSlice[0] || weatherData.daily[0];
+            const tomorrowD = forecastSlice[1] || weatherData.daily[1];
+            const day3D = forecastSlice[2] || weatherData.daily[2];
             const wmoShort = (c: number) => ({ 0:'clear',1:'mostly clear',2:'partly cloudy',3:'overcast',45:'foggy',48:'foggy',51:'light drizzle',53:'drizzle',55:'heavy drizzle',61:'light rain',63:'rain',65:'heavy rain',66:'freezing rain',67:'heavy freezing rain',71:'light snow',73:'snow',75:'heavy snow',77:'snow grains',80:'light showers',81:'showers',82:'heavy showers',85:'light snow showers',86:'heavy snow showers',95:'thunderstorms',96:'thunderstorms with hail',99:'severe thunderstorms' }[c] || 'mixed conditions');
             const todayDesc = wmoShort(todayD.weatherCode || weatherData.code);
             briefParts.push(`Currently ${Math.round(weatherData.temp)}° and ${todayDesc}. Today's high ${Math.round(todayD.high)}°, low ${Math.round(todayD.low)}°.`);
