@@ -17529,7 +17529,7 @@ export default function Dashboard() {
                 if (!p) return null;
                 return (
                   <div className="absolute inset-0 z-10 flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)' }} onClick={() => setSkyMapPlanet(null)} data-testid="planet-detail-overlay">
-                    <div className="rounded-xl overflow-hidden" style={{ width: '520px', maxWidth: '90%', maxHeight: '85%', background: 'linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%)', border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 20px 60px rgba(0,0,0,0.8)' }} onClick={(e) => e.stopPropagation()} data-testid={`planet-detail-${p.name.toLowerCase()}`}>
+                    <div className="rounded-xl overflow-hidden" style={{ width: '520px', maxWidth: '90%', maxHeight: '95%', background: 'linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%)', border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 20px 60px rgba(0,0,0,0.8)' }} onClick={(e) => e.stopPropagation()} data-testid={`planet-detail-${p.name.toLowerCase()}`}>
                       <div style={{ position: 'relative', height: '250px', overflow: 'hidden', background: '#000' }}>
                         <img src={p.photo} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 50%, rgba(13,17,23,0.95) 100%)' }} />
@@ -17542,7 +17542,7 @@ export default function Dashboard() {
                           </div>
                         </div>
                       </div>
-                      <div style={{ padding: '16px 16px 46px 16px', overflowY: 'auto', maxHeight: '330px' }}>
+                      <div style={{ padding: '16px 16px 46px 16px', overflowY: 'auto', maxHeight: '400px' }}>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '14px' }}>
                           <div className="rounded-lg p-2.5" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
                             <div className="text-[8px] text-white/40 uppercase" style={{ letterSpacing: '1px' }}>Diameter</div>
