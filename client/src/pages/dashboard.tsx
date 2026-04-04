@@ -23554,7 +23554,7 @@ export default function Dashboard() {
                               return sunSize > 2 ? `<div style="position:absolute;bottom:${100 - sunY}%;left:18%;transform:translateX(-50%);width:${sunSize + 10}px;height:${sunSize + 10}px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,40,${glowOpacity}) 0%,transparent 70%)"></div><div style="position:absolute;bottom:${100 - sunY}%;left:18%;transform:translateX(-50%);width:${sunSize}px;height:${sunSize}px;border-radius:50%;background:radial-gradient(circle,#ff8844 0%,#cc4422 100%);box-shadow:0 0 8px 2px rgba(255,100,30,${glowOpacity})"></div>` : '';
                             })() : '';
 
-                            const moonHtml = isNightPhase ? `<svg style="position:absolute;top:6px;right:6px;filter:drop-shadow(0 0 4px rgba(255,250,220,0.4))" width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="#f5f0d0" stroke="#e8e0b0" stroke-width="1"/></svg>` : '';
+                            const moonHtml = isNightPhase ? `<svg style="position:absolute;top:5px;right:5px;filter:drop-shadow(0 0 5px rgba(255,250,200,0.5))" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20.354 15.354A9 9 0 0 1 8.646 3.646 9.003 9.003 0 0 0 12 21a9.003 9.003 0 0 0 8.354-5.646z" fill="#fef3c7" stroke="#fde68a" stroke-width="0.5"/></svg>` : '';
 
                             return (
                               <>
