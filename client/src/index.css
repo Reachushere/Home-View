@@ -2511,6 +2511,15 @@ input[type="date"]::-webkit-datetime-edit-year-field {
   animation: weather-alert-box-pulse 2.5s ease-in-out infinite;
 }
 
+@keyframes countdownBarPulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+.countdown-bar-pulse {
+  animation: countdownBarPulse 1.5s ease-in-out infinite;
+}
+
 .section-dim > *:not(.no-dim) {
   opacity: 0.45;
 }

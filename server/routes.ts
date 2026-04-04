@@ -1813,6 +1813,21 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
     res.json(task);
   });
 
+  app.patch("/api/tasks/:id", async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const updates: any = {};
+      if (req.body.taskStatus !== undefined) updates.taskStatus = req.body.taskStatus;
+      if (req.body.startDate !== undefined) updates.startDate = req.body.startDate;
+      const task = await storage.updateTask(id, updates);
+      if (!task) return res.status(404).json({ message: 'Task not found' });
+      res.json(task);
+    } catch (err) {
+      console.error("Error updating task:", err);
+      res.status(500).json({ error: "Failed to update task" });
+    }
+  });
+
   app.patch("/api/tasks/:id/flag", async (req, res) => {
     const { flagged } = req.body;
     const task = await storage.updateTask(Number(req.params.id), { flagged: !!flagged });

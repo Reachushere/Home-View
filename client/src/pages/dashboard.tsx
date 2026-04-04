@@ -3337,6 +3337,19 @@ export default function Dashboard() {
     } catch { return {}; }
   });
   const [semStartDialogKey, setSemStartDialogKey] = useState<string | null>(null);
+  const [weeklyPlanningOpen, setWeeklyPlanningOpen] = useState(() => {
+    try {
+      const now = new Date();
+      const dow = now.getDay();
+      const hour = now.getHours();
+      const isSunEvening = dow === 0 && hour >= 17;
+      const isMonMorning = dow === 1 && hour < 12;
+      if (!isSunEvening && !isMonMorning) return false;
+      const weekKey = `weeklyPlan_${format(startOfDayET(now), 'yyyy-ww')}`;
+      const dismissed = localStorage.getItem(weekKey);
+      return !dismissed;
+    } catch { return false; }
+  });
 
   const SEMESTER_COURSE_DEFS = [
     { key: 'ss2025', start: '2025-05-05', end: '2025-08-08', codes: ['CPPA101','CPPA120','CPPA102'] },
@@ -21781,6 +21794,78 @@ export default function Dashboard() {
             document.body
           )}
 
+          {weeklyPlanningOpen && createPortal(
+            <div>
+              <div className="fixed inset-0 z-[10006] bg-black/60" onClick={() => {
+                const weekKey = `weeklyPlan_${format(startOfDayET(new Date()), 'yyyy-ww')}`;
+                localStorage.setItem(weekKey, '1');
+                setWeeklyPlanningOpen(false);
+              }} />
+              <div className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-[10006] w-[420px] max-w-[94vw] max-h-[80vh] overflow-y-auto rounded-lg text-white p-5" style={{ background: 'linear-gradient(180deg, #1a1f3a 0%, #0d1025 100%)', border: '2px solid rgba(255,255,255,0.3)', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }} data-testid="weekly-planning-dialog">
+                <h3 className="text-sm font-bold mb-1" style={{ letterSpacing: '0.5px' }}>📋 Weekly Planning</h3>
+                <p className="text-[10px] text-white/50 mb-3">Review your upcoming tasks and mark their status.</p>
+                {(() => {
+                  const upcoming = allTasks.filter(t => {
+                    if (t.isCompleted) return false;
+                    if (!t.dueDate) return false;
+                    const due = new Date(t.dueDate);
+                    const now = new Date();
+                    const diff = (due.getTime() - now.getTime()) / (1000*60*60*24);
+                    return diff >= -1 && diff <= 10;
+                  }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+                  if (upcoming.length === 0) return <p className="text-[11px] text-white/50 italic">No upcoming tasks this week.</p>;
+                  const statusColors: Record<string, string> = { not_started: '#ef4444', in_progress: '#f59e0b', done: '#22c55e' };
+                  const statusLabels: Record<string, string> = { not_started: 'Not Started', in_progress: 'In Progress', done: 'Done' };
+                  return upcoming.map(t => {
+                    const due = new Date(t.dueDate);
+                    const daysLeft = Math.max(0, Math.round((due.getTime() - new Date().getTime()) / (1000*60*60*24)));
+                    const status = (t as any).taskStatus || 'not_started';
+                    const co = (coursesData?.courses || []).find((c: any) => c.name?.split(' - ')[0]?.toUpperCase() === t.courseName?.toUpperCase() || c.name === t.courseName);
+                    return (
+                      <div key={t.id} className="flex items-center gap-2 mb-2 p-2 rounded" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }} data-testid={`weekly-plan-task-${t.id}`}>
+                        <div style={{ width: '4px', height: '32px', borderRadius: '2px', background: co?.color || '#3b82f6', flexShrink: 0 }} />
+                        <div className="flex-1 min-w-0">
+                          <div className="text-[11px] font-semibold truncate">{t.title}</div>
+                          <div className="text-[9px] text-white/50">{t.courseName} · Due in {daysLeft}d · {format(due, 'EEE MMM d')}</div>
+                        </div>
+                        <select
+                          value={status}
+                          onChange={async (e) => {
+                            const newStatus = e.target.value;
+                            try {
+                              await fetch(`/api/tasks/${t.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ taskStatus: newStatus }) });
+                              queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+                            } catch {}
+                          }}
+                          className="text-[9px] font-bold rounded px-2 py-1 border-0 cursor-pointer"
+                          style={{ background: statusColors[status] + '33', color: statusColors[status], outline: 'none', minWidth: '85px' }}
+                          data-testid={`weekly-plan-status-${t.id}`}
+                        >
+                          <option value="not_started">Not Started</option>
+                          <option value="in_progress">In Progress</option>
+                          <option value="done">Done</option>
+                        </select>
+                      </div>
+                    );
+                  });
+                })()}
+                <div className="flex gap-2 mt-4">
+                  <button
+                    className="flex-1 py-2 rounded text-[11px] font-bold border cursor-pointer transition-all hover:brightness-110"
+                    style={{ background: 'rgba(59,130,246,0.25)', borderColor: 'rgba(59,130,246,0.5)', color: '#93c5fd' }}
+                    onClick={() => {
+                      const weekKey = `weeklyPlan_${format(startOfDayET(new Date()), 'yyyy-ww')}`;
+                      localStorage.setItem(weekKey, '1');
+                      setWeeklyPlanningOpen(false);
+                    }}
+                    data-testid="button-dismiss-weekly-planning"
+                  >Done Planning</button>
+                </div>
+              </div>
+            </div>,
+            document.body
+          )}
+
           {semSettingsDialogKey && createPortal(
             <div>
             <div className="fixed inset-0 z-[10003] bg-black/50" onClick={() => setSemSettingsDialogKey(null)} />
@@ -23903,7 +23988,7 @@ export default function Dashboard() {
                     )}
                     {dayForecast && (
                       <span className="text-[11px] text-white/90 whitespace-nowrap leading-none font-medium relative z-10 inline-flex items-center gap-[2px]" style={{ letterSpacing: '-0.2px' }}>
-                        {afterSunrise ? `${Math.round(weatherData!.temp)}° ${desc}` : `${Math.round(dayForecast.low)}°/${Math.round(dayForecast.high)}° ${desc}`}
+                        {afterSunrise ? `${Math.round(weatherData!.temp)}° ${desc}` : `${Math.round(dayForecast.high)}°/${Math.round(dayForecast.low)}° ${desc}`}
                       </span>
                     )}
                   </div>
@@ -25891,28 +25976,64 @@ export default function Dashboard() {
                               const daysLeft = Math.max(0, Math.round((tDue.getTime() - today.getTime()) / (1000*60*60*24)));
                               const courseCode = t.courseName?.split(' - ')[0]?.trim() || '';
                               const gradColors = getCourseGradientColors(courseCode);
-                              const barColor = t.countdownBarColor || (daysLeft <= 1 ? '#ef4444' : daysLeft <= 3 ? '#f59e0b' : gradColors.start);
+                              const barColor = t.countdownBarColor || (daysLeft <= 1 ? '#ef4444' : daysLeft === 2 ? '#f97316' : daysLeft <= 4 ? '#f59e0b' : '#22c55e');
                               const tDueDayIdx = weekDays.findIndex(wd => isSameDayET(wd, tDue));
                               const isLastCell = tDueDayIdx >= 0 ? dayIdx === tDueDayIdx : dayIdx === weekDays.length - 1;
                               const isFirstCell = dayIdx === (todayDayIdx >= 0 ? todayDayIdx : 0);
                               const barY = 50 + tIdx * 5;
+                              const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
+                              const needsPulse = isNotStarted && daysLeft <= 2 && !t.isCompleted;
+                              const prepDaysDefault: Record<string, number> = { essay: 5, project: 7, exam: 5, quiz: 3, discussion: 3, reading: 2, module: 2, poll: 1, class: 0, meeting: 0, reminder: 0, scholarship: 3, other: 1 };
+                              const autoStartDays = (t as any).startDate ? 0 : (prepDaysDefault[t.type || 'other'] || 1);
+                              const startByDayIdx = autoStartDays > 0 ? Math.max(todayDayIdx >= 0 ? todayDayIdx : 0, (tDueDayIdx >= 0 ? tDueDayIdx : weekDays.length - 1) - autoStartDays) : -1;
+                              const isStartByCell = startByDayIdx >= 0 && dayIdx === startByDayIdx && startByDayIdx !== (tDueDayIdx >= 0 ? tDueDayIdx : -1);
                               return (
                                 <div
                                   key={`cbar-main-${t.id}`}
+                                  className={needsPulse ? 'countdown-bar-pulse' : ''}
                                   style={{
                                     position: 'absolute',
                                     left: 0,
                                     right: 0,
                                     bottom: `${barY}%`,
-                                    height: '4px',
+                                    height: needsPulse ? '5px' : '4px',
                                     background: barColor,
                                     opacity: 0.8,
                                     zIndex: 4,
                                     pointerEvents: 'none',
                                     borderRadius: isFirstCell && isLastCell ? '2px' : isFirstCell ? '2px 0 0 2px' : isLastCell ? '0 2px 2px 0' : '0',
+                                    boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined,
                                   }}
                                   data-testid={`countdown-span-main-${t.id}-day-${dayIdx}`}
                                 >
+                                  {isFirstCell && (
+                                    <span style={{
+                                      position: 'absolute',
+                                      left: '2px',
+                                      top: '-10px',
+                                      fontSize: '7px',
+                                      fontWeight: 600,
+                                      color: 'rgba(0,0,0,0.5)',
+                                      lineHeight: 1,
+                                      whiteSpace: 'nowrap',
+                                      overflow: 'hidden',
+                                      textOverflow: 'ellipsis',
+                                      maxWidth: '90%',
+                                    }}>{(t.title || '').replace(/[\[\]]/g, '').replace(/^\s+/, '').substring(0, 20)}</span>
+                                  )}
+                                  {isStartByCell && (
+                                    <div style={{
+                                      position: 'absolute',
+                                      left: 0,
+                                      top: '-8px',
+                                      width: 0,
+                                      height: 0,
+                                      borderLeft: '4px solid transparent',
+                                      borderRight: '4px solid transparent',
+                                      borderTop: `6px solid ${barColor}`,
+                                      opacity: 0.9,
+                                    }} title={`Start by this day`} />
+                                  )}
                                   {isLastCell && (
                                     <span style={{
                                       position: 'absolute',

@@ -397,6 +397,7 @@ export const tasks = pgTable("tasks", {
   countdownBarColor: text("countdown_bar_color"),
   repeatSpanDays: integer("repeat_span_days").default(1),
   shiftAdjust: boolean("shift_adjust").default(false),
+  taskStatus: text("task_status").default("not_started"),
 });
 
 // Base schema from drizzle, then override date fields to accept ISO strings
