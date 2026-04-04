@@ -15746,7 +15746,11 @@ export default function Dashboard() {
               };
               const onEnd = () => {
                 el.style.animation = 'none';
-                requestAnimationFrame(() => requestAnimationFrame(startScroll));
+                el.style.visibility = 'hidden';
+                requestAnimationFrame(() => requestAnimationFrame(() => {
+                  startScroll();
+                  el.style.visibility = 'visible';
+                }));
               };
               el.removeEventListener('animationend', (el as any).__d2lTickerEndHandler);
               (el as any).__d2lTickerEndHandler = onEnd;
