@@ -511,28 +511,36 @@ function NewsTickerPortal({ headlines, onAlertClick }: { headlines: Array<{ titl
     const applyTickerAnimation = () => {
       const scrollEl = containerRef.current?.querySelector('.news-ticker-scroll') as HTMLElement | null;
       if (!scrollEl) return;
+      scrollEl.style.animation = 'none';
+      scrollEl.style.transform = 'translate3d(0,0,0)';
+      void scrollEl.offsetWidth;
       const parentWidth = scrollEl.parentElement?.clientWidth || window.innerWidth;
-      const startContinuousScroll = () => {
-        scrollEl.style.transform = '';
-        const contentWidth = scrollEl.scrollWidth;
-        const totalTravel = parentWidth + contentWidth;
-        const speed = 65;
-        const dur = totalTravel / speed;
-        scrollEl.style.setProperty('--ticker-start', `${parentWidth}px`);
-        scrollEl.style.setProperty('--ticker-end', `-${contentWidth}px`);
-        scrollEl.style.animation = `tickerScroll ${dur}s linear infinite`;
-      };
-      startContinuousScroll();
+      let contentWidth = 0;
+      const children = scrollEl.children;
+      for (let i = 0; i < children.length; i++) {
+        const child = children[i] as HTMLElement;
+        contentWidth += child.offsetWidth + (parseFloat(getComputedStyle(child).marginLeft) || 0) + (parseFloat(getComputedStyle(child).marginRight) || 0);
+      }
+      contentWidth = Math.max(contentWidth, scrollEl.scrollWidth) + 100;
+      const totalTravel = parentWidth + contentWidth;
+      const speed = 65;
+      const dur = totalTravel / speed;
+      scrollEl.style.setProperty('--ticker-start', `${parentWidth}px`);
+      scrollEl.style.setProperty('--ticker-end', `-${contentWidth}px`);
+      scrollEl.style.animation = `tickerScroll ${dur}s linear infinite`;
     };
     const imgs = containerRef.current.querySelectorAll('img');
     if (imgs.length > 0) {
       let loaded = 0;
-      const onLoad = () => { loaded++; if (loaded >= imgs.length) requestAnimationFrame(applyTickerAnimation); };
+      const total = imgs.length;
+      const onLoad = () => { loaded++; if (loaded >= total) { requestAnimationFrame(() => requestAnimationFrame(applyTickerAnimation)); } };
       imgs.forEach(img => { if (img.complete) { loaded++; } else { img.addEventListener('load', onLoad); img.addEventListener('error', onLoad); } });
-      if (loaded >= imgs.length) requestAnimationFrame(applyTickerAnimation);
-      setTimeout(applyTickerAnimation, 500);
+      if (loaded >= total) {
+        requestAnimationFrame(() => requestAnimationFrame(applyTickerAnimation));
+      }
+      setTimeout(applyTickerAnimation, 800);
     } else {
-      requestAnimationFrame(applyTickerAnimation);
+      requestAnimationFrame(() => requestAnimationFrame(applyTickerAnimation));
     }
   }, [headlines]);
 
