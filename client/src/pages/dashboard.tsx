@@ -24874,7 +24874,7 @@ export default function Dashboard() {
                           const today = startOfDayET(new Date());
                           const cdCell = startOfDayET(day);
                           const countdownTasks = (allTasks || []).filter(t => {
-                            if (!t.showCountdownBar || t.showCountdownBarMain === false || t.isCompleted) return false;
+                            if (t.showCountdownBar === false || t.showCountdownBarMain === false || t.isCompleted) return false;
                             let tc = t.courseName?.split(' - ')[0]?.trim().toUpperCase() || '';
                             if (!tc && t.title) {
                               const bm = t.title.match(/^\[([A-Z]{3,4}\d{3})/i);
