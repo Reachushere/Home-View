@@ -28,6 +28,7 @@ import newsTickerLabel from "@assets/News_1773894837015.png";
 import zoomLogoPath from "@assets/Zoom_1773653841562.png";
 import wifiLogoPath from "@assets/Wifi_1773656687145.png";
 import politicoLogoPath from "@assets/Politico_1773537080711.png";
+import { computeStarPositions, starToSkyMapXY } from "@/lib/starCatalog";
 import degreeIconPath from "@assets/Degree_1775175568321.png";
 import remindersIconPath from "@assets/Reminders_1775175754351.png";
 import soundIconPath from "@assets/Sound_1775176942072.png";
@@ -2189,6 +2190,12 @@ export default function Dashboard() {
   const [weatherAlerts, setWeatherAlerts] = useState<{ title: string; summary: string; description: string; type: string; url: string }[]>([]);
   const [weatherAlertDialogOpen, setWeatherAlertDialogOpen] = useState(false);
   const [skyMapOpen, setSkyMapOpen] = useState(false);
+  const [skyMapTick, setSkyMapTick] = useState(0);
+  useEffect(() => {
+    if (!skyMapOpen) return;
+    const iv = setInterval(() => setSkyMapTick(t => t + 1), 30000);
+    return () => clearInterval(iv);
+  }, [skyMapOpen]);
   const [skyMapPlanet, setSkyMapPlanet] = useState<string | null>(null);
   const [skyMapDate, setSkyMapDate] = useState<Date>(new Date());
   const [hwHeaderFlipped, setHwHeaderFlipped] = useState(false);
@@ -17403,14 +17410,45 @@ export default function Dashboard() {
                       <div key={i} style={{ position: 'absolute', bottom: `${2 + Math.random() * 8}%`, left: `${(i / 30) * 100 + Math.random() * 3}%`, width: `${1 + Math.random() * 2}px`, height: `${1 + Math.random() * 3}px`, background: `rgba(255,200,100,${0.15 + Math.random() * 0.25})`, borderRadius: '1px' }} />
                     ))}
                   </div>
-                  {Array.from({ length: 80 }, (_, i) => {
-                    const sx = Math.random() * 100;
-                    const sy = Math.random() * 85;
-                    const ss = 0.5 + Math.random() * 1.5;
-                    const so = 0.3 + Math.random() * 0.7;
-                    const sd = 2 + Math.random() * 4;
-                    return <div key={i} style={{ position: 'absolute', left: `${sx}%`, top: `${sy}%`, width: `${ss}px`, height: `${ss}px`, borderRadius: '50%', background: '#ffffff', opacity: so, animation: `twinkle ${sd}s ${Math.random() * sd}s ease-in-out infinite` }} />;
-                  })}
+                  {(() => {
+                    void skyMapTick;
+                    const viewDate = (() => {
+                      if (skyMapDate) {
+                        const d = skyMapDate instanceof Date ? skyMapDate : new Date(skyMapDate + 'T22:00:00');
+                        const today = new Date();
+                        if (d.toDateString() === today.toDateString()) return new Date();
+                        return d;
+                      }
+                      return new Date();
+                    })();
+                    const realStars = computeStarPositions(viewDate, 43.67, -79.39, 0, 5.0);
+                    return realStars.map((star) => {
+                      const pos = starToSkyMapXY(star.az, star.alt);
+                      if (!pos) return null;
+                      const sizePx = star.mag <= 0 ? 3.0 : star.mag <= 1 ? 2.4 : star.mag <= 2 ? 1.8 : star.mag <= 3 ? 1.3 : star.mag <= 4 ? 0.9 : 0.6;
+                      const opacity = star.mag <= 0 ? 1.0 : star.mag <= 1 ? 0.9 : star.mag <= 2 ? 0.75 : star.mag <= 3 ? 0.55 : star.mag <= 4 ? 0.35 : 0.2;
+                      const twinkleDur = 3 + (star.name.charCodeAt(0) % 4);
+                      const twinkleDelay = (star.name.charCodeAt(1) || 0) % 5;
+                      const showLabel = star.mag <= 2.0;
+                      return (
+                        <div key={star.name} style={{ position: 'absolute', left: `${pos.x}%`, top: `${pos.y}%`, zIndex: star.mag <= 1 ? 3 : 1, transition: 'left 30s linear, top 30s linear' }}>
+                          <div style={{
+                            width: `${sizePx}px`, height: `${sizePx}px`, borderRadius: '50%',
+                            background: star.mag <= 1.5 ? '#e8eeff' : '#ffffff',
+                            boxShadow: star.mag <= 1 ? `0 0 ${sizePx * 3}px ${sizePx}px rgba(200,220,255,0.3)` : 'none',
+                            opacity, animation: `twinkle ${twinkleDur}s ${twinkleDelay}s ease-in-out infinite`,
+                            transform: 'translate(-50%, -50%)'
+                          }} />
+                          {showLabel && (
+                            <div style={{ position: 'absolute', top: `${sizePx + 3}px`, left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap', pointerEvents: 'none' }}>
+                              <div className="text-[7px] text-white/60" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.9)', textAlign: 'center' }}>{star.name}</div>
+                              {star.bayer && <div className="text-[6px] text-white/30" style={{ textAlign: 'center' }}>{star.bayer}</div>}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    });
+                  })()}
                   {planets.filter(p => p.visible).map((p, i) => (
                     <div key={p.name} style={{ position: 'absolute', left: `${p.x}%`, top: `${p.y}%` }}>
                       <div style={{ width: `${p.size * 2}px`, height: `${p.size * 2}px`, borderRadius: '50%', background: p.color, boxShadow: `0 0 ${p.size * 3}px ${p.size}px ${p.color}40`, transform: 'translate(-50%, -50%)' }} />
@@ -17447,7 +17485,10 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div style={{ width: '200px', flexShrink: 0, borderLeft: '1px solid rgba(255,255,255,0.08)', background: 'rgba(10,14,39,0.9)', overflowY: 'auto', padding: '12px' }}>
-                  <div className="text-[11px] text-white font-semibold mb-3" style={{ letterSpacing: '1px', textTransform: 'uppercase' }}>Visible Tonight</div>
+                  <div className="text-[11px] text-white font-semibold mb-2" style={{ letterSpacing: '1px', textTransform: 'uppercase' }}>Visible Tonight</div>
+                  <div className="mb-3 rounded p-1.5" style={{ background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.15)' }}>
+                    <div className="text-[8px] text-blue-300/80" data-testid="star-catalog-info">Yale Bright Star Catalog · {(() => { void skyMapTick; const vd = (() => { if (skyMapDate) { const d = skyMapDate instanceof Date ? skyMapDate : new Date(skyMapDate + 'T22:00:00'); const today = new Date(); if (d.toDateString() === today.toDateString()) return new Date(); return d; } return new Date(); })(); return computeStarPositions(vd, 43.67, -79.39, 0, 5.0).filter(s => starToSkyMapXY(s.az, s.alt) !== null).length; })()} stars in view · Live</div>
+                  </div>
                   {planets.map(p => (
                     <div key={p.name} className="mb-3 rounded-lg p-2" style={{ background: p.visible ? 'rgba(59,130,246,0.1)' : 'rgba(255,255,255,0.03)', border: `1px solid ${p.visible ? 'rgba(59,130,246,0.2)' : 'rgba(255,255,255,0.05)'}` }}>
                       <div className="flex items-center gap-2">
@@ -30742,10 +30783,14 @@ export default function Dashboard() {
                     variant="ghost"
                     className="text-white/60 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200 h-7 w-7"
                     onClick={() => {
-                      if (!confirm(`Delete "${editingTask.title}"? This cannot be undone.`)) return;
-                      const taskId = editingTask.id;
-                      setEditingTask(null);
-                      doDeleteSingleTask(taskId);
+                      const task = editingTask;
+                      if (isRecurringTask(task)) {
+                        setRecurringDeleteTask({ id: task.id, title: task.title, callback: () => setEditingTask(null) });
+                      } else {
+                        if (!confirm(`Delete "${task.title}"?`)) return;
+                        setEditingTask(null);
+                        doDeleteSingleTask(task.id);
+                      }
                     }}
                     data-testid="button-delete-task-header"
                   >
