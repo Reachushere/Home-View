@@ -25065,6 +25065,7 @@ export default function Dashboard() {
                                 onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
                                 onClick={(e) => e.stopPropagation()}
                                 className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                style={{ marginLeft: '-1px' }}
                                 data-testid={`checkbox-course-row-${task.id}`}
                               />
                               <span 
@@ -25424,6 +25425,7 @@ export default function Dashboard() {
                                   onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
                                   onClick={(e) => e.stopPropagation()}
                                   className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                  style={{ marginLeft: '-1px' }}
                                   data-testid={`checkbox-other-${task.id}`}
                                 />
                                 <span
@@ -26137,7 +26139,7 @@ export default function Dashboard() {
                                     onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
                                     onClick={(e) => e.stopPropagation()}
                                     className="shrink-0 bg-white data-[state=checked]:bg-white data-[state=checked]:text-black"
-                                    style={{ width: '10px', height: '10px', border: '1px solid black' }}
+                                    style={{ width: '10px', height: '10px', border: '1px solid black', marginLeft: '-1px' }}
                                     data-testid={`checkbox-time-${task.id}`}
                                   />
                                   {(() => { const hasAtt = (task.attachments?.length && task.attachments.some((att: any) => { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; return !!url; })) || task.referenceLink; return hasAtt ? <img src={pdfAttachIconPath} alt="PDF" style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0 }} data-testid={`attachment-icon-time-${task.id}`} /> : null; })()}
