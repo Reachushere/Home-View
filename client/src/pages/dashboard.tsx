@@ -24463,10 +24463,10 @@ export default function Dashboard() {
                             return (
                               <div className="absolute z-20 flex flex-col" style={{ top: 1, bottom: 1, left: 1, width: '46px', gap: '1px', pointerEvents: 'none' }} data-testid="today-hourly-forecast">
                                 {forecasts.map((fc, i) => (
-                                  <div key={i} className="flex items-center justify-center gap-[3px]" style={{ flex: 1, background: '#ffffff', borderRadius: '3px', padding: '0 3px', minHeight: 0 }} data-testid={`hourly-forecast-${fc.offset}h`}>
-                                    <span style={{ fontSize: '8px', color: '#000000', fontWeight: 700, lineHeight: 1 }}>{fc.offset}h</span>
-                                    <span style={{ fontSize: '13px', lineHeight: 1 }}>{wmoMini[fc.code] || '🌤'}</span>
-                                    <span style={{ fontSize: '9px', color: '#000000', fontWeight: 700, lineHeight: 1 }}>{fc.temp}°</span>
+                                  <div key={i} className="flex items-center justify-center gap-[3px]" style={{ flex: 1, background: '#000000', borderRadius: '3px', padding: '0 3px', minHeight: 0 }} data-testid={`hourly-forecast-${fc.offset}h`}>
+                                    <span style={{ fontSize: '8px', color: '#ffffff', fontWeight: 700, lineHeight: 1 }}>{fc.offset}h</span>
+                                    <span style={{ fontSize: '13px', lineHeight: 1, filter: 'brightness(1.5)' }}>{wmoMini[fc.code] || '🌤'}</span>
+                                    <span style={{ fontSize: '9px', color: '#ffffff', fontWeight: 700, lineHeight: 1 }}>{fc.temp}°</span>
                                   </div>
                                 ))}
                               </div>
