@@ -24008,9 +24008,9 @@ export default function Dashboard() {
                               if (isNightPhase) return 'linear-gradient(180deg, #0a0e27 0%, #101740 40%, #1a2555 100%)';
                               if (phase === 'preDawn') return 'linear-gradient(180deg, #0f1535 0%, #1e2a5a 40%, #3d2b4a 70%, #5c3d4a 100%)';
                               if (phase === 'sunrise') return isActiveWeather ? 'linear-gradient(180deg, #3a4060 0%, #7a6858 35%, #9a8868 55%, #8a8878 75%, #7a7a72 100%)' : 'linear-gradient(180deg, #2a3a6e 0%, #c97355 35%, #e8a55a 55%, #f0c66e 75%, #fdd878 100%)';
-                              if (phase === 'morning') return isActiveWeather ? 'linear-gradient(180deg, #3a4a5a 0%, #4a5a6a 40%, #5a6a7a 70%, #5a6878 100%)' : 'linear-gradient(180deg, #4a8ec7 0%, #7bb8e0 40%, #b8d8ef 70%, #edc261 100%)';
-                              if (phase === 'day' && isActiveWeather) return 'linear-gradient(180deg, #3a4a5a 0%, #4a5a6a 40%, #5a6a7a 100%)';
-                              if (phase === 'preSet') return isActiveWeather ? 'linear-gradient(180deg, #3a4858 0%, #4a5a6a 30%, #5a6570 60%, #4a5058 100%)' : 'linear-gradient(180deg, #5a95c8 0%, #8ab8d8 30%, #c9a96e 60%, #d4905a 100%)';
+                              if (phase === 'morning') return isActiveWeather ? 'linear-gradient(180deg, #2a4a78 0%, #4a6088 40%, #6a80a0 70%, #5a7898 100%)' : 'linear-gradient(180deg, #4a8ec7 0%, #7bb8e0 40%, #b8d8ef 70%, #edc261 100%)';
+                              if (phase === 'day' && isActiveWeather) return 'linear-gradient(180deg, #2a4a78 0%, #4a6088 40%, #7a94ac 100%)';
+                              if (phase === 'preSet') return isActiveWeather ? 'linear-gradient(180deg, #2a4060 0%, #3a5070 30%, #4a5a6a 60%, #3a4858 100%)' : 'linear-gradient(180deg, #5a95c8 0%, #8ab8d8 30%, #c9a96e 60%, #d4905a 100%)';
                               if (phase === 'sunset') return isActiveWeather ? 'linear-gradient(180deg, #2a3050 0%, #3a4558 25%, #4a5a68 45%, #4a5565 65%, #3a4550 100%)' : 'linear-gradient(180deg, #2d3a6e 0%, #8a4a5c 25%, #d4724a 45%, #ecc47e 65%, #f9a523 85%, #c44a20 100%)';
                               if (phase === 'dusk') return isActiveWeather ? 'linear-gradient(180deg, #101825 0%, #1a1a30 30%, #2a2a3a 55%, #3a3540 75%, #201820 100%)' : 'linear-gradient(180deg, #12183a 0%, #2a2050 30%, #5c3355 55%, #8a4a5c 75%, #3d2040 100%)';
                               if (wCode >= 71 && wCode <= 77) return 'linear-gradient(180deg, #4a5060 0%, #6a7080 40%, #8a90a0 100%)';
@@ -24053,16 +24053,16 @@ export default function Dashboard() {
                                 return Array.from({ length: 16 }, (_, i) => {
                                   const left = (i * 23 + 5) % 100;
                                   const delay = ((i * 0.2) % 2).toFixed(2);
-                                  const size = 2.5 + (i % 2);
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.85);border-radius:50%;animation:snowFall 2s ${delay}s linear infinite"></div>`;
+                                  const size = 3.5 + (i % 2) * 1.5;
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.9);border-radius:50%;animation:snowFall 2s ${delay}s linear infinite"></div>`;
                                 }).join('');
                               }
                               if (wCode >= 85 && wCode <= 86) {
                                 return Array.from({ length: 18 }, (_, i) => {
                                   const left = (i * 23 + 5) % 100;
                                   const delay = ((i * 0.2) % 2).toFixed(2);
-                                  const size = 2.5 + (i % 2);
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.85);border-radius:50%;animation:snowFall ${1.5 + (i % 2)}s ${delay}s linear infinite"></div>`;
+                                  const size = 3.5 + (i % 2) * 1.5;
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.9);border-radius:50%;animation:snowFall ${1.5 + (i % 2)}s ${delay}s linear infinite"></div>`;
                                 }).join('');
                               }
                               if (wCode >= 66 && wCode <= 67) {
@@ -24146,7 +24146,7 @@ export default function Dashboard() {
                                   @keyframes fogDrift { 0% { transform: translateX(-5px); } 100% { transform: translateX(5px); } }
                                   @keyframes lightningFlash { 0%,89%,91%,93%,100% { opacity: 0; } 90% { opacity: 1; } 92% { opacity: 0.6; } }
                                 `}</style>
-                                <div className="absolute left-0 right-0 bottom-0 z-10" style={{ top: 0, background: skyBg, overflow: 'hidden', pointerEvents: 'none', opacity: (isActiveWeather && !isNightPhase && phase !== 'preDawn' && phase !== 'dusk') ? 0.55 : 1 }}>
+                                <div className="absolute left-0 right-0 bottom-0 z-10" style={{ top: 0, background: skyBg, overflow: 'hidden', pointerEvents: 'none' }}>
                                   <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }} dangerouslySetInnerHTML={{ __html: starsHtml + moonHtml + sunriseSceneHtml + sunsetSceneHtml }} />
                                 </div>
                                 {weatherEffectsHtml && <div className="absolute left-0 right-0 bottom-0 z-[11]" style={{ top: 0, overflow: 'hidden', pointerEvents: 'none' }} dangerouslySetInnerHTML={{ __html: weatherEffectsHtml }} />}
@@ -24180,16 +24180,16 @@ export default function Dashboard() {
                                 return Array.from({ length: 16 }, (_, i) => {
                                   const left = (i * 23 + 5) % 100;
                                   const delay = ((i * 0.2) % 2).toFixed(2);
-                                  const size = 2.5 + (i % 2);
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.85);border-radius:50%;animation:snowFall ${2 + (i % 3)}s ${delay}s linear infinite"></div>`;
+                                  const size = 3.5 + (i % 2) * 1.5;
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.9);border-radius:50%;animation:snowFall ${2 + (i % 3)}s ${delay}s linear infinite"></div>`;
                                 }).join('');
                               }
                               if (wc >= 85 && wc <= 86) {
                                 return Array.from({ length: 18 }, (_, i) => {
                                   const left = (i * 23 + 5) % 100;
                                   const delay = ((i * 0.2) % 2).toFixed(2);
-                                  const size = 2.5 + (i % 2);
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.85);border-radius:50%;animation:snowFall ${1.5 + (i % 2)}s ${delay}s linear infinite"></div>`;
+                                  const size = 3.5 + (i % 2) * 1.5;
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.9);border-radius:50%;animation:snowFall ${1.5 + (i % 2)}s ${delay}s linear infinite"></div>`;
                                 }).join('');
                               }
                               if (wc >= 66 && wc <= 67) {
