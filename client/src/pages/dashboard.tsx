@@ -24002,8 +24002,8 @@ export default function Dashboard() {
                               if (isNightPhase) return 'linear-gradient(180deg, #0a0e27 0%, #101740 40%, #1a2555 100%)';
                               if (phase === 'preDawn') return 'linear-gradient(180deg, #0f1535 0%, #1e2a5a 40%, #3d2b4a 70%, #5c3d4a 100%)';
                               if (phase === 'sunrise') return isActiveWeather ? 'linear-gradient(180deg, #3a4060 0%, #7a6858 35%, #9a8868 55%, #8a8878 75%, #7a7a72 100%)' : 'linear-gradient(180deg, #2a3a6e 0%, #c97355 35%, #e8a55a 55%, #f0c66e 75%, #fdd878 100%)';
-                              if (phase === 'morning') return isActiveWeather ? 'linear-gradient(180deg, #405868 0%, #506878 40%, #607888 70%, #5a7080 100%)' : 'linear-gradient(180deg, #4a8ec7 0%, #7bb8e0 40%, #b8d8ef 70%, #edc261 100%)';
-                              if (phase === 'day' && isActiveWeather) return 'linear-gradient(180deg, #4a5e72 0%, #5a6e82 40%, #6a7e92 100%)';
+                              if (phase === 'morning') return isActiveWeather ? 'linear-gradient(180deg, #6a7e90 0%, #7a8e9e 40%, #8a9eac 70%, #8096a4 100%)' : 'linear-gradient(180deg, #4a8ec7 0%, #7bb8e0 40%, #b8d8ef 70%, #edc261 100%)';
+                              if (phase === 'day' && isActiveWeather) return 'linear-gradient(180deg, #7a8e9e 0%, #8a9eac 40%, #96aab8 100%)';
                               if (phase === 'preSet') return isActiveWeather ? 'linear-gradient(180deg, #3a4858 0%, #4a5a6a 30%, #5a6570 60%, #4a5058 100%)' : 'linear-gradient(180deg, #5a95c8 0%, #8ab8d8 30%, #c9a96e 60%, #d4905a 100%)';
                               if (phase === 'sunset') return isActiveWeather ? 'linear-gradient(180deg, #2a3050 0%, #3a4558 25%, #4a5a68 45%, #4a5565 65%, #3a4550 100%)' : 'linear-gradient(180deg, #2d3a6e 0%, #8a4a5c 25%, #d4724a 45%, #ecc47e 65%, #f9a523 85%, #c44a20 100%)';
                               if (phase === 'dusk') return isActiveWeather ? 'linear-gradient(180deg, #101825 0%, #1a1a30 30%, #2a2a3a 55%, #3a3540 75%, #201820 100%)' : 'linear-gradient(180deg, #12183a 0%, #2a2050 30%, #5c3355 55%, #8a4a5c 75%, #3d2040 100%)';
