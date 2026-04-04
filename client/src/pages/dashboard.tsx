@@ -26007,8 +26007,7 @@ export default function Dashboard() {
                                       <span style={{ fontSize: '7px', fontWeight: 700, color: 'white', textTransform: 'uppercase', letterSpacing: '0.3px', position: 'relative', zIndex: 1, textShadow: '0 1px 2px rgba(0,0,0,0.3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
                                         {(() => { const raw = (task.title || '').replace(/^\[.*?\]\s*/, '').replace(/^online\s+/i, ''); const t = raw; const isModRead = /^(module|reading|module\s*(?:&|and)\s*reading)$/i.test(t.trim()); if (isModRead && task.courseName) { const cc = task.courseName.split(' - ')[0]?.trim(); if (cc) return `${cc} ${t}`; } return t; })()}
                                       </span>
-                                      {(() => { const dm = courseDeliveryModes[courseCode] || ''; return dm === 'virtual' ? <div style={{ width: '14px', height: '14px', borderRadius: '3px', background: 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative', zIndex: 1 }}><img src={zoomCamPath} alt="Zoom" style={{ width: '10px', height: '10px', objectFit: 'contain' }} data-testid={`zoom-icon-time-${task.id}`} /></div> : null; })()}
-                                      {(() => { const hasAtt = (task.attachments?.length && task.attachments.some((att: any) => { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; return !!url; })) || task.referenceLink; return hasAtt ? <div style={{ width: '14px', height: '14px', borderRadius: '3px', background: 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative', zIndex: 1 }}><img src={pdfAttachIconPath} alt="PDF" style={{ width: '10px', height: '10px', objectFit: 'contain' }} data-testid={`attachment-icon-time-${task.id}`} /></div> : null; })()}
+                                      
                                     </div>
                                   );
                                 })()}
@@ -26022,11 +26021,13 @@ export default function Dashboard() {
                                     style={{ width: '10px', height: '10px' }}
                                     data-testid={`checkbox-time-${task.id}`}
                                   />
+                                  {(() => { const hasAtt = (task.attachments?.length && task.attachments.some((att: any) => { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; return !!url; })) || task.referenceLink; return hasAtt ? <img src={pdfAttachIconPath} alt="PDF" style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0 }} data-testid={`attachment-icon-time-${task.id}`} /> : null; })()}
                                   <div style={{ flex: 1, minWidth: 0 }}>
                                     <div style={{ fontSize: '8px', fontWeight: 400, color: '#000000', lineHeight: 1.2, position: 'relative', top: '1px', fontStyle: 'italic' }}>
                                       {task.eventStartTime && task.eventEndTime ? `${formatTimeTo12Hour(task.eventStartTime)} - ${formatTimeTo12Hour(task.eventEndTime)}` : format(new Date(task.dueDate), "h:mm a")}
                                     </div>
                                   </div>
+                                  {(() => { const dm = courseDeliveryModes[courseCode] || ''; return dm === 'virtual' ? <img src={zoomCamPath} alt="Zoom" style={{ width: '14px', height: '14px', objectFit: 'contain', borderRadius: '50%', flexShrink: 0 }} data-testid={`zoom-icon-time-${task.id}`} /> : null; })()}
                                 </div>
                               </div>
                             );
@@ -26196,8 +26197,7 @@ export default function Dashboard() {
                             <span style={{ fontSize: '8px', fontWeight: 700, color: 'white', textTransform: 'uppercase', letterSpacing: '0.3px', position: 'relative', zIndex: 1, textShadow: '0 1px 2px rgba(0,0,0,0.3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
                               {(() => { const raw = (task.title || '').replace(/^\[.*?\]\s*/, '').replace(/^online\s+/i, ''); const t = raw; const isModRead = /^(module|reading|module\s*(?:&|and)\s*reading)$/i.test(t.trim()); if (isModRead && task.courseName) { const cc2 = task.courseName.split(' - ')[0]?.trim(); if (cc2) return `${cc2} ${t}`; } return t; })()}
                             </span>
-                            {(() => { const dm = courseDeliveryModes[courseCode] || ''; return dm === 'virtual' ? <div style={{ width: '16px', height: '16px', borderRadius: '3px', background: 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative', zIndex: 1 }}><img src={zoomCamPath} alt="Zoom" style={{ width: '11px', height: '11px', objectFit: 'contain' }} data-testid={`zoom-icon-multi-${task.id}`} /></div> : null; })()}
-                            {(() => { const hasAtt = (task.attachments?.length && task.attachments.some((att: any) => { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; return !!url; })) || task.referenceLink; return hasAtt ? <div style={{ width: '16px', height: '16px', borderRadius: '3px', background: 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative', zIndex: 1 }}><Paperclip className="h-2.5 w-2.5 text-gray-600" data-testid={`attachment-icon-multi-${task.id}`} /></div> : null; })()}
+                            
                           </div>
                         );
                       })()}
@@ -26209,11 +26209,13 @@ export default function Dashboard() {
                           className="h-3.5 w-3.5 shrink-0 border-white bg-white data-[state=checked]:bg-white data-[state=checked]:border-white data-[state=checked]:text-black"
                           onClick={(e) => e.stopPropagation()}
                         />
+                        {(() => { const hasAtt = (task.attachments?.length && task.attachments.some((att: any) => { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; return !!url; })) || task.referenceLink; return hasAtt ? <img src={pdfAttachIconPath} alt="PDF" style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0 }} data-testid={`attachment-icon-multi-${task.id}`} /> : null; })()}
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ fontSize: '9px', fontWeight: 400, color: '#000000', lineHeight: 1.2, position: 'relative', top: '1px', fontStyle: 'italic' }}>
                             {task.eventStartTime && task.eventEndTime ? `${formatTimeTo12Hour(task.eventStartTime)} - ${formatTimeTo12Hour(task.eventEndTime)}` : format(new Date(task.dueDate), "h:mm a")}
                           </div>
                         </div>
+                        {(() => { const dm = courseDeliveryModes[courseCode] || ''; return dm === 'virtual' ? <img src={zoomCamPath} alt="Zoom" style={{ width: '14px', height: '14px', objectFit: 'contain', borderRadius: '50%', flexShrink: 0 }} data-testid={`zoom-icon-multi-${task.id}`} /> : null; })()}
                       </div>
                     </div>
                   );
