@@ -27778,7 +27778,7 @@ export default function Dashboard() {
                         return (
                           <span key={i} className="text-[9px]" style={{ whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '3px' }}>
                             <span style={{ color: magColor, fontWeight: 700 }}>M{eq.mag.toFixed(1)}</span>
-                            <span style={{ color: 'rgba(255,255,255,0.7)' }}>{shortPlace}</span>
+                            <span style={{ color: '#ffffff' }}>{shortPlace}</span>
                             <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: '8px' }}>{agoStr}</span>
                             {i < Math.min(earthquakeData.length, 3) - 1 && <span style={{ color: 'rgba(255,255,255,0.15)', marginLeft: '3px' }}>|</span>}
                           </span>
