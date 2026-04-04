@@ -25014,7 +25014,7 @@ export default function Dashboard() {
                               />
                               <span 
                                 className="truncate cursor-pointer hover:opacity-80 pl-1 flex-1 min-w-0"
-                                style={{ fontWeight: 500, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
+                                style={{ fontWeight: 400, fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textShadow: 'none', WebkitTextStroke: '0', letterSpacing: '0.1px' }}
                                 onClick={() => setEditingTask(task)}
                               >
                                 {task.title?.replace(/^\[?[A-Z]{2,5}\d{3}\s*-?\s*/, '').replace(/^\]\s*/, '').replace(/^-\s*/, '') || task.title}
