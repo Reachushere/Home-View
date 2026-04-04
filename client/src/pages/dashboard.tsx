@@ -24461,12 +24461,12 @@ export default function Dashboard() {
                               return { offset: h, temp: closest.temp, code: closest.weatherCode };
                             });
                             return (
-                              <div className="absolute z-20 flex flex-col" style={{ top: 1, bottom: 1, right: 1, width: '32px', gap: '1px', pointerEvents: 'none' }} data-testid="today-hourly-forecast">
+                              <div className="absolute z-20 flex flex-col" style={{ top: 1, bottom: 1, left: 1, width: '32px', gap: '1px', pointerEvents: 'none' }} data-testid="today-hourly-forecast">
                                 {forecasts.map((fc, i) => (
-                                  <div key={i} className="flex flex-col items-center justify-center" style={{ flex: 1, background: 'rgba(0,0,0,0.35)', borderRadius: '3px', padding: '1px 0', minHeight: 0 }} data-testid={`hourly-forecast-${fc.offset}h`}>
-                                    <span style={{ fontSize: '6.5px', color: 'rgba(255,255,255,0.7)', fontWeight: 600, lineHeight: 1 }}>+{fc.offset}h</span>
+                                  <div key={i} className="flex flex-col items-center justify-center" style={{ flex: 1, background: '#ffffff', borderRadius: '3px', padding: '1px 0', minHeight: 0 }} data-testid={`hourly-forecast-${fc.offset}h`}>
+                                    <span style={{ fontSize: '6.5px', color: 'rgba(0,0,0,0.5)', fontWeight: 600, lineHeight: 1 }}>{fc.offset}h</span>
                                     <span style={{ fontSize: '9px', lineHeight: 1, margin: '1px 0' }}>{wmoMini[fc.code] || '🌤'}</span>
-                                    <span style={{ fontSize: '7.5px', color: '#fff', fontWeight: 700, lineHeight: 1 }}>{fc.temp}°</span>
+                                    <span style={{ fontSize: '7.5px', color: '#000000', fontWeight: 700, lineHeight: 1 }}>{fc.temp}°</span>
                                   </div>
                                 ))}
                               </div>
