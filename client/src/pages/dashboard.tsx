@@ -15858,12 +15858,7 @@ export default function Dashboard() {
         <div style={{ position: 'absolute', left: '50%', top: '6px', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', borderRadius: '50%', width: '20px', height: '20px' }}>
           <LayoutGrid className="h-[13px] w-[13px]" strokeWidth={2.5} style={{ color: 'rgba(255,255,255,0.8)', filter: 'drop-shadow(0 0 1px rgba(255,255,255,0.3))' }} />
         </div>
-        {weatherAlerts.length > 0 && (
-          <>
-            <span style={{ position: 'absolute', right: '100%', top: '50%', transform: 'translateY(calc(-50% - 6px))', marginRight: '6px', color: '#ffffff', fontSize: '10px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px', pointerEvents: 'none', whiteSpace: 'nowrap' }} data-testid="tab-weather-label">WEATHER</span>
-            <span style={{ position: 'absolute', left: '100%', top: '50%', transform: 'translateY(calc(-50% - 6px))', marginLeft: '6px', color: '#ffffff', fontSize: '10px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px', pointerEvents: 'none', whiteSpace: 'nowrap' }} data-testid="tab-alert-label">ALERT</span>
-          </>
-        )}
+        
       </div>
 
       {/* Share Button - fixed position, bottom right beside copyright */}
@@ -17434,11 +17429,16 @@ export default function Dashboard() {
         </button>
       </div>
 
-      {/* Weather Alert label above ticker, right of mic */}
+      {/* Weather / Alert labels on top of D2L ticker red line */}
       {weatherAlerts.length > 0 && (
-        <div className="fixed z-[9999]" style={{ bottom: '33px', left: `${calendarLeft + 17}px`, display: isSchoolCoursesDialogOpen ? 'none' : undefined, pointerEvents: 'none' }} data-testid="weather-alert-label">
-          <span style={{ color: '#ff0000', fontSize: '13px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 0 6px rgba(255,0,0,0.4)', letterSpacing: '0.5px' }}>WEATHER ALERT</span>
-        </div>
+        <>
+          <div className="fixed z-[9999]" style={{ top: '23px', left: `${calendarLeft + 17}px`, pointerEvents: 'none' }} data-testid="weather-alert-label-left">
+            <span style={{ color: '#ffffff', fontSize: '10px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px' }}>WEATHER</span>
+          </div>
+          <div className="fixed z-[9999]" style={{ top: '23px', right: `${calendarLeft + 17}px`, pointerEvents: 'none' }} data-testid="weather-alert-label-right">
+            <span style={{ color: '#ffffff', fontSize: '10px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px' }}>ALERT</span>
+          </div>
+        </>
       )}
 
       {/* News Ticker */}
