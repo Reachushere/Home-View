@@ -24619,8 +24619,8 @@ export default function Dashboard() {
                   { name: 'CPHL110 - Philosophy of Religion', color: '#2563EB', colorEnd: '#60A5FA', professor: '', professorEmail: '', startDate: '2026-05-05', endDate: '2026-06-16' },
                   { name: 'CHIS105 - Inventing Popular Culture', color: '#DC2626', colorEnd: '#F87171', professor: '', professorEmail: '', startDate: '2026-06-23', endDate: '2026-08-07' },
                 ];
-                const currentWeekStart = weekDays[0];
-                const currentWeekEnd = weekDays[6];
+                const currentWeekStart = weekStartDate;
+                const currentWeekEnd = weekEndDate;
                 const winterCourseDefs = [
                   { code: 'CPPA122', endDate: '2026-04-17' },
                   { code: 'CFNF400', endDate: '2026-04-17' },
@@ -24637,7 +24637,11 @@ export default function Dashboard() {
                 const springSummerSemesterStart = new Date('2026-05-04T00:00:00');
                 const springSummerSemesterEnd = new Date('2026-08-14T23:59:59');
                 const activeSpringSummerCourses = (currentWeekEnd >= springSummerSemesterStart && currentWeekStart <= springSummerSemesterEnd)
-                  ? springSummerCourses
+                  ? springSummerCourses.filter(sc => {
+                      const scStart = new Date(sc.startDate + 'T00:00:00');
+                      const scEnd = new Date(sc.endDate + 'T23:59:59');
+                      return currentWeekEnd >= scStart && currentWeekStart <= scEnd;
+                    })
                   : [];
                 const allDisplayCourses = [...winterCourses];
                 const defaultWinterCourses = [
@@ -25367,20 +25371,7 @@ export default function Dashboard() {
                               </div>
                               {task.showCountdownBar && task.showCountdownBarMain !== false && !task.isCompleted && (() => {
                                 const cToday = startOfDayET(new Date());
-                                const cDue = startOfDayET(new Date(task.dueDate));
-                                const cDaysLeft = Math.max(0, Math.round((cDue.getTime() - cToday.getTime()) / (1000*60*60*24)));
-                                if (cDue < cToday) return null;
-                                const cUrgency = cDaysLeft <= 1 ? '#ef4444' : cDaysLeft <= 3 ? '#f59e0b' : course.darkColor;
-                                const cStartDate = task.startDate ? startOfDayET(new Date(task.startDate)) : cToday;
-                                const cTotalSpan = Math.max(1, Math.round((cDue.getTime() - cStartDate.getTime()) / (1000*60*60*24)));
-                                const cElapsed = Math.max(0, Math.round((cToday.getTime() - cStartDate.getTime()) / (1000*60*60*24)));
-                                const cPct = Math.min(100, Math.round((cElapsed / cTotalSpan) * 100));
-                                return (
-                                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '3px', background: 'rgba(0,0,0,0.1)', borderRadius: '0 0 3px 3px', overflow: 'hidden' }} data-testid={`countdown-bar-${task.id}`}>
-                                    <div style={{ width: `${cPct}%`, height: '100%', background: cUrgency, borderRadius: '0 0 0 3px', transition: 'width 0.3s ease' }} />
-                                    <span style={{ position: 'absolute', right: '2px', top: '-1px', fontSize: '6px', fontWeight: 800, color: cUrgency, lineHeight: 1, textShadow: '0 0 2px rgba(255,255,255,0.8)' }}>{cDaysLeft}d</span>
-                                  </div>
-                                );
+                                return null;
                               })()}
                             </div>
                             </div>
