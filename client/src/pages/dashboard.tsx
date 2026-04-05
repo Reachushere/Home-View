@@ -18911,7 +18911,7 @@ export default function Dashboard() {
                           <img src={teacherWhiteIconPath} alt="Course" className="h-3.5 w-3.5" style={{ filter: 'brightness(1)' }} />
                           Course
                         </button>
-                        {(["module", "reading", "essay", "discussion", "poll", "quiz", "exam", "project", "reminder", "meeting", "scholarship", "other"] as const).map(type => {
+                        {(["module", "reading", "essay", "discussion", "poll", "quiz", "exam", "other", "reminder", "meeting", "scholarship", "project"] as const).map(type => {
                           const TypeIcon = iconMap[type] || FileText;
                           const typeColors: Record<string, { bg: string; border: string; hover: string }> = {
                             reading: { bg: 'rgba(56,130,255,0.25)', border: 'rgba(56,130,255,0.55)', hover: 'rgba(56,130,255,0.35)' },
@@ -18923,7 +18923,7 @@ export default function Dashboard() {
                             exam: { bg: 'rgba(220,30,30,0.3)', border: 'rgba(220,30,30,0.6)', hover: 'rgba(220,30,30,0.4)' },
                             quiz: { bg: 'rgba(180,160,40,0.25)', border: 'rgba(180,160,40,0.55)', hover: 'rgba(180,160,40,0.35)' },
                             reminder: { bg: 'rgba(0,210,240,0.25)', border: 'rgba(0,210,240,0.55)', hover: 'rgba(0,210,240,0.35)' },
-                            meeting: { bg: 'rgba(50,50,180,0.25)', border: 'rgba(50,50,180,0.55)', hover: 'rgba(50,50,180,0.35)' },
+                            meeting: { bg: 'rgba(80,100,220,0.3)', border: 'rgba(100,120,240,0.6)', hover: 'rgba(80,100,220,0.4)' },
                             scholarship: { bg: 'rgba(202,138,4,0.25)', border: 'rgba(202,138,4,0.55)', hover: 'rgba(202,138,4,0.35)' },
                             other: { bg: 'rgba(160,170,180,0.2)', border: 'rgba(160,170,180,0.5)', hover: 'rgba(160,170,180,0.3)' },
                           };
