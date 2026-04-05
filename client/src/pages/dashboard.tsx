@@ -27928,67 +27928,33 @@ export default function Dashboard() {
                     })()}
                   </div>
                   <div style={{ width: '5px', flexShrink: 0 }} />
-                  {/* Col 3: Mini calendar from today to due date */}
-                  <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0px' }} data-testid={`minical-${task.id}`}>
-                    {(() => {
-                      const todayDate = startOfDayET(new Date());
-                      const dueDate = startOfDayET(new Date(task.dueDate));
-                      const courseColor = getCourseColor(task.courseName);
-                      const totalDays = Math.max(1, Math.min(differenceInDays(dueDate, todayDate) + 1, 42));
-                      const cols = totalDays <= 7 ? totalDays : 7;
-                      const days: Date[] = [];
-                      for (let i = 0; i < totalDays; i++) {
-                        const d = new Date(todayDate);
-                        d.setDate(d.getDate() + i);
-                        days.push(d);
-                      }
-                      return (
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <button onClick={(e) => e.stopPropagation()} className="cursor-pointer hover:opacity-80" data-testid={`date-link-${task.id}`} style={{ padding: '1px' }}>
-                              <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 10px)`, gap: '1px' }}>
-                                {days.map((d, i) => {
-                                  const isToday2 = i === 0;
-                                  const isDue = differenceInDays(d, dueDate) === 0;
-                                  return (
-                                    <div key={i} style={{
-                                      width: '10px', height: '10px', borderRadius: '1px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                      background: isToday2 ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.08)',
-                                      border: isToday2 ? '1px solid rgba(255,255,255,0.5)' : '0.5px solid rgba(255,255,255,0.12)',
-                                      position: 'relative',
-                                    }}>
-                                      {isDue ? (
-                                        <span style={{ fontSize: '9px', lineHeight: 1, color: courseColor, filter: 'drop-shadow(0 0 2px ' + courseColor + ')' }}>★</span>
-                                      ) : (
-                                        <span style={{ fontSize: '6px', lineHeight: 1, color: isToday2 ? '#ffffff' : 'rgba(255,255,255,0.5)', fontWeight: isToday2 ? 700 : 400 }}>{d.getDate()}</span>
-                                      )}
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="end" side="top" style={{ zIndex: 10010 }} onOpenAutoFocus={(e) => e.preventDefault()}>
-                            <div className="p-2">
-                              <CalendarPicker
-                                mode="single"
-                                selected={new Date(task.dueDate)}
-                                onSelect={(date) => {
-                                  if (date) {
-                                    const old = new Date(task.dueDate);
-                                    date.setHours(old.getHours(), old.getMinutes(), old.getSeconds());
-                                    apiRequest("PATCH", `/api/tasks/${task.id}`, { dueDate: date.toISOString() }).then(() => {
-                                      queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
-                                    });
-                                  }
-                                }}
-                                defaultMonth={new Date(task.dueDate)}
-                              />
-                            </div>
-                          </PopoverContent>
-                        </Popover>
-                      );
-                    })()}
+                  {/* Col 3: Days count + date */}
+                  <div style={{ width: '36px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px' }}>
+                    <span className="text-[9px] font-bold" style={{ color: progressColor, lineHeight: 1 }}>{daysUntil}d</span>
+                    
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button className="text-[9px] font-bold hover:underline cursor-pointer" style={{ color: progressColor, lineHeight: 1, whiteSpace: 'nowrap' }} onClick={(e) => e.stopPropagation()} data-testid={`date-link-${task.id}`}>{format(new Date(task.dueDate), 'MMM d')}</button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="end" side="top" style={{ zIndex: 10010 }} onOpenAutoFocus={(e) => e.preventDefault()}>
+                        <div className="p-2">
+                          <CalendarPicker
+                            mode="single"
+                            selected={new Date(task.dueDate)}
+                            onSelect={(date) => {
+                              if (date) {
+                                const old = new Date(task.dueDate);
+                                date.setHours(old.getHours(), old.getMinutes(), old.getSeconds());
+                                apiRequest("PATCH", `/api/tasks/${task.id}`, { dueDate: date.toISOString() }).then(() => {
+                                  queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+                                });
+                              }
+                            }}
+                            defaultMonth={new Date(task.dueDate)}
+                          />
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   <div style={{ width: '3px', flexShrink: 0 }} />
                 </div>
@@ -28535,23 +28501,37 @@ export default function Dashboard() {
                             const tDueDate = new Date(t.dueDate);
                             const tDue = startOfDayET(tDueDate);
                             const nowDate = startOfDayET(new Date());
-                            const daysUntil = differenceInCalendarDays(tDueDate, new Date());
-                            const maxDays = 14;
-                            const progressPercent = Math.max(0, Math.min(100, (daysUntil / maxDays) * 100));
-                            const barWidth = Math.round((progressPercent / 100) * 56);
-                            const isToday = daysUntil <= 0;
-                            const isThroughFriday = !isToday && tDue <= thisWeekFridayEnd;
-                            const isNextWeek = tDue >= nextSaturday && tDue <= nextWeekEnd;
-                            const is2Weeks = tDue >= twoWeeksStart && tDue <= threeWeeksEnd;
-                            const barColor = isToday ? '#ef4444' : isThroughFriday ? '#eab308' : isNextWeek ? (daysUntil < 3 ? '#eab308' : '#22c55e') : is2Weeks ? (daysUntil < 3 ? '#eab308' : '#22c55e') : 'rgb(100, 100, 100)';
+                            const daysUntil = Math.max(0, differenceInCalendarDays(tDueDate, new Date()));
+                            const courseColor = getCourseColor(t.courseName);
+                            const totalDays = Math.max(1, Math.min(daysUntil + 1, 42));
+                            const cols = totalDays <= 7 ? totalDays : 7;
+                            const days: Date[] = [];
+                            for (let di = 0; di < totalDays; di++) {
+                              const dd = new Date(nowDate);
+                              dd.setDate(dd.getDate() + di);
+                              days.push(dd);
+                            }
                             return (
-                              <div className="flex-shrink-0 flex items-center justify-end gap-1" style={{ marginLeft: 'auto', width: '130px' }}>
-                                <div style={{ width: '56px', position: 'relative', height: '5px', flexShrink: 0 }}>
-                                  <div style={{ position: 'absolute', top: 0, right: 0, width: '56px', height: '5px', backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: '3px' }} />
-                                  <div className="rounded-full" style={{ position: 'absolute', top: 0, right: 0, width: `${barWidth}px`, height: '5px', backgroundColor: barColor, opacity: 0.9 }} />
+                              <div className="flex-shrink-0 flex items-center justify-end" style={{ marginLeft: 'auto' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 9px)`, gap: '1px' }}>
+                                  {days.map((dd, di) => {
+                                    const isFirst = di === 0;
+                                    const isDue = differenceInDays(dd, tDue) === 0;
+                                    return (
+                                      <div key={di} style={{
+                                        width: '9px', height: '9px', borderRadius: '1px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        background: isFirst ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.08)',
+                                        border: isFirst ? '1px solid rgba(255,255,255,0.5)' : '0.5px solid rgba(255,255,255,0.12)',
+                                      }}>
+                                        {isDue ? (
+                                          <span style={{ fontSize: '8px', lineHeight: 1, color: courseColor, filter: `drop-shadow(0 0 2px ${courseColor})` }}>★</span>
+                                        ) : (
+                                          <span style={{ fontSize: '5px', lineHeight: 1, color: isFirst ? '#ffffff' : 'rgba(255,255,255,0.5)', fontWeight: isFirst ? 700 : 400 }}>{dd.getDate()}</span>
+                                        )}
+                                      </div>
+                                    );
+                                  })}
                                 </div>
-                                <span style={{ fontSize: '8px', color: '#ffffff', fontWeight: 400, minWidth: '16px', textAlign: 'left' }}>{daysUntil}d</span>
-                                <span style={{ fontSize: '9px', color: dateColor, fontWeight: 400, minWidth: '42px', textAlign: 'right' }}>{dueStr}</span>
                               </div>
                             );
                           })()}
