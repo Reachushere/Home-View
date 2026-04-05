@@ -1084,6 +1084,7 @@ export default function Dashboard() {
   const [quickAddStep, setQuickAddStep] = useState(0);
   const [quickAddData, setQuickAddData] = useState({
     type: "",
+    taskLabel: "" as "" | "household" | "financial" | "personal" | "outside" | "other",
     title: "",
     courseName: "",
     dueDate: "",
@@ -18713,7 +18714,7 @@ export default function Dashboard() {
                               }}
                               onMouseEnter={(e) => { e.currentTarget.style.background = tc.hover; }}
                               onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = tc.bg; }}
-                              onClick={() => { if (type === 'scholarship') { setIsQuickAddOpen(false); setTimeout(() => setIsScholarshipsOpen(true), 50); } else { setQuickAddData(p => ({ ...p, type })); setQuickAddStep(1); } }}
+                              onClick={() => { if (type === 'scholarship') { setIsQuickAddOpen(false); setTimeout(() => setIsScholarshipsOpen(true), 50); } else { setQuickAddData(p => ({ ...p, type, taskLabel: '' })); } }}
                               data-testid={`quick-add-type-${type}`}
                             >
                               <TypeIcon className="h-3.5 w-3.5" />
@@ -18755,6 +18756,44 @@ export default function Dashboard() {
                           Project
                         </button>
                       </div>
+                      {quickAddData.type && (
+                        <div className="mt-3 pt-3 border-t border-white/15">
+                          <p className="text-white/50 text-[10px] text-center mb-2">Label (optional)</p>
+                          <div className="grid grid-cols-3 gap-1.5">
+                            {([
+                              { key: 'household' as const, label: 'Household', icon: '🏠', bg: 'rgba(245,158,11,0.2)', border: 'rgba(245,158,11,0.5)', hover: 'rgba(245,158,11,0.3)' },
+                              { key: 'financial' as const, label: 'Financial', icon: '💰', bg: 'rgba(16,185,129,0.2)', border: 'rgba(16,185,129,0.5)', hover: 'rgba(16,185,129,0.3)' },
+                              { key: 'personal' as const, label: 'Personal', icon: '👤', bg: 'rgba(139,92,246,0.2)', border: 'rgba(139,92,246,0.5)', hover: 'rgba(139,92,246,0.3)' },
+                              { key: 'outside' as const, label: 'Outside', icon: '🌿', bg: 'rgba(34,197,94,0.2)', border: 'rgba(34,197,94,0.5)', hover: 'rgba(34,197,94,0.3)' },
+                              { key: 'other' as const, label: 'Other', icon: '📌', bg: 'rgba(160,170,180,0.15)', border: 'rgba(160,170,180,0.4)', hover: 'rgba(160,170,180,0.25)' },
+                            ]).map(lbl => (
+                              <button
+                                key={lbl.key}
+                                className="px-2 py-2 rounded-lg text-[11px] text-left transition-all duration-200 flex items-center gap-1.5 text-white"
+                                style={{
+                                  background: quickAddData.taskLabel === lbl.key ? lbl.hover : lbl.bg,
+                                  border: `1px solid ${quickAddData.taskLabel === lbl.key ? 'rgba(255,255,255,0.4)' : lbl.border}`,
+                                }}
+                                onMouseEnter={(e) => { e.currentTarget.style.background = lbl.hover; }}
+                                onMouseLeave={(e) => { if (quickAddData.taskLabel !== lbl.key) e.currentTarget.style.background = lbl.bg; }}
+                                onClick={() => { setQuickAddData(p => ({ ...p, taskLabel: lbl.key })); setQuickAddStep(1); }}
+                                data-testid={`quick-add-label-${lbl.key}`}
+                              >
+                                <span className="text-[13px]">{lbl.icon}</span>
+                                <span>{lbl.label}</span>
+                              </button>
+                            ))}
+                          </div>
+                          <button
+                            className="w-full mt-1.5 px-2 py-1.5 rounded-lg text-[10px] text-white/40 hover:text-white/60 transition-colors"
+                            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+                            onClick={() => { setQuickAddData(p => ({ ...p, taskLabel: '' })); setQuickAddStep(1); }}
+                            data-testid="quick-add-label-skip"
+                          >
+                            Skip — no label
+                          </button>
+                        </div>
+                      )}
                       <div className="border-t border-white/15 mt-3 pt-3">
                         <input
                           type="file"
@@ -19614,6 +19653,12 @@ export default function Dashboard() {
                           <span className="text-white/50">Type</span>
                           <span className="text-white">{quickAddData.type.charAt(0).toUpperCase() + quickAddData.type.slice(1)}</span>
                         </div>
+                        {quickAddData.taskLabel && (
+                          <div className="flex justify-between text-[11px]">
+                            <span className="text-white/50">Label</span>
+                            <span className="text-white">{quickAddData.taskLabel.charAt(0).toUpperCase() + quickAddData.taskLabel.slice(1)}</span>
+                          </div>
+                        )}
                         <div className="flex justify-between text-[11px]">
                           <span className="text-white/50">Title</span>
                           <span className="text-white truncate ml-4">{quickAddData.title}</span>
@@ -19803,7 +19848,7 @@ export default function Dashboard() {
                             startDate,
                             priority: quickAddData.priority,
                             weekNumber: selectedWeek,
-                            description: quickAddData.description || "",
+                            description: (quickAddData.taskLabel ? `[Label: ${quickAddData.taskLabel.charAt(0).toUpperCase() + quickAddData.taskLabel.slice(1)}]\n` : '') + (quickAddData.description || ""),
                             reminder1: quickAddData.reminder1,
                             reminder2: quickAddData.reminder2,
                             reminder3: quickAddData.reminder3,
