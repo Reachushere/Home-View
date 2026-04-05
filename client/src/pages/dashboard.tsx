@@ -26530,6 +26530,10 @@ export default function Dashboard() {
               {/* Other Tasks Summary Row - black background, only shows tasks with type "other" */}
               {(() => {
                 const activeCourseNames = filteredCourses.map(c => c.name.split(' - ')[0]?.toUpperCase()).filter(Boolean);
+                const expectedCourseCount = 3;
+                const renderedCourseCount = courseRowRects.length;
+                const missingRows = Math.max(0, expectedCourseCount - renderedCourseCount);
+                const courseRowH = 3 * 20 + 2 * 2 + 4;
                 const otherTasks = allTasks?.filter(task => {
                   if (task.type !== 'other' && task.type !== 'meeting' && task.type !== 'reminder') return false;
                   if (task.type === 'meeting' && task.courseName) return false;
@@ -26568,7 +26572,8 @@ export default function Dashboard() {
                   }
                   return false;
                 });
-                const otherRowHeight = Math.max(57, gridSizes.otherRowHeight || 57);
+                const baseOtherRowHeight = Math.max(57, gridSizes.otherRowHeight || 57);
+                const otherRowHeight = baseOtherRowHeight + missingRows * courseRowH;
                 return (
                   <div ref={otherRowRef} className="grid w-full flex-shrink-0 relative z-[43] group/otherrow" style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${otherRowHeight}px` }}>
                     <div className="px-1 py-0.5 text-[8px] font-[785] tracking-wide flex items-center justify-center text-white/80 relative cursor-pointer hover:brightness-110" onClick={() => setOtherRowEditOpen(true)} style={{ background: (() => { const stops = otherRowColors.labelStops ? (() => { try { return JSON.parse(otherRowColors.labelStops); } catch { return []; } })() : []; const allStops = [{ position: 0, color: otherRowColors.labelStart }, ...stops, { position: 100, color: otherRowColors.labelEnd }]; return `linear-gradient(180deg, ${allStops.map((s: any) => `${s.color} ${s.position}%`).join(', ')})`; })(), borderBottom: `1px dotted ${otherRowColors.borderColor || '#999'}` }} data-testid="other-row-label">
@@ -29503,7 +29508,8 @@ export default function Dashboard() {
             const hwSection = homeworkSectionRef.current;
             if (!hwSection) return null;
             const hwRect = hwSection.getBoundingClientRect();
-            const otherRowHeight = Math.max(57, gridSizes.otherRowHeight || 57);
+            const baseOtherH3 = Math.max(57, gridSizes.otherRowHeight || 57);
+            const otherRowHeight = baseOtherH3 + 3 * (3 * 20 + 2 * 2 + 4);
             const savedBottom = lastKnownOtherBottomRef.current;
             const fallbackBottom = (() => {
               const otherTop = otherRowRect.top - hwRect.top;
@@ -29932,7 +29938,9 @@ export default function Dashboard() {
               if (lastRect) {
                 const upcomingTopLocal = calendarBorderTop || (calendarTop + 15);
                 const otherTop = lastRect.top + lastRect.height - upcomingTopLocal - firstRowOffset;
-                const otherRowHeight = Math.max(57, gridSizes.otherRowHeight || 57);
+                const baseOtherRowH = Math.max(57, gridSizes.otherRowHeight || 57);
+                const missingCourseRows2 = Math.max(0, 3 - courseRowRects.length);
+                const otherRowHeight = baseOtherRowH + missingCourseRows2 * (3 * 20 + 2 * 2 + 4);
                 lastKnownOtherBottomRef.current = otherTop + otherRowHeight;
                 rows.push(
                   <div key="other-progress-row" style={{
@@ -29991,7 +29999,7 @@ export default function Dashboard() {
 
             return rows;
           })()}
-          <div className="flex-1 flex flex-col" style={{ paddingLeft: '0px', paddingRight: '0px', position: 'absolute', left: 0, right: 0, top: (() => { if (courseRowRects.length > 0) { const lastRect = courseRowRects[courseRowRects.length - 1]; if (lastRect) { const upcomingTopLocal = calendarBorderTop || (calendarTop + 15); const otherTop = lastRect.top + lastRect.height - upcomingTopLocal; const otherRowH = Math.max(57, gridSizes.otherRowHeight || 57); return `${otherTop + otherRowH - 2}px`; } } if (lastKnownOtherBottomRef.current) return `${lastKnownOtherBottomRef.current - 2}px`; return '261px'; })(), bottom: '0px', minHeight: 0, paddingBottom: '0px', overflow: 'hidden', zIndex: 2, display: 'flex', flexDirection: 'column' as const }}>
+          <div className="flex-1 flex flex-col" style={{ paddingLeft: '0px', paddingRight: '0px', position: 'absolute', left: 0, right: 0, top: (() => { if (courseRowRects.length > 0) { const lastRect = courseRowRects[courseRowRects.length - 1]; if (lastRect) { const upcomingTopLocal = calendarBorderTop || (calendarTop + 15); const otherTop = lastRect.top + lastRect.height - upcomingTopLocal; const baseOtherH = Math.max(57, gridSizes.otherRowHeight || 57); const missingCourseRows = Math.max(0, 3 - courseRowRects.length); const otherRowH = baseOtherH + missingCourseRows * (3 * 20 + 2 * 2 + 4); return `${otherTop + otherRowH - 2}px`; } } if (lastKnownOtherBottomRef.current) return `${lastKnownOtherBottomRef.current - 2}px`; return '261px'; })(), bottom: '0px', minHeight: 0, paddingBottom: '0px', overflow: 'hidden', zIndex: 2, display: 'flex', flexDirection: 'column' as const }}>
           <div style={{ width: '100%', height: '15px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', flexShrink: 0, position: 'relative', zIndex: 3, border: '0.5px solid rgba(255,255,255,0.15)' }}>
             <span style={{ fontSize: '10px', fontWeight: 500, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
           </div>
