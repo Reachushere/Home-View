@@ -28818,14 +28818,48 @@ export default function Dashboard() {
                     <span className="text-[10px] italic" style={{ color: 'rgba(255,255,255,0.4)', textAlign: 'center', pointerEvents: 'none' }}>No upcoming items</span>
                   )}
                   {otherProgressTasks.map(t => {
-                    const dueStr = format(new Date(t.dueDate), 'MMM d');
+                    const tDueDate = new Date(t.dueDate);
+                    const tDue = startOfDayET(tDueDate);
+                    const nowDate = startOfDayET(new Date());
+                    const daysUntil = Math.max(0, differenceInCalendarDays(tDueDate, new Date()));
+                    const otherColor = otherRowColors.borderColor || '#6b7280';
+                    const totalDays = Math.max(1, Math.min(daysUntil + 1, 42));
+                    const cols = totalDays <= 7 ? totalDays : 7;
+                    const days: Date[] = [];
+                    for (let di = 0; di < totalDays; di++) {
+                      const dd = new Date(nowDate);
+                      dd.setDate(dd.getDate() + di);
+                      days.push(dd);
+                    }
                     return (
-                      <div key={t.id} className="flex items-center gap-1.5 min-w-0 cursor-pointer hover:brightness-125" style={{ lineHeight: '1.3', marginBottom: '1px' }}
+                      <div key={t.id} className="flex items-center gap-1.5 min-w-0 cursor-pointer hover:brightness-125" style={{ lineHeight: '1.5', marginBottom: '0px', padding: '1px 0', marginTop: '1px' }}
                         onClick={() => setEditingTask(t)}
+                        onMouseEnter={() => setHoveredCountdownTaskIdDebounced(t.id)}
+                        onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                       >
                         <span style={{ fontSize: '10px', color: '#ffffff', flexShrink: 0 }}>•</span>
-                        <span className="truncate" style={{ fontSize: '9px', color: '#ffffff', fontWeight: 400, flex: 1, minWidth: 0 }}>{t.title}</span>
-                        <span style={{ fontSize: '9px', color: '#ffffff', fontWeight: 400, minWidth: '42px', textAlign: 'right' }}>{dueStr}</span>
+                        <span className="truncate" style={{ fontSize: '9px', color: '#ffffff', textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400, flex: 1, minWidth: 0 }}>{t.title}</span>
+                        <div className="flex-shrink-0 flex items-center justify-end" style={{ marginLeft: 'auto' }}>
+                          <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 9px)`, gap: '1px' }}>
+                            {days.map((dd, di) => {
+                              const isFirst = di === 0;
+                              const isDue = differenceInDays(dd, tDue) === 0;
+                              return (
+                                <div key={di} style={{
+                                  width: '9px', height: '9px', borderRadius: '1px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                  background: isFirst ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.08)',
+                                  border: isFirst ? '1px solid rgba(255,255,255,0.5)' : '0.5px solid rgba(255,255,255,0.12)',
+                                }}>
+                                  {isDue ? (
+                                    <span style={{ fontSize: '8px', lineHeight: 1, color: otherColor, filter: `drop-shadow(0 0 2px ${otherColor})` }}>★</span>
+                                  ) : (
+                                    <span style={{ fontSize: '5px', lineHeight: 1, color: isFirst ? '#ffffff' : 'rgba(255,255,255,0.5)', fontWeight: isFirst ? 700 : 400 }}>{dd.getDate()}</span>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
                       </div>
                     );
                   })}
