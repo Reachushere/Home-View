@@ -29218,7 +29218,7 @@ export default function Dashboard() {
           <div style={{ width: '100%', height: '15px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', flexShrink: 0, position: 'relative', zIndex: 3, border: '0.5px solid rgba(255,255,255,0.15)' }}>
             <span style={{ fontSize: '10px', fontWeight: 500, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
           </div>
-          <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }} ref={homeworkScrollRef} onScroll={() => { setHwIsScrolling(true); if (hwScrollTimerRef.current) clearTimeout(hwScrollTimerRef.current); hwScrollTimerRef.current = setTimeout(() => setHwIsScrolling(false), 300); const sc = homeworkScrollRef.current; if (sc) { setHwScrolledDown(sc.scrollTop > 5); const sections = sc.querySelectorAll('[data-semester-label]'); let bestLabel: string | null = null; let bestDist = Infinity; const containerTop = sc.getBoundingClientRect().top; sections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestDist) { bestDist = dist; bestLabel = el.getAttribute('data-semester-label') || null; } }); if (bestLabel) setHwVisibleSemLabel(bestLabel); const hwSections = sc.querySelectorAll('[data-homework-section]'); let bestSec: string | null = null; let bestSecDist = Infinity; hwSections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestSecDist) { bestSecDist = dist; bestSec = el.getAttribute('data-homework-section') || null; } }); setHwVisibleSection(bestSec); if (timelineSyncRef.current && bestSec) { if (timelineSyncDebounceRef.current) clearTimeout(timelineSyncDebounceRef.current); timelineSyncDebounceRef.current = setTimeout(() => { const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : null; const rwStart = semesterSettings?.readingWeekStart || null; let targetWeek: number | null = null; const idxMap: Record<string, number> = { today: 0, thisweek: 0, nextweek: 1, twoweeks: 2, threeweeks: 3 }; if (bestSec in idxMap) { const tlEntry = hwWeeklyTimeline[idxMap[bestSec]]; if (tlEntry && semStart) { const wk = getWeekNumber(tlEntry.weekStart, semStart, rwStart); targetWeek = Math.max(1, Math.min(wk, LAST_WEEK)); } } else { const secEl = sc.querySelector(`[data-homework-section="${bestSec}"]`); const secSemLabel = secEl?.getAttribute('data-semester-label') || ''; const currentSemLabel = hwWeeklyTimeline[0]?.semLabel || ''; if (secSemLabel === currentSemLabel) { const wkMatch = bestSec.match(/wk(\d+)/); if (wkMatch) targetWeek = Math.max(1, Math.min(parseInt(wkMatch[1]), LAST_WEEK)); else if (bestSec.match(/^sem-/)) targetWeek = 1; } } if (targetWeek !== null && targetWeek >= 1 && targetWeek <= LAST_WEEK && targetWeek !== selectedWeekRef.current) { startTransition(() => setSelectedWeek(targetWeek!)); } }, 200); } } }}>
+          <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }} ref={homeworkScrollRef} onScroll={() => { setHwIsScrolling(true); if (hwScrollTimerRef.current) clearTimeout(hwScrollTimerRef.current); hwScrollTimerRef.current = setTimeout(() => setHwIsScrolling(false), 300); const sc = homeworkScrollRef.current; if (sc) { setHwScrolledDown(sc.scrollTop > 5); const sections = sc.querySelectorAll('[data-semester-label]'); let bestLabel: string | null = null; let bestDist = Infinity; const containerTop = sc.getBoundingClientRect().top; sections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestDist) { bestDist = dist; bestLabel = el.getAttribute('data-semester-label') || null; } }); if (bestLabel) setHwVisibleSemLabel(bestLabel); const hwSections = sc.querySelectorAll('[data-homework-section]'); let bestSec: string | null = null; let bestSecDist = Infinity; hwSections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestSecDist) { bestSecDist = dist; bestSec = el.getAttribute('data-homework-section') || null; } }); setHwVisibleSection(bestSec); if (timelineSyncRef.current && bestSec) { if (timelineSyncDebounceRef.current) clearTimeout(timelineSyncDebounceRef.current); timelineSyncDebounceRef.current = setTimeout(() => { const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : null; const rwStart = semesterSettings?.readingWeekStart || null; if (!semStart) return; let targetWeek: number | null = null; const bestEl = sc.querySelector(`[data-homework-section="${bestSec}"]`); const weekStartAttr = bestEl?.getAttribute('data-week-start'); if (weekStartAttr) { const wk = getWeekNumber(new Date(weekStartAttr), semStart, rwStart); if (wk >= 1) targetWeek = wk; } if (targetWeek !== null && targetWeek >= 1 && targetWeek !== selectedWeekRef.current) { startTransition(() => setSelectedWeek(targetWeek!)); } }, 200); } } }}>
             {isLoading ? (
               <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
             ) : (
@@ -29228,7 +29228,7 @@ export default function Dashboard() {
                   data-testid="hw-group-bar-handle"
                 />
                 {/* Today Section */}
-                <div data-homework-section="today" style={{ display: 'flex', flexDirection: 'column', gap: '0px', padding: dueTodayTasks.length === 0 ? '0px 0 5px 0' : '0px 0 4px 0', marginTop: '3px' }}>
+                <div data-homework-section="today" data-week-start={hwWeeklyTimeline[0]?.weekStart?.toISOString()} style={{ display: 'flex', flexDirection: 'column', gap: '0px', padding: dueTodayTasks.length === 0 ? '0px 0 5px 0' : '0px 0 4px 0', marginTop: '3px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <span className="text-[12px]" style={{ color: '#FFFF00' }}>Today</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', position: 'relative', top: '0px' }}>({dueTodayTasks.length})</span>
@@ -29338,7 +29338,7 @@ export default function Dashboard() {
 
                 {/* This Week Section - hidden on Fridays since everything shifts to today */}
                 {new Date().getDay() === 5 ? null : (<>
-                <div data-homework-section="thisweek" data-semester-label={hwWeeklyTimeline[0]?.semLabel || ''} style={{ marginTop: '15px', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '5px' }}>
+                <div data-homework-section="thisweek" data-semester-label={hwWeeklyTimeline[0]?.semLabel || ''} data-week-start={hwWeeklyTimeline[0]?.weekStart?.toISOString()} style={{ marginTop: '15px', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '5px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', marginBottom: '0px', position: 'relative' }}>
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', whiteSpace: 'nowrap', flexShrink: 0 }}>{hwWeeklyTimeline[0]?.label || 'Week'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', flexShrink: 0, minWidth: '20px' }}>({dueTomorrowTasks.length})</span>
@@ -29533,7 +29533,7 @@ export default function Dashboard() {
                 </div>
                 </>)}
                 {/* Next Week Section */}
-                <div data-homework-section="nextweek" data-semester-label={hwWeeklyTimeline[1]?.semLabel || ''} style={{ marginTop: '15px', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '5px' }}>
+                <div data-homework-section="nextweek" data-semester-label={hwWeeklyTimeline[1]?.semLabel || ''} data-week-start={hwWeeklyTimeline[1]?.weekStart?.toISOString()} style={{ marginTop: '15px', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '5px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', marginBottom: '0px', position: 'relative' }}>
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', flexShrink: 0 }}>{hwWeeklyTimeline[1]?.label || 'Week'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', flexShrink: 0, minWidth: '20px' }}>({dueNextWeekTasks.length})</span>
@@ -29712,7 +29712,7 @@ export default function Dashboard() {
                 )}
                 </div>
                 {/* 2 Weeks Section */}
-                <div data-homework-section="twoweeks" data-semester-label={hwWeeklyTimeline[2]?.semLabel || ''} style={{ marginTop: '15px', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '5px' }}>
+                <div data-homework-section="twoweeks" data-semester-label={hwWeeklyTimeline[2]?.semLabel || ''} data-week-start={hwWeeklyTimeline[2]?.weekStart?.toISOString()} style={{ marginTop: '15px', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '5px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', marginBottom: '0px' }}>
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', flexShrink: 0 }}>{hwWeeklyTimeline[2]?.label || 'Two weeks'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', flexShrink: 0, minWidth: '20px' }}>({dueTwoWeeksTasks.length})</span>
@@ -29888,7 +29888,7 @@ export default function Dashboard() {
                 )}
                 </div>
                 {/* Beyond Section (Week 12+) */}
-                <div data-homework-section="threeweeks" />
+                <div data-homework-section="threeweeks" data-week-start={hwWeeklyTimeline[3]?.weekStart?.toISOString()} />
                 {(() => {
                   const beyondTimeline = hwWeeklyTimeline.slice(3);
                   const tasksByWeek = new Map<number, typeof dueBeyondTasks>();
@@ -29936,7 +29936,7 @@ export default function Dashboard() {
                           return undefined;
                         })();
                         return (
-                          <div key={group.key} data-semester-label={tlEntry.semLabel || ''} {...(sectionId ? { 'data-homework-section': sectionId } : {})}>
+                          <div key={group.key} data-semester-label={tlEntry.semLabel || ''} data-week-start={tlEntry.weekStart?.toISOString()} {...(sectionId ? { 'data-homework-section': sectionId } : {})}>
                           {groupIdx === 0 && (() => {
                             const prevYear = hwWeeklyTimeline[3]?.weekStart?.getFullYear();
                             const showYearSep = prevYear && tlEntry.weekStart.getFullYear() !== prevYear;
