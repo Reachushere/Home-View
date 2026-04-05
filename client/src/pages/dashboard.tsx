@@ -28758,7 +28758,7 @@ export default function Dashboard() {
             </div>
             <div ref={homeworkSpacerRef} style={{ position: 'absolute', right: '4px', top: 0, width: '0px', height: '100%', minHeight: '14px', backgroundColor: 'transparent' }} />
           </div>
-          {courseRowRects.length === 0 && (
+          {courseRowRects.length === 0 && !otherRowRect && (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px 10px', minHeight: '60px' }}>
               <span className="text-[11px] text-white/50 italic text-center" data-testid="text-no-courses">No active courses this week</span>
             </div>
@@ -28770,6 +28770,9 @@ export default function Dashboard() {
             const hwRect = hwSection.getBoundingClientRect();
             const otherTop = otherRowRect.top - hwRect.top;
             const otherRowHeight = otherRowRect.height;
+            const otherBottom = otherTop + otherRowHeight;
+            const expandedTop = 45;
+            const expandedHeight = otherBottom - expandedTop;
             const weekStart = weekDays.length > 0 ? startOfDayET(weekDays[0]) : null;
             const weekEnd = weekDays.length > 6 ? startOfDayET(addDays(weekDays[6], 1)) : null;
             const otherProgressTasks = (allTasks || []).filter(t => {
@@ -28792,10 +28795,10 @@ export default function Dashboard() {
             return (
               <div key="other-progress-row-standalone" style={{
                 position: 'absolute',
-                top: `${otherTop}px`,
+                top: `${expandedTop}px`,
                 left: 0,
                 right: 0,
-                height: `${otherRowHeight}px`,
+                height: `${expandedHeight}px`,
                 zIndex: 41,
                 borderTop: `1.5px dotted ${otherRowColors.borderColor}`,
                 borderBottom: `1.5px dotted ${otherRowColors.borderColor}`,
