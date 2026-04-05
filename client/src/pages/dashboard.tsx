@@ -24576,7 +24576,7 @@ export default function Dashboard() {
                             if (isTodaySat) return day.getDay() !== 6;
                             return todayIdx >= 0 && idx > todayIdx && day.getDay() !== 6;
                           })() && (
-                            <div className="absolute z-20" style={{ padding: '0', top: '8px', left: '48px', right: 0, textAlign: 'left' }}>
+                            <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '8px' }}>
                               <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`Week ${selectedWeek}`}</span>
                             </div>
                           )}
@@ -24636,24 +24636,19 @@ export default function Dashboard() {
                               const isSunsetText = minsT >= ssMinT - 60 && minsT < ssMinT + 60;
                               const isDarkWeather = isNightText || isSunriseText || isSunsetText || (weatherData && weatherData.code >= 51);
                             return (
-                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '36px' }}>
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', alignSelf: 'stretch', padding: '2px 0' }}>
-                                      <div className="text-[10px] font-medium tracking-wide" style={{ color: isDarkWeather ? '#ffffff' : '#000000', lineHeight: 1 }}>
-                                        {dayName}
-                                      </div>
-                                      <div className="text-[8px] font-bold tracking-wide" style={{ color: isDarkWeather ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.5)', lineHeight: 1, textTransform: 'uppercase' }}>
-                                        {format(day, 'MMM')}
-                                      </div>
+                                <>
+                                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', alignSelf: 'stretch', padding: '2px 0', marginLeft: '36px' }}>
+                                    <div className="text-[10px] font-medium tracking-wide" style={{ color: isDarkWeather ? '#ffffff' : '#000000', lineHeight: 1 }}>
+                                      {dayName}
                                     </div>
-                                    <div style={{ fontSize: '25px', fontWeight: 600, color: isDarkWeather ? '#ffffff' : '#000000', lineHeight: 1 }}>
-                                      {dayNum}
+                                    <div className="text-[8px] font-bold tracking-wide" style={{ color: isDarkWeather ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.5)', lineHeight: 1, textTransform: 'uppercase' }}>
+                                      {format(day, 'MMM')}
                                     </div>
                                   </div>
-                                  <div style={{ fontSize: '8px', fontWeight: 400, color: isDarkWeather ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.5)', lineHeight: 1, letterSpacing: '0.5px', marginTop: '2px' }}>
-                                    {`Week ${selectedWeek}`}
+                                  <div style={{ fontSize: '25px', fontWeight: 600, color: isDarkWeather ? '#ffffff' : '#000000', lineHeight: 1 }}>
+                                    {dayNum}
                                   </div>
-                                </div>
+                                </>
                               );
                             })() : (
                               <>
