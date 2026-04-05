@@ -3878,6 +3878,13 @@ export default function Dashboard() {
         parsed.timeSlotHeights = defaultHeights;
       }
       [0,1,2,3,4,5,6,21,22,23].forEach(i => { if (parsed.timeSlotHeights[i] < 36) parsed.timeSlotHeights[i] = 36; });
+      const daytimeMin = parsed.timeSlotHeights.filter((_: number, i: number) => i >= 7 && i <= 20).filter((h: number) => h >= 30);
+      if (daytimeMin.length > 0) {
+        const medianH = daytimeMin.sort((a: number, b: number) => a - b)[Math.floor(daytimeMin.length / 2)];
+        for (let i = 7; i <= 20; i++) {
+          if (parsed.timeSlotHeights[i] < medianH * 0.7) parsed.timeSlotHeights[i] = medianH;
+        }
+      }
       if (!parsed.timeSlotHeight) parsed.timeSlotHeight = 36;
       if (!parsed.courseRowHeight) parsed.courseRowHeight = 48;
       if (!parsed.otherRowHeight || parsed.otherRowHeight < 57) parsed.otherRowHeight = 57;
@@ -3895,6 +3902,13 @@ export default function Dashboard() {
         parsed.timeSlotHeights = defaultHeights;
       }
       [0,1,2,3,4,5,6,21,22,23].forEach(i => { if (parsed.timeSlotHeights[i] < 36) parsed.timeSlotHeights[i] = 36; });
+      const daytimeMin2 = parsed.timeSlotHeights.filter((_: number, i: number) => i >= 7 && i <= 20).filter((h: number) => h >= 30);
+      if (daytimeMin2.length > 0) {
+        const medianH2 = daytimeMin2.sort((a: number, b: number) => a - b)[Math.floor(daytimeMin2.length / 2)];
+        for (let i = 7; i <= 20; i++) {
+          if (parsed.timeSlotHeights[i] < medianH2 * 0.7) parsed.timeSlotHeights[i] = medianH2;
+        }
+      }
       if (!parsed.timeSlotHeight) parsed.timeSlotHeight = 36;
       if (!parsed.courseRowHeight) parsed.courseRowHeight = 48;
       if (!parsed.otherRowHeight || parsed.otherRowHeight < 57) parsed.otherRowHeight = 57;
@@ -28086,33 +28100,123 @@ export default function Dashboard() {
               w2027Start: new Date(2027, 0, 11),
             };
             const totalTabSlots = 14;
-            const currentSemesterWeeks = 13;
-            const semTabs: Array<{ id: string; topText: string; bottomText: string; semLabel: string; scrollTarget: string; colors: [string, string] }> = [];
-            semTabs.push({ id: 'wk-current', topText: String(Math.min(selectedWeek, currentSemesterWeeks)), bottomText: 'W', semLabel: hwWeeklyTimeline[0]?.semLabel || 'Winter 2026', scrollTarget: 'thisweek', colors: getYearColor(2026) });
-            if (selectedWeek + 1 <= currentSemesterWeeks) {
-              semTabs.push({ id: 'wk-next', topText: String(selectedWeek + 1), bottomText: 'W', semLabel: hwWeeklyTimeline[1]?.semLabel || 'Winter 2026', scrollTarget: 'nextweek', colors: getYearColor(2026) });
+            const maxWeeksPerSem = 13;
+            const maxSSWeeks = 14;
+            const lastYear = 2029;
+            const semDatesAll: Record<number, { wStart: Date; wEnd: Date; ssStart: Date; ssEnd: Date; fStart: Date; fEnd: Date }> = {
+              2026: { wStart: new Date(2026, 0, 12), wEnd: new Date(2026, 3, 10), ssStart: new Date(2026, 4, 4), ssEnd: new Date(2026, 7, 7), fStart: new Date(2026, 8, 8), fEnd: new Date(2026, 11, 11) },
+              2027: { wStart: new Date(2027, 0, 11), wEnd: new Date(2027, 3, 9), ssStart: new Date(2027, 4, 3), ssEnd: new Date(2027, 7, 6), fStart: new Date(2027, 8, 7), fEnd: new Date(2027, 11, 10) },
+              2028: { wStart: new Date(2028, 0, 10), wEnd: new Date(2028, 3, 7), ssStart: new Date(2028, 4, 1), ssEnd: new Date(2028, 7, 4), fStart: new Date(2028, 8, 5), fEnd: new Date(2028, 11, 8) },
+              2029: { wStart: new Date(2029, 0, 8), wEnd: new Date(2029, 3, 6), ssStart: new Date(2029, 4, 7), ssEnd: new Date(2029, 7, 10), fStart: new Date(2029, 8, 10), fEnd: new Date(2029, 11, 14) },
+            };
+            type SemTab = { id: string; topText: string; bottomText: string; semLabel: string; scrollTarget: string; colors: [string, string] };
+            const semTabs: SemTab[] = [];
+            const allFutureTabs: SemTab[] = [];
+            const buildSemTabs = (year: number, isCurrentSem: boolean, currentWk: number) => {
+              const d = semDatesAll[year];
+              if (!d) return;
+              const yc = getYearColor(year);
+              if (now < d.wEnd || (isCurrentSem && now >= d.wStart && now <= d.wEnd)) {
+                if (isCurrentSem) {
+                  for (let offset = 0; offset < 3; offset++) {
+                    const wk = currentWk + offset;
+                    if (wk <= maxWeeksPerSem) {
+                      const scrollT = offset === 0 ? 'thisweek' : offset === 1 ? 'nextweek' : 'twoweeks';
+                      allFutureTabs.push({ id: `w${year}-wk${wk}`, topText: String(wk), bottomText: 'W', semLabel: `Winter ${year}`, scrollTarget: scrollT, colors: yc });
+                    }
+                  }
+                } else {
+                  for (let wk = 1; wk <= maxWeeksPerSem; wk++) {
+                    allFutureTabs.push({ id: `w${year}-wk${wk}`, topText: String(wk), bottomText: 'W', semLabel: `Winter ${year}`, scrollTarget: `sem-w${year}-wk${wk}`, colors: yc });
+                  }
+                }
+              }
+              if (now < d.ssStart) {
+                allFutureTabs.push({ id: `april-${year}`, topText: '', bottomText: 'APRIL', semLabel: `Winter ${year}`, scrollTarget: `april-${year}`, colors: yc });
+              }
+              if (year <= lastYear) {
+                for (let w = 1; w <= maxSSWeeks; w++) {
+                  if (isCurrentSem && now >= d.ssStart && now < d.fStart) {
+                    if (w < currentWk) continue;
+                  }
+                  if (!isCurrentSem || (now < d.ssEnd)) {
+                    const topLabel = w <= 7 ? String(w) : `${w}/${w - 7}`;
+                    allFutureTabs.push({ id: `ss${year}-wk${w}`, topText: topLabel, bottomText: 'S', semLabel: `Spring/Summer ${year}`, scrollTarget: w === 1 ? `sem-ss${year}` : `sem-ss${year}-wk${w}`, colors: yc });
+                  }
+                }
+              }
+              if (now < d.fStart || (isCurrentSem && now >= d.ssEnd && now < d.fStart)) {
+                allFutureTabs.push({ id: `aug-sept-${year}`, topText: '', bottomText: 'AUG-SEP', semLabel: `Spring/Summer ${year}`, scrollTarget: `aug-sept-${year}`, colors: gapColor });
+              }
+              if (year <= lastYear) {
+                for (let wk = 1; wk <= maxWeeksPerSem; wk++) {
+                  if (isCurrentSem && now >= d.fStart) {
+                    if (wk < currentWk) continue;
+                  }
+                  allFutureTabs.push({ id: `f${year}-wk${wk}`, topText: String(wk), bottomText: 'F', semLabel: `Fall ${year}`, scrollTarget: `sem-f${year}-wk${wk}`, colors: yc });
+                }
+              }
+              if (year < lastYear) {
+                const nextD = semDatesAll[year + 1];
+                if (nextD && now < nextD.wStart) {
+                  allFutureTabs.push({ id: `dec-jan-${year}`, topText: '', bottomText: 'DEC-JAN', semLabel: `Fall ${year}`, scrollTarget: `dec-jan-${year}`, colors: gapColor });
+                }
+              }
+            };
+            const detectCurrentSem = (): { year: number; sem: 'w' | 'ss' | 'f' | 'gap'; currentWk: number } => {
+              for (let y = 2026; y <= lastYear; y++) {
+                const d = semDatesAll[y];
+                if (!d) continue;
+                if (now >= d.wStart && now < d.wEnd) return { year: y, sem: 'w', currentWk: selectedWeek };
+                if (now >= d.wEnd && now < d.ssStart) return { year: y, sem: 'gap', currentWk: 1 };
+                if (now >= d.ssStart && now < d.ssEnd) {
+                  const weekNum = Math.max(1, Math.ceil((now.getTime() - d.ssStart.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1);
+                  return { year: y, sem: 'ss', currentWk: Math.min(weekNum, maxSSWeeks) };
+                }
+                if (now >= d.ssEnd && now < d.fStart) return { year: y, sem: 'gap', currentWk: 1 };
+                if (now >= d.fStart && now < d.fEnd) {
+                  const weekNum = Math.max(1, Math.ceil((now.getTime() - d.fStart.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1);
+                  return { year: y, sem: 'f', currentWk: Math.min(weekNum, maxWeeksPerSem) };
+                }
+                if (y < lastYear) {
+                  const nextD = semDatesAll[y + 1];
+                  if (nextD && now >= d.fEnd && now < nextD.wStart) return { year: y, sem: 'gap', currentWk: 1 };
+                }
+              }
+              return { year: 2026, sem: 'w', currentWk: selectedWeek };
+            };
+            const current = detectCurrentSem();
+            const yearTabsToKeep: number[] = [];
+            for (let y = current.year + 1; y <= lastYear; y++) {
+              yearTabsToKeep.push(y);
             }
-            if (selectedWeek + 2 <= currentSemesterWeeks) {
-              semTabs.push({ id: 'wk-third', topText: String(selectedWeek + 2), bottomText: 'W', semLabel: hwWeeklyTimeline[2]?.semLabel || 'Winter 2026', scrollTarget: 'twoweeks', colors: getYearColor(2026) });
+            if (current.sem === 'w' && current.year >= 2027) {
+              // already in this year's winter, don't add self as year tab
+            } else if (current.sem !== 'w' && current.sem !== 'gap') {
+              // in SS or F of current year, that year shouldn't be a year tab
             }
-            if (now < semDates.ss2026Start) {
-              semTabs.push({ id: 'april-gap', topText: '', bottomText: 'APRIL', semLabel: 'Winter 2026', scrollTarget: 'threeweeks', colors: getYearColor(2026) });
-            }
-            const fixedBottomTabs = 4;
-            const ssAvailableSlots = totalTabSlots - semTabs.length - fixedBottomTabs;
-            if (now < semDates.f2026Start) {
-              const ssMaxWk = Math.min(14, Math.max(6, ssAvailableSlots));
-              for (let w = 1; w <= ssMaxWk; w++) {
-                const topLabel = w <= 7 ? String(w) : `${w}/${w - 7}`;
-                semTabs.push({ id: `ss26-wk${w}`, topText: topLabel, bottomText: 'S', semLabel: 'Spring/Summer 2026', scrollTarget: w === 1 ? 'sem-ss2026' : `sem-ss2026-wk${w}`, colors: getYearColor(2026) });
+            for (let y = 2026; y <= lastYear; y++) {
+              const d = semDatesAll[y];
+              if (!d) continue;
+              const isCurrent = (y === current.year);
+              if (isCurrent) {
+                buildSemTabs(y, true, current.currentWk);
+              } else if (y > current.year) {
+                buildSemTabs(y, false, 1);
               }
             }
-            if (now >= semDates.ss2026End && now < semDates.f2026Start) {
-              semTabs.push({ id: 'aug-sept-gap', topText: '', bottomText: 'AUG-SEP', semLabel: 'Spring/Summer 2026', scrollTarget: 'sem-ss2026', colors: gapColor });
+            const remainingYearTabs: SemTab[] = [];
+            for (const y of yearTabsToKeep) {
+              if (!allFutureTabs.some(t => t.id.includes(String(y)))) {
+                remainingYearTabs.push({ id: `year-${y}`, topText: '', bottomText: String(y), semLabel: `Winter ${y}`, scrollTarget: `sem-w${y}`, colors: getYearColor(y) });
+              }
             }
-            semTabs.push({ id: 'f-2026', topText: '', bottomText: 'FALL', semLabel: 'Fall 2026', scrollTarget: 'sem-f2026', colors: getYearColor(2026) });
-            for (let y = 2027; y <= 2029; y++) {
-              semTabs.push({ id: `year-${y}`, topText: '', bottomText: String(y), semLabel: `Winter ${y}`, scrollTarget: `sem-w${y}`, colors: getYearColor(y) });
+            const slotsForFuture = totalTabSlots - remainingYearTabs.length;
+            for (let i = 0; i < Math.min(slotsForFuture, allFutureTabs.length); i++) {
+              semTabs.push(allFutureTabs[i]);
+            }
+            for (const yt of remainingYearTabs) {
+              semTabs.push(yt);
             }
             const currentSemLabel = hwWeeklyTimeline[0]?.semLabel || null;
             const scrollActiveSem = hwVisibleSemLabel || currentSemLabel;
