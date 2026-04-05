@@ -2520,6 +2520,26 @@ input[type="date"]::-webkit-datetime-edit-year-field {
   animation: weather-alert-box-pulse 2.5s ease-in-out infinite;
 }
 
+@keyframes alertBarShimmer {
+  0%, 85%, 100% {
+    background-image: none;
+  }
+  90% {
+    background-image: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.45) 40%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.45) 60%, transparent 100%);
+    background-size: 200% 100%;
+    background-position: -100% 0;
+  }
+  95% {
+    background-image: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.45) 40%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.45) 60%, transparent 100%);
+    background-size: 200% 100%;
+    background-position: 200% 0;
+  }
+}
+
+.alert-bar-shimmer {
+  animation: alertBarShimmer 6s ease-in-out infinite;
+}
+
 @keyframes countdownBarPulse {
   0%, 100% { opacity: 0.8; }
   50% { opacity: 1; }

@@ -478,7 +478,7 @@ function NewsTickerPortal({ headlines, onAlertClick }: { headlines: Array<{ titl
     prevHeadlinesKeyRef.current = headlinesKey;
     renderedRef.current = true;
     const hasAlerts = headlines.some(h => h.source === '_ALERT_');
-    const html = `<div class="fixed left-0 right-0 z-[9998] overflow-hidden flex" style="bottom:0;height:38px;background:linear-gradient(90deg,#000000 0%,#14141e 50%,#000000 100%);border-top:1px solid rgba(255,255,255,0.15)" data-testid="news-ticker">${hasAlerts ? '<div style="position:absolute;top:0;left:0;width:calc(50% - 70px - 52px);height:3px;background:#ff0000;z-index:9999"></div><div style="position:absolute;top:0;left:calc(50% + 63px + 38px);right:0;height:3px;background:#ff0000;z-index:9999"></div>' : ''}<div class="flex-shrink-0 flex items-center justify-center" style="height:38px;width:auto"><img src="${newsTickerLabel}" alt="NEWS" style="height:38px;width:auto;object-fit:contain" /></div><div class="flex-1 overflow-hidden relative h-full"><div class="flex items-center h-full whitespace-nowrap news-ticker-scroll" style="position:relative;padding-top:3px"><span style="display:inline-block;width:40px;flex-shrink:0"></span>${headlines.map((item, i) => {
+    const html = `<div class="fixed left-0 right-0 z-[9998] overflow-hidden flex" style="bottom:0;height:38px;background:linear-gradient(90deg,#000000 0%,#14141e 50%,#000000 100%);border-top:1px solid rgba(255,255,255,0.15)" data-testid="news-ticker">${hasAlerts ? '<div class="alert-bar-shimmer" style="position:absolute;top:0;left:0;width:calc(50% - 70px - 52px);height:3px;background:#ff0000;z-index:9999"></div><div class="alert-bar-shimmer" style="position:absolute;top:0;left:calc(50% + 63px + 38px);right:0;height:3px;background:#ff0000;z-index:9999;animation-delay:0.3s"></div>' : ''}<div class="flex-shrink-0 flex items-center justify-center" style="height:38px;width:auto"><img src="${newsTickerLabel}" alt="NEWS" style="height:38px;width:auto;object-fit:contain" /></div><div class="flex-1 overflow-hidden relative h-full"><div class="flex items-center h-full whitespace-nowrap news-ticker-scroll" style="position:relative;padding-top:3px"><span style="display:inline-block;width:40px;flex-shrink:0"></span>${headlines.map((item, i) => {
       if (item.source === '_ALERT_') {
         const safeTitle = item.title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
         const alertIdx = (item as any).alertIndex ?? '';
@@ -15754,8 +15754,8 @@ export default function Dashboard() {
       {/* D2L Announcement Ticker - fixed at very top of page, matches bottom news ticker style */}
       {weatherAlerts.length > 0 && (
         <>
-          <div style={{ position: 'fixed', top: '37px', left: 0, width: 'calc(50% - 70px - 52px)', height: '3px', backgroundColor: '#ff0000', zIndex: 112, pointerEvents: 'none' }} />
-          <div style={{ position: 'fixed', top: '37px', left: 'calc(50% + 63px + 35px)', right: 0, height: '3px', backgroundColor: '#ff0000', zIndex: 112, pointerEvents: 'none' }} />
+          <div className="alert-bar-shimmer" style={{ position: 'fixed', top: '37px', left: 0, width: 'calc(50% - 70px - 52px)', height: '3px', backgroundColor: '#ff0000', zIndex: 112, pointerEvents: 'none' }} />
+          <div className="alert-bar-shimmer" style={{ position: 'fixed', top: '37px', left: 'calc(50% + 63px + 35px)', right: 0, height: '3px', backgroundColor: '#ff0000', zIndex: 112, pointerEvents: 'none', animationDelay: '0.3s' }} />
         </>
       )}
       <div className="fixed left-0 right-0 overflow-hidden flex" style={{ top: 0, height: '38px', zIndex: 111, backgroundColor: '#000000', background: 'linear-gradient(90deg, #000000 0%, #14141e 50%, #000000 100%)', borderBottom: '1px solid rgba(255,255,255,0.15)' }} data-testid="announcement-ticker">
@@ -24523,7 +24523,7 @@ export default function Dashboard() {
                                       <div style={{ fontSize: '7px', color: 'rgba(255,255,255,0.9)', fontWeight: 600, lineHeight: 1.1, textAlign: 'left', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: '1px' }}>{wmoLabel(fc.code)}</div>
                                       <div className="flex items-center justify-center gap-[3px]">
                                         <span style={{ fontSize: '9px', color: '#ffffff', fontWeight: 700, lineHeight: 1 }}>{fc.offset}h</span>
-                                        <span style={{ lineHeight: 1, flexShrink: 0 }}>{renderMiniWeatherSvg(fc.code)}</span>
+                                        <span style={{ lineHeight: 1, flexShrink: 0, position: 'relative', top: '-3px' }}>{renderMiniWeatherSvg(fc.code)}</span>
                                         <span style={{ fontSize: '10px', color: '#ffffff', fontWeight: 700, lineHeight: 1 }}>{fc.temp}°</span>
                                       </div>
                                     </div>
