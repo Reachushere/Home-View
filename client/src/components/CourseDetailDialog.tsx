@@ -89,6 +89,7 @@ interface CourseInfo {
   borderColor?: string;
   courseRowColor?: string;
   taskBgColor?: string;
+  courseFontColor?: string;
   deliveryMode: string;
   classDay: string;
   classDay2?: string;
@@ -109,8 +110,8 @@ interface CourseInfo {
 interface CourseDetailDialogProps {
   courseInfo: CourseInfo;
   onClose: () => void;
-  onSaveCourseInfo?: (updates: { courseCode?: string; courseName?: string; professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; classTime2?: string; classEndTime2?: string; zoomLink?: string; semesterTerm?: string; year?: string; startDate?: string; endDate?: string; color?: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; semesterKey?: string; courseRank?: number; springSummerTerm?: string; moduleFolder?: string; readingFolder?: string }) => void;
-  onLiveColorChange?: (updates: { color?: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string }) => void;
+  onSaveCourseInfo?: (updates: { courseCode?: string; courseName?: string; professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; classTime2?: string; classEndTime2?: string; zoomLink?: string; semesterTerm?: string; year?: string; startDate?: string; endDate?: string; color?: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; courseFontColor?: string; semesterKey?: string; courseRank?: number; springSummerTerm?: string; moduleFolder?: string; readingFolder?: string }) => void;
+  onLiveColorChange?: (updates: { color?: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; courseFontColor?: string }) => void;
   onGradeCalculated?: (grade: string, percent: string) => void;
   onDeleteCourse?: () => void;
   onOpenEditTask?: (task: Task) => void;
@@ -456,6 +457,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     borderColor: courseInfo.borderColor || '',
     courseRowColor: courseInfo.courseRowColor || '',
     taskBgColor: courseInfo.taskBgColor || '',
+    courseFontColor: courseInfo.courseFontColor || '',
     courseRank: courseRank ?? 0,
     springSummerTerm: courseSpSuTerm || 'full',
     moduleFolder: courseInfo.moduleFolder || '',
@@ -535,9 +537,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
         borderColor: editInfo.borderColor,
         courseRowColor: editInfo.courseRowColor,
         taskBgColor: editInfo.taskBgColor,
+        courseFontColor: editInfo.courseFontColor,
       });
     }
-  }, [editInfo.color, editInfo.colorEnd, editInfo.colorStops, editInfo.borderColor, editInfo.courseRowColor, editInfo.taskBgColor]);
+  }, [editInfo.color, editInfo.colorEnd, editInfo.colorStops, editInfo.borderColor, editInfo.courseRowColor, editInfo.taskBgColor, editInfo.courseFontColor]);
 
   const CERTIFICATE_TYPE_OPTIONS = [
     { group: 'Certificate 1', options: [
@@ -1774,6 +1777,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         borderColor: courseInfo.borderColor || '',
                         courseRowColor: courseInfo.courseRowColor || '',
                         taskBgColor: courseInfo.taskBgColor || '',
+                        courseFontColor: courseInfo.courseFontColor || '',
                       });
                       if (onLiveColorChange) {
                         onLiveColorChange({
@@ -1783,6 +1787,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                           borderColor: courseInfo.borderColor || '',
                           courseRowColor: courseInfo.courseRowColor || '',
                           taskBgColor: courseInfo.taskBgColor || '',
+                          courseFontColor: courseInfo.courseFontColor || '',
                         });
                       }
                       setIsEditingInfo(false);
@@ -2364,6 +2369,20 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         )}
                       </div>
                       <input type="text" value={editInfo.taskBgColor ? editInfo.taskBgColor.toUpperCase() : 'Auto'} onChange={e => { let v = e.target.value; if (v === '' || v === 'Auto') { setEditInfo({...editInfo, taskBgColor: ''}); return; } if (!v.startsWith('#')) v = '#' + v; setEditInfo({...editInfo, taskBgColor: v}); }} className="bg-white border border-gray-300 rounded text-black text-[8px] px-1 py-0.5 font-mono mt-1 text-center focus:outline-none focus:border-gray-400" style={{ width: '56px' }} data-testid="input-task-bg-color-hex" />
+                    </div>
+                    <div style={{ marginLeft: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <label className="text-white text-[9px] mb-1">Font</label>
+                      <button
+                        type="button"
+                        onClick={() => setEditInfo({...editInfo, courseFontColor: editInfo.courseFontColor === 'black' ? 'white' : editInfo.courseFontColor === 'white' ? '' : 'black'})}
+                        className="rounded-sm border border-white/30 flex items-center justify-center text-[9px] font-bold"
+                        style={{ width: '20px', height: '20px', backgroundColor: editInfo.courseFontColor === 'black' ? '#000000' : editInfo.courseFontColor === 'white' ? '#ffffff' : 'transparent', color: editInfo.courseFontColor === 'black' ? '#ffffff' : editInfo.courseFontColor === 'white' ? '#000000' : 'rgba(255,255,255,0.5)' }}
+                        title={editInfo.courseFontColor ? `Font: ${editInfo.courseFontColor} (click to cycle)` : 'Font: Auto (click to set black)'}
+                        data-testid="btn-course-font-color"
+                      >
+                        A
+                      </button>
+                      <span className="text-white/60 text-[7px] mt-1">{editInfo.courseFontColor ? editInfo.courseFontColor.charAt(0).toUpperCase() + editInfo.courseFontColor.slice(1) : 'Auto'}</span>
                     </div>
                     </div>
                     );
@@ -3581,6 +3600,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     borderColor: courseInfo.borderColor || '',
                     courseRowColor: courseInfo.courseRowColor || '',
                     taskBgColor: courseInfo.taskBgColor || '',
+                    courseFontColor: courseInfo.courseFontColor || '',
                   });
                 }
                 onClose();

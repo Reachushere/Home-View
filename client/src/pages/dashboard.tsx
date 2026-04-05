@@ -1767,6 +1767,7 @@ export default function Dashboard() {
     progressEndColor: string;
     courseRowColor?: string;
     taskBgColor?: string;
+    courseFontColor?: string;
     moduleP: {percent: number; hasFiles: boolean};
     readingP: {percent: number; hasFiles: boolean};
     moduleUnread: number;
@@ -4389,7 +4390,7 @@ export default function Dashboard() {
     return `${gridSizes.timeColumnWidth}px ${allDays}`;
   };
 
-  const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; professor: string; professorEmail?: string }> }>(() => {
+  const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; courseFontColor?: string; professor: string; professorEmail?: string }> }>(() => {
     const defaultCourses = [
       { name: 'CPPA122 - Local Politics and Government', color: '#0F5004', colorEnd: '#47B045', professor: 'Caryl Arundel', professorEmail: 'carundel@torontomu.ca' },
       { name: 'CFNF400 - Human Sexuality', color: '#DE1864', colorEnd: '#FA67B3', professor: 'Alex McKay', professorEmail: 'a4mckay@torontomu.ca' },
@@ -4557,7 +4558,7 @@ export default function Dashboard() {
     toast({ title: "School settings saved", description: "Your school settings have been updated." });
   };
   
-  const saveCourses = (data: { courses: Array<{ name: string; color: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; professor: string; professorEmail?: string }> }) => {
+  const saveCourses = (data: { courses: Array<{ name: string; color: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; courseFontColor?: string; professor: string; professorEmail?: string }> }) => {
     const prevCourses = coursesData?.courses || [];
     setCoursesData(data);
     localStorage.setItem('coursesData', JSON.stringify(data));
@@ -4575,6 +4576,7 @@ export default function Dashboard() {
         semPayload[`${prefix}BorderColor`] = course.borderColor || null;
         semPayload[`${prefix}CourseRowColor`] = course.courseRowColor || null;
         semPayload[`${prefix}TaskBgColor`] = course.taskBgColor || null;
+        semPayload[`${prefix}CourseFontColor`] = course.courseFontColor || null;
         const parts = course.name.split(' - ');
         const code = (parts[0] || '').trim();
         const name = parts.slice(1).join(' - ').trim();
@@ -6042,6 +6044,7 @@ export default function Dashboard() {
     let borderColor = (matchedCourse as any)?.borderColor || '';
     let courseRowColor = (matchedCourse as any)?.courseRowColor || '';
     let taskBgColor = (matchedCourse as any)?.taskBgColor || '';
+    let courseFontColor = (matchedCourse as any)?.courseFontColor || '';
     let courseType = '';
     let semesterTerm = '';
     let year = '';
@@ -6137,6 +6140,7 @@ export default function Dashboard() {
       borderColor,
       courseRowColor,
       taskBgColor,
+      courseFontColor,
       deliveryMode,
       classDay,
       classDay2,
@@ -7070,6 +7074,7 @@ export default function Dashboard() {
         const semBorderColor = sem[`${prefix}BorderColor`];
         const semCourseRowColor = sem[`${prefix}CourseRowColor`];
         const semTaskBgColor = sem[`${prefix}TaskBgColor`];
+        const semCourseFontColor = sem[`${prefix}CourseFontColor`];
         if (updated[i]) {
           const c = updated[i] as any;
           if (semColor && semColor !== c.color) { c.color = semColor; changed = true; }
@@ -7078,6 +7083,7 @@ export default function Dashboard() {
           if (semBorderColor !== undefined && semBorderColor !== null && semBorderColor !== c.borderColor) { c.borderColor = semBorderColor; changed = true; }
           if (semCourseRowColor !== undefined && semCourseRowColor !== null && semCourseRowColor !== c.courseRowColor) { c.courseRowColor = semCourseRowColor; changed = true; }
           if (semTaskBgColor !== undefined && semTaskBgColor !== null && semTaskBgColor !== c.taskBgColor) { c.taskBgColor = semTaskBgColor; changed = true; }
+          if (semCourseFontColor !== undefined && semCourseFontColor !== null && semCourseFontColor !== c.courseFontColor) { c.courseFontColor = semCourseFontColor; changed = true; }
         }
       }
       if (changed) {
@@ -17062,6 +17068,7 @@ export default function Dashboard() {
                   ...(colorUpdates.borderColor !== undefined ? { borderColor: colorUpdates.borderColor } : {}),
                   ...(colorUpdates.courseRowColor !== undefined ? { courseRowColor: colorUpdates.courseRowColor } : {}),
                   ...(colorUpdates.taskBgColor !== undefined ? { taskBgColor: colorUpdates.taskBgColor } : {}),
+                  ...(colorUpdates.courseFontColor !== undefined ? { courseFontColor: colorUpdates.courseFontColor } : {}),
                 };
                 setCoursesData({ courses: updatedCourses });
               }
@@ -17089,6 +17096,7 @@ export default function Dashboard() {
                   ...((updates as any).borderColor !== undefined ? { borderColor: (updates as any).borderColor } : {}),
                   ...(updates.courseRowColor !== undefined ? { courseRowColor: updates.courseRowColor } : {}),
                   ...(updates.taskBgColor !== undefined ? { taskBgColor: updates.taskBgColor } : {}),
+                  ...(updates.courseFontColor !== undefined ? { courseFontColor: updates.courseFontColor } : {}),
                 };
                 saveCourses({ courses: updatedCourses });
                 if (updates.courseCode || updates.courseName) {
@@ -24372,9 +24380,9 @@ export default function Dashboard() {
                               return '';
                             })();
 
-                            const sunriseSceneHtml = isSunrisePhase ? (() => {
-                              const totalDuration = 150;
-                              const riseStart = srMin - 60;
+                            const sunriseSceneHtml = (phase === 'sunrise' || phase === 'morning') ? (() => {
+                              const totalDuration = 120;
+                              const riseStart = srMin;
                               const elapsed = minutesSinceMidnight - riseStart;
                               const p = Math.max(0, Math.min(1, elapsed / totalDuration));
                               const horizonOpacity = Math.max(0, 0.6 - p * 0.3);
@@ -24792,7 +24800,7 @@ export default function Dashboard() {
                   'ss2026:CPHL110': { startDate: '2026-05-05', endDate: '2026-06-20' },
                   'ss2026:CHIS105': { startDate: '2026-06-23', endDate: '2026-08-07' },
                 };
-                const allDisplayCourses: Array<{ name: string; color: string; colorEnd?: string; professor: string; professorEmail?: string; _semKey: string }> = [];
+                const allDisplayCourses: Array<{ name: string; color: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; professor: string; professorEmail?: string; _semKey: string }> = [];
                 const semKeyOrder = ['w2026', 'ss2026', 'f2026', 'w2027', 'ss2027', 'f2027', 'w2028', 'ss2028', 'f2028', 'w2029'];
                 for (const semKey of semKeyOrder) {
                   if (semesterEndConfirmed[semKey]) continue;
@@ -24824,6 +24832,10 @@ export default function Dashboard() {
                       name: fullName ? `${codeNorm} - ${fullName}` : codeNorm,
                       color: matchedCourse?.color || '#6b7280',
                       colorEnd: matchedCourse?.colorEnd || '#9ca3af',
+                      colorStops: matchedCourse?.colorStops || '',
+                      borderColor: matchedCourse?.borderColor || '',
+                      courseRowColor: matchedCourse?.courseRowColor || '',
+                      taskBgColor: matchedCourse?.taskBgColor || '',
                       professor: matchedCourse?.professor || '',
                       professorEmail: matchedCourse?.professorEmail || '',
                       _semKey: semKey,
