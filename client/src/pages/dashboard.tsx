@@ -24499,7 +24499,7 @@ export default function Dashboard() {
                                   if (nextWeek > activeSem.weeks) {
                                     return `Last School Week (${currentWeek})`;
                                   }
-                                  const ssSubSession = activeSem.key.startsWith('ss') && nextWeek >= 7 ? (satDate < new Date('2026-06-23T00:00:00') ? '/1' : '/2') : '';
+                                  const ssSubSession = activeSem.key.startsWith('ss') && satDate >= new Date('2026-06-20T00:00:00') ? (satDate < new Date('2026-06-23T00:00:00') ? '/1' : '/2') : '';
                                   return `New School Week (${nextWeek}${ssSubSession})`;
                                 }
                                 const nextSem = semDefs.find(s => satDate < new Date(s.start + 'T00:00:00'));
