@@ -14767,7 +14767,10 @@ export default function Dashboard() {
 
           {/* ── Tasks ── */}
           <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', paddingRight: '7px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(50,120,210,0.6)', position: 'relative', top: '1px', margin: '0 7.5px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(40,110,210,0.5) 0%, rgba(25,80,180,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
-          <ListChecks className="h-[18px] w-[18px] text-white/70" style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', top: '-10px' }} />
+          <div style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <ListChecks className="h-[18px] w-[18px] text-white/70" style={{ position: 'relative', top: '-10px' }} />
+            <span style={{ position: 'absolute', top: '14px', fontSize: '6.5px', color: 'rgba(255,255,255,0.55)', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', left: '50%', transform: 'translateX(-30%)' }}>Tasks</span>
+          </div>
           {/* Completed Tasks Button - Swapped with Graduation Hat */}
           <div className="pill-button-hover" style={{ 
             marginTop: '0px', width: '44px', height: '43px', borderRadius: '50%',
@@ -15067,7 +15070,10 @@ export default function Dashboard() {
 
           {/* ── School ── */}
           <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(34,197,94,0.7)', position: 'relative', top: '1px', margin: '0 7.5px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(34,197,94,0.55) 0%, rgba(22,163,74,0.4) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
-          <GraduationCap className="h-[20px] w-[20px] text-white/70" style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', top: '-10px' }} />
+          <div style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <GraduationCap className="h-[20px] w-[20px] text-white/70" style={{ position: 'relative', top: '-10px' }} />
+            <span style={{ position: 'absolute', top: '14px', fontSize: '6.5px', color: 'rgba(255,255,255,0.55)', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', left: '50%', transform: 'translateX(-30%)' }}>School</span>
+          </div>
           {/* Courses Button */}
           <div className="pill-button-hover" style={{ 
             marginTop: '0px', width: '44px', height: '43px', borderRadius: '50%',
@@ -15169,7 +15175,10 @@ export default function Dashboard() {
 
           {/* ── Entertainment ── */}
           <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(160,100,240,0.6)', position: 'relative', top: '1px', margin: '0 7.5px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(150,90,235,0.5) 0%, rgba(120,60,210,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
-          <img src={soundIconPath} alt="Sound" style={{ height: '22px', width: '22px', objectFit: 'contain', position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', opacity: 0.7, top: '-10px' }} />
+          <div style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <img src={soundIconPath} alt="Sound" style={{ height: '22px', width: '22px', objectFit: 'contain', position: 'relative', opacity: 0.7, top: '-10px' }} />
+            <span style={{ position: 'absolute', top: '14px', fontSize: '6.5px', color: 'rgba(255,255,255,0.55)', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', left: '50%', transform: 'translateX(-30%)' }}>Sound</span>
+          </div>
           {/* Spotify Button */}
           <div className="pill-button-hover" style={{ 
             marginTop: '0px', width: '44px', height: '43px', borderRadius: '50%',
@@ -15194,6 +15203,32 @@ export default function Dashboard() {
               }}
             >
               <Music2 className="text-white" style={{ height: '20px', width: '20px' }} />
+            </Button>
+          </div>
+
+
+          {/* Alexa Announcements Button */}
+          <div className="pill-button-hover" style={{ 
+            marginTop: '0px', width: '44px', height: '43px', borderRadius: '50%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+            position: 'relative' as const, zIndex: 1,
+            border: '1.5px solid rgba(255,255,255,0.35)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
+              style={{ background: 'transparent' }}
+              data-testid="button-alexa-announce"
+              title="Alexa Announcements"
+              onClick={() => {
+                triggerButtonGlow('alexa');
+                setIsAlexaDialogOpen(true);
+              }}
+            >
+              <Megaphone className="text-white" style={{ height: '22px', width: '22px' }} />
             </Button>
           </div>
 
@@ -15260,7 +15295,10 @@ export default function Dashboard() {
           {/* ── Tools ── */}
           <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 32)}px`, border: '1.5px solid rgba(110,110,110,0.8)', position: 'relative', top: '1px', margin: '0 7.5px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(100,100,100,0.75) 0%, rgba(75,75,75,0.55) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           {isAdmin && (
-            <Wrench className="h-[18px] w-[18px] text-white/70" style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', top: '-10px' }} />
+            <div style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <Wrench className="h-[18px] w-[18px] text-white/70" style={{ position: 'relative', top: '-10px' }} />
+              <span style={{ position: 'absolute', top: '14px', fontSize: '6.5px', color: 'rgba(255,255,255,0.55)', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', left: '50%', transform: 'translateX(-30%)' }}>Tools</span>
+            </div>
           )}
           {/* Home Assistant (moved from bottom pill) */}
           {isAdmin && (
@@ -15444,31 +15482,6 @@ export default function Dashboard() {
               }}
             >
               <Mail className="text-white" style={{ height: '22px', width: '22px' }} />
-            </Button>
-          </div>
-
-          {/* Alexa Announcements Button */}
-          <div className="pill-button-hover" style={{ 
-            marginTop: '0px', width: '44px', height: '43px', borderRadius: '50%',
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
-            position: 'relative' as const, zIndex: 1,
-            border: '1.5px solid rgba(255,255,255,0.35)',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
-          }}>
-            <Button
-              size="icon"
-              variant="ghost"
-              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
-              style={{ background: 'transparent' }}
-              data-testid="button-alexa-announce"
-              title="Alexa Announcements"
-              onClick={() => {
-                triggerButtonGlow('alexa');
-                setIsAlexaDialogOpen(true);
-              }}
-            >
-              <Megaphone className="text-white" style={{ height: '22px', width: '22px' }} />
             </Button>
           </div>
 
@@ -24536,15 +24549,15 @@ export default function Dashboard() {
                                 const satDate = day;
                                 const semDefs = [
                                   { key: 'w2026', start: '2026-01-12', end: '2026-04-17', weeks: 13 },
-                                  { key: 'ss2026', start: '2026-05-04', end: '2026-08-07', weeks: 14 },
-                                  { key: 'f2026', start: '2026-09-07', end: '2026-12-11', weeks: 14 },
-                                  { key: 'w2027', start: '2027-01-11', end: '2027-04-16', weeks: 14 },
-                                  { key: 'ss2027', start: '2027-05-03', end: '2027-08-06', weeks: 14 },
-                                  { key: 'f2027', start: '2027-09-13', end: '2027-12-17', weeks: 14 },
-                                  { key: 'w2028', start: '2028-01-10', end: '2028-04-14', weeks: 14 },
-                                  { key: 'ss2028', start: '2028-05-01', end: '2028-08-04', weeks: 14 },
-                                  { key: 'f2028', start: '2028-09-11', end: '2028-12-15', weeks: 14 },
-                                  { key: 'w2029', start: '2029-01-08', end: '2029-04-13', weeks: 14 },
+                                  { key: 'ss2026', start: '2026-05-04', end: '2026-08-07', weeks: 13 },
+                                  { key: 'f2026', start: '2026-09-07', end: '2026-12-11', weeks: 13 },
+                                  { key: 'w2027', start: '2027-01-11', end: '2027-04-16', weeks: 13 },
+                                  { key: 'ss2027', start: '2027-05-03', end: '2027-08-06', weeks: 13 },
+                                  { key: 'f2027', start: '2027-09-13', end: '2027-12-17', weeks: 13 },
+                                  { key: 'w2028', start: '2028-01-10', end: '2028-04-14', weeks: 13 },
+                                  { key: 'ss2028', start: '2028-05-01', end: '2028-08-04', weeks: 13 },
+                                  { key: 'f2028', start: '2028-09-11', end: '2028-12-15', weeks: 13 },
+                                  { key: 'w2029', start: '2029-01-08', end: '2029-04-13', weeks: 13 },
                                 ];
                                 const activeSem = semDefs.find(s => satDate >= new Date(s.start + 'T00:00:00') && satDate <= new Date(s.end + 'T23:59:59'));
                                 if (activeSem) {
@@ -24581,15 +24594,15 @@ export default function Dashboard() {
                               <span style={{ display: 'block', fontSize: 'min(9.5px, 1.4vw)', fontWeight: 400, color: (() => { const now = new Date(); const todayIdx = weekDays.findIndex(d => isSameDayET(d, now)); return todayIdx < 0 ? '#ffffff' : 'rgba(255,255,255,0.35)'; })(), lineHeight: '11px', letterSpacing: '0.5px', padding: '0 1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{(() => {
                                 const semDefs = [
                                   { key: 'w2026', start: '2026-01-12', end: '2026-04-17', weeks: 13 },
-                                  { key: 'ss2026', start: '2026-05-04', end: '2026-08-07', weeks: 14 },
-                                  { key: 'f2026', start: '2026-09-07', end: '2026-12-11', weeks: 14 },
-                                  { key: 'w2027', start: '2027-01-11', end: '2027-04-16', weeks: 14 },
-                                  { key: 'ss2027', start: '2027-05-03', end: '2027-08-06', weeks: 14 },
-                                  { key: 'f2027', start: '2027-09-13', end: '2027-12-17', weeks: 14 },
-                                  { key: 'w2028', start: '2028-01-10', end: '2028-04-14', weeks: 14 },
-                                  { key: 'ss2028', start: '2028-05-01', end: '2028-08-04', weeks: 14 },
-                                  { key: 'f2028', start: '2028-09-11', end: '2028-12-15', weeks: 14 },
-                                  { key: 'w2029', start: '2029-01-08', end: '2029-04-13', weeks: 14 },
+                                  { key: 'ss2026', start: '2026-05-04', end: '2026-08-07', weeks: 13 },
+                                  { key: 'f2026', start: '2026-09-07', end: '2026-12-11', weeks: 13 },
+                                  { key: 'w2027', start: '2027-01-11', end: '2027-04-16', weeks: 13 },
+                                  { key: 'ss2027', start: '2027-05-03', end: '2027-08-06', weeks: 13 },
+                                  { key: 'f2027', start: '2027-09-13', end: '2027-12-17', weeks: 13 },
+                                  { key: 'w2028', start: '2028-01-10', end: '2028-04-14', weeks: 13 },
+                                  { key: 'ss2028', start: '2028-05-01', end: '2028-08-04', weeks: 13 },
+                                  { key: 'f2028', start: '2028-09-11', end: '2028-12-15', weeks: 13 },
+                                  { key: 'w2029', start: '2029-01-08', end: '2029-04-13', weeks: 13 },
                                 ];
                                 const dayDate = new Date(day.getFullYear(), day.getMonth(), day.getDate(), 12, 0, 0);
                                 const activeSem = semDefs.find(s => dayDate >= new Date(s.start + 'T00:00:00') && dayDate <= new Date(s.end + 'T23:59:59'));
@@ -24629,15 +24642,15 @@ export default function Dashboard() {
                               <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{(() => {
                                 const semDefs = [
                                   { key: 'w2026', start: '2026-01-12', end: '2026-04-17', weeks: 13 },
-                                  { key: 'ss2026', start: '2026-05-04', end: '2026-08-07', weeks: 14 },
-                                  { key: 'f2026', start: '2026-09-07', end: '2026-12-11', weeks: 14 },
-                                  { key: 'w2027', start: '2027-01-11', end: '2027-04-16', weeks: 14 },
-                                  { key: 'ss2027', start: '2027-05-03', end: '2027-08-06', weeks: 14 },
-                                  { key: 'f2027', start: '2027-09-13', end: '2027-12-17', weeks: 14 },
-                                  { key: 'w2028', start: '2028-01-10', end: '2028-04-14', weeks: 14 },
-                                  { key: 'ss2028', start: '2028-05-01', end: '2028-08-04', weeks: 14 },
-                                  { key: 'f2028', start: '2028-09-11', end: '2028-12-15', weeks: 14 },
-                                  { key: 'w2029', start: '2029-01-08', end: '2029-04-13', weeks: 14 },
+                                  { key: 'ss2026', start: '2026-05-04', end: '2026-08-07', weeks: 13 },
+                                  { key: 'f2026', start: '2026-09-07', end: '2026-12-11', weeks: 13 },
+                                  { key: 'w2027', start: '2027-01-11', end: '2027-04-16', weeks: 13 },
+                                  { key: 'ss2027', start: '2027-05-03', end: '2027-08-06', weeks: 13 },
+                                  { key: 'f2027', start: '2027-09-13', end: '2027-12-17', weeks: 13 },
+                                  { key: 'w2028', start: '2028-01-10', end: '2028-04-14', weeks: 13 },
+                                  { key: 'ss2028', start: '2028-05-01', end: '2028-08-04', weeks: 13 },
+                                  { key: 'f2028', start: '2028-09-11', end: '2028-12-15', weeks: 13 },
+                                  { key: 'w2029', start: '2029-01-08', end: '2029-04-13', weeks: 13 },
                                 ];
                                 const dayDate = new Date(day.getFullYear(), day.getMonth(), day.getDate(), 12, 0, 0);
                                 const activeSem = semDefs.find(s => dayDate >= new Date(s.start + 'T00:00:00') && dayDate <= new Date(s.end + 'T23:59:59'));
