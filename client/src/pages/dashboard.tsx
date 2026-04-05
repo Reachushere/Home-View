@@ -1062,7 +1062,11 @@ export default function Dashboard() {
     return () => { window.removeEventListener('resize', handleResize); window.removeEventListener('orientationchange', handleResize); };
   }, []);
   
-  const [selectedWeek, setSelectedWeek] = useState<number>(2);
+  const [selectedWeek, setSelectedWeek] = useState<number>(() => {
+    const saved = localStorage.getItem('unical_selectedWeek');
+    if (saved) { const n = parseInt(saved, 10); if (n >= 1 && n <= 13) return n; }
+    return 12;
+  });
   const [calendarWeekMode, setCalendarWeekMode] = useState<'current' | 'next'>(() => {
     const saved = localStorage.getItem('calendarWeekMode');
     return (saved === 'next') ? 'next' : 'current';
@@ -3387,6 +3391,69 @@ export default function Dashboard() {
     saveSemesterAssignments(updated);
   };
   const dragCourseRef = useRef<{ code: string; fromSemKey: string } | null>(null);
+  const [courseFolderLinks, setCourseFolderLinks] = useState<Record<string, { modulePath?: string; readingPath?: string }>>(() => {
+    const saved = localStorage.getItem('courseFolderLinks');
+    if (saved) { try { return JSON.parse(saved); } catch {} }
+    return {};
+  });
+  const saveCourseFolderLinks = useCallback((links: Record<string, { modulePath?: string; readingPath?: string }>) => {
+    setCourseFolderLinks(links);
+    localStorage.setItem('courseFolderLinks', JSON.stringify(links));
+    saveDegreeToServer('courseFolderLinks', links);
+  }, []);
+  const [folderLinkDialogOpen, setFolderLinkDialogOpen] = useState(false);
+  const [folderLinkBrowsing, setFolderLinkBrowsing] = useState<{ courseCode: string; type: 'module' | 'reading' } | null>(null);
+  const [folderLinkBrowsePath, setFolderLinkBrowsePath] = useState('/School/1. TMU/Courses');
+  const [folderLinkBrowseItems, setFolderLinkBrowseItems] = useState<Array<{ name: string; type: string; path: string }>>([]);
+  const [folderLinkBrowseLoading, setFolderLinkBrowseLoading] = useState(false);
+  const folderLinkMissingCourses = useMemo(() => {
+    const missing: Array<{ semKey: string; semLabel: string; courseCode: string; courseName: string; missingModule: boolean; missingReading: boolean }> = [];
+    const semStartDatesCheck: Record<string, string> = {
+      'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12',
+      'ss2026': '2026-05-04', 'f2026': '2026-09-07', 'w2027': '2027-01-11',
+    };
+    const semLabels: Record<string, string> = {
+      'ss2025': 'Spring/Summer 2025', 'f2025': 'Fall 2025', 'w2026': 'Winter 2026',
+      'ss2026': 'Spring/Summer 2026', 'f2026': 'Fall 2026', 'w2027': 'Winter 2027',
+    };
+    const now = new Date();
+    for (const [semKey, courses] of Object.entries(semesterCourseAssignments)) {
+      const semEnd = semStartDatesCheck[semKey];
+      if (!semEnd) continue;
+      const endDate = new Date(semEnd);
+      endDate.setMonth(endDate.getMonth() + 4);
+      if (now > endDate) continue;
+      for (const course of courses) {
+        const code = course.code.toUpperCase().replace(/\s/g, '');
+        const link = courseFolderLinks[code];
+        const missingModule = !link?.modulePath;
+        const missingReading = !link?.readingPath;
+        if (missingModule || missingReading) {
+          missing.push({ semKey, semLabel: semLabels[semKey] || semKey, courseCode: code, courseName: course.fullName || course.name, missingModule, missingReading });
+        }
+      }
+    }
+    return missing;
+  }, [semesterCourseAssignments, courseFolderLinks]);
+  useEffect(() => {
+    if (folderLinkMissingCourses.length > 0 && desktopIsFull) {
+      const timer = setTimeout(() => setFolderLinkDialogOpen(true), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [folderLinkMissingCourses.length, desktopIsFull]);
+  const browseForFolderLink = useCallback(async (path: string) => {
+    setFolderLinkBrowseLoading(true);
+    try {
+      const res = await fetch(`/api/onedrive/files?path=${encodeURIComponent(path)}`);
+      const items = await res.json();
+      if (Array.isArray(items)) {
+        setFolderLinkBrowseItems(items.filter((i: any) => i.type === 'folder').map((i: any) => ({ name: i.name, type: i.type, path: i.path })));
+      }
+    } catch (err) {
+      console.error('Browse folder error:', err);
+    }
+    setFolderLinkBrowseLoading(false);
+  }, []);
   const [draftCoursePlayPriority, setDraftCoursePlayPriority] = useState<Record<string, number>>({});
   const draftCoursePlayPriorityRef = useRef<Record<string, number>>({});
   const setDraftPriorityBoth = useCallback((val: Record<string, number> | ((prev: Record<string, number>) => Record<string, number>)) => {
@@ -6642,27 +6709,33 @@ export default function Dashboard() {
     return variants;
   }, [allCourseWeekMappings]);
 
-  // Automatically set selectedWeek based on today's date (re-checks when date changes)
+  const parseWeekDate = (dateStr: string) => {
+    const [y, m, d] = dateStr.split('-').map(Number);
+    return new Date(y, m - 1, d);
+  };
+  const findCurrentWeekFromList = (weekList: WeekInfo[], refDate: Date) => {
+    const ref = new Date(refDate.getFullYear(), refDate.getMonth(), refDate.getDate());
+    return weekList.find(w => {
+      const s = parseWeekDate(w.startDate);
+      const e = parseWeekDate(w.endDate);
+      return ref >= s && ref <= e;
+    });
+  };
   const lastAutoWeekDateRef = useRef(new Date().getDate());
   useEffect(() => {
     if (weeks.length > 0) {
       const today = new Date();
-      const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-      const currentWeek = weeks.find(w => {
-        const start = parseISO(w.startDate);
-        const end = parseISO(w.endDate);
-        const startDateOnly = new Date(start.getFullYear(), start.getMonth(), start.getDate());
-        const endDateOnly = new Date(end.getFullYear(), end.getMonth(), end.getDate());
-        return todayDateOnly >= startDateOnly && todayDateOnly <= endDateOnly;
-      });
+      const currentWeek = findCurrentWeekFromList(weeks, today);
       if (currentWeek) {
         setSelectedWeek(currentWeek.weekNumber);
+        localStorage.setItem('unical_selectedWeek', String(currentWeek.weekNumber));
       } else {
         const cachedSem = queryClient.getQueryData<SemesterSettings | null>(["/api/semester"]);
         const semStart = cachedSem?.semesterStartDate ? new Date(cachedSem.semesterStartDate) : undefined;
         const readingWeek = cachedSem?.readingWeekStart || null;
         const computedWeek = getWeekNumber(today, semStart, readingWeek);
         setSelectedWeek(computedWeek);
+        localStorage.setItem('unical_selectedWeek', String(computedWeek));
       }
       lastAutoWeekDateRef.current = today.getDate();
     }
@@ -6673,22 +6746,17 @@ export default function Dashboard() {
     const currentDate = currentTime.getDate();
     if (currentDate !== lastAutoWeekDateRef.current) {
       lastAutoWeekDateRef.current = currentDate;
-      const todayDateOnly = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate());
-      const currentWeek = weeks.find(w => {
-        const start = parseISO(w.startDate);
-        const end = parseISO(w.endDate);
-        const startDateOnly = new Date(start.getFullYear(), start.getMonth(), start.getDate());
-        const endDateOnly = new Date(end.getFullYear(), end.getMonth(), end.getDate());
-        return todayDateOnly >= startDateOnly && todayDateOnly <= endDateOnly;
-      });
+      const currentWeek = findCurrentWeekFromList(weeks, currentTime);
       if (currentWeek) {
         setSelectedWeek(currentWeek.weekNumber);
+        localStorage.setItem('unical_selectedWeek', String(currentWeek.weekNumber));
       } else {
         const cachedSem = queryClient.getQueryData<SemesterSettings | null>(["/api/semester"]);
         const semStart = cachedSem?.semesterStartDate ? new Date(cachedSem.semesterStartDate) : undefined;
         const readingWeek = cachedSem?.readingWeekStart || null;
         const computedWeek = getWeekNumber(currentTime, semStart, readingWeek);
         setSelectedWeek(computedWeek);
+        localStorage.setItem('unical_selectedWeek', String(computedWeek));
       }
     }
   }, [currentTime, weeks]);
@@ -11158,7 +11226,7 @@ export default function Dashboard() {
 
 
   // Current week dates (Week 2 = Jan 17-23, 2026)
-  const currentWeekInfo = weeks.find(w => w.weekNumber === 2); // Current week is Week 2
+  const currentWeekInfo = findCurrentWeekFromList(weeks, new Date()) || weeks.find(w => w.weekNumber === selectedWeek);
   const currentWeekStart = currentWeekInfo ? new Date(currentWeekInfo.startDate) : null;
   const currentWeekEnd = currentWeekInfo ? new Date(currentWeekInfo.endDate) : null;
 
@@ -22019,6 +22087,175 @@ export default function Dashboard() {
           </Dialog>
           
           {/* Courses Dialog - All past + current courses organized by semester */}
+          {/* OneDrive Folder Links Blocking Dialog */}
+          {folderLinkDialogOpen && desktopIsFull && folderLinkMissingCourses.length > 0 && createPortal(
+            <div>
+            <div className="fixed inset-0 z-[10003] bg-black/60" />
+            <div
+              className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-[10003] overflow-hidden flex flex-col text-[11px] text-white sm:rounded-lg"
+              style={{ width: '520px', maxHeight: '80vh', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}
+              data-testid="folder-link-dialog"
+            >
+              <div style={{ padding: '16px 20px 12px', borderBottom: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <span style={{ fontWeight: 700, fontSize: '13px' }}>OneDrive Folder Links Required</span>
+              </div>
+              <div style={{ padding: '12px 20px 8px', fontSize: '11px', color: 'rgba(255,255,255,0.7)' }}>
+                Link your OneDrive Module and Reading folders for each course to enable automated file syncing.
+              </div>
+              <div style={{ flex: 1, overflowY: 'auto', padding: '4px 20px 16px' }}>
+                {folderLinkMissingCourses.map((mc, idx) => {
+                  const link = courseFolderLinks[mc.courseCode] || {};
+                  return (
+                    <div key={mc.courseCode + mc.semKey} style={{ marginBottom: '12px', padding: '10px 12px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }} data-testid={`folder-link-course-${mc.courseCode}`}>
+                      <div style={{ fontWeight: 600, fontSize: '11.5px', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span style={{ color: getCourseColor(mc.courseCode), fontWeight: 700 }}>{mc.courseCode}</span>
+                        <span style={{ color: 'rgba(255,255,255,0.5)' }}>—</span>
+                        <span>{mc.courseName}</span>
+                        <span style={{ marginLeft: 'auto', fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: 400 }}>{mc.semLabel}</span>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span style={{ width: '55px', fontSize: '10px', color: mc.missingModule ? '#f87171' : '#34d399', fontWeight: 500 }}>Module:</span>
+                          {link.modulePath ? (
+                            <span style={{ fontSize: '10px', color: '#34d399', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>✓ {link.modulePath.split('/').slice(-2).join('/')}</span>
+                          ) : (
+                            <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', flex: 1 }}>Not linked</span>
+                          )}
+                          <button
+                            onClick={() => {
+                              setFolderLinkBrowsing({ courseCode: mc.courseCode, type: 'module' });
+                              const defaultPath = `/School/1. TMU/Courses`;
+                              setFolderLinkBrowsePath(defaultPath);
+                              browseForFolderLink(defaultPath);
+                            }}
+                            style={{ fontSize: '9px', padding: '2px 8px', borderRadius: '4px', background: mc.missingModule ? 'rgba(59,130,246,0.3)' : 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', color: 'white', fontWeight: 500 }}
+                            data-testid={`browse-module-${mc.courseCode}`}
+                          >{link.modulePath ? 'Change' : 'Browse'}</button>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span style={{ width: '55px', fontSize: '10px', color: mc.missingReading ? '#f87171' : '#34d399', fontWeight: 500 }}>Reading:</span>
+                          {link.readingPath ? (
+                            <span style={{ fontSize: '10px', color: '#34d399', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>✓ {link.readingPath.split('/').slice(-2).join('/')}</span>
+                          ) : (
+                            <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', flex: 1 }}>Not linked</span>
+                          )}
+                          <button
+                            onClick={() => {
+                              setFolderLinkBrowsing({ courseCode: mc.courseCode, type: 'reading' });
+                              const defaultPath = `/School/1. TMU/Courses`;
+                              setFolderLinkBrowsePath(defaultPath);
+                              browseForFolderLink(defaultPath);
+                            }}
+                            style={{ fontSize: '9px', padding: '2px 8px', borderRadius: '4px', background: mc.missingReading ? 'rgba(59,130,246,0.3)' : 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', color: 'white', fontWeight: 500 }}
+                            data-testid={`browse-reading-${mc.courseCode}`}
+                          >{link.readingPath ? 'Change' : 'Browse'}</button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+                {folderLinkMissingCourses.length === 0 && (
+                  <div style={{ textAlign: 'center', padding: '20px', color: '#34d399', fontWeight: 600 }}>All courses linked!</div>
+                )}
+              </div>
+              {folderLinkMissingCourses.length === 0 && (
+                <div style={{ padding: '0 20px 16px', display: 'flex', justifyContent: 'flex-end' }}>
+                  <button
+                    onClick={() => setFolderLinkDialogOpen(false)}
+                    style={{ fontSize: '11px', padding: '6px 20px', borderRadius: '6px', background: 'rgba(59,130,246,0.5)', border: '1px solid rgba(59,130,246,0.7)', cursor: 'pointer', color: 'white', fontWeight: 600 }}
+                    data-testid="folder-link-done"
+                  >Done</button>
+                </div>
+              )}
+            </div>
+            {/* Folder Browser Sub-Dialog */}
+            {folderLinkBrowsing && (
+              <>
+              <div className="fixed inset-0 z-[10004] bg-black/40" onClick={() => setFolderLinkBrowsing(null)} />
+              <div
+                className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-[10004] overflow-hidden flex flex-col text-[11px] text-white sm:rounded-lg"
+                style={{ width: '440px', maxHeight: '60vh', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}
+                data-testid="folder-browser-dialog"
+              >
+                <div style={{ padding: '12px 16px 10px', borderBottom: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                  <span style={{ fontWeight: 600, fontSize: '12px' }}>
+                    Select {folderLinkBrowsing.type === 'module' ? 'Module' : 'Reading'} Folder for {folderLinkBrowsing.courseCode}
+                  </span>
+                </div>
+                <div style={{ padding: '8px 16px', fontSize: '10px', color: 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{folderLinkBrowsePath}</span>
+                </div>
+                <div style={{ flex: 1, overflowY: 'auto', padding: '0 16px 12px' }}>
+                  {folderLinkBrowsePath !== '/' && (
+                    <div
+                      style={{ padding: '6px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: '4px', marginBottom: '2px' }}
+                      className="hover:bg-white/10"
+                      onClick={() => {
+                        const parent = folderLinkBrowsePath.split('/').slice(0, -1).join('/') || '/';
+                        setFolderLinkBrowsePath(parent);
+                        browseForFolderLink(parent);
+                      }}
+                      data-testid="folder-browser-back"
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>
+                      <span style={{ color: 'rgba(255,255,255,0.6)' }}>..</span>
+                    </div>
+                  )}
+                  {folderLinkBrowseLoading ? (
+                    <div style={{ textAlign: 'center', padding: '20px', color: 'rgba(255,255,255,0.4)' }}>Loading...</div>
+                  ) : folderLinkBrowseItems.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '20px', color: 'rgba(255,255,255,0.4)' }}>No folders found</div>
+                  ) : (
+                    folderLinkBrowseItems.map((item) => (
+                      <div
+                        key={item.path}
+                        style={{ padding: '6px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: '4px', marginBottom: '2px' }}
+                        className="hover:bg-white/10"
+                        onClick={() => {
+                          setFolderLinkBrowsePath(item.path);
+                          browseForFolderLink(item.path);
+                        }}
+                        data-testid={`folder-item-${item.name}`}
+                      >
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#facc15" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                        <span>{item.name}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+                <div style={{ padding: '10px 16px', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <button
+                    onClick={() => setFolderLinkBrowsing(null)}
+                    style={{ fontSize: '10px', padding: '4px 12px', borderRadius: '4px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', color: 'white' }}
+                    data-testid="folder-browser-cancel"
+                  >Cancel</button>
+                  <button
+                    onClick={() => {
+                      if (!folderLinkBrowsing) return;
+                      const updated = { ...courseFolderLinks };
+                      const code = folderLinkBrowsing.courseCode;
+                      if (!updated[code]) updated[code] = {};
+                      if (folderLinkBrowsing.type === 'module') {
+                        updated[code] = { ...updated[code], modulePath: folderLinkBrowsePath };
+                      } else {
+                        updated[code] = { ...updated[code], readingPath: folderLinkBrowsePath };
+                      }
+                      saveCourseFolderLinks(updated);
+                      setFolderLinkBrowsing(null);
+                    }}
+                    style={{ fontSize: '10px', padding: '4px 16px', borderRadius: '4px', background: 'rgba(59,130,246,0.5)', border: '1px solid rgba(59,130,246,0.7)', cursor: 'pointer', color: 'white', fontWeight: 600 }}
+                    data-testid="folder-browser-select"
+                  >Select This Folder</button>
+                </div>
+              </div>
+              </>
+            )}
+            </div>,
+            document.body
+          )}
           {isSchoolCoursesDialogOpen && desktopIsFull && createPortal(
             <div>
             <div className={`fixed inset-0 z-[10002] ${schoolCoursesOpenSource === 'pill' ? 'bg-black/50' : ''}`} onClick={() => startTransition(() => setIsSchoolCoursesDialogOpen(false))} />
@@ -24876,6 +25113,8 @@ export default function Dashboard() {
                 const srTime = weatherData?.sunrise ? new Date(weatherData.sunrise) : null;
                 const afterSunrise = isTodayForecast && srTime && new Date() >= srTime;
                 const effectiveWCode = afterSunrise ? weatherData!.code : dayForecast?.weatherCode;
+                const ssTime = weatherData?.sunset ? new Date(weatherData.sunset) : null;
+                const isNight = isTodayForecast && srTime && ssTime ? (new Date() < srTime || new Date() >= ssTime) : false;
                 const wIconEl = ((wc: number | undefined) => {
                   if (wc === undefined) return null;
                   const s = 11;
