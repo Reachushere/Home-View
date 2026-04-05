@@ -24042,7 +24042,7 @@ export default function Dashboard() {
                       </div>
                     )}
                     {isTodayForecast && weatherAlerts.length > 0 && (
-                      <div className="absolute inset-0 weather-alert-box-pulse" style={{ backgroundColor: 'rgb(255,0,0)', left: '0px', right: '-2px' }} />
+                      <div className="absolute inset-0 weather-alert-box-pulse" style={{ backgroundColor: 'rgb(255,0,0)', left: '-1px', right: '-2px' }} />
                     )}
                     {dayForecast && (
                       <span className="text-[11px] text-white/90 whitespace-nowrap leading-none font-medium relative z-10 inline-flex items-center gap-[2px]" style={{ letterSpacing: '-0.2px' }}>
@@ -24516,11 +24516,11 @@ export default function Dashboard() {
                             });
                             const wmoLabel = (c: number) => ({ 0:'Sunny',1:'Mostly Clear',2:'Partly Cloudy',3:'Cloudy',45:'Foggy',48:'Foggy',51:'Light Drizzle',53:'Drizzle',55:'Heavy Drizzle',61:'Light Rain',63:'Rainy',65:'Heavy Rain',66:'Freezing Rain',67:'Freezing Rain',71:'Light Snow',73:'Snowy',75:'Heavy Snow',77:'Snow Grains',80:'Showers',81:'Showers',82:'Heavy Showers',85:'Snow Showers',86:'Snow Showers',95:'Thunderstorms',96:'Hail',99:'Severe Storms' }[c] || 'Mixed');
                             return (
-                              <div className="absolute z-20 flex flex-col" style={{ top: 6, bottom: 6, left: 1, width: '48px', gap: '0px', pointerEvents: 'none' }} data-testid="today-hourly-forecast">
+                              <div className="absolute z-20 flex flex-col" style={{ top: 6, bottom: 6, left: 3, width: '48px', gap: '0px', pointerEvents: 'none' }} data-testid="today-hourly-forecast">
                                 {forecasts.map((fc, i) => (
                                   <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, borderBottom: i < forecasts.length - 1 ? '1px solid rgba(255,255,255,0.4)' : 'none' }}>
                                     <div style={{ flex: 1, background: '#1a1a2e', borderRadius: i === 0 ? '3px 3px 0 0' : i === forecasts.length - 1 ? '0 0 3px 3px' : '0', padding: '2px 3px 2px 3px', display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: 0 }} data-testid={`hourly-forecast-${fc.offset}h`}>
-                                      <div style={{ fontSize: '6px', color: '#ffffff', fontWeight: 600, lineHeight: 1, textAlign: 'left', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: '1px' }}>{wmoLabel(fc.code)}</div>
+                                      <div style={{ fontSize: '7px', color: 'rgba(255,255,255,0.9)', fontWeight: 600, lineHeight: 1.1, textAlign: 'left', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: '1px' }}>{wmoLabel(fc.code)}</div>
                                       <div className="flex items-center justify-center gap-[3px]">
                                         <span style={{ fontSize: '9px', color: '#ffffff', fontWeight: 700, lineHeight: 1 }}>{fc.offset}h</span>
                                         <span style={{ lineHeight: 1, flexShrink: 0 }}>{renderMiniWeatherSvg(fc.code)}</span>
