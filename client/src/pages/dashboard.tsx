@@ -28100,9 +28100,9 @@ export default function Dashboard() {
               w2027Start: new Date(2027, 0, 11),
             };
             const totalTabSlots = 14;
-            const maxWeeksPerSem = 13;
+            const maxWinterWeeks = 13;
             const maxSSWeeks = 14;
-            const lastYear = 2029;
+            const lastSemYear = 2029;
             const semDatesAll: Record<number, { wStart: Date; wEnd: Date; ssStart: Date; ssEnd: Date; fStart: Date; fEnd: Date }> = {
               2026: { wStart: new Date(2026, 0, 12), wEnd: new Date(2026, 3, 10), ssStart: new Date(2026, 4, 4), ssEnd: new Date(2026, 7, 7), fStart: new Date(2026, 8, 8), fEnd: new Date(2026, 11, 11) },
               2027: { wStart: new Date(2027, 0, 11), wEnd: new Date(2027, 3, 9), ssStart: new Date(2027, 4, 3), ssEnd: new Date(2027, 7, 6), fStart: new Date(2027, 8, 7), fEnd: new Date(2027, 11, 10) },
@@ -28111,113 +28111,157 @@ export default function Dashboard() {
             };
             type SemTab = { id: string; topText: string; bottomText: string; semLabel: string; scrollTarget: string; colors: [string, string] };
             const semTabs: SemTab[] = [];
-            const allFutureTabs: SemTab[] = [];
-            const buildSemTabs = (year: number, isCurrentSem: boolean, currentWk: number) => {
-              const d = semDatesAll[year];
-              if (!d) return;
+            const pipeline: SemTab[] = [];
+            const addWinterWeeks = (year: number, startWk: number, isCurrent: boolean) => {
               const yc = getYearColor(year);
-              if (now < d.wEnd || (isCurrentSem && now >= d.wStart && now <= d.wEnd)) {
-                if (isCurrentSem) {
-                  for (let offset = 0; offset < 3; offset++) {
-                    const wk = currentWk + offset;
-                    if (wk <= maxWeeksPerSem) {
-                      const scrollT = offset === 0 ? 'thisweek' : offset === 1 ? 'nextweek' : 'twoweeks';
-                      allFutureTabs.push({ id: `w${year}-wk${wk}`, topText: String(wk), bottomText: 'W', semLabel: `Winter ${year}`, scrollTarget: scrollT, colors: yc });
-                    }
-                  }
-                } else {
-                  for (let wk = 1; wk <= maxWeeksPerSem; wk++) {
-                    allFutureTabs.push({ id: `w${year}-wk${wk}`, topText: String(wk), bottomText: 'W', semLabel: `Winter ${year}`, scrollTarget: `sem-w${year}-wk${wk}`, colors: yc });
+              if (isCurrent) {
+                for (let offset = 0; offset < 3; offset++) {
+                  const wk = startWk + offset;
+                  if (wk <= maxWinterWeeks) {
+                    const scrollT = offset === 0 ? 'thisweek' : offset === 1 ? 'nextweek' : 'twoweeks';
+                    pipeline.push({ id: `w${year}-wk${wk}`, topText: String(wk), bottomText: 'W', semLabel: `Winter ${year}`, scrollTarget: scrollT, colors: yc });
                   }
                 }
-              }
-              if (now < d.ssStart) {
-                allFutureTabs.push({ id: `april-${year}`, topText: '', bottomText: 'APRIL', semLabel: `Winter ${year}`, scrollTarget: `april-${year}`, colors: yc });
-              }
-              if (year <= lastYear) {
-                for (let w = 1; w <= maxSSWeeks; w++) {
-                  if (isCurrentSem && now >= d.ssStart && now < d.fStart) {
-                    if (w < currentWk) continue;
-                  }
-                  if (!isCurrentSem || (now < d.ssEnd)) {
-                    const topLabel = w <= 7 ? String(w) : `${w}/${w - 7}`;
-                    allFutureTabs.push({ id: `ss${year}-wk${w}`, topText: topLabel, bottomText: 'S', semLabel: `Spring/Summer ${year}`, scrollTarget: w === 1 ? `sem-ss${year}` : `sem-ss${year}-wk${w}`, colors: yc });
-                  }
-                }
-              }
-              if (now < d.fStart || (isCurrentSem && now >= d.ssEnd && now < d.fStart)) {
-                allFutureTabs.push({ id: `aug-sept-${year}`, topText: '', bottomText: 'AUG-SEP', semLabel: `Spring/Summer ${year}`, scrollTarget: `aug-sept-${year}`, colors: gapColor });
-              }
-              if (year <= lastYear) {
-                for (let wk = 1; wk <= maxWeeksPerSem; wk++) {
-                  if (isCurrentSem && now >= d.fStart) {
-                    if (wk < currentWk) continue;
-                  }
-                  allFutureTabs.push({ id: `f${year}-wk${wk}`, topText: String(wk), bottomText: 'F', semLabel: `Fall ${year}`, scrollTarget: `sem-f${year}-wk${wk}`, colors: yc });
-                }
-              }
-              if (year < lastYear) {
-                const nextD = semDatesAll[year + 1];
-                if (nextD && now < nextD.wStart) {
-                  allFutureTabs.push({ id: `dec-jan-${year}`, topText: '', bottomText: 'DEC-JAN', semLabel: `Fall ${year}`, scrollTarget: `dec-jan-${year}`, colors: gapColor });
+              } else {
+                for (let wk = startWk; wk <= maxWinterWeeks; wk++) {
+                  pipeline.push({ id: `w${year}-wk${wk}`, topText: String(wk), bottomText: 'W', semLabel: `Winter ${year}`, scrollTarget: `sem-w${year}-wk${wk}`, colors: yc });
                 }
               }
             };
-            const detectCurrentSem = (): { year: number; sem: 'w' | 'ss' | 'f' | 'gap'; currentWk: number } => {
-              for (let y = 2026; y <= lastYear; y++) {
+            const addAprilGap = (year: number) => {
+              pipeline.push({ id: `april-${year}`, topText: '', bottomText: 'APRIL', semLabel: `Winter ${year}`, scrollTarget: `april-${year}`, colors: getYearColor(year) });
+            };
+            const addSSWeeks = (year: number, startWk: number) => {
+              const yc = getYearColor(year);
+              for (let w = startWk; w <= maxSSWeeks; w++) {
+                const topLabel = w <= 7 ? String(w) : `${w}/${w - 7}`;
+                pipeline.push({ id: `ss${year}-wk${w}`, topText: topLabel, bottomText: 'S', semLabel: `Spring/Summer ${year}`, scrollTarget: w === 1 ? `sem-ss${year}` : `sem-ss${year}-wk${w}`, colors: yc });
+              }
+            };
+            const addAugSeptGap = (year: number) => {
+              pipeline.push({ id: `aug-sept-${year}`, topText: '', bottomText: 'AUG-SEP', semLabel: `Spring/Summer ${year}`, scrollTarget: `aug-sept-${year}`, colors: gapColor });
+            };
+            const addFallWeeks = (year: number, startWk: number) => {
+              const yc = getYearColor(year);
+              for (let wk = startWk; wk <= maxWinterWeeks; wk++) {
+                pipeline.push({ id: `f${year}-wk${wk}`, topText: String(wk), bottomText: 'F', semLabel: `Fall ${year}`, scrollTarget: `sem-f${year}-wk${wk}`, colors: yc });
+              }
+            };
+            const addDecJanGap = (year: number) => {
+              pipeline.push({ id: `dec-jan-${year}`, topText: '', bottomText: 'DEC-JAN', semLabel: `Fall ${year}`, scrollTarget: `dec-jan-${year}`, colors: gapColor });
+            };
+            const addYearTab = (year: number) => {
+              pipeline.push({ id: `year-${year}`, topText: '', bottomText: String(year), semLabel: `Winter ${year}`, scrollTarget: `sem-w${year}`, colors: getYearColor(year) });
+            };
+            const detectCurrentSem = (): { year: number; sem: 'w' | 'ss' | 'f' | 'aprilGap' | 'augGap' | 'decGap'; currentWk: number } => {
+              for (let y = 2026; y <= lastSemYear; y++) {
                 const d = semDatesAll[y];
                 if (!d) continue;
                 if (now >= d.wStart && now < d.wEnd) return { year: y, sem: 'w', currentWk: selectedWeek };
-                if (now >= d.wEnd && now < d.ssStart) return { year: y, sem: 'gap', currentWk: 1 };
+                if (now >= d.wEnd && now < d.ssStart) return { year: y, sem: 'aprilGap', currentWk: 1 };
                 if (now >= d.ssStart && now < d.ssEnd) {
-                  const weekNum = Math.max(1, Math.ceil((now.getTime() - d.ssStart.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1);
-                  return { year: y, sem: 'ss', currentWk: Math.min(weekNum, maxSSWeeks) };
+                  const wkNum = Math.max(1, Math.ceil((now.getTime() - d.ssStart.getTime()) / (7 * 86400000)) + 1);
+                  return { year: y, sem: 'ss', currentWk: Math.min(wkNum, maxSSWeeks) };
                 }
-                if (now >= d.ssEnd && now < d.fStart) return { year: y, sem: 'gap', currentWk: 1 };
+                if (now >= d.ssEnd && now < d.fStart) return { year: y, sem: 'augGap', currentWk: 1 };
                 if (now >= d.fStart && now < d.fEnd) {
-                  const weekNum = Math.max(1, Math.ceil((now.getTime() - d.fStart.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1);
-                  return { year: y, sem: 'f', currentWk: Math.min(weekNum, maxWeeksPerSem) };
+                  const wkNum = Math.max(1, Math.ceil((now.getTime() - d.fStart.getTime()) / (7 * 86400000)) + 1);
+                  return { year: y, sem: 'f', currentWk: Math.min(wkNum, maxWinterWeeks) };
                 }
-                if (y < lastYear) {
+                if (y < lastSemYear) {
                   const nextD = semDatesAll[y + 1];
-                  if (nextD && now >= d.fEnd && now < nextD.wStart) return { year: y, sem: 'gap', currentWk: 1 };
+                  if (nextD && now >= d.fEnd && now < nextD.wStart) return { year: y, sem: 'decGap', currentWk: 1 };
                 }
               }
               return { year: 2026, sem: 'w', currentWk: selectedWeek };
             };
-            const current = detectCurrentSem();
-            const yearTabsToKeep: number[] = [];
-            for (let y = current.year + 1; y <= lastYear; y++) {
-              yearTabsToKeep.push(y);
-            }
-            if (current.sem === 'w' && current.year >= 2027) {
-              // already in this year's winter, don't add self as year tab
-            } else if (current.sem !== 'w' && current.sem !== 'gap') {
-              // in SS or F of current year, that year shouldn't be a year tab
-            }
-            for (let y = 2026; y <= lastYear; y++) {
-              const d = semDatesAll[y];
-              if (!d) continue;
-              const isCurrent = (y === current.year);
-              if (isCurrent) {
-                buildSemTabs(y, true, current.currentWk);
-              } else if (y > current.year) {
-                buildSemTabs(y, false, 1);
+            const cur = detectCurrentSem();
+            const buildFromYear = (year: number, startPhase: 'w' | 'april' | 'ss' | 'aug' | 'f' | 'dec', startWk: number, isCurrent: boolean) => {
+              if (year > lastSemYear) return;
+              if (startPhase === 'w') { addWinterWeeks(year, startWk, isCurrent); startPhase = 'april'; startWk = 1; }
+              if (startPhase === 'april') { addAprilGap(year); startPhase = 'ss'; }
+              if (startPhase === 'ss') { addSSWeeks(year, startWk); startPhase = 'aug'; startWk = 1; }
+              if (startPhase === 'aug') { addAugSeptGap(year); startPhase = 'f'; }
+              if (startPhase === 'f') { addFallWeeks(year, startWk); startPhase = 'dec'; startWk = 1; }
+              if (startPhase === 'dec' && year < lastSemYear) { addDecJanGap(year); }
+              for (let ny = year + 1; ny <= lastSemYear; ny++) {
+                addWinterWeeks(ny, 1, false);
+                addAprilGap(ny);
+                addSSWeeks(ny, 1);
+                addAugSeptGap(ny);
+                addFallWeeks(ny, 1);
+                if (ny < lastSemYear) addDecJanGap(ny);
+              }
+            };
+            if (cur.sem === 'w') buildFromYear(cur.year, 'w', cur.currentWk, true);
+            else if (cur.sem === 'aprilGap') buildFromYear(cur.year, 'april', 1, true);
+            else if (cur.sem === 'ss') buildFromYear(cur.year, 'ss', cur.currentWk, true);
+            else if (cur.sem === 'augGap') buildFromYear(cur.year, 'aug', 1, true);
+            else if (cur.sem === 'f') buildFromYear(cur.year, 'f', cur.currentWk, true);
+            else if (cur.sem === 'decGap') buildFromYear(cur.year, 'dec', 1, true);
+            const getTabYear = (t: SemTab) => parseInt(t.id.match(/\d{4}/)?.[0] || '0');
+            const getTabPhase = (t: SemTab): string => {
+              if (t.id.startsWith('w')) return 'w';
+              if (t.id.startsWith('april-')) return 'april';
+              if (t.id.startsWith('ss')) return 'ss';
+              if (t.id.startsWith('aug-sept-')) return 'aug';
+              if (t.id.startsWith('f')) return 'f';
+              if (t.id.startsWith('dec-jan-')) return 'dec';
+              return '?';
+            };
+            const futureYears: number[] = [];
+            for (let y = cur.year + 1; y <= lastSemYear; y++) futureYears.push(y);
+            const tailTabs: SemTab[] = [];
+            for (const y of futureYears) tailTabs.push({ id: `year-${y}`, topText: '', bottomText: String(y), semLabel: `Winter ${y}`, scrollTarget: `sem-w${y}`, colors: getYearColor(y) });
+            const curYearPhases = ['w', 'april', 'ss', 'aug', 'f', 'dec'];
+            const phaseCollapsed: Record<string, SemTab> = {};
+            for (const t of pipeline) {
+              if (getTabYear(t) !== cur.year) continue;
+              const ph = getTabPhase(t);
+              if (ph === 'f' && !phaseCollapsed['f']) {
+                phaseCollapsed['f'] = { id: 'coll-fall', topText: '', bottomText: 'FALL', semLabel: t.semLabel, scrollTarget: t.scrollTarget, colors: t.colors };
               }
             }
-            const remainingYearTabs: SemTab[] = [];
-            for (const y of yearTabsToKeep) {
-              if (!allFutureTabs.some(t => t.id.includes(String(y)))) {
-                remainingYearTabs.push({ id: `year-${y}`, topText: '', bottomText: String(y), semLabel: `Winter ${y}`, scrollTarget: `sem-w${y}`, colors: getYearColor(y) });
+            let slotsForExpand = totalTabSlots - tailTabs.length;
+            const curYearPipeline = pipeline.filter(t => getTabYear(t) === cur.year);
+            if (curYearPipeline.length <= slotsForExpand) {
+              for (const t of curYearPipeline) semTabs.push(t);
+              const leftover = slotsForExpand - curYearPipeline.length;
+              if (leftover > 0) {
+                const nextPipeline = pipeline.filter(t => getTabYear(t) > cur.year);
+                const expandedYears = new Set<number>();
+                let added = 0;
+                for (let i = 0; i < nextPipeline.length && added < leftover; i++) {
+                  semTabs.push(nextPipeline[i]);
+                  expandedYears.add(getTabYear(nextPipeline[i]));
+                  added++;
+                }
+                tailTabs.length = 0;
+                for (const y of futureYears) {
+                  if (!expandedYears.has(y)) {
+                    tailTabs.push({ id: `year-${y}`, topText: '', bottomText: String(y), semLabel: `Winter ${y}`, scrollTarget: `sem-w${y}`, colors: getYearColor(y) });
+                  }
+                }
+              }
+            } else {
+              for (let i = 0; i < curYearPipeline.length; i++) {
+                const tab = curYearPipeline[i];
+                const ph = getTabPhase(tab);
+                const remainingPhases: SemTab[] = [];
+                if (ph !== 'f' && ph !== 'dec') {
+                  const laterPhases = curYearPhases.slice(curYearPhases.indexOf(ph) + 1);
+                  for (const lp of laterPhases) {
+                    if (lp === 'f' && phaseCollapsed['f']) remainingPhases.push(phaseCollapsed['f']);
+                  }
+                }
+                if (semTabs.length + 1 + remainingPhases.length + tailTabs.length > totalTabSlots) {
+                  for (const rp of remainingPhases) semTabs.push(rp);
+                  break;
+                }
+                semTabs.push(tab);
               }
             }
-            const slotsForFuture = totalTabSlots - remainingYearTabs.length;
-            for (let i = 0; i < Math.min(slotsForFuture, allFutureTabs.length); i++) {
-              semTabs.push(allFutureTabs[i]);
-            }
-            for (const yt of remainingYearTabs) {
-              semTabs.push(yt);
-            }
+            for (const t of tailTabs) semTabs.push(t);
             const currentSemLabel = hwWeeklyTimeline[0]?.semLabel || null;
             const scrollActiveSem = hwVisibleSemLabel || currentSemLabel;
             return (
