@@ -1144,6 +1144,9 @@ export default function Dashboard() {
     shiftAdjust: false,
     hideFromSummary: false,
     hideFromCountdown: false,
+    sendInvite: false,
+    inviteEmail: '',
+    inviteName: '',
   });
   const [isMedicalWizardOpen, setIsMedicalWizardOpen] = useState(false);
   const [medicalStep, setMedicalStep] = useState(0);
@@ -1247,15 +1250,16 @@ export default function Dashboard() {
       });
       if (medicalData.sendInvite && medicalData.inviteEmail) {
         try {
-          await apiRequest("POST", "/api/calendar/invite", {
-            email: medicalData.inviteEmail,
-            name: medicalData.inviteName || medicalData.inviteEmail,
-            title,
-            description: `${typeLabel} appointment${medicalData.address ? ` at ${medicalData.address}` : ''}`,
+          await apiRequest("POST", "/api/tasks/send-invite", {
+            recipientEmail: medicalData.inviteEmail,
+            recipientName: medicalData.inviteName || medicalData.inviteEmail,
+            taskTitle: title,
+            taskDescription: `${typeLabel} appointment${medicalData.address ? ` at ${medicalData.address}` : ''}`,
             startDate: dueDate.toISOString(),
             endDate: new Date(`${medicalData.date}T${medicalData.endHour}:${medicalData.endMinute}`).toISOString(),
             location: medicalData.address || medicalData.clinicName || '',
           });
+          toast({ title: "Invite sent", description: `Calendar invite sent to ${medicalData.inviteEmail}` });
         } catch (e) { console.error('Failed to send invite:', e); }
       }
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
@@ -18586,7 +18590,7 @@ export default function Dashboard() {
                   <div className="flex items-center gap-2">
                     <Plus className="text-white" style={{ width: '15px', height: '15px' }} />
                     <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
-                      {quickAddStep === 0 ? 'ADD' : quickAddStep === 1 ? 'TASK NAME' : quickAddStep === 2 ? 'COURSE' : quickAddStep === 3 ? 'DATE & TIME' : quickAddStep === 4 ? 'DISPLAY OPTIONS' : quickAddStep === 5 ? 'PRIORITY' : quickAddStep === 6 ? 'REMINDERS' : quickAddStep === 7 ? 'ATTACHMENTS' : quickAddStep === 8 ? 'NOTES & LINKS' : quickAddStep === 9 ? 'SUBTASKS & PROJECT' : quickAddStep === 10 ? 'REPEAT' : 'REVIEW'}
+                      {quickAddStep === 0 ? 'ADD' : quickAddStep === 1 ? 'TASK NAME' : quickAddStep === 2 ? 'COURSE' : quickAddStep === 3 ? 'DATE & TIME' : quickAddStep === 4 ? 'DISPLAY OPTIONS' : quickAddStep === 5 ? 'PRIORITY' : quickAddStep === 6 ? 'REMINDERS' : quickAddStep === 7 ? 'ATTACHMENTS' : quickAddStep === 8 ? 'NOTES & LINKS' : quickAddStep === 9 ? 'SUBTASKS & PROJECT' : quickAddStep === 10 ? 'REPEAT' : quickAddStep === 11 ? 'INVITE' : 'REVIEW'}
                     </h2>
                   </div>
                   <button onClick={handleQuickAddClose} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-quick-add">
@@ -19540,8 +19544,65 @@ export default function Dashboard() {
                     </div>
                   )}
 
-                  {/* Step 11: Review & Submit */}
                   {quickAddStep === 11 && (
+                    <div className="flex flex-col gap-3">
+                      <div className="text-center mb-2">
+                        <Mail className="h-8 w-8 text-blue-400 mx-auto mb-2" />
+                        <h3 className="text-sm font-medium text-white">Send Invite</h3>
+                        <p className="text-[9px] text-white/50 mt-1">Invite someone to this task via email</p>
+                      </div>
+                      <div className="flex items-center gap-3 mb-1">
+                        <button
+                          onClick={() => setQuickAddData(p => ({ ...p, sendInvite: !p.sendInvite }))}
+                          className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-[11px] transition-all w-full justify-center"
+                          style={{
+                            background: quickAddData.sendInvite ? 'rgba(59,130,246,0.2)' : 'rgba(255,255,255,0.04)',
+                            border: `1px solid ${quickAddData.sendInvite ? 'rgba(59,130,246,0.5)' : 'rgba(255,255,255,0.1)'}`,
+                            color: quickAddData.sendInvite ? 'white' : 'rgba(255,255,255,0.5)',
+                          }}
+                          data-testid="quick-add-invite-toggle"
+                        >
+                          <Mail className="h-3.5 w-3.5" />
+                          {quickAddData.sendInvite ? 'Invite Enabled' : 'Enable Invite?'}
+                        </button>
+                      </div>
+                      {quickAddData.sendInvite && (
+                        <div className="space-y-3">
+                          <div>
+                            <label className="text-white/50 text-[10px] block mb-1">Recipient Email</label>
+                            <input
+                              type="email"
+                              value={quickAddData.inviteEmail}
+                              onChange={e => setQuickAddData(p => ({ ...p, inviteEmail: e.target.value }))}
+                              placeholder="person@email.com"
+                              className="w-full bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] focus:outline-none focus:border-blue-400/50"
+                              data-testid="quick-add-invite-email"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-white/50 text-[10px] block mb-1">Recipient Name (optional)</label>
+                            <input
+                              type="text"
+                              value={quickAddData.inviteName}
+                              onChange={e => setQuickAddData(p => ({ ...p, inviteName: e.target.value }))}
+                              placeholder="Their name"
+                              className="w-full bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-[12px] focus:outline-none focus:border-blue-400/50"
+                              data-testid="quick-add-invite-name"
+                            />
+                          </div>
+                          <div className="p-2.5 rounded-lg text-[9px] text-blue-300/70" style={{ background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.15)' }}>
+                            An email with a calendar invite (.ics) will be sent from bryn.hendricks@gmail.com when you submit this task.
+                          </div>
+                        </div>
+                      )}
+                      {!quickAddData.sendInvite && (
+                        <p className="text-white/30 text-[9px] text-center mt-4">You can skip this step if you don't need to invite anyone.</p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Step 12: Review & Submit */}
+                  {quickAddStep === 12 && (
                     <div className="flex flex-col gap-3">
                       <div className="text-center mb-2">
                         <ClipboardCheck className="h-8 w-8 text-green-400 mx-auto mb-2" />
@@ -19657,6 +19718,10 @@ export default function Dashboard() {
                             </span>
                           </div>
                         )}
+                        <div className="flex justify-between text-[11px]">
+                          <span className="text-white/50">Invite</span>
+                          <span className="text-white">{quickAddData.sendInvite ? (quickAddData.inviteEmail || '—') : 'Not sending'}</span>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -19675,7 +19740,7 @@ export default function Dashboard() {
                     {quickAddStep === 0 ? 'Cancel' : <><ChevronLeft className="h-3 w-3 mr-1" /> Back</>}
                   </button>
 
-                  {quickAddStep < 11 && quickAddStep > 0 && (() => {
+                  {quickAddStep < 12 && quickAddStep > 0 && (() => {
                     const canNext = !((quickAddStep === 1 && !quickAddData.title.trim()) || (quickAddStep === 3 && !quickAddData.dueDate));
                     return (
                       <div className="flex items-center gap-2">
@@ -19704,7 +19769,7 @@ export default function Dashboard() {
                     );
                   })()}
 
-                  {quickAddStep === 11 && (
+                  {quickAddStep === 12 && (
                     <div className="flex items-center gap-2">
                     <button
                       onClick={handleQuickAddClose}
@@ -19785,6 +19850,23 @@ export default function Dashboard() {
                               } catch (e) {
                                 console.error('Failed to create subtask:', e);
                               }
+                            }
+                          }
+                          if (quickAddData.sendInvite && quickAddData.inviteEmail) {
+                            try {
+                              await apiRequest("POST", "/api/tasks/send-invite", {
+                                recipientEmail: quickAddData.inviteEmail,
+                                recipientName: quickAddData.inviteName || quickAddData.inviteEmail,
+                                taskTitle: quickAddData.title,
+                                taskDescription: quickAddData.description || quickAddData.notes || '',
+                                startDate: dueDate.toISOString(),
+                                endDate: quickAddData.eventEndTime ? new Date(quickAddData.dueDate + 'T' + quickAddData.eventEndTime).toISOString() : null,
+                                location: '',
+                              });
+                              toast({ title: "Invite sent", description: `Calendar invite sent to ${quickAddData.inviteEmail}` });
+                            } catch (e) {
+                              console.error('Failed to send invite:', e);
+                              toast({ title: "Invite failed", description: "Task was added but the invite email could not be sent.", variant: "destructive" });
                             }
                           }
                           queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
@@ -32795,6 +32877,43 @@ export default function Dashboard() {
                 )}
               </div>
               <div className="flex items-center gap-3">
+                {editingTask && (
+                  <Button
+                    variant="outline"
+                    className="border !border-blue-400/50 text-white hover:text-white hover:!border-blue-300 hover:bg-blue-500/20 transition-opacity duration-200 h-8"
+                    style={{
+                      fontSize: '11px',
+                      background: 'rgba(59,130,246,0.12)',
+                    }}
+                    onClick={() => {
+                      const task = editingTask;
+                      const inviteEmail = prompt('Enter recipient email address:');
+                      if (!inviteEmail) return;
+                      const inviteName = prompt('Enter recipient name (optional):') || inviteEmail;
+                      const dueDate = task.dueDate ? new Date(task.dueDate).toISOString() : new Date().toISOString();
+                      const endDate = task.eventEndTime && task.dueDate
+                        ? new Date(new Date(task.dueDate).toISOString().split('T')[0] + 'T' + task.eventEndTime).toISOString()
+                        : null;
+                      apiRequest("POST", "/api/tasks/send-invite", {
+                        recipientEmail: inviteEmail,
+                        recipientName: inviteName,
+                        taskTitle: task.title,
+                        taskDescription: task.description || task.notes || '',
+                        startDate: dueDate,
+                        endDate,
+                        location: '',
+                      }).then(() => {
+                        toast({ title: "Invite sent", description: `Calendar invite sent to ${inviteEmail}` });
+                      }).catch(() => {
+                        toast({ title: "Invite failed", description: "Could not send the invite email.", variant: "destructive" });
+                      });
+                    }}
+                    data-testid="button-send-invite"
+                  >
+                    <Mail className="h-3 w-3 mr-1" />
+                    Invite
+                  </Button>
+                )}
                 {editingTask && editingTask.type === 'reminder' && !(editingTask as any).isAcknowledged && (
                   <Button
                     variant="outline"

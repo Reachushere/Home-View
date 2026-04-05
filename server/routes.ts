@@ -6977,6 +6977,97 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
   // ============================================
   
   // GET /api/tasks/:taskId/subtasks - Get all subtasks for a task
+  app.post("/api/tasks/send-invite", async (req, res) => {
+    try {
+      const { recipientEmail, recipientName, taskTitle, taskDescription, startDate, endDate, location } = req.body;
+      if (!recipientEmail || !taskTitle) {
+        return res.status(400).json({ error: "recipientEmail and taskTitle are required" });
+      }
+      const senderEmail = "bryn.hendricks@gmail.com";
+      const startDt = startDate ? new Date(startDate) : new Date();
+      const endDt = endDate ? new Date(endDate) : new Date(startDt.getTime() + 60 * 60 * 1000);
+      const formatDt = (d: Date) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+      const uid = `unical-${Date.now()}-${Math.random().toString(36).slice(2)}@unical.app`;
+      const icsContent = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//UniCal//Task Invite//EN',
+        'METHOD:REQUEST',
+        'BEGIN:VEVENT',
+        `UID:${uid}`,
+        `DTSTART:${formatDt(startDt)}`,
+        `DTEND:${formatDt(endDt)}`,
+        `SUMMARY:${taskTitle}`,
+        `DESCRIPTION:${(taskDescription || '').replace(/\n/g, '\\n')}`,
+        location ? `LOCATION:${location}` : '',
+        `ORGANIZER;CN=Bryn:mailto:${senderEmail}`,
+        `ATTENDEE;CN=${recipientName || recipientEmail};RSVP=TRUE:mailto:${recipientEmail}`,
+        `STATUS:CONFIRMED`,
+        'END:VEVENT',
+        'END:VCALENDAR',
+      ].filter(Boolean).join('\r\n');
+
+      const boundary = `boundary_${Date.now()}`;
+      const formattedStart = startDt.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: 'America/Toronto' });
+      const htmlBody = `
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #1a1a2e, #16213e); color: white; padding: 24px; border-radius: 12px 12px 0 0;">
+            <h2 style="margin: 0 0 4px 0; font-size: 18px;">You're Invited</h2>
+            <p style="margin: 0; opacity: 0.7; font-size: 13px;">UniCal Task Invite</p>
+          </div>
+          <div style="background: #f8f9fa; padding: 24px; border: 1px solid #e0e0e0; border-top: none; border-radius: 0 0 12px 12px;">
+            <h3 style="margin: 0 0 16px 0; color: #1a1a2e;">${taskTitle}</h3>
+            <p style="margin: 0 0 8px 0; color: #555; font-size: 14px;"><strong>When:</strong> ${formattedStart}</p>
+            ${location ? `<p style="margin: 0 0 8px 0; color: #555; font-size: 14px;"><strong>Where:</strong> ${location}</p>` : ''}
+            ${taskDescription ? `<p style="margin: 16px 0 0 0; color: #555; font-size: 14px;">${taskDescription.replace(/\n/g, '<br>')}</p>` : ''}
+            <p style="margin: 16px 0 0 0; color: #888; font-size: 12px;">Sent from UniCal by Bryn</p>
+          </div>
+        </div>`;
+
+      const rawEmail = [
+        `From: Bryn <${senderEmail}>`,
+        `To: ${recipientName ? `${recipientName} <${recipientEmail}>` : recipientEmail}`,
+        `Subject: Invite: ${taskTitle}`,
+        'MIME-Version: 1.0',
+        `Content-Type: multipart/mixed; boundary="${boundary}"`,
+        '',
+        `--${boundary}`,
+        'Content-Type: text/html; charset=UTF-8',
+        '',
+        htmlBody,
+        '',
+        `--${boundary}`,
+        'Content-Type: text/calendar; charset=UTF-8; method=REQUEST',
+        'Content-Disposition: attachment; filename="invite.ics"',
+        '',
+        icsContent,
+        '',
+        `--${boundary}--`,
+      ].join('\r\n');
+
+      const encodedMessage = Buffer.from(rawEmail)
+        .toString('base64')
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+
+      const { getGmailAccessToken } = await import("./gmail");
+      const accessToken = await getGmailAccessToken();
+      const sendRes = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ raw: encodedMessage }),
+      });
+      const result = await sendRes.json() as any;
+      if (result.error) throw new Error(JSON.stringify(result.error));
+      console.log(`[Invite] Email invite sent to ${recipientEmail} for "${taskTitle}"`);
+      res.json({ success: true, messageId: result.id });
+    } catch (error: any) {
+      console.error("[Invite] Failed to send invite:", error);
+      res.status(500).json({ error: error.message || "Failed to send invite" });
+    }
+  });
+
   app.get("/api/tasks/:taskId/subtasks", async (req, res) => {
     try {
       const taskId = Number(req.params.taskId);
