@@ -28211,12 +28211,18 @@ export default function Dashboard() {
                               <defs><filter id={`tabShadow-${tabIdx}`}><feDropShadow dx="0" dy="0.3" stdDeviation="0.3" floodColor="rgba(0,0,0,0.03)" /></filter></defs>
                               <path d={`M0,0 L${displayW - br},0 Q${displayW},0 ${displayW},${br} L${displayW},${svgH - br} Q${displayW},${svgH} ${displayW - br},${svgH} L0,${svgH} Z`} fill={`url(#${gradId})`} filter={`url(#tabShadow-${tabIdx})`} />
                               {tab.topText ? (
-                                <>
-                                  <text x={cx} y={svgH * 0.28 + 2} textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.9)" fontSize={Math.min(8.5, svgH * 0.15 + 3)} fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.5">{tab.bottomText}</text>
-                                  <text x={cx} y={svgH * 0.62} textAnchor="middle" dominantBaseline="central" fill="#ffffff" fontSize={Math.min(12, svgH * 0.4 - 2)} fontWeight="700" fontFamily="system-ui, -apple-system, sans-serif">{tab.topText}</text>
-                                </>
+                                (() => {
+                                  const isLongText = tab.topText.length > 2;
+                                  const numFontSize = isLongText ? 9 : 12;
+                                  return (
+                                    <>
+                                      <text x={cx} y={svgH * 0.28 + 2} textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.9)" fontSize={8.5} fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.5">{tab.bottomText}</text>
+                                      <text x={cx} y={svgH * 0.65} textAnchor="middle" dominantBaseline="central" fill="#ffffff" fontSize={numFontSize} fontWeight="700" fontFamily="system-ui, -apple-system, sans-serif">{tab.topText}</text>
+                                    </>
+                                  );
+                                })()
                               ) : (
-                                <text x={cx} y={svgH / 2 - 1} textAnchor="middle" dominantBaseline="central" fill="#ffffff" fontSize={Math.min(9, svgH * 0.25 + 2)} fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.3" transform={`rotate(90, ${cx}, ${svgH / 2})`}>{tab.bottomText}</text>
+                                <text x={cx} y={svgH / 2 - 1} textAnchor="middle" dominantBaseline="central" fill="#ffffff" fontSize={9} fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.3" transform={`rotate(90, ${cx}, ${svgH / 2})`}>{tab.bottomText}</text>
                               )}
                             </>
                           );
