@@ -11079,19 +11079,27 @@ export default function Dashboard() {
   const getAllDayCalendarEvents = (day: Date) => {
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const dayKey = _etDateKey(day);
+    const dayTasks = tasksByDateKey.get(dayKey) || [];
     return filteredCalendarEvents.filter(e => {
       if (!e.isAllDay) return false;
-      // For all-day events, extract date part directly to avoid timezone parsing issues
-      // startDate may be "2026-03-26T12:00:00" (no TZ) — parse the YYYY-MM-DD directly
       const datePart = e.startDate.includes('T') ? e.startDate.split('T')[0] : e.startDate;
       const [yr, mo, dy] = datePart.split('-').map(Number);
       const eventDate = new Date(yr, mo - 1, dy, 12, 0, 0);
-      // Hide all-day events from days that have already passed
       const eventDayStart = new Date(yr, mo - 1, dy);
       if (eventDayStart < todayStart) return false;
-      // Only show events that conflict with tasks
       if (!eventConflictsWithTask(e)) return false;
-      return isSameDayET(eventDate, day);
+      if (!isSameDayET(eventDate, day)) return false;
+      const titleClean = e.title.replace(/^\[PREP\]\s*/, '').replace(/^\[.*?\]\s*/g, '').toLowerCase().trim();
+      const isDupOfExistingTask = dayTasks.some(t => {
+        if (t.calendarEventId === e.id || t.secondAccountCalendarEventId === e.id || t.prepCalendarEventId === e.id || t.secondAccountPrepEventId === e.id) return true;
+        const taskTitle = t.title.replace(/^\[.*?\]\s*/g, '').toLowerCase().trim();
+        if (taskTitle === titleClean) return true;
+        if (t.type === 'class' && titleClean.includes(taskTitle.substring(0, 15))) return true;
+        return false;
+      });
+      if (isDupOfExistingTask) return false;
+      return true;
     });
   };
   
