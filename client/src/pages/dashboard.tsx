@@ -15455,18 +15455,7 @@ export default function Dashboard() {
               title="Notepad"
               onClick={() => setIsNotepadOpen(true)}
             >
-              <svg viewBox="0 0 16 16" fill="none" style={{ height: '19px', width: '19px' }}>
-                <rect x="3" y="1" width="10" height="14" rx="1" fill="#4a90d9" stroke="white" strokeWidth="0.5"/>
-                <rect x="4.5" y="2.5" width="7" height="11" rx="0.5" fill="white"/>
-                <line x1="5.5" y1="5" x2="10.5" y2="5" stroke="#4a90d9" strokeWidth="0.5"/>
-                <line x1="5.5" y1="7" x2="10.5" y2="7" stroke="#4a90d9" strokeWidth="0.5"/>
-                <line x1="5.5" y1="9" x2="10.5" y2="9" stroke="#4a90d9" strokeWidth="0.5"/>
-                <line x1="5.5" y1="11" x2="8.5" y2="11" stroke="#4a90d9" strokeWidth="0.5"/>
-                <rect x="2" y="3" width="1.5" height="1" rx="0.3" fill="#ffd700"/>
-                <rect x="2" y="5.5" width="1.5" height="1" rx="0.3" fill="#ffd700"/>
-                <rect x="2" y="8" width="1.5" height="1" rx="0.3" fill="#ffd700"/>
-                <rect x="2" y="10.5" width="1.5" height="1" rx="0.3" fill="#ffd700"/>
-              </svg>
+              <StickyNote className="text-white" style={{ height: '20px', width: '20px' }} />
             </Button>
           </div>
 
