@@ -24615,7 +24615,7 @@ export default function Dashboard() {
                                 {forecasts.map((fc, i) => (
                                   <div key={i} className="flex items-center justify-center gap-[3px]" style={{ flex: 1, background: '#1a1a2e', borderRadius: '3px', padding: '0 3px', minHeight: 0 }} data-testid={`hourly-forecast-${fc.offset}h`}>
                                     <span style={{ fontSize: '9px', color: '#ffffff', fontWeight: 700, lineHeight: 1 }}>{fc.offset}h</span>
-                                    <span style={{ lineHeight: 1, flexShrink: 0, position: 'relative', top: '-1px' }}>{renderMiniWeatherSvg(fc.code)}</span>
+                                    <span style={{ lineHeight: 1, flexShrink: 0, position: 'relative', top: '-2px' }}>{renderMiniWeatherSvg(fc.code)}</span>
                                     <span style={{ fontSize: '10px', color: '#ffffff', fontWeight: 700, lineHeight: 1 }}>{fc.temp}°</span>
                                   </div>
                                 ))}
