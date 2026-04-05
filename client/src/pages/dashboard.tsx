@@ -35076,7 +35076,23 @@ function TaskForm({
             });
           }
         }
-        return apiRequest("PATCH", `/api/tasks/${task.id}`, payload);
+        const patchRes = await apiRequest("PATCH", `/api/tasks/${task.id}`, payload);
+        if (data.type === 'essay' && !task.referenceLink) {
+          try {
+            const courseCode = data.courseName?.split(' - ')[0]?.split(' ')[0]?.trim() || '';
+            const courseNamePart = data.courseName?.split(' - ').slice(1).join(' - ')?.trim() || '';
+            await apiRequest("POST", "/api/tasks/essay-template", {
+              taskId: task.id,
+              assignmentName: data.title,
+              courseCode,
+              courseName: courseNamePart,
+              dueDate: finalDueDate.toISOString(),
+            });
+          } catch (essayErr) {
+            console.error("Essay template creation failed for edited task:", essayErr);
+          }
+        }
+        return patchRes;
       }
       // Create the task and return the response to get the new task ID
       const response = await apiRequest("POST", "/api/tasks", payload);
