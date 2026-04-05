@@ -24487,7 +24487,11 @@ export default function Dashboard() {
                                   const daysDiff = Math.round((satDate.getTime() - semStart.getTime()) / (1000*60*60*24));
                                   const semWeek = Math.floor(daysDiff / 7) + 1;
                                   const isLast = semWeek >= activeSem.weeks;
-                                  return `${isLast ? 'Last' : 'New'} School Week (${semWeek})`;
+                                  const ssSubSession = activeSem.key.startsWith('ss') ? (() => {
+                                    const midpoint = new Date(new Date(activeSem.start + 'T00:00:00').getTime() + (new Date(activeSem.end + 'T00:00:00').getTime() - new Date(activeSem.start + 'T00:00:00').getTime()) / 2);
+                                    return satDate <= midpoint ? '/1' : '/2';
+                                  })() : '';
+                                  return `${isLast ? 'Last' : 'New'} School Week (${semWeek}${ssSubSession})`;
                                 }
                                 const nextSem = semDefs.find(s => satDate < new Date(s.start + 'T00:00:00'));
                                 if (nextSem) {
@@ -24663,7 +24667,9 @@ export default function Dashboard() {
                   if (!semStart || !semEnd) continue;
                   const semStartDate = new Date(semStart + 'T00:00:00');
                   const semEndDate = new Date(semEnd + 'T23:59:59');
-                  if (currentWeekEnd < semStartDate || currentWeekStart > semEndDate) continue;
+                  const examBuffer = semKey.startsWith('ss') ? 0 : 14;
+                  const semEndWithExams = new Date(semEndDate.getTime() + examBuffer * 24 * 60 * 60 * 1000);
+                  if (currentWeekEnd < semStartDate || currentWeekStart > semEndWithExams) continue;
                   const courses = semesterCourseAssignments[semKey] || [];
                   for (const sc of courses) {
                     if (!sc.code) continue;
@@ -24672,9 +24678,10 @@ export default function Dashboard() {
                     const courseStart = ssCourseOverrides[overrideKey]
                       ? new Date(ssCourseOverrides[overrideKey].startDate + 'T00:00:00')
                       : semStartDate;
-                    const courseEnd = ssCourseOverrides[overrideKey]
+                    const courseEndRaw = ssCourseOverrides[overrideKey]
                       ? new Date(ssCourseOverrides[overrideKey].endDate + 'T23:59:59')
                       : semEndDate;
+                    const courseEnd = new Date(courseEndRaw.getTime() + examBuffer * 24 * 60 * 60 * 1000);
                     if (currentWeekEnd < courseStart || currentWeekStart > courseEnd) continue;
                     if (allDisplayCourses.some(c => c.name.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') === codeNorm)) continue;
                     const matchedCourse = coursesData.courses.find(c => {
