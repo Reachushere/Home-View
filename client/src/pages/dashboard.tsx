@@ -1310,6 +1310,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     const checkMorningReview = async () => {
+      if (authLevel !== '5747') return;
       const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
       const hour = eastern.getHours();
       if (hour < 9) return;
@@ -1367,6 +1368,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     const checkMonthlyReport = () => {
+      if (authLevel !== '5747') return;
       const now = new Date();
       const etStr = now.toLocaleString('en-US', { timeZone: 'America/Toronto' });
       const et = new Date(etStr);
@@ -3506,6 +3508,7 @@ export default function Dashboard() {
   useEffect(() => {
     (async () => {
       try {
+        if (authLevel !== '5747') return;
         const now = new Date();
         const dow = now.getDay();
         const hour = now.getHours();
@@ -3538,6 +3541,7 @@ export default function Dashboard() {
   ];
 
   useEffect(() => {
+    if (authLevel !== '5747') return;
     const now = new Date();
     const activeSem = SEMESTER_COURSE_DEFS.find(s => now >= new Date(s.start) && now <= new Date(s.end));
     if (!activeSem) return;
@@ -3564,6 +3568,7 @@ export default function Dashboard() {
   }, [coursePlayPriority]);
 
   useEffect(() => {
+    if (authLevel !== '5747') return;
     const now = new Date();
     const nowStr = now.toISOString();
     for (const sem of SEMESTER_COURSE_DEFS) {
@@ -13047,7 +13052,7 @@ export default function Dashboard() {
       )}
 
       {/* Morning Review - Full Page Overlay */}
-      {showMorningReview && (
+      {showMorningReview && desktopIsFull && (
         <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 10010, background: 'rgba(0,0,0,0.6)' }} data-testid="dialog-morning-review">
           <div className="flex flex-col text-white" style={{ width: '69%', maxWidth: '900px', height: '62.5vh', maxHeight: '525px', borderRadius: '10px', overflow: 'hidden', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
           <div className="flex items-center justify-between px-3 py-1.5 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
@@ -18543,7 +18548,7 @@ export default function Dashboard() {
           
 
           {/* Add Chooser Dialog */}
-          {isAddChooserOpen && (
+          {isAddChooserOpen && desktopIsFull && (
             <div className="fixed inset-0 z-[10003] flex items-center justify-center bg-black/30" onClick={() => setIsAddChooserOpen(false)}>
               <div
                 className="rounded-xl w-[320px] overflow-hidden flex flex-col text-white shadow-2xl"
@@ -18601,7 +18606,7 @@ export default function Dashboard() {
           )}
 
           {/* Quick Add Wizard Dialog */}
-          {isQuickAddOpen && (
+          {isQuickAddOpen && desktopIsFull && (
             <div className="fixed inset-0 z-[10003] flex items-center justify-center" onClick={handleQuickAddClose}>
               <div 
                 className="rounded-xl w-[680px] max-w-[95vw] max-h-[95vh] overflow-hidden flex flex-col text-white shadow-2xl"
@@ -20780,7 +20785,7 @@ export default function Dashboard() {
 
             return (
             <>
-          <Dialog open={isEmailWizardOpen} onOpenChange={(open) => { if (!open) { setIsEmailWizardOpen(false); } }}>
+          <Dialog open={isEmailWizardOpen && desktopIsFull} onOpenChange={(open) => { if (!open) { setIsEmailWizardOpen(false); } }}>
             <DialogContent className="max-w-[520px] max-h-[80vh] overflow-y-auto overflow-x-hidden text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', zIndex: 10003 }}>
               <DialogTitle className="sr-only">Email Management</DialogTitle>
               <div className="flex items-center justify-between px-4 py-2 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
@@ -21138,7 +21143,7 @@ export default function Dashboard() {
           </Dialog>
 
           {/* Monthly Post-Secondary Report Dialog */}
-          {isMonthlyReportOpen && (
+          {isMonthlyReportOpen && desktopIsFull && (
             <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 10020, backgroundColor: 'rgba(0,0,0,0.6)' }} data-testid="monthly-report-overlay">
               <div className="sm:rounded-lg shadow-2xl w-[600px] max-h-[85vh] flex flex-col overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }} data-testid="monthly-report-dialog">
                 <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
@@ -21320,7 +21325,7 @@ export default function Dashboard() {
             </div>
           )}
 
-          <Dialog open={isFeedbackOpen} onOpenChange={setIsFeedbackOpen}>
+          <Dialog open={isFeedbackOpen && desktopIsFull} onOpenChange={setIsFeedbackOpen}>
             <DialogContent className="max-w-[320px] text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_textarea]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '45%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', zIndex: 10003 }}>
               <DialogTitle className="sr-only">Send Feedback</DialogTitle>
               <div className="flex items-center justify-between px-4 py-2 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
@@ -21367,7 +21372,7 @@ export default function Dashboard() {
             document.body
           )}
 
-          <Dialog open={isKeyContactsOpen} onOpenChange={setIsKeyContactsOpen}>
+          <Dialog open={isKeyContactsOpen && desktopIsFull} onOpenChange={setIsKeyContactsOpen}>
             <DialogContent className="overflow-hidden flex flex-col text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white p-0 [&>button.absolute]:hidden max-w-none" style={{ width: 'calc(96vw + 28px)', maxWidth: 'calc(96vw + 28px)', height: 'calc(94vh + 16px)', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
               <DialogTitle className="sr-only">Key Contacts</DialogTitle>
               <div className="flex items-center justify-between px-4 py-1.5 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ background: `linear-gradient(180deg, ${colorSettings.headerBar} 0%, ${colorSettings.headerBar} 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
@@ -21639,7 +21644,7 @@ export default function Dashboard() {
           </Dialog>
 
           {/* Rank Courses Reminder */}
-          <Dialog open={showRankCoursesReminder} onOpenChange={setShowRankCoursesReminder}>
+          <Dialog open={showRankCoursesReminder && desktopIsFull} onOpenChange={setShowRankCoursesReminder}>
             <DialogContent className="max-w-sm text-[11px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '45%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08)', border: '1px solid white', borderRadius: '12px', overflow: 'hidden' }}>
               <div className="flex items-center justify-between px-4 py-3 border-b border-white/20" style={{ backgroundColor: colorSettings.headerBar, borderRadius: '12px 12px 0 0' }}>
                 <div className="flex items-center gap-2">
@@ -21722,7 +21727,7 @@ export default function Dashboard() {
           </Dialog>
 
           {/* Profile Dialog */}
-          <Dialog open={isSystemHealthOpen} onOpenChange={setIsSystemHealthOpen}>
+          <Dialog open={isSystemHealthOpen && desktopIsFull} onOpenChange={setIsSystemHealthOpen}>
             <DialogContent className="max-w-md text-[11px] text-white [&_*:not(input)]:text-white p-0 [&>button.absolute]:hidden" style={{ top: 'calc(50% - 30px)', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
               <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                 <div className="flex items-center gap-2">
@@ -21890,7 +21895,7 @@ export default function Dashboard() {
           </Dialog>
           
           {/* Courses Dialog - All past + current courses organized by semester */}
-          {isSchoolCoursesDialogOpen && createPortal(
+          {isSchoolCoursesDialogOpen && desktopIsFull && createPortal(
             <div>
             <div className={`fixed inset-0 z-[10002] ${schoolCoursesOpenSource === 'pill' ? 'bg-black/50' : ''}`} onClick={() => startTransition(() => setIsSchoolCoursesDialogOpen(false))} />
             <div
@@ -22549,7 +22554,7 @@ export default function Dashboard() {
             document.body
           )}
 
-          {semEndDialogKey && createPortal(
+          {semEndDialogKey && desktopIsFull && createPortal(
             <div>
               <div className="fixed inset-0 z-[10005] bg-black/60" />
               <div className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-[10005] w-[380px] max-w-[90vw] rounded-lg text-white p-5" style={{ background: 'linear-gradient(180deg, #1a1f3a 0%, #0d1025 100%)', border: '2px solid rgba(255,255,255,0.3)', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }} data-testid="semester-end-dialog">
@@ -22606,7 +22611,7 @@ export default function Dashboard() {
             document.body
           )}
 
-          {semStartDialogKey && createPortal(
+          {semStartDialogKey && desktopIsFull && createPortal(
             <div>
               <div className="fixed inset-0 z-[10005] bg-black/60" />
               <div className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-[10005] w-[380px] max-w-[90vw] rounded-lg text-white p-5" style={{ background: 'linear-gradient(180deg, #1a1f3a 0%, #0d1025 100%)', border: '2px solid rgba(255,255,255,0.3)', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }} data-testid="semester-start-dialog">
@@ -22638,7 +22643,7 @@ export default function Dashboard() {
             document.body
           )}
 
-          {weeklyPlanningOpen && createPortal(
+          {weeklyPlanningOpen && desktopIsFull && createPortal(
             <div>
               <div className="fixed inset-0 z-[10006] bg-black/60" onClick={() => {
                 const weekKey = `weeklyPlan_${format(startOfDayET(new Date()), 'yyyy-ww')}`;
@@ -22993,7 +22998,7 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
 
-          {isNewCourseWizardOpen && (
+          {isNewCourseWizardOpen && desktopIsFull && (
             <NewCourseWizard
               existingSemesterType={newSemesterForm.semesterType || "winter"}
               existingSemesterYear={(() => {
