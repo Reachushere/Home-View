@@ -24490,10 +24490,13 @@ export default function Dashboard() {
                                 if (activeSem) {
                                   const semStart = new Date(activeSem.start + 'T12:00:00');
                                   const daysDiff = Math.round((satDate.getTime() - semStart.getTime()) / (1000*60*60*24));
-                                  const semWeek = Math.floor(daysDiff / 7) + 1;
-                                  const isLast = semWeek >= activeSem.weeks;
-                                  const ssSubSession = activeSem.key.startsWith('ss') && semWeek >= 7 ? (satDate < new Date('2026-06-23T00:00:00') ? '/1' : '/2') : '';
-                                  return `${isLast ? 'Last' : 'New'} School Week (${semWeek}${ssSubSession})`;
+                                  const currentWeek = Math.floor(daysDiff / 7) + 1;
+                                  const nextWeek = currentWeek + 1;
+                                  if (nextWeek > activeSem.weeks) {
+                                    return `Last School Week (${currentWeek})`;
+                                  }
+                                  const ssSubSession = activeSem.key.startsWith('ss') && nextWeek >= 7 ? (satDate < new Date('2026-06-23T00:00:00') ? '/1' : '/2') : '';
+                                  return `New School Week (${nextWeek}${ssSubSession})`;
                                 }
                                 const nextSem = semDefs.find(s => satDate < new Date(s.start + 'T00:00:00'));
                                 if (nextSem) {
