@@ -21677,12 +21677,24 @@ export default function Dashboard() {
                                     }
                                     return draftCoursePlayPriority[`${sem.key}:${code}`] ?? coursePlayPriority[`${sem.key}:${code}`] ?? 0;
                                   };
+                                  const getSubSession = (code: string): string => {
+                                    if (!isSSSem) return '';
+                                    const va = draftCoursePlayPriority[`${sem.key}:${code}:A`] ?? coursePlayPriority[`${sem.key}:${code}:A`] ?? 0;
+                                    const vb = draftCoursePlayPriority[`${sem.key}:${code}:B`] ?? coursePlayPriority[`${sem.key}:${code}:B`] ?? 0;
+                                    if ((va || 999) <= (vb || 999)) return 'A';
+                                    return 'B';
+                                  };
                                   const pa = getPri(a.code);
                                   const pb = getPri(b.code);
                                   if (pa === 0 && pb === 0) return 0;
                                   if (pa === 0) return 1;
                                   if (pb === 0) return -1;
-                                  return pa - pb;
+                                  if (pa !== pb) return pa - pb;
+                                  const sa = getSubSession(a.code);
+                                  const sb = getSubSession(b.code);
+                                  if (sa === 'A' && sb === 'B') return -1;
+                                  if (sa === 'B' && sb === 'A') return 1;
+                                  return 0;
                                 }).map(c => renderCourseRow(c, sem.key, sem.courses.length))}
                                 {sem.courses.length === 0 && <div className="text-[9px] text-white/40 text-center py-3">No courses yet</div>}
                               </div>
@@ -24837,7 +24849,19 @@ export default function Dashboard() {
                   if (priA === 0 && priB === 0) return 0;
                   if (priA === 0) return 1;
                   if (priB === 0) return -1;
-                  return priA - priB;
+                  if (priA !== priB) return priA - priB;
+                  const getSubSess = (semKey: string, code: string): string => {
+                    if (!semKey.startsWith('ss')) return '';
+                    const va = coursePlayPriority[`${semKey}:${code}:A`] ?? 0;
+                    const vb = coursePlayPriority[`${semKey}:${code}:B`] ?? 0;
+                    if ((va || 999) <= (vb || 999)) return 'A';
+                    return 'B';
+                  };
+                  const ssA = getSubSess(semKeyA, getCode(a));
+                  const ssB = getSubSess(semKeyB, getCode(b));
+                  if (ssA === 'A' && ssB === 'B') return -1;
+                  if (ssA === 'B' && ssB === 'A') return 1;
+                  return 0;
                 });
                 const allKnownCodes = Object.values(semesterCourseAssignments).flat().map(c => c.code.replace(/\s/g, '').toUpperCase()).filter(Boolean);
                 const maxCourseRowHeight = 3 * 20 + 2 * 2 + 4;
