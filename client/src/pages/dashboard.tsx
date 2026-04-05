@@ -24214,7 +24214,7 @@ export default function Dashboard() {
 
                             type SkyPhase = 'night' | 'preDawn' | 'sunrise' | 'morning' | 'day' | 'preSet' | 'sunset' | 'dusk' | 'nightPost';
                             const phase: SkyPhase = (() => {
-                              if (minutesSinceMidnight < srMin - 60) return 'night';
+                              if (minutesSinceMidnight < srMin - 30) return 'night';
                               if (minutesSinceMidnight < srMin) return 'preDawn';
                               if (minutesSinceMidnight < srMin + 30) return 'sunrise';
                               if (minutesSinceMidnight < srMin + 90) return 'morning';
@@ -24488,8 +24488,14 @@ export default function Dashboard() {
                                 const semDefs = [
                                   { key: 'w2026', start: '2026-01-12', end: '2026-04-17', weeks: 13 },
                                   { key: 'ss2026', start: '2026-05-04', end: '2026-08-07', weeks: 14 },
-                                  { key: 'f2026', start: '2026-09-14', end: '2026-12-11', weeks: 13 },
-                                  { key: 'w2027', start: '2027-01-11', end: '2027-04-16', weeks: 13 },
+                                  { key: 'f2026', start: '2026-09-07', end: '2026-12-11', weeks: 14 },
+                                  { key: 'w2027', start: '2027-01-11', end: '2027-04-16', weeks: 14 },
+                                  { key: 'ss2027', start: '2027-05-03', end: '2027-08-06', weeks: 14 },
+                                  { key: 'f2027', start: '2027-09-13', end: '2027-12-17', weeks: 14 },
+                                  { key: 'w2028', start: '2028-01-10', end: '2028-04-14', weeks: 14 },
+                                  { key: 'ss2028', start: '2028-05-01', end: '2028-08-04', weeks: 14 },
+                                  { key: 'f2028', start: '2028-09-11', end: '2028-12-15', weeks: 14 },
+                                  { key: 'w2029', start: '2029-01-08', end: '2029-04-13', weeks: 14 },
                                 ];
                                 const activeSem = semDefs.find(s => satDate >= new Date(s.start + 'T00:00:00') && satDate <= new Date(s.end + 'T23:59:59'));
                                 if (activeSem) {
@@ -24527,14 +24533,20 @@ export default function Dashboard() {
                                 const semDefs = [
                                   { key: 'w2026', start: '2026-01-12', end: '2026-04-17', weeks: 13 },
                                   { key: 'ss2026', start: '2026-05-04', end: '2026-08-07', weeks: 14 },
-                                  { key: 'f2026', start: '2026-09-14', end: '2026-12-11', weeks: 13 },
-                                  { key: 'w2027', start: '2027-01-11', end: '2027-04-16', weeks: 13 },
+                                  { key: 'f2026', start: '2026-09-07', end: '2026-12-11', weeks: 14 },
+                                  { key: 'w2027', start: '2027-01-11', end: '2027-04-16', weeks: 14 },
+                                  { key: 'ss2027', start: '2027-05-03', end: '2027-08-06', weeks: 14 },
+                                  { key: 'f2027', start: '2027-09-13', end: '2027-12-17', weeks: 14 },
+                                  { key: 'w2028', start: '2028-01-10', end: '2028-04-14', weeks: 14 },
+                                  { key: 'ss2028', start: '2028-05-01', end: '2028-08-04', weeks: 14 },
+                                  { key: 'f2028', start: '2028-09-11', end: '2028-12-15', weeks: 14 },
+                                  { key: 'w2029', start: '2029-01-08', end: '2029-04-13', weeks: 14 },
                                 ];
                                 const dayDate = new Date(day.getFullYear(), day.getMonth(), day.getDate(), 12, 0, 0);
                                 const activeSem = semDefs.find(s => dayDate >= new Date(s.start + 'T00:00:00') && dayDate <= new Date(s.end + 'T23:59:59'));
                                 if (activeSem) {
                                   const semStartD = new Date(activeSem.start + 'T12:00:00');
-                                  if (activeSem.key === 'w2026' || activeSem.key === 'w2027') {
+                                  if (activeSem.key.startsWith('w')) {
                                     const rwStart = semesterSettings?.readingWeekStart || null;
                                     const wk = getWeekNumber(dayDate, semStartD, rwStart);
                                     return wk === -1 ? 'Reading Week' : `Week ${Math.min(Math.max(wk, 1), activeSem.weeks)}`;
@@ -24567,14 +24579,20 @@ export default function Dashboard() {
                                 const semDefs = [
                                   { key: 'w2026', start: '2026-01-12', end: '2026-04-17', weeks: 13 },
                                   { key: 'ss2026', start: '2026-05-04', end: '2026-08-07', weeks: 14 },
-                                  { key: 'f2026', start: '2026-09-14', end: '2026-12-11', weeks: 13 },
-                                  { key: 'w2027', start: '2027-01-11', end: '2027-04-16', weeks: 13 },
+                                  { key: 'f2026', start: '2026-09-07', end: '2026-12-11', weeks: 14 },
+                                  { key: 'w2027', start: '2027-01-11', end: '2027-04-16', weeks: 14 },
+                                  { key: 'ss2027', start: '2027-05-03', end: '2027-08-06', weeks: 14 },
+                                  { key: 'f2027', start: '2027-09-13', end: '2027-12-17', weeks: 14 },
+                                  { key: 'w2028', start: '2028-01-10', end: '2028-04-14', weeks: 14 },
+                                  { key: 'ss2028', start: '2028-05-01', end: '2028-08-04', weeks: 14 },
+                                  { key: 'f2028', start: '2028-09-11', end: '2028-12-15', weeks: 14 },
+                                  { key: 'w2029', start: '2029-01-08', end: '2029-04-13', weeks: 14 },
                                 ];
                                 const dayDate = new Date(day.getFullYear(), day.getMonth(), day.getDate(), 12, 0, 0);
                                 const activeSem = semDefs.find(s => dayDate >= new Date(s.start + 'T00:00:00') && dayDate <= new Date(s.end + 'T23:59:59'));
                                 if (activeSem) {
                                   const semStartD = new Date(activeSem.start + 'T12:00:00');
-                                  if (activeSem.key === 'w2026' || activeSem.key === 'w2027') {
+                                  if (activeSem.key.startsWith('w')) {
                                     const rwStart = semesterSettings?.readingWeekStart || null;
                                     const wk = getWeekNumber(dayDate, semStartD, rwStart);
                                     if (wk === -1) return 'Reading Week';
