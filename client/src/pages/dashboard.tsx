@@ -28142,11 +28142,8 @@ export default function Dashboard() {
                   const boxH = boxEl ? boxEl.offsetHeight : (window.innerHeight - (calendarBorderTop || (calendarTop + 15)) - calendarBottom);
                   const topInset = 11;
                   const bottomInset = 3;
-                  const usableH = Math.max(60, boxH + 30 - 15) - topInset - bottomInset;
-                  const n = semTabs.length;
-                  const tabH = usableH / n;
-                  const stepPx = tabH;
-                  const clipBottom = 0;
+                  const tabH = 28;
+                  const tabGap = -2;
                   return semTabs.map((tab, tabIdx) => {
                   const isActive = (() => {
                     if (tab.id === 'wk-current') return !hwVisibleSection || hwVisibleSection === 'thisweek' || hwVisibleSection === 'today';
@@ -28156,7 +28153,6 @@ export default function Dashboard() {
                     return scrollActiveSem === tab.semLabel;
                   })();
                   const tabW = 15;
-                  const tabGap = -2;
                   const tabTop = topInset + tabIdx * (tabH + tabGap);
                   const svgH = Math.floor(tabH);
                   const svgW = tabW + 3;
