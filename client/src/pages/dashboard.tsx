@@ -230,6 +230,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   meeting: Users,
   class: GraduationCap,
   scholarship: Award,
+  medical: Activity,
   other: MoreHorizontal,
 };
 
@@ -244,6 +245,7 @@ const typeColors: Record<string, string> = {
   quiz: "bg-amber-500/20 text-amber-600 dark:text-amber-400",
   reminder: "bg-teal-500/20 text-teal-600 dark:text-teal-400",
   scholarship: "bg-yellow-500/20 text-yellow-600 dark:text-yellow-400",
+  medical: "bg-red-500/20 text-red-600 dark:text-red-400",
 };
 
 const calendarTypeIconColors: Record<string, string> = {
@@ -259,6 +261,7 @@ const calendarTypeIconColors: Record<string, string> = {
   reminder: '#0d9488',
   meeting: '#6366f1',
   scholarship: '#ca8a04',
+  medical: '#dc2626',
   other: '#6b7280',
 };
 
@@ -275,6 +278,7 @@ const calendarTypeBarColors: Record<string, string> = {
   reminder: 'rgb(0,210,240)',
   meeting: 'rgb(80,80,240)',
   scholarship: 'rgb(202,138,4)',
+  medical: 'rgb(220,60,60)',
   other: 'rgb(120,130,140)',
   partnerShifts: 'rgb(100,100,180)',
 };
@@ -1141,6 +1145,127 @@ export default function Dashboard() {
     hideFromSummary: false,
     hideFromCountdown: false,
   });
+  const [isMedicalWizardOpen, setIsMedicalWizardOpen] = useState(false);
+  const [medicalStep, setMedicalStep] = useState(0);
+  const [medicalData, setMedicalData] = useState({
+    appointmentType: '' as '' | 'dentist' | 'doctor' | 'specialist' | 'eye' | 'walk-in' | 'other',
+    customType: '',
+    date: '',
+    hour: '09',
+    minute: '00',
+    endHour: '10',
+    endMinute: '00',
+    doctorName: '',
+    clinicName: '',
+    phone: '',
+    address: '',
+    purpose: '',
+    relevantInfo: '',
+    attachments: [] as string[],
+    reminderPopup: true,
+    reminderAlexa: true,
+    reminderSms: false,
+    reminder1: 1440,
+    reminder2: 60,
+    sendInvite: false,
+    inviteEmail: '',
+    inviteName: '',
+    notes: '',
+  });
+  const medicalWizardSteps = [
+    { label: 'Type', icon: '🏥' },
+    { label: 'Date & Time', icon: '📅' },
+    { label: 'Doctor', icon: '👨‍⚕️' },
+    { label: 'Location', icon: '📍' },
+    { label: 'Details', icon: '📋' },
+    { label: 'Files', icon: '📎' },
+    { label: 'Reminders', icon: '🔔' },
+    { label: 'Invite', icon: '✉️' },
+    { label: 'Review', icon: '✅' },
+  ];
+  const handleMedicalClose = () => {
+    setIsMedicalWizardOpen(false);
+    setMedicalStep(0);
+    setMedicalData({ appointmentType: '', customType: '', date: '', hour: '09', minute: '00', endHour: '10', endMinute: '00', doctorName: '', clinicName: '', phone: '', address: '', purpose: '', relevantInfo: '', attachments: [], reminderPopup: true, reminderAlexa: true, reminderSms: false, reminder1: 1440, reminder2: 60, sendInvite: false, inviteEmail: '', inviteName: '', notes: '' });
+  };
+  const handleMedicalSubmit = async () => {
+    try {
+      const typeLabel = medicalData.appointmentType === 'other' ? (medicalData.customType || 'Medical') : (medicalData.appointmentType.charAt(0).toUpperCase() + medicalData.appointmentType.slice(1));
+      const title = `${typeLabel} Appointment${medicalData.doctorName ? ` — ${medicalData.doctorName}` : ''}`;
+      const dueDate = new Date(`${medicalData.date}T${medicalData.hour}:${medicalData.minute}`);
+      const descParts: string[] = [];
+      if (medicalData.appointmentType) descParts.push(`Type: ${typeLabel}`);
+      if (medicalData.doctorName) descParts.push(`Doctor: ${medicalData.doctorName}`);
+      if (medicalData.clinicName) descParts.push(`Clinic: ${medicalData.clinicName}`);
+      if (medicalData.phone) descParts.push(`Phone: ${medicalData.phone}`);
+      if (medicalData.address) descParts.push(`Address: ${medicalData.address}`);
+      if (medicalData.purpose) descParts.push(`Purpose: ${medicalData.purpose}`);
+      if (medicalData.relevantInfo) descParts.push(`\nRelevant Info:\n${medicalData.relevantInfo}`);
+      if (medicalData.notes) descParts.push(`\nNotes:\n${medicalData.notes}`);
+      const description = descParts.join('\n');
+      await apiRequest("POST", "/api/tasks", {
+        title,
+        type: 'medical',
+        courseName: null,
+        dueDate: dueDate.toISOString(),
+        startDate: null,
+        priority: 'high',
+        weekNumber: selectedWeek,
+        description,
+        reminder1: medicalData.reminder1,
+        reminder2: medicalData.reminder2,
+        reminder3: null,
+        reminder4: null,
+        attachments: medicalData.attachments,
+        referenceLink: '',
+        repeatType: 'none',
+        repeatInterval: null,
+        repeatIntervalUnit: null,
+        repeatEndDate: null,
+        eventStartTime: `${medicalData.hour}:${medicalData.minute}`,
+        eventEndTime: `${medicalData.endHour}:${medicalData.endMinute}`,
+        notes: medicalData.notes || null,
+        projectId: null,
+        flagged: false,
+        hideFromSummary: false,
+        hideFromCountdown: false,
+        showCountdownBar: true,
+        showCountdownBarMain: true,
+        showCountdownBarSummary: true,
+        countdownBarDays: 3,
+        countdownBarColor: null,
+        repeatSpanDays: 1,
+        shiftAdjust: false,
+        reminderEmail: false,
+        reminderAlexa: medicalData.reminderAlexa,
+        reminderSms: medicalData.reminderSms,
+        reminder1Methods: [medicalData.reminderPopup && 'popup', medicalData.reminderAlexa && 'alexa', medicalData.reminderSms && 'sms'].filter(Boolean).join(',') || null,
+        reminder2Methods: [medicalData.reminderPopup && 'popup', medicalData.reminderAlexa && 'alexa'].filter(Boolean).join(',') || null,
+        reminder3Methods: null,
+        reminder4Methods: null,
+        reminder4DateTime: null,
+      });
+      if (medicalData.sendInvite && medicalData.inviteEmail) {
+        try {
+          await apiRequest("POST", "/api/calendar/invite", {
+            email: medicalData.inviteEmail,
+            name: medicalData.inviteName || medicalData.inviteEmail,
+            title,
+            description: `${typeLabel} appointment${medicalData.address ? ` at ${medicalData.address}` : ''}`,
+            startDate: dueDate.toISOString(),
+            endDate: new Date(`${medicalData.date}T${medicalData.endHour}:${medicalData.endMinute}`).toISOString(),
+            location: medicalData.address || medicalData.clinicName || '',
+          });
+        } catch (e) { console.error('Failed to send invite:', e); }
+      }
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/weeks"] });
+      handleMedicalClose();
+      toast({ title: "Appointment added", description: `${title} on ${format(dueDate, "MMM d, yyyy 'at' h:mm a")}` });
+    } catch (err) {
+      toast({ title: "Error", description: "Failed to add appointment.", variant: "destructive" });
+    }
+  };
   const quickAddHasData = quickAddData.type !== "" || quickAddData.title.trim() !== "" || quickAddData.courseName !== "" || quickAddData.dueDate !== "" || quickAddData.notes.trim() !== "" || quickAddData.attachments.length > 0 || quickAddData.subtasks.length > 0;
   const handleQuickAddClose = () => {
     if (quickAddHasData) {
@@ -18594,6 +18719,17 @@ export default function Dashboard() {
                         })}
                         <button
                           className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 text-white flex items-center gap-1.5"
+                          style={{ background: 'rgba(220,60,60,0.2)', border: '1px solid rgba(220,60,60,0.5)' }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(220,60,60,0.3)'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(220,60,60,0.2)'; }}
+                          onClick={(e) => { e.stopPropagation(); setIsQuickAddOpen(false); setTimeout(() => setIsMedicalWizardOpen(true), 50); }}
+                          data-testid="quick-add-type-medical"
+                        >
+                          <Activity className="h-3.5 w-3.5" style={{ color: 'rgba(255,80,80,0.9)' }} />
+                          Medical Appointment
+                        </button>
+                        <button
+                          className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 text-white flex items-center gap-1.5"
                           style={{ background: 'rgba(0,180,170,0.2)', border: '1px solid rgba(0,180,170,0.5)' }}
                           onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,180,170,0.3)'; }}
                           onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,180,170,0.2)'; }}
@@ -19692,6 +19828,397 @@ export default function Dashboard() {
                   </div>
                 </div>
               )}
+            </div>
+          )}
+
+          {isMedicalWizardOpen && (
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center"
+              style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
+              onClick={(e) => { if (e.target === e.currentTarget) handleMedicalClose(); }}
+              data-testid="medical-wizard-overlay"
+            >
+              <div
+                className="relative flex flex-col"
+                style={{
+                  width: '520px', maxWidth: '95vw', maxHeight: '80vh',
+                  background: 'linear-gradient(135deg, rgba(30,10,15,0.97), rgba(20,5,10,0.99))',
+                  border: '1px solid rgba(220,60,60,0.35)',
+                  borderRadius: '16px',
+                  boxShadow: '0 0 40px rgba(220,60,60,0.12), 0 20px 60px rgba(0,0,0,0.6)',
+                  overflow: 'hidden',
+                }}
+                data-testid="medical-wizard-dialog"
+              >
+                <div className="flex items-center justify-between px-5 pt-4 pb-2">
+                  <div className="flex items-center gap-2">
+                    <Activity className="h-4 w-4" style={{ color: 'rgba(255,80,80,0.9)' }} />
+                    <span className="text-white text-[13px] font-medium">Medical Appointment</span>
+                  </div>
+                  <button onClick={handleMedicalClose} className="text-white/40 hover:text-white/80 transition-colors" data-testid="medical-wizard-close">
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+                <div className="flex gap-1 px-5 py-2 overflow-x-auto">
+                  {medicalWizardSteps.map((s, i) => (
+                    <button
+                      key={i}
+                      onClick={() => {
+                        if (i < medicalStep || (i === 0) || (i <= medicalStep)) setMedicalStep(i);
+                      }}
+                      className="flex items-center gap-1 px-2 py-1 rounded-md text-[9px] whitespace-nowrap transition-all"
+                      style={{
+                        background: i === medicalStep ? 'rgba(220,60,60,0.3)' : i < medicalStep ? 'rgba(220,60,60,0.1)' : 'rgba(255,255,255,0.03)',
+                        border: `1px solid ${i === medicalStep ? 'rgba(220,60,60,0.6)' : i < medicalStep ? 'rgba(220,60,60,0.2)' : 'rgba(255,255,255,0.08)'}`,
+                        color: i <= medicalStep ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.3)',
+                      }}
+                      data-testid={`medical-step-${i}`}
+                    >
+                      <span>{s.icon}</span>
+                      <span>{s.label}</span>
+                    </button>
+                  ))}
+                </div>
+                <div className="flex-1 overflow-y-auto px-5 py-3" style={{ minHeight: '280px' }}>
+                  {medicalStep === 0 && (
+                    <div className="flex flex-col gap-3">
+                      <p className="text-white/50 text-[10px] text-center mb-1">What type of appointment?</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        {([
+                          { key: 'dentist', label: 'Dentist', emoji: '🦷' },
+                          { key: 'doctor', label: 'Doctor / GP', emoji: '🩺' },
+                          { key: 'specialist', label: 'Specialist', emoji: '🏥' },
+                          { key: 'eye', label: 'Eye / Optometrist', emoji: '👁️' },
+                          { key: 'walk-in', label: 'Walk-in Clinic', emoji: '🚶' },
+                          { key: 'other', label: 'Other', emoji: '📋' },
+                        ] as const).map(opt => (
+                          <button
+                            key={opt.key}
+                            onClick={() => setMedicalData(d => ({ ...d, appointmentType: opt.key }))}
+                            className="flex items-center gap-2 px-3 py-3 rounded-lg text-[12px] text-left transition-all"
+                            style={{
+                              background: medicalData.appointmentType === opt.key ? 'rgba(220,60,60,0.25)' : 'rgba(255,255,255,0.04)',
+                              border: `1px solid ${medicalData.appointmentType === opt.key ? 'rgba(220,60,60,0.6)' : 'rgba(255,255,255,0.1)'}`,
+                              color: 'white',
+                            }}
+                            data-testid={`medical-type-${opt.key}`}
+                          >
+                            <span className="text-[16px]">{opt.emoji}</span>
+                            <span>{opt.label}</span>
+                          </button>
+                        ))}
+                      </div>
+                      {medicalData.appointmentType === 'other' && (
+                        <input
+                          type="text"
+                          placeholder="Specify type..."
+                          value={medicalData.customType}
+                          onChange={e => setMedicalData(d => ({ ...d, customType: e.target.value }))}
+                          className="w-full px-3 py-2 rounded-lg text-[11px] text-white bg-white/5 border border-white/15 outline-none focus:border-red-400/50"
+                          data-testid="medical-custom-type"
+                        />
+                      )}
+                    </div>
+                  )}
+                  {medicalStep === 1 && (
+                    <div className="flex flex-col gap-3">
+                      <p className="text-white/50 text-[10px] text-center mb-1">When is your appointment?</p>
+                      <div>
+                        <label className="text-white/50 text-[10px] block mb-1">Date</label>
+                        <input
+                          type="date"
+                          value={medicalData.date}
+                          onChange={e => setMedicalData(d => ({ ...d, date: e.target.value }))}
+                          className="w-full px-3 py-2 rounded-lg text-[11px] text-white bg-white/5 border border-white/15 outline-none focus:border-red-400/50"
+                          style={{ colorScheme: 'dark' }}
+                          data-testid="medical-date"
+                        />
+                      </div>
+                      <div className="flex gap-3">
+                        <div className="flex-1">
+                          <label className="text-white/50 text-[10px] block mb-1">Start Time</label>
+                          <div className="flex gap-1">
+                            <select value={medicalData.hour} onChange={e => setMedicalData(d => ({ ...d, hour: e.target.value }))} className="flex-1 px-2 py-2 rounded-lg text-[11px] text-white bg-white/5 border border-white/15 outline-none" style={{ colorScheme: 'dark' }} data-testid="medical-start-hour">
+                              {Array.from({ length: 24 }, (_, i) => <option key={i} value={String(i).padStart(2, '0')}>{String(i).padStart(2, '0')}</option>)}
+                            </select>
+                            <span className="text-white/50 self-center">:</span>
+                            <select value={medicalData.minute} onChange={e => setMedicalData(d => ({ ...d, minute: e.target.value }))} className="flex-1 px-2 py-2 rounded-lg text-[11px] text-white bg-white/5 border border-white/15 outline-none" style={{ colorScheme: 'dark' }} data-testid="medical-start-min">
+                              {['00', '15', '30', '45'].map(m => <option key={m} value={m}>{m}</option>)}
+                            </select>
+                          </div>
+                        </div>
+                        <div className="flex-1">
+                          <label className="text-white/50 text-[10px] block mb-1">End Time</label>
+                          <div className="flex gap-1">
+                            <select value={medicalData.endHour} onChange={e => setMedicalData(d => ({ ...d, endHour: e.target.value }))} className="flex-1 px-2 py-2 rounded-lg text-[11px] text-white bg-white/5 border border-white/15 outline-none" style={{ colorScheme: 'dark' }} data-testid="medical-end-hour">
+                              {Array.from({ length: 24 }, (_, i) => <option key={i} value={String(i).padStart(2, '0')}>{String(i).padStart(2, '0')}</option>)}
+                            </select>
+                            <span className="text-white/50 self-center">:</span>
+                            <select value={medicalData.endMinute} onChange={e => setMedicalData(d => ({ ...d, endMinute: e.target.value }))} className="flex-1 px-2 py-2 rounded-lg text-[11px] text-white bg-white/5 border border-white/15 outline-none" style={{ colorScheme: 'dark' }} data-testid="medical-end-min">
+                              {['00', '15', '30', '45'].map(m => <option key={m} value={m}>{m}</option>)}
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {medicalStep === 2 && (
+                    <div className="flex flex-col gap-3">
+                      <p className="text-white/50 text-[10px] text-center mb-1">Doctor / Provider Details</p>
+                      <div>
+                        <label className="text-white/50 text-[10px] block mb-1">Doctor Name</label>
+                        <input type="text" value={medicalData.doctorName} onChange={e => setMedicalData(d => ({ ...d, doctorName: e.target.value }))} placeholder="Dr. Smith" className="w-full px-3 py-2 rounded-lg text-[11px] text-white bg-white/5 border border-white/15 outline-none focus:border-red-400/50" data-testid="medical-doctor-name" />
+                      </div>
+                      <div>
+                        <label className="text-white/50 text-[10px] block mb-1">Clinic / Office Name</label>
+                        <input type="text" value={medicalData.clinicName} onChange={e => setMedicalData(d => ({ ...d, clinicName: e.target.value }))} placeholder="Toronto Health Centre" className="w-full px-3 py-2 rounded-lg text-[11px] text-white bg-white/5 border border-white/15 outline-none focus:border-red-400/50" data-testid="medical-clinic-name" />
+                      </div>
+                      <div>
+                        <label className="text-white/50 text-[10px] block mb-1">Phone Number</label>
+                        <input type="tel" value={medicalData.phone} onChange={e => setMedicalData(d => ({ ...d, phone: e.target.value }))} placeholder="(416) 555-1234" className="w-full px-3 py-2 rounded-lg text-[11px] text-white bg-white/5 border border-white/15 outline-none focus:border-red-400/50" data-testid="medical-phone" />
+                      </div>
+                    </div>
+                  )}
+                  {medicalStep === 3 && (
+                    <div className="flex flex-col gap-3">
+                      <p className="text-white/50 text-[10px] text-center mb-1">Location & Purpose</p>
+                      <div>
+                        <label className="text-white/50 text-[10px] block mb-1">Address</label>
+                        <input type="text" value={medicalData.address} onChange={e => setMedicalData(d => ({ ...d, address: e.target.value }))} placeholder="123 University Ave, Toronto ON" className="w-full px-3 py-2 rounded-lg text-[11px] text-white bg-white/5 border border-white/15 outline-none focus:border-red-400/50" data-testid="medical-address" />
+                      </div>
+                      <div>
+                        <label className="text-white/50 text-[10px] block mb-1">Purpose of Visit</label>
+                        <select value={medicalData.purpose} onChange={e => setMedicalData(d => ({ ...d, purpose: e.target.value }))} className="w-full px-3 py-2 rounded-lg text-[11px] text-white bg-white/5 border border-white/15 outline-none" style={{ colorScheme: 'dark' }} data-testid="medical-purpose">
+                          <option value="">Select purpose...</option>
+                          <option value="Check-up / Routine">Check-up / Routine</option>
+                          <option value="Follow-up">Follow-up</option>
+                          <option value="New Concern">New Concern</option>
+                          <option value="Prescription Refill">Prescription Refill</option>
+                          <option value="Lab Work / Blood Test">Lab Work / Blood Test</option>
+                          <option value="Cleaning">Cleaning (Dental)</option>
+                          <option value="Filling / Procedure">Filling / Procedure (Dental)</option>
+                          <option value="Eye Exam">Eye Exam</option>
+                          <option value="Vaccination">Vaccination</option>
+                          <option value="Referral">Referral</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+                    </div>
+                  )}
+                  {medicalStep === 4 && (
+                    <div className="flex flex-col gap-3">
+                      <p className="text-white/50 text-[10px] text-center mb-1">Additional Details</p>
+                      <div>
+                        <label className="text-white/50 text-[10px] block mb-1">Relevant Medical Info</label>
+                        <textarea value={medicalData.relevantInfo} onChange={e => setMedicalData(d => ({ ...d, relevantInfo: e.target.value }))} placeholder="Allergies, current medications, symptoms to discuss..." rows={3} className="w-full px-3 py-2 rounded-lg text-[11px] text-white bg-white/5 border border-white/15 outline-none focus:border-red-400/50 resize-none" data-testid="medical-info" />
+                      </div>
+                      <div className="p-3 rounded-lg" style={{ background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)' }}>
+                        <p className="text-blue-300 text-[10px] font-medium mb-1">Bring to Your Appointment</p>
+                        <ul className="text-blue-200/70 text-[9px] space-y-0.5 list-disc pl-3">
+                          <li>Health card (OHIP)</li>
+                          <li>List of current medications</li>
+                          <li>Previous test results (if applicable)</li>
+                          <li>Insurance information</li>
+                          <li>Questions for your doctor</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <label className="text-white/50 text-[10px] block mb-1">Notes</label>
+                        <textarea value={medicalData.notes} onChange={e => setMedicalData(d => ({ ...d, notes: e.target.value }))} placeholder="Any other notes..." rows={2} className="w-full px-3 py-2 rounded-lg text-[11px] text-white bg-white/5 border border-white/15 outline-none focus:border-red-400/50 resize-none" data-testid="medical-notes" />
+                      </div>
+                    </div>
+                  )}
+                  {medicalStep === 5 && (
+                    <div className="flex flex-col gap-3">
+                      <p className="text-white/50 text-[10px] text-center mb-1">Attach Files</p>
+                      <p className="text-white/30 text-[9px] text-center">Upload referral letters, requisitions, or past records</p>
+                      <div className="flex flex-col items-center gap-2 py-4">
+                        <label className="flex flex-col items-center gap-2 cursor-pointer px-6 py-4 rounded-lg border border-dashed border-white/20 hover:border-red-400/40 transition-colors" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                          <Upload className="h-6 w-6 text-white/30" />
+                          <span className="text-white/40 text-[10px]">Click to upload</span>
+                          <input type="file" multiple className="hidden" onChange={(e) => {
+                            const files = e.target.files;
+                            if (files) {
+                              const names = Array.from(files).map(f => f.name);
+                              setMedicalData(d => ({ ...d, attachments: [...d.attachments, ...names] }));
+                            }
+                          }} data-testid="medical-file-input" />
+                        </label>
+                        {medicalData.attachments.length > 0 && (
+                          <div className="w-full space-y-1 mt-2">
+                            {medicalData.attachments.map((f, i) => (
+                              <div key={i} className="flex items-center justify-between px-3 py-1.5 rounded-lg text-[10px] text-white/70" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                                <span className="truncate">{f}</span>
+                                <button onClick={() => setMedicalData(d => ({ ...d, attachments: d.attachments.filter((_, j) => j !== i) }))} className="text-white/30 hover:text-red-400 ml-2" data-testid={`medical-remove-file-${i}`}>
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  {medicalStep === 6 && (
+                    <div className="flex flex-col gap-3">
+                      <p className="text-white/50 text-[10px] text-center mb-1">Reminders</p>
+                      <div className="space-y-2">
+                        <div>
+                          <label className="text-white/50 text-[10px] block mb-1">First Reminder</label>
+                          <select value={medicalData.reminder1} onChange={e => setMedicalData(d => ({ ...d, reminder1: Number(e.target.value) }))} className="w-full px-3 py-2 rounded-lg text-[11px] text-white bg-white/5 border border-white/15 outline-none" style={{ colorScheme: 'dark' }} data-testid="medical-reminder1">
+                            <option value={0}>None</option>
+                            <option value={15}>15 minutes before</option>
+                            <option value={30}>30 minutes before</option>
+                            <option value={60}>1 hour before</option>
+                            <option value={120}>2 hours before</option>
+                            <option value={1440}>1 day before</option>
+                            <option value={2880}>2 days before</option>
+                            <option value={4320}>3 days before</option>
+                            <option value={10080}>1 week before</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="text-white/50 text-[10px] block mb-1">Second Reminder</label>
+                          <select value={medicalData.reminder2} onChange={e => setMedicalData(d => ({ ...d, reminder2: Number(e.target.value) }))} className="w-full px-3 py-2 rounded-lg text-[11px] text-white bg-white/5 border border-white/15 outline-none" style={{ colorScheme: 'dark' }} data-testid="medical-reminder2">
+                            <option value={0}>None</option>
+                            <option value={15}>15 minutes before</option>
+                            <option value={30}>30 minutes before</option>
+                            <option value={60}>1 hour before</option>
+                            <option value={120}>2 hours before</option>
+                            <option value={1440}>1 day before</option>
+                            <option value={2880}>2 days before</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div className="mt-2">
+                        <label className="text-white/50 text-[10px] block mb-2">Notify via</label>
+                        <div className="flex gap-3">
+                          {([
+                            { key: 'reminderPopup', label: 'Popup', icon: '🔔' },
+                            { key: 'reminderAlexa', label: 'Alexa', icon: '🔊' },
+                            { key: 'reminderSms', label: 'SMS', icon: '💬' },
+                          ] as const).map(m => (
+                            <button
+                              key={m.key}
+                              onClick={() => setMedicalData(d => ({ ...d, [m.key]: !d[m.key] }))}
+                              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[11px] transition-all"
+                              style={{
+                                background: medicalData[m.key] ? 'rgba(220,60,60,0.2)' : 'rgba(255,255,255,0.04)',
+                                border: `1px solid ${medicalData[m.key] ? 'rgba(220,60,60,0.5)' : 'rgba(255,255,255,0.1)'}`,
+                                color: medicalData[m.key] ? 'white' : 'rgba(255,255,255,0.4)',
+                              }}
+                              data-testid={`medical-notify-${m.key}`}
+                            >
+                              <span>{m.icon}</span>
+                              <span>{m.label}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {medicalStep === 7 && (
+                    <div className="flex flex-col gap-3">
+                      <p className="text-white/50 text-[10px] text-center mb-1">Send Calendar Invite</p>
+                      <div className="flex items-center gap-3 mb-2">
+                        <button
+                          onClick={() => setMedicalData(d => ({ ...d, sendInvite: !d.sendInvite }))}
+                          className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-[11px] transition-all"
+                          style={{
+                            background: medicalData.sendInvite ? 'rgba(220,60,60,0.2)' : 'rgba(255,255,255,0.04)',
+                            border: `1px solid ${medicalData.sendInvite ? 'rgba(220,60,60,0.5)' : 'rgba(255,255,255,0.1)'}`,
+                            color: medicalData.sendInvite ? 'white' : 'rgba(255,255,255,0.4)',
+                          }}
+                          data-testid="medical-send-invite-toggle"
+                        >
+                          <Mail className="h-3.5 w-3.5" />
+                          {medicalData.sendInvite ? 'Invite Enabled' : 'Send Invite?'}
+                        </button>
+                      </div>
+                      {medicalData.sendInvite && (
+                        <div className="space-y-3">
+                          <div>
+                            <label className="text-white/50 text-[10px] block mb-1">Recipient Email</label>
+                            <input type="email" value={medicalData.inviteEmail} onChange={e => setMedicalData(d => ({ ...d, inviteEmail: e.target.value }))} placeholder="parent@email.com" className="w-full px-3 py-2 rounded-lg text-[11px] text-white bg-white/5 border border-white/15 outline-none focus:border-red-400/50" data-testid="medical-invite-email" />
+                          </div>
+                          <div>
+                            <label className="text-white/50 text-[10px] block mb-1">Recipient Name (optional)</label>
+                            <input type="text" value={medicalData.inviteName} onChange={e => setMedicalData(d => ({ ...d, inviteName: e.target.value }))} placeholder="Mom" className="w-full px-3 py-2 rounded-lg text-[11px] text-white bg-white/5 border border-white/15 outline-none focus:border-red-400/50" data-testid="medical-invite-name" />
+                          </div>
+                          <p className="text-white/30 text-[9px]">A calendar invite will be sent when you submit this appointment.</p>
+                        </div>
+                      )}
+                      {!medicalData.sendInvite && (
+                        <p className="text-white/30 text-[9px] text-center mt-4">You can skip this step if you don't need to invite anyone.</p>
+                      )}
+                    </div>
+                  )}
+                  {medicalStep === 8 && (
+                    <div className="flex flex-col gap-3">
+                      <p className="text-white/50 text-[10px] text-center mb-2">Review Your Appointment</p>
+                      <div className="space-y-2 p-3 rounded-lg" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                        {[
+                          { label: 'Type', value: medicalData.appointmentType === 'other' ? (medicalData.customType || 'Other') : (medicalData.appointmentType ? medicalData.appointmentType.charAt(0).toUpperCase() + medicalData.appointmentType.slice(1) : '—') },
+                          { label: 'Date', value: medicalData.date ? format(new Date(medicalData.date + 'T12:00'), 'EEEE, MMMM d, yyyy') : '—' },
+                          { label: 'Time', value: `${medicalData.hour}:${medicalData.minute} — ${medicalData.endHour}:${medicalData.endMinute}` },
+                          { label: 'Doctor', value: medicalData.doctorName || '—' },
+                          { label: 'Clinic', value: medicalData.clinicName || '—' },
+                          { label: 'Phone', value: medicalData.phone || '—' },
+                          { label: 'Address', value: medicalData.address || '—' },
+                          { label: 'Purpose', value: medicalData.purpose || '—' },
+                          { label: 'Reminders', value: [medicalData.reminder1 > 0 && `${medicalData.reminder1 >= 1440 ? `${medicalData.reminder1 / 1440}d` : medicalData.reminder1 >= 60 ? `${medicalData.reminder1 / 60}h` : `${medicalData.reminder1}m`} before`, medicalData.reminder2 > 0 && `${medicalData.reminder2 >= 60 ? `${medicalData.reminder2 / 60}h` : `${medicalData.reminder2}m`} before`].filter(Boolean).join(', ') || 'None' },
+                          { label: 'Notify via', value: [medicalData.reminderPopup && 'Popup', medicalData.reminderAlexa && 'Alexa', medicalData.reminderSms && 'SMS'].filter(Boolean).join(', ') || 'None' },
+                          { label: 'Files', value: medicalData.attachments.length > 0 ? `${medicalData.attachments.length} file(s)` : 'None' },
+                          { label: 'Invite', value: medicalData.sendInvite ? (medicalData.inviteEmail || '—') : 'Not sending' },
+                        ].map((row, i) => (
+                          <div key={i} className="flex justify-between text-[11px]">
+                            <span className="text-white/40">{row.label}</span>
+                            <span className="text-white text-right max-w-[60%] truncate">{row.value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className="flex items-center justify-between px-5 pb-4 pt-2">
+                  <button
+                    onClick={medicalStep === 0 ? handleMedicalClose : () => setMedicalStep(s => s - 1)}
+                    className="px-3 py-1.5 rounded-lg text-[11px] text-white/60 hover:text-white transition-colors"
+                    style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)' }}
+                    data-testid="medical-back"
+                  >
+                    {medicalStep === 0 ? 'Cancel' : 'Back'}
+                  </button>
+                  {medicalStep < 8 ? (
+                    <button
+                      onClick={() => setMedicalStep(s => s + 1)}
+                      disabled={medicalStep === 0 && !medicalData.appointmentType || medicalStep === 1 && !medicalData.date}
+                      className="px-4 py-1.5 rounded-lg text-[11px] text-white transition-all disabled:opacity-30"
+                      style={{
+                        background: 'rgba(220,60,60,0.3)',
+                        border: '1px solid rgba(220,60,60,0.6)',
+                        boxShadow: '0 0 8px rgba(220,60,60,0.3)',
+                      }}
+                      data-testid="medical-next"
+                    >
+                      Next <ChevronRight className="h-3 w-3 inline ml-0.5" />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleMedicalSubmit}
+                      className="px-4 py-1.5 rounded-lg text-[11px] text-white transition-all"
+                      style={{
+                        background: 'rgba(220,60,60,0.4)',
+                        border: '1px solid rgba(220,60,60,0.7)',
+                        boxShadow: '0 0 12px rgba(220,60,60,0.4), 0 0 20px rgba(220,60,60,0.2)',
+                      }}
+                      data-testid="medical-submit"
+                    >
+                      Add Appointment
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
           )}
 
