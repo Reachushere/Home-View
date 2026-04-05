@@ -12310,18 +12310,14 @@ export default function Dashboard() {
             height: isMobileLandscape ? '100%' : 'auto',
           }}
         >
-          {isFull ? (
-            <button onClick={() => setTickerDialogOpen(true)} data-testid="mobile-button-d2l" style={{...mobileBtnStyle(btnSize), overflow: 'hidden'}}>
-              <img src={d2lTickerLabel} alt="D2L" style={{ height: `${btnSize}px`, width: `${btnSize}px`, objectFit: 'cover', borderRadius: '12px' }} />
-            </button>
-          ) : (
-            <div style={{
+          <div onClick={() => setTickerDialogOpen(true)} style={{
               width: isMobileLandscape ? '48px' : '90%', maxWidth: isMobileLandscape ? '48px' : '340px',
               height: isMobileLandscape ? 'auto' : '32px',
               borderRadius: '10px', overflow: 'hidden',
               background: 'linear-gradient(90deg, #000000 0%, #14141e 50%, #000000 100%)',
               border: '0.5px solid rgba(255,255,255,0.2)',
               display: 'flex', alignItems: 'center', position: 'relative',
+              cursor: 'pointer',
             }} data-testid="mobile-inline-ticker">
               <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', padding: '0 4px' }}>
                 <img src={d2lTickerLabel} alt="D2L" style={{ height: isMobileLandscape ? '20px' : '28px', width: 'auto', objectFit: 'contain' }} />
@@ -12376,7 +12372,6 @@ export default function Dashboard() {
                 })()}
               </div>
             </div>
-          )}
 
           {isFull && (
             <button onClick={() => setIsAlexaDialogOpen(true)} data-testid="mobile-button-alexa" style={mobileBtnStyle(btnSize)}>
