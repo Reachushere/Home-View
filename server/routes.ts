@@ -20,8 +20,7 @@ import { textToSpeech, initTTSFallbackStatus } from "./replit_integrations/audio
 import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, sendTestHaPush, sendHaTaskReminder, sendEchoVoiceAnnouncement, sendCalendarInvite, type TaskReminder } from "./email";
 import { syncOutlookEventsToReview, fetchOutlookCalendarEvents, findOrCreateMailFolder, createMailRule, moveExistingEmailsToFolder, moveAllEmailsFromFolder, deleteMailRulesByName, getMailFolderId, moveEmailsNotFromDomains, getOutlookClient } from "./outlookCalendar";
 import { parseTickerCommand, extractInlineExpiry } from "./gmailTicker";
-import { sendGmail } from "./gmail";
-// fetchD2LAnnouncements available in ./gmail but Gmail connector lacks read scope; D2L sync handled by external Apps Script
+import { sendGmail, fetchD2LAnnouncements } from "./gmail";
 import { getSchedulerStatus } from "./reminderScheduler";
 import { fetchTMUCalendarEvents } from "./tmuCalendar";
 import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder, getOneDriveFileContentAsText, getOneDriveItemByPath, createOneDriveTextFile, updateOneDriveFileContent, deleteOneDriveItem, resolveSharedNotebookUrl, getSharedNotebookSections, getPagesBySectionId } from "./onedrive";
