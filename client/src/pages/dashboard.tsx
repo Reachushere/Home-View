@@ -24145,8 +24145,8 @@ export default function Dashboard() {
                       <div className="absolute inset-0 weather-alert-box-pulse" style={{ backgroundColor: 'rgb(255,0,0)', left: '-1px', right: '-2px' }} />
                     )}
                     {dayForecast && (
-                      <span className="text-[11px] text-white/90 whitespace-nowrap leading-none font-medium relative z-10 inline-flex items-center gap-[2px]" style={{ letterSpacing: '-0.2px' }}>
-                        {wIconEl && <span style={{ position: 'relative', top: '-3px', display: 'inline-flex' }}>{wIconEl}</span>}
+                      <span className="text-[11px] text-white/90 whitespace-nowrap leading-none font-medium relative z-10 inline-flex items-start gap-[2px]" style={{ letterSpacing: '-0.2px', marginTop: '-3px' }}>
+                        {wIconEl && <span style={{ display: 'inline-flex', flexShrink: 0 }}>{wIconEl}</span>}
                         {afterSunrise ? `${Math.round(weatherData!.temp)}°` : `${Math.round(dayForecast.high)}°/${Math.round(dayForecast.low)}°`}
                       </span>
                     )}
