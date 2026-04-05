@@ -1434,6 +1434,16 @@ export default function SpotifyPlayerPage() {
       {isSakura && <JapaneseWaves accent={profile.accent} />}
       <HoloScanLine />
 
+      <button
+        onClick={() => { const params = new URLSearchParams(window.location.search); const auth = params.get('auth'); window.location.href = '/' + (auth ? `?auth=${auth}` : ''); }}
+        className="absolute top-3 left-3 z-50 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-white/80 hover:text-white transition-all"
+        style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', backdropFilter: 'blur(12px)' }}
+        data-testid="button-spotify-back"
+      >
+        <ChevronLeft className="h-3.5 w-3.5" />
+        Back
+      </button>
+
       {notification && (
         <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 px-6 py-2.5 rounded-lg text-xs font-medium text-white/95"
           style={{
