@@ -1313,8 +1313,15 @@ export default function Dashboard() {
       const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
       const hour = eastern.getHours();
       if (hour < 9) return;
-      const dismissUntil = localStorage.getItem('morning_review_dismiss_until');
-      if (dismissUntil && Date.now() < Number(dismissUntil)) return;
+      try {
+        const dismissRes = await fetch('/api/morning-review/dismiss-until');
+        if (dismissRes.ok) {
+          const dismissData = await dismissRes.json();
+          if (dismissData.dismissUntil && Date.now() < Number(dismissData.dismissUntil)) return;
+        }
+      } catch (_) {}
+      const localDismiss = localStorage.getItem('morning_review_dismiss_until');
+      if (localDismiss && Date.now() < Number(localDismiss)) return;
       const todayStr = `${eastern.getFullYear()}-${String(eastern.getMonth()+1).padStart(2,'0')}-${String(eastern.getDate()).padStart(2,'0')}`;
       const shownToday = localStorage.getItem('morning_review_shown_date');
       if (shownToday === todayStr) return;
@@ -1458,7 +1465,13 @@ export default function Dashboard() {
     tomorrow9am.setDate(tomorrow9am.getDate() + 1);
     tomorrow9am.setHours(9, 0, 0, 0);
     const offsetMs = eastern.getTime() - Date.now();
-    localStorage.setItem('morning_review_dismiss_until', String(tomorrow9am.getTime() - offsetMs));
+    const dismissTs = tomorrow9am.getTime() - offsetMs;
+    localStorage.setItem('morning_review_dismiss_until', String(dismissTs));
+    fetch('/api/morning-review/dismiss-until', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ dismissUntil: dismissTs }),
+    }).catch(() => {});
     fetch('/api/morning-review/last-shown', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -3488,19 +3501,34 @@ export default function Dashboard() {
     } catch { return {}; }
   });
   const [semStartDialogKey, setSemStartDialogKey] = useState<string | null>(null);
-  const [weeklyPlanningOpen, setWeeklyPlanningOpen] = useState(() => {
-    try {
-      const now = new Date();
-      const dow = now.getDay();
-      const hour = now.getHours();
-      const isSunEvening = dow === 0 && hour >= 17;
-      const isMonMorning = dow === 1 && hour < 12;
-      if (!isSunEvening && !isMonMorning) return false;
-      const weekKey = `weeklyPlan_${format(startOfDayET(now), 'yyyy-ww')}`;
-      const dismissed = localStorage.getItem(weekKey);
-      return !dismissed;
-    } catch { return false; }
-  });
+  const [weeklyPlanningOpen, setWeeklyPlanningOpen] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const now = new Date();
+        const dow = now.getDay();
+        const hour = now.getHours();
+        const isSunEvening = dow === 0 && hour >= 17;
+        const isMonMorning = dow === 1 && hour < 12;
+        if (!isSunEvening && !isMonMorning) return;
+        const weekKey = `weeklyPlan_${format(startOfDayET(now), 'yyyy-ww')}`;
+        const localDismissed = localStorage.getItem(weekKey);
+        if (localDismissed) return;
+        try {
+          const res = await fetch('/api/weekly-planning/dismissed');
+          if (res.ok) {
+            const data = await res.json();
+            if (data.weekKey === weekKey) {
+              localStorage.setItem(weekKey, '1');
+              return;
+            }
+          }
+        } catch (_) {}
+        setWeeklyPlanningOpen(true);
+      } catch {}
+    })();
+  }, []);
 
   const SEMESTER_COURSE_DEFS = [
     { key: 'ss2025', start: '2025-05-05', end: '2025-08-08', codes: ['CPPA101','CPPA120','CPPA102'] },
@@ -22615,6 +22643,7 @@ export default function Dashboard() {
               <div className="fixed inset-0 z-[10006] bg-black/60" onClick={() => {
                 const weekKey = `weeklyPlan_${format(startOfDayET(new Date()), 'yyyy-ww')}`;
                 localStorage.setItem(weekKey, '1');
+                fetch('/api/weekly-planning/dismiss', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ weekKey }) }).catch(() => {});
                 setWeeklyPlanningOpen(false);
               }} />
               <div className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-[10006] w-[420px] max-w-[94vw] max-h-[80vh] overflow-y-auto rounded-lg text-white p-5" style={{ background: 'linear-gradient(180deg, #1a1f3a 0%, #0d1025 100%)', border: '2px solid rgba(255,255,255,0.3)', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }} data-testid="weekly-planning-dialog">
@@ -22672,6 +22701,7 @@ export default function Dashboard() {
                     onClick={() => {
                       const weekKey = `weeklyPlan_${format(startOfDayET(new Date()), 'yyyy-ww')}`;
                       localStorage.setItem(weekKey, '1');
+                      fetch('/api/weekly-planning/dismiss', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ weekKey }) }).catch(() => {});
                       setWeeklyPlanningOpen(false);
                     }}
                     data-testid="button-dismiss-weekly-planning"

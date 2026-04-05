@@ -19293,11 +19293,21 @@ Return ONLY the JSON object, no markdown formatting.`;
   }
 
   let morningReviewLastShownDate: string | null = null;
+  let morningReviewDismissUntil: number | null = null;
+  let weeklyPlanningDismissedWeek: string | null = null;
 
   (async () => {
     try {
       const result = await pool.query("SELECT value FROM degree_tracking_data WHERE key = 'morning_review_last_shown'");
       if (result.rows.length > 0) morningReviewLastShownDate = result.rows[0].value;
+    } catch (_) {}
+    try {
+      const result = await pool.query("SELECT value FROM degree_tracking_data WHERE key = 'morning_review_dismiss_until'");
+      if (result.rows.length > 0) morningReviewDismissUntil = Number(result.rows[0].value) || null;
+    } catch (_) {}
+    try {
+      const result = await pool.query("SELECT value FROM degree_tracking_data WHERE key = 'weekly_planning_dismissed_week'");
+      if (result.rows.length > 0) weeklyPlanningDismissedWeek = result.rows[0].value;
     } catch (_) {}
   })();
 
@@ -19318,6 +19328,44 @@ Return ONLY the JSON object, no markdown formatting.`;
       } catch (_) {}
     }
     res.json({ ok: true, date: morningReviewLastShownDate });
+  });
+
+  app.get("/api/morning-review/dismiss-until", (_req, res) => {
+    res.json({ dismissUntil: morningReviewDismissUntil });
+  });
+
+  app.post("/api/morning-review/dismiss-until", async (req, res) => {
+    const { dismissUntil } = req.body;
+    if (dismissUntil && typeof dismissUntil === 'number') {
+      morningReviewDismissUntil = dismissUntil;
+      try {
+        await pool.query(
+          `INSERT INTO degree_tracking_data (key, value) VALUES ('morning_review_dismiss_until', $1)
+           ON CONFLICT (key) DO UPDATE SET value = $1`,
+          [String(dismissUntil)]
+        );
+      } catch (_) {}
+    }
+    res.json({ ok: true, dismissUntil: morningReviewDismissUntil });
+  });
+
+  app.get("/api/weekly-planning/dismissed", (_req, res) => {
+    res.json({ weekKey: weeklyPlanningDismissedWeek });
+  });
+
+  app.post("/api/weekly-planning/dismiss", async (req, res) => {
+    const { weekKey } = req.body;
+    if (weekKey && typeof weekKey === 'string') {
+      weeklyPlanningDismissedWeek = weekKey;
+      try {
+        await pool.query(
+          `INSERT INTO degree_tracking_data (key, value) VALUES ('weekly_planning_dismissed_week', $1)
+           ON CONFLICT (key) DO UPDATE SET value = $1`,
+          [weekKey]
+        );
+      } catch (_) {}
+    }
+    res.json({ ok: true, weekKey: weeklyPlanningDismissedWeek });
   });
 
   app.post("/api/morning-review/sync-all", async (_req, res) => {
