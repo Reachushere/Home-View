@@ -24489,6 +24489,7 @@ export default function Dashboard() {
                                   { key: 'w2026', start: '2026-01-12', end: '2026-04-17', weeks: 13 },
                                   { key: 'ss2026', start: '2026-05-04', end: '2026-08-07', weeks: 14 },
                                   { key: 'f2026', start: '2026-09-14', end: '2026-12-11', weeks: 13 },
+                                  { key: 'w2027', start: '2027-01-11', end: '2027-04-16', weeks: 13 },
                                 ];
                                 const activeSem = semDefs.find(s => satDate >= new Date(s.start + 'T00:00:00') && satDate <= new Date(s.end + 'T23:59:59'));
                                 if (activeSem) {
@@ -24499,11 +24500,15 @@ export default function Dashboard() {
                                   if (nextWeek > activeSem.weeks) {
                                     return `Last School Week (${currentWeek})`;
                                   }
-                                  const ssSubSession = activeSem.key.startsWith('ss') && satDate >= new Date('2026-06-20T00:00:00') ? (satDate < new Date('2026-06-23T00:00:00') ? '/1' : '/2') : '';
+                                  const ssSubSession = activeSem.key.startsWith('ss') && satDate >= new Date('2026-06-20T00:00:00') ? `/${nextWeek - 7}` : '';
                                   return `New School Week (${nextWeek}${ssSubSession})`;
                                 }
                                 const nextSem = semDefs.find(s => satDate < new Date(s.start + 'T00:00:00'));
                                 if (nextSem) {
+                                  return `Break`;
+                                }
+                                const lastSem = semDefs[semDefs.length - 1];
+                                if (lastSem && satDate > new Date(lastSem.end + 'T23:59:59')) {
                                   return `Break`;
                                 }
                                 return `New School Week (${selectedWeek + 1})`;
@@ -24523,12 +24528,13 @@ export default function Dashboard() {
                                   { key: 'w2026', start: '2026-01-12', end: '2026-04-17', weeks: 13 },
                                   { key: 'ss2026', start: '2026-05-04', end: '2026-08-07', weeks: 14 },
                                   { key: 'f2026', start: '2026-09-14', end: '2026-12-11', weeks: 13 },
+                                  { key: 'w2027', start: '2027-01-11', end: '2027-04-16', weeks: 13 },
                                 ];
                                 const dayDate = new Date(day.getFullYear(), day.getMonth(), day.getDate(), 12, 0, 0);
                                 const activeSem = semDefs.find(s => dayDate >= new Date(s.start + 'T00:00:00') && dayDate <= new Date(s.end + 'T23:59:59'));
                                 if (activeSem) {
                                   const semStartD = new Date(activeSem.start + 'T12:00:00');
-                                  if (activeSem.key === 'w2026') {
+                                  if (activeSem.key === 'w2026' || activeSem.key === 'w2027') {
                                     const rwStart = semesterSettings?.readingWeekStart || null;
                                     const wk = getWeekNumber(dayDate, semStartD, rwStart);
                                     return wk === -1 ? 'Reading Week' : `Week ${Math.min(Math.max(wk, 1), activeSem.weeks)}`;
@@ -24537,11 +24543,13 @@ export default function Dashboard() {
                                   const daysDiff = Math.round((calcDate.getTime() - semStartD.getTime()) / (1000*60*60*24));
                                   const semWeek = Math.max(1, Math.min(Math.floor(daysDiff / 7) + 1, activeSem.weeks));
                                   const isSS = activeSem.key.startsWith('ss');
-                                  const ssLabel = isSS && semWeek >= 7 ? (dayDate < new Date('2026-06-23T00:00:00') ? '/1' : '/2') : '';
+                                  const ssLabel = isSS && dayDate >= new Date('2026-06-20T00:00:00') ? `/${semWeek - 7}` : '';
                                   return `Week ${semWeek}${ssLabel}`;
                                 }
                                 const nextSem = semDefs.find(s => dayDate < new Date(s.start + 'T00:00:00'));
                                 if (nextSem) return 'Break';
+                                const lastSem1 = semDefs[semDefs.length - 1];
+                                if (lastSem1 && dayDate > new Date(lastSem1.end + 'T23:59:59')) return 'Break';
                                 return `Week ${Math.min(selectedWeek + 1, LAST_WEEK)}`;
                               })()}</span>
                             </div>
@@ -24560,12 +24568,13 @@ export default function Dashboard() {
                                   { key: 'w2026', start: '2026-01-12', end: '2026-04-17', weeks: 13 },
                                   { key: 'ss2026', start: '2026-05-04', end: '2026-08-07', weeks: 14 },
                                   { key: 'f2026', start: '2026-09-14', end: '2026-12-11', weeks: 13 },
+                                  { key: 'w2027', start: '2027-01-11', end: '2027-04-16', weeks: 13 },
                                 ];
                                 const dayDate = new Date(day.getFullYear(), day.getMonth(), day.getDate(), 12, 0, 0);
                                 const activeSem = semDefs.find(s => dayDate >= new Date(s.start + 'T00:00:00') && dayDate <= new Date(s.end + 'T23:59:59'));
                                 if (activeSem) {
                                   const semStartD = new Date(activeSem.start + 'T12:00:00');
-                                  if (activeSem.key === 'w2026') {
+                                  if (activeSem.key === 'w2026' || activeSem.key === 'w2027') {
                                     const rwStart = semesterSettings?.readingWeekStart || null;
                                     const wk = getWeekNumber(dayDate, semStartD, rwStart);
                                     if (wk === -1) return 'Reading Week';
@@ -24575,11 +24584,13 @@ export default function Dashboard() {
                                   const daysDiff = Math.round((calcDate.getTime() - semStartD.getTime()) / (1000*60*60*24));
                                   const semWeek = Math.max(1, Math.min(Math.floor(daysDiff / 7) + 1, activeSem.weeks));
                                   const isSS = activeSem.key.startsWith('ss');
-                                  const ssLabel = isSS && semWeek >= 7 ? (dayDate < new Date('2026-06-23T00:00:00') ? '/1' : '/2') : '';
+                                  const ssLabel = isSS && dayDate >= new Date('2026-06-20T00:00:00') ? `/${semWeek - 7}` : '';
                                   return `Week ${semWeek}${ssLabel}`;
                                 }
                                 const nextSem = semDefs.find(s => dayDate < new Date(s.start + 'T00:00:00'));
                                 if (nextSem) return 'Break';
+                                const lastSem2 = semDefs[semDefs.length - 1];
+                                if (lastSem2 && dayDate > new Date(lastSem2.end + 'T23:59:59')) return 'Break';
                                 return `Week ${Math.min(selectedWeek, LAST_WEEK)}`;
                               })()}</span>
                             </div>

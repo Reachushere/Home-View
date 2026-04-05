@@ -1626,6 +1626,18 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       tasksToDelete.push(parentTask);
     }
 
+    if (allSiblings.length === 0 && !task.parentTaskId && task.title) {
+      const allTasks = await storage.getAllTasks();
+      for (const t of allTasks) {
+        if (t.id !== task.id && t.title === task.title && t.type === task.type &&
+            (t.courseName || '') === (task.courseName || '') &&
+            new Date(t.dueDate) >= new Date(task.dueDate) &&
+            !tasksToDelete.some(d => d.id === t.id)) {
+          tasksToDelete.push(t);
+        }
+      }
+    }
+
     for (const t of tasksToDelete) {
       if (t.calendarEventId) {
         try { await deleteCalendarEvent(t.calendarEventId); } catch {}
