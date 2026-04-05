@@ -1609,9 +1609,8 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
   // DELETE /api/tasks/:id/future - Delete this task and all future recurring instances
   app.delete("/api/tasks/:id/future", async (req, res) => {
     const taskId = Number(req.params.id);
-    console.log(`[DeleteFuture] Starting delete for task ${taskId}`);
     const task = await storage.getTask(taskId);
-    if (!task) { console.log(`[DeleteFuture] Task ${taskId} not found`); return res.status(404).json({ message: 'Task not found' }); }
+    if (!task) return res.status(404).json({ message: 'Task not found' });
 
     const parentId = task.parentTaskId || task.id;
     const allSiblings = await storage.getChildTasks(parentId);
@@ -1628,7 +1627,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
     }
 
     if (allSiblings.length === 0 && !task.parentTaskId && task.title) {
-      const allTasks = await storage.getAllTasks();
+      const allTasks = await storage.getTasks();
       for (const t of allTasks) {
         if (t.id !== task.id && t.title === task.title && t.type === task.type &&
             (t.courseName || '') === (task.courseName || '') &&
@@ -1638,8 +1637,6 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
         }
       }
     }
-
-    console.log(`[DeleteFuture] Found ${tasksToDelete.length} tasks to delete: ${tasksToDelete.map(t => `${t.id}(${t.dueDate})`).join(', ')}`);
 
     for (const t of tasksToDelete) {
       if (t.calendarEventId) {
@@ -1658,7 +1655,6 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       await storage.deleteTask(t.id);
     }
 
-    console.log(`[DeleteFuture] Successfully deleted ${tasksToDelete.length} tasks`);
     res.status(204).end();
   });
 
