@@ -26021,6 +26021,12 @@ export default function Dashboard() {
                           onDragLeave={handleDragLeave}
                           onDrop={(e) => handleDrop(e, day, hour)}
                           onDoubleClick={(e) => {
+                            if (hourTasks.length > 0) {
+                              e.stopPropagation();
+                              setEditingTask(hourTasks[0]);
+                              return;
+                            }
+                            
                             const rect = e.currentTarget.getBoundingClientRect();
                             const clickY = e.clientY - rect.top;
                             const isBottomHalf = clickY > rect.height / 2;
