@@ -26717,33 +26717,44 @@ export default function Dashboard() {
                             const eventMin = getETMinutes(new Date(event.startDate));
                             const calTopOffset = eventMin > 0 ? (eventMin / 60) * rowHeight : 2;
                             const calMaxHeight = Math.min(40, rowHeight - calTopOffset - 2);
+                            const gcalColor = otherRowColors.borderColor || '#6b7280';
+                            const gcalBg = otherRowColors.taskBgColor || '#f3f4f6';
                             return (
                             <div
                               key={event.id}
-                              className={`absolute rounded pt-0.5 px-0.5 pb-0 hover:opacity-90 shadow-sm overflow-hidden bg-gray-200 dark:bg-gray-700 border border-gray-500`}
+                              className={`absolute rounded hover:opacity-90 shadow-sm overflow-hidden`}
                               style={{
                                 top: `${calTopOffset}px`,
                                 left: `calc(${(hourTasks.length + eventIdx) * columnWidth}% + 2px)`,
                                 width: `calc(${columnWidth}% - 4px)`,
                                 height: `${Math.max(20, calMaxHeight)}px`,
                                 maxHeight: `${Math.max(20, calMaxHeight)}px`,
-                                zIndex: 1
+                                zIndex: 1,
+                                border: `1.5px solid ${gcalColor}`,
+                                backgroundColor: gcalBg,
+                                display: 'flex',
+                                flexDirection: 'column',
                               }}
                               data-testid={`gcal-event-${event.id}`}
                             >
-                              <div className="flex items-center gap-0.5">
+                              <div style={{ background: gcalColor, display: 'flex', alignItems: 'center', padding: '1px 3px', flexShrink: 0 }}>
+                                <span style={{ fontSize: '9px', fontWeight: 500, color: 'white', letterSpacing: '0.3px', textShadow: '0 1px 2px rgba(0,0,0,0.3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                                  {event.title}
+                                </span>
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '1px 3px 2px 3px', flex: 1 }}>
                                 <Checkbox
                                   checked={false}
                                   onCheckedChange={() => toggleDismissCalendarEvent(event.id)}
-                                  className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                  className="shrink-0 bg-white data-[state=checked]:bg-white data-[state=checked]:text-black"
+                                  style={{ width: '10px', height: '10px', border: '1px solid black', marginLeft: '-1px' }}
                                   data-testid={`checkbox-gcal-${event.id}`}
                                 />
-                                <a href={event.htmlLink} target="_blank" rel="noopener noreferrer" className="text-[8px] font-bold truncate text-black cursor-pointer hover:underline flex-1" onClick={(e) => e.stopPropagation()}>
-                                  {event.title}
-                                </a>
-                              </div>
-                              <div className="text-[8px] mt-0.5 mb-3 ml-[18px] text-muted-foreground italic">
-                                {format(new Date(event.startDate), "h:mm a")}
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div style={{ fontSize: '9px', fontWeight: 400, color: '#000000', lineHeight: 1, fontStyle: 'italic' }}>
+                                    {format(new Date(event.startDate), "h:mm a")}{event.endDate ? ` - ${format(new Date(event.endDate), "h:mm a")}` : ''}
+                                  </div>
+                                </div>
                               </div>
                             </div>
                             );
