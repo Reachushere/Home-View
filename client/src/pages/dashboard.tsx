@@ -6690,12 +6690,21 @@ export default function Dashboard() {
     }
   }, [currentTime, weeks]);
 
-  const { data: allTasks = [] } = useQuery<Task[]>({
+  const { data: allTasksRaw = [] } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
     queryFn: () => fetch("/api/tasks", { credentials: 'include' }).then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
     retry: 2,
     retryDelay: 1000,
   });
+
+  const allTasks = useMemo(() => {
+    if (authLevel === '5747') return allTasksRaw;
+    return allTasksRaw.filter(t => {
+      const desc = (t as any).description || '';
+      if (/\[Label:\s*(Personal|Financial)\]/i.test(desc)) return false;
+      return true;
+    });
+  }, [allTasksRaw, authLevel]);
 
   const hasUnackedReminders = allTasks.some((t: any) => t.type === 'reminder' && t.isAcknowledged === false && !t.isCompleted);
 
