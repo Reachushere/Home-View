@@ -14764,20 +14764,20 @@ export default function Dashboard() {
 
           {/* Up arrow to hide pill */}
           <div
-            style={{ position: 'relative', zIndex: 1, flexShrink: 0, width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', marginRight: '-4px' }}
+            style={{ position: 'relative', zIndex: 1, flexShrink: 0, width: '31px', height: '31px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', marginRight: '-4px', marginLeft: '5px' }}
             className="pill-button-hover"
             onClick={() => closeTopPill()}
             title="Hide toolbar"
             data-testid="button-hide-top-pill"
           >
-            <ChevronUp className="h-[16px] w-[16px] text-white/70" />
+            <ChevronUp className="h-[19px] w-[19px] text-white/70" />
           </div>
 
           {/* ── Tasks ── */}
           <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', paddingRight: '7px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(50,120,210,0.6)', position: 'relative', top: '1px', margin: '0 7.5px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(40,110,210,0.5) 0%, rgba(25,80,180,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           <div style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <ListChecks className="h-[18px] w-[18px] text-white/70" style={{ position: 'relative', top: '-10px' }} />
-            <span style={{ position: 'absolute', top: '11px', fontSize: '6.5px', color: '#ffffff', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', right: '50%', transform: 'translateX(30%)' }}>Tasks</span>
+            <span style={{ position: 'absolute', top: '11px', fontSize: '7.5px', color: '#ffffff', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', right: '50%', transform: 'translateX(32%)' }}>Tasks</span>
           </div>
           {/* Completed Tasks Button - Swapped with Graduation Hat */}
           <div className="pill-button-hover" style={{ 
@@ -14825,21 +14825,8 @@ export default function Dashboard() {
           </div>
 
 
-          {/* Projects Button */}
-          {desktopIsFull && <Button 
-            variant="ghost" 
-            size="sm" 
-            className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} 
-            style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)', marginLeft: '-5px', marginTop: '1px', zIndex: 10, position: 'relative' }} 
-            data-testid="button-projects"
-            onClick={() => { triggerButtonGlow('projects'); setEditingProject(null); setProjectWizardStep(0); setProjectWizardData({ name: '', description: '', color: '#6366F1', status: 'planning', targetDate: '', priority: 'medium' }); setProjectDialogOpen(true); }}
-          >
-            + Project
-          </Button>}
-
-
           {/* Quick Add Button */}
-          {desktopIsFull && <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)', marginLeft: '-5px', marginTop: '1px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminder4DateTimeMode: false, reminder4Date: '', reminder4Hour: '09', reminder4Minute: '00', reminderEmail: false, reminderAlexa: false, reminderSms: false, reminder1Methods: '', reminder2Methods: '', reminder3Methods: '', reminder4Methods: '', attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '', repeatSpanDays: 1, shiftAdjust: false, hideFromSummary: false, hideFromCountdown: false }); setIsQuickAddOpen(true); }); }}>+ Add Task</Button>}
+          {desktopIsFull && <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)', marginLeft: '-5px', marginTop: '1px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminder4DateTimeMode: false, reminder4Date: '', reminder4Hour: '09', reminder4Minute: '00', reminderEmail: false, reminderAlexa: false, reminderSms: false, reminder1Methods: '', reminder2Methods: '', reminder3Methods: '', reminder4Methods: '', attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '', repeatSpanDays: 1, shiftAdjust: false, hideFromSummary: false, hideFromCountdown: false }); setIsQuickAddOpen(true); }); }}>+ Add</Button>}
 
           {authLevel === '4201' && <Button
             variant="ghost"
@@ -15080,7 +15067,7 @@ export default function Dashboard() {
           <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(34,197,94,0.7)', position: 'relative', top: '1px', margin: '0 7.5px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(34,197,94,0.55) 0%, rgba(22,163,74,0.4) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           <div style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <GraduationCap className="h-[20px] w-[20px] text-white/70" style={{ position: 'relative', top: '-10px' }} />
-            <span style={{ position: 'absolute', top: '11px', fontSize: '6.5px', color: '#ffffff', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', right: '50%', transform: 'translateX(30%)' }}>School</span>
+            <span style={{ position: 'absolute', top: '11px', fontSize: '7.5px', color: '#ffffff', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', right: '50%', transform: 'translateX(32%)' }}>School</span>
           </div>
           {/* Courses Button */}
           <div className="pill-button-hover" style={{ 
@@ -15185,7 +15172,7 @@ export default function Dashboard() {
           <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(160,100,240,0.6)', position: 'relative', top: '1px', margin: '0 7.5px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(150,90,235,0.5) 0%, rgba(120,60,210,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           <div style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <img src={soundIconPath} alt="Sound" style={{ height: '22px', width: '22px', objectFit: 'contain', position: 'relative', opacity: 0.7, top: '-10px' }} />
-            <span style={{ position: 'absolute', top: '11px', fontSize: '6.5px', color: '#ffffff', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', right: '50%', transform: 'translateX(30%)' }}>Sound</span>
+            <span style={{ position: 'absolute', top: '11px', fontSize: '7.5px', color: '#ffffff', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', right: '50%', transform: 'translateX(32%)' }}>Sound</span>
           </div>
           {/* Spotify Button */}
           <div className="pill-button-hover" style={{ 
@@ -15304,8 +15291,8 @@ export default function Dashboard() {
           <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 32)}px`, border: '1.5px solid rgba(110,110,110,0.8)', position: 'relative', top: '1px', margin: '0 7.5px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(100,100,100,0.75) 0%, rgba(75,75,75,0.55) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           {isAdmin && (
             <div style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <Wrench className="h-[18px] w-[18px] text-white/70" style={{ position: 'relative', top: '-10px' }} />
-              <span style={{ position: 'absolute', top: '9px', fontSize: '6.5px', color: '#ffffff', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', right: '50%', transform: 'translateX(30%)' }}>Tools</span>
+              <Wrench className="h-[18px] w-[18px] text-white/70" style={{ position: 'relative', top: '-11px', left: '-1px' }} />
+              <span style={{ position: 'absolute', top: '8px', fontSize: '7.5px', color: '#ffffff', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', right: '50%', transform: 'translateX(31%)' }}>Tools</span>
             </div>
           )}
           {/* Home Assistant (moved from bottom pill) */}
@@ -18010,7 +17997,9 @@ export default function Dashboard() {
           transition: 'left 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
         }}
         onClick={() => {
-          setIsAddChooserOpen(true);
+          setQuickAddStep(0);
+          setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminder4DateTimeMode: false, reminder4Date: '', reminder4Hour: '09', reminder4Minute: '00', reminderEmail: false, reminderAlexa: false, reminderSms: false, reminder1Methods: '', reminder2Methods: '', reminder3Methods: '', reminder4Methods: '', attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '', repeatSpanDays: 1, shiftAdjust: false, hideFromSummary: false, hideFromCountdown: false });
+          setIsQuickAddOpen(true);
         }}
         data-testid="left-add-task-tab"
         title="Add"
@@ -18467,7 +18456,7 @@ export default function Dashboard() {
                   <div className="flex items-center gap-2">
                     <Plus className="text-white" style={{ width: '15px', height: '15px' }} />
                     <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
-                      {quickAddStep === 0 ? 'ADD TASK' : quickAddStep === 1 ? 'TASK NAME' : quickAddStep === 2 ? 'COURSE' : quickAddStep === 3 ? 'DATE & TIME' : quickAddStep === 4 ? 'DISPLAY OPTIONS' : quickAddStep === 5 ? 'PRIORITY' : quickAddStep === 6 ? 'REMINDERS' : quickAddStep === 7 ? 'ATTACHMENTS' : quickAddStep === 8 ? 'NOTES & LINKS' : quickAddStep === 9 ? 'SUBTASKS & PROJECT' : quickAddStep === 10 ? 'REPEAT' : 'REVIEW'}
+                      {quickAddStep === 0 ? 'ADD' : quickAddStep === 1 ? 'TASK NAME' : quickAddStep === 2 ? 'COURSE' : quickAddStep === 3 ? 'DATE & TIME' : quickAddStep === 4 ? 'DISPLAY OPTIONS' : quickAddStep === 5 ? 'PRIORITY' : quickAddStep === 6 ? 'REMINDERS' : quickAddStep === 7 ? 'ATTACHMENTS' : quickAddStep === 8 ? 'NOTES & LINKS' : quickAddStep === 9 ? 'SUBTASKS & PROJECT' : quickAddStep === 10 ? 'REPEAT' : 'REVIEW'}
                     </h2>
                   </div>
                   <button onClick={handleQuickAddClose} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-quick-add">
@@ -18553,9 +18542,9 @@ export default function Dashboard() {
                       <div className="grid grid-cols-2 gap-2">
                         <button
                           className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 text-white flex items-center gap-1.5"
-                          style={{ background: 'rgba(0,190,160,0.25)', border: '1px solid rgba(0,190,160,0.55)' }}
-                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,190,160,0.35)'; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,190,160,0.25)'; }}
+                          style={{ background: 'rgba(34,180,90,0.25)', border: '1px solid rgba(34,180,90,0.55)' }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(34,180,90,0.35)'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(34,180,90,0.25)'; }}
                           onClick={(e) => { e.stopPropagation(); setIsQuickAddOpen(false); setTimeout(() => setIsNewCourseWizardOpen(true), 50); }}
                           data-testid="quick-add-type-course"
                         >
@@ -18568,13 +18557,13 @@ export default function Dashboard() {
                             reading: { bg: 'rgba(56,130,255,0.25)', border: 'rgba(56,130,255,0.55)', hover: 'rgba(56,130,255,0.35)' },
                             module: { bg: 'rgba(16,200,120,0.25)', border: 'rgba(16,200,120,0.55)', hover: 'rgba(16,200,120,0.35)' },
                             essay: { bg: 'rgba(255,180,30,0.25)', border: 'rgba(255,180,30,0.55)', hover: 'rgba(255,180,30,0.35)' },
-                            project: { bg: 'rgba(255,60,60,0.25)', border: 'rgba(255,60,60,0.55)', hover: 'rgba(255,60,60,0.35)' },
-                            discussion: { bg: 'rgba(160,80,255,0.25)', border: 'rgba(160,80,255,0.55)', hover: 'rgba(160,80,255,0.35)' },
+                            project: { bg: 'rgba(255,100,50,0.25)', border: 'rgba(255,100,50,0.55)', hover: 'rgba(255,100,50,0.35)' },
+                            discussion: { bg: 'rgba(180,120,220,0.25)', border: 'rgba(180,120,220,0.55)', hover: 'rgba(180,120,220,0.35)' },
                             poll: { bg: 'rgba(255,70,160,0.25)', border: 'rgba(255,70,160,0.55)', hover: 'rgba(255,70,160,0.35)' },
                             exam: { bg: 'rgba(220,30,30,0.3)', border: 'rgba(220,30,30,0.6)', hover: 'rgba(220,30,30,0.4)' },
                             quiz: { bg: 'rgba(180,160,40,0.25)', border: 'rgba(180,160,40,0.55)', hover: 'rgba(180,160,40,0.35)' },
                             reminder: { bg: 'rgba(0,210,240,0.25)', border: 'rgba(0,210,240,0.55)', hover: 'rgba(0,210,240,0.35)' },
-                            meeting: { bg: 'rgba(80,80,240,0.25)', border: 'rgba(80,80,240,0.55)', hover: 'rgba(80,80,240,0.35)' },
+                            meeting: { bg: 'rgba(50,50,180,0.25)', border: 'rgba(50,50,180,0.55)', hover: 'rgba(50,50,180,0.35)' },
                             scholarship: { bg: 'rgba(202,138,4,0.25)', border: 'rgba(202,138,4,0.55)', hover: 'rgba(202,138,4,0.35)' },
                             other: { bg: 'rgba(160,170,180,0.2)', border: 'rgba(160,170,180,0.5)', hover: 'rgba(160,170,180,0.3)' },
                           };
@@ -18599,12 +18588,26 @@ export default function Dashboard() {
                           );
                         })}
                         <button
-                          className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-opacity duration-200 bg-violet-500/15 text-white border border-violet-400/30 hover:bg-violet-500/25 flex items-center gap-1.5"
+                          className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 text-white flex items-center gap-1.5"
+                          style={{ background: 'rgba(0,180,170,0.2)', border: '1px solid rgba(0,180,170,0.5)' }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,180,170,0.3)'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,180,170,0.2)'; }}
                           onClick={(e) => { e.stopPropagation(); setIsQuickAddOpen(false); setTimeout(() => { setPartnerWizardStep(0); setPartnerWizardDates([]); setPartnerWizardShiftType('day'); setPartnerWizardOpen(true); }, 50); }}
                           data-testid="quick-add-type-partner-shifts"
                         >
-                          <Calendar className="h-3.5 w-3.5 text-violet-400" />
+                          <Calendar className="h-3.5 w-3.5" style={{ color: 'rgba(0,210,200,0.8)' }} />
                           Partner Shifts
+                        </button>
+                        <button
+                          className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 text-white flex items-center gap-1.5"
+                          style={{ background: 'rgba(180,130,70,0.25)', border: '1px solid rgba(180,130,70,0.55)' }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(180,130,70,0.35)'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(180,130,70,0.25)'; }}
+                          onClick={(e) => { e.stopPropagation(); setIsQuickAddOpen(false); setTimeout(() => { setEditingProject(null); setProjectWizardStep(0); setProjectWizardData({ name: '', description: '', color: '#6366F1', status: 'planning', targetDate: '', priority: 'medium' }); setProjectDialogOpen(true); }, 50); }}
+                          data-testid="quick-add-type-project-wizard"
+                        >
+                          <FolderPlus className="h-3.5 w-3.5" />
+                          Project
                         </button>
                       </div>
                       <div className="border-t border-white/15 mt-3 pt-3">
@@ -18617,11 +18620,14 @@ export default function Dashboard() {
                           data-testid="input-ics-file"
                         />
                         <button
-                          className="w-full px-3 py-2.5 rounded-lg text-[12px] text-left transition-opacity duration-200 bg-gradient-to-r from-violet-500/10 to-indigo-500/10 text-white border border-violet-400/30 hover:border-violet-400/50 hover:from-violet-500/20 hover:to-indigo-500/20 flex items-center gap-2"
+                          className="w-full px-3 py-2.5 rounded-lg text-[12px] text-left transition-opacity duration-200 text-white flex items-center gap-2"
+                          style={{ background: 'linear-gradient(to right, rgba(100,160,210,0.15), rgba(80,140,200,0.15))', border: '1px solid rgba(100,160,210,0.35)' }}
+                          onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(100,160,210,0.55)'; e.currentTarget.style.background = 'linear-gradient(to right, rgba(100,160,210,0.25), rgba(80,140,200,0.25))'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(100,160,210,0.35)'; e.currentTarget.style.background = 'linear-gradient(to right, rgba(100,160,210,0.15), rgba(80,140,200,0.15))'; }}
                           onClick={() => icsFileInputRef.current?.click()}
                           data-testid="button-import-ics"
                         >
-                          <Upload className="h-3.5 w-3.5 text-violet-400" />
+                          <Upload className="h-3.5 w-3.5" style={{ color: 'rgba(120,180,230,0.8)' }} />
                           Import from .ICS File
                           <span className="text-[9px] text-white/40 ml-auto">Calendar events</span>
                         </button>
