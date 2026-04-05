@@ -26025,7 +26025,7 @@ export default function Dashboard() {
                           data-testid={`all-day-task-${task.id}`}
                         >
                           <div
-                            className={`group flex items-center gap-1 text-[8px] px-1 py-0.5 truncate rounded border w-full min-w-0 cursor-pointer ${
+                            className={`group flex items-center gap-1 text-[9px] px-1 py-0.5 truncate rounded border w-full min-w-0 cursor-pointer ${
                               ""
                             } ${task.isCompleted ? "text-gray-400" : ""}`}
                             style={{
@@ -26061,7 +26061,7 @@ export default function Dashboard() {
                             )}
                             <span 
                               className={`cursor-pointer hover:opacity-80 truncate flex-1 ${task.isCompleted ? "line-through" : ""}`}
-                              style={{ fontWeight: 400 }}
+                              style={{ fontWeight: 500, WebkitFontSmoothing: 'antialiased' as any, textRendering: 'geometricPrecision' }}
                             >
                               {(task.title || '').replace(/[\[\]]/g, '')}
                             </span>
