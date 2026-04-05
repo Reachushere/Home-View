@@ -10666,14 +10666,10 @@ export default function Dashboard() {
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
   
-  // Due Today: all tasks due today (not prep tasks, actual due dates)
-  // Also include full-week MODULE tasks that span today (startDate <= today <= dueDate)
+  // Due Today: all tasks due today that haven't been checked off as complete
   const dueTodayTasks = useMemo(() => allTasks.filter(t => {
-    if (t.isMissed || t.isCompleted) return false;
-    if (isCASL101Finished(t)) return false;
+    if (t.isCompleted) return false;
     if (!t.dueDate) return false;
-    if (/module/i.test(t.title || '')) return false;
-    if (t.hideFromSummary) return false;
     
     if (isSameDayET(new Date(t.dueDate), today)) return true;
     
