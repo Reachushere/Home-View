@@ -164,11 +164,13 @@ export async function checkReminders() {
             console.log(`[Reminder] Skipping duplicate Echo announcement for "${task.title}" (already announced this cycle for a different reminder slot)`);
           } else if (digestSentToday) {
             console.log(`[Reminder] Skipping individual Echo announcement for "${task.title}" (daily digest already announced today)`);
-          } else if (!isTravelling) {
+          } else if (!isTravelling && (process.env.NODE_ENV === 'production' || process.env.REPL_DEPLOYMENT)) {
             notifications.push(sendEchoVoiceAnnouncement(voiceMessage));
             echoAnnouncedTaskIds.add(task.id);
-          } else {
+          } else if (isTravelling) {
             console.log(`[Reminder] Skipping Echo announcement for "${task.title}" (travelling mode)`);
+          } else {
+            console.log(`[Reminder] Skipping Echo announcement for "${task.title}" (dev environment)`);
           }
 
           const results = await Promise.allSettled(notifications);
@@ -299,14 +301,25 @@ export async function checkDailyDigest() {
 
         const MAX_NAMES_TO_READ = 10;
 
-        function deduplicateTaskNames(tasks: TaskReminder[]): string[] {
+        function describeTask(t: TaskReminder): string {
+          const baseName = t.title.includes(' - ') ? t.title.split(' - ')[0].trim() : t.title.trim();
+          const parts: string[] = [];
+          if (t.courseName) parts.push(t.courseName);
+          if (t.type && t.type !== 'other') parts.push(t.type);
+          if (parts.length > 0) {
+            return `${baseName} (${parts.join(', ')})`;
+          }
+          return baseName;
+        }
+
+        function deduplicateTaskDescriptions(tasks: TaskReminder[]): string[] {
           const seen = new Set<string>();
           const result: string[] = [];
           for (const t of tasks) {
             const baseName = t.title.includes(' - ') ? t.title.split(' - ')[0].trim() : t.title.trim();
             if (!seen.has(baseName.toLowerCase())) {
               seen.add(baseName.toLowerCase());
-              result.push(baseName);
+              result.push(describeTask(t));
             }
           }
           return result;
@@ -314,29 +327,44 @@ export async function checkDailyDigest() {
 
         let voiceMsg = `${greeting}.`;
         if (tomorrowTasks.length > 0) {
-          const dedupedNames = deduplicateTaskNames(tomorrowTasks);
-          if (dedupedNames.length <= MAX_NAMES_TO_READ) {
-            const tomorrowList = dedupedNames.join(", ");
+          const dedupedDescs = deduplicateTaskDescriptions(tomorrowTasks);
+          if (dedupedDescs.length <= MAX_NAMES_TO_READ) {
+            const tomorrowList = dedupedDescs.join(". ");
             voiceMsg += ` You have ${tomorrowTasks.length} task${tomorrowTasks.length !== 1 ? 's' : ''} due tomorrow: ${tomorrowList}.`;
           } else {
-            const firstFew = dedupedNames.slice(0, 5).join(", ");
-            voiceMsg += ` You have ${tomorrowTasks.length} tasks due tomorrow, including: ${firstFew}, and ${dedupedNames.length - 5} more.`;
+            const firstFew = dedupedDescs.slice(0, 5).join(". ");
+            voiceMsg += ` You have ${tomorrowTasks.length} tasks due tomorrow, including: ${firstFew}. And ${dedupedDescs.length - 5} more.`;
           }
         } else {
           voiceMsg += ` No tasks due tomorrow.`;
         }
         if (day2Tasks.length > 0) {
-          voiceMsg += ` Also, ${day2Tasks.length} task${day2Tasks.length !== 1 ? 's' : ''} the day after.`;
+          const day2Descs = deduplicateTaskDescriptions(day2Tasks);
+          if (day2Descs.length <= 5) {
+            voiceMsg += ` The day after: ${day2Descs.join(". ")}.`;
+          } else {
+            const firstFew = day2Descs.slice(0, 3).join(". ");
+            voiceMsg += ` The day after, ${day2Tasks.length} tasks, including: ${firstFew}. And ${day2Descs.length - 3} more.`;
+          }
         }
         if (day3Tasks.length > 0) {
-          voiceMsg += ` And ${day3Tasks.length} more in 3 days.`;
+          const day3Descs = deduplicateTaskDescriptions(day3Tasks);
+          if (day3Descs.length <= 3) {
+            voiceMsg += ` In 3 days: ${day3Descs.join(". ")}.`;
+          } else {
+            voiceMsg += ` And ${day3Tasks.length} more tasks in 3 days.`;
+          }
         }
 
-        const echoResult = await sendEchoVoiceAnnouncement(voiceMsg);
-        if (echoResult.success) {
-          console.log(`[Reminder] Daily digest Echo announcement sent (${tomorrowTasks.length} tomorrow, ${day2Tasks.length} day2, ${day3Tasks.length} day3)`);
+        if (process.env.NODE_ENV === 'production' || process.env.REPL_DEPLOYMENT) {
+          const echoResult = await sendEchoVoiceAnnouncement(voiceMsg);
+          if (echoResult.success) {
+            console.log(`[Reminder] Daily digest Echo announcement sent (${tomorrowTasks.length} tomorrow, ${day2Tasks.length} day2, ${day3Tasks.length} day3)`);
+          } else {
+            console.error(`[Reminder] Daily digest Echo announcement failed:`, echoResult.error);
+          }
         } else {
-          console.error(`[Reminder] Daily digest Echo announcement failed:`, echoResult.error);
+          console.log(`[Reminder] Skipping daily digest Echo announcement (dev environment)`);
         }
       } else {
         console.log(`[Reminder] Skipping daily digest Echo announcement (travelling mode)`);
