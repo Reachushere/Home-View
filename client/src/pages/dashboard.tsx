@@ -28078,53 +28078,33 @@ export default function Dashboard() {
               2029: ['rgba(120,120,120,0.8)', 'rgba(95,95,95,0.6)'],
             };
             const getYearColor = (y: number): [string, string] => yearColors[y] || ['rgba(40,110,210,0.8)', 'rgba(25,80,180,0.6)'];
+            const gapColor: [string, string] = ['#95A5A6', '#7F8C8D'];
+            const semDates = {
+              w2026End: new Date(2026, 3, 10),
+              ss2026Start: new Date(2026, 4, 4), ss2026End: new Date(2026, 7, 7),
+              f2026Start: new Date(2026, 8, 8), f2026End: new Date(2026, 11, 11),
+              w2027Start: new Date(2027, 0, 11),
+            };
             const semTabs: Array<{ id: string; topText: string; bottomText: string; semLabel: string; scrollTarget: string; colors: [string, string] }> = [];
-            const currentSemesterWeeks = 13;
-            const wkCurrent = Math.min(selectedWeek, currentSemesterWeeks);
-            semTabs.push({ id: 'wk-current', topText: String(wkCurrent), bottomText: 'W', semLabel: hwWeeklyTimeline[0]?.semLabel || 'Winter 2026', scrollTarget: 'thisweek', colors: getYearColor(2026) });
-            if (selectedWeek + 1 <= currentSemesterWeeks) {
-              semTabs.push({ id: 'wk-next', topText: String(selectedWeek + 1), bottomText: 'W', semLabel: hwWeeklyTimeline[1]?.semLabel || 'Winter 2026', scrollTarget: 'nextweek', colors: getYearColor(2026) });
+            semTabs.push({ id: 'wk-current', topText: String(selectedWeek), bottomText: 'W', semLabel: hwWeeklyTimeline[0]?.semLabel || 'Winter 2026', scrollTarget: 'thisweek', colors: getYearColor(2026) });
+            semTabs.push({ id: 'wk-next', topText: String(selectedWeek + 1), bottomText: 'W', semLabel: hwWeeklyTimeline[1]?.semLabel || 'Winter 2026', scrollTarget: 'nextweek', colors: getYearColor(2026) });
+            semTabs.push({ id: 'wk-third', topText: String(selectedWeek + 2), bottomText: 'W', semLabel: hwWeeklyTimeline[2]?.semLabel || 'Winter 2026', scrollTarget: 'twoweeks', colors: getYearColor(2026) });
+            if (now < semDates.ss2026Start) {
+              semTabs.push({ id: 'april-gap', topText: '', bottomText: 'APRIL', semLabel: 'Winter 2026', scrollTarget: 'threeweeks', colors: getYearColor(2026) });
             }
-            if (selectedWeek + 2 <= currentSemesterWeeks) {
-              semTabs.push({ id: 'wk-third', topText: String(selectedWeek + 2), bottomText: 'W', semLabel: hwWeeklyTimeline[2]?.semLabel || 'Winter 2026', scrollTarget: 'twoweeks', colors: getYearColor(2026) });
+            if (now < semDates.f2026Start) {
+              const ssMaxWk = 6;
+              for (let w = 1; w <= ssMaxWk; w++) {
+                semTabs.push({ id: `ss26-wk${w}`, topText: String(w), bottomText: 'S', semLabel: 'Spring/Summer 2026', scrollTarget: w === 1 ? 'sem-ss2026' : `sem-ss2026-wk${w}`, colors: getYearColor(2026) });
+              }
             }
-            semTabs.push({ id: 'april-gap', topText: '', bottomText: 'APR', semLabel: 'Winter 2026', scrollTarget: 'threeweeks', colors: getYearColor(2026) });
-            const addSpringSummer = (y: number) => {
-              const yc = getYearColor(y);
-              const ssLabel = `Spring/Summer ${y}`;
-              for (let w = 1; w <= 7; w++) {
-                semTabs.push({ id: `ss${y}-wk${w}`, topText: String(w), bottomText: 'S', semLabel: ssLabel, scrollTarget: w === 1 ? `sem-ss${y}` : `sem-ss${y}-wk${w}`, colors: yc });
-              }
-              for (let w = 8; w <= 14; w++) {
-                const summerWk = w - 7;
-                semTabs.push({ id: `ss${y}-wk${w}`, topText: `${w}/${summerWk}`, bottomText: 'S', semLabel: ssLabel, scrollTarget: `sem-ss${y}-wk${w}`, colors: yc });
-              }
-            };
-            const addFall = (y: number) => {
-              const yc = getYearColor(y);
-              const fLabel = `Fall ${y}`;
-              for (let w = 1; w <= 13; w++) {
-                semTabs.push({ id: `f${y}-wk${w}`, topText: String(w), bottomText: 'F', semLabel: fLabel, scrollTarget: w === 1 ? `sem-f${y}` : `sem-f${y}-wk${w}`, colors: yc });
-              }
-            };
-            const addWinter = (y: number) => {
-              const yc = getYearColor(y);
-              const wLabel = `Winter ${y}`;
-              for (let w = 1; w <= 13; w++) {
-                semTabs.push({ id: `w${y}-wk${w}`, topText: String(w), bottomText: 'W', semLabel: wLabel, scrollTarget: w === 1 ? `sem-w${y}` : `sem-w${y}-wk${w}`, colors: yc });
-              }
-            };
-            addSpringSummer(2026);
-            addFall(2026);
-            addWinter(2027);
-            addSpringSummer(2027);
-            addFall(2027);
-            addWinter(2028);
-            addSpringSummer(2028);
-            addFall(2028);
-            addWinter(2029);
-            addSpringSummer(2029);
-            addFall(2029);
+            if (now >= semDates.ss2026End && now < semDates.f2026Start) {
+              semTabs.push({ id: 'aug-sept-gap', topText: '', bottomText: 'AUG-SEP', semLabel: 'Spring/Summer 2026', scrollTarget: 'sem-ss2026', colors: gapColor });
+            }
+            semTabs.push({ id: 'f-2026', topText: '', bottomText: 'FALL', semLabel: 'Fall 2026', scrollTarget: 'sem-f2026', colors: getYearColor(2026) });
+            for (let y = 2027; y <= 2029; y++) {
+              semTabs.push({ id: `year-${y}`, topText: '', bottomText: String(y), semLabel: `Winter ${y}`, scrollTarget: `sem-w${y}`, colors: getYearColor(y) });
+            }
             const currentSemLabel = hwWeeklyTimeline[0]?.semLabel || null;
             const scrollActiveSem = hwVisibleSemLabel || currentSemLabel;
             return (
