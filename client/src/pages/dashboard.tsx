@@ -1558,6 +1558,11 @@ export default function Dashboard() {
   const [hwVisibleSemLabel, setHwVisibleSemLabel] = useState<string | null>(null);
   const [hwVisibleSection, setHwVisibleSection] = useState<string | null>(null);
   const [hwScrolledDown, setHwScrolledDown] = useState(false);
+  const [timelineSyncCalendar, setTimelineSyncCalendar] = useState(() => {
+    const saved = localStorage.getItem('timelineSyncCalendar');
+    return saved === 'true';
+  });
+  const timelineSyncDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [hwFloating, setHwFloatingRaw] = useState(() => {
     const saved = localStorage.getItem('hwFloating');
     return saved ? { showControls: false, isPlaying: false, ...JSON.parse(saved) } : { detached: false, minimized: false, showControls: false, isPlaying: false, x: 100, y: 100 };
@@ -24487,10 +24492,7 @@ export default function Dashboard() {
                                   const daysDiff = Math.round((satDate.getTime() - semStart.getTime()) / (1000*60*60*24));
                                   const semWeek = Math.floor(daysDiff / 7) + 1;
                                   const isLast = semWeek >= activeSem.weeks;
-                                  const ssSubSession = activeSem.key.startsWith('ss') ? (() => {
-                                    const midpoint = new Date(new Date(activeSem.start + 'T00:00:00').getTime() + (new Date(activeSem.end + 'T00:00:00').getTime() - new Date(activeSem.start + 'T00:00:00').getTime()) / 2);
-                                    return satDate <= midpoint ? '/1' : '/2';
-                                  })() : '';
+                                  const ssSubSession = activeSem.key.startsWith('ss') && semWeek >= 7 ? (satDate < new Date('2026-06-23T00:00:00') ? '/1' : '/2') : '';
                                   return `${isLast ? 'Last' : 'New'} School Week (${semWeek}${ssSubSession})`;
                                 }
                                 const nextSem = semDefs.find(s => satDate < new Date(s.start + 'T00:00:00'));
@@ -24505,21 +24507,72 @@ export default function Dashboard() {
                             const now = new Date();
                             const todayIdx = weekDays.findIndex(d => isSameDayET(d, now));
                             const isTodaySat = now.getDay() === 6;
+                            if (todayIdx < 0 && day.getDay() !== 6) return true;
                             return todayIdx >= 0 && idx < todayIdx && day.getDay() !== 6 && !isTodaySat;
                           })() && (
                             <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '8px' }}>
-                              <span style={{ display: 'block', fontSize: 'min(9.5px, 1.4vw)', fontWeight: 400, color: 'rgba(255,255,255,0.35)', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{`Week ${selectedWeek + 1} (Next Week)`}</span>
+                              <span style={{ display: 'block', fontSize: 'min(9.5px, 1.4vw)', fontWeight: 400, color: (() => { const now = new Date(); const todayIdx = weekDays.findIndex(d => isSameDayET(d, now)); return todayIdx < 0 ? '#ffffff' : 'rgba(255,255,255,0.35)'; })(), lineHeight: '11px', letterSpacing: '0.5px', padding: '0 1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{(() => {
+                                const semDefs = [
+                                  { key: 'w2026', start: '2026-01-12', end: '2026-04-17', weeks: 13 },
+                                  { key: 'ss2026', start: '2026-05-04', end: '2026-08-07', weeks: 14 },
+                                  { key: 'f2026', start: '2026-09-14', end: '2026-12-11', weeks: 13 },
+                                ];
+                                const dayDate = new Date(day.getFullYear(), day.getMonth(), day.getDate(), 12, 0, 0);
+                                const activeSem = semDefs.find(s => dayDate >= new Date(s.start + 'T00:00:00') && dayDate <= new Date(s.end + 'T23:59:59'));
+                                if (activeSem) {
+                                  const semStartD = new Date(activeSem.start + 'T12:00:00');
+                                  if (activeSem.key === 'w2026') {
+                                    const rwStart = semesterSettings?.readingWeekStart || null;
+                                    const wk = getWeekNumber(dayDate, semStartD, rwStart);
+                                    return wk === -1 ? 'Reading Week' : `Week ${Math.min(Math.max(wk, 1), activeSem.weeks)}`;
+                                  }
+                                  const daysDiff = Math.round((dayDate.getTime() - semStartD.getTime()) / (1000*60*60*24));
+                                  const semWeek = Math.max(1, Math.min(Math.floor(daysDiff / 7) + 1, activeSem.weeks));
+                                  const isSS = activeSem.key.startsWith('ss');
+                                  const ssLabel = isSS && semWeek >= 7 ? (dayDate < new Date('2026-06-23T00:00:00') ? '/1' : '/2') : '';
+                                  return `Week ${semWeek}${ssLabel}`;
+                                }
+                                const nextSem = semDefs.find(s => dayDate < new Date(s.start + 'T00:00:00'));
+                                if (nextSem) return 'Break';
+                                return `Week ${Math.min(selectedWeek + 1, LAST_WEEK)}`;
+                              })()}</span>
                             </div>
                           )}
                           {!isToday && (() => {
                             const now = new Date();
                             const todayIdx = weekDays.findIndex(d => isSameDayET(d, now));
                             const isTodaySat = now.getDay() === 6;
+                            if (todayIdx < 0) return false;
                             if (isTodaySat) return day.getDay() !== 6;
                             return todayIdx >= 0 && idx > todayIdx && day.getDay() !== 6;
                           })() && (
                             <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '8px' }}>
-                              <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{`Week ${selectedWeek}`}</span>
+                              <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{(() => {
+                                const semDefs = [
+                                  { key: 'w2026', start: '2026-01-12', end: '2026-04-17', weeks: 13 },
+                                  { key: 'ss2026', start: '2026-05-04', end: '2026-08-07', weeks: 14 },
+                                  { key: 'f2026', start: '2026-09-14', end: '2026-12-11', weeks: 13 },
+                                ];
+                                const dayDate = new Date(day.getFullYear(), day.getMonth(), day.getDate(), 12, 0, 0);
+                                const activeSem = semDefs.find(s => dayDate >= new Date(s.start + 'T00:00:00') && dayDate <= new Date(s.end + 'T23:59:59'));
+                                if (activeSem) {
+                                  const semStartD = new Date(activeSem.start + 'T12:00:00');
+                                  if (activeSem.key === 'w2026') {
+                                    const rwStart = semesterSettings?.readingWeekStart || null;
+                                    const wk = getWeekNumber(dayDate, semStartD, rwStart);
+                                    if (wk === -1) return 'Reading Week';
+                                    return `Week ${Math.min(Math.max(wk, 1), activeSem.weeks)}`;
+                                  }
+                                  const daysDiff = Math.round((dayDate.getTime() - semStartD.getTime()) / (1000*60*60*24));
+                                  const semWeek = Math.max(1, Math.min(Math.floor(daysDiff / 7) + 1, activeSem.weeks));
+                                  const isSS = activeSem.key.startsWith('ss');
+                                  const ssLabel = isSS && semWeek >= 7 ? (dayDate < new Date('2026-06-23T00:00:00') ? '/1' : '/2') : '';
+                                  return `Week ${semWeek}${ssLabel}`;
+                                }
+                                const nextSem = semDefs.find(s => dayDate < new Date(s.start + 'T00:00:00'));
+                                if (nextSem) return 'Break';
+                                return `Week ${Math.min(selectedWeek, LAST_WEEK)}`;
+                              })()}</span>
                             </div>
                           )}
                           {isToday && weatherData?.hourly && weatherData.hourly.length > 0 && (() => {
@@ -24557,12 +24610,12 @@ export default function Dashboard() {
                               <div className="absolute z-20 flex flex-col" style={{ top: 6, bottom: 6, left: 3, width: '48px', gap: '0px', pointerEvents: 'none' }} data-testid="today-hourly-forecast">
                                 {forecasts.map((fc, i) => (
                                   <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, borderBottom: i < forecasts.length - 1 ? '1px solid rgba(255,255,255,0.4)' : 'none' }}>
-                                    <div style={{ flex: 1, background: '#1a1a2e', borderRadius: i === 0 ? '3px 3px 0 0' : i === forecasts.length - 1 ? '0 0 3px 3px' : '0', padding: '1px 3px 1px 3px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', minHeight: 0 }} data-testid={`hourly-forecast-${fc.offset}h`}>
-                                      <div style={{ fontSize: '7px', color: 'rgba(255,255,255,0.9)', fontWeight: 600, lineHeight: 1, textAlign: 'left', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: '0px', marginTop: '1px' }}>{wmoLabel(fc.code)}</div>
-                                      <div className="flex items-center justify-center gap-[3px]" style={{ marginTop: '1px' }}>
-                                        <span style={{ fontSize: '9px', color: '#ffffff', fontWeight: 700, lineHeight: 1, marginLeft: '2px' }}>{fc.offset}h</span>
+                                    <div style={{ flex: 1, background: '#1a1a2e', borderRadius: i === 0 ? '3px 3px 0 0' : i === forecasts.length - 1 ? '0 0 3px 3px' : '0', padding: '1px 2px 1px 2px', display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: 0, overflow: 'visible' }} data-testid={`hourly-forecast-${fc.offset}h`}>
+                                      <div style={{ fontSize: '6.5px', color: 'rgba(255,255,255,0.85)', fontWeight: 600, lineHeight: 1, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: '1px', marginTop: '1px' }}>{wmoLabel(fc.code)}</div>
+                                      <div className="flex items-center justify-center gap-[2px]" style={{ marginTop: '0px' }}>
+                                        <span style={{ fontSize: '8px', color: '#ffffff', fontWeight: 700, lineHeight: 1 }}>{fc.offset}h</span>
                                         <span style={{ lineHeight: 1, flexShrink: 0 }}>{renderMiniWeatherSvg(fc.code)}</span>
-                                        <span style={{ fontSize: '10px', color: '#ffffff', fontWeight: 700, lineHeight: 1 }}>{fc.temp}°</span>
+                                        <span style={{ fontSize: '9px', color: '#ffffff', fontWeight: 700, lineHeight: 1 }}>{fc.temp}°</span>
                                       </div>
                                     </div>
                                   </div>
@@ -24666,9 +24719,7 @@ export default function Dashboard() {
                   if (!semStart || !semEnd) continue;
                   const semStartDate = new Date(semStart + 'T00:00:00');
                   const semEndDate = new Date(semEnd + 'T23:59:59');
-                  const examBuffer = semKey.startsWith('ss') ? 0 : 14;
-                  const semEndWithExams = new Date(semEndDate.getTime() + examBuffer * 24 * 60 * 60 * 1000);
-                  if (currentWeekEnd < semStartDate || currentWeekStart > semEndWithExams) continue;
+                  if (currentWeekEnd < semStartDate || currentWeekStart > semEndDate) continue;
                   const courses = semesterCourseAssignments[semKey] || [];
                   for (const sc of courses) {
                     if (!sc.code) continue;
@@ -24680,8 +24731,7 @@ export default function Dashboard() {
                     const courseEndRaw = ssCourseOverrides[overrideKey]
                       ? new Date(ssCourseOverrides[overrideKey].endDate + 'T23:59:59')
                       : semEndDate;
-                    const courseEnd = new Date(courseEndRaw.getTime() + examBuffer * 24 * 60 * 60 * 1000);
-                    if (currentWeekEnd < courseStart || currentWeekStart > courseEnd) continue;
+                    if (currentWeekEnd < courseStart || currentWeekStart > courseEndRaw) continue;
                     if (allDisplayCourses.some(c => c.name.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') === codeNorm)) continue;
                     const matchedCourse = coursesData.courses.find(c => {
                       const cc = c.name?.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '');
@@ -28108,8 +28158,8 @@ export default function Dashboard() {
               <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 10px', margin: '-8px -4px', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => { const newWeek = selectedWeek - 1; startTransition(() => setSelectedWeek(newWeek)); if (newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }} data-testid="button-pill-prev-week"><span style={{ fontSize: '13px', lineHeight: '1', color: '#000' }}>◀</span></div>
               <span data-testid="text-week-dates" style={{ fontSize: '10px', fontWeight: 500, color: '#000', whiteSpace: 'nowrap', lineHeight: 1, letterSpacing: '0.3px', flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px' }}>
                 {(() => {
-                  const startMonth = format(weekStartDate, 'MMMM');
-                  const endMonth = format(weekEndDate, 'MMMM');
+                  const startMonth = format(weekStartDate, 'MMM');
+                  const endMonth = format(weekEndDate, 'MMM');
                   const startDay = format(weekStartDate, 'd');
                   const endDay = format(weekEndDate, 'd');
                   const startDow = format(weekStartDate, 'EEE');
@@ -28527,6 +28577,16 @@ export default function Dashboard() {
               </div>
             );
           })()}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '2px 6px', flexShrink: 0, gap: '4px' }} data-testid="timeline-sync-toggle-container">
+            <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.6)', fontWeight: 500, letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Sync</span>
+            <div
+              onClick={() => { const next = !timelineSyncCalendar; setTimelineSyncCalendar(next); localStorage.setItem('timelineSyncCalendar', String(next)); }}
+              style={{ width: '24px', height: '13px', borderRadius: '7px', background: timelineSyncCalendar ? '#22c55e' : 'rgba(255,255,255,0.25)', cursor: 'pointer', position: 'relative', transition: 'background 0.2s ease', flexShrink: 0 }}
+              data-testid="button-timeline-sync-toggle"
+            >
+              <div style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#ffffff', position: 'absolute', top: '2px', left: timelineSyncCalendar ? '13px' : '2px', transition: 'left 0.2s ease', boxShadow: '0 1px 2px rgba(0,0,0,0.3)' }} />
+            </div>
+          </div>
           <div style={{ padding: '0 8px', height: courseRowRects.length > 0 ? `${courseRowRects[0].top - (calendarBorderTop || (calendarTop + 15)) - 1}px` : '45px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 46, overflow: 'hidden', marginBottom: '0px', boxShadow: '0 3px 6px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3)' }}>
             <div style={{ position: 'absolute', top: '21px', left: '22px', right: 0, height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)', zIndex: 2 }} />
             <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: '6px', bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', zIndex: 2 }}>Homework Progress</span>
@@ -28582,6 +28642,11 @@ export default function Dashboard() {
             </div>
             <div ref={homeworkSpacerRef} style={{ position: 'absolute', right: '4px', top: 0, width: '0px', height: '100%', minHeight: '14px', backgroundColor: 'transparent' }} />
           </div>
+          {courseRowRects.length === 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px 10px', minHeight: '60px' }}>
+              <span className="text-[11px] text-white/50 italic text-center" data-testid="text-no-courses">No active courses this week</span>
+            </div>
+          )}
           {courseRowRects.length > 0 && courseProgressDataRef.current.length > 0 && (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
             const firstRowOffset = 0;
@@ -28812,10 +28877,10 @@ export default function Dashboard() {
                     </div>
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, borderRadius: '6px', overflow: 'hidden', gap: '2px' }}>
-                      {(() => { const cGrad = getCourseGradientColors(pd.courseCode); return [
-                        { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `play-module-${pd.courseCode.toLowerCase()}`, testUpload: `upload-module-${pd.courseCode.toLowerCase()}`, bg: cGrad.start, dark: true },
-                        { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, bg: cGrad.end, dark: false },
-                      ]; })().map(item => {
+                      {[
+                        { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `play-module-${pd.courseCode.toLowerCase()}`, testUpload: `upload-module-${pd.courseCode.toLowerCase()}`, bg: pd.progressStartColor || getCourseGradientColors(pd.courseCode).start, dark: true },
+                        { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, bg: pd.progressEndColor || getCourseGradientColors(pd.courseCode).end, dark: false },
+                      ].map(item => {
                         const circleSize = 34;
                         const strokeWidth = 3;
                         const radius = (circleSize - strokeWidth) / 2;
@@ -28967,7 +29032,7 @@ export default function Dashboard() {
           <div style={{ width: '100%', height: '15px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', flexShrink: 0, position: 'relative', zIndex: 3, border: '0.5px solid rgba(255,255,255,0.15)' }}>
             <span style={{ fontSize: '10px', fontWeight: 500, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
           </div>
-          <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }} ref={homeworkScrollRef} onScroll={() => { setHwIsScrolling(true); if (hwScrollTimerRef.current) clearTimeout(hwScrollTimerRef.current); hwScrollTimerRef.current = setTimeout(() => setHwIsScrolling(false), 300); const sc = homeworkScrollRef.current; if (sc) { setHwScrolledDown(sc.scrollTop > 5); const sections = sc.querySelectorAll('[data-semester-label]'); let bestLabel: string | null = null; let bestDist = Infinity; const containerTop = sc.getBoundingClientRect().top; sections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestDist) { bestDist = dist; bestLabel = el.getAttribute('data-semester-label') || null; } }); if (bestLabel) setHwVisibleSemLabel(bestLabel); const hwSections = sc.querySelectorAll('[data-homework-section]'); let bestSec: string | null = null; let bestSecDist = Infinity; hwSections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestSecDist) { bestSecDist = dist; bestSec = el.getAttribute('data-homework-section') || null; } }); setHwVisibleSection(bestSec); } }}>
+          <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }} ref={homeworkScrollRef} onScroll={() => { setHwIsScrolling(true); if (hwScrollTimerRef.current) clearTimeout(hwScrollTimerRef.current); hwScrollTimerRef.current = setTimeout(() => setHwIsScrolling(false), 300); const sc = homeworkScrollRef.current; if (sc) { setHwScrolledDown(sc.scrollTop > 5); const sections = sc.querySelectorAll('[data-semester-label]'); let bestLabel: string | null = null; let bestDist = Infinity; const containerTop = sc.getBoundingClientRect().top; sections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestDist) { bestDist = dist; bestLabel = el.getAttribute('data-semester-label') || null; } }); if (bestLabel) setHwVisibleSemLabel(bestLabel); const hwSections = sc.querySelectorAll('[data-homework-section]'); let bestSec: string | null = null; let bestSecDist = Infinity; hwSections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestSecDist) { bestSecDist = dist; bestSec = el.getAttribute('data-homework-section') || null; } }); setHwVisibleSection(bestSec); if (timelineSyncCalendar && bestSec) { if (timelineSyncDebounceRef.current) clearTimeout(timelineSyncDebounceRef.current); timelineSyncDebounceRef.current = setTimeout(() => { let targetWeek: number | null = null; if (bestSec === 'today' || bestSec === 'thisweek') { targetWeek = hwWeeklyTimeline[0]?.weekNum ?? null; } else if (bestSec === 'nextweek') { targetWeek = hwWeeklyTimeline[1]?.weekNum ?? null; } else if (bestSec === 'twoweeks') { targetWeek = hwWeeklyTimeline[2]?.weekNum ?? null; } else if (bestSec === 'threeweeks') { targetWeek = hwWeeklyTimeline[3]?.weekNum ?? null; } else { const wkMatch = bestSec.match(/wk(\d+)/); if (wkMatch) targetWeek = parseInt(wkMatch[1]); } if (targetWeek !== null && targetWeek >= 1 && targetWeek <= 13 && targetWeek !== selectedWeek) { startTransition(() => setSelectedWeek(targetWeek!)); } }, 200); } } }}>
             {isLoading ? (
               <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
             ) : (
@@ -29972,10 +30037,10 @@ export default function Dashboard() {
                         </div>
                       ) : (
                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, borderRadius: '6px', overflow: 'hidden' }}>
-                          {(() => { const cGrad = getCourseGradientColors(pd.courseCode); return [
-                            { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `float-play-module-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-module-${pd.courseCode.toLowerCase()}`, bg: cGrad.start, dark: true },
-                            { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `float-play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-reading-${pd.courseCode.toLowerCase()}`, bg: cGrad.end, dark: false },
-                          ]; })().map(item => {
+                          {[
+                            { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `float-play-module-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-module-${pd.courseCode.toLowerCase()}`, bg: pd.progressStartColor || getCourseGradientColors(pd.courseCode).start, dark: true },
+                            { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `float-play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-reading-${pd.courseCode.toLowerCase()}`, bg: pd.progressEndColor || getCourseGradientColors(pd.courseCode).end, dark: false },
+                          ].map(item => {
                             const circleSize = 44;
                             const strokeWidth = 3.5;
                             const radius = (circleSize - strokeWidth) / 2;
