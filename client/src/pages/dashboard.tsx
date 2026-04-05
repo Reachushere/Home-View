@@ -1562,6 +1562,10 @@ export default function Dashboard() {
     const saved = localStorage.getItem('timelineSyncCalendar');
     return saved === 'true';
   });
+  const timelineSyncRef = useRef(timelineSyncCalendar);
+  timelineSyncRef.current = timelineSyncCalendar;
+  const selectedWeekRef = useRef(selectedWeek);
+  selectedWeekRef.current = selectedWeek;
   const timelineSyncDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [hwFloating, setHwFloatingRaw] = useState(() => {
     const saved = localStorage.getItem('hwFloating');
@@ -24529,7 +24533,8 @@ export default function Dashboard() {
                                     const wk = getWeekNumber(dayDate, semStartD, rwStart);
                                     return wk === -1 ? 'Reading Week' : `Week ${Math.min(Math.max(wk, 1), activeSem.weeks)}`;
                                   }
-                                  const daysDiff = Math.round((dayDate.getTime() - semStartD.getTime()) / (1000*60*60*24));
+                                  const calcDate = dayDate.getDay() === 0 ? new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate() + 1, 12, 0, 0) : dayDate;
+                                  const daysDiff = Math.round((calcDate.getTime() - semStartD.getTime()) / (1000*60*60*24));
                                   const semWeek = Math.max(1, Math.min(Math.floor(daysDiff / 7) + 1, activeSem.weeks));
                                   const isSS = activeSem.key.startsWith('ss');
                                   const ssLabel = isSS && semWeek >= 7 ? (dayDate < new Date('2026-06-23T00:00:00') ? '/1' : '/2') : '';
@@ -24566,7 +24571,8 @@ export default function Dashboard() {
                                     if (wk === -1) return 'Reading Week';
                                     return `Week ${Math.min(Math.max(wk, 1), activeSem.weeks)}`;
                                   }
-                                  const daysDiff = Math.round((dayDate.getTime() - semStartD.getTime()) / (1000*60*60*24));
+                                  const calcDate = dayDate.getDay() === 0 ? new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate() + 1, 12, 0, 0) : dayDate;
+                                  const daysDiff = Math.round((calcDate.getTime() - semStartD.getTime()) / (1000*60*60*24));
                                   const semWeek = Math.max(1, Math.min(Math.floor(daysDiff / 7) + 1, activeSem.weeks));
                                   const isSS = activeSem.key.startsWith('ss');
                                   const ssLabel = isSS && semWeek >= 7 ? (dayDate < new Date('2026-06-23T00:00:00') ? '/1' : '/2') : '';
@@ -29039,7 +29045,7 @@ export default function Dashboard() {
           <div style={{ width: '100%', height: '15px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', flexShrink: 0, position: 'relative', zIndex: 3, border: '0.5px solid rgba(255,255,255,0.15)' }}>
             <span style={{ fontSize: '10px', fontWeight: 500, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
           </div>
-          <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }} ref={homeworkScrollRef} onScroll={() => { setHwIsScrolling(true); if (hwScrollTimerRef.current) clearTimeout(hwScrollTimerRef.current); hwScrollTimerRef.current = setTimeout(() => setHwIsScrolling(false), 300); const sc = homeworkScrollRef.current; if (sc) { setHwScrolledDown(sc.scrollTop > 5); const sections = sc.querySelectorAll('[data-semester-label]'); let bestLabel: string | null = null; let bestDist = Infinity; const containerTop = sc.getBoundingClientRect().top; sections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestDist) { bestDist = dist; bestLabel = el.getAttribute('data-semester-label') || null; } }); if (bestLabel) setHwVisibleSemLabel(bestLabel); const hwSections = sc.querySelectorAll('[data-homework-section]'); let bestSec: string | null = null; let bestSecDist = Infinity; hwSections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestSecDist) { bestSecDist = dist; bestSec = el.getAttribute('data-homework-section') || null; } }); setHwVisibleSection(bestSec); if (timelineSyncCalendar && bestSec) { if (timelineSyncDebounceRef.current) clearTimeout(timelineSyncDebounceRef.current); timelineSyncDebounceRef.current = setTimeout(() => { let targetWeek: number | null = null; if (bestSec === 'today' || bestSec === 'thisweek') { targetWeek = hwWeeklyTimeline[0]?.weekNum ?? null; } else if (bestSec === 'nextweek') { targetWeek = hwWeeklyTimeline[1]?.weekNum ?? null; } else if (bestSec === 'twoweeks') { targetWeek = hwWeeklyTimeline[2]?.weekNum ?? null; } else if (bestSec === 'threeweeks') { targetWeek = hwWeeklyTimeline[3]?.weekNum ?? null; } else { const wkMatch = bestSec.match(/wk(\d+)/); if (wkMatch) targetWeek = parseInt(wkMatch[1]); } if (targetWeek !== null && targetWeek >= 1 && targetWeek <= 13 && targetWeek !== selectedWeek) { startTransition(() => setSelectedWeek(targetWeek!)); } }, 200); } } }}>
+          <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }} ref={homeworkScrollRef} onScroll={() => { setHwIsScrolling(true); if (hwScrollTimerRef.current) clearTimeout(hwScrollTimerRef.current); hwScrollTimerRef.current = setTimeout(() => setHwIsScrolling(false), 300); const sc = homeworkScrollRef.current; if (sc) { setHwScrolledDown(sc.scrollTop > 5); const sections = sc.querySelectorAll('[data-semester-label]'); let bestLabel: string | null = null; let bestDist = Infinity; const containerTop = sc.getBoundingClientRect().top; sections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestDist) { bestDist = dist; bestLabel = el.getAttribute('data-semester-label') || null; } }); if (bestLabel) setHwVisibleSemLabel(bestLabel); const hwSections = sc.querySelectorAll('[data-homework-section]'); let bestSec: string | null = null; let bestSecDist = Infinity; hwSections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestSecDist) { bestSecDist = dist; bestSec = el.getAttribute('data-homework-section') || null; } }); setHwVisibleSection(bestSec); if (timelineSyncRef.current && bestSec) { if (timelineSyncDebounceRef.current) clearTimeout(timelineSyncDebounceRef.current); timelineSyncDebounceRef.current = setTimeout(() => { let targetWeek: number | null = null; if (bestSec === 'today' || bestSec === 'thisweek') { targetWeek = hwWeeklyTimeline[0]?.weekNum ?? null; } else if (bestSec === 'nextweek') { targetWeek = hwWeeklyTimeline[1]?.weekNum ?? null; } else if (bestSec === 'twoweeks') { targetWeek = hwWeeklyTimeline[2]?.weekNum ?? null; } else if (bestSec === 'threeweeks') { targetWeek = hwWeeklyTimeline[3]?.weekNum ?? null; } else { const wkMatch = bestSec.match(/wk(\d+)/); if (wkMatch) targetWeek = parseInt(wkMatch[1]); } if (targetWeek !== null && targetWeek >= 1 && targetWeek <= 14 && targetWeek !== selectedWeekRef.current) { startTransition(() => setSelectedWeek(targetWeek!)); } }, 200); } } }}>
             {isLoading ? (
               <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
             ) : (
