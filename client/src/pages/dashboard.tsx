@@ -28185,7 +28185,7 @@ export default function Dashboard() {
             >
               <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#fff', position: 'absolute', top: '2px', left: timelineSyncCalendar ? '12px' : '2px', transition: 'left 0.2s ease', boxShadow: '0 1px 2px rgba(0,0,0,0.3)' }} />
             </div>
-            <span style={{ fontSize: '7px', color: '#ffffff', fontWeight: 500, letterSpacing: '0.3px', whiteSpace: 'nowrap', lineHeight: 1 }}>Pair Scroll</span>
+            <span style={{ fontSize: '9px', color: '#ffffff', fontWeight: 500, letterSpacing: '0.3px', whiteSpace: 'nowrap', lineHeight: 1 }}>Pair Scroll</span>
           </div>
           {!hwFloating.detached ? (
             <button
