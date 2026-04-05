@@ -3959,6 +3959,7 @@ export default function Dashboard() {
   
   // Context menu state for right-click delete
   const [recurringDeleteTask, setRecurringDeleteTask] = useState<{ id: number; title: string; callback?: () => void } | null>(null);
+  const [attachmentDeletePrompt, setAttachmentDeletePrompt] = useState<{ taskId: number; title: string; attachments: string[]; skipRecurringDialog?: boolean } | null>(null);
   const [recurringEditPending, setRecurringEditPending] = useState<{ taskId: number; title: string; payload: Record<string, unknown>; onSuccess: () => void } | null>(null);
   const [contextMenu, setContextMenu] = useState<{
     x: number;
@@ -9945,6 +9946,11 @@ export default function Dashboard() {
   const deleteTaskWithUndo = (taskId: number, skipDialog?: boolean) => {
     const task = allTasks.find(t => t.id === taskId);
     if (!task) { deleteMutation.mutate(taskId); return; }
+    const hasAttachments = task.attachments && task.attachments.length > 0;
+    if (hasAttachments && !skipDialog) {
+      setAttachmentDeletePrompt({ taskId, title: task.title, attachments: task.attachments as string[] });
+      return;
+    }
     if (!skipDialog && isRecurringTask(task)) {
       setRecurringDeleteTask({ id: taskId, title: task.title });
       return;
@@ -31348,6 +31354,87 @@ export default function Dashboard() {
             </button>
           </div>
         )}
+
+        {/* Attachment Save Prompt Dialog */}
+        <Dialog open={!!attachmentDeletePrompt} onOpenChange={(open) => !open && setAttachmentDeletePrompt(null)}>
+          <DialogContent className="max-w-sm text-white !z-[10050]" overlayClassName="!z-[10050]" style={{ zIndex: 10050 }}>
+            <DialogHeader>
+              <DialogTitle className="text-white text-sm">Task Has Attachments</DialogTitle>
+            </DialogHeader>
+            <p className="text-white/80 text-xs">
+              "{attachmentDeletePrompt?.title}" has {attachmentDeletePrompt?.attachments.length} attachment{(attachmentDeletePrompt?.attachments.length || 0) > 1 ? 's' : ''}. Would you like to save {(attachmentDeletePrompt?.attachments.length || 0) > 1 ? 'them' : 'it'} before deleting?
+            </p>
+            <div className="flex flex-col gap-1.5 pt-1 max-h-[120px] overflow-y-auto">
+              {attachmentDeletePrompt?.attachments.map((att, i) => {
+                const fileName = att.split('/').pop() || att;
+                return (
+                  <a key={i} href={att} download target="_blank" rel="noopener noreferrer" className="text-xs text-blue-400 hover:text-blue-300 hover:underline truncate flex items-center gap-1.5" data-testid={`download-attachment-${i}`}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    {decodeURIComponent(fileName)}
+                  </a>
+                );
+              })}
+            </div>
+            <div className="flex gap-2 pt-3">
+              <button
+                className="flex-1 inline-flex items-center justify-center rounded-md px-4 py-2 text-white transition-opacity duration-200 text-xs"
+                style={{
+                  border: '1.5px solid rgba(59,130,246,0.6)',
+                  background: 'linear-gradient(180deg, rgba(59,130,246,0.38) 0%, rgba(59,130,246,0.15) 48%, rgba(59,130,246,0.06) 52%, rgba(59,130,246,0.22) 100%)',
+                  boxShadow: 'inset 0 1px 0 rgba(59,130,246,0.4), inset 0 -1px 0 rgba(59,130,246,0.1)'
+                }}
+                onClick={() => {
+                  if (attachmentDeletePrompt) {
+                    attachmentDeletePrompt.attachments.forEach((att) => {
+                      const a = document.createElement('a');
+                      a.href = att;
+                      a.download = att.split('/').pop() || 'attachment';
+                      a.target = '_blank';
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                    });
+                  }
+                }}
+                data-testid="button-save-attachments"
+              >
+                Save Attachments
+              </button>
+              <button
+                className="flex-1 inline-flex items-center justify-center rounded-md px-4 py-2 text-red-300 transition-opacity duration-200 text-xs"
+                style={{
+                  border: '1.5px solid rgba(239,68,68,0.6)',
+                  background: 'linear-gradient(180deg, rgba(239,68,68,0.38) 0%, rgba(239,68,68,0.15) 48%, rgba(239,68,68,0.06) 52%, rgba(239,68,68,0.22) 100%)',
+                  boxShadow: 'inset 0 1px 0 rgba(239,68,68,0.4), inset 0 -1px 0 rgba(239,68,68,0.1)'
+                }}
+                onClick={() => {
+                  if (attachmentDeletePrompt) {
+                    const { taskId } = attachmentDeletePrompt;
+                    setAttachmentDeletePrompt(null);
+                    const task = allTasks.find(t => t.id === taskId);
+                    if (task && isRecurringTask(task)) {
+                      setRecurringDeleteTask({ id: taskId, title: task.title });
+                    } else {
+                      doDeleteSingleTask(taskId);
+                      setEditingTask(null);
+                      setContextMenu(null);
+                    }
+                  }
+                }}
+                data-testid="button-delete-without-saving"
+              >
+                Delete Anyway
+              </button>
+            </div>
+            <button
+              className="w-full inline-flex items-center justify-center rounded-md px-4 py-1.5 text-white/60 hover:text-white/80 transition-colors text-xs"
+              onClick={() => setAttachmentDeletePrompt(null)}
+              data-testid="button-cancel-delete-attachment"
+            >
+              Cancel
+            </button>
+          </DialogContent>
+        </Dialog>
 
         {/* Recurring Delete Dialog */}
         <Dialog open={!!recurringDeleteTask} onOpenChange={(open) => !open && setRecurringDeleteTask(null)}>
