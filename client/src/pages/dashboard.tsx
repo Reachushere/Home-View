@@ -24566,7 +24566,21 @@ export default function Dashboard() {
                             const now = new Date();
                             const nowMs = now.getTime();
                             const offsets = [2, 5, 10];
-                            const wmoMini: Record<number, string> = { 0:'☀️',1:'🌤',2:'⛅',3:'☁️',45:'🌫',48:'🌫',51:'🌧',53:'🌧',55:'🌧',61:'🌧',63:'🌧',65:'🌧',66:'🧊',67:'🧊',71:'🌨',73:'🌨',75:'🌨',77:'🌨',80:'🌧',81:'🌧',82:'🌧',85:'🌨',86:'🌨',95:'⛈',96:'⛈',99:'⛈' };
+                            const renderMiniWeatherSvg = (wc: number) => {
+                              const s = 14;
+                              if (wc === 0) return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="5" fill="#facc15"/><g stroke="#facc15" strokeWidth="2" strokeLinecap="round">{[[12,1,12,3],[12,21,12,23],[4.22,4.22,5.64,5.64],[18.36,18.36,19.78,19.78],[1,12,3,12],[21,12,23,12],[4.22,19.78,5.64,18.36],[18.36,5.64,19.78,4.22]].map(([x1,y1,x2,y2],i)=><line key={i} x1={x1} y1={y1} x2={x2} y2={y2}/>)}</g></svg>;
+                              if (wc === 1) return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><circle cx="10" cy="8" r="3.5" fill="#facc15"/><g stroke="#facc15" strokeWidth="1.5" strokeLinecap="round"><line x1="10" y1="2" x2="10" y2="3.5"/><line x1="10" y1="12.5" x2="10" y2="14"/><line x1="4" y1="8" x2="5.5" y2="8"/><line x1="14.5" y1="8" x2="16" y2="8"/></g><path d="M8 16a4 4 0 0 1 4-4h2a3 3 0 0 1 0 6H9a2.5 2.5 0 0 1 0-5" fill="rgba(255,255,255,0.85)"/></svg>;
+                              if (wc === 2) return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3" fill="#facc15"/><path d="M7 16a4.5 4.5 0 0 1 4.5-4.5h3a3.5 3.5 0 0 1 0 7H8.5a3 3 0 0 1 0-6" fill="rgba(255,255,255,0.9)"/></svg>;
+                              if (wc === 3) return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><path d="M6 16a5 5 0 0 1 5-5h3a4 4 0 0 1 0 8H7.5a3 3 0 0 1 0-6" fill="rgba(255,255,255,0.9)"/></svg>;
+                              if (wc === 45 || wc === 48) return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><g stroke="rgba(255,255,255,0.7)" strokeWidth="2" strokeLinecap="round"><line x1="3" y1="10" x2="21" y2="10"/><line x1="5" y1="14" x2="19" y2="14"/><line x1="7" y1="18" x2="17" y2="18"/></g></svg>;
+                              if ((wc >= 51 && wc <= 55) || (wc >= 80 && wc <= 82)) return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><path d="M6 12a4.5 4.5 0 0 1 4.5-4.5h2.5a3.5 3.5 0 0 1 0 7H7.5a3 3 0 0 1 0-6" fill="rgba(255,255,255,0.8)"/><g stroke="#60a5fa" strokeWidth="1.5" strokeLinecap="round"><line x1="8" y1="17" x2="7" y2="20"/><line x1="14" y1="17" x2="13" y2="20"/></g></svg>;
+                              if ((wc >= 56 && wc <= 57) || (wc >= 61 && wc <= 67)) return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><path d="M6 11a4.5 4.5 0 0 1 4.5-4.5h2.5a3.5 3.5 0 0 1 0 7H7.5a3 3 0 0 1 0-6" fill="rgba(255,255,255,0.8)"/><g stroke="#3b82f6" strokeWidth="1.5" strokeLinecap="round"><line x1="7" y1="16" x2="6" y2="19"/><line x1="11" y1="16" x2="10" y2="19"/><line x1="15" y1="16" x2="14" y2="19"/></g></svg>;
+                              if (wc >= 66 && wc <= 67) return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><path d="M6 11a4.5 4.5 0 0 1 4.5-4.5h2.5a3.5 3.5 0 0 1 0 7H7.5a3 3 0 0 1 0-6" fill="rgba(255,255,255,0.8)"/><g stroke="#93c5fd" strokeWidth="1.5" strokeLinecap="round"><line x1="8" y1="16" x2="7" y2="19"/><line x1="14" y1="16" x2="13" y2="19"/></g></svg>;
+                              if (wc >= 71 && wc <= 77) return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><path d="M6 11a4.5 4.5 0 0 1 4.5-4.5h2.5a3.5 3.5 0 0 1 0 7H7.5a3 3 0 0 1 0-6" fill="rgba(255,255,255,0.8)"/><g fill="#dbeafe"><circle cx="8" cy="17" r="1.5"/><circle cx="13" cy="18" r="1.5"/><circle cx="17" cy="16.5" r="1.5"/></g></svg>;
+                              if (wc >= 85 && wc <= 86) return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><path d="M6 11a4.5 4.5 0 0 1 4.5-4.5h2.5a3.5 3.5 0 0 1 0 7H7.5a3 3 0 0 1 0-6" fill="rgba(255,255,255,0.8)"/><g fill="#dbeafe"><circle cx="7" cy="17" r="1.5"/><circle cx="11" cy="18.5" r="1.5"/><circle cx="15" cy="17" r="1.5"/><circle cx="9" cy="20" r="1.2"/></g></svg>;
+                              if (wc >= 95) return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><path d="M6 10a4.5 4.5 0 0 1 4.5-4.5h2.5a3.5 3.5 0 0 1 0 7H7.5a3 3 0 0 1 0-6" fill="rgba(200,200,200,0.9)"/><path d="M13 14l-2 4h3l-2 4" stroke="#facc15" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+                              return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3" fill="#facc15"/><path d="M7 16a4.5 4.5 0 0 1 4.5-4.5h3a3.5 3.5 0 0 1 0 7H8.5a3 3 0 0 1 0-6" fill="rgba(255,255,255,0.9)"/></svg>;
+                            };
                             const forecasts = offsets.map(h => {
                               const targetMs = nowMs + h * 3600000;
                               let closest = weatherData.hourly![0];
@@ -24583,7 +24597,7 @@ export default function Dashboard() {
                                 {forecasts.map((fc, i) => (
                                   <div key={i} className="flex items-center justify-center gap-[3px]" style={{ flex: 1, background: '#1a1a2e', borderRadius: '3px', padding: '0 3px', minHeight: 0 }} data-testid={`hourly-forecast-${fc.offset}h`}>
                                     <span style={{ fontSize: '8px', color: '#ffffff', fontWeight: 700, lineHeight: 1 }}>{fc.offset}h</span>
-                                    <span style={{ fontSize: '14px', lineHeight: 1, filter: 'brightness(3) contrast(1.2) drop-shadow(0 0 3px rgba(255,255,255,0.8))' }}>{wmoMini[fc.code] || '🌤'}</span>
+                                    <span style={{ lineHeight: 1, flexShrink: 0 }}>{renderMiniWeatherSvg(fc.code)}</span>
                                     <span style={{ fontSize: '9px', color: '#ffffff', fontWeight: 700, lineHeight: 1 }}>{fc.temp}°</span>
                                   </div>
                                 ))}
