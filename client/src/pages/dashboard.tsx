@@ -24577,7 +24577,7 @@ export default function Dashboard() {
                                 {forecasts.map((fc, i) => (
                                   <div key={i} className="flex items-center justify-center gap-[3px]" style={{ flex: 1, background: '#000000', borderRadius: '3px', padding: '0 3px', minHeight: 0 }} data-testid={`hourly-forecast-${fc.offset}h`}>
                                     <span style={{ fontSize: '8px', color: '#ffffff', fontWeight: 700, lineHeight: 1 }}>{fc.offset}h</span>
-                                    <span style={{ fontSize: '13px', lineHeight: 1, filter: 'brightness(1.5)' }}>{wmoMini[fc.code] || '🌤'}</span>
+                                    <span style={{ fontSize: '13px', lineHeight: 1, filter: 'brightness(2) drop-shadow(0 0 2px rgba(255,255,255,0.6))' }}>{wmoMini[fc.code] || '🌤'}</span>
                                     <span style={{ fontSize: '9px', color: '#ffffff', fontWeight: 700, lineHeight: 1 }}>{fc.temp}°</span>
                                   </div>
                                 ))}
