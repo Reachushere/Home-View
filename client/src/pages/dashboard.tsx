@@ -31371,9 +31371,9 @@ export default function Dashboard() {
 
         {/* Attachment Save Prompt Dialog */}
         <Dialog open={!!attachmentDeletePrompt} onOpenChange={(open) => !open && setAttachmentDeletePrompt(null)}>
-          <DialogContent className="max-w-sm text-white !z-[10050]" overlayClassName="!z-[10050]" style={{ zIndex: 10050 }}>
-            <DialogHeader>
-              <DialogTitle className="text-white text-sm">Task Has Attachments</DialogTitle>
+          <DialogContent className="max-w-sm text-white !z-[10050]" overlayClassName="!z-[10050]" style={{ zIndex: 10050, background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.25)' }}>
+            <DialogHeader className="flex flex-row items-center gap-2 px-4 py-3 -mx-6 -mt-6 rounded-t-lg border-b border-white/40" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+              <DialogTitle className="text-white text-sm font-normal" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>Task Has Attachments</DialogTitle>
             </DialogHeader>
             <p className="text-white/80 text-xs">
               "{attachmentDeletePrompt?.title}" has {attachmentDeletePrompt?.attachments.length} attachment{(attachmentDeletePrompt?.attachments.length || 0) > 1 ? 's' : ''}. Would you like to save {(attachmentDeletePrompt?.attachments.length || 0) > 1 ? 'them' : 'it'} before deleting?
@@ -31452,9 +31452,9 @@ export default function Dashboard() {
 
         {/* Recurring Delete Dialog */}
         <Dialog open={!!recurringDeleteTask} onOpenChange={(open) => !open && setRecurringDeleteTask(null)}>
-          <DialogContent className="max-w-sm text-white !z-[10050]" overlayClassName="!z-[10050]" style={{ zIndex: 10050 }}>
-            <DialogHeader>
-              <DialogTitle className="text-white text-sm">Delete Recurring Task</DialogTitle>
+          <DialogContent className="max-w-sm text-white !z-[10050]" overlayClassName="!z-[10050]" style={{ zIndex: 10050, background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.25)' }}>
+            <DialogHeader className="flex flex-row items-center gap-2 px-4 py-3 -mx-6 -mt-6 rounded-t-lg border-b border-white/40" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+              <DialogTitle className="text-white text-sm font-normal" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>Delete Recurring Task</DialogTitle>
             </DialogHeader>
             <p className="text-white/80 text-xs">
               "{recurringDeleteTask?.title}" is a recurring task. What would you like to do?
@@ -31807,13 +31807,7 @@ export default function Dashboard() {
                     className="text-white/60 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200 h-7 w-7"
                     onClick={() => {
                       const task = editingTask;
-                      if (isRecurringTask(task)) {
-                        setRecurringDeleteTask({ id: task.id, title: task.title });
-                      } else {
-                        if (!confirm(`Delete "${task.title}"?`)) return;
-                        setEditingTask(null);
-                        doDeleteSingleTask(task.id);
-                      }
+                      deleteTaskWithUndo(task.id);
                     }}
                     data-testid="button-delete-task-header"
                   >
