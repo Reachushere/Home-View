@@ -19018,8 +19018,16 @@ Return ONLY the JSON object, no markdown formatting.`;
   app.post("/api/pending-review/:id/reject", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
+      const items = await storage.getPendingReviewItems();
+      const item = items.find(i => i.id === id);
       await storage.updatePendingReviewItem(id, { status: 'rejected' });
-      console.log(`[Review] Rejected item #${id}`);
+      if (item?.title) {
+        const normTitle = item.title.toLowerCase().replace(/\s+/g, ' ').replace(/[^a-z0-9 ]/g, '').trim();
+        await storage.addDismissedReviewTitle(normTitle, item.title, item.source);
+        console.log(`[Review] Rejected item #${id} and permanently blocked title: "${item.title}"`);
+      } else {
+        console.log(`[Review] Rejected item #${id}`);
+      }
       res.json({ success: true });
     } catch (error: any) {
       console.error("[Review] Error rejecting item:", error);
@@ -19101,10 +19109,16 @@ Return ONLY the JSON object, no markdown formatting.`;
     try {
       const { ids } = req.body;
       if (!Array.isArray(ids) || ids.length === 0) return res.status(400).json({ error: "ids array required" });
+      const allItems = await storage.getPendingReviewItems();
       for (const id of ids) {
+        const item = allItems.find(i => i.id === id);
         await storage.updatePendingReviewItem(id, { status: 'rejected' });
+        if (item?.title) {
+          const normTitle = item.title.toLowerCase().replace(/\s+/g, ' ').replace(/[^a-z0-9 ]/g, '').trim();
+          await storage.addDismissedReviewTitle(normTitle, item.title, item.source);
+        }
       }
-      console.log(`[Review] Batch rejected ${ids.length} items`);
+      console.log(`[Review] Batch rejected ${ids.length} items (titles permanently blocked)`);
       res.json({ success: true });
     } catch (error: any) {
       console.error("[Review] Error batch rejecting:", error);
@@ -19238,6 +19252,7 @@ Return ONLY the JSON object, no markdown formatting.`;
         const dateK = t.dueDate ? new Date(t.dueDate).toISOString().split('T')[0] : 'nodate';
         return `${normT}||${dateK}`;
       }));
+      const dismissedTitles = new Set(await storage.getDismissedReviewTitles());
       const seenTitles = new Set<string>();
       const filtered = items.filter(item => {
         if (item.startDate) {
@@ -19245,6 +19260,7 @@ Return ONLY the JSON object, no markdown formatting.`;
           if (itemDate < todayStart) return false;
         }
         const normT = normalizeTitle(item.title || '');
+        if (dismissedTitles.has(normT)) return false;
         const dateK = item.startDate ? new Date(item.startDate).toISOString().split('T')[0] : 'nodate';
         if (taskKeys.has(`${normT}||${dateK}`)) return false;
         if (seenTitles.has(normT)) return false;

@@ -759,6 +759,14 @@ export const insertPendingReviewItemSchema = createInsertSchema(pendingReviewIte
 export type PendingReviewItem = typeof pendingReviewItems.$inferSelect;
 export type InsertPendingReviewItem = z.infer<typeof insertPendingReviewItemSchema>;
 
+export const dismissedReviewTitles = pgTable("dismissed_review_titles", {
+  id: serial("id").primaryKey(),
+  normalizedTitle: text("normalized_title").notNull(),
+  originalTitle: text("original_title").notNull(),
+  source: text("source"),
+  dismissedAt: timestamp("dismissed_at").defaultNow(),
+});
+
 export const sharedNotebookLinks = pgTable("shared_notebook_links", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
