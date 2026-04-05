@@ -26434,16 +26434,74 @@ export default function Dashboard() {
                                   />
                                 )}
                               </div>
-                              {task.showCountdownBar && task.showCountdownBarMain !== false && !task.isCompleted && (() => {
-                                const cToday = startOfDayET(new Date());
-                                return null;
-                              })()}
                             </div>
                             </div>
                           );
                         });
                         })()}
                       </div>
+                      {/* Countdown bars in course row */}
+                      {(() => {
+                        const cbToday = startOfDayET(new Date());
+                        const cbTodayDayIdx = weekDays.findIndex(wd => isSameDayET(wd, cbToday));
+                        const barTasks = (allTasks || []).filter(t => {
+                          if (t.showCountdownBar === false || t.showCountdownBarMain === false || t.isCompleted) return false;
+                          const taskCourse = t.courseName?.split(' - ')[0]?.toUpperCase() || '';
+                          if (taskCourse !== courseCodeUpper) return false;
+                          const tDue = startOfDayET(new Date(t.dueDate));
+                          if (tDue < cbToday) return false;
+                          const tDueDayIdx = weekDays.findIndex(wd => isSameDayET(wd, tDue));
+                          const barStart = cbTodayDayIdx >= 0 ? cbTodayDayIdx : 0;
+                          const barEnd = tDueDayIdx >= 0 ? tDueDayIdx : weekDays.length - 1;
+                          return dayIdx >= barStart && dayIdx <= barEnd;
+                        });
+                        if (barTasks.length === 0) return null;
+                        return barTasks.map((t, tIdx) => {
+                          const tDue = startOfDayET(new Date(t.dueDate));
+                          const daysLeft = Math.max(0, Math.round((tDue.getTime() - cbToday.getTime()) / (1000*60*60*24)));
+                          const barColor = t.countdownBarColor || (daysLeft <= 1 ? '#ef4444' : daysLeft === 2 ? '#f97316' : daysLeft <= 4 ? '#f59e0b' : '#22c55e');
+                          const tDueDayIdx = weekDays.findIndex(wd => isSameDayET(wd, tDue));
+                          const isLastCell = tDueDayIdx >= 0 ? dayIdx === tDueDayIdx : dayIdx === weekDays.length - 1;
+                          const isFirstCell = dayIdx === (cbTodayDayIdx >= 0 ? cbTodayDayIdx : 0);
+                          const barBottom = 2 + tIdx * 7;
+                          const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
+                          const needsPulse = isNotStarted && daysLeft <= 2 && !t.isCompleted;
+                          return (
+                            <div
+                              key={`cbar-cr-${t.id}`}
+                              className={needsPulse ? 'countdown-bar-pulse' : ''}
+                              style={{
+                                position: 'absolute',
+                                left: 0,
+                                right: 0,
+                                bottom: `${barBottom}px`,
+                                height: needsPulse ? '5px' : '4px',
+                                background: barColor,
+                                opacity: 0.7,
+                                zIndex: 6,
+                                pointerEvents: 'none',
+                                borderRadius: isFirstCell && isLastCell ? '2px' : isFirstCell ? '2px 0 0 2px' : isLastCell ? '0 2px 2px 0' : '0',
+                                boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined,
+                              }}
+                              data-testid={`countdown-course-bar-${t.id}-day-${dayIdx}`}
+                            >
+                              {isLastCell && (
+                                <span style={{
+                                  position: 'absolute',
+                                  right: '2px',
+                                  top: '-9px',
+                                  fontSize: '7px',
+                                  fontWeight: 800,
+                                  color: barColor,
+                                  lineHeight: 1,
+                                  whiteSpace: 'nowrap',
+                                  textShadow: '0 0 3px rgba(255,255,255,0.8)',
+                                }}>{daysLeft}d</span>
+                              )}
+                            </div>
+                          );
+                        });
+                      })()}
                       </div>
                     );
                   });
@@ -26800,6 +26858,69 @@ export default function Dashboard() {
                               </div>
                             );
                           })}
+                          {/* Countdown bars in other row */}
+                          {(() => {
+                            const cbToday = startOfDayET(new Date());
+                            const cbTodayDayIdx = weekDays.findIndex(wd => isSameDayET(wd, cbToday));
+                            const barTasks = (allTasks || []).filter(t => {
+                              if (t.showCountdownBar === false || t.showCountdownBarMain === false || t.isCompleted) return false;
+                              if (t.type !== 'other' && t.type !== 'meeting' && t.type !== 'reminder') return false;
+                              const taskCourseCode = t.courseName?.split(' - ')[0]?.toUpperCase() || '';
+                              if (taskCourseCode && activeCourseNames.includes(taskCourseCode)) return false;
+                              const tDue = startOfDayET(new Date(t.dueDate));
+                              if (tDue < cbToday) return false;
+                              const tDueDayIdx = weekDays.findIndex(wd => isSameDayET(wd, tDue));
+                              const barStart = cbTodayDayIdx >= 0 ? cbTodayDayIdx : 0;
+                              const barEnd = tDueDayIdx >= 0 ? tDueDayIdx : weekDays.length - 1;
+                              return dayIdx >= barStart && dayIdx <= barEnd;
+                            });
+                            if (barTasks.length === 0) return null;
+                            return barTasks.map((t, tIdx) => {
+                              const tDue = startOfDayET(new Date(t.dueDate));
+                              const daysLeft = Math.max(0, Math.round((tDue.getTime() - cbToday.getTime()) / (1000*60*60*24)));
+                              const barColor = t.countdownBarColor || (daysLeft <= 1 ? '#ef4444' : daysLeft === 2 ? '#f97316' : daysLeft <= 4 ? '#f59e0b' : '#22c55e');
+                              const tDueDayIdx = weekDays.findIndex(wd => isSameDayET(wd, tDue));
+                              const isLastCell = tDueDayIdx >= 0 ? dayIdx === tDueDayIdx : dayIdx === weekDays.length - 1;
+                              const isFirstCell = dayIdx === (cbTodayDayIdx >= 0 ? cbTodayDayIdx : 0);
+                              const barBottom = 2 + tIdx * 7;
+                              const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
+                              const needsPulse = isNotStarted && daysLeft <= 2 && !t.isCompleted;
+                              return (
+                                <div
+                                  key={`cbar-other-${t.id}`}
+                                  className={needsPulse ? 'countdown-bar-pulse' : ''}
+                                  style={{
+                                    position: 'absolute',
+                                    left: 0,
+                                    right: 0,
+                                    bottom: `${barBottom}px`,
+                                    height: needsPulse ? '5px' : '4px',
+                                    background: barColor,
+                                    opacity: 0.7,
+                                    zIndex: 6,
+                                    pointerEvents: 'none',
+                                    borderRadius: isFirstCell && isLastCell ? '2px' : isFirstCell ? '2px 0 0 2px' : isLastCell ? '0 2px 2px 0' : '0',
+                                    boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined,
+                                  }}
+                                  data-testid={`countdown-other-bar-${t.id}-day-${dayIdx}`}
+                                >
+                                  {isLastCell && (
+                                    <span style={{
+                                      position: 'absolute',
+                                      right: '2px',
+                                      top: '-9px',
+                                      fontSize: '7px',
+                                      fontWeight: 800,
+                                      color: barColor,
+                                      lineHeight: 1,
+                                      whiteSpace: 'nowrap',
+                                      textShadow: '0 0 3px rgba(255,255,255,0.8)',
+                                    }}>{daysLeft}d</span>
+                                  )}
+                                </div>
+                              );
+                            });
+                          })()}
                         </div>
                       );
                     })}
@@ -27143,118 +27264,6 @@ export default function Dashboard() {
                             }}
                           />
                           <div className="absolute top-0 bottom-0 z-[1] pointer-events-none" style={{ left: `${gridSizes.timeSlotHeight + 3}px`, width: '1px', borderLeft: '1px dotted rgba(180, 180, 180, 0.45)' }} />
-                          {/* Countdown bars on main calendar */}
-                          {(() => {
-                            const today = startOfDayET(new Date());
-                            const cellDate = startOfDayET(day);
-                            const todayDayIdx = weekDays.findIndex(wd => isSameDayET(wd, today));
-                            const countdownTasks = (allTasks || []).filter(t => {
-                              if (t.showCountdownBar === false || t.showCountdownBarMain === false || t.isCompleted) return false;
-                              const tDue = startOfDayET(new Date(t.dueDate));
-                              if (tDue < today) return false;
-                              const tDueHour = (() => {
-                                if (t.eventStartTime) {
-                                  const [h] = t.eventStartTime.split(':').map(Number);
-                                  return h;
-                                }
-                                const d = new Date(t.dueDate);
-                                const h = getETHours(d);
-                                return h === 0 ? 18 : h;
-                              })();
-                              const tDueDayIdx = weekDays.findIndex(wd => isSameDayET(wd, tDue));
-                              const isDueDay = dayIdx === tDueDayIdx;
-                              if (isDueDay) {
-                                if (tDueHour !== hour) return false;
-                              } else {
-                                const displayHour = timeSlots[0] ?? 8;
-                                if (hour !== displayHour) return false;
-                              }
-                              const barStart = todayDayIdx >= 0 ? todayDayIdx : 0;
-                              const barEnd = tDueDayIdx >= 0 ? tDueDayIdx : weekDays.length - 1;
-                              return dayIdx >= barStart && dayIdx <= barEnd;
-                            });
-                            if (countdownTasks.length === 0) return null;
-                            return countdownTasks.map((t, tIdx) => {
-                              const tDue = startOfDayET(new Date(t.dueDate));
-                              const daysLeft = Math.max(0, Math.round((tDue.getTime() - today.getTime()) / (1000*60*60*24)));
-                              const courseCode = t.courseName?.split(' - ')[0]?.trim() || '';
-                              const gradColors = getCourseGradientColors(courseCode);
-                              const barColor = t.countdownBarColor || (daysLeft <= 1 ? '#ef4444' : daysLeft === 2 ? '#f97316' : daysLeft <= 4 ? '#f59e0b' : '#22c55e');
-                              const tDueDayIdx = weekDays.findIndex(wd => isSameDayET(wd, tDue));
-                              const isLastCell = tDueDayIdx >= 0 ? dayIdx === tDueDayIdx : dayIdx === weekDays.length - 1;
-                              const isFirstCell = dayIdx === (todayDayIdx >= 0 ? todayDayIdx : 0);
-                              const barY = 50 + tIdx * 5;
-                              const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
-                              const needsPulse = isNotStarted && daysLeft <= 2 && !t.isCompleted;
-                              const prepDaysDefault: Record<string, number> = { essay: 5, project: 7, exam: 5, quiz: 3, discussion: 3, reading: 2, module: 2, poll: 1, class: 0, meeting: 0, reminder: 0, scholarship: 3, other: 1 };
-                              const autoStartDays = (t as any).startDate ? 0 : (prepDaysDefault[t.type || 'other'] || 1);
-                              const startByDayIdx = autoStartDays > 0 ? Math.max(todayDayIdx >= 0 ? todayDayIdx : 0, (tDueDayIdx >= 0 ? tDueDayIdx : weekDays.length - 1) - autoStartDays) : -1;
-                              const isStartByCell = startByDayIdx >= 0 && dayIdx === startByDayIdx && startByDayIdx !== (tDueDayIdx >= 0 ? tDueDayIdx : -1);
-                              return (
-                                <div
-                                  key={`cbar-main-${t.id}`}
-                                  className={needsPulse ? 'countdown-bar-pulse' : ''}
-                                  style={{
-                                    position: 'absolute',
-                                    left: 0,
-                                    right: 0,
-                                    bottom: `${barY}%`,
-                                    height: needsPulse ? '5px' : '4px',
-                                    background: barColor,
-                                    opacity: 0.8,
-                                    zIndex: 4,
-                                    pointerEvents: 'none',
-                                    borderRadius: isFirstCell && isLastCell ? '2px' : isFirstCell ? '2px 0 0 2px' : isLastCell ? '0 2px 2px 0' : '0',
-                                    boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined,
-                                  }}
-                                  data-testid={`countdown-span-main-${t.id}-day-${dayIdx}`}
-                                >
-                                  {isFirstCell && (
-                                    <span style={{
-                                      position: 'absolute',
-                                      left: '2px',
-                                      top: '-10px',
-                                      fontSize: '7px',
-                                      fontWeight: 600,
-                                      color: 'rgba(0,0,0,0.5)',
-                                      lineHeight: 1,
-                                      whiteSpace: 'nowrap',
-                                      overflow: 'hidden',
-                                      textOverflow: 'ellipsis',
-                                      maxWidth: '90%',
-                                    }}>{(t.title || '').replace(/[\[\]]/g, '').replace(/^\s+/, '').substring(0, 20)}</span>
-                                  )}
-                                  {isStartByCell && (
-                                    <div style={{
-                                      position: 'absolute',
-                                      left: 0,
-                                      top: '-8px',
-                                      width: 0,
-                                      height: 0,
-                                      borderLeft: '4px solid transparent',
-                                      borderRight: '4px solid transparent',
-                                      borderTop: `6px solid ${barColor}`,
-                                      opacity: 0.9,
-                                    }} title={`Start by this day`} />
-                                  )}
-                                  {isLastCell && (
-                                    <span style={{
-                                      position: 'absolute',
-                                      right: '2px',
-                                      top: '-10px',
-                                      fontSize: '7px',
-                                      fontWeight: 800,
-                                      color: barColor,
-                                      lineHeight: 1,
-                                      whiteSpace: 'nowrap',
-                                      textShadow: '0 0 3px rgba(255,255,255,0.8)',
-                                      opacity: 1,
-                                    }}>{daysLeft}d</span>
-                                  )}
-                                </div>
-                              );
-                            });
-                          })()}
                           {sleepLabelStart && !isToday && (
                             <div style={{
                               position: 'absolute',
