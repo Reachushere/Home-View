@@ -14762,11 +14762,22 @@ export default function Dashboard() {
           
 
 
+          {/* Up arrow to hide pill */}
+          <div
+            style={{ position: 'relative', zIndex: 1, flexShrink: 0, width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', marginRight: '-4px' }}
+            className="pill-button-hover"
+            onClick={() => closeTopPill()}
+            title="Hide toolbar"
+            data-testid="button-hide-top-pill"
+          >
+            <ChevronUp className="h-[16px] w-[16px] text-white/70" />
+          </div>
+
           {/* ── Tasks ── */}
           <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', paddingRight: '7px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(50,120,210,0.6)', position: 'relative', top: '1px', margin: '0 7.5px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(40,110,210,0.5) 0%, rgba(25,80,180,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           <div style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <ListChecks className="h-[18px] w-[18px] text-white/70" style={{ position: 'relative', top: '-10px' }} />
-            <span style={{ position: 'absolute', top: '14px', fontSize: '6.5px', color: 'rgba(255,255,255,0.55)', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', left: '50%', transform: 'translateX(-30%)' }}>Tasks</span>
+            <span style={{ position: 'absolute', top: '11px', fontSize: '6.5px', color: '#ffffff', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', right: '50%', transform: 'translateX(30%)' }}>Tasks</span>
           </div>
           {/* Completed Tasks Button - Swapped with Graduation Hat */}
           <div className="pill-button-hover" style={{ 
@@ -15069,7 +15080,7 @@ export default function Dashboard() {
           <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(34,197,94,0.7)', position: 'relative', top: '1px', margin: '0 7.5px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(34,197,94,0.55) 0%, rgba(22,163,74,0.4) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           <div style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <GraduationCap className="h-[20px] w-[20px] text-white/70" style={{ position: 'relative', top: '-10px' }} />
-            <span style={{ position: 'absolute', top: '14px', fontSize: '6.5px', color: 'rgba(255,255,255,0.55)', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', left: '50%', transform: 'translateX(-30%)' }}>School</span>
+            <span style={{ position: 'absolute', top: '11px', fontSize: '6.5px', color: '#ffffff', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', right: '50%', transform: 'translateX(30%)' }}>School</span>
           </div>
           {/* Courses Button */}
           <div className="pill-button-hover" style={{ 
@@ -15174,7 +15185,7 @@ export default function Dashboard() {
           <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(160,100,240,0.6)', position: 'relative', top: '1px', margin: '0 7.5px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(150,90,235,0.5) 0%, rgba(120,60,210,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           <div style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <img src={soundIconPath} alt="Sound" style={{ height: '22px', width: '22px', objectFit: 'contain', position: 'relative', opacity: 0.7, top: '-10px' }} />
-            <span style={{ position: 'absolute', top: '14px', fontSize: '6.5px', color: 'rgba(255,255,255,0.55)', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', left: '50%', transform: 'translateX(-30%)' }}>Sound</span>
+            <span style={{ position: 'absolute', top: '11px', fontSize: '6.5px', color: '#ffffff', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', right: '50%', transform: 'translateX(30%)' }}>Sound</span>
           </div>
           {/* Spotify Button */}
           <div className="pill-button-hover" style={{ 
@@ -15294,7 +15305,7 @@ export default function Dashboard() {
           {isAdmin && (
             <div style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <Wrench className="h-[18px] w-[18px] text-white/70" style={{ position: 'relative', top: '-10px' }} />
-              <span style={{ position: 'absolute', top: '14px', fontSize: '6.5px', color: 'rgba(255,255,255,0.55)', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', left: '50%', transform: 'translateX(-30%)' }}>Tools</span>
+              <span style={{ position: 'absolute', top: '9px', fontSize: '6.5px', color: '#ffffff', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', right: '50%', transform: 'translateX(30%)' }}>Tools</span>
             </div>
           )}
           {/* Home Assistant (moved from bottom pill) */}
