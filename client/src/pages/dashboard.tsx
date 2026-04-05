@@ -24149,12 +24149,9 @@ export default function Dashboard() {
                       <div className="absolute inset-0 weather-alert-box-pulse" style={{ backgroundColor: 'rgb(255,0,0)', left: '-1px', right: '-2px' }} />
                     )}
                     {dayForecast && (
-                      <span className="text-[11px] text-white/90 whitespace-nowrap leading-none font-medium relative z-10 inline-flex items-start gap-[2px]" style={{ letterSpacing: '-0.2px', marginTop: '-3px' }}>
-                        {wIconEl && <span style={{ display: 'inline-flex', flexShrink: 0 }}>{wIconEl}</span>}
-                        <span style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: '0px', lineHeight: 1 }}>
-                          <span>{afterSunrise ? `${Math.round(weatherData!.temp)}°` : `${Math.round(dayForecast.high)}°/${Math.round(dayForecast.low)}°`}</span>
-                          {desc && <span style={{ fontSize: '5.5px', fontWeight: 500, opacity: 0.8, lineHeight: 1 }}>{desc}</span>}
-                        </span>
+                      <span className="text-white/90 whitespace-nowrap leading-none font-medium relative z-10 inline-flex items-center gap-[2px]" style={{ letterSpacing: '-0.2px', marginTop: '-1px', fontSize: '8.5px' }}>
+                        <span>{afterSunrise ? `${Math.round(weatherData!.temp)}°` : `${Math.round(dayForecast.high)}°/${Math.round(dayForecast.low)}°`}</span>
+                        {desc && <span style={{ fontSize: '5.5px', fontWeight: 500, opacity: 0.8, lineHeight: 1 }}>{desc}</span>}
                       </span>
                     )}
                   </div>
