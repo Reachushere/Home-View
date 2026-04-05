@@ -24246,7 +24246,6 @@ export default function Dashboard() {
                             ).join('') : '';
 
                             const weatherEffectsHtml = (() => {
-                              if (isNightPhase) return '';
                               if (wCode >= 95) {
                                 const drops = Array.from({ length: 22 }, (_, i) => {
                                   const left = (i * 37 + 13) % 100;
