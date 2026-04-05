@@ -28449,14 +28449,25 @@ export default function Dashboard() {
                       const taskWeek = (t.weekNumber !== undefined && t.weekNumber !== null) ? t.weekNumber : (semesterSettings?.semesterStartDate ? getWeekNumber(new Date(t.dueDate), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null);
                       return taskWeek === selectedWeek;
                     });
+                    const nonModuleReadingTasks = allCourseTasks.filter(t => {
+                      const tType = (t.type || '').toLowerCase();
+                      if (t === moduleTask) return false;
+                      if (tType === 'module' || tType === 'reading') return false;
+                      return true;
+                    });
+                    const seenClassCourse = new Set<string>();
+                    const dedupedTasks = nonModuleReadingTasks.filter(t => {
+                      const tType = (t.type || '').toLowerCase();
+                      if (tType === 'class') {
+                        const key = t.courseName || '';
+                        if (seenClassCourse.has(key)) return false;
+                        seenClassCourse.add(key);
+                      }
+                      return true;
+                    });
                     const courseTasks = [
                       ...(moduleTask ? [moduleTask] : []),
-                      ...allCourseTasks.filter(t => {
-                        const tType = (t.type || '').toLowerCase();
-                        if (t === moduleTask) return false;
-                        if (tType === 'module' || tType === 'reading') return false;
-                        return true;
-                      })
+                      ...dedupedTasks
                     ];
                     if (courseTasks.length === 0) return <span className="text-[10px] text-white/40 italic">No tasks</span>;
                     const textColor = '#ffffff';
