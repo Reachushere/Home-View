@@ -198,6 +198,69 @@ export async function sendGmailWithAttachment(params: { to: string; subject: str
   }
 }
 
+export interface RecentEmail {
+  id: string;
+  subject: string;
+  snippet: string;
+  from: string;
+  fromName: string;
+  date: string;
+  read: boolean;
+  labels: string[];
+}
+
+export async function fetchRecentEmails(maxResults: number = 10, query?: string): Promise<RecentEmail[]> {
+  try {
+    const q = query ? encodeURIComponent(query) : '';
+    const endpoint = q ? `messages?q=${q}&maxResults=${maxResults}` : `messages?maxResults=${maxResults}`;
+    const listData = await gmailGet(endpoint);
+
+    const messages = listData.messages || [];
+    if (messages.length === 0) return [];
+
+    const emails: RecentEmail[] = [];
+
+    for (const msg of messages) {
+      try {
+        const detail = await gmailGet(`messages/${msg.id}?format=metadata&metadataHeaders=Subject&metadataHeaders=From&metadataHeaders=Date`);
+
+        const headers = detail.payload?.headers || [];
+        const subject = headers.find((h: any) => h.name?.toLowerCase() === 'subject')?.value || 'No Subject';
+        const fromRaw = headers.find((h: any) => h.name?.toLowerCase() === 'from')?.value || '';
+        const dateStr = headers.find((h: any) => h.name?.toLowerCase() === 'date')?.value || '';
+        const isRead = !detail.labelIds?.includes('UNREAD');
+
+        let fromName = fromRaw;
+        const nameMatch = fromRaw.match(/^"?([^"<]+)"?\s*</);
+        if (nameMatch) fromName = nameMatch[1].trim();
+
+        let fromEmail = fromRaw;
+        const emailMatch = fromRaw.match(/<([^>]+)>/);
+        if (emailMatch) fromEmail = emailMatch[1];
+
+        emails.push({
+          id: msg.id,
+          subject,
+          snippet: detail.snippet || '',
+          from: fromEmail,
+          fromName,
+          date: dateStr ? new Date(dateStr).toISOString() : new Date().toISOString(),
+          read: isRead,
+          labels: detail.labelIds || [],
+        });
+      } catch (e: any) {
+        console.error(`[Gmail] Failed to fetch email ${msg.id}:`, e.message);
+      }
+    }
+
+    emails.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    return emails;
+  } catch (err: any) {
+    console.error('[Gmail] Error fetching recent emails:', err.message);
+    throw err;
+  }
+}
+
 export async function fetchD2LAnnouncements(maxResults: number = 20): Promise<D2LAnnouncement[]> {
   try {
     const query = encodeURIComponent(`from:${D2L_SENDER}`);

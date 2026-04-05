@@ -20,7 +20,7 @@ import { textToSpeech, initTTSFallbackStatus } from "./replit_integrations/audio
 import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, sendTestHaPush, sendHaTaskReminder, sendEchoVoiceAnnouncement, sendCalendarInvite, type TaskReminder } from "./email";
 import { syncOutlookEventsToReview, fetchOutlookCalendarEvents, findOrCreateMailFolder, createMailRule, moveExistingEmailsToFolder, moveAllEmailsFromFolder, deleteMailRulesByName, getMailFolderId, moveEmailsNotFromDomains, getOutlookClient } from "./outlookCalendar";
 import { parseTickerCommand, extractInlineExpiry } from "./gmailTicker";
-import { sendGmail, fetchD2LAnnouncements } from "./gmail";
+import { sendGmail, fetchD2LAnnouncements, fetchRecentEmails } from "./gmail";
 import { getSchedulerStatus } from "./reminderScheduler";
 import { fetchTMUCalendarEvents } from "./tmuCalendar";
 import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder, getOneDriveFileContentAsText, getOneDriveItemByPath, createOneDriveTextFile, updateOneDriveFileContent, deleteOneDriveItem, resolveSharedNotebookUrl, getSharedNotebookSections, getPagesBySectionId } from "./onedrive";
@@ -5735,6 +5735,45 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
+  app.post("/api/announcements/sync-gmail", async (req, res) => {
+    try {
+      const d2lEmails = await fetchD2LAnnouncements(15);
+      let added = 0;
+      let skipped = 0;
+      for (const email of d2lEmails) {
+        const existing = await storage.getAnnouncementByEmailId(email.id);
+        if (existing) {
+          skipped++;
+          continue;
+        }
+        await storage.createAnnouncement({
+          emailId: email.id,
+          subject: email.subject,
+          body: email.body,
+          snippet: email.snippet,
+          courseName: email.courseName,
+          receivedAt: new Date(email.date),
+        });
+        added++;
+      }
+      console.log(`[D2L Sync] Gmail sync complete: ${added} added, ${skipped} already existed`);
+      res.json({ success: true, added, skipped, total: d2lEmails.length });
+    } catch (err: any) {
+      console.error("[D2L Sync] Gmail sync error:", err.message);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/gmail/recent", async (_req, res) => {
+    try {
+      const emails = await fetchRecentEmails(15, 'is:unread OR newer_than:1d');
+      res.json(emails);
+    } catch (err: any) {
+      console.error("[Gmail] Recent emails error:", err.message);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   app.post("/api/announcements/webhook", async (req, res) => {
     try {
       const { emailId, subject, body, snippet, courseName, receivedAt } = req.body;
@@ -9500,6 +9539,35 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
   checkAndActivateSemester();
   setInterval(checkAndActivateSemester, 6 * 60 * 60 * 1000);
+
+  const syncD2LFromGmail = async () => {
+    try {
+      const d2lEmails = await fetchD2LAnnouncements(10);
+      let added = 0;
+      for (const email of d2lEmails) {
+        const existing = await storage.getAnnouncementByEmailId(email.id);
+        if (existing) continue;
+        await storage.createAnnouncement({
+          emailId: email.id,
+          subject: email.subject,
+          body: email.body,
+          snippet: email.snippet,
+          courseName: email.courseName,
+          receivedAt: new Date(email.date),
+        });
+        added++;
+      }
+      if (added > 0) console.log(`[D2L Sync] Auto-sync: ${added} new announcements from Gmail`);
+    } catch (err: any) {
+      if (err.message?.includes('Gmail not connected') || err.message?.includes('insufficient') || err.message?.includes('PERMISSION_DENIED')) {
+        // Silently skip — Gmail read scopes not available
+      } else {
+        console.error('[D2L Sync] Auto-sync error:', err.message);
+      }
+    }
+  };
+  setTimeout(syncD2LFromGmail, 15000);
+  setInterval(syncD2LFromGmail, 10 * 60 * 1000);
 
   // Self-ping to keep Replit from sleeping (every 4 minutes)
   const SELF_PING_INTERVAL_MS = 4 * 60 * 1000;
