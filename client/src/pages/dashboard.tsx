@@ -24861,16 +24861,38 @@ export default function Dashboard() {
                       const cc = c.name?.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '');
                       return cc === codeNorm;
                     });
+                    const semSettings = (allSemesterSettingsRef.current || []).find((s: any) => {
+                      for (let ci = 1; ci <= 3; ci++) {
+                        const cField = ((s as any)[`course${ci}Code`] || '').replace(/\s/g, '').toUpperCase();
+                        if (cField === codeNorm) return true;
+                      }
+                      return false;
+                    });
+                    const semCourseIdx = semSettings ? (() => {
+                      for (let ci = 1; ci <= 3; ci++) {
+                        const cField = ((semSettings as any)[`course${ci}Code`] || '').replace(/\s/g, '').toUpperCase();
+                        if (cField === codeNorm) return ci;
+                      }
+                      return 0;
+                    })() : 0;
+                    const semPrefix = semCourseIdx > 0 ? `course${semCourseIdx}` : '';
+                    const semColor = semPrefix ? (semSettings as any)[`${semPrefix}Color`] : '';
+                    const semColorEnd = semPrefix ? (semSettings as any)[`${semPrefix}ColorEnd`] : '';
+                    const semColorStops = semPrefix ? (semSettings as any)[`${semPrefix}ColorStops`] : '';
+                    const semBorderColor = semPrefix ? (semSettings as any)[`${semPrefix}BorderColor`] : '';
+                    const semCourseRowColor = semPrefix ? (semSettings as any)[`${semPrefix}CourseRowColor`] : '';
+                    const semTaskBgColor = semPrefix ? (semSettings as any)[`${semPrefix}TaskBgColor`] : '';
+                    const semCourseFontColor = semPrefix ? (semSettings as any)[`${semPrefix}CourseFontColor`] : '';
                     const fullName = sc.fullName || matchedCourse?.name?.split(' - ').slice(1).join(' - ') || '';
                     allDisplayCourses.push({
                       name: fullName ? `${codeNorm} - ${fullName}` : codeNorm,
-                      color: matchedCourse?.color || '#6b7280',
-                      colorEnd: matchedCourse?.colorEnd || '#9ca3af',
-                      colorStops: matchedCourse?.colorStops || '',
-                      borderColor: matchedCourse?.borderColor || '',
-                      courseRowColor: matchedCourse?.courseRowColor || '',
-                      taskBgColor: matchedCourse?.taskBgColor || '',
-                      courseFontColor: matchedCourse?.courseFontColor || '',
+                      color: semColor || matchedCourse?.color || '#6b7280',
+                      colorEnd: semColorEnd || matchedCourse?.colorEnd || '#9ca3af',
+                      colorStops: semColorStops || matchedCourse?.colorStops || '',
+                      borderColor: semBorderColor || matchedCourse?.borderColor || '',
+                      courseRowColor: semCourseRowColor || matchedCourse?.courseRowColor || '',
+                      taskBgColor: semTaskBgColor || matchedCourse?.taskBgColor || '',
+                      courseFontColor: semCourseFontColor || matchedCourse?.courseFontColor || '',
                       professor: matchedCourse?.professor || '',
                       professorEmail: matchedCourse?.professorEmail || '',
                       _semKey: semKey,
