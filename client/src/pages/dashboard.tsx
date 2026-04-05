@@ -24554,6 +24554,11 @@ export default function Dashboard() {
                               </>
                             );
                           })()}
+                          {isToday && (
+                            <div className="absolute z-20" style={{ padding: '0', top: '8px', left: '36px', right: 0, textAlign: 'center' }}>
+                              <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: 'rgba(255,255,255,0.85)', lineHeight: '11px', letterSpacing: '0.5px' }}>{`Week ${selectedWeek}`}</span>
+                            </div>
+                          )}
                           {day.getDay() === 6 && !isToday && (
                             <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '8px' }}>
                               <span style={{ display: 'block', fontSize: 'min(9.5px, 1.4vw)', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{`New School Week (${selectedWeek + 1})`}</span>
@@ -24611,12 +24616,12 @@ export default function Dashboard() {
                               return { offset: h, temp: closest.temp, code: closest.weatherCode };
                             });
                             return (
-                              <div className="absolute z-20 flex flex-col" style={{ top: 6, bottom: 6, left: 1, width: '46px', gap: '1px', pointerEvents: 'none' }} data-testid="today-hourly-forecast">
+                              <div className="absolute z-20 flex flex-col" style={{ top: 6, bottom: 6, left: 1, width: '48px', gap: '1px', pointerEvents: 'none' }} data-testid="today-hourly-forecast">
                                 {forecasts.map((fc, i) => (
                                   <div key={i} className="flex items-center justify-center gap-[3px]" style={{ flex: 1, background: '#1a1a2e', borderRadius: '3px', padding: '0 3px', minHeight: 0 }} data-testid={`hourly-forecast-${fc.offset}h`}>
-                                    <span style={{ fontSize: '8px', color: '#ffffff', fontWeight: 700, lineHeight: 1 }}>{fc.offset}h</span>
-                                    <span style={{ lineHeight: 1, flexShrink: 0 }}>{renderMiniWeatherSvg(fc.code)}</span>
-                                    <span style={{ fontSize: '9px', color: '#ffffff', fontWeight: 700, lineHeight: 1 }}>{fc.temp}°</span>
+                                    <span style={{ fontSize: '9px', color: '#ffffff', fontWeight: 700, lineHeight: 1 }}>{fc.offset}h</span>
+                                    <span style={{ lineHeight: 1, flexShrink: 0, position: 'relative', top: '-1px' }}>{renderMiniWeatherSvg(fc.code)}</span>
+                                    <span style={{ fontSize: '10px', color: '#ffffff', fontWeight: 700, lineHeight: 1 }}>{fc.temp}°</span>
                                   </div>
                                 ))}
                               </div>
@@ -24636,24 +24641,19 @@ export default function Dashboard() {
                               const isSunsetText = minsT >= ssMinT - 60 && minsT < ssMinT + 60;
                               const isDarkWeather = isNightText || isSunriseText || isSunsetText || (weatherData && weatherData.code >= 51);
                             return (
-                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '36px' }}>
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2px 0' }}>
-                                      <div className="text-[10px] font-medium tracking-wide" style={{ color: isDarkWeather ? '#ffffff' : '#000000', lineHeight: 1 }}>
-                                        {dayName}
-                                      </div>
-                                      <div className="text-[8px] font-bold tracking-wide" style={{ color: isDarkWeather ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.5)', lineHeight: 1, textTransform: 'uppercase' }}>
-                                        {format(day, 'MMM')}
-                                      </div>
+                                <>
+                                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', alignSelf: 'stretch', padding: '2px 0', marginLeft: '36px' }}>
+                                    <div className="text-[10px] font-medium tracking-wide" style={{ color: isDarkWeather ? '#ffffff' : '#000000', lineHeight: 1 }}>
+                                      {dayName}
                                     </div>
-                                    <div style={{ fontSize: '25px', fontWeight: 600, color: isDarkWeather ? '#ffffff' : '#000000', lineHeight: 1 }}>
-                                      {dayNum}
+                                    <div className="text-[8px] font-bold tracking-wide" style={{ color: isDarkWeather ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.5)', lineHeight: 1, textTransform: 'uppercase' }}>
+                                      {format(day, 'MMM')}
                                     </div>
                                   </div>
-                                  <div style={{ fontSize: '8px', fontWeight: 400, color: isDarkWeather ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.5)', lineHeight: 1, letterSpacing: '0.5px', marginTop: '1px' }}>
-                                    {`Week ${selectedWeek}`}
+                                  <div style={{ fontSize: '25px', fontWeight: 600, color: isDarkWeather ? '#ffffff' : '#000000', lineHeight: 1 }}>
+                                    {dayNum}
                                   </div>
-                                </div>
+                                </>
                               );
                             })() : (
                               <>
