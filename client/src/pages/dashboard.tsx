@@ -1760,6 +1760,7 @@ export default function Dashboard() {
   const otherRowRef = useRef<HTMLDivElement | null>(null);
   const [courseRowRects, setCourseRowRects] = useState<{top: number; height: number}[]>([]);
   const [otherRowRect, setOtherRowRect] = useState<{top: number; height: number} | null>(null);
+  const lastKnownOtherBottomRef = useRef<number | null>(null);
   const courseProgressDataRef = useRef<Array<{
     courseCode: string;
     progressBg: string;
@@ -28782,9 +28783,13 @@ export default function Dashboard() {
             const hwSection = homeworkSectionRef.current;
             if (!hwSection) return null;
             const hwRect = hwSection.getBoundingClientRect();
-            const otherTop = otherRowRect.top - hwRect.top;
-            const otherRowHeight = otherRowRect.height;
-            const otherBottom = otherTop + otherRowHeight;
+            const otherRowHeight = Math.max(57, gridSizes.otherRowHeight || 57);
+            const savedBottom = lastKnownOtherBottomRef.current;
+            const fallbackBottom = (() => {
+              const otherTop = otherRowRect.top - hwRect.top;
+              return otherTop + otherRowRect.height;
+            })();
+            const otherBottom = savedBottom || fallbackBottom;
             const expandedTop = 45;
             const expandedHeight = otherBottom - expandedTop;
             const weekStart = weekDays.length > 0 ? startOfDayET(weekDays[0]) : null;
@@ -29208,6 +29213,7 @@ export default function Dashboard() {
                 const upcomingTopLocal = calendarBorderTop || (calendarTop + 15);
                 const otherTop = lastRect.top + lastRect.height - upcomingTopLocal - firstRowOffset;
                 const otherRowHeight = Math.max(57, gridSizes.otherRowHeight || 57);
+                lastKnownOtherBottomRef.current = otherTop + otherRowHeight;
                 rows.push(
                   <div key="other-progress-row" style={{
                     position: 'absolute',
@@ -29265,7 +29271,7 @@ export default function Dashboard() {
 
             return rows;
           })()}
-          <div className="flex-1 flex flex-col" style={{ paddingLeft: '0px', paddingRight: '0px', position: 'absolute', left: 0, right: 0, top: (() => { if (courseRowRects.length > 0) { const lastRect = courseRowRects[courseRowRects.length - 1]; if (lastRect) { const upcomingTopLocal = calendarBorderTop || (calendarTop + 15); const otherTop = lastRect.top + lastRect.height - upcomingTopLocal; const otherRowH = Math.max(57, gridSizes.otherRowHeight || 57); return `${otherTop + otherRowH - 2}px`; } } return '261px'; })(), bottom: '0px', minHeight: 0, paddingBottom: '0px', overflow: 'hidden', zIndex: 2, display: 'flex', flexDirection: 'column' as const }}>
+          <div className="flex-1 flex flex-col" style={{ paddingLeft: '0px', paddingRight: '0px', position: 'absolute', left: 0, right: 0, top: (() => { if (courseRowRects.length > 0) { const lastRect = courseRowRects[courseRowRects.length - 1]; if (lastRect) { const upcomingTopLocal = calendarBorderTop || (calendarTop + 15); const otherTop = lastRect.top + lastRect.height - upcomingTopLocal; const otherRowH = Math.max(57, gridSizes.otherRowHeight || 57); return `${otherTop + otherRowH - 2}px`; } } if (lastKnownOtherBottomRef.current) return `${lastKnownOtherBottomRef.current - 2}px`; return '261px'; })(), bottom: '0px', minHeight: 0, paddingBottom: '0px', overflow: 'hidden', zIndex: 2, display: 'flex', flexDirection: 'column' as const }}>
           <div style={{ width: '100%', height: '15px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', flexShrink: 0, position: 'relative', zIndex: 3, border: '0.5px solid rgba(255,255,255,0.15)' }}>
             <span style={{ fontSize: '10px', fontWeight: 500, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
           </div>
