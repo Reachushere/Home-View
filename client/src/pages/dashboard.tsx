@@ -26569,7 +26569,55 @@ export default function Dashboard() {
                 })}
                 
                 {/* Multi-hour tasks overlay - rendered as single absolute positioned elements */}
-                {getMultiHourTasksForWeek().map(({ task, dayIdx, startHour, startMin, endHour, endMin }) => {
+                {(() => {
+                  const allMultiHour = getMultiHourTasksForWeek();
+                  const overlapInfo = new Map<number, { col: number; totalCols: number }>();
+                  const dayGroups = new Map<number, typeof allMultiHour>();
+                  for (const item of allMultiHour) {
+                    if (!dayGroups.has(item.dayIdx)) dayGroups.set(item.dayIdx, []);
+                    dayGroups.get(item.dayIdx)!.push(item);
+                  }
+                  for (const [, items] of dayGroups) {
+                    const sorted = [...items].sort((a, b) => a.startHour * 60 + a.startMin - (b.startHour * 60 + b.startMin));
+                    const columns: typeof allMultiHour[] = [];
+                    for (const item of sorted) {
+                      const itemStart = item.startHour * 60 + item.startMin;
+                      const itemEnd = item.endHour * 60 + item.endMin;
+                      let placed = false;
+                      for (let c = 0; c < columns.length; c++) {
+                        const lastInCol = columns[c][columns[c].length - 1];
+                        const lastEnd = lastInCol.endHour * 60 + lastInCol.endMin;
+                        if (itemStart >= lastEnd) {
+                          columns[c].push(item);
+                          placed = true;
+                          break;
+                        }
+                      }
+                      if (!placed) {
+                        columns.push([item]);
+                      }
+                    }
+                    for (let c = 0; c < columns.length; c++) {
+                      for (const item of columns[c]) {
+                        const itemStart = item.startHour * 60 + item.startMin;
+                        const itemEnd = item.endHour * 60 + item.endMin;
+                        let maxConcurrent = columns.length;
+                        let colsOverlapping = 0;
+                        for (let cc = 0; cc < columns.length; cc++) {
+                          const hasOverlap = columns[cc].some(other => {
+                            const otherStart = other.startHour * 60 + other.startMin;
+                            const otherEnd = other.endHour * 60 + other.endMin;
+                            return otherStart < itemEnd && otherEnd > itemStart;
+                          });
+                          if (hasOverlap) colsOverlapping++;
+                        }
+                        maxConcurrent = colsOverlapping;
+                        overlapInfo.set(item.task.id, { col: c, totalCols: maxConcurrent });
+                      }
+                    }
+                  }
+                  return allMultiHour.map(({ task, dayIdx, startHour, startMin, endHour, endMin }) => {
+                  const oi = overlapInfo.get(task.id) || { col: 0, totalCols: 1 };
                   const calendarStartHour = 0;
                   let topPx = 0;
                   for (let h = calendarStartHour; h < startHour; h++) {
@@ -26638,8 +26686,8 @@ export default function Dashboard() {
                         const borderColor = task.isCompleted ? '#d1d5db' : hasCourseGrad ? gradColors.start : (task.type === 'other' ? otherRowColors.borderColor : '#6b7280');
                         return {
                           top: `${topPx}px`,
-                          left: `calc(${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px + (${gridSizes.dayColumnWidths.slice(0, dayIdx).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px) + 2px)`,
-                          width: (() => { const now = new Date(); const currentHourNow = now.getHours(); const taskDay2 = weekDays[dayIdx]; const isTodayCol = isSameDayET(taskDay2, now); const taskCoversCurrentHour = startHour <= currentHourNow && (endHour > currentHourNow || (endHour === currentHourNow && endMin > 0)); const isCurrentHourOverlap = isTodayCol && taskCoversCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return isCurrentHourOverlap ? `calc((${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px) / 2 - 4px)` : `calc((${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px) - 4px)`; })(),
+                          left: (() => { const sidebarPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0); const dayFrac = `(${gridSizes.dayColumnWidths.slice(0, dayIdx).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)})`; const dayW = `(${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${sidebarPx}px)`; if (oi.totalCols > 1) { return `calc(${sidebarPx}px + ${dayFrac} * (100% - ${sidebarPx}px) + (${dayW}) * ${oi.col} / ${oi.totalCols} + 2px)`; } return `calc(${sidebarPx}px + ${dayFrac} * (100% - ${sidebarPx}px) + 2px)`; })(),
+                          width: (() => { const sidebarPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0); const dayW = `(${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${sidebarPx}px)`; const now = new Date(); const currentHourNow = now.getHours(); const taskDay2 = weekDays[dayIdx]; const isTodayCol = isSameDayET(taskDay2, now); const taskCoversCurrentHour = startHour <= currentHourNow && (endHour > currentHourNow || (endHour === currentHourNow && endMin > 0)); const isCurrentHourOverlap = isTodayCol && taskCoversCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); const colDivisor = oi.totalCols > 1 ? oi.totalCols : (isCurrentHourOverlap ? 2 : 1); return `calc((${dayW}) / ${colDivisor} - 4px)`; })(),
                           height: `${heightPx}px`,
                           zIndex: hoveredCountdownTaskId === task.id ? 55 : (selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43)),
                           background: bgGradient,
@@ -26725,7 +26773,8 @@ export default function Dashboard() {
                       </div>
                     </div>
                   );
-                })}
+                });
+                })()}
                 
                 
               </div>
