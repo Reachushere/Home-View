@@ -18956,7 +18956,7 @@ export default function Dashboard() {
                           onClick={(e) => { e.stopPropagation(); setIsQuickAddOpen(false); setTimeout(() => setIsMedicalWizardOpen(true), 50); }}
                           data-testid="quick-add-type-medical"
                         >
-                          <Activity className="h-3.5 w-3.5" style={{ color: 'rgba(255,80,80,0.9)' }} />
+                          <Activity className="h-3.5 w-3.5" style={{ color: '#ffffff' }} />
                           Medical Appointment
                         </button>
                         <button
@@ -18967,7 +18967,7 @@ export default function Dashboard() {
                           onClick={(e) => { e.stopPropagation(); setIsQuickAddOpen(false); setTimeout(() => { setPartnerWizardStep(0); setPartnerWizardDates([]); setPartnerWizardShiftType('day'); setPartnerWizardOpen(true); }, 50); }}
                           data-testid="quick-add-type-partner-shifts"
                         >
-                          <Calendar className="h-3.5 w-3.5" style={{ color: 'rgba(0,210,200,0.8)' }} />
+                          <Calendar className="h-3.5 w-3.5" style={{ color: '#ffffff' }} />
                           Partner Shifts
                         </button>
                         <button
@@ -19037,7 +19037,7 @@ export default function Dashboard() {
                           onClick={() => icsFileInputRef.current?.click()}
                           data-testid="button-import-ics"
                         >
-                          <Upload className="h-3.5 w-3.5" style={{ color: 'rgba(120,180,230,0.8)' }} />
+                          <Upload className="h-3.5 w-3.5" style={{ color: '#ffffff' }} />
                           Import from .ICS File
                           <span className="text-[9px] text-white/40 ml-auto">Calendar events</span>
                         </button>
