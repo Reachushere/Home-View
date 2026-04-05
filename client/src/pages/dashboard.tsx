@@ -28085,17 +28085,26 @@ export default function Dashboard() {
               f2026Start: new Date(2026, 8, 8), f2026End: new Date(2026, 11, 11),
               w2027Start: new Date(2027, 0, 11),
             };
+            const totalTabSlots = 14;
+            const currentSemesterWeeks = 13;
             const semTabs: Array<{ id: string; topText: string; bottomText: string; semLabel: string; scrollTarget: string; colors: [string, string] }> = [];
-            semTabs.push({ id: 'wk-current', topText: String(selectedWeek), bottomText: 'W', semLabel: hwWeeklyTimeline[0]?.semLabel || 'Winter 2026', scrollTarget: 'thisweek', colors: getYearColor(2026) });
-            semTabs.push({ id: 'wk-next', topText: String(selectedWeek + 1), bottomText: 'W', semLabel: hwWeeklyTimeline[1]?.semLabel || 'Winter 2026', scrollTarget: 'nextweek', colors: getYearColor(2026) });
-            semTabs.push({ id: 'wk-third', topText: String(selectedWeek + 2), bottomText: 'W', semLabel: hwWeeklyTimeline[2]?.semLabel || 'Winter 2026', scrollTarget: 'twoweeks', colors: getYearColor(2026) });
+            semTabs.push({ id: 'wk-current', topText: String(Math.min(selectedWeek, currentSemesterWeeks)), bottomText: 'W', semLabel: hwWeeklyTimeline[0]?.semLabel || 'Winter 2026', scrollTarget: 'thisweek', colors: getYearColor(2026) });
+            if (selectedWeek + 1 <= currentSemesterWeeks) {
+              semTabs.push({ id: 'wk-next', topText: String(selectedWeek + 1), bottomText: 'W', semLabel: hwWeeklyTimeline[1]?.semLabel || 'Winter 2026', scrollTarget: 'nextweek', colors: getYearColor(2026) });
+            }
+            if (selectedWeek + 2 <= currentSemesterWeeks) {
+              semTabs.push({ id: 'wk-third', topText: String(selectedWeek + 2), bottomText: 'W', semLabel: hwWeeklyTimeline[2]?.semLabel || 'Winter 2026', scrollTarget: 'twoweeks', colors: getYearColor(2026) });
+            }
             if (now < semDates.ss2026Start) {
               semTabs.push({ id: 'april-gap', topText: '', bottomText: 'APRIL', semLabel: 'Winter 2026', scrollTarget: 'threeweeks', colors: getYearColor(2026) });
             }
+            const fixedBottomTabs = 4;
+            const ssAvailableSlots = totalTabSlots - semTabs.length - fixedBottomTabs;
             if (now < semDates.f2026Start) {
-              const ssMaxWk = 6;
+              const ssMaxWk = Math.min(14, Math.max(6, ssAvailableSlots));
               for (let w = 1; w <= ssMaxWk; w++) {
-                semTabs.push({ id: `ss26-wk${w}`, topText: String(w), bottomText: 'S', semLabel: 'Spring/Summer 2026', scrollTarget: w === 1 ? 'sem-ss2026' : `sem-ss2026-wk${w}`, colors: getYearColor(2026) });
+                const topLabel = w <= 7 ? String(w) : `${w}/${w - 7}`;
+                semTabs.push({ id: `ss26-wk${w}`, topText: topLabel, bottomText: 'S', semLabel: 'Spring/Summer 2026', scrollTarget: w === 1 ? 'sem-ss2026' : `sem-ss2026-wk${w}`, colors: getYearColor(2026) });
               }
             }
             if (now >= semDates.ss2026End && now < semDates.f2026Start) {
