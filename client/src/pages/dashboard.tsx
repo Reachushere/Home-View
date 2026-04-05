@@ -25935,19 +25935,30 @@ export default function Dashboard() {
                     {allDayEvents.map(event => {
                       const isPrepEvent = event.title.startsWith('[PREP]');
                       const displayTitle = isPrepEvent ? event.title.replace(/^\[PREP\]\s*/, '') : event.title;
+                      const prepCourseColor = isPrepEvent ? (() => {
+                        const matchingTask = allTasks.find(t => t.prepCalendarEventId === event.id || t.secondAccountPrepEventId === event.id);
+                        if (matchingTask?.courseName) return getCourseColor(matchingTask.courseName);
+                        const courseMatch = displayTitle.match(/^(CPPA|CFNF|CASL|CECN|CPHL|CHIS)\d*/i);
+                        if (courseMatch) {
+                          const found = allTasks.find(t => t.courseName?.toUpperCase().startsWith(courseMatch[0].toUpperCase()));
+                          if (found?.courseName) return getCourseColor(found.courseName);
+                        }
+                        return '';
+                      })() : '';
                       return (
                         <a
                           key={event.id}
                           href={event.htmlLink}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className={`flex items-center text-[8px] py-0.5 rounded border cursor-pointer hover:opacity-80 w-full min-w-0 overflow-hidden ${isPrepEvent ? 'gap-0 px-0 bg-white dark:bg-white text-black border-gray-500' : 'gap-1 px-1 bg-gray-200 dark:bg-gray-700 text-black dark:text-white border-gray-500'}`}
+                          className={`flex items-center text-[8px] py-0.5 rounded border cursor-pointer hover:opacity-80 w-full min-w-0 overflow-hidden ${isPrepEvent ? 'gap-0 px-0' : 'gap-1 px-1 bg-gray-200 dark:bg-gray-700 text-black dark:text-white border-gray-500'}`}
+                          style={isPrepEvent ? { backgroundColor: prepCourseColor ? `${prepCourseColor}20` : 'rgba(255,255,255,0.1)', borderColor: prepCourseColor || 'rgba(255,255,255,0.3)' } : undefined}
                           data-testid={`all-day-gcal-${event.id}`}
                         >
                           {isPrepEvent ? (
                             <>
-                              <span className="flex items-center whitespace-nowrap font-bold shrink-0 rounded-l" style={{ backgroundColor: '#d1d5db', color: '#ffffff', letterSpacing: '1px', padding: '1px 3px 0 2px', fontSize: '8px', WebkitTextStroke: '0.15px #ffffff', alignSelf: 'stretch', fontFamily: "system-ui, sans-serif", fontWeight: 500 }}>PREP</span>
-                              <span className="truncate font-bold flex-1 min-w-0 pl-1">{displayTitle}</span>
+                              <span className="flex items-center whitespace-nowrap font-bold shrink-0 rounded-l" style={{ backgroundColor: prepCourseColor || '#d1d5db', color: '#ffffff', letterSpacing: '1px', padding: '1px 3px 0 2px', fontSize: '8px', WebkitTextStroke: '0.15px #ffffff', alignSelf: 'stretch', fontFamily: "system-ui, sans-serif", fontWeight: 500 }}>PREP</span>
+                              <span className="truncate font-bold flex-1 min-w-0 pl-1" style={{ color: prepCourseColor || '#ffffff' }}>{displayTitle}</span>
                             </>
                           ) : (
                             <>
