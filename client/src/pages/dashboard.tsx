@@ -24585,7 +24585,7 @@ export default function Dashboard() {
                             const nowMs = now.getTime();
                             const offsets = [5, 10];
                             const renderMiniWeatherSvg = (wc: number) => {
-                              const s = 14;
+                              const s = 16;
                               if (wc === 0) return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="5" fill="#facc15"/><g stroke="#facc15" strokeWidth="2" strokeLinecap="round">{[[12,1,12,3],[12,21,12,23],[4.22,4.22,5.64,5.64],[18.36,18.36,19.78,19.78],[1,12,3,12],[21,12,23,12],[4.22,19.78,5.64,18.36],[18.36,5.64,19.78,4.22]].map(([x1,y1,x2,y2],i)=><line key={i} x1={x1} y1={y1} x2={x2} y2={y2}/>)}</g></svg>;
                               if (wc === 1) return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><circle cx="10" cy="8" r="3.5" fill="#facc15"/><g stroke="#facc15" strokeWidth="1.5" strokeLinecap="round"><line x1="10" y1="2" x2="10" y2="3.5"/><line x1="10" y1="12.5" x2="10" y2="14"/><line x1="4" y1="8" x2="5.5" y2="8"/><line x1="14.5" y1="8" x2="16" y2="8"/></g><path d="M8 16a4 4 0 0 1 4-4h2a3 3 0 0 1 0 6H9a2.5 2.5 0 0 1 0-5" fill="rgba(255,255,255,0.85)"/></svg>;
                               if (wc === 2) return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3" fill="#facc15"/><path d="M7 16a4.5 4.5 0 0 1 4.5-4.5h3a3.5 3.5 0 0 1 0 7H8.5a3 3 0 0 1 0-6" fill="rgba(255,255,255,0.9)"/></svg>;
