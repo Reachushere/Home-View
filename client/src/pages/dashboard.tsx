@@ -12891,7 +12891,7 @@ export default function Dashboard() {
       {/* Morning Review - Full Page Overlay */}
       {showMorningReview && (
         <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 10010, background: 'rgba(0,0,0,0.6)' }} data-testid="dialog-morning-review">
-          <div className="flex flex-col text-white" style={{ width: '55%', maxWidth: '720px', height: '50vh', maxHeight: '420px', borderRadius: '8px', overflow: 'hidden', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
+          <div className="flex flex-col text-white" style={{ width: '69%', maxWidth: '900px', height: '62.5vh', maxHeight: '525px', borderRadius: '10px', overflow: 'hidden', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
           <div className="flex items-center justify-between px-3 py-1.5 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
             <div className="flex items-center gap-1.5">
               <Sun className="text-yellow-400" style={{ width: '11px', height: '11px' }} />
