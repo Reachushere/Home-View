@@ -31326,7 +31326,7 @@ export default function Dashboard() {
 
         {/* Recurring Delete Dialog */}
         <Dialog open={!!recurringDeleteTask} onOpenChange={(open) => !open && setRecurringDeleteTask(null)}>
-          <DialogContent className="max-w-sm text-white">
+          <DialogContent className="max-w-sm text-white [&]:z-[10050]" style={{ zIndex: 10050 }}>
             <DialogHeader>
               <DialogTitle className="text-white text-sm">Delete Recurring Task</DialogTitle>
             </DialogHeader>
@@ -31682,7 +31682,8 @@ export default function Dashboard() {
                     onClick={() => {
                       const task = editingTask;
                       if (isRecurringTask(task)) {
-                        setRecurringDeleteTask({ id: task.id, title: task.title, callback: () => setEditingTask(null) });
+                        setEditingTask(null);
+                        setTimeout(() => setRecurringDeleteTask({ id: task.id, title: task.title }), 150);
                       } else {
                         if (!confirm(`Delete "${task.title}"?`)) return;
                         setEditingTask(null);
