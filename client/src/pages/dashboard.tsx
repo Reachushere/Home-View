@@ -24522,7 +24522,7 @@ export default function Dashboard() {
                                     <div style={{ flex: 1, background: '#1a1a2e', borderRadius: i === 0 ? '3px 3px 0 0' : i === forecasts.length - 1 ? '0 0 3px 3px' : '0', padding: '2px 3px 2px 3px', display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: 0 }} data-testid={`hourly-forecast-${fc.offset}h`}>
                                       <div style={{ fontSize: '7px', color: 'rgba(255,255,255,0.9)', fontWeight: 600, lineHeight: 1.1, textAlign: 'left', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: '1px' }}>{wmoLabel(fc.code)}</div>
                                       <div className="flex items-center justify-center gap-[3px]">
-                                        <span style={{ fontSize: '9px', color: '#ffffff', fontWeight: 700, lineHeight: 1 }}>{fc.offset}h</span>
+                                        <span style={{ fontSize: '9px', color: '#ffffff', fontWeight: 700, lineHeight: 1, marginLeft: '2px' }}>{fc.offset}h</span>
                                         <span style={{ lineHeight: 1, flexShrink: 0, position: 'relative', top: '-3px' }}>{renderMiniWeatherSvg(fc.code)}</span>
                                         <span style={{ fontSize: '10px', color: '#ffffff', fontWeight: 700, lineHeight: 1 }}>{fc.temp}°</span>
                                       </div>
