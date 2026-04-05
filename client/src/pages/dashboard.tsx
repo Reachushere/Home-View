@@ -23982,13 +23982,13 @@ export default function Dashboard() {
                 const showForecastWeather = !isPast && diffDays >= 0 && effectiveWCode !== undefined;
                 const fwSkyBg = showForecastWeather ? (() => {
                   const wc = effectiveWCode!;
-                  if (wc >= 95) return 'linear-gradient(180deg, #1a1a2e 0%, #2d2d44 50%, #3a3a50 100%)';
-                  if (wc >= 71 && wc <= 77) return 'linear-gradient(180deg, #4a5060 0%, #6a7080 50%, #8a90a0 100%)';
-                  if (wc >= 85 && wc <= 86) return 'linear-gradient(180deg, #3a4050 0%, #5a6070 50%, #7a8090 100%)';
-                  if ((wc >= 61 && wc <= 67) || (wc >= 80 && wc <= 82)) return 'linear-gradient(180deg, #3a4a5a 0%, #4a5a6a 50%, #5a6a7a 100%)';
-                  if (wc >= 51 && wc <= 55) return 'linear-gradient(180deg, #4a5a68 0%, #5a6a78 50%, #6a7a88 100%)';
-                  if (wc >= 45 && wc <= 48) return 'linear-gradient(180deg, #5a5a6a 0%, #7a7a8a 100%)';
-                  if (wc === 3) return 'linear-gradient(180deg, #4a5a6a 0%, #6a7a8a 100%)';
+                  if (wc >= 95) return 'linear-gradient(180deg, #141430 0%, #1e2050 50%, #2a2a60 100%)';
+                  if (wc >= 71 && wc <= 77) return 'linear-gradient(180deg, #2a3a5a 0%, #3e5478 50%, #5a7098 100%)';
+                  if (wc >= 85 && wc <= 86) return 'linear-gradient(180deg, #1e2e4e 0%, #3a4e6e 50%, #5a6e8e 100%)';
+                  if ((wc >= 61 && wc <= 67) || (wc >= 80 && wc <= 82)) return 'linear-gradient(180deg, #1a2e50 0%, #2a4268 50%, #3a5878 100%)';
+                  if (wc >= 51 && wc <= 55) return 'linear-gradient(180deg, #2a4060 0%, #3a5878 50%, #4a6888 100%)';
+                  if (wc >= 45 && wc <= 48) return 'linear-gradient(180deg, #3a4a6a 0%, #5a6a8a 100%)';
+                  if (wc === 3) return 'linear-gradient(180deg, #3a5070 0%, #5a7090 100%)';
                   if (wc === 2) return 'linear-gradient(180deg, #2a5a9a 0%, #4a8ac8 50%, #7ab8e0 100%)';
                   return 'linear-gradient(180deg, #2a6aaa 0%, #4a9ad8 50%, #7ac0e8 100%)';
                 })() : null;
@@ -23998,7 +23998,7 @@ export default function Dashboard() {
                     const drops = Array.from({ length: 8 }, (_, i) => {
                       const left = (i * 37 + 13) % 100;
                       const delay = ((i * 0.13) % 0.8).toFixed(2);
-                      return `<div style="position:absolute;left:${left}%;top:-2px;width:1px;height:5px;background:rgba(180,190,220,0.5);animation:rainDrop 0.4s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                      return `<div style="position:absolute;left:${left}%;top:-2px;width:1px;height:5px;background:rgba(120,160,255,0.7);animation:rainDrop 0.4s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
                     }).join('');
                     return drops;
                   }
@@ -24007,7 +24007,7 @@ export default function Dashboard() {
                       const left = (i * 23 + 5) % 100;
                       const delay = ((i * 0.2) % 2).toFixed(2);
                       const size = 2 + (i % 2);
-                      return `<div style="position:absolute;left:${left}%;top:-2px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.9);border-radius:50%;animation:snowFall 2s ${delay}s linear infinite"></div>`;
+                      return `<div style="position:absolute;left:${left}%;top:-2px;width:${size}px;height:${size}px;background:rgba(220,235,255,0.95);border-radius:50%;animation:snowFall 2s ${delay}s linear infinite"></div>`;
                     }).join('');
                   }
                   if (wc >= 85 && wc <= 86) {
@@ -24015,21 +24015,21 @@ export default function Dashboard() {
                       const left = (i * 23 + 5) % 100;
                       const delay = ((i * 0.2) % 2).toFixed(2);
                       const size = 2 + (i % 2);
-                      return `<div style="position:absolute;left:${left}%;top:-2px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.9);border-radius:50%;animation:snowFall ${1.5 + (i % 2)}s ${delay}s linear infinite"></div>`;
+                      return `<div style="position:absolute;left:${left}%;top:-2px;width:${size}px;height:${size}px;background:rgba(220,235,255,0.95);border-radius:50%;animation:snowFall ${1.5 + (i % 2)}s ${delay}s linear infinite"></div>`;
                     }).join('');
                   }
                   if ((wc >= 61 && wc <= 67) || (wc >= 80 && wc <= 82)) {
                     return Array.from({ length: 8 }, (_, i) => {
                       const left = (i * 23 + 5) % 100;
                       const delay = ((i * 0.14) % 1.2).toFixed(2);
-                      return `<div style="position:absolute;left:${left}%;top:-2px;width:1px;height:5px;background:rgba(200,210,230,0.6);animation:rainDrop 0.6s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                      return `<div style="position:absolute;left:${left}%;top:-2px;width:1px;height:5px;background:rgba(90,170,255,0.65);animation:rainDrop 0.6s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
                     }).join('');
                   }
                   if (wc >= 51 && wc <= 55) {
                     return Array.from({ length: 6 }, (_, i) => {
                       const left = (i * 29 + 7) % 100;
                       const delay = ((i * 0.17) % 1.2).toFixed(2);
-                      return `<div style="position:absolute;left:${left}%;top:-2px;width:1px;height:4px;background:rgba(200,210,230,0.4);animation:rainDrop 1s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                      return `<div style="position:absolute;left:${left}%;top:-2px;width:1px;height:4px;background:rgba(100,180,255,0.5);animation:rainDrop 1s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
                     }).join('');
                   }
                   return '';
@@ -24100,7 +24100,7 @@ export default function Dashboard() {
                 <div className="absolute pointer-events-none" style={{ top: '0px', height: '60px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px))`, width: `calc((${todayW} / ${totalDayW}) * (100% - ${fixedW}px))`, zIndex: 9990 }} />
               );
             })()}
-            {/* Red separator on left border of today column - only spans the day header height */}
+            {/* Red separator on left border of today column - spans full height from top of date cell */}
             {(() => {
               const now = new Date();
               const todayIdx = weekDays.findIndex(d => isSameDayET(d, now));
@@ -24109,7 +24109,7 @@ export default function Dashboard() {
               const beforeW = gridSizes.dayColumnWidths.slice(0, todayIdx).reduce((a: number, b: number) => a + b, 0);
               const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
               return (
-                <div className="absolute bottom-0 z-50 pointer-events-none" style={{ top: '60px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px) - 1px)`, width: '3px', backgroundColor: colorSettings.headerBar }} />
+                <div className="absolute bottom-0 z-50 pointer-events-none" style={{ top: '0px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px) - 1px)`, width: '3px', backgroundColor: '#ffffff' }} />
               );
             })()}
             
@@ -24213,18 +24213,18 @@ export default function Dashboard() {
                             const skyBg = (() => {
                               if (isNightPhase) return 'linear-gradient(180deg, #0a0e27 0%, #101740 40%, #1a2555 100%)';
                               if (phase === 'preDawn') return 'linear-gradient(180deg, #0f1535 0%, #1e2a5a 40%, #3d2b4a 70%, #5c3d4a 100%)';
-                              if (phase === 'sunrise') return isActiveWeather ? 'linear-gradient(180deg, #3a4060 0%, #7a6858 35%, #9a8868 55%, #8a8878 75%, #7a7a72 100%)' : 'linear-gradient(180deg, #2a3a6e 0%, #c97355 35%, #e8a55a 55%, #f0c66e 75%, #fdd878 100%)';
-                              if (phase === 'morning') return isActiveWeather ? 'linear-gradient(180deg, #2a4a78 0%, #4a6088 40%, #6a80a0 70%, #5a7898 100%)' : 'linear-gradient(180deg, #4a8ec7 0%, #7bb8e0 40%, #b8d8ef 70%, #edc261 100%)';
-                              if (phase === 'day' && isActiveWeather) return 'linear-gradient(180deg, #2a4a78 0%, #4a6088 40%, #7a94ac 100%)';
-                              if (phase === 'preSet') return isActiveWeather ? 'linear-gradient(180deg, #2a4060 0%, #3a5070 30%, #4a5a6a 60%, #3a4858 100%)' : 'linear-gradient(180deg, #5a95c8 0%, #8ab8d8 30%, #c9a96e 60%, #d4905a 100%)';
-                              if (phase === 'sunset') return isActiveWeather ? 'linear-gradient(180deg, #2a3050 0%, #3a4558 25%, #4a5a68 45%, #4a5565 65%, #3a4550 100%)' : 'linear-gradient(180deg, #2d3a6e 0%, #8a4a5c 25%, #d4724a 45%, #ecc47e 65%, #f9a523 85%, #c44a20 100%)';
-                              if (phase === 'dusk') return isActiveWeather ? 'linear-gradient(180deg, #101825 0%, #1a1a30 30%, #2a2a3a 55%, #3a3540 75%, #201820 100%)' : 'linear-gradient(180deg, #12183a 0%, #2a2050 30%, #5c3355 55%, #8a4a5c 75%, #3d2040 100%)';
-                              if (wCode >= 71 && wCode <= 77) return 'linear-gradient(180deg, #4a5060 0%, #6a7080 40%, #8a90a0 100%)';
-                              if (wCode >= 85 && wCode <= 86) return 'linear-gradient(180deg, #3a4050 0%, #5a6070 40%, #7a8090 100%)';
-                              if ((wCode >= 61 && wCode <= 67) || (wCode >= 80 && wCode <= 82)) return 'linear-gradient(180deg, #3a4a5a 0%, #4a5a6a 40%, #5a6a7a 100%)';
-                              if (wCode >= 45 && wCode <= 48) return 'linear-gradient(180deg, #8a9aaa 0%, #b0b8c5 40%, #c8d0d8 100%)';
-                              if (wCode === 3) return 'linear-gradient(180deg, #6a7a8e 0%, #8a98aa 40%, #a8b4c2 100%)';
-                              if (wCode === 2) return 'linear-gradient(180deg, #5a8ec0 0%, #7ab5d8 40%, #a0d0ea 100%)';
+                              if (phase === 'sunrise') return isActiveWeather ? 'linear-gradient(180deg, #2a3558 0%, #8a5a48 35%, #b87a50 55%, #9a7a60 75%, #6a6a5a 100%)' : 'linear-gradient(180deg, #2a3a6e 0%, #c97355 35%, #e8a55a 55%, #f0c66e 75%, #fdd878 100%)';
+                              if (phase === 'morning') return isActiveWeather ? 'linear-gradient(180deg, #1e3a6e 0%, #2e5a8e 40%, #4a7ab0 70%, #3a6a9a 100%)' : 'linear-gradient(180deg, #4a8ec7 0%, #7bb8e0 40%, #b8d8ef 70%, #edc261 100%)';
+                              if (phase === 'day' && isActiveWeather) return 'linear-gradient(180deg, #1a3a6e 0%, #2a5a90 40%, #4878b0 100%)';
+                              if (phase === 'preSet') return isActiveWeather ? 'linear-gradient(180deg, #1a2a50 0%, #2a4068 30%, #3a5070 60%, #2a3a58 100%)' : 'linear-gradient(180deg, #5a95c8 0%, #8ab8d8 30%, #c9a96e 60%, #d4905a 100%)';
+                              if (phase === 'sunset') return isActiveWeather ? 'linear-gradient(180deg, #1a2040 0%, #2a3558 25%, #3a4a68 45%, #3a4560 65%, #2a3550 100%)' : 'linear-gradient(180deg, #2d3a6e 0%, #8a4a5c 25%, #d4724a 45%, #ecc47e 65%, #f9a523 85%, #c44a20 100%)';
+                              if (phase === 'dusk') return isActiveWeather ? 'linear-gradient(180deg, #0a1020 0%, #151530 30%, #1e2040 55%, #2a2a45 75%, #151020 100%)' : 'linear-gradient(180deg, #12183a 0%, #2a2050 30%, #5c3355 55%, #8a4a5c 75%, #3d2040 100%)';
+                              if (wCode >= 71 && wCode <= 77) return 'linear-gradient(180deg, #2a3a5a 0%, #3e5478 40%, #5a7098 100%)';
+                              if (wCode >= 85 && wCode <= 86) return 'linear-gradient(180deg, #1e2e4e 0%, #3a4e6e 40%, #5a6e8e 100%)';
+                              if ((wCode >= 61 && wCode <= 67) || (wCode >= 80 && wCode <= 82)) return 'linear-gradient(180deg, #1a2e50 0%, #2a4268 40%, #3a5878 100%)';
+                              if (wCode >= 45 && wCode <= 48) return 'linear-gradient(180deg, #4a6080 0%, #6a80a0 40%, #8aa0b8 100%)';
+                              if (wCode === 3) return 'linear-gradient(180deg, #3a5070 0%, #5a7090 40%, #7a90a8 100%)';
+                              if (wCode === 2) return 'linear-gradient(180deg, #3a78b0 0%, #5aa0d0 40%, #80c0e8 100%)';
                               return 'linear-gradient(180deg, #3a7cc2 0%, #6aafe0 40%, #8ac3df 100%)';
                             })();
 
@@ -24250,16 +24250,16 @@ export default function Dashboard() {
                                 const drops = Array.from({ length: 22 }, (_, i) => {
                                   const left = (i * 37 + 13) % 100;
                                   const delay = ((i * 0.13) % 0.8).toFixed(2);
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1.5px;height:8px;background:rgba(180,190,220,0.7);animation:rainDrop 0.4s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1.5px;height:8px;background:rgba(120,160,255,0.8);animation:rainDrop 0.4s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
                                 }).join('');
-                                return drops + `<div style="position:absolute;inset:0;background:rgba(255,255,200,0.15);animation:lightningFlash 15s 3s ease-in-out infinite"></div>`;
+                                return drops + `<div style="position:absolute;inset:0;background:rgba(255,255,200,0.2);animation:lightningFlash 15s 3s ease-in-out infinite"></div>`;
                               }
                               if (wCode >= 71 && wCode <= 77) {
                                 return Array.from({ length: 16 }, (_, i) => {
                                   const left = (i * 23 + 5) % 100;
                                   const delay = ((i * 0.2) % 2).toFixed(2);
                                   const size = 3.5 + (i % 2) * 1.5;
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.9);border-radius:50%;animation:snowFall 2s ${delay}s linear infinite"></div>`;
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(220,235,255,0.95);border-radius:50%;animation:snowFall 2s ${delay}s linear infinite;box-shadow:0 0 3px rgba(180,210,255,0.5)"></div>`;
                                 }).join('');
                               }
                               if (wCode >= 85 && wCode <= 86) {
@@ -24267,14 +24267,14 @@ export default function Dashboard() {
                                   const left = (i * 23 + 5) % 100;
                                   const delay = ((i * 0.2) % 2).toFixed(2);
                                   const size = 3.5 + (i % 2) * 1.5;
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.9);border-radius:50%;animation:snowFall ${1.5 + (i % 2)}s ${delay}s linear infinite"></div>`;
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(220,235,255,0.95);border-radius:50%;animation:snowFall ${1.5 + (i % 2)}s ${delay}s linear infinite;box-shadow:0 0 3px rgba(180,210,255,0.5)"></div>`;
                                 }).join('');
                               }
                               if (wCode >= 66 && wCode <= 67) {
                                 return Array.from({ length: 16 }, (_, i) => {
                                   const left = (i * 23 + 5) % 100;
                                   const delay = ((i * 0.14) % 1.2).toFixed(2);
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1.5px;height:6px;background:rgba(180,210,255,0.6);animation:rainDrop 0.6s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1.5px;height:6px;background:rgba(100,180,255,0.75);animation:rainDrop 0.6s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
                                 }).join('');
                               }
                               if ((wCode >= 61 && wCode <= 65) || (wCode >= 80 && wCode <= 82)) {
@@ -24282,21 +24282,21 @@ export default function Dashboard() {
                                 return Array.from({ length: density }, (_, i) => {
                                   const left = (i * 23 + 5) % 100;
                                   const delay = ((i * 0.14) % 1.2).toFixed(2);
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1.5px;height:7px;background:rgba(200,210,230,0.6);animation:rainDrop ${wCode >= 80 ? '0.5s' : '0.7s'} ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1.5px;height:7px;background:rgba(90,170,255,0.7);animation:rainDrop ${wCode >= 80 ? '0.5s' : '0.7s'} ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
                                 }).join('');
                               }
                               if (wCode >= 51 && wCode <= 55) {
                                 return Array.from({ length: 10 }, (_, i) => {
                                   const left = (i * 29 + 7) % 100;
                                   const delay = ((i * 0.17) % 1.2).toFixed(2);
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1px;height:5px;background:rgba(200,210,230,0.4);animation:rainDrop 1s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1px;height:5px;background:rgba(100,180,255,0.5);animation:rainDrop 1s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
                                 }).join('');
                               }
                               if (wCode === 45 || wCode === 48) {
-                                return `<div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(200,200,210,0.1) 0%,rgba(200,200,210,0.5) 30%,rgba(200,200,210,0.3) 60%,rgba(200,200,210,0.5) 100%);animation:fogDrift 6s ease-in-out infinite alternate"></div>`;
+                                return `<div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(140,180,220,0.15) 0%,rgba(160,200,240,0.4) 30%,rgba(140,180,220,0.25) 60%,rgba(160,200,240,0.4) 100%);animation:fogDrift 6s ease-in-out infinite alternate"></div>`;
                               }
                               if (wCode === 3) {
-                                return `<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(140,145,155,0.3) 0%,rgba(160,165,175,0.15) 100%)"></div>`;
+                                return `<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(80,120,170,0.25) 0%,rgba(100,140,190,0.15) 100%)"></div>`;
                               }
                               if (!isNightPhase && !isSunsetPhase && !isSunrisePhase) {
                                 if (wCode <= 1) {
