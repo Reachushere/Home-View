@@ -24635,66 +24635,66 @@ export default function Dashboard() {
               {/* Course Rows - Dynamic based on selected week */}
               {/* Pre-compute course row height: minimum = 3 tasks height, expand only if any course has >3 tasks */}
               {(() => {
-                const springSummerCourses = [
-                  { name: 'CECN210 - Understanding Economics', color: '#059669', colorEnd: '#34D399', professor: '', professorEmail: '', startDate: '2026-05-04', endDate: '2026-07-31' },
-                  { name: 'CPHL110 - Philosophy of Religion', color: '#2563EB', colorEnd: '#60A5FA', professor: '', professorEmail: '', startDate: '2026-05-05', endDate: '2026-06-20' },
-                  { name: 'CHIS105 - Inventing Popular Culture', color: '#DC2626', colorEnd: '#F87171', professor: '', professorEmail: '', startDate: '2026-06-23', endDate: '2026-08-07' },
-                ];
                 const currentWeekStart = weekDays[0];
                 const currentWeekEnd = weekDays[6];
-                const winterCourseDefs = [
-                  { code: 'CPPA122', endDate: '2026-04-17' },
-                  { code: 'CFNF400', endDate: '2026-04-17' },
-                  { code: 'CASL101', endDate: '2026-04-17' },
-                ];
-                const winterCourses = semesterEndConfirmed['w2026'] ? [] : coursesData.courses.filter(c => {
-                  if (!c.name) return false;
-                  const code = c.name.split(' - ')[0]?.trim().toUpperCase();
-                  const def = winterCourseDefs.find(d => code === d.code);
-                  if (!def) return false;
-                  const courseEnd = new Date(def.endDate + 'T23:59:59');
-                  return currentWeekStart <= courseEnd;
-                });
-                const springSummerSemesterStart = new Date('2026-05-04T00:00:00');
-                const springSummerSemesterEnd = new Date('2026-08-14T23:59:59');
-                const activeSpringSummerCourses = (currentWeekEnd >= springSummerSemesterStart && currentWeekStart <= springSummerSemesterEnd)
-                  ? springSummerCourses.filter(sc => {
-                      const scStart = new Date(sc.startDate + 'T00:00:00');
-                      const scEnd = new Date(sc.endDate + 'T23:59:59');
-                      return currentWeekEnd >= scStart && currentWeekStart <= scEnd;
-                    })
-                  : [];
-                const allDisplayCourses = [...winterCourses];
-                const defaultWinterCourses = [
-                  { name: 'CPPA122 - Local Politics and Government', color: '#0F5004', colorEnd: '#47B045', professor: 'Caryl Arundel', professorEmail: 'carundel@torontomu.ca' },
-                  { name: 'CFNF400 - Human Sexuality', color: '#DE1864', colorEnd: '#FA67B3', professor: 'Alex McKay', professorEmail: 'a4mckay@torontomu.ca' },
-                  { name: 'CASL101 - ASL', color: '#974B8A', colorEnd: '#B045A2', professor: 'Christina Moreau', professorEmail: 'christina.moreau@torontomu.ca' },
-                ];
-                if (!semesterEndConfirmed['w2026']) {
-                  for (const dwc of defaultWinterCourses) {
-                    const dwcCode = dwc.name.split(' - ')[0]?.trim().toUpperCase();
-                    const dwcDef = winterCourseDefs.find(d => d.code === dwcCode);
-                    if (dwcDef && currentWeekStart <= new Date(dwcDef.endDate + 'T23:59:59')) {
-                      const alreadyHas = allDisplayCourses.some(c => c.name.split(' - ')[0]?.trim().toUpperCase() === dwcCode);
-                      if (!alreadyHas) allDisplayCourses.push(dwc);
-                    }
-                  }
-                }
-                if (!semesterEndConfirmed['ss2026']) {
-                  for (const sc of activeSpringSummerCourses) {
-                    const alreadyExists = allDisplayCourses.some(c => c.name.split(' - ')[0]?.trim().toUpperCase() === sc.name.split(' - ')[0]?.trim().toUpperCase());
-                    if (!alreadyExists) allDisplayCourses.push(sc);
+                const semStartDates: Record<string, string> = {
+                  'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12',
+                  'ss2026': '2026-05-04', 'f2026': '2026-09-07', 'w2027': '2027-01-11',
+                  'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10',
+                  'ss2028': '2028-05-01', 'f2028': '2028-09-11', 'w2029': '2029-01-08',
+                };
+                const semEndDates: Record<string, string> = {
+                  'ss2025': '2025-08-08', 'f2025': '2025-12-12', 'w2026': '2026-04-17',
+                  'ss2026': '2026-08-07', 'f2026': '2026-12-11', 'w2027': '2027-04-16',
+                  'ss2027': '2027-08-06', 'f2027': '2027-12-17', 'w2028': '2028-04-14',
+                  'ss2028': '2028-08-04', 'f2028': '2028-12-15', 'w2029': '2029-04-13',
+                };
+                const ssCourseOverrides: Record<string, { startDate: string; endDate: string }> = {
+                  'ss2026:CECN210': { startDate: '2026-05-04', endDate: '2026-07-31' },
+                  'ss2026:CPHL110': { startDate: '2026-05-05', endDate: '2026-06-20' },
+                  'ss2026:CHIS105': { startDate: '2026-06-23', endDate: '2026-08-07' },
+                };
+                const allDisplayCourses: Array<{ name: string; color: string; colorEnd?: string; professor: string; professorEmail?: string; _semKey: string }> = [];
+                const semKeyOrder = ['w2026', 'ss2026', 'f2026', 'w2027', 'ss2027', 'f2027', 'w2028', 'ss2028', 'f2028', 'w2029'];
+                for (const semKey of semKeyOrder) {
+                  if (semesterEndConfirmed[semKey]) continue;
+                  const semStart = semStartDates[semKey];
+                  const semEnd = semEndDates[semKey];
+                  if (!semStart || !semEnd) continue;
+                  const semStartDate = new Date(semStart + 'T00:00:00');
+                  const semEndDate = new Date(semEnd + 'T23:59:59');
+                  if (currentWeekEnd < semStartDate || currentWeekStart > semEndDate) continue;
+                  const courses = semesterCourseAssignments[semKey] || [];
+                  for (const sc of courses) {
+                    if (!sc.code) continue;
+                    const codeNorm = sc.code.replace(/\s/g, '').toUpperCase();
+                    const overrideKey = `${semKey}:${codeNorm}`;
+                    const courseStart = ssCourseOverrides[overrideKey]
+                      ? new Date(ssCourseOverrides[overrideKey].startDate + 'T00:00:00')
+                      : semStartDate;
+                    const courseEnd = ssCourseOverrides[overrideKey]
+                      ? new Date(ssCourseOverrides[overrideKey].endDate + 'T23:59:59')
+                      : semEndDate;
+                    if (currentWeekEnd < courseStart || currentWeekStart > courseEnd) continue;
+                    if (allDisplayCourses.some(c => c.name.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') === codeNorm)) continue;
+                    const matchedCourse = coursesData.courses.find(c => {
+                      const cc = c.name?.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '');
+                      return cc === codeNorm;
+                    });
+                    const fullName = sc.fullName || matchedCourse?.name?.split(' - ').slice(1).join(' - ') || '';
+                    allDisplayCourses.push({
+                      name: fullName ? `${codeNorm} - ${fullName}` : codeNorm,
+                      color: matchedCourse?.color || '#6b7280',
+                      colorEnd: matchedCourse?.colorEnd || '#9ca3af',
+                      professor: matchedCourse?.professor || '',
+                      professorEmail: matchedCourse?.professorEmail || '',
+                      _semKey: semKey,
+                    });
                   }
                 }
                 const filteredCourses = [...allDisplayCourses].sort((a, b) => {
                   const getCode = (c: any) => c.name.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') || '';
-                  const getSemKey = (c: any) => {
-                    const code = getCode(c);
-                    const wDef = winterCourseDefs.find(d => d.code === code);
-                    if (wDef) return 'w2026';
-                    if (activeSpringSummerCourses.some(sc => sc.name.split(' - ')[0]?.trim().toUpperCase() === code)) return 'ss2026';
-                    return '';
-                  };
+                  const getSemKey = (c: any) => c._semKey || '';
                   const semKeyA = getSemKey(a);
                   const semKeyB = getSemKey(b);
                   const getPri = (semKey: string, code: string) => {
@@ -24713,6 +24713,7 @@ export default function Dashboard() {
                   if (priB === 0) return -1;
                   return priA - priB;
                 });
+                const allKnownCodes = Object.values(semesterCourseAssignments).flat().map(c => c.code.replace(/\s/g, '').toUpperCase()).filter(Boolean);
                 const maxCourseRowHeight = 3 * 20 + 2 * 2 + 4;
 
                 return (
@@ -25008,8 +25009,7 @@ export default function Dashboard() {
                   }
                   return false;
                 });
-                const mainCourseNames = ['CPPA122', 'CFNF400', 'CASL101', 'CECN210', 'CPHL110', 'CHIS105'];
-                const isMainCourse = mainCourseNames.includes(courseName);
+                const isMainCourse = allKnownCodes.includes(courseName);
                 if (courseTaskCount === 0 && !courseHasProjects && !isMainCourse) {
                   return null;
                 }
