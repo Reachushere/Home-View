@@ -24636,19 +24636,24 @@ export default function Dashboard() {
                               const isSunsetText = minsT >= ssMinT - 60 && minsT < ssMinT + 60;
                               const isDarkWeather = isNightText || isSunriseText || isSunsetText || (weatherData && weatherData.code >= 51);
                             return (
-                                <>
-                                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', alignSelf: 'stretch', padding: '2px 0', marginLeft: '43px' }}>
-                                    <div className="text-[10px] font-medium tracking-wide" style={{ color: isDarkWeather ? '#ffffff' : '#000000', lineHeight: 1 }}>
-                                      {dayName}
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '36px' }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', alignSelf: 'stretch', padding: '2px 0' }}>
+                                      <div className="text-[10px] font-medium tracking-wide" style={{ color: isDarkWeather ? '#ffffff' : '#000000', lineHeight: 1 }}>
+                                        {dayName}
+                                      </div>
+                                      <div className="text-[8px] font-bold tracking-wide" style={{ color: isDarkWeather ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.5)', lineHeight: 1, textTransform: 'uppercase' }}>
+                                        {format(day, 'MMM')}
+                                      </div>
                                     </div>
-                                    <div className="text-[8px] font-medium tracking-wide" style={{ color: isDarkWeather ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.5)', lineHeight: 1, textTransform: 'uppercase' }}>
-                                      {format(day, 'MMM')}
+                                    <div style={{ fontSize: '25px', fontWeight: 600, color: isDarkWeather ? '#ffffff' : '#000000', lineHeight: 1 }}>
+                                      {dayNum}
                                     </div>
                                   </div>
-                                  <div style={{ fontSize: '25px', fontWeight: 600, color: isDarkWeather ? '#ffffff' : '#000000', lineHeight: 1 }}>
-                                    {dayNum}
+                                  <div style={{ fontSize: '8px', fontWeight: 400, color: isDarkWeather ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.5)', lineHeight: 1, letterSpacing: '0.5px', marginTop: '2px' }}>
+                                    {`Week ${selectedWeek}`}
                                   </div>
-                                </>
+                                </div>
                               );
                             })() : (
                               <>
