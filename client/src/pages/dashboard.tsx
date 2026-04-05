@@ -17147,6 +17147,7 @@ export default function Dashboard() {
                       if ((updates as any).borderColor !== undefined) payload[`${prefix}BorderColor`] = (updates as any).borderColor;
                       if (updates.courseRowColor !== undefined) payload[`${prefix}CourseRowColor`] = updates.courseRowColor;
                       if (updates.taskBgColor !== undefined) payload[`${prefix}TaskBgColor`] = updates.taskBgColor;
+                      if (updates.courseFontColor !== undefined) payload[`${prefix}CourseFontColor`] = updates.courseFontColor;
                       if ((updates as any).startDate) payload[`${prefix}StartDate`] = new Date((updates as any).startDate + 'T12:00:00').toISOString();
                       if ((updates as any).endDate) payload[`${prefix}EndDate`] = new Date((updates as any).endDate + 'T12:00:00').toISOString();
                       if ((updates as any).springSummerTerm !== undefined) payload[`${prefix}SpringSummerTerm`] = (updates as any).springSummerTerm;
@@ -24800,7 +24801,7 @@ export default function Dashboard() {
                   'ss2026:CPHL110': { startDate: '2026-05-05', endDate: '2026-06-20' },
                   'ss2026:CHIS105': { startDate: '2026-06-23', endDate: '2026-08-07' },
                 };
-                const allDisplayCourses: Array<{ name: string; color: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; professor: string; professorEmail?: string; _semKey: string }> = [];
+                const allDisplayCourses: Array<{ name: string; color: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; courseFontColor?: string; professor: string; professorEmail?: string; _semKey: string }> = [];
                 const semKeyOrder = ['w2026', 'ss2026', 'f2026', 'w2027', 'ss2027', 'f2027', 'w2028', 'ss2028', 'f2028', 'w2029'];
                 for (const semKey of semKeyOrder) {
                   if (semesterEndConfirmed[semKey]) continue;
@@ -24836,6 +24837,7 @@ export default function Dashboard() {
                       borderColor: matchedCourse?.borderColor || '',
                       courseRowColor: matchedCourse?.courseRowColor || '',
                       taskBgColor: matchedCourse?.taskBgColor || '',
+                      courseFontColor: matchedCourse?.courseFontColor || '',
                       professor: matchedCourse?.professor || '',
                       professorEmail: matchedCourse?.professorEmail || '',
                       _semKey: semKey,
@@ -24919,7 +24921,8 @@ export default function Dashboard() {
                     const dR = Math.max(0, rgb.r - 40), dG = Math.max(0, rgb.g - 40), dB = Math.max(0, rgb.b - 40);
                     return `rgb(${dR}, ${dG}, ${dB})`;
                   })(),
-                  colors: dynamicCourseColors[courseName] 
+                  colors: dynamicCourseColors[courseName],
+                  fontColor: (courseData as any).courseFontColor || '',
                 };
                 // Get full-week tasks for this course (tasks that span from visible start to Friday)
                 // Exclude completed tasks so they are removed from view
@@ -24958,9 +24961,9 @@ export default function Dashboard() {
                 if (hasFullWeekTasks) {
                   return (
                     <div key={course.name} className="w-full flex-shrink-0 flex" style={{ borderBottom: `1.5px dotted ${courseData.color}dd` }}>
-                      <div className="px-1 py-0.5 text-[10px] font-semibold tracking-normal flex items-center justify-center text-white cursor-pointer hover:brightness-110 flex-shrink-0" onClick={() => { if (selectedCertCourse) return; const cd = courseData; const code = cd.name.split(' - ')[0]?.trim(); const cName = cd.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code })); }} style={{ background: course.label, overflow: 'hidden', minWidth: 0, width: `${gridSizes.timeColumnWidth}px`, position: 'relative' }} data-testid={`course-row-label-${course.name}`}>
+                      <div className="px-1 py-0.5 text-[10px] font-semibold tracking-normal flex items-center justify-center cursor-pointer hover:brightness-110 flex-shrink-0" onClick={() => { if (selectedCertCourse) return; const cd = courseData; const code = cd.name.split(' - ')[0]?.trim(); const cName = cd.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code })); }} style={{ background: course.label, overflow: 'hidden', minWidth: 0, width: `${gridSizes.timeColumnWidth}px`, position: 'relative', color: course.fontColor || 'white' }} data-testid={`course-row-label-${course.name}`}>
                         {course.name}
-                        <div style={{ position: 'absolute', top: '1px', right: '1px', zIndex: 2 }} onClick={(e) => { e.stopPropagation(); if (selectedCertCourse) return; const cd = courseData; const code = cd.name.split(' - ')[0]?.trim(); const cName = cd.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code, openInEdit: true })); }} data-testid={`pencil-edit-course-${course.name}`}><Pencil className="w-[9px] h-[9px] text-white" strokeWidth={3} /></div>
+                        <div style={{ position: 'absolute', top: '1px', right: '1px', zIndex: 2 }} onClick={(e) => { e.stopPropagation(); if (selectedCertCourse) return; const cd = courseData; const code = cd.name.split(' - ')[0]?.trim(); const cName = cd.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code, openInEdit: true })); }} data-testid={`pencil-edit-course-${course.name}`}><Pencil className="w-[9px] h-[9px]" style={{ color: course.fontColor || 'white' }} strokeWidth={3} /></div>
                       </div>
                       <div className="flex-1 min-w-0">
                       {fullWeekTasks.map((task, taskIdx) => {
@@ -24989,12 +24992,13 @@ export default function Dashboard() {
                             {gridSizes.moduleColumnWidth > 0 && (
                             <div style={{ backgroundColor: course.bg }}>
                               <div 
-                                className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded border ${task.isCompleted ? "text-gray-400" : "text-black"}`}
+                                className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded border ${task.isCompleted ? "text-gray-400" : ""}`}
                                 style={{
                                   margin: '2px 2px 2px 2px',
                                   marginRight: '0px',
                                   backgroundColor: task.isCompleted ? '#e5e7eb' : (() => { const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === course.name); if (cMatch?.taskBgColor) return cMatch.taskBgColor; return cMatch?.colorEnd || course.bg; })(),
-                                  borderColor: task.isCompleted ? '#d1d5db' : course.darkColor
+                                  borderColor: task.isCompleted ? '#d1d5db' : course.darkColor,
+                                  color: task.isCompleted ? undefined : (course.fontColor || 'black'),
                                 }}
                                 data-testid={`course-module-task-static-${task.id}`}
                               >
@@ -25081,12 +25085,13 @@ export default function Dashboard() {
                                     <div 
                                       className={`flex-1 flex items-center gap-1 text-[8px] px-0.5 ml-0 ${isFriday ? 'mr-0.5' : ''} ${todayBorderClass} ${
                                         shouldBlink ? "animate-blink" : ""
-                                      } ${task.isCompleted ? "text-gray-400" : "text-black"}`}
+                                      } ${task.isCompleted ? "text-gray-400" : ""}`}
                                       style={{ 
                                         height: 'calc(100% - 4px)', 
                                         marginTop: '2px', 
                                         marginBottom: '2px',
                                         backgroundColor: task.isCompleted ? '#e5e7eb' : 'white',
+                                        color: task.isCompleted ? undefined : (course.fontColor || 'black'),
                                         border: `1px solid ${task.isCompleted ? '#d1d5db' : course.darkColor}`,
                                         filter: hoveredCountdownTaskId === task.id ? 'brightness(1.15)' : undefined,
                                         boxShadow: hoveredCountdownTaskId === task.id ? '0 2px 8px rgba(0,0,0,0.35)' : undefined,
@@ -25178,7 +25183,7 @@ export default function Dashboard() {
                 
                 return (
                 <div key={course.name} ref={el => { courseRowRefs.current[courseIdx] = el; }} className="grid w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${maxCourseRowHeight}px`, maxHeight: `${maxCourseRowHeight}px`, overflow: 'hidden' }}>
-                  <div className="px-1 py-0.5 text-[8px] font-medium tracking-normal flex flex-col items-center justify-center text-white relative leading-tight cursor-pointer hover:brightness-110" onClick={() => { if (selectedCertCourse) return; const code = courseData.name.split(' - ')[0]?.trim(); const cName = courseData.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code })); }} style={{ background: course.label, borderBottom: `1.5px dotted ${courseData.color}dd`, overflow: 'hidden', minWidth: 0 }} data-testid={`course-row-label-${course.name}`}>
+                  <div className="px-1 py-0.5 text-[8px] font-medium tracking-normal flex flex-col items-center justify-center relative leading-tight cursor-pointer hover:brightness-110" onClick={() => { if (selectedCertCourse) return; const code = courseData.name.split(' - ')[0]?.trim(); const cName = courseData.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code })); }} style={{ background: course.label, borderBottom: `1.5px dotted ${courseData.color}dd`, overflow: 'hidden', minWidth: 0, color: course.fontColor || 'white' }} data-testid={`course-row-label-${course.name}`}>
                     {(() => {
                       const code = course.name.split(' - ')[0];
                       const fullName = course.name.split(' - ').slice(1).join(' - ');
@@ -25211,7 +25216,7 @@ export default function Dashboard() {
                         </>
                       );
                     })()}
-                    <div style={{ position: 'absolute', top: '1px', right: '1px', zIndex: 2 }} onClick={(e) => { e.stopPropagation(); if (selectedCertCourse) return; const code = courseData.name.split(' - ')[0]?.trim(); const cName = courseData.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code, openInEdit: true })); }} data-testid={`pencil-edit-course-${course.name}`}><Pencil className="w-[9px] h-[9px] text-white" strokeWidth={3} /></div>
+                    <div style={{ position: 'absolute', top: '1px', right: '1px', zIndex: 2 }} onClick={(e) => { e.stopPropagation(); if (selectedCertCourse) return; const code = courseData.name.split(' - ')[0]?.trim(); const cName = courseData.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code, openInEdit: true })); }} data-testid={`pencil-edit-course-${course.name}`}><Pencil className="w-[9px] h-[9px]" style={{ color: course.fontColor || 'white' }} strokeWidth={3} /></div>
                   </div>
                   {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: course.bg, borderBottom: `1.5px dotted ${courseData.color}dd` }} />}
                   {(() => {
@@ -25731,6 +25736,7 @@ export default function Dashboard() {
                       progressEndColor: courseHexColorEnd || courseHexColor,
                       courseRowColor: courseMatch?.courseRowColor || courseHexColor,
                       taskBgColor: courseMatch?.taskBgColor,
+                      courseFontColor: courseMatch?.courseFontColor || '',
                       moduleP,
                       readingP,
                       moduleUnread,
@@ -25992,11 +25998,12 @@ export default function Dashboard() {
                           <div
                             className={`group flex items-center gap-1 text-[8px] px-1 py-0.5 truncate rounded border w-full min-w-0 cursor-pointer ${
                               ""
-                            } ${task.isCompleted ? "text-gray-400" : "text-black"}`}
+                            } ${task.isCompleted ? "text-gray-400" : ""}`}
                             style={{
                               backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || (task.type === 'other' ? otherRowColors.taskBgColor : '#dbeafe')),
                               borderColor: task.isCompleted ? '#d1d5db' : (colors?.hex || (task.type === 'other' ? otherRowColors.borderColor : '#60a5fa')),
-                              borderWidth: '1.5px'
+                              borderWidth: '1.5px',
+                              color: task.isCompleted ? undefined : (() => { const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase().replace(/\s/g, '') === courseCode.replace(/\s/g, '').toUpperCase()); return cMatch?.courseFontColor || 'black'; })(),
                             }}
                             onContextMenu={(e) => {
                               e.preventDefault();
@@ -29058,8 +29065,8 @@ export default function Dashboard() {
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, borderRadius: '6px', overflow: 'hidden', gap: '2px' }}>
                       {[
-                        { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `play-module-${pd.courseCode.toLowerCase()}`, testUpload: `upload-module-${pd.courseCode.toLowerCase()}`, bg: pd.progressStartColor || getCourseGradientColors(pd.courseCode).start, dark: true },
-                        { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, bg: pd.progressEndColor || getCourseGradientColors(pd.courseCode).end, dark: false },
+                        { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `play-module-${pd.courseCode.toLowerCase()}`, testUpload: `upload-module-${pd.courseCode.toLowerCase()}`, bg: pd.progressStartColor || getCourseGradientColors(pd.courseCode).start, dark: true, fontOverride: pd.courseFontColor || '' },
+                        { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, bg: pd.progressEndColor || getCourseGradientColors(pd.courseCode).end, dark: false, fontOverride: pd.courseFontColor || '' },
                       ].map(item => {
                         const circleSize = 34;
                         const strokeWidth = 3;
@@ -29067,7 +29074,7 @@ export default function Dashboard() {
                         const circumference = 2 * Math.PI * radius;
                         const offset = circumference - (item.p.percent / 100) * circumference;
                         const isModule = item.type === 'module';
-                        const textColor = item.dark ? '#fff' : '#000';
+                        const textColor = item.fontOverride || (item.dark ? '#fff' : '#000');
                         const dragKey = `${pd.courseCode}-${item.type}`;
                         const isDragOver = hwDragOverTarget === dragKey;
                         return (
@@ -29079,7 +29086,7 @@ export default function Dashboard() {
                             style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1px', position: 'relative', flex: '1 1 0', alignSelf: 'stretch', minWidth: 0, background: item.bg, padding: '4px 1px 3px', borderRadius: '6px', overflow: 'visible', outline: isDragOver ? '2px solid rgba(255,255,255,0.8)' : 'none', outlineOffset: '-2px', transition: 'outline 0.15s ease' }}
                             data-testid={`drop-${item.type}-${pd.courseCode.toLowerCase()}`}>
                             <div style={{ position: 'absolute', top: '2px', left: 0, right: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2px', zIndex: 5, flexWrap: 'nowrap', overflow: 'hidden' }}>
-                              <span style={{ fontSize: '10px', fontWeight: 400, color: item.dark ? '#ffffff' : '#000000', letterSpacing: '0.5px', fontFamily: "'Raleway', sans-serif", whiteSpace: 'nowrap', flexShrink: 0 }}>{item.label}</span>
+                              <span style={{ fontSize: '10px', fontWeight: 400, color: textColor, letterSpacing: '0.5px', fontFamily: "'Raleway', sans-serif", whiteSpace: 'nowrap', flexShrink: 0 }}>{item.label}</span>
                               {item.p.hasFiles && item.unread > 0 && item.p.percent < 100 && (
                                 <div className="bg-[#FF0000] text-white text-[6px] font-bold rounded-full flex items-center justify-center shadow-lg border border-white" style={{ width: '12px', height: '12px', flexShrink: 0, padding: 0, lineHeight: 1 }}>
                                   {item.unread}
@@ -29089,17 +29096,17 @@ export default function Dashboard() {
                             <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginTop: '8px' }}>
                               <div style={{ position: 'relative', width: circleSize, height: circleSize, flexShrink: 0 }}>
                                 <svg width={circleSize} height={circleSize} style={{ transform: 'rotate(-90deg)' }}>
-                                  <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth={strokeWidth} />
+                                  <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke={textColor === '#000' || textColor === 'black' ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.3)'} strokeWidth={strokeWidth} />
                                   {item.p.hasFiles && item.p.percent > 0 && (
-                                    <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke="#ffffff" strokeWidth={strokeWidth} strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
+                                    <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke={textColor} strokeWidth={strokeWidth} strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
                                   )}
                                 </svg>
-                                <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700, color: item.dark ? '#ffffff' : '#000000', fontFamily: "system-ui, -apple-system, 'Segoe UI', sans-serif", letterSpacing: '-0.3px' }}>
+                                <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700, color: textColor, fontFamily: "system-ui, -apple-system, 'Segoe UI', sans-serif", letterSpacing: '-0.3px' }}>
                                   {item.p.hasFiles ? `${item.p.percent}%` : 'N/A'}
                                 </span>
                               </div>
                               <div className="cursor-pointer" style={{ position: 'relative', opacity: item.p.percent === 100 ? 0.5 : 1, marginLeft: '3px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }} onClick={(e) => { e.stopPropagation(); item.play(); }} onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); item.play(); }} data-testid={item.testPlay}>
-                                <Play fill="#ffffff" stroke="#ffffff" style={{ width: '14px', height: '14px' }} />
+                                <Play fill={textColor} stroke={textColor} style={{ width: '14px', height: '14px' }} />
                               </div>
                             </div>
                           </div>
