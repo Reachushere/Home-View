@@ -29094,12 +29094,14 @@ export default function Dashboard() {
                   <div className="text-[10px] text-white/50 text-center" style={{ padding: '4px 0' }}>No tasks due today</div>
                 ) : (
                   <div style={{ marginTop: '-17px' }}>
-                    <div data-hw-group-row style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '2px' }}>
-                      <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch', marginLeft: '14px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2 }}>
-                        <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)', position: 'absolute', right: '-6px', top: 0, bottom: 0 }} />
+                    <div data-hw-group-row style={{ display: 'flex', alignItems: 'flex-start', gap: '0px', marginBottom: '2px' }}>
+                      <div data-hw-group-bar style={{ width: `${hwGroupBarWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch', marginLeft: '9px', marginRight: '4px', overflow: 'visible', position: 'relative', zIndex: 2 }}>
                       </div>
-                      <div style={{ flex: 1, minWidth: 0, marginRight: '-7px', backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: '6px', padding: '4px 4px' }}>
-                        <div style={{ maxHeight: '80px', overflowY: 'auto', scrollbarWidth: 'none' }}>
+                      <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, width: '10px', marginLeft: '3px', marginRight: '2px', alignSelf: 'stretch', position: 'relative', zIndex: 3 }}>
+                        <div style={{ width: '3px', height: '100%', borderRadius: '2px', background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)' }} />
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0, marginRight: '-7px' }}>
+                        <div className="flex flex-col gap-0.5">
                   <div className="flex flex-col" style={{ gap: '6px' }}>
                     {dueTodayTasks.map((task, tIdx) => {
                       const progressBarWidth = getProgressBarWidth(task);
@@ -29184,7 +29186,7 @@ export default function Dashboard() {
                       );
                     })}
                   </div>
-                    </div>
+                        </div>
                       </div>
                     </div>
                   </div>
