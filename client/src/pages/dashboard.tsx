@@ -29110,7 +29110,7 @@ export default function Dashboard() {
                       const cfp = taskCourseCode ? calcCourseFileProgress(taskCourseCode) : null;
                       const hwPdfUrl = task.attachments?.length ? (() => { for (const att of task.attachments) { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; if (url) return url; } return null; })() : task.referenceLink || null;
                       return (
-                        <div key={task.id} className="" style={{ position: 'relative', overflow: 'visible', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: tIdx % 2 === 0 ? '#051729' : 'transparent', marginLeft: `${-(hwGroupBarWidth + 8)}px`, marginRight: '0px', paddingLeft: `${hwGroupBarWidth + 8}px`, paddingRight: '0px' }}
+                        <div key={task.id} className="" style={{ position: 'relative', overflow: 'visible', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: 0, backgroundColor: tIdx % 2 === 0 ? '#051729' : 'transparent', marginLeft: '-8px', marginRight: '0px', paddingLeft: '8px', paddingRight: '0px' }}
                           onMouseEnter={() => setHoveredCountdownTaskIdDebounced(task.id)}
                           onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                           ref={(rowEl) => {
@@ -29138,7 +29138,7 @@ export default function Dashboard() {
                               <span style={{ fontSize: '7px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.3px', marginTop: '1px', marginBottom: '-2px' }}>{format(new Date(task.dueDate), 'EEEEEE')}</span>
                               <span style={{ fontSize: '9px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1, textAlign: 'center', display: 'block', marginTop: '1px' }}>{format(new Date(task.dueDate), 'd')}</span>
                             </div>
-                            <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '0px', marginLeft: '38px' }}>
+                            <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '0px', marginLeft: '21px' }}>
                               <div>
                                 <button
                                   className="text-[10px] truncate hover:underline cursor-pointer leading-none w-full"
