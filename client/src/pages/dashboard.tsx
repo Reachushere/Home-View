@@ -11059,15 +11059,25 @@ export default function Dashboard() {
   // Get Google Calendar events for a specific hour on a day (only conflicting events)
   const getCalendarEventsForHour = (day: Date, hour: number) => {
     const now = new Date();
+    const dayKey = _etDateKey(day);
+    const dayTasks = tasksByDateKey.get(dayKey) || [];
     return filteredCalendarEvents.filter(e => {
       if (e.isAllDay) return false;
       const eventDate = new Date(e.startDate);
       const eventEndDate = new Date(e.endDate);
-      // Hide events that have already ended
       if (eventEndDate < now) return false;
-      // Only show events that conflict with tasks
       if (!eventConflictsWithTask(e)) return false;
-      return isSameDayET(eventDate, day) && getETHours(eventDate) === hour;
+      if (!isSameDayET(eventDate, day) || getETHours(eventDate) !== hour) return false;
+      const titleClean = e.title.replace(/^\[PREP\]\s*/, '').replace(/^\[.*?\]\s*/g, '').toLowerCase().trim();
+      const isDupOfExistingTask = dayTasks.some(t => {
+        if (t.calendarEventId === e.id || t.secondAccountCalendarEventId === e.id || t.prepCalendarEventId === e.id || t.secondAccountPrepEventId === e.id) return true;
+        const taskTitle = t.title.replace(/^\[.*?\]\s*/g, '').toLowerCase().trim();
+        if (taskTitle === titleClean) return true;
+        if (t.type === 'class' && titleClean.includes(taskTitle.substring(0, 15))) return true;
+        return false;
+      });
+      if (isDupOfExistingTask) return false;
+      return true;
     });
   };
   
