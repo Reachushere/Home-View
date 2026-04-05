@@ -24964,7 +24964,7 @@ export default function Dashboard() {
                     {dayForecast && (
                       <span className="text-white/90 whitespace-nowrap leading-none font-medium relative z-10 inline-flex items-center gap-[2px]" style={{ letterSpacing: '-0.2px', marginTop: '-1px', fontSize: '11px' }}>
                         <span>{afterSunrise ? `${Math.round(weatherData!.temp)}°` : `${Math.round(dayForecast.high)}°/${Math.round(dayForecast.low)}°`}</span>
-                        {desc && <span style={{ fontSize: '7.5px', fontWeight: 500, opacity: 0.8, lineHeight: 1 }}>{desc}</span>}
+                        {desc && <span style={{ fontSize: '11px', fontWeight: 500, opacity: 0.8, lineHeight: 1 }}>{desc}</span>}
                       </span>
                     )}
                   </div>
