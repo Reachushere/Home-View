@@ -24265,14 +24265,14 @@ export default function Dashboard() {
                         data-testid={`toggle-sleep-${shiftDateStr}`}
                       />
                     )}
-                    {!isToday && !isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && shiftForDay === 'day' && (
+                    {!isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && shiftForDay === 'day' && (
                       <div className="absolute top-0 left-0 right-0" style={{ height: '5px', backgroundColor: sleepDisabledDays.has(shiftDateStr) ? 'rgba(255, 178, 50, 0.3)' : 'rgba(255, 178, 50, 0.85)', zIndex: 15 }} />
                     )}
-                    {!isToday && !isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && shiftForDay === 'night' && (
+                    {!isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && shiftForDay === 'night' && (
                       <div className="absolute bottom-0 left-0 right-0" style={{ height: '5px', backgroundColor: sleepDisabledDays.has(shiftDateStr) ? 'rgba(168, 85, 247, 0.3)' : 'rgba(168, 85, 247, 0.85)', zIndex: 15 }} />
                     )}
                     {(() => {
-                      const hasShiftBar = !isToday && !isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && (shiftForDay === 'day' || shiftForDay === 'night');
+                      const hasShiftBar = !isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && (shiftForDay === 'day' || shiftForDay === 'night');
                       return (
                         <>
                           {isToday && (() => {
@@ -24583,7 +24583,7 @@ export default function Dashboard() {
                           {isToday && weatherData?.hourly && weatherData.hourly.length > 0 && (() => {
                             const now = new Date();
                             const nowMs = now.getTime();
-                            const offsets = [2, 5, 10];
+                            const offsets = [5, 10];
                             const renderMiniWeatherSvg = (wc: number) => {
                               const s = 14;
                               if (wc === 0) return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="5" fill="#facc15"/><g stroke="#facc15" strokeWidth="2" strokeLinecap="round">{[[12,1,12,3],[12,21,12,23],[4.22,4.22,5.64,5.64],[18.36,18.36,19.78,19.78],[1,12,3,12],[21,12,23,12],[4.22,19.78,5.64,18.36],[18.36,5.64,19.78,4.22]].map(([x1,y1,x2,y2],i)=><line key={i} x1={x1} y1={y1} x2={x2} y2={y2}/>)}</g></svg>;
@@ -24611,7 +24611,7 @@ export default function Dashboard() {
                               return { offset: h, temp: closest.temp, code: closest.weatherCode };
                             });
                             return (
-                              <div className="absolute z-20 flex flex-col" style={{ top: 1, bottom: 1, left: 1, width: '46px', gap: '1px', pointerEvents: 'none' }} data-testid="today-hourly-forecast">
+                              <div className="absolute z-20 flex flex-col" style={{ top: 6, bottom: 6, left: 1, width: '46px', gap: '1px', pointerEvents: 'none' }} data-testid="today-hourly-forecast">
                                 {forecasts.map((fc, i) => (
                                   <div key={i} className="flex items-center justify-center gap-[3px]" style={{ flex: 1, background: '#1a1a2e', borderRadius: '3px', padding: '0 3px', minHeight: 0 }} data-testid={`hourly-forecast-${fc.offset}h`}>
                                     <span style={{ fontSize: '8px', color: '#ffffff', fontWeight: 700, lineHeight: 1 }}>{fc.offset}h</span>
