@@ -1757,7 +1757,9 @@ export default function Dashboard() {
   const [originalCalendarLeft, setOriginalCalendarLeft] = useState(27); // Original left before reduction
   const [courseRowsTop, setCourseRowsTop] = useState(0); // Position of course rows container
   const courseRowRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const otherRowRef = useRef<HTMLDivElement | null>(null);
   const [courseRowRects, setCourseRowRects] = useState<{top: number; height: number}[]>([]);
+  const [otherRowRect, setOtherRowRect] = useState<{top: number; height: number} | null>(null);
   const courseProgressDataRef = useRef<Array<{
     courseCode: string;
     progressBg: string;
@@ -10692,6 +10694,14 @@ export default function Dashboard() {
             if (prev[i].top !== newRects[i].top || prev[i].height !== newRects[i].height) return newRects;
           }
           return prev;
+        });
+      }
+      if (otherRowRef.current) {
+        const r = otherRowRef.current.getBoundingClientRect();
+        const newRect = { top: Math.round(r.top), height: Math.round(r.height) };
+        setOtherRowRect(prev => {
+          if (prev && prev.top === newRect.top && prev.height === newRect.height) return prev;
+          return newRect;
         });
       }
       if (allDayRowRef.current) {
@@ -25765,7 +25775,7 @@ export default function Dashboard() {
                 });
                 const otherRowHeight = Math.max(57, gridSizes.otherRowHeight || 57);
                 return (
-                  <div className="grid w-full flex-shrink-0 relative z-[43] group/otherrow" style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${otherRowHeight}px` }}>
+                  <div ref={otherRowRef} className="grid w-full flex-shrink-0 relative z-[43] group/otherrow" style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${otherRowHeight}px` }}>
                     <div className="px-1 py-0.5 text-[8px] font-[785] tracking-wide flex items-center justify-center text-white/80 relative cursor-pointer hover:brightness-110" onClick={() => setOtherRowEditOpen(true)} style={{ background: (() => { const stops = otherRowColors.labelStops ? (() => { try { return JSON.parse(otherRowColors.labelStops); } catch { return []; } })() : []; const allStops = [{ position: 0, color: otherRowColors.labelStart }, ...stops, { position: 100, color: otherRowColors.labelEnd }]; return `linear-gradient(180deg, ${allStops.map((s: any) => `${s.color} ${s.position}%`).join(', ')})`; })(), borderBottom: `1px dotted ${otherRowColors.borderColor || '#999'}` }} data-testid="other-row-label">
                       OTHER
                       <div style={{ position: 'absolute', top: '1px', right: '1px', zIndex: 2 }} onClick={(e) => { e.stopPropagation(); setOtherRowEditOpen(true); }} data-testid="pencil-edit-other-row"><Pencil className="w-[9px] h-[9px] text-white" strokeWidth={3} /></div>
@@ -28711,6 +28721,76 @@ export default function Dashboard() {
               <span className="text-[11px] text-white/50 italic text-center" data-testid="text-no-courses">No active courses this week</span>
             </div>
           )}
+          {courseRowRects.length === 0 && otherRowRect && (() => {
+            const upcomingTop = calendarBorderTop || (calendarTop + 15);
+            const hwSection = homeworkSectionRef.current;
+            if (!hwSection) return null;
+            const hwRect = hwSection.getBoundingClientRect();
+            const otherTop = otherRowRect.top - hwRect.top;
+            const otherRowHeight = otherRowRect.height;
+            const weekStart = weekDays.length > 0 ? startOfDayET(weekDays[0]) : null;
+            const weekEnd = weekDays.length > 6 ? startOfDayET(addDays(weekDays[6], 1)) : null;
+            const otherProgressTasks = (allTasks || []).filter(t => {
+              if (t.isCompleted) return false;
+              if (t.hideFromSummary) return false;
+              const tc = t.courseName?.split(' ')[0]?.toUpperCase() || '';
+              const knownCourseCodes = ['CPPA122', 'CFNF400', 'CASL101', 'CECN210', 'CPHL110', 'CHIS105', 'CPPA235'];
+              if (knownCourseCodes.includes(tc)) return false;
+              const taskDue = startOfDayET(new Date(t.dueDate));
+              if (weekStart && weekEnd) {
+                if (taskDue >= weekStart && taskDue < weekEnd) return true;
+                if (t.startDate) {
+                  const taskStart = startOfDayET(new Date(t.startDate));
+                  if (taskStart < weekEnd && taskDue > weekStart) return true;
+                }
+                return false;
+              }
+              return false;
+            }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+            return (
+              <div key="other-progress-row-standalone" style={{
+                position: 'absolute',
+                top: `${otherTop}px`,
+                left: 0,
+                right: 0,
+                height: `${otherRowHeight}px`,
+                zIndex: 41,
+                borderTop: `1.5px dotted ${otherRowColors.borderColor}`,
+                borderBottom: `1.5px dotted ${otherRowColors.borderColor}`,
+                display: 'flex',
+                alignItems: 'stretch',
+                overflowX: 'hidden',
+                overflowY: 'hidden',
+                scrollbarWidth: 'none',
+                padding: '0',
+              }}>
+                <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '1px 6px 0px 6px', overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', background: (() => { const stops = otherRowColors.labelStops ? (() => { try { return JSON.parse(otherRowColors.labelStops); } catch { return []; } })() : []; const allStops = [{ position: 0, color: otherRowColors.labelStart }, ...stops, { position: 100, color: otherRowColors.labelEnd }]; return `linear-gradient(180deg, ${allStops.map((s: any) => `${s.color} ${s.position}%`).join(', ')})`; })() }}
+                  onWheel={(e) => {
+                    e.stopPropagation();
+                    e.currentTarget.scrollTop += e.deltaY;
+                    e.preventDefault();
+                  }}
+                >
+                  <span className="text-[8px] font-[785] uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.8)', position: 'absolute', top: '2px', left: '6px' }}>Other</span>
+                  {otherProgressTasks.length === 0 && (
+                    <span className="text-[10px] italic" style={{ color: 'rgba(255,255,255,0.4)', textAlign: 'center', pointerEvents: 'none' }}>No upcoming items</span>
+                  )}
+                  {otherProgressTasks.map(t => {
+                    const dueStr = format(new Date(t.dueDate), 'MMM d');
+                    return (
+                      <div key={t.id} className="flex items-center gap-1.5 min-w-0 cursor-pointer hover:brightness-125" style={{ lineHeight: '1.3', marginBottom: '1px' }}
+                        onClick={() => setEditingTask(t)}
+                      >
+                        <span style={{ fontSize: '10px', color: '#ffffff', flexShrink: 0 }}>•</span>
+                        <span className="truncate" style={{ fontSize: '9px', color: '#ffffff', fontWeight: 400, flex: 1, minWidth: 0 }}>{t.title}</span>
+                        <span style={{ fontSize: '9px', color: '#ffffff', fontWeight: 400, minWidth: '42px', textAlign: 'right' }}>{dueStr}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })()}
           {courseRowRects.length > 0 && courseProgressDataRef.current.length > 0 && (() => {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
             const firstRowOffset = 0;
