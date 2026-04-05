@@ -3123,6 +3123,33 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
+  app.get("/api/notepad", async (_req, res) => {
+    try {
+      const row = await db.select().from(appState).where(eq(appState.key, 'notepadContent')).limit(1);
+      res.json({ content: row.length > 0 ? row[0].value : '' });
+    } catch (err: any) {
+      console.error("Error getting notepad:", err);
+      res.json({ content: '' });
+    }
+  });
+
+  app.post("/api/notepad", async (req, res) => {
+    try {
+      const { content } = req.body;
+      const value = typeof content === 'string' ? content : '';
+      const existing = await db.select().from(appState).where(eq(appState.key, 'notepadContent')).limit(1);
+      if (existing.length > 0) {
+        await db.update(appState).set({ value, updatedAt: new Date() }).where(eq(appState.key, 'notepadContent'));
+      } else {
+        await db.insert(appState).values({ key: 'notepadContent', value });
+      }
+      res.json({ success: true });
+    } catch (err: any) {
+      console.error("Error saving notepad:", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   app.get("/api/feedback-notes", async (_req, res) => {
     try {
       const notes = await db.select().from(feedbackNotes).orderBy(sql`created_at DESC`);

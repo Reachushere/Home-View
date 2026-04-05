@@ -292,7 +292,12 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   const [syllabusData, setSyllabusData] = useState<any>(null);
   const [syllabusItemStates, setSyllabusItemStates] = useState<Record<number, { accepted: boolean | null; editing: boolean; edits: any }>>({});
   const [syllabusObjectPath, setSyllabusObjectPath] = useState<string>('');
-  const [syllabusCreatedTaskIds, setSyllabusCreatedTaskIds] = useState<number[]>([]);
+  const [syllabusCreatedTaskIds, setSyllabusCreatedTaskIds] = useState<number[]>(() => {
+    try {
+      const saved = localStorage.getItem(`syllabusCreatedTaskIds_${courseInfo.courseCode}`);
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
+  });
   const [isUndoingSyllabus, setIsUndoingSyllabus] = useState(false);
 
   useEffect(() => {
@@ -1143,7 +1148,11 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
 
       const created = await resp.json();
       if (created?.id) {
-        setSyllabusCreatedTaskIds(prev => [...prev, created.id]);
+        setSyllabusCreatedTaskIds(prev => {
+          const updated = [...prev, created.id];
+          localStorage.setItem(`syllabusCreatedTaskIds_${courseInfo.courseCode}`, JSON.stringify(updated));
+          return updated;
+        });
       }
 
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
@@ -1171,6 +1180,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
       }
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
       setSyllabusCreatedTaskIds([]);
+      localStorage.removeItem(`syllabusCreatedTaskIds_${courseInfo.courseCode}`);
       setSyllabusData(null);
       setSyllabusItemStates({});
       toast({ title: "Syllabus undone", description: `Removed ${deleted} task${deleted !== 1 ? 's' : ''} added from syllabus.` });

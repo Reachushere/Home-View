@@ -1792,6 +1792,10 @@ export default function Dashboard() {
   const [isScholarshipsOpen, setIsScholarshipsOpen] = useState(false);
   const [isKeyContactsOpen, setIsKeyContactsOpen] = useState(false);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+  const [isNotepadOpen, setIsNotepadOpen] = useState(false);
+  const [notepadContent, setNotepadContent] = useState('');
+  const [notepadSaving, setNotepadSaving] = useState(false);
+  const [notepadLoaded, setNotepadLoaded] = useState(false);
   const [isMonthlyReportOpen, setIsMonthlyReportOpen] = useState(false);
   const [monthlyReportFields, setMonthlyReportFields] = useState(() => {
     const saved = localStorage.getItem('monthlyReportFields');
@@ -15175,7 +15179,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Tools ── */}
-          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, border: '1.5px solid rgba(110,110,110,0.8)', position: 'relative', top: '1px', margin: '0 7.5px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(100,100,100,0.75) 0%, rgba(75,75,75,0.55) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 32)}px`, border: '1.5px solid rgba(110,110,110,0.8)', position: 'relative', top: '1px', margin: '0 7.5px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(100,100,100,0.75) 0%, rgba(75,75,75,0.55) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           {isAdmin && (
             <Wrench className="h-[18px] w-[18px] text-white/70" style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', top: '-10px' }} />
           )}
@@ -15431,6 +15435,46 @@ export default function Dashboard() {
             </Button>
           </div>
 
+          {/* Notepad Button */}
+          <div className="pill-button-hover" style={{ 
+            marginTop: '0px', width: '44px', height: '43px', borderRadius: '50%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+            position: 'relative' as const, zIndex: 1,
+            border: '1.5px solid rgba(255,255,255,0.35)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
+              style={{ background: 'transparent' }}
+              data-testid="button-notepad"
+              title="Notepad"
+              onClick={() => {
+                if (!notepadLoaded) {
+                  fetch('/api/notepad').then(r => r.json()).then(d => {
+                    setNotepadContent(d.content || '');
+                    setNotepadLoaded(true);
+                  }).catch(() => setNotepadLoaded(true));
+                }
+                setIsNotepadOpen(true);
+              }}
+            >
+              <svg viewBox="0 0 16 16" fill="none" style={{ height: '19px', width: '19px' }}>
+                <rect x="3" y="1" width="10" height="14" rx="1" fill="#4a90d9" stroke="white" strokeWidth="0.5"/>
+                <rect x="4.5" y="2.5" width="7" height="11" rx="0.5" fill="white"/>
+                <line x1="5.5" y1="5" x2="10.5" y2="5" stroke="#4a90d9" strokeWidth="0.5"/>
+                <line x1="5.5" y1="7" x2="10.5" y2="7" stroke="#4a90d9" strokeWidth="0.5"/>
+                <line x1="5.5" y1="9" x2="10.5" y2="9" stroke="#4a90d9" strokeWidth="0.5"/>
+                <line x1="5.5" y1="11" x2="8.5" y2="11" stroke="#4a90d9" strokeWidth="0.5"/>
+                <rect x="2" y="3" width="1.5" height="1" rx="0.3" fill="#ffd700"/>
+                <rect x="2" y="5.5" width="1.5" height="1" rx="0.3" fill="#ffd700"/>
+                <rect x="2" y="8" width="1.5" height="1" rx="0.3" fill="#ffd700"/>
+                <rect x="2" y="10.5" width="1.5" height="1" rx="0.3" fill="#ffd700"/>
+              </svg>
+            </Button>
+          </div>
 
           {/* Sync Button - Push & Pull combined */}
           <div 
@@ -20560,6 +20604,65 @@ export default function Dashboard() {
               </div>
             </DialogContent>
           </Dialog>
+
+          {isNotepadOpen && createPortal(
+            <div>
+              <div className="fixed inset-0 z-[10003] bg-black/60" onClick={() => setIsNotepadOpen(false)} />
+              <div className="fixed left-[50%] top-[45%] translate-x-[-50%] translate-y-[-50%] z-[10003] w-[480px] max-w-[92vw] rounded-lg overflow-hidden flex flex-col" style={{ height: '420px', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)' }} data-testid="notepad-dialog">
+                <div className="flex items-center justify-between px-4 py-2 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+                  <div className="flex items-center gap-2">
+                    <svg viewBox="0 0 16 16" fill="none" style={{ height: '14px', width: '14px' }}>
+                      <rect x="3" y="1" width="10" height="14" rx="1" fill="#4a90d9" stroke="white" strokeWidth="0.5"/>
+                      <rect x="4.5" y="2.5" width="7" height="11" rx="0.5" fill="white"/>
+                      <line x1="5.5" y1="5" x2="10.5" y2="5" stroke="#4a90d9" strokeWidth="0.5"/>
+                      <line x1="5.5" y1="7" x2="10.5" y2="7" stroke="#4a90d9" strokeWidth="0.5"/>
+                      <line x1="5.5" y1="9" x2="10.5" y2="9" stroke="#4a90d9" strokeWidth="0.5"/>
+                      <line x1="5.5" y1="11" x2="8.5" y2="11" stroke="#4a90d9" strokeWidth="0.5"/>
+                      <rect x="2" y="3" width="1.5" height="1" rx="0.3" fill="#ffd700"/>
+                      <rect x="2" y="5.5" width="1.5" height="1" rx="0.3" fill="#ffd700"/>
+                      <rect x="2" y="8" width="1.5" height="1" rx="0.3" fill="#ffd700"/>
+                      <rect x="2" y="10.5" width="1.5" height="1" rx="0.3" fill="#ffd700"/>
+                    </svg>
+                    <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>NOTEPAD</h2>
+                  </div>
+                  <button onClick={() => setIsNotepadOpen(false)} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-notepad"><X className="h-4 w-4" /></button>
+                </div>
+                <div className="flex flex-col flex-1 p-3 gap-2 overflow-hidden">
+                  <textarea
+                    value={notepadContent}
+                    onChange={(e) => setNotepadContent(e.target.value)}
+                    placeholder="Type your notes here..."
+                    className="flex-1 bg-white/95 text-gray-900 border border-white/30 rounded-lg p-3 text-[13px] resize-none focus:outline-none focus:border-white/60"
+                    style={{ fontFamily: "'Consolas', 'Courier New', monospace", lineHeight: '1.6' }}
+                    data-testid="input-notepad"
+                    autoFocus
+                  />
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] text-white/40">{notepadContent.length} characters</span>
+                    <Button
+                      disabled={notepadSaving}
+                      data-testid="button-save-notepad"
+                      className="h-8 px-6 text-[11px] font-medium"
+                      style={{ background: 'linear-gradient(180deg, rgba(34,197,94,0.4) 0%, rgba(34,197,94,0.2) 100%)', border: '1px solid rgba(34,197,94,0.5)', color: '#4ade80' }}
+                      onClick={async () => {
+                        setNotepadSaving(true);
+                        try {
+                          await fetch('/api/notepad', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: notepadContent }) });
+                          toast({ title: "Saved", description: "Notepad saved successfully." });
+                        } catch {
+                          toast({ title: "Error", description: "Failed to save notepad.", variant: "destructive" });
+                        } finally { setNotepadSaving(false); }
+                      }}
+                    >
+                      {notepadSaving ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : null}
+                      {notepadSaving ? 'Saving...' : 'Save'}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>,
+            document.body
+          )}
 
           <Dialog open={isKeyContactsOpen} onOpenChange={setIsKeyContactsOpen}>
             <DialogContent className="overflow-hidden flex flex-col text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white p-0 [&>button.absolute]:hidden max-w-none" style={{ width: 'calc(96vw + 28px)', maxWidth: 'calc(96vw + 28px)', height: 'calc(94vh + 16px)', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
