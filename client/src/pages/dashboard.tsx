@@ -2333,9 +2333,6 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    hwHeaderFlipRef.current = setInterval(() => {
-      setHwHeaderFlipped(prev => !prev);
-    }, 12000);
     return () => { if (hwHeaderFlipRef.current) clearInterval(hwHeaderFlipRef.current); };
   }, []);
 
@@ -28735,36 +28732,6 @@ export default function Dashboard() {
                     <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '4px', lineHeight: 1, marginRight: '-2px', flexShrink: 0, whiteSpace: 'nowrap' }}>
                       {weatherData.sunrise && <span className="text-[8.5px]" style={{ display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }} data-testid="homework-sunrise"><span style={{ color: '#FFFF00' }}>☀</span><span style={{ color: '#FFFF00', marginLeft: '3px', position: 'relative', top: '-2px' }}>↑</span><span style={{ color: 'rgba(255,255,255,1)', marginLeft: '6px' }}>{(() => { const t = new Date(weatherData.sunrise); const h = t.getHours(); const m = t.getMinutes(); const ampm = h >= 12 ? 'PM' : 'AM'; return `${h === 0 ? 12 : h > 12 ? h - 12 : h}:${m.toString().padStart(2, '0')} ${ampm}`; })()}</span><span style={{ marginLeft: '5px', color: 'rgba(255,255,255,0.4)' }}>|</span></span>}
                       {weatherData.sunset && <span className="text-[8.5px]" style={{ marginLeft: '5px', display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }} data-testid="homework-sunset"><span style={{ color: '#FFFF00', display: 'inline-block', transform: 'scaleX(-1) rotate(30deg)' }}>☽</span><span style={{ color: '#FFFF00', marginLeft: '3px', position: 'relative', top: '-2px' }}>↓</span><span style={{ color: 'rgba(255,255,255,1)', marginLeft: '6px' }}>{(() => { const t = new Date(weatherData.sunset); const h = t.getHours(); const m = t.getMinutes(); const ampm = h >= 12 ? 'PM' : 'AM'; return `${h === 0 ? 12 : h > 12 ? h - 12 : h}:${m.toString().padStart(2, '0')} ${ampm}`; })()}</span></span>}
-                    </div>
-                  )}
-                </div>
-                <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateX(180deg)', display: 'flex', alignItems: 'center', padding: '0 6px', background: 'linear-gradient(90deg, rgba(20,20,40,0.95), rgba(15,15,35,0.95))' }}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, marginRight: '8px', marginLeft: '10px' }}><path d="M2 12h3l3-8 4 16 3-12 2 4h5" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  {earthquakeData.length > 0 ? (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden', flex: 1 }}>
-                      {earthquakeData.slice(0, 3).map((eq, i) => {
-                        const magColor = eq.mag >= 4 ? '#ef4444' : eq.mag >= 3 ? '#f59e0b' : '#22c55e';
-                        const ago = Math.round((Date.now() - eq.time) / 3600000);
-                        const agoStr = ago < 1 ? '<1h ago' : ago < 24 ? `${ago}h ago` : `${Math.round(ago / 24)}d ago`;
-                        const placeName = eq.place?.replace(/^.+? of /, '') || 'Unknown';
-                        const shortPlace = placeName.length > 18 ? placeName.slice(0, 16) + '…' : placeName;
-                        return (
-                          <span key={i} className="text-[9px]" style={{ whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                            <span style={{ color: magColor, fontWeight: 700 }}>M{eq.mag.toFixed(1)}</span>
-                            <span style={{ color: '#ffffff' }}>{shortPlace}</span>
-                            <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: '8px' }}>{agoStr}</span>
-                            {i < Math.min(earthquakeData.length, 3) - 1 && <span style={{ color: 'rgba(255,255,255,0.15)', marginLeft: '3px' }}>|</span>}
-                          </span>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.5)' }}>No recent earthquakes near Toronto</span>
-                  )}
-                  {weatherAlerts.length > 0 && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginLeft: 'auto' }}>
-                      <span style={{ color: '#ef4444', fontSize: '10px' }}>⚠</span>
-                      <span className="text-[9px]" style={{ color: '#fca5a5', whiteSpace: 'nowrap' }}>{weatherAlerts.length} alert{weatherAlerts.length > 1 ? 's' : ''}</span>
                     </div>
                   )}
                 </div>
