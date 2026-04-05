@@ -17104,7 +17104,10 @@ export default function Dashboard() {
                   ...(updates.taskBgColor !== undefined ? { taskBgColor: updates.taskBgColor } : {}),
                   ...(updates.courseFontColor !== undefined ? { courseFontColor: updates.courseFontColor } : {}),
                 };
-                saveCourses({ courses: updatedCourses });
+                const updatedData = { courses: updatedCourses };
+                setCoursesData(updatedData);
+                localStorage.setItem('coursesData', JSON.stringify(updatedData));
+                saveDegreeToServer('coursesData', updatedData);
                 if (updates.courseCode || updates.courseName) {
                   setSelectedCertCourse(prev => prev ? {
                     ...prev,
