@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import Cropper from "react-easy-crop";
 import { NewCourseWizard } from "@/components/NewCourseWizard";
 import { CourseDetailDialog } from "@/components/CourseDetailDialog";
+import NotepadDialog from "@/components/NotepadDialog";
 import OtherRowEditDialog from "@/components/OtherRowEditDialog";
 import { FastInput, FastTextarea } from "@/components/FastInput";
 import { SemesterChecklistDialog } from "@/components/SemesterChecklistDialog";
@@ -1793,9 +1794,6 @@ export default function Dashboard() {
   const [isKeyContactsOpen, setIsKeyContactsOpen] = useState(false);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [isNotepadOpen, setIsNotepadOpen] = useState(false);
-  const [notepadContent, setNotepadContent] = useState('');
-  const [notepadSaving, setNotepadSaving] = useState(false);
-  const [notepadLoaded, setNotepadLoaded] = useState(false);
   const [isMonthlyReportOpen, setIsMonthlyReportOpen] = useState(false);
   const [monthlyReportFields, setMonthlyReportFields] = useState(() => {
     const saved = localStorage.getItem('monthlyReportFields');
@@ -15417,26 +15415,6 @@ export default function Dashboard() {
             </Button>
           </div>
 
-          {/* Quick Notes Button */}
-          <div className="pill-button-hover" style={{ 
-            marginTop: '0px', width: '44px', height: '43px', borderRadius: '50%',
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
-            position: 'relative' as const, zIndex: 1,
-            border: '1.5px solid rgba(255,255,255,0.35)',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
-          }}>
-            <a
-              href="/onenote"
-              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200 flex items-center justify-center"
-              style={{ background: 'transparent', textDecoration: 'none' }}
-              title="Quick Notes"
-              data-testid="honeycomb-quick-notes"
-            >
-              <StickyNote className="text-white" style={{ height: '18px', width: '18px', strokeWidth: 1.5 }} />
-            </a>
-          </div>
-
           {/* Feedback Button */}
           <div className="pill-button-hover" style={{ 
             marginTop: '0px', width: '44px', height: '43px', borderRadius: '50%',
@@ -15475,15 +15453,7 @@ export default function Dashboard() {
               style={{ background: 'transparent' }}
               data-testid="button-notepad"
               title="Notepad"
-              onClick={() => {
-                if (!notepadLoaded) {
-                  fetch('/api/notepad').then(r => r.json()).then(d => {
-                    setNotepadContent(d.content || '');
-                    setNotepadLoaded(true);
-                  }).catch(() => setNotepadLoaded(true));
-                }
-                setIsNotepadOpen(true);
-              }}
+              onClick={() => setIsNotepadOpen(true)}
             >
               <svg viewBox="0 0 16 16" fill="none" style={{ height: '19px', width: '19px' }}>
                 <rect x="3" y="1" width="10" height="14" rx="1" fill="#4a90d9" stroke="white" strokeWidth="0.5"/>
@@ -20630,61 +20600,7 @@ export default function Dashboard() {
           </Dialog>
 
           {isNotepadOpen && createPortal(
-            <div>
-              <div className="fixed inset-0 z-[10003] bg-black/60" onClick={() => setIsNotepadOpen(false)} />
-              <div className="fixed left-[50%] top-[45%] translate-x-[-50%] translate-y-[-50%] z-[10003] w-[480px] max-w-[92vw] rounded-lg overflow-hidden flex flex-col" style={{ height: '420px', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)' }} data-testid="notepad-dialog">
-                <div className="flex items-center justify-between px-4 py-2 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
-                  <div className="flex items-center gap-2">
-                    <svg viewBox="0 0 16 16" fill="none" style={{ height: '14px', width: '14px' }}>
-                      <rect x="3" y="1" width="10" height="14" rx="1" fill="#4a90d9" stroke="white" strokeWidth="0.5"/>
-                      <rect x="4.5" y="2.5" width="7" height="11" rx="0.5" fill="white"/>
-                      <line x1="5.5" y1="5" x2="10.5" y2="5" stroke="#4a90d9" strokeWidth="0.5"/>
-                      <line x1="5.5" y1="7" x2="10.5" y2="7" stroke="#4a90d9" strokeWidth="0.5"/>
-                      <line x1="5.5" y1="9" x2="10.5" y2="9" stroke="#4a90d9" strokeWidth="0.5"/>
-                      <line x1="5.5" y1="11" x2="8.5" y2="11" stroke="#4a90d9" strokeWidth="0.5"/>
-                      <rect x="2" y="3" width="1.5" height="1" rx="0.3" fill="#ffd700"/>
-                      <rect x="2" y="5.5" width="1.5" height="1" rx="0.3" fill="#ffd700"/>
-                      <rect x="2" y="8" width="1.5" height="1" rx="0.3" fill="#ffd700"/>
-                      <rect x="2" y="10.5" width="1.5" height="1" rx="0.3" fill="#ffd700"/>
-                    </svg>
-                    <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>NOTEPAD</h2>
-                  </div>
-                  <button onClick={() => setIsNotepadOpen(false)} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-notepad"><X className="h-4 w-4" /></button>
-                </div>
-                <div className="flex flex-col flex-1 p-3 gap-2 overflow-hidden">
-                  <textarea
-                    value={notepadContent}
-                    onChange={(e) => setNotepadContent(e.target.value)}
-                    placeholder="Type your notes here..."
-                    className="flex-1 bg-white/95 text-gray-900 border border-white/30 rounded-lg p-3 text-[13px] resize-none focus:outline-none focus:border-white/60"
-                    style={{ fontFamily: "'Consolas', 'Courier New', monospace", lineHeight: '1.6' }}
-                    data-testid="input-notepad"
-                    autoFocus
-                  />
-                  <div className="flex items-center justify-between">
-                    <span className="text-[9px] text-white/40">{notepadContent.length} characters</span>
-                    <Button
-                      disabled={notepadSaving}
-                      data-testid="button-save-notepad"
-                      className="h-8 px-6 text-[11px] font-medium"
-                      style={{ background: 'linear-gradient(180deg, rgba(34,197,94,0.4) 0%, rgba(34,197,94,0.2) 100%)', border: '1px solid rgba(34,197,94,0.5)', color: '#4ade80' }}
-                      onClick={async () => {
-                        setNotepadSaving(true);
-                        try {
-                          await fetch('/api/notepad', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: notepadContent }) });
-                          toast({ title: "Saved", description: "Notepad saved successfully." });
-                        } catch {
-                          toast({ title: "Error", description: "Failed to save notepad.", variant: "destructive" });
-                        } finally { setNotepadSaving(false); }
-                      }}
-                    >
-                      {notepadSaving ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : null}
-                      {notepadSaving ? 'Saving...' : 'Save'}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>,
+            <NotepadDialog isOpen={isNotepadOpen} onClose={() => setIsNotepadOpen(false)} colorSettings={colorSettings} />,
             document.body
           )}
 
@@ -28149,44 +28065,61 @@ export default function Dashboard() {
             </div>
           </div>}
           {(() => {
-            const currentYear = 2026;
             const now = new Date();
-            const semDates = {
-              w2026End: new Date(2026, 3, 10),
-              ss2026Start: new Date(2026, 4, 4), ss2026End: new Date(2026, 7, 7),
-              f2026Start: new Date(2026, 8, 8), f2026End: new Date(2026, 11, 11),
-              w2027Start: new Date(2027, 0, 11),
+            const yearColors: Record<number, [string, string]> = {
+              2026: ['rgba(40,110,210,0.8)', 'rgba(25,80,180,0.6)'],
+              2027: ['rgba(34,197,94,0.85)', 'rgba(22,163,74,0.7)'],
+              2028: ['rgba(150,90,235,0.8)', 'rgba(120,60,210,0.6)'],
+              2029: ['rgba(120,120,120,0.8)', 'rgba(95,95,95,0.6)'],
             };
-            const semTabColors: Record<string, [string, string]> = {
-              'Winter 2026': ['rgba(40,110,210,0.8)', 'rgba(25,80,180,0.6)'],
-              'Spring/Summer 2026': ['rgba(40,110,210,0.8)', 'rgba(25,80,180,0.6)'],
-              'Fall 2026': ['rgba(40,110,210,0.8)', 'rgba(25,80,180,0.6)'],
-              'Winter 2027': ['rgba(34,197,94,0.85)', 'rgba(22,163,74,0.7)'],
-              'Winter 2028': ['rgba(150,90,235,0.8)', 'rgba(120,60,210,0.6)'],
-              'Winter 2029': ['rgba(120,120,120,0.8)', 'rgba(95,95,95,0.6)'],
-            };
-            const getTabColors = (sem: string): [string, string] => semTabColors[sem] || ['rgba(40,110,210,0.8)', 'rgba(25,80,180,0.6)'];
-            const gapColor: [string, string] = ['#95A5A6', '#7F8C8D'];
+            const getYearColor = (y: number): [string, string] => yearColors[y] || ['rgba(40,110,210,0.8)', 'rgba(25,80,180,0.6)'];
             const semTabs: Array<{ id: string; topText: string; bottomText: string; semLabel: string; scrollTarget: string; colors: [string, string] }> = [];
-            semTabs.push({ id: 'wk-current', topText: String(selectedWeek), bottomText: 'W', semLabel: hwWeeklyTimeline[0]?.semLabel || 'Winter 2026', scrollTarget: 'thisweek', colors: getTabColors('Winter 2026') });
-            semTabs.push({ id: 'wk-next', topText: String(selectedWeek + 1), bottomText: 'W', semLabel: hwWeeklyTimeline[1]?.semLabel || 'Winter 2026', scrollTarget: 'nextweek', colors: getTabColors('Winter 2026') });
-            semTabs.push({ id: 'wk-third', topText: String(selectedWeek + 2), bottomText: 'W', semLabel: hwWeeklyTimeline[2]?.semLabel || 'Winter 2026', scrollTarget: 'twoweeks', colors: getTabColors('Winter 2026') });
-            if (now < semDates.ss2026Start) {
-              semTabs.push({ id: 'april-gap', topText: '', bottomText: 'APRIL', semLabel: 'Winter 2026', scrollTarget: 'threeweeks', colors: getTabColors('Winter 2026') });
+            const currentSemesterWeeks = 13;
+            const wkCurrent = Math.min(selectedWeek, currentSemesterWeeks);
+            semTabs.push({ id: 'wk-current', topText: String(wkCurrent), bottomText: 'W', semLabel: hwWeeklyTimeline[0]?.semLabel || 'Winter 2026', scrollTarget: 'thisweek', colors: getYearColor(2026) });
+            if (selectedWeek + 1 <= currentSemesterWeeks) {
+              semTabs.push({ id: 'wk-next', topText: String(selectedWeek + 1), bottomText: 'W', semLabel: hwWeeklyTimeline[1]?.semLabel || 'Winter 2026', scrollTarget: 'nextweek', colors: getYearColor(2026) });
             }
-            if (now < semDates.f2026Start) {
-              const ssMaxWk = now >= semDates.ss2026Start ? 6 : 6;
-              for (let w = 1; w <= ssMaxWk; w++) {
-                semTabs.push({ id: `ss26-wk${w}`, topText: String(w), bottomText: 'S', semLabel: 'Spring/Summer 2026', scrollTarget: w === 1 ? 'sem-ss2026' : `sem-ss2026-wk${w}`, colors: getTabColors('Spring/Summer 2026') });
+            if (selectedWeek + 2 <= currentSemesterWeeks) {
+              semTabs.push({ id: 'wk-third', topText: String(selectedWeek + 2), bottomText: 'W', semLabel: hwWeeklyTimeline[2]?.semLabel || 'Winter 2026', scrollTarget: 'twoweeks', colors: getYearColor(2026) });
+            }
+            semTabs.push({ id: 'april-gap', topText: '', bottomText: 'APR', semLabel: 'Winter 2026', scrollTarget: 'threeweeks', colors: getYearColor(2026) });
+            const addSpringSummer = (y: number) => {
+              const yc = getYearColor(y);
+              const ssLabel = `Spring/Summer ${y}`;
+              for (let w = 1; w <= 7; w++) {
+                semTabs.push({ id: `ss${y}-wk${w}`, topText: String(w), bottomText: 'S', semLabel: ssLabel, scrollTarget: w === 1 ? `sem-ss${y}` : `sem-ss${y}-wk${w}`, colors: yc });
               }
-            }
-            if (now >= semDates.ss2026End && now < semDates.f2026Start) {
-              semTabs.push({ id: 'aug-sept-gap', topText: '', bottomText: 'AUG-SEP', semLabel: 'Spring/Summer 2026', scrollTarget: 'sem-ss2026', colors: gapColor });
-            }
-            semTabs.push({ id: 'f-2026', topText: '', bottomText: 'FALL', semLabel: 'Fall 2026', scrollTarget: 'sem-f2026', colors: getTabColors('Fall 2026') });
-            for (let y = currentYear + 1; y <= 2029; y++) {
-              semTabs.push({ id: `year-${y}`, topText: '', bottomText: String(y), semLabel: `Winter ${y}`, scrollTarget: `sem-w${y}`, colors: getTabColors(`Winter ${y}`) });
-            }
+              for (let w = 8; w <= 14; w++) {
+                const summerWk = w - 7;
+                semTabs.push({ id: `ss${y}-wk${w}`, topText: `${w}/${summerWk}`, bottomText: 'S', semLabel: ssLabel, scrollTarget: `sem-ss${y}-wk${w}`, colors: yc });
+              }
+            };
+            const addFall = (y: number) => {
+              const yc = getYearColor(y);
+              const fLabel = `Fall ${y}`;
+              for (let w = 1; w <= 13; w++) {
+                semTabs.push({ id: `f${y}-wk${w}`, topText: String(w), bottomText: 'F', semLabel: fLabel, scrollTarget: w === 1 ? `sem-f${y}` : `sem-f${y}-wk${w}`, colors: yc });
+              }
+            };
+            const addWinter = (y: number) => {
+              const yc = getYearColor(y);
+              const wLabel = `Winter ${y}`;
+              for (let w = 1; w <= 13; w++) {
+                semTabs.push({ id: `w${y}-wk${w}`, topText: String(w), bottomText: 'W', semLabel: wLabel, scrollTarget: w === 1 ? `sem-w${y}` : `sem-w${y}-wk${w}`, colors: yc });
+              }
+            };
+            addSpringSummer(2026);
+            addFall(2026);
+            addWinter(2027);
+            addSpringSummer(2027);
+            addFall(2027);
+            addWinter(2028);
+            addSpringSummer(2028);
+            addFall(2028);
+            addWinter(2029);
+            addSpringSummer(2029);
+            addFall(2029);
             const currentSemLabel = hwWeeklyTimeline[0]?.semLabel || null;
             const scrollActiveSem = hwVisibleSemLabel || currentSemLabel;
             return (
@@ -28215,8 +28148,6 @@ export default function Dashboard() {
                     if (tab.id === 'wk-next') return hwVisibleSection === 'nextweek';
                     if (tab.id === 'wk-third') return hwVisibleSection === 'twoweeks';
                     if (tab.id === 'april-gap') return hwVisibleSection === 'threeweeks';
-                    if (tab.id === 'aug-sept-gap') return false;
-                    if (tab.id.startsWith('ss26-wk')) return tab.id === 'ss26-wk1' && scrollActiveSem === tab.semLabel;
                     return scrollActiveSem === tab.semLabel;
                   })();
                   const tabW = 15;

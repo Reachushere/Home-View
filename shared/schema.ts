@@ -556,6 +556,35 @@ export const insertShiftScheduleSchema = createInsertSchema(shiftSchedule).omit(
 export type ShiftScheduleEntry = typeof shiftSchedule.$inferSelect;
 export type InsertShiftScheduleEntry = z.infer<typeof insertShiftScheduleSchema>;
 
+export const notepadNotes = pgTable("notepad_notes", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull().default("Untitled"),
+  content: text("content").notNull().default(""),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertNotepadNoteSchema = createInsertSchema(notepadNotes).omit({ id: true, createdAt: true, updatedAt: true });
+export type NotepadNote = typeof notepadNotes.$inferSelect;
+export type InsertNotepadNote = z.infer<typeof insertNotepadNoteSchema>;
+
+export const notepadAttachments = pgTable("notepad_attachments", {
+  id: serial("id").primaryKey(),
+  noteId: integer("note_id").notNull(),
+  fileName: text("file_name").notNull(),
+  fileType: text("file_type").notNull(),
+  oneDrivePath: text("onedrive_path").notNull(),
+  oneDriveWebUrl: text("onedrive_web_url"),
+  thumbnailUrl: text("thumbnail_url"),
+  fileSize: integer("file_size"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertNotepadAttachmentSchema = createInsertSchema(notepadAttachments).omit({ id: true, createdAt: true });
+export type NotepadAttachment = typeof notepadAttachments.$inferSelect;
+export type InsertNotepadAttachment = z.infer<typeof insertNotepadAttachmentSchema>;
+
 export const semesterChecklist = pgTable("semester_checklist", {
   id: serial("id").primaryKey(),
   semesterSettingsId: integer("semester_settings_id").notNull(),

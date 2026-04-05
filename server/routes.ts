@@ -8,7 +8,7 @@ import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { db } from "./db";
 import { sql, eq } from "drizzle-orm";
-import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, COURSES, type RepeatType, type RepeatIntervalUnit, type InsertTask, type FileRecord, degreeTrackingData, feedbackNotes, insertFeedbackNoteSchema, appState, announcements, scheduledAlexaAnnouncements, haAutomations } from "@shared/schema";
+import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, COURSES, type RepeatType, type RepeatIntervalUnit, type InsertTask, type FileRecord, degreeTrackingData, feedbackNotes, insertFeedbackNoteSchema, appState, announcements, scheduledAlexaAnnouncements, haAutomations, notepadNotes, notepadAttachments } from "@shared/schema";
 import { z } from "zod";
 import { LIBERAL_STUDIES_COURSES, OPEN_ELECTIVE_COURSES } from "@shared/electiveCourses";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
@@ -3123,29 +3123,130 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
-  app.get("/api/notepad", async (_req, res) => {
+  app.get("/api/notepad/notes", async (_req, res) => {
     try {
-      const row = await db.select().from(appState).where(eq(appState.key, 'notepadContent')).limit(1);
-      res.json({ content: row.length > 0 ? row[0].value : '' });
+      const notes = await db.select().from(notepadNotes).orderBy(notepadNotes.sortOrder);
+      res.json(notes);
     } catch (err: any) {
-      console.error("Error getting notepad:", err);
-      res.json({ content: '' });
+      console.error("Error getting notepad notes:", err);
+      res.json([]);
     }
   });
 
-  app.post("/api/notepad", async (req, res) => {
+  app.post("/api/notepad/notes", async (req, res) => {
     try {
-      const { content } = req.body;
-      const value = typeof content === 'string' ? content : '';
-      const existing = await db.select().from(appState).where(eq(appState.key, 'notepadContent')).limit(1);
-      if (existing.length > 0) {
-        await db.update(appState).set({ value, updatedAt: new Date() }).where(eq(appState.key, 'notepadContent'));
-      } else {
-        await db.insert(appState).values({ key: 'notepadContent', value });
-      }
+      const { title, content, sortOrder } = req.body;
+      const [note] = await db.insert(notepadNotes).values({
+        title: title || 'Untitled',
+        content: content || '',
+        sortOrder: sortOrder ?? 0,
+      }).returning();
+      res.json(note);
+    } catch (err: any) {
+      console.error("Error creating notepad note:", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.patch("/api/notepad/notes/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updates: any = { updatedAt: new Date() };
+      if (req.body.title !== undefined) updates.title = req.body.title;
+      if (req.body.content !== undefined) updates.content = req.body.content;
+      if (req.body.sortOrder !== undefined) updates.sortOrder = req.body.sortOrder;
+      const [note] = await db.update(notepadNotes).set(updates).where(eq(notepadNotes.id, id)).returning();
+      res.json(note);
+    } catch (err: any) {
+      console.error("Error updating notepad note:", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.delete("/api/notepad/notes/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await db.delete(notepadAttachments).where(eq(notepadAttachments.noteId, id));
+      await db.delete(notepadNotes).where(eq(notepadNotes.id, id));
       res.json({ success: true });
     } catch (err: any) {
-      console.error("Error saving notepad:", err);
+      console.error("Error deleting notepad note:", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/notepad/notes/:id/attachments", async (req, res) => {
+    try {
+      const noteId = parseInt(req.params.id);
+      const attachments = await db.select().from(notepadAttachments).where(eq(notepadAttachments.noteId, noteId));
+      res.json(attachments);
+    } catch (err: any) {
+      console.error("Error getting attachments:", err);
+      res.json([]);
+    }
+  });
+
+  app.post("/api/notepad/notes/:id/attachments", async (req, res) => {
+    try {
+      const noteId = parseInt(req.params.id);
+      const { fileName, fileData, fileType } = req.body;
+      if (!fileName || !fileData) return res.status(400).json({ error: "fileName and fileData required" });
+
+      const fileBuffer = Buffer.from(fileData, 'base64');
+      const { uploadOneDriveFile } = await import("./onedrive");
+      const oneDrivePath = "/Uni-Cal Attachments";
+      const timestamp = Date.now();
+      const safeName = `${timestamp}_${fileName}`;
+      const result = await uploadOneDriveFile(oneDrivePath, safeName, fileBuffer, fileType || 'application/octet-stream');
+
+      const [attachment] = await db.insert(notepadAttachments).values({
+        noteId,
+        fileName,
+        fileType: fileType || 'application/octet-stream',
+        oneDrivePath: `${oneDrivePath}/${safeName}`,
+        oneDriveWebUrl: result.webUrl || null,
+        thumbnailUrl: null,
+        fileSize: fileBuffer.length,
+      }).returning();
+
+      res.json(attachment);
+    } catch (err: any) {
+      console.error("Error uploading attachment:", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.delete("/api/notepad/attachments/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await db.delete(notepadAttachments).where(eq(notepadAttachments.id, id));
+      res.json({ success: true });
+    } catch (err: any) {
+      console.error("Error deleting attachment:", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/notepad/attachments/:id/download", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const [attachment] = await db.select().from(notepadAttachments).where(eq(notepadAttachments.id, id));
+      if (!attachment) return res.status(404).json({ error: "Not found" });
+      
+      if (attachment.oneDriveWebUrl) {
+        return res.json({ redirectUrl: attachment.oneDriveWebUrl });
+      }
+      
+      const { getOneDriveClient } = await import("./onedrive");
+      const client = await getOneDriveClient();
+      const encodedPath = encodeURIComponent(attachment.oneDrivePath).replace(/%2F/g, '/');
+      const driveItem = await client.api(`/me/drive/root:${encodedPath}`).select('id,@microsoft.graph.downloadUrl').get();
+      if (driveItem['@microsoft.graph.downloadUrl']) {
+        return res.json({ redirectUrl: driveItem['@microsoft.graph.downloadUrl'] });
+      }
+      res.status(404).json({ error: "Download URL not available" });
+    } catch (err: any) {
+      console.error("Error downloading attachment:", err);
       res.status(500).json({ error: err.message });
     }
   });
