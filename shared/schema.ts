@@ -706,6 +706,7 @@ export const scheduledAlexaAnnouncements = pgTable("scheduled_alexa_announcement
   isSent: boolean("is_sent").default(false),
   lastSentAt: timestamp("last_sent_at"),
   speakers: text("speakers").default("all"),
+  voiceGender: text("voice_gender").default("female"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

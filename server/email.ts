@@ -404,13 +404,18 @@ export function resolveEchoTargets(speakers?: string | null): string[] {
   return selected.length > 0 ? selected : allIds;
 }
 
-export async function sendEchoVoiceAnnouncement(message: string, speakers?: string | null): Promise<{ success: boolean; error?: string }> {
+export async function sendEchoVoiceAnnouncement(message: string, speakers?: string | null, voiceGender?: string | null): Promise<{ success: boolean; error?: string }> {
   if (!HA_TOKEN) {
     return { success: false, error: 'Home Assistant Token not configured' };
   }
 
   const haUrl = HA_URL.replace(/\/$/, '');
   const targets = resolveEchoTargets(speakers);
+
+  const isMale = voiceGender === 'male';
+  const ssmlMessage = isMale
+    ? `<voice name="Matthew">${message}</voice>`
+    : message;
 
   try {
     const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
@@ -420,8 +425,8 @@ export async function sendEchoVoiceAnnouncement(message: string, speakers?: stri
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        message: message,
-        data: { type: "tts" },
+        message: ssmlMessage,
+        data: { type: isMale ? "ssml" : "tts" },
         target: targets,
       }),
     });

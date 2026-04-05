@@ -1834,6 +1834,7 @@ export default function Dashboard() {
   const [alexaRepeatEndDate, setAlexaRepeatEndDate] = useState('');
   const [alexaShiftAdjust, setAlexaShiftAdjust] = useState(false);
   const [alexaSpeakers, setAlexaSpeakers] = useState('all');
+  const [alexaVoiceGender, setAlexaVoiceGender] = useState<'female' | 'male'>('female');
   const [alexaCalendarOpen, setAlexaCalendarOpen] = useState(false);
   const [editR4CalendarOpen, setEditR4CalendarOpen] = useState(false);
   const [alexaRepeatEndCalendarOpen, setAlexaRepeatEndCalendarOpen] = useState(false);
@@ -6924,8 +6925,8 @@ export default function Dashboard() {
     onError: () => { toast({ title: "Error", description: "Failed to send announcement.", variant: "destructive" }); },
   });
   const sendAlexaImmediateMutation = useMutation({
-    mutationFn: async ({ message, speakers }: { message: string; speakers?: string }) => {
-      const res = await apiRequest('POST', '/api/ha-announce', { message, speakers });
+    mutationFn: async ({ message, speakers, voiceGender }: { message: string; speakers?: string; voiceGender?: string }) => {
+      const res = await apiRequest('POST', '/api/ha-announce', { message, speakers, voiceGender });
       return res.json();
     },
     onSuccess: () => { toast({ title: "Sent", description: "Announcement sent to Alexa now." }); },
@@ -11607,6 +11608,22 @@ export default function Dashboard() {
                   </select>
                 </div>
 
+                {/* Voice gender toggle */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-white/40 text-[10px] w-[42px] shrink-0">Voice:</span>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => setAlexaVoiceGender(v => v === 'female' ? 'male' : 'female')}
+                      className="relative shrink-0"
+                      style={{ width: '22px', height: '12px', borderRadius: '6px', background: alexaVoiceGender === 'male' ? 'rgba(59,130,246,0.7)' : 'rgba(236,72,153,0.7)', border: '0.5px solid rgba(255,255,255,0.3)', transition: 'background 0.2s' }}
+                      data-testid="alexa-voice-gender-toggle"
+                    >
+                      <div style={{ width: '9px', height: '9px', borderRadius: '4.5px', background: '#fff', position: 'absolute', top: '1.5px', left: alexaVoiceGender === 'male' ? '11px' : '1.5px', transition: 'left 0.2s', boxShadow: '0 1px 2px rgba(0,0,0,0.3)' }} />
+                    </button>
+                    <span className="text-white/60 text-[10px]">{alexaVoiceGender === 'male' ? '♂ Male (Matthew)' : '♀ Female (Default)'}</span>
+                  </div>
+                </div>
+
                 {/* Repeat dropdown */}
                 <div className="flex items-center gap-1.5">
                   <span className="text-white/40 text-[10px] w-[42px] shrink-0">Repeat:</span>
@@ -11734,9 +11751,10 @@ export default function Dashboard() {
                           repeatEndDate: alexaRepeatEndDate || null,
                           shiftAdjust: alexaShiftAdjust,
                           speakers: alexaSpeakers,
+                          voiceGender: alexaVoiceGender,
                         });
                       } else {
-                        sendAlexaImmediateMutation.mutate({ message: alexaMessage.trim(), speakers: alexaSpeakers });
+                        sendAlexaImmediateMutation.mutate({ message: alexaMessage.trim(), speakers: alexaSpeakers, voiceGender: alexaVoiceGender });
                         setAlexaMessage('');
                       }
                     }}
@@ -29078,7 +29096,7 @@ export default function Dashboard() {
           <div style={{ width: '100%', height: '15px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', flexShrink: 0, position: 'relative', zIndex: 3, border: '0.5px solid rgba(255,255,255,0.15)' }}>
             <span style={{ fontSize: '10px', fontWeight: 500, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
           </div>
-          <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }} ref={homeworkScrollRef} onScroll={() => { setHwIsScrolling(true); if (hwScrollTimerRef.current) clearTimeout(hwScrollTimerRef.current); hwScrollTimerRef.current = setTimeout(() => setHwIsScrolling(false), 300); const sc = homeworkScrollRef.current; if (sc) { setHwScrolledDown(sc.scrollTop > 5); const sections = sc.querySelectorAll('[data-semester-label]'); let bestLabel: string | null = null; let bestDist = Infinity; const containerTop = sc.getBoundingClientRect().top; sections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestDist) { bestDist = dist; bestLabel = el.getAttribute('data-semester-label') || null; } }); if (bestLabel) setHwVisibleSemLabel(bestLabel); const hwSections = sc.querySelectorAll('[data-homework-section]'); let bestSec: string | null = null; let bestSecDist = Infinity; hwSections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestSecDist) { bestSecDist = dist; bestSec = el.getAttribute('data-homework-section') || null; } }); setHwVisibleSection(bestSec); if (timelineSyncRef.current && bestSec) { if (timelineSyncDebounceRef.current) clearTimeout(timelineSyncDebounceRef.current); timelineSyncDebounceRef.current = setTimeout(() => { const curWk = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : selectedWeekRef.current; let targetWeek: number | null = null; if (bestSec === 'today' || bestSec === 'thisweek') { targetWeek = curWk; } else if (bestSec === 'nextweek') { targetWeek = curWk + 1; } else if (bestSec === 'twoweeks') { targetWeek = curWk + 2; } else if (bestSec === 'threeweeks') { targetWeek = curWk + 3; } else { const wkMatch = bestSec.match(/wk(\d+)/); if (wkMatch) targetWeek = parseInt(wkMatch[1]); } if (targetWeek !== null && targetWeek >= 1 && targetWeek <= LAST_WEEK && targetWeek !== selectedWeekRef.current) { startTransition(() => setSelectedWeek(targetWeek!)); } }, 200); } } }}>
+          <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }} ref={homeworkScrollRef} onScroll={() => { setHwIsScrolling(true); if (hwScrollTimerRef.current) clearTimeout(hwScrollTimerRef.current); hwScrollTimerRef.current = setTimeout(() => setHwIsScrolling(false), 300); const sc = homeworkScrollRef.current; if (sc) { setHwScrolledDown(sc.scrollTop > 5); const sections = sc.querySelectorAll('[data-semester-label]'); let bestLabel: string | null = null; let bestDist = Infinity; const containerTop = sc.getBoundingClientRect().top; sections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestDist) { bestDist = dist; bestLabel = el.getAttribute('data-semester-label') || null; } }); if (bestLabel) setHwVisibleSemLabel(bestLabel); const hwSections = sc.querySelectorAll('[data-homework-section]'); let bestSec: string | null = null; let bestSecDist = Infinity; hwSections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestSecDist) { bestSecDist = dist; bestSec = el.getAttribute('data-homework-section') || null; } }); setHwVisibleSection(bestSec); if (timelineSyncRef.current && bestSec) { if (timelineSyncDebounceRef.current) clearTimeout(timelineSyncDebounceRef.current); timelineSyncDebounceRef.current = setTimeout(() => { const curWk = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : selectedWeekRef.current; let targetWeek: number | null = null; if (bestSec === 'today') { targetWeek = curWk; } else if (bestSec === 'thisweek') { targetWeek = curWk + 1; } else if (bestSec === 'nextweek') { targetWeek = curWk + 2; } else if (bestSec === 'twoweeks') { targetWeek = curWk + 3; } else if (bestSec === 'threeweeks') { targetWeek = curWk + 4; } else { const wkMatch = bestSec.match(/wk(\d+)/); if (wkMatch) targetWeek = parseInt(wkMatch[1]); } if (targetWeek !== null && targetWeek >= 1 && targetWeek <= LAST_WEEK && targetWeek !== selectedWeekRef.current) { startTransition(() => setSelectedWeek(targetWeek!)); } }, 200); } } }}>
             {isLoading ? (
               <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
             ) : (
