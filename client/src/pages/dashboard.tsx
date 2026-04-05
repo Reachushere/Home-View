@@ -5378,6 +5378,20 @@ export default function Dashboard() {
           localStorage.setItem('showAllDayRow', JSON.stringify(val));
           setShowAllDayRow(val);
         }
+        if (data.semesterEndConfirmed) {
+          setSemesterEndConfirmed(prev => {
+            const merged = { ...prev, ...data.semesterEndConfirmed };
+            localStorage.setItem('semesterEndConfirmed', JSON.stringify(merged));
+            return merged;
+          });
+        }
+        if (data.semEndDialogDismissUntil) {
+          setSemEndDialogDismissUntil(prev => {
+            const merged = { ...prev, ...data.semEndDialogDismissUntil };
+            localStorage.setItem('semEndDialogDismissUntil', JSON.stringify(merged));
+            return merged;
+          });
+        }
       })
       .then(() => {
         const syncKeys = [
@@ -5386,7 +5400,7 @@ export default function Dashboard() {
           'coursePlayPriority', 'courseDisplayNames', 'profileData',
           'checkedCourses', 'inProgressCourses', 'courseGrades', 'openElectives',
           'gridSizes', 'calendarHeight', 'calendarReduction', 'showAllDayRow',
-          'otherRowColors',
+          'otherRowColors', 'semesterEndConfirmed', 'semEndDialogDismissUntil',
         ];
         const payload: Record<string, any> = {};
         for (const key of syncKeys) {
@@ -21733,6 +21747,7 @@ export default function Dashboard() {
                       const updated = { ...semesterEndConfirmed, [semEndDialogKey]: true };
                       setSemesterEndConfirmed(updated);
                       localStorage.setItem('semesterEndConfirmed', JSON.stringify(updated));
+                      fetch('/api/degree-tracking/bulk', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ semesterEndConfirmed: updated }) }).catch(() => {});
                       setSemEndDialogKey(null);
                     }}
                     data-testid="button-confirm-semester-end"
@@ -21742,17 +21757,17 @@ export default function Dashboard() {
                     style={{ background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)', color: 'white' }}
                     onClick={() => {
                       const dismissInput = document.getElementById('sem-end-dismiss-datetime') as HTMLInputElement;
+                      let updated: Record<string, string>;
                       if (dismissInput?.value) {
-                        const updated = { ...semEndDialogDismissUntil, [semEndDialogKey]: dismissInput.value };
-                        setSemEndDialogDismissUntil(updated);
-                        localStorage.setItem('semEndDialogDismissUntil', JSON.stringify(updated));
+                        updated = { ...semEndDialogDismissUntil, [semEndDialogKey]: dismissInput.value };
                       } else {
                         const tomorrow = new Date();
                         tomorrow.setDate(tomorrow.getDate() + 1);
-                        const updated = { ...semEndDialogDismissUntil, [semEndDialogKey]: tomorrow.toISOString() };
-                        setSemEndDialogDismissUntil(updated);
-                        localStorage.setItem('semEndDialogDismissUntil', JSON.stringify(updated));
+                        updated = { ...semEndDialogDismissUntil, [semEndDialogKey]: tomorrow.toISOString() };
                       }
+                      setSemEndDialogDismissUntil(updated);
+                      localStorage.setItem('semEndDialogDismissUntil', JSON.stringify(updated));
+                      fetch('/api/degree-tracking/bulk', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ semEndDialogDismissUntil: updated }) }).catch(() => {});
                       setSemEndDialogKey(null);
                     }}
                     data-testid="button-dismiss-semester-end"
