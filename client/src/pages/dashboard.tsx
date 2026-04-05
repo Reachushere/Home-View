@@ -23982,15 +23982,15 @@ export default function Dashboard() {
                 const showForecastWeather = !isPast && diffDays >= 0 && effectiveWCode !== undefined;
                 const fwSkyBg = showForecastWeather ? (() => {
                   const wc = effectiveWCode!;
-                  if (wc >= 95) return 'linear-gradient(180deg, #141430 0%, #1e2050 50%, #2a2a60 100%)';
-                  if (wc >= 71 && wc <= 77) return 'linear-gradient(180deg, #2a3a5a 0%, #3e5478 50%, #5a7098 100%)';
-                  if (wc >= 85 && wc <= 86) return 'linear-gradient(180deg, #1e2e4e 0%, #3a4e6e 50%, #5a6e8e 100%)';
-                  if ((wc >= 61 && wc <= 67) || (wc >= 80 && wc <= 82)) return 'linear-gradient(180deg, #1a2e50 0%, #2a4268 50%, #3a5878 100%)';
-                  if (wc >= 51 && wc <= 55) return 'linear-gradient(180deg, #2a4060 0%, #3a5878 50%, #4a6888 100%)';
-                  if (wc >= 45 && wc <= 48) return 'linear-gradient(180deg, #3a4a6a 0%, #5a6a8a 100%)';
-                  if (wc === 3) return 'linear-gradient(180deg, #3a5070 0%, #5a7090 100%)';
-                  if (wc === 2) return 'linear-gradient(180deg, #2a5a9a 0%, #4a8ac8 50%, #7ab8e0 100%)';
-                  return 'linear-gradient(180deg, #2a6aaa 0%, #4a9ad8 50%, #7ac0e8 100%)';
+                  if (wc >= 95) return 'linear-gradient(180deg, #0a0a30 0%, #1a1050 50%, #2e1860 100%)';
+                  if (wc >= 71 && wc <= 77) return 'linear-gradient(180deg, #1a3a6e 0%, #2a5090 50%, #4070b0 100%)';
+                  if (wc >= 85 && wc <= 86) return 'linear-gradient(180deg, #142a58 0%, #2a4a80 50%, #3a68a8 100%)';
+                  if ((wc >= 61 && wc <= 67) || (wc >= 80 && wc <= 82)) return 'linear-gradient(180deg, #0e2248 0%, #1e3a70 50%, #2e5498 100%)';
+                  if (wc >= 51 && wc <= 55) return 'linear-gradient(180deg, #183060 0%, #2a4a88 50%, #3a62a8 100%)';
+                  if (wc >= 45 && wc <= 48) return 'linear-gradient(180deg, #283a68 0%, #3a5898 100%)';
+                  if (wc === 3) return 'linear-gradient(180deg, #2a4878 0%, #3e68a0 100%)';
+                  if (wc === 2) return 'linear-gradient(180deg, #1a58a8 0%, #3888d0 50%, #60b0e8 100%)';
+                  return 'linear-gradient(180deg, #1a68b8 0%, #3898e0 50%, #60c0f0 100%)';
                 })() : null;
                 const fwEffectsHtml = showForecastWeather ? (() => {
                   const wc = effectiveWCode!;
@@ -23998,7 +23998,7 @@ export default function Dashboard() {
                     const drops = Array.from({ length: 8 }, (_, i) => {
                       const left = (i * 37 + 13) % 100;
                       const delay = ((i * 0.13) % 0.8).toFixed(2);
-                      return `<div style="position:absolute;left:${left}%;top:-2px;width:1px;height:5px;background:rgba(120,160,255,0.7);animation:rainDrop 0.4s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                      return `<div style="position:absolute;left:${left}%;top:-2px;width:1px;height:5px;background:rgba(80,160,255,0.9);animation:rainDrop 0.4s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
                     }).join('');
                     return drops;
                   }
@@ -24007,7 +24007,7 @@ export default function Dashboard() {
                       const left = (i * 23 + 5) % 100;
                       const delay = ((i * 0.2) % 2).toFixed(2);
                       const size = 2 + (i % 2);
-                      return `<div style="position:absolute;left:${left}%;top:-2px;width:${size}px;height:${size}px;background:rgba(220,235,255,0.95);border-radius:50%;animation:snowFall 2s ${delay}s linear infinite"></div>`;
+                      return `<div style="position:absolute;left:${left}%;top:-2px;width:${size}px;height:${size}px;background:rgba(200,225,255,1);border-radius:50%;animation:snowFall 2s ${delay}s linear infinite"></div>`;
                     }).join('');
                   }
                   if (wc >= 85 && wc <= 86) {
@@ -24015,27 +24015,27 @@ export default function Dashboard() {
                       const left = (i * 23 + 5) % 100;
                       const delay = ((i * 0.2) % 2).toFixed(2);
                       const size = 2 + (i % 2);
-                      return `<div style="position:absolute;left:${left}%;top:-2px;width:${size}px;height:${size}px;background:rgba(220,235,255,0.95);border-radius:50%;animation:snowFall ${1.5 + (i % 2)}s ${delay}s linear infinite"></div>`;
+                      return `<div style="position:absolute;left:${left}%;top:-2px;width:${size}px;height:${size}px;background:rgba(200,225,255,1);border-radius:50%;animation:snowFall ${1.5 + (i % 2)}s ${delay}s linear infinite"></div>`;
                     }).join('');
                   }
                   if ((wc >= 61 && wc <= 67) || (wc >= 80 && wc <= 82)) {
                     return Array.from({ length: 8 }, (_, i) => {
                       const left = (i * 23 + 5) % 100;
                       const delay = ((i * 0.14) % 1.2).toFixed(2);
-                      return `<div style="position:absolute;left:${left}%;top:-2px;width:1px;height:5px;background:rgba(90,170,255,0.65);animation:rainDrop 0.6s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                      return `<div style="position:absolute;left:${left}%;top:-2px;width:1px;height:5px;background:rgba(70,160,255,0.85);animation:rainDrop 0.6s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
                     }).join('');
                   }
                   if (wc >= 51 && wc <= 55) {
                     return Array.from({ length: 6 }, (_, i) => {
                       const left = (i * 29 + 7) % 100;
                       const delay = ((i * 0.17) % 1.2).toFixed(2);
-                      return `<div style="position:absolute;left:${left}%;top:-2px;width:1px;height:4px;background:rgba(100,180,255,0.5);animation:rainDrop 1s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                      return `<div style="position:absolute;left:${left}%;top:-2px;width:1px;height:4px;background:rgba(80,170,255,0.8);animation:rainDrop 1s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
                     }).join('');
                   }
                   return '';
                 })() : '';
                 return (
-                  <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : 1, ...(isTodayForecast && idx > 0 ? { borderLeft: '3px solid #ffffff' } : {}) }} data-testid={`weather-above-${dateStr}`}>
+                  <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : 1, ...(isTodayForecast ? { borderLeft: '3px solid #ffffff' } : {}) }} data-testid={`weather-above-${dateStr}`}>
                     {showForecastWeather && fwSkyBg && (
                       <div className="absolute inset-0 z-0" style={{ background: fwSkyBg, overflow: 'hidden', pointerEvents: 'none', opacity: isTodayForecast ? 1 : 0.7 }}>
                         {fwEffectsHtml && <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }} dangerouslySetInnerHTML={{ __html: fwEffectsHtml }} />}
@@ -24100,11 +24100,11 @@ export default function Dashboard() {
                 <div className="absolute pointer-events-none" style={{ top: '0px', height: '60px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px))`, width: `calc((${todayW} / ${totalDayW}) * (100% - ${fixedW}px))`, zIndex: 9990 }} />
               );
             })()}
-            {/* Red separator on left border of today column - spans full height from top of date cell */}
+            {/* White separator on left border of today column - spans full height from top of date cell */}
             {(() => {
               const now = new Date();
               const todayIdx = weekDays.findIndex(d => isSameDayET(d, now));
-              if (todayIdx <= 0) return null;
+              if (todayIdx < 0) return null;
               const totalDayW = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0);
               const beforeW = gridSizes.dayColumnWidths.slice(0, todayIdx).reduce((a: number, b: number) => a + b, 0);
               const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
@@ -24154,7 +24154,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`flex flex-col items-center justify-center h-full relative`}
-                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'visible', ...(idx > 0 ? { borderLeft: '3px solid #ffffff' } : {}) } : day.getDay() === 6 ? { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)' } : { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', borderLeft: '1.5px dotted rgba(255,255,255,0.35)' }}
+                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'visible', borderLeft: '3px solid #ffffff' } : day.getDay() === 6 ? { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)' } : { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', borderLeft: '1.5px dotted rgba(255,255,255,0.35)' }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     
@@ -24460,7 +24460,7 @@ export default function Dashboard() {
                           })()}
                           {day.getDay() === 6 && !isToday && (
                             <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '8px' }}>
-                              <span style={{ display: 'block', fontSize: 'min(9.5px, 1.4vw)', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{`New School Week (${selectedWeek + 1})`}</span>
+                              <span style={{ display: 'block', fontSize: 'min(9.5px, 1.4vw)', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{`${selectedWeek + 1 >= (schoolData.numberOfWeeks || 13) ? 'Last' : 'New'} School Week (${selectedWeek + 1})`}</span>
                             </div>
                           )}
                           {!isToday && (() => {
@@ -26411,6 +26411,9 @@ export default function Dashboard() {
                                     transformOrigin: 'center center',
                                     display: 'flex',
                                     flexDirection: 'column' as const,
+                                    backfaceVisibility: 'hidden' as const,
+                                    WebkitFontSmoothing: 'antialiased',
+                                    textRendering: 'geometricPrecision',
                                   };
                                 })()}
                                 data-testid={`time-task-${task.id}`}
@@ -26448,7 +26451,7 @@ export default function Dashboard() {
                                         <div style={{ width: '10px', height: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><TIcon style={{ width: '10px', height: '10px', color: 'rgba(255,255,255,0.9)' } as any} data-testid={`type-icon-time-${task.id}`} /></div>
                                       ) : <div style={{ width: '10px', height: '10px', flexShrink: 0 }} />}
                                       </div>
-                                      <span style={{ fontSize: '8px', fontWeight: 500, color: 'white', letterSpacing: '0.3px', textShadow: '0 1px 2px rgba(0,0,0,0.3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, padding: '1px 3px' }}>
+                                      <span style={{ fontSize: '9px', fontWeight: 500, color: 'white', letterSpacing: '0.3px', textShadow: '0 1px 2px rgba(0,0,0,0.3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, padding: '1px 3px' }}>
                                         {(() => { const raw = (task.title || '').replace(/[\[\]]/g, '').replace(/^\s+/, '').replace(/^online\s+/i, ''); const t = raw; const isModRead = /^(module|reading|module\s*(?:&|and)\s*reading)$/i.test(t.trim()); if (isModRead && task.courseName) { const cc = task.courseName.split(' - ')[0]?.trim(); if (cc) return `${cc} ${t}`; } return t; })()}
                                       </span>
                                       
@@ -26467,7 +26470,7 @@ export default function Dashboard() {
                                   />
                                   {(() => { const hasAtt = (task.attachments?.length && task.attachments.some((att: any) => { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; return !!url; })) || task.referenceLink; return hasAtt ? <img src={pdfAttachIconPath} alt="PDF" style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0 }} data-testid={`attachment-icon-time-${task.id}`} /> : null; })()}
                                   <div style={{ flex: 1, minWidth: 0 }}>
-                                    <div style={{ fontSize: '8px', fontWeight: 400, color: '#000000', lineHeight: 1, fontStyle: 'italic' }}>
+                                    <div style={{ fontSize: '9px', fontWeight: 400, color: '#000000', lineHeight: 1, fontStyle: 'italic' }}>
                                       {task.eventStartTime && task.eventEndTime ? `${formatTimeTo12Hour(task.eventStartTime)} - ${formatTimeTo12Hour(task.eventEndTime)}` : format(new Date(task.dueDate), "h:mm a")}
                                     </div>
                                   </div>
@@ -26607,6 +26610,9 @@ export default function Dashboard() {
                           transition: 'filter 0.2s ease, box-shadow 0.2s ease',
                           display: 'flex',
                           flexDirection: 'column' as const,
+                          backfaceVisibility: 'hidden' as const,
+                          WebkitFontSmoothing: 'antialiased',
+                          textRendering: 'geometricPrecision',
                         };
                       })()}
                       data-testid={`multi-hour-task-${task.id}`}
@@ -26654,7 +26660,7 @@ export default function Dashboard() {
                               flex: 1,
                               minWidth: 0,
                             }}>
-                              <span style={{ fontSize: '8px', fontWeight: 700, color: 'white', letterSpacing: '0.3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                              <span style={{ fontSize: '9px', fontWeight: 700, color: 'white', letterSpacing: '0.3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
                                 {(() => { const raw = (task.title || '').replace(/[\[\]]/g, '').replace(/^\s+/, '').replace(/^online\s+/i, ''); const t = raw || (task.courseName || '').replace(/[\[\]]/g, ''); if (task.type === 'class' && task.courseName) { const namePart = task.courseName.replace(/[\[\]]/g, '').split(' - ').slice(1).join(' - ').trim(); return <><span style={{ fontWeight: 900 }}>Class:</span> {namePart || task.courseName.replace(/[\[\]]/g, '')}</>; } const isModRead = /^(module|reading|module\s*(?:&|and)\s*reading)$/i.test(t.trim()); if (isModRead && task.courseName) { const cc2 = task.courseName.replace(/[\[\]]/g, '').split(' - ')[0]?.trim(); if (cc2) return `${cc2} ${t}`; } return t; })()}
                               </span>
                             </div>

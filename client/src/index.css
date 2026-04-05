@@ -571,6 +571,10 @@ button[role="combobox"] > span {
 [data-testid^="time-task-"],
 [data-testid^="multi-hour-task-"] {
   transition: filter 0.15s ease, box-shadow 0.15s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
+  backface-visibility: hidden;
 }
 
 [data-radix-menu-content] [role="menuitem"]:hover,
