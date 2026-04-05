@@ -28170,6 +28170,20 @@ export default function Dashboard() {
               <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 10px', margin: '-8px -4px', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => { const newWeek = selectedWeek + 1; startTransition(() => setSelectedWeek(newWeek)); if (newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }} data-testid="button-pill-next-week"><span style={{ fontSize: '13px', lineHeight: '1', color: '#000' }}>▶</span></div>
             </div>
           </div>
+          <div
+            onClick={(e) => { e.stopPropagation(); const next = !timelineSyncCalendar; setTimelineSyncCalendar(next); localStorage.setItem('timelineSyncCalendar', String(next)); }}
+            className="absolute z-[71]"
+            style={{ top: '-15px', left: '1px', display: 'flex', alignItems: 'center', gap: '3px', cursor: 'pointer', padding: '1px 4px 1px 2px', borderRadius: '4px 4px 0 0' }}
+            data-testid="timeline-sync-toggle-container"
+          >
+            <div
+              style={{ width: '20px', height: '10px', borderRadius: '5px', background: timelineSyncCalendar ? '#22c55e' : 'rgba(255,255,255,0.3)', position: 'relative', transition: 'background 0.2s ease', flexShrink: 0 }}
+              data-testid="button-timeline-sync-toggle"
+            >
+              <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#fff', position: 'absolute', top: '2px', left: timelineSyncCalendar ? '12px' : '2px', transition: 'left 0.2s ease', boxShadow: '0 1px 2px rgba(0,0,0,0.3)' }} />
+            </div>
+            <span style={{ fontSize: '7px', color: 'rgba(255,255,255,0.5)', fontWeight: 500, letterSpacing: '0.3px', whiteSpace: 'nowrap', lineHeight: 1 }}>Sync</span>
+          </div>
           {!hwFloating.detached ? (
             <button
               onClick={hwFloatingHandlers.onDetach}
@@ -28577,16 +28591,6 @@ export default function Dashboard() {
               </div>
             );
           })()}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '2px 6px', flexShrink: 0, gap: '4px' }} data-testid="timeline-sync-toggle-container">
-            <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.6)', fontWeight: 500, letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Sync</span>
-            <div
-              onClick={() => { const next = !timelineSyncCalendar; setTimelineSyncCalendar(next); localStorage.setItem('timelineSyncCalendar', String(next)); }}
-              style={{ width: '24px', height: '13px', borderRadius: '7px', background: timelineSyncCalendar ? '#22c55e' : 'rgba(255,255,255,0.25)', cursor: 'pointer', position: 'relative', transition: 'background 0.2s ease', flexShrink: 0 }}
-              data-testid="button-timeline-sync-toggle"
-            >
-              <div style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#ffffff', position: 'absolute', top: '2px', left: timelineSyncCalendar ? '13px' : '2px', transition: 'left 0.2s ease', boxShadow: '0 1px 2px rgba(0,0,0,0.3)' }} />
-            </div>
-          </div>
           <div style={{ padding: '0 8px', height: courseRowRects.length > 0 ? `${courseRowRects[0].top - (calendarBorderTop || (calendarTop + 15)) - 1}px` : '45px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 46, overflow: 'hidden', marginBottom: '0px', boxShadow: '0 3px 6px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3)' }}>
             <div style={{ position: 'absolute', top: '21px', left: '22px', right: 0, height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)', zIndex: 2 }} />
             <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: '6px', bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', zIndex: 2 }}>Homework Progress</span>
