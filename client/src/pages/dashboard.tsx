@@ -25671,6 +25671,11 @@ export default function Dashboard() {
                     const taskCourseCode = task.courseName.split(' - ')[0]?.toUpperCase();
                     if (taskCourseCode && activeCourseNames.includes(taskCourseCode)) return false;
                   }
+                  const bracketMatch = task.title.match(/^\[([^\]]+)\]/);
+                  if (bracketMatch) {
+                    const bracketCode = bracketMatch[1].split(' - ')[0]?.toUpperCase();
+                    if (bracketCode && activeCourseNames.some(ac => bracketCode.startsWith(ac))) return false;
+                  }
                   if (task.isCompleted) return false;
                   if (task.hideFromSummary) return false;
                   const taskDueDate = startOfDayET(new Date(task.dueDate));
