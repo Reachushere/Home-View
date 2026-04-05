@@ -1925,6 +1925,7 @@ export default function Dashboard() {
     readingP: {percent: number; hasFiles: boolean};
     moduleUnread: number;
     readingUnread: number;
+    moduleRemainingMin: number;
     hasNoData: boolean;
     handlePlayModule: () => void;
     handlePlayReading: () => void;
@@ -26766,6 +26767,22 @@ export default function Dashboard() {
                     const readingP = calcFileProgress(readingFiles, readingFolderKey);
                     const otherFiles = weeklyFiles.filter(f => f.folder === otherFolderKey);
                     const otherP = calcFileProgress(otherFiles, otherFolderKey);
+                    const moduleRemainingMin = (() => {
+                      const MINS_PER_CHUNK = 1.2;
+                      let remaining = 0;
+                      const preparedModuleFiles = moduleFiles.filter((f: any) => f.totalChunks && f.totalChunks > 0);
+                      for (const f of preparedModuleFiles) {
+                        if (f.listened) continue;
+                        const total = f.totalChunks || 0;
+                        let checked = 0;
+                        if (f.checkedChunks && f.checkedChunks !== 'null' && f.checkedChunks !== '[]') {
+                          try { const arr = JSON.parse(f.checkedChunks); if (Array.isArray(arr)) checked = arr.length; } catch {}
+                        }
+                        if (checked === 0 && f.lastChunkIndex != null && f.lastChunkIndex > 0) checked = f.lastChunkIndex;
+                        remaining += Math.max(0, total - checked);
+                      }
+                      return Math.round(remaining * MINS_PER_CHUNK);
+                    })();
                     const hasNoData = false;
                     const courseMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode);
                     const courseHexColor = courseMatch?.color || '#6b7280';
@@ -26857,6 +26874,7 @@ export default function Dashboard() {
                       readingP,
                       moduleUnread,
                       readingUnread,
+                      moduleRemainingMin,
                       hasNoData,
                       handlePlayModule: () => handlePlayFiles('module'),
                       handlePlayReading: () => handlePlayFiles('reading'),
@@ -30254,6 +30272,33 @@ export default function Dashboard() {
                                 <Play fill={textColor} stroke={textColor} style={{ width: '14px', height: '14px' }} />
                               </div>
                             </div>
+                            {isModule && pd.moduleRemainingMin > 0 && pd.moduleP.hasFiles && pd.moduleP.percent < 100 && (() => {
+                              const now = new Date();
+                              const dayOfWeek = now.getDay();
+                              const daysUntilFri = dayOfWeek <= 5 ? 5 - dayOfWeek : 6;
+                              const fri = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilFri, 23, 59, 59);
+                              const hoursLeft = Math.max(0, (fri.getTime() - now.getTime()) / (1000 * 60 * 60));
+                              const remainHrs = pd.moduleRemainingMin / 60;
+                              const pctOfTimeNeeded = Math.min(100, (remainHrs / Math.max(0.1, hoursLeft)) * 100);
+                              const isUrgent = pctOfTimeNeeded > 50;
+                              const isCritical = pctOfTimeNeeded > 80;
+                              const remainLabel = pd.moduleRemainingMin >= 60
+                                ? `${Math.floor(pd.moduleRemainingMin / 60)}h${pd.moduleRemainingMin % 60 > 0 ? Math.round(pd.moduleRemainingMin % 60) + 'm' : ''}`
+                                : `${pd.moduleRemainingMin}m`;
+                              const hoursLeftLabel = hoursLeft >= 24 ? `${Math.floor(hoursLeft / 24)}d${Math.round(hoursLeft % 24)}h` : `${Math.round(hoursLeft)}h`;
+                              const barColor = isCritical ? '#ef4444' : isUrgent ? '#f59e0b' : '#22c55e';
+                              return (
+                                <div style={{ width: '100%', padding: '0 3px', marginTop: '1px' }} data-testid={`module-time-remaining-${pd.courseCode.toLowerCase()}`}>
+                                  <div style={{ width: '100%', height: '3px', borderRadius: '2px', background: 'rgba(255,255,255,0.15)', overflow: 'hidden', position: 'relative' }}>
+                                    <div style={{ width: `${Math.min(100, pctOfTimeNeeded)}%`, height: '100%', borderRadius: '2px', background: barColor, transition: 'width 0.5s ease' }} />
+                                  </div>
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1px' }}>
+                                    <span style={{ fontSize: '7px', fontWeight: 600, color: barColor, fontFamily: "system-ui, sans-serif" }}>{remainLabel} left</span>
+                                    <span style={{ fontSize: '6.5px', color: 'rgba(255,255,255,0.5)', fontFamily: "system-ui, sans-serif" }}>Fri {hoursLeftLabel}</span>
+                                  </div>
+                                </div>
+                              );
+                            })()}
                           </div>
                         );
                       })}
@@ -31417,6 +31462,33 @@ export default function Dashboard() {
                                     <Play fill="#ffffff" stroke="#ffffff" style={{ width: '18px', height: '18px' }} />
                                   </div>
                                 </div>
+                                {isModule && pd.moduleRemainingMin > 0 && pd.moduleP.hasFiles && pd.moduleP.percent < 100 && (() => {
+                                  const now = new Date();
+                                  const dayOfWeek = now.getDay();
+                                  const daysUntilFri = dayOfWeek <= 5 ? 5 - dayOfWeek : 6;
+                                  const fri = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilFri, 23, 59, 59);
+                                  const hoursLeft = Math.max(0, (fri.getTime() - now.getTime()) / (1000 * 60 * 60));
+                                  const remainHrs = pd.moduleRemainingMin / 60;
+                                  const pctOfTimeNeeded = Math.min(100, (remainHrs / Math.max(0.1, hoursLeft)) * 100);
+                                  const isUrgent = pctOfTimeNeeded > 50;
+                                  const isCritical = pctOfTimeNeeded > 80;
+                                  const remainLabel = pd.moduleRemainingMin >= 60
+                                    ? `${Math.floor(pd.moduleRemainingMin / 60)}h${pd.moduleRemainingMin % 60 > 0 ? Math.round(pd.moduleRemainingMin % 60) + 'm' : ''}`
+                                    : `${pd.moduleRemainingMin}m`;
+                                  const hoursLeftLabel = hoursLeft >= 24 ? `${Math.floor(hoursLeft / 24)}d${Math.round(hoursLeft % 24)}h` : `${Math.round(hoursLeft)}h`;
+                                  const barColor = isCritical ? '#ef4444' : isUrgent ? '#f59e0b' : '#22c55e';
+                                  return (
+                                    <div style={{ width: '100%', padding: '0 4px', marginTop: '2px' }} data-testid={`float-module-time-remaining-${pd.courseCode.toLowerCase()}`}>
+                                      <div style={{ width: '100%', height: '3px', borderRadius: '2px', background: 'rgba(255,255,255,0.15)', overflow: 'hidden' }}>
+                                        <div style={{ width: `${Math.min(100, pctOfTimeNeeded)}%`, height: '100%', borderRadius: '2px', background: barColor, transition: 'width 0.5s ease' }} />
+                                      </div>
+                                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1px' }}>
+                                        <span style={{ fontSize: '7.5px', fontWeight: 600, color: barColor, fontFamily: "system-ui, sans-serif" }}>{remainLabel} left</span>
+                                        <span style={{ fontSize: '7px', color: 'rgba(255,255,255,0.5)', fontFamily: "system-ui, sans-serif" }}>Fri {hoursLeftLabel}</span>
+                                      </div>
+                                    </div>
+                                  );
+                                })()}
                               </div>
                             );
                           })}
