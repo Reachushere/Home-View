@@ -4760,7 +4760,7 @@ export default function Dashboard() {
       colors[courseCode] = {
         hex,
         hexEnd,
-        bg: `rgb(${Math.max(0, endRgb.r - 12)}, ${Math.max(0, endRgb.g - 12)}, ${Math.max(0, endRgb.b - 12)})`,
+        bg: hexEnd || `rgb(${endRgb.r}, ${endRgb.g}, ${endRgb.b})`,
         mid: `rgb(${midR}, ${midG}, ${midB})`,
         border: displayHex,
         text: '#ffffff',
@@ -24474,7 +24474,28 @@ export default function Dashboard() {
                           })()}
                           {day.getDay() === 6 && !isToday && (
                             <div className="absolute left-0 right-0 text-center z-20" style={{ padding: '0', top: '8px' }}>
-                              <span style={{ display: 'block', fontSize: 'min(9.5px, 1.4vw)', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{`${selectedWeek + 1 >= (schoolData.numberOfWeeks || 13) ? 'Last' : 'New'} School Week (${selectedWeek + 1})`}</span>
+                              <span style={{ display: 'block', fontSize: 'min(9.5px, 1.4vw)', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{(() => {
+                                const satDate = day;
+                                const semDefs = [
+                                  { key: 'w2026', start: '2026-01-12', end: '2026-04-17', weeks: 13 },
+                                  { key: 'ss2026', start: '2026-05-04', end: '2026-08-07', weeks: 14 },
+                                  { key: 'f2026', start: '2026-09-14', end: '2026-12-11', weeks: 13 },
+                                ];
+                                const activeSem = semDefs.find(s => satDate >= new Date(s.start + 'T00:00:00') && satDate <= new Date(s.end + 'T23:59:59'));
+                                if (activeSem) {
+                                  const semStart = new Date(activeSem.start + 'T12:00:00');
+                                  const daysDiff = Math.round((satDate.getTime() - semStart.getTime()) / (1000*60*60*24));
+                                  const semWeek = Math.floor(daysDiff / 7) + 1;
+                                  const isLast = semWeek >= activeSem.weeks;
+                                  return `${isLast ? 'Last' : 'New'} School Week (${semWeek})`;
+                                }
+                                const nextSem = semDefs.find(s => satDate < new Date(s.start + 'T00:00:00'));
+                                if (nextSem) {
+                                  const daysUntil = Math.round((new Date(nextSem.start + 'T12:00:00').getTime() - satDate.getTime()) / (1000*60*60*24));
+                                  return `${daysUntil}d to ${nextSem.key.startsWith('ss') ? 'Spring' : nextSem.key.startsWith('f') ? 'Fall' : 'Winter'}`;
+                                }
+                                return `New School Week (${selectedWeek + 1})`;
+                              })()}</span>
                             </div>
                           )}
                           {!isToday && (() => {
@@ -24616,11 +24637,11 @@ export default function Dashboard() {
               {(() => {
                 const springSummerCourses = [
                   { name: 'CECN210 - Understanding Economics', color: '#059669', colorEnd: '#34D399', professor: '', professorEmail: '', startDate: '2026-05-04', endDate: '2026-07-31' },
-                  { name: 'CPHL110 - Philosophy of Religion', color: '#2563EB', colorEnd: '#60A5FA', professor: '', professorEmail: '', startDate: '2026-05-05', endDate: '2026-06-16' },
+                  { name: 'CPHL110 - Philosophy of Religion', color: '#2563EB', colorEnd: '#60A5FA', professor: '', professorEmail: '', startDate: '2026-05-05', endDate: '2026-06-20' },
                   { name: 'CHIS105 - Inventing Popular Culture', color: '#DC2626', colorEnd: '#F87171', professor: '', professorEmail: '', startDate: '2026-06-23', endDate: '2026-08-07' },
                 ];
-                const currentWeekStart = weekStartDate;
-                const currentWeekEnd = weekEndDate;
+                const currentWeekStart = weekDays[0];
+                const currentWeekEnd = weekDays[6];
                 const winterCourseDefs = [
                   { code: 'CPPA122', endDate: '2026-04-17' },
                   { code: 'CFNF400', endDate: '2026-04-17' },
@@ -24676,8 +24697,17 @@ export default function Dashboard() {
                   };
                   const semKeyA = getSemKey(a);
                   const semKeyB = getSemKey(b);
-                  const priA = coursePlayPriority[`${semKeyA}:${getCode(a)}`] || 0;
-                  const priB = coursePlayPriority[`${semKeyB}:${getCode(b)}`] || 0;
+                  const getPri = (semKey: string, code: string) => {
+                    const direct = coursePlayPriority[`${semKey}:${code}`];
+                    if (direct && direct > 0) return direct;
+                    const withA = coursePlayPriority[`${semKey}:${code}:A`];
+                    if (withA && withA > 0) return withA;
+                    const withB = coursePlayPriority[`${semKey}:${code}:B`];
+                    if (withB && withB > 0) return withB;
+                    return 0;
+                  };
+                  const priA = getPri(semKeyA, getCode(a));
+                  const priB = getPri(semKeyB, getCode(b));
                   if (priA === 0 && priB === 0) return 0;
                   if (priA === 0) return 1;
                   if (priB === 0) return -1;
@@ -24800,7 +24830,7 @@ export default function Dashboard() {
                                 style={{
                                   margin: '2px 2px 2px 2px',
                                   marginRight: '0px',
-                                  backgroundColor: task.isCompleted ? '#e5e7eb' : (() => { const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === course.name); if (cMatch?.taskBgColor) return cMatch.taskBgColor; const cEnd = cMatch?.colorEnd; const endRgb = hexToRgb(cEnd || course.darkColor); return `rgb(${Math.max(0,endRgb.r-12)},${Math.max(0,endRgb.g-12)},${Math.max(0,endRgb.b-12)})`; })(),
+                                  backgroundColor: task.isCompleted ? '#e5e7eb' : (() => { const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === course.name); if (cMatch?.taskBgColor) return cMatch.taskBgColor; return cMatch?.colorEnd || course.bg; })(),
                                   borderColor: task.isCompleted ? '#d1d5db' : course.darkColor
                                 }}
                                 data-testid={`course-module-task-static-${task.id}`}
@@ -24978,7 +25008,7 @@ export default function Dashboard() {
                   }
                   return false;
                 });
-                const mainCourseNames = ['CPPA122', 'CFNF400', 'CASL101'];
+                const mainCourseNames = ['CPPA122', 'CFNF400', 'CASL101', 'CECN210', 'CPHL110', 'CHIS105'];
                 const isMainCourse = mainCourseNames.includes(courseName);
                 if (courseTaskCount === 0 && !courseHasProjects && !isMainCourse) {
                   return null;
@@ -25271,7 +25301,7 @@ export default function Dashboard() {
                                 <div
                                   className="flex items-center text-[9px] rounded border cursor-pointer relative w-full"
                                   style={{ 
-                                    backgroundColor: (() => { const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === course.name); if (cMatch?.taskBgColor) return cMatch.taskBgColor; const cEnd = cMatch?.colorEnd; const endRgb = hexToRgb(cEnd || course.darkColor); return `rgb(${Math.max(0,endRgb.r-12)},${Math.max(0,endRgb.g-12)},${Math.max(0,endRgb.b-12)})`; })(),
+                                    backgroundColor: (() => { const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === course.name); if (cMatch?.taskBgColor) return cMatch.taskBgColor; return cMatch?.colorEnd || course.bg; })(),
                                     borderColor: course.darkColor,
                                     zIndex: hoveredCountdownTaskId === task.id ? 55 : 1,
                                     filter: hoveredCountdownTaskId === task.id ? 'brightness(1.15)' : undefined,
@@ -25318,7 +25348,7 @@ export default function Dashboard() {
                             <div 
                               className={`flex flex-col gap-0 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer w-full min-w-0 ${isDueTomorrow ? "animate-slow-blink" : ""}`}
                               style={{ 
-                                backgroundColor: (() => { const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === course.name); if (cMatch?.taskBgColor) return cMatch.taskBgColor; const cEnd = cMatch?.colorEnd; const endRgb = hexToRgb(cEnd || course.darkColor); return `rgb(${Math.max(0,endRgb.r-12)},${Math.max(0,endRgb.g-12)},${Math.max(0,endRgb.b-12)})`; })(),
+                                backgroundColor: (() => { const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === course.name); if (cMatch?.taskBgColor) return cMatch.taskBgColor; return cMatch?.colorEnd || course.bg; })(),
                                 borderColor: course.darkColor,
                                 filter: hoveredCountdownTaskId === task.id ? 'brightness(1.15)' : undefined,
                                 boxShadow: hoveredCountdownTaskId === task.id ? '0 2px 8px rgba(0,0,0,0.35)' : undefined,
@@ -26433,9 +26463,7 @@ export default function Dashboard() {
                                   const moduleBoxColor = (() => {
                                     const cMatch2 = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode.toUpperCase());
                                     if (cMatch2?.taskBgColor) return cMatch2.taskBgColor;
-                                    const cEnd2 = cMatch2?.colorEnd;
-                                    const endRgb2 = hexToRgb(cEnd2 || (gradColors?.start || '#6b7280'));
-                                    return `rgb(${Math.max(0,endRgb2.r-12)},${Math.max(0,endRgb2.g-12)},${Math.max(0,endRgb2.b-12)})`;
+                                    return cMatch2?.colorEnd || (gradColors?.end || '#9ca3af');
                                   })();
                                   return (
                                     <div style={{
