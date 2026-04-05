@@ -24109,7 +24109,7 @@ export default function Dashboard() {
               const beforeW = gridSizes.dayColumnWidths.slice(0, todayIdx).reduce((a: number, b: number) => a + b, 0);
               const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
               return (
-                <div className="absolute bottom-0 pointer-events-none" style={{ top: '0px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px) - 1px)`, width: '3px', backgroundColor: '#ffffff', zIndex: 100 }} />
+                <div className="absolute bottom-0 pointer-events-none" style={{ top: '0px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px) - 1px)`, width: '2px', backgroundColor: '#ffffff', zIndex: 100 }} />
               );
             })()}
             
@@ -25583,8 +25583,7 @@ export default function Dashboard() {
                   }
                   const bracketMatch = task.title.match(/^\[([^\]]+)\]/);
                   if (bracketMatch) {
-                    const bracketCode = bracketMatch[1].split(' - ')[0]?.toUpperCase();
-                    if (bracketCode && activeCourseNames.some(ac => bracketCode.startsWith(ac))) return false;
+                    return false;
                   }
                   if (task.isCompleted) return false;
                   if (task.hideFromSummary) return false;
