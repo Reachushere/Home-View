@@ -24495,8 +24495,7 @@ export default function Dashboard() {
                                 }
                                 const nextSem = semDefs.find(s => satDate < new Date(s.start + 'T00:00:00'));
                                 if (nextSem) {
-                                  const daysUntil = Math.round((new Date(nextSem.start + 'T12:00:00').getTime() - satDate.getTime()) / (1000*60*60*24));
-                                  return `${daysUntil}d to ${nextSem.key.startsWith('ss') ? 'Spring' : nextSem.key.startsWith('f') ? 'Fall' : 'Winter'}`;
+                                  return `Break`;
                                 }
                                 return `New School Week (${selectedWeek + 1})`;
                               })()}</span>
