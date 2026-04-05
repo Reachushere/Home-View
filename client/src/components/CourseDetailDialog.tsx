@@ -1069,13 +1069,16 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
 
       if (parsed.courseInfo) {
         const ci = parsed.courseInfo;
-        if (ci.professor || ci.professorEmail) {
-          const updates: any = {};
-          if (ci.professor && !courseInfo.professor) updates.professor = ci.professor;
-          if (ci.professorEmail && !courseInfo.professorEmail) updates.professorEmail = ci.professorEmail;
-          if (Object.keys(updates).length > 0 && onSaveCourseInfo) {
-            onSaveCourseInfo(updates);
-          }
+        const updates: any = {};
+        if (ci.professor && !courseInfo.professor) updates.professor = ci.professor;
+        if (ci.professorEmail && !courseInfo.professorEmail) updates.professorEmail = ci.professorEmail;
+        if (ci.classDay && !courseInfo.classDay) updates.classDay = ci.classDay;
+        if (ci.classDay2 && !courseInfo.classDay2) updates.classDay2 = ci.classDay2;
+        if (ci.classTime && !courseInfo.classTime) updates.classTime = ci.classTime;
+        if (ci.classTime2 && !courseInfo.classTime2) updates.classTime2 = ci.classTime2;
+        if (ci.deliveryMode && !courseInfo.deliveryMode) updates.deliveryMode = ci.deliveryMode;
+        if (Object.keys(updates).length > 0 && onSaveCourseInfo) {
+          onSaveCourseInfo(updates);
         }
       }
 

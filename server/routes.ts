@@ -17172,7 +17172,12 @@ Return a JSON object with these fields:
   "professorEmail": string or null,
   "officeHours": string or null,
   "textbook": string or null,
-  "description": string or null
+  "description": string or null,
+  "classDay": string or null (the day of the week the class meets, e.g. "Thursday", "Monday". Look for phrases like "Thursdays 18:10" or "Class: Mon/Wed" on the first page.),
+  "classDay2": string or null (second class day if the class meets twice a week, e.g. "Wednesday"),
+  "classTime": string or null (24-hour format like "18:10", "09:00". Extract from schedule info on first page.),
+  "classTime2": string or null (second class time if different from first),
+  "deliveryMode": string or null (one of: "virtual", "online", "in-person", or null. Look for keywords like "Zoom", "Virtual", "Online", "In-Person", "On Campus".)
 }
 
 2. "gradingBreakdown": array of { "component": string, "weight": number (e.g. 30 for 30%), "description": string or null }
