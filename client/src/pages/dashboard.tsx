@@ -24546,8 +24546,10 @@ export default function Dashboard() {
                                 const activeSem = semDefs.find(s => dayDate >= new Date(s.start + 'T00:00:00') && dayDate <= new Date(s.end + 'T23:59:59'));
                                 if (activeSem) {
                                   const semStartD = new Date(activeSem.start + 'T12:00:00');
+                                  const nowForSem = new Date(); nowForSem.setHours(12,0,0,0);
+                                  const isCurrentSem = nowForSem >= new Date(activeSem.start + 'T00:00:00') && nowForSem <= new Date(activeSem.end + 'T23:59:59');
                                   if (activeSem.key.startsWith('w')) {
-                                    const rwStart = semesterSettings?.readingWeekStart || null;
+                                    const rwStart = isCurrentSem ? (semesterSettings?.readingWeekStart || null) : null;
                                     const wk = getWeekNumber(dayDate, semStartD, rwStart);
                                     return wk === -1 ? 'Reading Week' : `Week ${Math.min(Math.max(wk, 1), activeSem.weeks)}`;
                                   }
@@ -24592,8 +24594,10 @@ export default function Dashboard() {
                                 const activeSem = semDefs.find(s => dayDate >= new Date(s.start + 'T00:00:00') && dayDate <= new Date(s.end + 'T23:59:59'));
                                 if (activeSem) {
                                   const semStartD = new Date(activeSem.start + 'T12:00:00');
+                                  const nowForSem2 = new Date(); nowForSem2.setHours(12,0,0,0);
+                                  const isCurrentSem2 = nowForSem2 >= new Date(activeSem.start + 'T00:00:00') && nowForSem2 <= new Date(activeSem.end + 'T23:59:59');
                                   if (activeSem.key.startsWith('w')) {
-                                    const rwStart = semesterSettings?.readingWeekStart || null;
+                                    const rwStart = isCurrentSem2 ? (semesterSettings?.readingWeekStart || null) : null;
                                     const wk = getWeekNumber(dayDate, semStartD, rwStart);
                                     if (wk === -1) return 'Reading Week';
                                     return `Week ${Math.min(Math.max(wk, 1), activeSem.weeks)}`;
