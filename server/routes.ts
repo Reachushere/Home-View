@@ -11486,14 +11486,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
     try {
       if (chunks.length === 0) {
-        console.log(`[Nest Playback] No chunks for "${fileName}" (id=${fileId}) — text extraction failed, marking listened and skipping`);
+        console.log(`[Nest Playback] No chunks for "${fileName}" (id=${fileId}) — text extraction failed, skipping without marking listened`);
         await clearPlaybackSession();
-        try {
-          await storage.updateFile(fileId, { listened: true });
-          console.log(`[Nest Playback] Marked file ${fileId} as listened (extraction failed)`);
-        } catch (e: any) {
-          console.error(`[Nest Playback] Failed to mark file ${fileId} listened: ${e.message}`);
-        }
         try {
           const allFiles = await storage.getFiles();
           const semesterSettings = await storage.getActiveSemesterSettings();
