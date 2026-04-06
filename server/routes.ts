@@ -1274,22 +1274,34 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       if (!Array.isArray(incoming)) return res.status(400).json({ message: 'tasks must be an array' });
       
       const existing = await storage.getTasks({});
+      const stripBrackets = (s: string) => (s || '').replace(/\[[^\]]*\]\s*/g, '').trim();
       const existingMap = new Map<string, any>();
+      const existingByStrippedTitle = new Map<string, any>();
+      const existingByNameAndDate = new Map<string, any>();
       existing.forEach(t => {
         const key = `${t.courseName}||${t.title}||${t.type}||${t.weekNumber || ''}`;
         existingMap.set(key, t);
+        const stripped = stripBrackets(t.title);
+        const dateKey = t.dueDate ? new Date(t.dueDate).toISOString().split('T')[0] : '';
+        const strippedKey = `${stripped}||${t.type}||${dateKey}`;
+        if (!existingByStrippedTitle.has(strippedKey)) existingByStrippedTitle.set(strippedKey, t);
+        const nameAndDateKey = `${stripped}||${dateKey}`;
+        if (!existingByNameAndDate.has(nameAndDateKey)) existingByNameAndDate.set(nameAndDateKey, t);
       });
       
       let created = 0, updated = 0, skipped = 0;
       for (const t of incoming) {
         const key = `${t.courseName}||${t.title}||${t.type}||${t.weekNumber || ''}`;
+        const dueStr = t.dueDate ? new Date(t.dueDate).toISOString().split('T')[0] : '';
+        const strippedKey = `${stripBrackets(t.title)}||${t.type}||${dueStr}`;
         const { id, isMissed, subtaskCount, completedSubtaskCount, calendarEventId, calendarProvider, prepCalendarEventId, secondaryCalendarEventId, secondAccountCalendarEventId, secondAccountPrepEventId, ...taskData } = t;
         if (taskData.dueDate && typeof taskData.dueDate === 'string') taskData.dueDate = new Date(taskData.dueDate);
         if (taskData.startDate && typeof taskData.startDate === 'string') taskData.startDate = new Date(taskData.startDate);
         if (taskData.completedAt && typeof taskData.completedAt === 'string') taskData.completedAt = new Date(taskData.completedAt);
         if (taskData.repeatEndDate && typeof taskData.repeatEndDate === 'string') taskData.repeatEndDate = new Date(taskData.repeatEndDate);
         
-        const existingTask = existingMap.get(key);
+        const nameAndDateKey = `${stripBrackets(t.title)}||${dueStr}`;
+        const existingTask = existingMap.get(key) || existingByStrippedTitle.get(strippedKey) || existingByNameAndDate.get(nameAndDateKey);
         if (existingTask) {
           if (taskData.gradeWeight !== undefined || taskData.gradeValue !== undefined || taskData.gradeTotal !== undefined || taskData.assignmentGroup !== undefined) {
             await storage.updateTask(existingTask.id, {
