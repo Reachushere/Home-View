@@ -27646,7 +27646,7 @@ export default function Dashboard() {
                               taskLanes.push(lane);
                             });
                             const matchingBars = deduped.map((cd, idx) => ({ ...cd, lane: taskLanes[idx] })).filter(cd => {
-                              if (hour !== 0) return false;
+                              if (hour !== cd.tDueHour) return false;
                               return dayIdx >= cd.startDay && dayIdx <= cd.endDay;
                             });
                             if (matchingBars.length === 0) return null;
