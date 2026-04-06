@@ -28613,7 +28613,7 @@ export default function Dashboard() {
                                 onTouchMove={handleTouchMove}
                                 onMouseEnter={(e) => { if (totalItems > 1) { const el = e.currentTarget as HTMLElement; el.style.width = 'calc(100% - 4px)'; el.style.zIndex = '55'; el.style.boxShadow = '0 4px 16px rgba(0,0,0,0.25)'; } }}
                                 onMouseLeave={(e) => { if (totalItems > 1) { const el = e.currentTarget as HTMLElement; const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); el.style.width = hasNextDueBox ? `calc(${columnWidth / 2}% - 4px)` : `calc(${columnWidth}% - 4px)`; el.style.zIndex = selectedTaskId === task.id ? '50' : (draggedTask?.id === task.id ? '45' : '43'); el.style.boxShadow = ''; } }}
-                                className={`absolute shadow-sm cursor-grab active:cursor-grabbing rounded overflow-hidden ${
+                                className={`absolute shadow-sm cursor-grab active:cursor-grabbing rounded overflow-visible ${
                                   draggedTask?.id === task.id ? "opacity-50" : ""
                                 } ${
                                   selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
@@ -28648,6 +28648,15 @@ export default function Dashboard() {
                                 data-cal-task-id={task.id}
                                 data-cal-date={format(day, 'yyyy-MM-dd')}
                               >
+                                {task.showCountdownBarMain !== false && !task.isCompleted && (() => {
+                                  const dueDateObj = new Date(task.dueDate);
+                                  const nowCd = new Date();
+                                  const daysLeft = Math.max(0, Math.ceil((dueDateObj.getTime() - nowCd.getTime()) / (1000 * 60 * 60 * 24)));
+                                  const cdBarColor = task.countdownBarColor || (daysLeft <= 1 ? '#ef4444' : daysLeft === 2 ? '#f97316' : daysLeft <= 4 ? '#f59e0b' : '#22c55e');
+                                  return (
+                                    <div style={{ position: 'absolute', left: '-5px', top: '2px', bottom: '2px', width: '5px', background: cdBarColor, borderRadius: '2px 0 0 2px', zIndex: 1, opacity: 0.9 }} data-testid={`countdown-nub-${task.id}`} />
+                                  );
+                                })()}
                                 {/* Type bar with glass effect */}
                                 {(() => {
                                   const hasCourseLink = !!(task.courseName || (courseCode && dynamicCourseColors[courseCode]));
@@ -28874,7 +28883,7 @@ export default function Dashboard() {
                           taskTitle: task.title
                         });
                       }}
-                      className={`absolute hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing rounded overflow-hidden border ${
+                      className={`absolute hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing rounded overflow-visible border ${
                         draggedTask?.id === task.id ? "opacity-50" : ""
                       } ${
                         selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
@@ -28908,6 +28917,15 @@ export default function Dashboard() {
                       data-cal-task-id={task.id}
                       data-cal-date={format(taskDay, 'yyyy-MM-dd')}
                     >
+                      {task.showCountdownBarMain !== false && !task.isCompleted && (() => {
+                        const dueDateObj = new Date(task.dueDate);
+                        const nowCd = new Date();
+                        const daysLeft = Math.max(0, Math.ceil((dueDateObj.getTime() - nowCd.getTime()) / (1000 * 60 * 60 * 24)));
+                        const cdBarColor = task.countdownBarColor || (daysLeft <= 1 ? '#ef4444' : daysLeft === 2 ? '#f97316' : daysLeft <= 4 ? '#f59e0b' : '#22c55e');
+                        return (
+                          <div style={{ position: 'absolute', left: '-5px', top: '2px', bottom: '2px', width: '5px', background: cdBarColor, borderRadius: '2px 0 0 2px', zIndex: 1, opacity: 0.9 }} data-testid={`countdown-nub-${task.id}`} />
+                        );
+                      })()}
                       {/* Type bar with icon-only color strip + module-colored title area */}
                       {(() => {
                         const hasCourseLink = !!(task.courseName || (courseCode && dynamicCourseColors[courseCode]));
