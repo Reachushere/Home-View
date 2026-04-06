@@ -27472,33 +27472,32 @@ export default function Dashboard() {
                               const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
                               const isTaskCell = !cd.beyond && dayIdx === cd.tDueDayIdx;
                               const isEndCell = dayIdx === cd.startDay;
-                              if (isTaskCell && !isEndCell) return null;
-                              const effectiveEndDay = Math.min(cd.endDay, cd.tDueDayIdx - (cd.beyond ? 0 : 1));
-                              if (!isTaskCell && dayIdx > effectiveEndDay) return null;
-                              const isLastBarCell = dayIdx === effectiveEndDay && !isTaskCell;
+                              if (dayIdx > cd.endDay) return null;
                               const topPx = 2 + cd.lane * barGap;
                               const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
                               const needsPulse = isNotStarted && cd.daysLeft <= 2 && !t.isCompleted;
                               const labelText = (t.title || '').replace(/[\[\]]/g, '').replace(/^\s+/, '').substring(0, 20);
-                              const needsElbow = cd.lane > 0 && dayIdx === effectiveEndDay;
+                              const needsElbow = cd.lane > 0 && isTaskCell;
                               const elbowDropPx = cd.lane * barGap;
+                              const isLastVisibleCell = isTaskCell && !isEndCell;
                               return (
                                 <div key={`cbar-main-${t.id}`} style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, pointerEvents: 'none', zIndex: 2 }}>
                                   {needsElbow && (
-                                    <div style={{ position: 'absolute', right: 0, top: `${2}px`, width: barH, height: elbowDropPx, background: barColor, opacity: 0.85 }} />
+                                    <div style={{ position: 'absolute', left: 0, top: `${2}px`, width: barH, height: elbowDropPx, background: barColor, opacity: 0.85 }} />
                                   )}
                                   <div
                                     className={needsPulse ? 'countdown-bar-pulse' : ''}
                                     style={{
                                       position: 'absolute',
                                       left: 0,
-                                      right: 0,
+                                      right: isLastVisibleCell ? 'auto' : 0,
+                                      width: isLastVisibleCell ? '4px' : undefined,
                                       top: `${topPx}px`,
                                       height: needsPulse ? '4px' : `${barH}px`,
                                       background: barColor,
                                       opacity: 0.85,
                                       pointerEvents: 'none',
-                                      borderRadius: isEndCell && isLastBarCell ? '2px' : isEndCell ? '2px 0 0 2px' : isLastBarCell ? '0 2px 2px 0' : '0',
+                                      borderRadius: isEndCell && isTaskCell ? '2px' : isEndCell ? '2px 0 0 2px' : isTaskCell ? '0 2px 2px 0' : '0',
                                       boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined,
                                     }}
                                     data-testid={`countdown-span-main-${t.id}-day-${dayIdx}`}
