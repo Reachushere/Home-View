@@ -1361,6 +1361,51 @@ export default function Dashboard() {
   const [showMorningReview, setShowMorningReview] = useState(false);
   const [morningReviewItems, setMorningReviewItems] = useState<any[]>([]);
   const [morningReviewLoading, setMorningReviewLoading] = useState(false);
+  const [cooldownSeconds, setCooldownSeconds] = useState<number | null>(null);
+  const [cooldownFading, setCooldownFading] = useState(false);
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval> | null = null;
+    let fadeTimeout: ReturnType<typeof setTimeout> | null = null;
+    let hideTimeout: ReturnType<typeof setTimeout> | null = null;
+    const check = async () => {
+      try {
+        const res = await fetch('/api/health');
+        if (res.ok) {
+          const data = await res.json();
+          const uptime = data.uptime || 0;
+          if (uptime < 60) {
+            const remaining = 60 - uptime;
+            setCooldownSeconds(remaining);
+            setCooldownFading(false);
+            if (!interval) {
+              interval = setInterval(async () => {
+                try {
+                  const r2 = await fetch('/api/health');
+                  if (r2.ok) {
+                    const d2 = await r2.json();
+                    const rem = 60 - (d2.uptime || 0);
+                    if (rem <= 0) {
+                      setCooldownSeconds(0);
+                      setCooldownFading(true);
+                      if (interval) { clearInterval(interval); interval = null; }
+                      fadeTimeout = setTimeout(() => {}, 0);
+                      hideTimeout = setTimeout(() => { setCooldownSeconds(null); setCooldownFading(false); }, 120000);
+                    } else {
+                      setCooldownSeconds(rem);
+                    }
+                  }
+                } catch {}
+              }, 1000);
+            }
+          } else {
+            setCooldownSeconds(null);
+          }
+        }
+      } catch {}
+    };
+    check();
+    return () => { if (interval) clearInterval(interval); if (fadeTimeout) clearTimeout(fadeTimeout); if (hideTimeout) clearTimeout(hideTimeout); };
+  }, []);
   const [processingReviewIds, setProcessingReviewIds] = useState<Set<number>>(new Set());
   const [reviewMode, setReviewMode] = useState<'all' | 'individual'>('all');
   const [reviewCheckedIds, setReviewCheckedIds] = useState<Set<number>>(new Set());
@@ -30687,6 +30732,18 @@ export default function Dashboard() {
             </div>
             <div ref={homeworkSpacerRef} style={{ position: 'absolute', right: '4px', top: 0, width: '0px', height: '100%', minHeight: '14px', backgroundColor: 'transparent' }} />
           </div>
+          {cooldownSeconds !== null && (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '3px 12px', background: 'linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.3) 100%)', transition: 'opacity 2s ease-out', opacity: cooldownFading ? 0.35 : 1 }} data-testid="cooldown-timer">
+              <span style={{ fontSize: '9px', fontWeight: 600, letterSpacing: '1px', fontFamily: 'monospace', color: cooldownFading ? 'rgba(150,150,150,0.8)' : (cooldownSeconds <= 10 ? '#ff4444' : '#ff6b6b'), textShadow: cooldownFading ? 'none' : '0 0 6px rgba(255,80,80,0.4)', transition: 'color 1s ease-out, text-shadow 1s ease-out' }}>
+                {cooldownFading ? 'READY' : `COOLDOWN ${cooldownSeconds}s`}
+              </span>
+              {!cooldownFading && (
+                <div style={{ marginLeft: '8px', width: '60px', height: '3px', borderRadius: '2px', background: 'rgba(255,255,255,0.1)', overflow: 'hidden' }}>
+                  <div style={{ height: '100%', borderRadius: '2px', background: cooldownSeconds <= 10 ? '#ff4444' : '#ff6b6b', width: `${Math.max(0, (cooldownSeconds / 60) * 100)}%`, transition: 'width 1s linear, background 0.5s ease' }} />
+                </div>
+              )}
+            </div>
+          )}
           {courseRowRects.length === 0 && !otherRowRect && (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px 10px', minHeight: '60px' }}>
               <span className="text-[11px] text-white/50 italic text-center" data-testid="text-no-courses">No active courses this week</span>
