@@ -15262,7 +15262,10 @@ export default function Dashboard() {
           onMouseLeave={() => { if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); topPillTimeoutRef.current = setTimeout(() => { topPillHoveredRef.current = false; if (!isSettingsPanelOpen && !isTodoFlyoutOpen && !isProjectsFlyoutOpen && !isRadioDialogOpen && !isCompletedTasksOpen && !isQuickAddOpen && !isAlexaDialogOpen && !isEmailWizardOpen && !isKeyContactsOpen && !isSystemHealthOpen && !isFeedbackOpen && !isSchoolCoursesDialogOpen && !isNewCourseWizardOpen) closeTopPill(); }, 1500); }}
         />
         {/* Spacing slider above pill */}
-        <div style={{
+        <div
+          onMouseEnter={() => { topPillHoveredRef.current = true; if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); }}
+          onMouseLeave={() => { if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); topPillTimeoutRef.current = setTimeout(() => { topPillHoveredRef.current = false; if (!isSettingsPanelOpen && !isTodoFlyoutOpen && !isProjectsFlyoutOpen && !isRadioDialogOpen && !isCompletedTasksOpen && !isQuickAddOpen && !isAlexaDialogOpen && !isEmailWizardOpen && !isKeyContactsOpen && !isSystemHealthOpen && !isFeedbackOpen && !isSchoolCoursesDialogOpen && !isNewCourseWizardOpen) closeTopPill(); }, 1500); }}
+          style={{
           position: 'absolute',
           top: '-19px',
           left: '0px',
@@ -15282,6 +15285,8 @@ export default function Dashboard() {
             step="1"
             value={blinkSettings.tallPillButtonSpacing}
             onChange={(e) => setBlinkSettings(prev => ({ ...prev, tallPillButtonSpacing: Number(e.target.value) }))}
+            onMouseDown={() => { topPillHoveredRef.current = true; if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); }}
+            onMouseUp={() => { topPillHoveredRef.current = true; }}
             className="pill-spacing-slider"
             style={{ width: '80px', height: '2px', cursor: 'pointer', accentColor: '#3b82f6' }}
             data-testid="slider-pill-spacing-inline"
