@@ -5035,7 +5035,14 @@ export default function Dashboard() {
   };
 
   const getCourseGradientColors = (courseCode: string): { start: string; end: string } => {
+    const readingEndOverrides: Record<string, string> = {
+      'CASL101': '#E9C6F0',
+      'CPPA122': '#AACD9F',
+      'CFNF400': '#FFC3C6',
+    };
     const course = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode.toUpperCase());
+    const upperCode = courseCode.toUpperCase();
+    if (readingEndOverrides[upperCode]) return { start: course?.color || '#6b7280', end: readingEndOverrides[upperCode] };
     if (course?.colorEnd) return { start: course.color, end: course.colorEnd };
     if (course) {
       const rgb = hexToRgb(course.color);
@@ -18395,17 +18402,8 @@ export default function Dashboard() {
                   )}
                 </div>
               </div>
-              <div className="px-2 pb-2 flex justify-end">
-                <Button 
-                  type="button" 
-                  variant="outline"
-                  className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 w-[110px]"
-                  style={{ fontSize: '12px' }}
-                  onClick={() => setDayDetailDate(null)}
-                  data-testid="day-detail-close-bottom"
-                >
-                  Close
-                </Button>
+              <div className="flex justify-end px-4 py-[10px] border-t border-white/40 shrink-0 rounded-b-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, ${colorSettings.headerBar}bb 0%, ${colorSettings.headerBar}cc 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15), 0 -2px 8px rgba(0,0,0,0.08)' }}>
+                <button onClick={() => setDayDetailDate(null)} className="px-5 py-[5px] rounded text-[11px] font-medium text-white/80 hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)' }} data-testid="day-detail-close-bottom">Close</button>
               </div>
             </div>
           </div>
@@ -23308,16 +23306,16 @@ export default function Dashboard() {
                 </div>
               )}
               
-              <div className="flex items-center justify-end px-4 py-3 border-t border-white/20">
+              <div className="flex items-center justify-end px-4 py-[10px] border-t border-white/40 shrink-0 rounded-b-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, ${colorSettings.headerBar}bb 0%, ${colorSettings.headerBar}cc 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15), 0 -2px 8px rgba(0,0,0,0.08)' }}>
                 <div className="flex gap-2">
-                  <Button variant="outline" className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 px-6" style={{ fontSize: '12px', minWidth: '120px', marginRight: '10px' }} onClick={() => startTransition(() => setIsSchoolCoursesDialogOpen(false))} data-testid="button-cancel-school-courses">Cancel</Button>
-                  <Button variant="outline" className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8 px-6" style={{ boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)', fontSize: '12px', minWidth: '120px' }} onClick={() => {
+                  <button className="px-5 py-[5px] rounded text-[11px] font-medium text-white/80 hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)' }} onClick={() => startTransition(() => setIsSchoolCoursesDialogOpen(false))} data-testid="button-cancel-school-courses">Cancel</button>
+                  <button className="px-5 py-[5px] rounded text-[11px] font-medium text-white hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.22)', border: '1px solid rgba(255,255,255,0.35)', boxShadow: '0 0 6px rgba(255,255,255,0.3)' }} onClick={() => {
                     const draft = draftCoursePlayPriorityRef.current;
                     setCoursePlayPriority(draft);
                     localStorage.setItem('coursePlayPriority', JSON.stringify(draft));
                     fetch('/api/course-play-priority', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(draft) }).catch(() => {});
                     startTransition(() => setIsSchoolCoursesDialogOpen(false));
-                  }} data-testid="button-save-school-courses">Save</Button>
+                  }} data-testid="button-save-school-courses">Save</button>
                 </div>
               </div>
             </div>
@@ -25596,26 +25594,21 @@ export default function Dashboard() {
             }}
           />
 
-          {/* Month View button - below glass backing, left-aligned */}
+          {/* Today View button - below glass backing, left-aligned */}
           <Button
             variant="ghost"
             className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight fixed"
             data-tpo data-tpo-opacity="1"
             style={{ bottom: `${calendarBottom - 18}px`, left: `${calendarLeft + 9}px`, zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
-            onClick={() => {
-              if (calendarView === "week") {
-                setCurrentMonth(new Date());
-              }
-              setCalendarView(calendarView === "month" ? "week" : "month");
-            }}
-            data-testid="button-month-view"
+            onClick={() => setDayDetailDate(startOfDayET(new Date()))}
+            data-testid="button-today-view"
           >
-            {calendarView === "month" ? "Week View" : "Month View"}
+            Today View
           </Button>
           <div
             className="fixed"
             data-tpo data-tpo-opacity="1"
-            style={{ bottom: `${calendarBottom - 18}px`, left: `${calendarLeft + (calendarView === "month" ? 78 : 86)}px`, zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center', gap: '6px' }}
+            style={{ bottom: `${calendarBottom - 18}px`, left: `${calendarLeft + 76}px`, zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center', gap: '6px' }}
           >
             <div style={{ width: '1px', height: '12px', background: 'rgba(255,255,255,0.5)', marginLeft: '2px', marginBottom: '5px' }} />
             <Button
@@ -25638,10 +25631,15 @@ export default function Dashboard() {
             <Button
               variant="ghost"
               className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight"
-              onClick={() => setDayDetailDate(startOfDayET(new Date()))}
-              data-testid="button-today-view"
+              onClick={() => {
+                if (calendarView === "week") {
+                  setCurrentMonth(new Date());
+                }
+                setCalendarView(calendarView === "month" ? "week" : "month");
+              }}
+              data-testid="button-month-view"
             >
-              Today View
+              {calendarView === "month" ? "Week View" : "Month View"}
             </Button>
           </div>
           
@@ -27408,7 +27406,7 @@ export default function Dashboard() {
                       courseCode,
                       progressBg,
                       progressStartColor: courseHexColor,
-                      progressEndColor: courseHexColorEnd || courseHexColor,
+                      progressEndColor: courseHexColorEnd || getCourseGradientColors(courseCode).end,
                       courseRowColor: courseMatch?.courseRowColor || courseHexColor,
                       taskBgColor: courseMatch?.taskBgColor,
                       courseFontColor: courseMatch?.courseFontColor || '',
@@ -28561,74 +28559,77 @@ export default function Dashboard() {
                     </div>
                   );
                 })()}
+
+                {/* Countdown bars — inside #faf8f5 content div so they scroll with calendar */}
+                {(() => {
+                  const twoWeeksOut = new Date(stableToday.getTime() + 14 * 24 * 60 * 60 * 1000);
+                  const allCountdown = (allTasks || []).filter(t => {
+                    if (t.showCountdownBar === false || t.showCountdownBarMain === false || t.isCompleted) return false;
+                    const tDue = startOfDayET(new Date(t.dueDate));
+                    if (tDue <= stableToday || tDue > twoWeeksOut) return false;
+                    return true;
+                  }).map(t => {
+                    const tDue = startOfDayET(new Date(t.dueDate));
+                    const daysLeft = Math.max(0, Math.round((tDue.getTime() - stableToday.getTime()) / (1000*60*60*24)));
+                    return { task: t, tDue, daysLeft };
+                  }).sort((a, b) => a.tDue.getTime() - b.tDue.getTime() || (a.task.title || '').localeCompare(b.task.title || ''));
+                  const seenNames = new Map<string, number>();
+                  const deduped = allCountdown.filter(cd => {
+                    const name = (cd.task.title || '').trim().toLowerCase();
+                    if (!name) return true;
+                    if (seenNames.has(name)) return false;
+                    seenNames.set(name, 1);
+                    return true;
+                  });
+                  if (deduped.length === 0) return null;
+                  const todayDow = stableToday.getDay();
+                  const dws = gridSizes.dayColumnWidths;
+                  const totalFr = dws.reduce((s: number, v: number) => s + v, 0);
+                  const fixedPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
+                  let frBefore = 0;
+                  for (let i = 0; i <= todayDow && i < dws.length; i++) frBefore += dws[i];
+                  let frSpan = 0;
+                  for (let i = todayDow + 1; i <= Math.min(todayDow + 2, dws.length - 1); i++) frSpan += dws[i];
+                  if (frSpan === 0) return null;
+                  const leftFrac = frBefore / totalFr;
+                  const widthFrac = frSpan / totalFr;
+                  const barH = 3;
+                  const barGap = 14;
+                  const totalBarsHeight = deduped.length * barGap;
+                  return (
+                    <div ref={countdownOverlayRef} data-bars-height={String(totalBarsHeight)} style={{ position: 'sticky', top: `calc(50% - ${Math.round(totalBarsHeight / 2)}px)`, zIndex: 50, pointerEvents: 'none', overflow: 'visible', height: 0 }} data-testid="countdown-bars-overlay">
+                      <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, top: 0, overflow: 'visible' }}>
+                        <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, top: 0 }}>
+                        {deduped.map((cd, idx) => {
+                          const t = cd.task;
+                          const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
+                          const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
+                          const needsPulse = isNotStarted && cd.daysLeft <= 2 && !t.isCompleted;
+                          const labelText = (t.title || '').replace(/[\[\]]/g, '').replace(/^\s+/, '');
+                          const barHPx = needsPulse ? 4 : barH;
+                          const yOff = idx * barGap;
+                          return (
+                            <div key={`cbar-main-${t.id}`} className="countdown-bar-wrapper" style={{ position: 'absolute', left: 0, right: 0, top: `${yOff}px`, height: `${barGap}px`, pointerEvents: 'auto', cursor: 'default', overflow: 'hidden' }} onDoubleClick={() => setEditingTask(t as any)} data-testid={`countdown-bar-${t.id}`}>
+                              <div style={{ position: 'absolute', left: '0px', top: '2px', right: 0, height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
+                                <div style={{ width: '10px', minWidth: '10px', height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
+                                <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
+                                  <span style={{ fontSize: '9px', fontWeight: 500, color: barColor, letterSpacing: '-0.2px', lineHeight: '10px' }}>{cd.daysLeft}d</span>
+                                </div>
+                                <span style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(0,0,0,0.85)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flexShrink: 1, minWidth: 0, paddingLeft: '1px', paddingRight: '3px', lineHeight: '10px' }}>{labelText}</span>
+                                <div className={needsPulse ? 'countdown-bar-pulse' : ''} style={{ flex: 1, height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '0 2px 2px 0', minWidth: '4px', boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined }} />
+                              </div>
+                            </div>
+                          );
+                        })}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
                 
             </div>
           </div>
           </div>
-          {/* Countdown bars overlay — always visible, floats over scroll area */}
-          {(() => {
-            const twoWeeksOut = new Date(stableToday.getTime() + 14 * 24 * 60 * 60 * 1000);
-            const allCountdown = (allTasks || []).filter(t => {
-              if (t.showCountdownBar === false || t.showCountdownBarMain === false || t.isCompleted) return false;
-              const tDue = startOfDayET(new Date(t.dueDate));
-              if (tDue <= stableToday || tDue > twoWeeksOut) return false;
-              return true;
-            }).map(t => {
-              const tDue = startOfDayET(new Date(t.dueDate));
-              const daysLeft = Math.max(0, Math.round((tDue.getTime() - stableToday.getTime()) / (1000*60*60*24)));
-              return { task: t, tDue, daysLeft };
-            }).sort((a, b) => a.tDue.getTime() - b.tDue.getTime() || (a.task.title || '').localeCompare(b.task.title || ''));
-            const seenNames = new Map<string, number>();
-            const deduped = allCountdown.filter(cd => {
-              const name = (cd.task.title || '').trim().toLowerCase();
-              if (!name) return true;
-              if (seenNames.has(name)) return false;
-              seenNames.set(name, 1);
-              return true;
-            });
-            if (deduped.length === 0) return null;
-            const todayDow = stableToday.getDay();
-            const dws = gridSizes.dayColumnWidths;
-            const totalFr = dws.reduce((s: number, v: number) => s + v, 0);
-            const fixedPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
-            let frBefore = 0;
-            for (let i = 0; i <= todayDow && i < dws.length; i++) frBefore += dws[i];
-            let frSpan = 0;
-            for (let i = todayDow + 1; i <= Math.min(todayDow + 2, dws.length - 1); i++) frSpan += dws[i];
-            if (frSpan === 0) return null;
-            const leftFrac = frBefore / totalFr;
-            const widthFrac = frSpan / totalFr;
-            const barH = 3;
-            const barGap = 14;
-            const totalBarsHeight = deduped.length * barGap;
-            return (
-              <div ref={countdownOverlayRef} data-bars-height={String(totalBarsHeight)} style={{ position: 'absolute', top: '50%', transform: `translateY(-${Math.round(totalBarsHeight / 2)}px)`, left: `${fixedPx}px`, right: 0, zIndex: 5, pointerEvents: 'none', overflow: 'visible', height: 0 }} data-testid="countdown-bars-overlay">
-                <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, top: 0, overflow: 'visible' }}>
-                  {deduped.map((cd, idx) => {
-                    const t = cd.task;
-                    const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
-                    const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
-                    const needsPulse = isNotStarted && cd.daysLeft <= 2 && !t.isCompleted;
-                    const labelText = (t.title || '').replace(/[\[\]]/g, '').replace(/^\s+/, '');
-                    const barHPx = needsPulse ? 4 : barH;
-                    const yOff = idx * barGap;
-                    return (
-                      <div key={`cbar-main-${t.id}`} className="countdown-bar-wrapper" style={{ position: 'absolute', left: 0, right: 0, top: `${yOff}px`, height: `${barGap}px`, pointerEvents: 'auto', cursor: 'default', overflow: 'hidden' }} onDoubleClick={() => setEditingTask(t as any)} data-testid={`countdown-bar-${t.id}`}>
-                        <div style={{ position: 'absolute', left: '0px', top: '2px', right: 0, height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
-                          <div style={{ width: '10px', minWidth: '10px', height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
-                          <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
-                            <span style={{ fontSize: '9px', fontWeight: 500, color: barColor, letterSpacing: '-0.2px', lineHeight: '10px' }}>{cd.daysLeft}d</span>
-                          </div>
-                          <span style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(0,0,0,0.85)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flexShrink: 1, minWidth: 0, paddingLeft: '1px', paddingRight: '3px', lineHeight: '10px' }}>{labelText}</span>
-                          <div className={needsPulse ? 'countdown-bar-pulse' : ''} style={{ flex: 1, height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '0 2px 2px 0', minWidth: '4px', boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined }} />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })()}
           </div>
           </div>
           <div
