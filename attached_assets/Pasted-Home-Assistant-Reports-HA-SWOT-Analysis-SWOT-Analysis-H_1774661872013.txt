@@ -1,0 +1,1915 @@
+Home Assistant Reports
+HA SWOT Analysis
+# SWOT Analysis — Home Assistant Automation System
+**Generated:** March 25, 2026
+**Based on:** HA_Integration_Report.md + HA_Automations_Reference.md
+
+---
+
+## STRENGTHS
+
+### 1. Deeply Integrated Study System
+The cat washroom CPPA flow is remarkably well thought out. Lights trigger a voice prompt, voice confirmation starts synchronized playback across Nest speaker + tablet + TV, progress saves automatically, and toothbrushing auto-stops it. This turns a daily routine (bathroom visit) into productive study time without requiring any manual app interaction.
+
+### 2. Comprehensive Fallback Chains
+Almost nothing has a single point of failure:
+- **TTS:** Edge TTS → HA Voice device → Nest speaker → HA Cloud TTS (4 layers deep)
+- **File lookup:** Database cache → OneDrive sync → re-check
+- **HA API calls:** 3 retry attempts with progressive backoff (1.5s, 3s, 4.5s) and 12-second timeout per attempt
+- **Playback:** If no study files exist, the system gracefully falls back to CHUM FM radio instead of doing nothing
+
+### 3. Multiple Input Methods for the Same Action
+You can control the cat washroom system via:
+- Light switch (automatic prompt)
+- Shower button (direct play, no prompt)
+- Physical knob press (stop)
+- Voice commands (pause, resume, stop, skip, restart, reset — 6 commands)
+- Volume knob (rotary encoder)
+- Toothbrush detection (auto-stop)
+
+This gives real redundancy. If one method fails or isn't convenient, another is always available.
+
+### 4. Smart State Management
+The system handles edge cases well:
+- **Server restart cooldown:** Prevents false webhook fires during deployment
+- **Stale session detection:** Auto-clears playback state stuck for 10+ minutes at chunk 0
+- **Pause timeout:** 10-minute auto-stop if you say "pause" but never come back
+- **Max session age:** 4-hour hard limit prevents zombie sessions
+- **Max consecutive errors:** Stops after 5 TTS failures instead of looping forever
+- **Active playback guards:** Shower button and lights won't interrupt each other
+
+### 5. Progress Persistence
+Every stop event (lights off, knob press, toothbrush, voice stop, timeout) saves the current chunk position to the database. When you return, playback resumes one chunk back for context. Completion state, listened flags, and checked chunks are all tracked per file.
+
+### 6. Rich Dashboard Data Pipeline
+The ticker pushes weather, 3-day forecast, pollen/AQI, course announcements, and 30+ interleaved news headlines from 11 sources to HA sensors every 5 minutes — all available as attributes for Lovelace cards.
+
+### 7. Whole-Home Spotify Control
+The floorplan-based Spotify player with room hotspots, 3 user profiles (Bryn, Yasu, Guest), per-room speaker targeting, and the ability to "flick" playback to any tablet is a polished experience. The auto-navigate-home when lights turn off is a nice touch.
+
+---
+
+## WEAKNESSES
+
+### 1. Single Server, In-Memory State
+All playback state (`catWashPlaybackActive`, `catWashPlaybackState`, `voiceCommandPauseState_`, `catLightsPromptPending`) is stored in server memory. If the Replit instance restarts mid-playback:
+- Active playback is lost with no recovery
+- The 10-minute pause timer vanishes
+- Confirmation wait state disappears
+- The user has no indication anything went wrong
+
+**Impact:** Any deployment, crash, or Replit wake-up kills an active session silently.
+
+### 2. Cloud-Dependent Critical Path
+The entire study flow depends on the Replit-hosted app being reachable from your local HA instance. The chain is:
+```
+HA (local) → Internet → Nabu Casa → Internet → Replit App → Internet → Nabu Casa → HA (local)
+```
+Every HA service call makes a round trip through the internet twice. If your internet drops, Replit goes down, or Nabu Casa has issues, the entire automation system is dead — lights, volume, playback, everything.
+
+### 3. Hardcoded URLs and Entity IDs Everywhere
+The deployed app URL (`https://home-view--bkh416.replit.app`) and HA URL (`https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa`) are hardcoded in dozens of places throughout `routes.ts`. Entity IDs like `media_player.nestaudio6787` appear by name (not through constants) in some locations. If you replace a device, rename an entity, or change your Nabu Casa URL, you'll need a careful find-and-replace across a 15,000+ line file.
+
+### 4. Monolithic routes.ts (15,322 Lines)
+All 18 automations, the Spotify player backend, task management, file handling, OneDrive sync, calendar integration, and more live in a single file. This makes it:
+- Hard to find specific automation logic
+- Risky to edit (a typo anywhere can break unrelated features)
+- Slow to parse mentally when debugging
+- Difficult for anyone else to maintain
+
+### 5. No Authentication on Most Webhooks
+Only `play-urgent-pdf` checks for `x-webhook-secret`. All other webhook endpoints (`cat-lights`, `cat-lights-confirm`, `cat-knob-press`, `cat-volume`, `cat-shower-button`, `voice-command`, `kitchen-volume`, `cat-wash-stop`) are completely open. Anyone who discovers your app URL can:
+- Trigger the cat washroom flow
+- Stop your playback
+- Adjust your volume
+- Send voice commands
+
+**Impact:** Low risk today (the URLs aren't public knowledge), but a security gap.
+
+### 6. TTS Rate Limiting is a Known Problem
+The primary HA Cloud TTS is rate-limited until April 1, 2026, forcing reliance on Edge TTS. If Edge TTS also becomes unavailable or rate-limited, the fallback chain will exhaust quickly since the final fallback (HA Cloud TTS) is the one that's already rate-limited.
+
+### 7. Polling-Based Confirmation (Not Event-Driven)
+The confirmation flow polls `input_boolean.module_reading_confirmed` every 1.5 seconds for up to 23 seconds. That's ~15 HTTP round trips through the internet just to check if you said "yes." A WebSocket or webhook-based confirmation would be instant and use zero polling.
+
+### 8. No Monitoring or Alerting
+There's no health check, no uptime monitor, and no notification if the app goes down. If Replit sleeps the instance or a deployment fails, you won't know until you flip the lights and nothing happens.
+
+---
+
+## OPPORTUNITIES
+
+### 1. Move State to the Database
+Replace in-memory playback state with database-backed state. This would:
+- Survive server restarts and deployments
+- Allow the app to recover mid-playback after a crash
+- Enable a "what's currently playing?" dashboard widget in HA
+- Let you check playback status from any device
+
+### 2. Add Webhook Authentication
+Add a shared secret header check to all webhook endpoints (like `play-urgent-pdf` already has). This is a simple change — add one guard check to each handler — and would close the security gap.
+
+### 3. Local Fallback / HA-Native Automation
+For the most critical flows (lights on → CHUM FM), consider a parallel HA-native automation that runs entirely locally. If the app is unreachable, HA could still play CHUM FM on its own. The app webhook would then cancel/override the local automation when it responds successfully.
+
+### 4. Break Up routes.ts
+Split the monolith into focused modules:
+- `server/catWashroom.ts` — all CPPA/cat washroom logic
+- `server/spotifyController.ts` — Spotify flick/stop/go-home
+- `server/voiceCommands.ts` — voice command handler
+- `server/ticker.ts` — already partially done with `haTickerWebhook.ts`
+- `server/webhooks.ts` — volume, kitchen, partner notification
+
+This would make each automation independently testable and much easier to maintain.
+
+### 5. WebSocket for Tablet Sync
+Replace the polling-based tablet/TV sync (tablet polls `/api/cat-wash/progress`) with a WebSocket connection. This would give:
+- Instant word highlighting updates
+- Real-time chunk transitions
+- Lower server load
+- Better synchronization between Nest audio and tablet display
+
+### 6. Expand to Other Rooms
+The cat washroom study system is well-proven. The same pattern (lights trigger → voice prompt → confirmed playback) could work in:
+- **King Bedroom:** Morning alarm → "Would you like to review today's schedule?"
+- **Kitchen:** Motion sensor → play podcast or news briefing
+- **Living Room:** TV on → show study dashboard on the TV
+
+### 7. Add Usage Analytics
+Track which readings you complete, when, and how long each takes. This data could:
+- Show study patterns over the semester
+- Predict how long remaining readings will take
+- Suggest optimal study times based on history
+- Generate a weekly study report
+
+### 8. Smart Volume Based on Time of Day
+Instead of fixed volume defaults (0.85 for TTS prompt, 0.75 for playback), adjust based on time:
+- Early morning (6-8 AM): Lower volume
+- Daytime (8 AM-10 PM): Normal volume
+- Late night (10 PM-6 AM): Whisper mode
+
+### 9. Multi-Semester Support
+The system is currently semester-bound. Adding historical semester data would let you:
+- Review past readings
+- Track progress across your degree
+- Compare study patterns semester over semester
+
+### 10. Offline TTS Pre-Generation
+Currently, TTS audio is generated on-demand (with some background pipelining for the next chunk). A nightly job could pre-generate all TTS audio for the week's readings, eliminating any TTS latency or rate-limit risk during actual playback.
+
+---
+
+## THREATS
+
+### 1. Replit Platform Dependency
+The entire system runs on Replit. If Replit changes pricing, has extended downtime, modifies their deployment infrastructure, or deprecates features your app depends on, there's no quick migration path. The app is deeply integrated with Replit's deployment URLs, environment secrets, and hosting model.
+
+### 2. Third-Party API Changes
+The system depends on multiple external services:
+- **Edge TTS (Microsoft):** Unofficial/undocumented API — could be blocked or changed without notice
+- **Nabu Casa:** HA Cloud relay — pricing or availability changes affect all HA communication
+- **Spotify API:** Rate limits, scope changes, or deprecation of endpoints
+- **OneDrive API:** File sync depends on Microsoft Graph API stability
+- **RSS feeds (11 news sources):** Any source changing their feed format breaks that source's ticker data
+
+### 3. Network Partition = Total Failure
+If your home internet goes down:
+- All HA ↔ App communication stops
+- Lights won't trigger any automation
+- Volume knobs, shower button, voice commands — all dead
+- No fallback to local-only operation exists
+
+This is the biggest operational risk. A local network outage makes the entire automation system inert.
+
+### 4. Device Replacement Fragility
+Entity IDs are device-specific (e.g., `media_player.nestaudio6787` includes the device's serial number). Replacing the Nest speaker, any Echo, a tablet, or the Fire Stick means:
+- Finding every reference to the old entity ID
+- Updating it across the 15,000-line routes file
+- Updating REST commands in HA's configuration.yaml
+- Re-testing every automation that uses that device
+
+### 5. Semester Boundary Gaps
+Between semesters, the CPPA system has no content to play, so it always falls back to CHUM FM. If you forget to configure the new semester settings, the study system is effectively disabled until you notice and set it up manually.
+
+### 6. Single User Design
+The system is built for Bryn specifically — voice prompts say "Bryn," push notifications go to one iPhone, Spotify profiles are hardcoded. If household dynamics change (new roommate, partner wants to use the study system), significant refactoring would be needed.
+
+### 7. ADB Command Fragility
+The tablet and Fire Stick automation relies on ADB commands through HA's Android TV integration. These commands are:
+- Device-specific (Silk browser package name, immersive mode settings)
+- Firmware-version dependent (Android updates can break ADB behavior)
+- Not always reliable (ADB connections can drop, devices can go offline)
+- Hard to debug remotely (no feedback if a command fails silently)
+
+### 8. TTS Quality Degradation
+Edge TTS is currently set to `en-US-AndrewMultilingualNeural`, which works well. But if Microsoft degrades, removes, or paywalls this voice, the reading experience suffers significantly. Academic content read by a poor TTS voice would be hard to follow.
+
+---
+
+## SUMMARY MATRIX
+
+| Category | Count | Key Theme |
+|----------|-------|-----------|
+| **Strengths** | 7 | Deeply integrated, redundant, well-engineered daily workflow |
+| **Weaknesses** | 8 | In-memory state, cloud dependency, monolithic code, no auth on most webhooks |
+| **Opportunities** | 10 | Database state, local fallback, room expansion, analytics, code splitting |
+| **Threats** | 8 | Platform lock-in, network dependency, device replacement pain, API instability |
+
+### Top 3 Priorities (Risk × Impact)
+
+1. **Move playback state to database** (Weakness #1 → Opportunity #1)
+   Eliminates the biggest reliability gap. Every server restart currently kills active sessions silently.
+
+2. **Add webhook authentication** (Weakness #5 → Opportunity #2)
+   Smallest effort, closes a real security hole. One shared-secret check per endpoint.
+
+3. **Build a local HA fallback for CHUM FM** (Weakness #2 → Opportunity #3)
+   Even a simple HA automation that plays CHUM FM if the webhook doesn't respond within 10 seconds would cover 80% of the "internet is down" failure case.
+________________________________________
+HA Automations Reference
+# Home Assistant Automations — Complete Reference
+**Generated:** March 25, 2026
+**App URL:** https://home-view--bkh416.replit.app
+
+---
+
+## HOW THIS WORKS
+
+Your app acts as the "brain" — Home Assistant triggers webhooks on your app, and the app responds by calling HA services back. The HA side uses **REST commands** (defined in your `configuration.yaml`) to call your app's webhook endpoints. The app then makes **HA service calls** (media_player, input_boolean, androidtv, etc.) to control your devices.
+
+```
+[HA Automation] → REST Command → [App Webhook Endpoint] → HA Service Call → [Device]
+```
+
+---
+
+## AUTOMATION 1: Cat Washroom Lights — CPPA Study Prompt
+
+### What it does
+When you turn on the cat washroom lights, the system checks if you have unlistened school readings for this week. If yes, it asks via voice: "Would you like to play [reading name]?" and waits for your answer. If you confirm, it starts reading the material aloud on the Nest speaker while displaying the text on your tablet and TV. If you don't confirm within 23 seconds, it plays CHUM FM 104.5 instead. When you turn the lights OFF, everything stops and your progress is saved.
+
+### HA Side (what you need in configuration.yaml)
+```yaml
+rest_command:
+  cat_lights_webhook:                                    # Name you call from HA automations
+    url: "https://home-view--bkh416.replit.app/api/webhook/cat-lights"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+```
+
+### HA Automation (what triggers it)
+```yaml
+automation:
+  - alias: "Cat Washroom Lights Changed"
+    trigger:
+      - platform: state                                  # Fires on any state change
+        entity_id: light.cat_lights                      # The cat washroom light entity
+    action:
+      - service: rest_command.cat_lights_webhook          # Calls the app webhook
+```
+
+### App Side — LIGHTS OFF Flow
+```
+POST /api/webhook/cat-lights
+│
+├── Query light.cat_lights state from HA → "off"
+│
+├── IF CPPA playback is active:
+│   └── stopNestPlaybackWithGoodbye('light_off')
+│       ├── Save current chunk index to database
+│       ├── media_player/media_stop → media_player.nestaudio6787
+│       │   Stops the Nest speaker audio
+│       ├── media_player/turn_off → media_player.fire_tv_172_24_0_88
+│       │   Turns off the Fire Stick
+│       └── media_player/turn_off → media_player.tv_cat_wr
+│           Turns off the Samsung TV
+│
+├── IF TTS session is active:
+│   └── stopTTSSession() — kills the chunk-by-chunk reading
+│
+├── stopAllCatWashroomSpeakers()
+│   ├── media_player/media_stop → media_player.nestaudio6787
+│   │   Stops Nest speaker (CHUM FM or anything else)
+│   ├── media_player/media_stop → [echo_cat_left, echo_cat_right, echo_cat_middle]
+│   │   Stops all 3 cat washroom Echo speakers
+│   └── media_player/media_stop → media_player.cat_washroom_media_group
+│       Stops the entire cat washroom speaker group
+│
+├── Reset state flags:
+│   catLightsPromptPending = false
+│   catWashPlaybackTrigger = null
+│
+└── Response: { action: "stopped", stoppedItems: [...] }
+```
+
+### App Side — LIGHTS ON Flow
+```
+POST /api/webhook/cat-lights
+│
+├── Query light.cat_lights state from HA → "on"
+│
+├── GUARD: Server startup cooldown (skip if server just restarted)
+├── GUARD: Skip if playback already active
+├── GUARD: Skip if another prompt is already pending
+│
+├── ★ STOP any leftover media (CHUM FM, etc):
+│   └── stopAllCatWashroomSpeakers()
+│       ├── media_player/media_stop → media_player.nestaudio6787
+│       ├── media_player/media_stop → [all 3 Echo speakers]
+│       └── media_player/media_stop → media_player.cat_washroom_media_group
+│
+├── Look up active semester settings from database
+├── Calculate current week number (accounts for reading week)
+├── Find next unlistened CPPA file for this week
+│   ├── Check database cache first
+│   └── If not cached → sync from OneDrive, then check again
+│
+├── IF no unlistened files found:
+│   └── playChumFmRadio()
+│       └── media_player/play_media → media_player.cat_washroom_media_group
+│           content_type: "custom"
+│           content_id: "play 104.5 chum fm"
+│       └── DONE (no prompt needed)
+│
+├── Prepare TTS prompt:
+│   message = "Would you like to play [file description]?"
+│
+├── Set HA booleans:
+│   ├── input_boolean/turn_off → input_boolean.module_reading_confirmed
+│   └── input_boolean/turn_on → input_boolean.module_reading_pending
+│
+├── Set speaker volumes for prompt:
+│   ├── media_player/volume_set → media_player.home_assistant_voice_097c38 @ 0.85
+│   └── media_player/volume_set → media_player.nestaudio6787 @ 0.85
+│
+├── Generate TTS audio (Edge TTS, voice: en-US-AndrewMultilingualNeural)
+│
+├── Play TTS prompt (with fallback chain):
+│   ├── TRY 1: media_player/play_media → media_player.home_assistant_voice_097c38
+│   │   Plays on HA Voice ESPHome device
+│   ├── TRY 2: media_player/play_media → media_player.nestaudio6787
+│   │   Falls back to Nest speaker
+│   └── TRY 3: tts/speak → tts.home_assistant_cloud → HA Voice device
+│       Last resort: HA Cloud TTS (Nabu Casa)
+│
+├── Wait 2 seconds (let prompt finish)
+│
+├── WAIT FOR CONFIRMATION (up to 23 seconds):
+│   ├── Poll input_boolean.module_reading_confirmed every 1.5s
+│   └── OR receive POST /api/webhook/cat-lights-confirm
+│
+├── Reset booleans:
+│   ├── input_boolean/turn_off → input_boolean.module_reading_pending
+│   └── input_boolean/turn_off → input_boolean.module_reading_confirmed
+│
+├── IF NOT CONFIRMED (23s timeout):
+│   └── playChumFmRadio()
+│       └── media_player/play_media → media_player.cat_washroom_media_group
+│           Plays CHUM FM 104.5
+│
+└── IF CONFIRMED:
+    └── startConfirmedPlaybackFlow() — See AUTOMATION 3
+```
+
+---
+
+## AUTOMATION 2: Cat Washroom Lights — Confirmation
+
+### What it does
+When you say "yes" (or press a button) to confirm you want to hear the reading, this webhook resolves the pending prompt from Automation 1 and triggers the full playback flow.
+
+### HA Side
+```yaml
+rest_command:
+  cat_lights_confirm_webhook:
+    url: "https://home-view--bkh416.replit.app/api/webhook/cat-lights-confirm"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+```
+
+### App Side
+```
+POST /api/webhook/cat-lights-confirm
+│
+├── Resolve the pending confirmation promise → true
+│   (This unblocks the 23-second wait in Automation 1)
+│
+├── Stop media on cat washroom Echo speakers:
+│   └── media_player/media_stop → [echo_cat_left, echo_cat_right, echo_cat_middle]
+│       Clears any Echo audio so it doesn't compete with Nest playback
+│
+└── Response: { action: "confirmed" }
+```
+
+---
+
+## AUTOMATION 3: Confirmed Playback Flow (CPPA Module Reading)
+
+### What it does
+This is the core reading flow. It navigates your tablet and TV to the PDF reader page, turns on the Fire Stick and Samsung TV, plays a confirmation message ("Okay, I will now play..."), and then starts reading the module text chunk by chunk on the Nest speaker. The tablet and TV display the text in sync.
+
+### Triggered by
+- Automation 1 (lights confirmation)
+- Automation 5 (shower button)
+- Automation 9 (voice commands: resume, restart, reset, skip)
+- Automation 11 (play-urgent-pdf webhook)
+
+### App Side
+```
+startConfirmedPlaybackFlow(file, logPrefix, voice='echo', confirmationTTS)
+│
+├── Calculate resume point:
+│   savedChunk = file.lastChunkIndex (from database)
+│   resumeFromChunk = max(0, savedChunk - 1)     ← goes back 1 chunk for context
+│
+├── Build URLs:
+│   readerUrl = /pdf-reader/{fileId}?catWashFollow=true&resumeChunk={N}&voice=echo&fullscreen=true
+│   tvFollowUrl = /pdf-reader/{fileId}?catWashFollow=true&followOnly=true&...
+│
+├── Set tablet navigation commands:
+│   ├── tablet-nav "master" → readerUrl         (main tablet controls playback)
+│   └── tablet-nav "tv" → tvFollowUrl           (TV follows along, display only)
+│
+├── PARALLEL SETUP (all happen simultaneously):
+│
+│   ├── TABLET SETUP (media_player.tablet_cat):
+│   │   ├── androidtv/adb_command: input keyevent KEYCODE_WAKEUP
+│   │   │   Wakes the tablet screen
+│   │   ├── androidtv/adb_command: settings put system screen_brightness 255
+│   │   │   Sets brightness to maximum
+│   │   ├── Wait 1.5 seconds
+│   │   ├── androidtv/adb_command: am start --activity-clear-task -a VIEW -d "{readerUrl}" com.amazon.cloud9
+│   │   │   Opens the PDF reader URL in Silk browser
+│   │   ├── Wait 1 second
+│   │   ├── androidtv/adb_command: settings put global policy_control immersive.full=com.amazon.cloud9
+│   │   │   Sets immersive mode (hides status/nav bars)
+│   │   └── androidtv/adb_command: input keyevent KEYCODE_F11
+│   │       Toggles fullscreen
+│   │
+│   ├── TV SETUP:
+│   │   ├── media_player/turn_on → media_player.fire_tv_172_24_0_88
+│   │   │   Wakes the Fire Stick
+│   │   ├── media_player/turn_on → media_player.tv_cat_wr
+│   │   │   Turns on the Samsung TV
+│   │   ├── Wait 3 seconds (let TV boot)
+│   │   ├── media_player/select_source → media_player.tv_cat_wr, source: "HDMI1"
+│   │   │   Switches TV input to Fire Stick
+│   │   └── openUrlOnFireStick():
+│   │       ├── androidtv/adb_command: input keyevent KEYCODE_WAKEUP
+│   │       ├── androidtv/adb_command: am force-stop com.amazon.cloud9
+│   │       │   Kills existing Silk browser
+│   │       ├── Store redirect URL at /api/cat-wash/tv-follow
+│   │       ├── androidtv/adb_command: am start -a VIEW -d "{redirectUrl}" com.amazon.cloud9
+│   │       │   Opens redirect URL (which then redirects to PDF reader)
+│   │       ├── Wait 8 seconds
+│   │       ├── androidtv/adb_command: settings put global policy_control immersive.full=...
+│   │       │   Immersive mode attempt 1
+│   │       ├── androidtv/adb_command: settings put global policy_control immersive.full=...
+│   │       │   Immersive mode attempt 2
+│   │       └── androidtv/adb_command: input keyevent KEYCODE_DPAD_CENTER
+│   │           Press center button (dismiss any dialogs)
+│   │
+│   ├── PRE-GENERATE FIRST AUDIO CHUNK:
+│   │   ├── Check if pre-prepared audio exists (from background audio prep job)
+│   │   │   ├── Yes → use cached file path
+│   │   │   └── No → generateAndSaveTTSAudio(chunkText)
+│   │   │       Edge TTS → save as .mp3 in /tts/ directory
+│   │
+│   └── CONFIRMATION TTS:
+│       ├── Generate TTS: "Okay, I will now play [file description]."
+│       ├── playOnNestSpeaker(audioUrl)
+│       │   ├── media_player/media_stop → media_player.nestaudio6787
+│       │   ├── media_player/volume_set → media_player.nestaudio6787 @ 0.75
+│       │   └── media_player/play_media → media_player.nestaudio6787
+│       └── Wait for estimated TTS duration (word count / 140 wpm)
+│
+├── Set volume for playback:
+│   ├── media_player/volume_set → media_player.home_assistant_voice_097c38 @ 0.75
+│   └── media_player/volume_set → media_player.nestaudio6787 @ 0.75
+│
+├── Extract text from PDF file
+├── Split into chunks (2000 chars each)
+│
+└── startNestChunkPlayback():
+    │
+    FOR EACH CHUNK (starting from resumeFromChunk):
+    ├── Check if session is still valid (not cancelled, not stale)
+    ├── Generate or use pre-prepared TTS audio for chunk
+    ├── playOnNestSpeaker(audioUrl)
+    │   ├── media_player/media_stop → media_player.nestaudio6787
+    │   ├── media_player/volume_set → media_player.nestaudio6787 @ 0.75
+    │   └── media_player/play_media → media_player.nestaudio6787
+    ├── Wait for estimated chunk duration (word count / 175 wpm + 1s buffer)
+    ├── Poll Nest speaker state to confirm playback finished
+    ├── Update database: lastChunkIndex, checkedChunks
+    ├── Emit progress to connected tablet/TV via polling endpoint
+    └── Pre-generate NEXT chunk audio in background (pipeline)
+    │
+    WHEN ALL CHUNKS COMPLETE:
+    ├── Mark file as "listened" in database
+    ├── Play goodbye TTS: "All done with [file]. Great work Bryn!"
+    ├── Find next unlistened file
+    │   ├── If found → start next file automatically
+    │   └── If none → stop playback, turn off TV/Fire Stick
+    └── stopNestPlaybackWithGoodbye('complete')
+```
+
+---
+
+## AUTOMATION 4: Cat Washroom Knob Press — Master STOP
+
+### What it does
+When you press the physical knob/button in the cat washroom, everything stops immediately. If CPPA playback is active, it saves your progress first. If nothing is playing, it kills any media on all washroom speakers (stops CHUM FM, etc.).
+
+### HA Side
+```yaml
+rest_command:
+  cat_knob_press_webhook:
+    url: "https://home-view--bkh416.replit.app/api/webhook/cat-knob-press"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+```
+
+### App Side
+```
+POST /api/webhook/cat-knob-press
+│
+├── IF CPPA playback is active:
+│   └── Internally calls POST /api/webhook/cat-wash-stop
+│       ├── stopNestPlaybackWithGoodbye('knob_press')
+│       │   ├── Save chunk progress to database
+│       │   ├── media_player/media_stop → media_player.nestaudio6787
+│       │   ├── media_player/turn_off → media_player.fire_tv_172_24_0_88
+│       │   └── media_player/turn_off → media_player.tv_cat_wr
+│       └── Stop TTS session if active
+│
+├── ELSE (no CPPA playing — just stop everything):
+│   └── stopAllCatWashroomSpeakers()
+│       ├── media_player/media_stop → media_player.nestaudio6787
+│       ├── media_player/media_stop → [echo_cat_left, echo_cat_right, echo_cat_middle]
+│       └── media_player/media_stop → media_player.cat_washroom_media_group
+│
+└── Response: { success: true, action: "stopped" }
+```
+
+---
+
+## AUTOMATION 5: Cat Washroom Shower Button — Direct Play
+
+### What it does
+When you press the shower button, it skips the "would you like to play?" prompt and immediately starts the next unlistened CPPA reading. If there are no readings left for the week, it plays CHUM FM instead. If CPPA playback is already running, it does nothing (assumes you're just toggling the shower/fan).
+
+### HA Side
+```yaml
+rest_command:
+  cat_wash_webhook:
+    url: "https://home-view--bkh416.replit.app/api/webhook/cat-wash"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+```
+Note: The shower button automation in HA should call `rest_command.cat_wash_webhook` or directly hit `/api/webhook/cat-shower-button`.
+
+### App Side
+```
+POST /api/webhook/cat-shower-button
+│
+├── GUARD: Server startup cooldown
+├── GUARD: Skip if CPPA playback already active
+├── GUARD: Skip if lights prompt already pending
+│
+├── Look up active semester
+│   ├── No active semester → playChumFmRadio()
+│   │   └── media_player/play_media → media_player.cat_washroom_media_group
+│   │       "play 104.5 chum fm"
+│   └── Active semester → continue
+│
+├── Calculate current week, find next unlistened file
+│   ├── Check database first
+│   └── If not cached → sync from OneDrive
+│
+├── IF no files:
+│   └── playChumFmRadio() → CHUM FM on speaker group
+│
+├── IF file found:
+│   ├── Response: { action: "playing", file: {...} }
+│   ├── Generate confirmation TTS: "Okay, I will now play [file]."
+│   └── startConfirmedPlaybackFlow() — See AUTOMATION 3
+│       (No prompt/wait — goes directly into playback)
+```
+
+---
+
+## AUTOMATION 6: Cat Washroom Volume Knob
+
+### What it does
+When you turn the rotary encoder in the cat washroom, it adjusts the volume on whichever speakers are currently playing. It checks which speakers are active (Nest, Echo group, etc.) and adjusts only those. Normal rotation = ±5% per click, fast rotation = ±15%.
+
+### HA Side
+```yaml
+rest_command:
+  cat_volume_webhook:
+    url: "https://home-view--bkh416.replit.app/api/webhook/cat-volume"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+    payload: '{"direction":"{{ direction }}"}'
+```
+**Variable `direction`:** `"up"` or `"down"` — set by your HA automation based on encoder rotation.
+
+### App Side
+```
+POST /api/webhook/cat-volume
+Body: { direction: "up" | "down", speed: "normal" | "fast" }
+│
+├── Query state of cat washroom speakers:
+│   ├── GET /api/states/media_player.nestaudio6787
+│   └── GET /api/states/media_player.cat_washroom_media_group
+│
+├── Find which are currently "playing", "paused", or "buffering"
+│   └── If none active → default to Nest speaker
+│
+├── Calculate new volume:
+│   ├── Normal step: current ± 0.05
+│   └── Fast step: current ± 0.15
+│   └── Clamped to 0.0 – 1.0
+│
+├── For each active speaker:
+│   └── media_player/volume_set → {speaker entity} @ newVolume
+│
+└── Response: { success: true, direction, speed }
+```
+
+---
+
+## AUTOMATION 7: Toothbrush Detection — Auto Stop
+
+### What it does
+When the app detects your toothbrush has started running (state changes from "idle" or "charging" to "brushing"), it automatically stops the CPPA playback and saves your progress. This way you don't need to manually stop the reading when you start brushing.
+
+### How it works
+This is NOT triggered by an HA automation — the app polls the toothbrush sensor directly.
+
+### App Side
+```
+startToothbrushPolling() — Started whenever CPPA playback begins
+│
+├── Poll sensor.toothbrush_bryn_toothbrush_state every few seconds
+│   └── GET /api/states/sensor.toothbrush_bryn_toothbrush_state
+│
+├── IF state = "running" or "brushing":
+│   └── Internally triggers cat-wash-stop logic
+│       ├── stopNestPlaybackWithGoodbye('toothbrush')
+│       │   ├── Save progress to database
+│       │   ├── media_player/media_stop → media_player.nestaudio6787
+│       │   ├── media_player/turn_off → Fire Stick
+│       │   └── media_player/turn_off → Samsung TV
+│       └── Play goodbye TTS: "Stopping playback. Your progress has been saved."
+│
+└── Polling stops when playback ends
+```
+
+### Webhook alternative
+```
+POST /api/webhook/cat-wash-stop
+Body: { trigger: "toothbrush" }
+│
+├── IF CPPA playback active:
+│   └── stopNestPlaybackWithGoodbye('toothbrush')
+│       ├── Save chunk progress
+│       ├── media_player/media_stop → media_player.nestaudio6787
+│       ├── media_player/turn_off → media_player.fire_tv_172_24_0_88
+│       └── media_player/turn_off → media_player.tv_cat_wr
+│
+├── IF TTS session active:
+│   └── stopTTSSession()
+│
+└── Response: { action: "stopped", stoppedItems: [...] }
+```
+
+---
+
+## AUTOMATION 8: Kitchen Volume Control
+
+### What it does
+Controls the Kitchen Echo Studio (Black) volume via a rotary encoder or HA automation.
+
+### App Side
+```
+POST /api/webhook/kitchen-volume
+Body: { direction: "up" | "down", speed: "normal" | "fast" }
+│
+├── GET current volume of media_player.echo_kitchen_studio_black_am
+│
+├── Calculate new volume:
+│   ├── Normal: ± 0.05
+│   └── Fast: ± 0.15
+│
+└── media_player/volume_set → media_player.echo_kitchen_studio_black_am @ newVolume
+```
+
+---
+
+## AUTOMATION 9: Voice Commands
+
+### What it does
+Handles voice commands spoken in the cat washroom. You can pause, resume, stop, skip, restart, or reset the current CPPA reading. Each command gives voice feedback via the Nest speaker.
+
+### HA Side
+The HA voice assistant (or a custom intent) should call:
+```yaml
+rest_command:
+  voice_command_webhook:
+    url: "https://home-view--bkh416.replit.app/api/webhook/voice-command"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+    payload: '{"command":"{{ command }}"}'
+```
+
+### App Side — PAUSE
+```
+POST /api/webhook/voice-command
+Body: { command: "pause" }
+│
+├── IF nothing playing:
+│   └── TTS: "Nothing is playing right now."
+│
+├── Save current chunk progress to database
+├── Stop Nest speaker: media_player/media_stop → media_player.nestaudio6787
+├── Stop word advancement (text highlighting on tablet)
+├── Set playback state to inactive
+├── Stop toothbrush polling
+│
+├── Start 10-MINUTE AUTO-STOP TIMER:
+│   └── After 10 minutes with no "resume":
+│       ├── Send stop command to tablet + TV
+│       ├── media_player/turn_off → media_player.fire_tv_172_24_0_88
+│       ├── media_player/turn_off → media_player.samsung_tv
+│       └── TTS: "Pause timed out. Playback has been stopped. Your progress has been saved."
+│
+├── TTS: "Paused. Say resume to continue, or I'll stop in 10 minutes."
+│
+└── Response: { action: "paused", file: "...", chunk: N }
+```
+
+### App Side — RESUME
+```
+POST /api/webhook/voice-command
+Body: { command: "resume" }
+│
+├── IF nothing is paused:
+│   └── TTS: "Nothing is paused right now."
+│
+├── Clear auto-stop timer
+├── Look up paused file from database
+│
+├── Clear Echo speakers:
+│   └── media_player/media_stop → [echo_cat_left, echo_cat_right, echo_cat_middle]
+│
+├── TTS: "Resuming [file name]."
+│
+└── startConfirmedPlaybackFlow(file) — See AUTOMATION 3
+    (Resumes from saved chunk position)
+```
+
+### App Side — STOP
+```
+POST /api/webhook/voice-command
+Body: { command: "stop" }
+│
+├── IF nothing playing or paused:
+│   └── TTS: "Nothing is playing."
+│
+├── IF CPPA playback active:
+│   └── stopNestPlaybackWithGoodbye('voice_command_stop')
+│       ├── Save progress
+│       ├── media_player/media_stop → Nest
+│       ├── media_player/turn_off → Fire Stick
+│       ├── media_player/turn_off → Samsung TV
+│       └── TTS goodbye: "Stopped. Your progress has been saved. See you next time Bryn."
+│
+├── IF paused (not actively playing):
+│   ├── Send stop to tablet + TV displays
+│   ├── media_player/turn_off → media_player.fire_tv_172_24_0_88
+│   ├── media_player/turn_off → media_player.samsung_tv
+│   └── TTS: "Stopped. Your progress has been saved. See you next time Bryn."
+│
+└── Stop TTS session if active
+```
+
+### App Side — SKIP (next file)
+```
+POST /api/webhook/voice-command
+Body: { command: "skip" }
+│
+├── IF nothing playing:
+│   └── TTS: "Nothing is playing to skip."
+│
+├── Mark current file as "listened" (complete) in database
+├── Stop current Nest playback
+│
+├── Find next unlistened file for this week
+│   ├── IF no more files:
+│   │   ├── media_player/turn_off → Fire Stick + Samsung TV
+│   │   └── TTS: "Skipped. No more readings for this week. Great work Bryn!"
+│   │
+│   └── IF next file found:
+│       ├── Clear Echo speakers
+│       ├── TTS: "Skipped. Now playing [next file]."
+│       └── startConfirmedPlaybackFlow(nextFile) — See AUTOMATION 3
+```
+
+### App Side — RESTART (go back one chunk)
+```
+POST /api/webhook/voice-command
+Body: { command: "restart" }  (also accepts "go_back")
+│
+├── IF nothing playing:
+│   └── TTS: "Nothing is playing to restart."
+│
+├── Calculate target chunk = current chunk - 1 (minimum 0)
+├── Stop current playback
+├── Save new chunk position to database
+│
+├── Clear Echo speakers
+├── TTS: "Going back. Restarting from an earlier section."
+│
+└── startConfirmedPlaybackFlow(file, fromChunk) — See AUTOMATION 3
+```
+
+### App Side — RESET (start from beginning)
+```
+POST /api/webhook/voice-command
+Body: { command: "reset" }
+│
+├── IF nothing playing:
+│   └── TTS: "Nothing is playing to reset."
+│
+├── Reset file progress in database:
+│   lastChunkIndex = 0
+│   checkedChunks = '[]'
+├── Stop current playback
+│
+├── Clear Echo speakers
+├── TTS: "Resetting [file]. Starting from the beginning."
+│
+└── startConfirmedPlaybackFlow(file, fromChunk=0) — See AUTOMATION 3
+```
+
+---
+
+## AUTOMATION 10: Dashboard Ticker — Push to HA Sensors
+
+### What it does
+Every 5 minutes, the app fetches weather, news, pollen data, and course announcements, then pushes them to 3 HA sensors. These sensors can be used in your Lovelace dashboard cards to display a scrolling news ticker, weather info, etc.
+
+### App Side (runs automatically)
+```
+pushTickerToHA() — runs every 5 minutes (300,000 ms)
+│
+├── Fetch from internal APIs:
+│   ├── GET /api/weather-alerts     (3s timeout)
+│   ├── GET /api/weather            (3s timeout)
+│   ├── GET /api/pollen             (3s timeout)
+│   └── GET /api/news               (4s timeout)
+│
+├── Fetch course announcements from database
+│
+├── Build ticker segments:
+│   ├── ⚠️ Weather alerts (if any)
+│   ├── 🌡️ Current temperature + conditions
+│   ├── 📅 3-day forecast
+│   ├── 🌿 Pollen levels + AQI
+│   ├── 📢 Course announcements (within current week)
+│   └── 📰 News headlines (Canadian → US → BBC, interleaved)
+│
+├── Push to HA via POST /api/states/{entity}:
+│
+│   ├── sensor.dashboard_ticker
+│   │   State: first 255 chars of combined text
+│   │   Attributes: full_text, segments[], weather, forecast_3day,
+│   │               forecast_brief, pollen, alerts[], announcements[],
+│   │               news[], news_detailed[]
+│   │
+│   ├── sensor.dashboard_weather
+│   │   State: "1°C — Clear | Wind: 12 km/h"
+│   │   Attributes: forecast_3day, forecast_brief, pollen, alerts[]
+│   │
+│   └── sensor.dashboard_news
+│       State: "28 headlines"
+│       Attributes: headlines[], headlines_detailed[]
+│
+└── Log: "[HA Ticker] Pushed 32 segments to HA (weather: yes, news: 28, alerts: 0)"
+```
+
+---
+
+## AUTOMATION 11: Play Urgent PDF — On-Demand Webhook
+
+### What it does
+When called from HA (via a script, button, or automation), immediately finds and starts playing the most urgent unlistened PDF reading. Prioritizes CPPA modules first, then other modules, then CPPA readings, then other readings.
+
+### HA Side
+```yaml
+rest_command:
+  play_urgent_pdf:
+    url: "https://home-view--bkh416.replit.app/api/webhook/play-urgent-pdf"
+    method: POST
+    content_type: "application/json"
+    headers:
+      x-webhook-secret: "[YOUR_SITE_PASSWORD]"
+    payload: '{"entity_id": "media_player.nestaudio6787"}'
+```
+
+### App Side
+```
+POST /api/webhook/play-urgent-pdf
+Body: { entity_id: "media_player.nestaudio6787" }  (optional, defaults to Nest)
+│
+├── Authenticate via x-webhook-secret header
+│
+├── Validate entity_id against allowed speaker list
+│   Allowed: Nest, HA Voice, Kitchen Echo, all 3 cat Echos,
+│            Closet Echo, LR Couch Echo, Hallway Echo,
+│            King L/R/TV Echos, Kitchen Cupboards/Fridge/Hutch/Island/Studio Echos, LR Hub Echo
+│   Default: media_player.nestaudio6787 (Nest speaker)
+│
+├── Get current semester week
+├── Find all unlistened files, ordered by priority:
+│   1. CPPA module files (highest priority)
+│   2. Other course module files
+│   3. CPPA reading files
+│   4. Other course reading files
+│
+├── IF no files:
+│   ├── IF target is Nest/HA Voice:
+│   │   └── TTS: "All week N readings are complete. Great job!"
+│   │       media_player/play_media → target entity
+│   └── IF target is Alexa device:
+│       └── notify/alexa_media → target entity
+│           "All week N readings are complete."
+│
+└── IF file found:
+    └── startConfirmedPlaybackFlow(file) — See AUTOMATION 3
+```
+
+---
+
+## AUTOMATION 12: Partner Leaves Work Notification
+
+### What it does
+Creates an HA automation that sends a push notification to Bryn's iPhone when Yasu's phone leaves the "work" zone.
+
+### App Side (creates the automation in HA)
+```
+POST /api/ha/automation/partner-leaves-work
+│
+├── Build automation config:
+│   alias: "Notify when Yasu leaves work"
+│   trigger:
+│     platform: zone
+│     entity_id: device_tracker.y_phone_app    ← Yasu's phone
+│     zone: zone.work
+│     event: "leave"
+│   action:
+│     service: notify.mobile_app_iphone_10     ← Bryn's iPhone
+│     data:
+│       title: "Yasu Left Work"
+│       message: "Yasu just left the work zone."
+│       push: sound: "default", interruption_level: "time-sensitive"
+│
+├── TRY 1: POST /api/services/automation/create
+│   Push automation config to HA
+│
+├── TRY 2 (if first fails):
+│   POST /api/config/automation/config/uni_cal_partner_leaves_work
+│   Push via config endpoint instead
+│
+└── Response: { success: true }
+```
+
+---
+
+## AUTOMATION 13: Spotify — Stop All Playback
+
+### What it does
+Stops Spotify playback on all speakers in the apartment. Sends media_stop to the SpotifyPlus entity and every speaker that has active Spotify playback, then pauses the Spotify API itself.
+
+### App Side
+```
+POST /api/spotify/stop-all
+│
+├── media_player/media_stop → media_player.spotifyplus_byhomeyyz
+│   Stops the SpotifyPlus integration entity
+│
+├── For each tracked active playback:
+│   └── media_player/media_stop → {speaker entity}
+│       Stops Spotify on that individual speaker
+│
+├── Spotify API: pause()
+│   Pauses playback via the Spotify Web API
+│
+├── Clear all tracked playback state
+│
+└── Response: { ok: true, cleared: N, results: [...] }
+```
+
+---
+
+## AUTOMATION 14: Spotify — Flick to Device
+
+### What it does
+"Flicks" (transfers) the Spotify player UI to a specific tablet or TV in the apartment. Uses ADB commands to navigate the device's Silk browser to the Spotify player page.
+
+### App Side
+```
+POST /api/spotify/flick
+Body: { deviceId: "lr_tablet" }   ← matches FLICK_DEVICES id
+│
+├── Look up device from FLICK_DEVICES registry
+├── Build Spotify URL: /spotify?auth=bryn
+│
+├── IF device can display (tablet/TV):
+│   └── androidtv/adb_command → {device entity}
+│       am start --activity-clear-task -a VIEW -d "{spotifyUrl}" com.amazon.cloud9
+│       Opens Spotify player in Silk browser on that device
+│
+└── Response: { ok: true, device: "..." }
+```
+
+---
+
+## AUTOMATION 15: Spotify — Home Button (Navigate All Tablets Home)
+
+### What it does
+When you press the Home button on the Spotify player, it navigates ALL 7 tablets back to the Home Assistant dashboard and navigates your current browser to the HA dashboard too.
+
+### App Side
+```
+POST /api/spotify/go-home
+│
+├── For each of 7 tablets (in parallel):
+│   ├── media_player.tablet_hallway_entrance (Hallway Entrance)
+│   ├── media_player.tablet_hallway (Hallway Main)
+│   ├── media_player.tablet_11 (Living Room)
+│   ├── media_player.bd24bb29_04a116d8_king (King Bedroom)
+│   ├── media_player.tablet_queen (Queen Bedroom)
+│   ├── media_player.tablet_kitchen_island (Kitchen Island)
+│   └── media_player.tablet_cat (Cat Washroom)
+│
+│   Each tablet:
+│   └── androidtv/adb_command → {tablet entity}
+│       am start --activity-clear-task -a VIEW -d "http://172.24.0.2:8123/lovelace/test-home" com.amazon.cloud9
+│       Opens HA dashboard in Silk browser
+│
+└── Response: { ok: true, navigating: 7 }
+
+CLIENT SIDE (browser):
+├── If on dev environment → navigate to "/"
+└── If on production → navigate to "http://172.24.0.2:8123/lovelace/test-home"
+```
+
+---
+
+## AUTOMATION 16: Voice Announcements & Push Notifications
+
+### What it does
+Sends voice announcements to Echo speakers and push notifications to Bryn's iPhone for task reminders.
+
+### Voice Announcement
+```
+POST /api/ha-announce
+Body: { message: "Your assignment is due in 30 minutes!" }
+│
+└── sendEchoVoiceAnnouncement(message)
+    └── Sends TTS announcement to Echo speakers via Alexa Media Player
+```
+
+### Push Notification Reminder
+```
+POST /api/ha-push/reminder
+Body: { taskId: 123 }
+│
+├── Look up task from database
+│
+└── sendHaTaskReminder({...})
+    └── notify.mobile_app_iphone_10
+        title: "[Course] [Type] Due"
+        message: "[Task title] - due [time]"
+        push: sound: "default", interruption_level: "time-sensitive"
+```
+
+---
+
+## AUTOMATION 17: Alexa Reminder Announcements
+
+### What it does
+Runs every 60 seconds in the background. Checks if any tasks have reminders due within the current minute and sends voice announcements to Echo speakers and push notifications.
+
+### App Side (background process)
+```
+Alexa Reminder Scheduler — checks every 60 seconds
+│
+├── Get all incomplete tasks from database
+├── For each task, check reminder times:
+│   ├── reminder1: 30 minutes before due
+│   ├── reminder2: 120 minutes (2 hours) before due
+│   ├── reminder3: custom (if set)
+│   └── reminder4: custom (if set)
+│
+├── IF a reminder is due now (within the current minute):
+│   ├── Send Echo voice announcement
+│   │   └── sendEchoVoiceAnnouncement("Reminder: [task] is due in [time]")
+│   └── Send push notification
+│       └── notify.mobile_app_iphone_10
+│
+└── Track sent reminders to avoid duplicates
+```
+
+---
+
+## AUTOMATION 18: Spotify Light-Off Auto-Navigate
+
+### What it does
+When the Spotify player page is open on a tablet and the associated room's lights turn off, the tablet automatically navigates home. This prevents tablets from staying on the Spotify page after you leave a room.
+
+### Client Side (runs in browser on each tablet)
+```
+useEffect — polls every 3 seconds
+│
+├── GET /api/ha-entity-state?entity={lightEntity}
+│   (lightEntity is passed as URL parameter to the Spotify page)
+│
+├── IF light state = "off":
+│   ├── POST /api/spotify/go-home
+│   │   Sends ADB command to ALL tablets → navigate to HA dashboard
+│   └── Current browser → navigate to HA dashboard
+│
+└── IF light state = "on":
+    └── Do nothing, keep Spotify page open
+```
+________________________________________
+HA Integration Report
+# Home Assistant Integration — Complete Technical Report
+**Generated:** March 25, 2026
+**App:** home-view--bkh416.replit.app
+**HA Instance:** https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa (Nabu Casa) / http://172.24.0.2:8123 (local)
+
+> **Source Code Visibility:** This report is generated entirely from reading the application source code. The agent **CAN** read and identify all server-side code (`server/routes.ts`, `server/haTickerWebhook.ts`, `server/spotify.ts`) and client-side code (`client/src/pages/spotify-player.tsx`). The agent **CANNOT** directly read your Home Assistant `configuration.yaml`, `automations.yaml`, `scripts.yaml`, or any other files stored on your HA instance — only what is embedded or referenced in this app's codebase.
+
+---
+
+## TABLE OF CONTENTS
+
+1. [REST Commands (YAML for HA)](#1-rest-commands-yaml-for-ha)
+2. [REST Sensors (Pushed from App → HA)](#2-rest-sensors-pushed-from-app--ha)
+3. [Input Booleans](#3-input-booleans)
+4. [All HA Entity IDs by Room](#4-all-ha-entity-ids-by-room)
+5. [Webhook Endpoints & Automation Flows](#5-webhook-endpoints--automation-flows)
+6. [Volume Defaults & Settings](#6-volume-defaults--settings)
+7. [Speaker Groups & Device Registry](#7-speaker-groups--device-registry)
+8. [Spotify Player — Room Hotspots & Profiles](#8-spotify-player--room-hotspots--profiles)
+9. [HA Service Calls — Full Trace](#9-ha-service-calls--full-trace)
+10. [TTS Configuration](#10-tts-configuration)
+11. [ADB Tablet Commands](#11-adb-tablet-commands)
+12. [HA Automation Created by App](#12-ha-automation-created-by-app)
+13. [Constants & Defaults Summary](#13-constants--defaults-summary)
+
+---
+
+## 1. REST Commands (YAML for HA)
+
+**Source file:** `.local/ha-rest-commands.yaml`
+**Purpose:** These YAML definitions go into your HA `configuration.yaml` (or included file) so HA automations can call your app's webhook endpoints.
+
+| Code | Explanation |
+|------|-------------|
+| `rest_command:` | Top-level HA configuration block for REST commands |
+| | |
+| `  cat_lights_webhook:` | REST command triggered by HA when cat washroom lights change |
+| `    url: "https://home-view--bkh416.replit.app/api/webhook/cat-lights"` | Calls the app's cat-lights webhook on the published URL |
+| `    method: POST` | HTTP POST request |
+| `    headers:` | |
+| `      Content-Type: "application/json"` | JSON content type header |
+| | |
+| `  cat_lights_confirm_webhook:` | REST command for confirming the TTS prompt ("yes, play it") |
+| `    url: "https://home-view--bkh416.replit.app/api/webhook/cat-lights-confirm"` | Confirms the "Would you like to play...?" voice prompt |
+| `    method: POST` | |
+| | |
+| `  cat_knob_press_webhook:` | REST command for the physical knob/button press (master STOP) |
+| `    url: "https://home-view--bkh416.replit.app/api/webhook/cat-knob-press"` | Stops all playback in cat washroom |
+| `    method: POST` | |
+| | |
+| `  cat_volume_webhook:` | REST command for rotary encoder volume control |
+| `    url: "https://home-view--bkh416.replit.app/api/webhook/cat-volume"` | Adjusts volume on active cat washroom speakers |
+| `    method: POST` | |
+| `    payload: '{"direction":"{{ direction }}"}'` | **Variable:** `direction` — **Current options:** `"up"` or `"down"` |
+| | |
+| `  cat_wash_webhook:` | REST command for the shower button |
+| `    url: "https://home-view--bkh416.replit.app/api/webhook/cat-wash"` | Alternative trigger for cat washroom playback |
+| `    method: POST` | |
+
+---
+
+## 2. REST Sensors (Pushed from App → HA)
+
+**Source file:** `server/haTickerWebhook.ts`
+**Method:** The app pushes data to HA via `POST /api/states/{entity_id}` every 5 minutes.
+
+### sensor.dashboard_ticker
+
+| Code | Explanation |
+|------|-------------|
+| `pushSensorToHA('sensor.dashboard_ticker', fullTickerText.slice(0, 255), {` | Pushes ticker sensor — state is first 255 chars of combined text |
+| `  friendly_name: 'Dashboard News Ticker',` | Display name in HA |
+| `  icon: 'mdi:newspaper-variant-outline',` | MDI icon |
+| `  full_text: fullTickerText,` | Complete ticker text (all segments joined with `\|\|\|`) |
+| `  segment_count: segments.length,` | Number of ticker segments |
+| `  segments,` | Array of individual ticker segments |
+| `  weather: weatherState,` | e.g. `"1°C — Clear \| Wind: 12 km/h"` |
+| `  forecast_3day: forecastDays.join(' • '),` | e.g. `"Mon: 4°/-1° • Tue: 13°/2° • Wed: 3°/-4°"` |
+| `  forecast_brief: forecastBrief,` | Natural language forecast summary |
+| `  pollen: pollenText,` | e.g. `"Low (Tree: Low, Grass: Low, Weed: Low) \| AQI: 27"` |
+| `  alerts: alertItems,` | Array of weather alert titles (empty if none) |
+| `  announcements: announcementTexts,` | Array of course announcements (filtered by week) |
+| `  news: newsItems.slice(0, 30)...,` | Array of formatted news strings `"Source: Title (Xh)"` |
+| `  news_detailed: newsItems.slice(0, 30),` | Array of objects: `{ title, source, link, ago }` |
+| `})` | |
+
+### sensor.dashboard_weather
+
+| Code | Explanation |
+|------|-------------|
+| `pushSensorToHA('sensor.dashboard_weather', weatherState, {` | State = current weather string |
+| `  friendly_name: 'Dashboard Weather',` | |
+| `  icon: 'mdi:weather-partly-cloudy',` | |
+| `  forecast_3day,` | 3-day forecast |
+| `  forecast_brief,` | Natural language brief |
+| `  pollen: pollenText,` | Pollen levels |
+| `  alerts: alertItems,` | Weather alerts |
+| `})` | |
+
+### sensor.dashboard_news
+
+| Code | Explanation |
+|------|-------------|
+| `pushSensorToHA('sensor.dashboard_news', '${newsItems.length} headlines', {` | State = headline count |
+| `  friendly_name: 'Dashboard News',` | |
+| `  icon: 'mdi:newspaper',` | |
+| `  headlines: [...],` | Formatted headline strings |
+| `  headlines_detailed: [...],` | Objects with title, source, link, ago |
+| `})` | |
+
+**News source ordering:** Canadian → US → BBC (interleaved).
+- **Canadian sources:** CTV, CBC, Global
+- **US sources:** CNN, Politico, Raw Story, MSNBC, ABC News, Fox News
+- **UK sources:** BBC
+
+**Update interval:** Every **5 minutes** (`5 * 60 * 1000 ms`), configured in `server/haTickerWebhook.ts` line 202.
+
+---
+
+## 3. Input Booleans
+
+These must exist in your HA instance. The app reads and writes them during the cat washroom flow.
+
+| Entity ID | Constant Name | Purpose |
+|-----------|---------------|---------|
+| `input_boolean.module_reading_pending` | `MODULE_READING_PENDING` | Set to ON when TTS prompt is playing, OFF after timeout or confirmation |
+| `input_boolean.module_reading_confirmed` | `MODULE_READING_CONFIRMED` | Polled every 1.5s during confirmation wait; if ON, playback begins |
+
+**Flow:**
+1. Lights ON → `module_reading_pending` = ON, `module_reading_confirmed` = OFF
+2. Wait up to 23 seconds, polling `module_reading_confirmed` every 1.5s
+3. If confirmed → both reset to OFF, playback starts
+4. If timeout → both reset to OFF, CHUM FM plays instead
+
+---
+
+## 4. All HA Entity IDs by Room
+
+### 🚪 Hallway
+| Entity ID | Device Name | Type |
+|-----------|-------------|------|
+| `media_player.tablet_hallway_entrance` | Tablet (Entrance) | tablet |
+| `media_player.tablet_hallway` | Tablet (Main) | tablet |
+| `media_player.echo_hallway_entrance_am` | Echo (Entrance) | echo |
+| `media_player.hallway_media_group` | All Hallway | group |
+| `media_player.hallway_2` | Hallway (Spotify hotspot) | echo |
+
+### 🛋️ Living Room
+| Entity ID | Device Name | Type |
+|-----------|-------------|------|
+| `media_player.tablet_11` | Fire Tablet (11) | tablet |
+| `media_player.echo_lr_couch_l_am` | Echo (Couch L) | echo |
+| `media_player.echo_lr_couch_r_am` | Echo (Couch R) | echo |
+| `media_player.echo_lr_hub_am` | Echo (Hub) | echo |
+| `media_player.echo_lr_studio_white_am` | Echo Studio (White) | echo |
+| `media_player.echo_lr_tv_shelf_am` | Echo (TV Shelf) | echo |
+| `media_player.tv_living_room_70` | TV (70") | tv |
+| `media_player.living_room_media_group` | All Living Room | group |
+
+### 🛏️ King Bedroom
+| Entity ID | Device Name | Type |
+|-----------|-------------|------|
+| `media_player.bd24bb29_04a116d8_king` | Tablet | tablet |
+| `media_player.echo_king_l_am` | Echo (Left) | echo |
+| `media_player.echo_king_r_am` | Echo (Right) | echo |
+| `media_player.echo_king_tv_am` | Echo (TV) | echo |
+| `media_player.tv_king` | TV | tv |
+| `media_player.king_bedroom_media_group` | All King Bedroom | group |
+
+### 👑 Queen Bedroom
+| Entity ID | Device Name | Type |
+|-----------|-------------|------|
+| `media_player.tablet_queen` | Tablet | tablet |
+| `media_player.echo_queen_balcony_am` | Echo (Balcony) | echo |
+| `media_player.echo_queen_bed_l_am` | Echo (Bed L) | echo |
+| `media_player.echo_queen_bed_r_am` | Echo (Bed R) | echo |
+| `media_player.queen_bedroom_media_group` | All Queen Bedroom | group |
+
+### 🍳 Kitchen
+| Entity ID | Device Name | Type |
+|-----------|-------------|------|
+| `media_player.tablet_kitchen_island` | Tablet (Kitchen Island) | tablet |
+| `media_player.echo_kitchen_cupboards_left_am` | Echo (Cupboards L) | echo |
+| `media_player.echo_kitchen_cupboards_r_am` | Echo (Cupboards R) | echo |
+| `media_player.echo_kitchen_fridge_am` | Echo (Fridge) | echo |
+| `media_player.echo_kitchen_hutch_am` | Echo (Hutch) | echo |
+| `media_player.echo_kitchen_island_corner_am` | Echo (Island Corner) | echo |
+| `media_player.echo_kitchen_studio_black_am` | Echo Studio (Black) | echo |
+| `media_player.tv_kitchen` | TV | tv |
+| `media_player.kitchen_media_group` | All Kitchen | group |
+| `media_player.kitchen_lr` | Kitchen/LR (Spotify hotspot) | echo |
+
+### 🐱 Cat Washroom
+| Entity ID | Device Name | Type | Constant |
+|-----------|-------------|------|----------|
+| `media_player.tablet_cat` | Tablet | tablet | — |
+| `media_player.echo_cat_washroom_middle` | Echo (Middle) | echo | `CAT_ECHO_ENTITIES[2]` |
+| `media_player.echo_cat_left_am` | Echo (Left) | echo | `CAT_ECHO_ENTITIES[0]` |
+| `media_player.echo_cat_right_am` | Echo (Right) | echo | `CAT_ECHO_ENTITIES[1]` |
+| `media_player.nestaudio6787` | Nest Speaker / Google Home | speaker | `NEST_SPEAKER_ENTITY` / `BATHROOM_ECHO_ENTITY` |
+| `media_player.home_assistant_voice_097c38_media_player` | HA Voice (ESPHome) | speaker | `CAT_WR_HA_VOICE_ENTITY` |
+| `media_player.tv_cat_wr` | Samsung TV | tv | — |
+| `media_player.fire_tv_172_24_0_88` | Fire Stick (TV) | tv | — |
+| `media_player.cat_washroom_media_group` | All Cat Washroom | group | — |
+| `media_player.cat_speakers` | Cat Speakers (Spotify hotspot) | echo | — |
+
+### 🐶 Pug Washroom
+| Entity ID | Device Name | Type |
+|-----------|-------------|------|
+| `media_player.echo_show_pug_am` | Echo Show | echo_show |
+| `media_player.pug_media_group` | All Pug Washroom | group |
+
+### 👔 Closet
+| Entity ID | Device Name | Type |
+|-----------|-------------|------|
+| `media_player.echo_closet_am` | Echo | echo |
+| `media_player.closet_media_group` | All Closet | group |
+
+### 🏠 Everywhere
+| Entity ID | Device Name | Type |
+|-----------|-------------|------|
+| `media_player.byhome` | All Speakers (Apartment-wide) | group |
+
+### 🌿 Balcony
+| Entity ID | Device Name | Type |
+|-----------|-------------|------|
+| `media_player.balcony_speaker` | Balcony Speaker | echo |
+| `media_player.balcony_media_group` | All Balcony | group |
+
+### Other Entities (Non-Speaker)
+| Entity ID | Type | Purpose |
+|-----------|------|---------|
+| `light.cat_lights` | light | Cat washroom light — triggers cat wash automation |
+| `sensor.toothbrush_bryn_toothbrush_state` | sensor | Bryn's toothbrush state — stops playback when "brushing" |
+| `device_tracker.y_phone_app` | device_tracker | Yasu's phone — partner location tracking |
+| `notify.mobile_app_iphone_10` | notify | Push notifications to Bryn's iPhone |
+| `tts.home_assistant_cloud` | tts | HA Cloud TTS (Nabu Casa) — fallback TTS engine |
+| `media_player.spotifyplus_byhomeyyz` | media_player | SpotifyPlus integration entity |
+
+---
+
+## 5. Webhook Endpoints & Automation Flows
+
+### POST /api/webhook/cat-lights
+**HA Trigger:** `light.cat_lights` state change (ON/OFF)
+**REST Command:** `cat_lights_webhook`
+
+```
+LIGHT OFF:
+├── Stop active CPPA playback (if any) → stopNestPlaybackWithGoodbye('light_off')
+│   ├── media_player/media_stop → NEST_SPEAKER_ENTITY
+│   ├── media_player/turn_off → media_player.fire_tv_172_24_0_88
+│   └── media_player/turn_off → media_player.samsung_tv
+├── Stop TTS session (if any)
+├── stopAllCatWashroomSpeakers(haUrl)
+│   ├── media_player/media_stop → NEST_SPEAKER_ENTITY
+│   ├── media_player/media_stop → CAT_ECHO_ENTITIES (Left, Right, Middle)
+│   └── media_player/media_stop → media_player.cat_washroom_media_group
+└── Return { action: "stopped" }
+
+LIGHT ON:
+├── Check cooldowns and existing playback
+├── ★ NEW: stopAllCatWashroomSpeakers() → Stops CHUM FM or any leftover media
+├── Find next unlistened CPPA file for current week
+│   ├── If NO file found → playChumFmRadio()
+│   │   └── media_player/play_media → media_player.cat_washroom_media_group
+│   │       content_id: "play 104.5 chum fm"
+│   │       content_type: "custom"
+│   │   └── Return
+│   └── If file found → Continue to TTS prompt
+├── Set input_boolean/turn_off → MODULE_READING_CONFIRMED
+├── Set input_boolean/turn_on → MODULE_READING_PENDING
+├── media_player/volume_set → CAT_WR_HA_VOICE_ENTITY @ 0.85
+├── media_player/volume_set → NEST_SPEAKER_ENTITY @ 0.85
+├── Generate TTS audio: "Would you like to play [file description]?"
+├── Play TTS on HA Voice → CAT_WR_HA_VOICE_ENTITY
+│   ├── Fallback 1: Play on Nest → NEST_SPEAKER_ENTITY
+│   └── Fallback 2: tts/speak → tts.home_assistant_cloud → CAT_WR_HA_VOICE_ENTITY
+├── Wait 2 seconds
+├── Wait up to 23 seconds for confirmation
+│   ├── Poll input_boolean.module_reading_confirmed every 1.5s
+│   └── OR receive POST /api/webhook/cat-lights-confirm
+│
+├── IF CONFIRMED → startConfirmedPlaybackFlow()
+│   ├── Set tablet-nav for "master" tablet + "tv"
+│   ├── ADB wake tablet_cat + brightness 255 + navigate Silk to PDF reader
+│   ├── Turn on Fire Stick + Samsung TV
+│   ├── Switch Samsung TV to HDMI1
+│   ├── Open PDF reader URL on Fire Stick via ADB
+│   ├── Play confirmation TTS: "Okay, I will now play [file]"
+│   ├── media_player/volume_set → CAT_WR_HA_VOICE_ENTITY @ 0.75
+│   ├── media_player/volume_set → NEST_SPEAKER_ENTITY @ 0.75
+│   └── startNestChunkPlayback() → plays chunks one by one on Nest
+│
+└── IF NOT CONFIRMED (23s timeout)
+    └── playChumFmRadio() → CHUM FM on media_player.cat_washroom_media_group
+```
+
+### POST /api/webhook/cat-lights-confirm
+**HA Trigger:** Voice confirmation or physical button
+**REST Command:** `cat_lights_confirm_webhook`
+
+```
+├── Resolve pending confirmation promise → true
+├── media_player/media_stop → CAT_ECHO_ENTITIES (clear Echo speakers)
+└── Return { action: "confirmed" }
+```
+
+### POST /api/webhook/cat-knob-press
+**HA Trigger:** Physical knob press in cat washroom
+**REST Command:** `cat_knob_press_webhook`
+
+```
+├── IF CPPA playback active:
+│   └── stopNestPlaybackWithGoodbye()
+│       ├── Save chunk progress to database
+│       ├── media_player/media_stop → NEST_SPEAKER_ENTITY
+│       ├── media_player/turn_off → Fire Stick + Samsung TV
+│       └── Stop TTS session
+├── ELSE:
+│   └── stopAllCatWashroomSpeakers()
+│       ├── media_player/media_stop → NEST_SPEAKER_ENTITY
+│       ├── media_player/media_stop → CAT_ECHO_ENTITIES
+│       └── media_player/media_stop → cat_washroom_media_group
+└── Return { action: "stopped" }
+```
+
+### POST /api/webhook/cat-volume
+**HA Trigger:** Rotary encoder in cat washroom
+**REST Command:** `cat_volume_webhook`
+**Payload:** `{"direction": "up"}` or `{"direction": "down"}`
+
+```
+├── Query state of all cat washroom speakers
+│   └── GET /api/states/ → NEST_SPEAKER_ENTITY, CAT_ECHO_ENTITIES, cat_washroom_media_group, CAT_WR_HA_VOICE_ENTITY
+├── Find which speakers are currently "playing"
+├── Adjust volume:
+│   ├── Normal step: ±0.05
+│   └── Fast step: ±0.15
+└── media_player/volume_set → [active speaker entity] @ newVolume
+```
+
+### POST /api/webhook/cat-wash-stop
+**HA Trigger:** Toothbrush state changes from idle/charging to "brushing"
+**Sensor polled:** `sensor.toothbrush_bryn_toothbrush_state`
+
+```
+├── Stop Nest playback
+├── Save chunk progress
+├── Stop TTS session
+└── Return { action: "stopped" }
+```
+
+### POST /api/webhook/cat-shower-button
+**HA Trigger:** Physical shower button press
+
+```
+├── Check for active semester
+│   ├── No semester → playChumFmRadio()
+│   └── Semester active → find next unlistened file
+│       ├── No files → playChumFmRadio()
+│       └── File found → startConfirmedPlaybackFlow() (no TTS prompt, immediate start)
+```
+
+### POST /api/webhook/kitchen-volume
+**HA Trigger:** Kitchen volume automation
+**Payload:** `{"direction": "up"}` or `{"direction": "down"}`
+
+```
+├── Get current volume of KITCHEN_ECHO_ENTITY (media_player.echo_kitchen_studio_black_am)
+├── Adjust by ±0.05
+└── media_player/volume_set → KITCHEN_ECHO_ENTITY @ newVolume
+```
+
+### POST /api/webhook/voice-command
+**HA Trigger:** Custom voice assistant phrases
+
+```
+├── Command: "pause" / "stop reading"
+│   ├── Pause Nest playback
+│   ├── Save progress
+│   └── Start 10-minute auto-stop timer
+│
+├── Command: "resume" / "continue reading"
+│   ├── Find last file being played
+│   └── startConfirmedPlaybackFlow() from saved chunk
+│
+├── Command: "stop" / "stop everything"
+│   ├── stopNestPlaybackWithGoodbye()
+│   ├── Turn off Fire Stick + Samsung TV
+│   └── Clear all state
+│
+├── Command: "skip" / "next"
+│   ├── Mark current file as complete
+│   ├── Find next unlistened file
+│   └── startConfirmedPlaybackFlow() with next file
+│
+├── Command: "restart" / "start over"
+│   ├── Reset current file to chunk 0
+│   └── startConfirmedPlaybackFlow() from beginning
+│
+└── Command: "reset"
+    ├── Reset file progress (clear all checked chunks)
+    └── startConfirmedPlaybackFlow() from chunk 0
+```
+
+### POST /api/webhook/email
+**HA Trigger:** Gmail webhook / email forwarding
+
+```
+├── Route based on email content/subject:
+│   ├── /api/webhook/ticker → Create scrolling ticker announcement
+│   ├── /api/webhook/reminder → Create task/reminder in database
+│   ├── /api/webhook/delete → Delete matching items
+│   └── /api/webhook/email-homework → Parse homework assignments
+```
+
+### POST /api/webhook/play-urgent-pdf
+**HA Trigger:** Manual or scheduled
+**REST Command (in HA):**
+```yaml
+rest_command:
+  play_urgent_pdf:
+    url: "https://home-view--bkh416.replit.app/api/webhook/play-urgent-pdf"
+    method: "POST"
+    content_type: "application/json"
+    headers:
+      "x-webhook-secret": "[SITE_PASSWORD]"
+    payload: '{"entity_id": "media_player.nestaudio6787"}'
+```
+
+```
+├── Find most urgent unlistened PDF across all courses
+├── If found → startConfirmedPlaybackFlow()
+└── If not found → playChumFmRadio()
+```
+
+---
+
+## 6. Volume Defaults & Settings
+
+| Context | Entity | Volume Level | File Line |
+|---------|--------|-------------|-----------|
+| TTS Prompt (before asking question) | `CAT_WR_HA_VOICE_ENTITY` | **0.85** | routes.ts:8864 |
+| TTS Prompt (before asking question) | `NEST_SPEAKER_ENTITY` | **0.85** | routes.ts:8865 |
+| CPPA Playback (during reading) | `CAT_WR_HA_VOICE_ENTITY` | **0.75** | routes.ts:7263 |
+| CPPA Playback (during reading) | `NEST_SPEAKER_ENTITY` | **0.75** | routes.ts:7267 |
+| Nest retry logic | `NEST_SPEAKER_ENTITY` | **0.75** | routes.ts:7544 |
+| Stop/cleanup (TTS stop, playback stop) | Target entity | **0.50** | routes.ts:10375, 11918, 12069, 12172 |
+| Spotify playback start | Volume target | **0.35** | routes.ts:14684 |
+| Cat volume knob — normal step | Active speaker | **±0.05** per turn | routes.ts (cat-volume) |
+| Cat volume knob — fast step | Active speaker | **±0.15** per turn | routes.ts (cat-volume) |
+| Kitchen volume — step | Kitchen Echo Studio | **±0.05** per turn | routes.ts (kitchen-volume) |
+
+---
+
+## 7. Speaker Groups & Device Registry
+
+### Named Constants (server/routes.ts top)
+
+| Constant | Value | Purpose |
+|----------|-------|---------|
+| `BATHROOM_ECHO_ENTITY` | `media_player.nestaudio6787` | Bathroom/Cat WR Nest speaker |
+| `KITCHEN_ECHO_ENTITY` | `media_player.echo_kitchen_studio_black_am` | Kitchen Echo Studio (Black) |
+| `NEST_SPEAKER_ENTITY` | `media_player.nestaudio6787` | Nest/Google speaker for CPPA TTS playback |
+| `CAT_WR_HA_VOICE_ENTITY` | `media_player.home_assistant_voice_097c38_media_player` | ESPHome HA Voice device — primary TTS prompt speaker |
+| `PARTNER_PHONE_ENTITY` | `device_tracker.y_phone_app` | Yasu's phone for location tracking |
+| `SPOTIFYPLUS_ENTITY` | `media_player.spotifyplus_byhomeyyz` | SpotifyPlus integration entity |
+
+### Grouped Constants
+
+| Constant | Entities | Purpose |
+|----------|----------|---------|
+| `NON_ALEXA_ENTITIES` | `[NEST_SPEAKER_ENTITY, CAT_WR_HA_VOICE_ENTITY]` | Speakers that are NOT Alexa — excluded from Alexa-specific commands |
+| `CAT_ECHO_ENTITIES` | `["media_player.echo_cat_left_am", "media_player.echo_cat_right_am", "media_player.echo_cat_washroom_middle"]` | Cat washroom Echo speakers (3 units) |
+
+### stopAllCatWashroomSpeakers() — What Gets Stopped
+
+```
+IF Spotify "Everywhere" group is playing:
+├── media_player/media_stop → NEST_SPEAKER_ENTITY (Nest only)
+└── media_player/media_stop → media_player.cat_washroom_media_group
+    (Preserves Echo speakers so apartment-wide Spotify isn't interrupted)
+
+ELSE (normal stop):
+├── media_player/media_stop → NEST_SPEAKER_ENTITY
+├── media_player/media_stop → CAT_ECHO_ENTITIES (all 3 Echos)
+└── media_player/media_stop → media_player.cat_washroom_media_group
+```
+
+---
+
+## 8. Spotify Player — Room Hotspots & Profiles
+
+### Room Hotspots (Floorplan Map)
+
+**Source:** `client/src/pages/spotify-player.tsx` line 129
+
+| Room | Position (x%, y%, w%, h%) | Entity ID (individual) | Group Entity ID | Device Type |
+|------|--------------------------|----------------------|----------------|-------------|
+| Balcony | 2, 72, 18, 25 | `media_player.balcony_speaker` | `media_player.balcony_media_group` | echo |
+| Queen Bedroom | 2, 38, 18, 33 | `media_player.queen_bedroom` | `media_player.queen_bedroom_media_group` | echo |
+| Pug Washroom | 2, 5, 16, 32 | `media_player.echo_show_pug_am` | `media_player.pug_media_group` | echo_show |
+| Hallway | 19, 5, 16, 32 | `media_player.hallway_2` | `media_player.hallway_media_group` | echo |
+| Kitchen | 36, 5, 28, 45 | `media_player.kitchen_lr` | `media_player.kitchen_media_group` | echo |
+| Living Room | 36, 52, 28, 45 | `media_player.kitchen_lr` | `media_player.living_room_media_group` | echo |
+| King Bedroom | 65, 30, 33, 50 | `media_player.king_bedroom` | `media_player.king_bedroom_media_group` | echo |
+| Cat Washroom | 84, 3, 14, 26 | `media_player.cat_speakers` | `media_player.cat_washroom_media_group` | echo |
+| Closet | 65, 3, 18, 26 | `media_player.echo_closet_am` | `media_player.closet_media_group` | echo |
+| Everywhere | 84, 78, 14, 18 | `media_player.byhome` | `media_player.byhome` | echo |
+
+### Spotify User Profiles
+
+**Profile: Bryn** (accent: blue #3b82f6)
+| Artist/Playlist | Spotify URI | Search Query |
+|-----------------|-------------|-------------|
+| Katy Perry | `spotify:artist:6jJ0s89eD6GaHleKKya26X` | "Katy Perry" |
+| Pink | `spotify:artist:1KCSPY1glIKqW2TotWuXOR` | "Pink singer" |
+| Lady Gaga | `spotify:artist:1HY2Jd0NmPuamShAr6KMms` | "Lady Gaga" |
+| Cher | `spotify:artist:72OaDtakiy6yFqkt4TsiFt` | "Cher" |
+| This Is Me | `spotify:track:2MYDnXBdJkFRuWgyOjpdth` | "This Is Me Greatest Showman" |
+| CHUM FM | _(no URI — radio)_ | "104.5 Chum FM" |
+| Disney | `spotify:playlist:37i9dQZF1DX8C585qnMYHP` | "Disney hits" |
+| Chill Electro | `spotify:playlist:37i9dQZF1DX4E3UdUs7fUx` | "Chill electronic" |
+| Dinner Jazz | `spotify:playlist:37i9dQZF1DX4wta20PHgwo` | "Dinner jazz" |
+
+**Profile: Yasu** (accent: sky blue #38bdf8, theme: sakura)
+| Artist/Playlist | Spotify URI | Search Query |
+|-----------------|-------------|-------------|
+| 中島みゆき | `spotify:artist:7IKFMPUxJDZhKxFGYOawBo` | "Miyuki Nakajima" |
+| YOASOBI | `spotify:artist:64tJ2EAv1R6UaZqc4iOCyj` | "YOASOBI" |
+| Kenshi Yonezu | `spotify:artist:1snhtMLeb2DYoMOcVkiKnR` | "Kenshi Yonezu" |
+| Aimyon | `spotify:artist:5Lak6GhYbSqhRimRYhE0dP` | "Aimyon" |
+| ONE OK ROCK | `spotify:artist:7q4KJIqziJOKnsTaFKpMII` | "ONE OK ROCK" |
+| Official HIGE DANdism | `spotify:artist:3YMVszTadghiHjPOYaG3PM` | "Official HIGE DANdism" |
+| Vaundy | `spotify:artist:6k4bHMbRIf97CqMqmU7Xk4` | "Vaundy" |
+| King Gnu | `spotify:artist:6n70eCqbtJhbMgsMet1WVb` | "King Gnu" |
+| Aimer | `spotify:artist:0bAsR2unSRpn6BOpSbGhAu` | "Aimer" |
+| Tokyo Disney | `spotify:track:2PdJJkPFzhJiMqUOT1GKsj` | "Tokyo Disney music" |
+
+**Profile: Guest** (accent: violet #a78bfa)
+| Artist/Playlist | Spotify URI | Search Query |
+|-----------------|-------------|-------------|
+| Dua Lipa | `spotify:artist:6M2wZ9GZgrQXHCFfjv46we` | "Dua Lipa" |
+| The Weeknd | `spotify:artist:1Xyo4u8uXC1ZmMpatF05PJ` | "The Weeknd" |
+| Taylor Swift | `spotify:artist:06HL4z0CvFAxyc27GXpf02` | "Taylor Swift" |
+| Ed Sheeran | `spotify:artist:6eUKZXaKkcviH0Ku9w2n3V` | "Ed Sheeran" |
+| Billie Eilish | `spotify:artist:6qqNVTkY8uBg9cP3Jd7DAH` | "Billie Eilish" |
+| Harry Styles | `spotify:artist:6KImCVD70vtIoJWnq6nGn3` | "Harry Styles" |
+| Doja Cat | `spotify:artist:5cj0lLjcoR7YOSnhnX0Po5` | "Doja Cat" |
+| SZA | `spotify:artist:7tYKF4w9nC0nq9CsPZTHyP` | "SZA" |
+
+### Japanese Room Names (Yasu/Sakura theme)
+| English | Japanese |
+|---------|----------|
+| Balcony | バルコニー |
+| Queen Bedroom | クイーンベッド |
+| Pug Washroom | パグ洗面所 |
+| Hallway | 廊下 |
+| Kitchen | キッチン |
+| Living Room | リビング |
+| King Bedroom | キングベッド |
+| Cat Washroom | 猫洗面所 |
+| Closet | クローゼット |
+| Everywhere | 全室 |
+
+---
+
+## 9. HA Service Calls — Full Trace
+
+Every HA service call goes through two wrapper functions with built-in retry logic:
+
+### haFetch() — GET requests
+```
+haFetch(url, options, maxRetries=3, label)
+├── Timeout: 12 seconds per attempt
+├── Retry delay: 1500ms × attempt number (1.5s, 3s, 4.5s)
+└── 3 attempts total before throwing
+```
+
+### haServiceCall() — POST requests
+```
+haServiceCall(service, data, label)
+├── URL: ${HOME_ASSISTANT_URL}/api/services/${service}
+├── Auth: Bearer ${HOME_ASSISTANT_TOKEN}
+├── Uses haFetch internally (3 retries, 12s timeout)
+└── Returns Response object
+```
+
+### Complete Service Call Inventory
+
+| Service | Entity | Context | Purpose |
+|---------|--------|---------|---------|
+| `media_player/play_media` | `CAT_WR_HA_VOICE_ENTITY` | Cat Lights TTS | Play TTS audio prompt |
+| `media_player/play_media` | `NEST_SPEAKER_ENTITY` | Cat Lights TTS Fallback | Fallback TTS on Nest |
+| `media_player/play_media` | `NEST_SPEAKER_ENTITY` | Chunk Playback | Play CPPA module chunks |
+| `media_player/play_media` | `cat_washroom_media_group` | CHUM FM | Play radio (content_id: "play 104.5 chum fm") |
+| `media_player/media_stop` | `NEST_SPEAKER_ENTITY` | Stop Playback | Stop Nest audio |
+| `media_player/media_stop` | `CAT_ECHO_ENTITIES` | Stop Speakers | Stop all 3 cat Echos |
+| `media_player/media_stop` | `cat_washroom_media_group` | Stop Group | Stop entire group |
+| `media_player/volume_set` | Various | Volume Control | Set volume (see Section 6) |
+| `media_player/turn_on` | `fire_tv_172_24_0_88` | TV Setup | Wake Fire Stick |
+| `media_player/turn_on` | `tv_cat_wr` | TV Setup | Wake Samsung TV |
+| `media_player/turn_off` | `fire_tv_172_24_0_88` | Goodbye | Turn off Fire Stick |
+| `media_player/turn_off` | `tv_cat_wr` | Goodbye | Turn off Samsung TV |
+| `media_player/select_source` | `tv_cat_wr` | TV Setup | Switch to HDMI1 |
+| `input_boolean/turn_on` | `module_reading_pending` | Cat Lights | Signal prompt is active |
+| `input_boolean/turn_off` | `module_reading_pending` | Cat Lights | Clear pending state |
+| `input_boolean/turn_off` | `module_reading_confirmed` | Cat Lights | Reset confirmation |
+| `tts/speak` | `tts.home_assistant_cloud` | Cloud TTS Fallback | Last-resort TTS method |
+| `androidtv/adb_command` | `tablet_cat` | Tablet Setup | Wake + navigate + fullscreen |
+| `androidtv/adb_command` | `fire_tv_172_24_0_88` | TV Setup | Wake + open Silk + immersive |
+| `androidtv/adb_command` | All 7 tablets | Spotify Home | Navigate all tablets to HA dashboard |
+| `notify/mobile_app` | `notify.mobile_app_iphone_10` | Push Notification | Send task reminders to Bryn's iPhone |
+
+---
+
+## 10. TTS Configuration
+
+| Setting | Value | Notes |
+|---------|-------|-------|
+| **Primary Engine** | Edge TTS (Microsoft) | Active because HA Cloud TTS is rate-limited |
+| **Edge TTS Voice** | `en-US-AndrewMultilingualNeural` | Male voice, multilingual |
+| **Rate Limit Until** | April 1, 2026 | After this date, HA Cloud TTS may be used again |
+| **Fallback Chain** | 1. Edge TTS → 2. HA Voice device → 3. Nest speaker → 4. HA Cloud TTS | |
+| **Chunk Size** | 2000 characters | Text split into chunks for Nest playback |
+| **Characters/Second** | 13 | Used to estimate chunk playback duration |
+| **Max Consecutive Errors** | 5 | Stops playback after 5 TTS failures |
+| **Max Session Age** | 4 hours (14,400,000 ms) | Auto-stops stale playback sessions |
+
+### TTS Playback Flow (Nest Speaker)
+```
+For each chunk in CPPA module text:
+├── Check if pre-prepared audio exists (from background prep job)
+│   ├── Yes → Use cached audio file path
+│   └── No → generateAndSaveTTSAudio(chunkText)
+│       └── Edge TTS → save as .mp3 in /tts/ directory
+├── playOnNestSpeaker(audioUrl)
+│   ├── media_player/media_stop → NEST_SPEAKER_ENTITY (clear previous)
+│   ├── media_player/volume_set → NEST_SPEAKER_ENTITY @ 0.75
+│   └── media_player/play_media → NEST_SPEAKER_ENTITY
+├── Wait for estimated duration (wordCount / 175 wpm × 60s + 1s buffer)
+├── Poll Nest state to confirm playback finished
+├── Emit chunk progress via WebSocket to PDF reader on tablet/TV
+├── Update database: lastChunkIndex, checkedChunks
+└── Move to next chunk
+```
+
+---
+
+## 11. ADB Tablet Commands
+
+### Spotify Home Button (POST /api/spotify/go-home)
+Navigates all 7 tablets to `http://172.24.0.2:8123/lovelace/test-home`
+
+| Tablet Entity | Name |
+|--------------|------|
+| `media_player.tablet_hallway_entrance` | Hallway Entrance |
+| `media_player.tablet_hallway` | Hallway Main |
+| `media_player.tablet_11` | Living Room |
+| `media_player.bd24bb29_04a116d8_king` | King Bedroom |
+| `media_player.tablet_queen` | Queen Bedroom |
+| `media_player.tablet_kitchen_island` | Kitchen Island |
+| `media_player.tablet_cat` | Cat Washroom |
+
+**ADB Command:** `am start --activity-clear-task -a android.intent.action.VIEW -d "{url}" com.amazon.cloud9`
+
+### Cat Washroom Tablet Setup (startConfirmedPlaybackFlow)
+```
+ADB commands for media_player.tablet_cat:
+1. input keyevent KEYCODE_WAKEUP                    → Wake screen
+2. settings put system screen_brightness 255          → Max brightness
+3. am start --activity-clear-task ... Silk browser    → Navigate to PDF reader URL
+4. settings put global policy_control immersive.full= → Set immersive mode
+5. input keyevent KEYCODE_F11                         → Toggle fullscreen
+```
+
+### Fire Stick Setup (openUrlOnFireStick)
+```
+ADB commands for media_player.fire_tv_172_24_0_88:
+1. input keyevent KEYCODE_WAKEUP                    → Wake Fire Stick
+2. am force-stop com.amazon.cloud9                   → Kill existing Silk browser
+3. am start ... -d "{url}" com.amazon.cloud9          → Open PDF reader URL
+4. settings put global policy_control immersive.full= → Immersive mode (attempt 1)
+5. settings put global policy_control immersive.full= → Immersive mode (attempt 2)
+6. input keyevent KEYCODE_DPAD_CENTER                → Press center (dismiss dialogs)
+```
+
+---
+
+## 12. HA Automation Created by App
+
+### Partner Leaves Work Notification
+**Endpoint:** POST /api/ha/automation/partner-leaves-work
+**Purpose:** Creates an HA automation that notifies Bryn when Yasu leaves work
+
+```
+Automation config pushed to HA:
+├── Trigger: device_tracker.y_phone_app state changes FROM "work zone" state
+├── Condition: Time is between 15:00 and 22:00
+├── Action: notify.mobile_app_iphone_10
+│   └── Message: "Yasu just left work"
+│   └── Title: "Partner Update"
+```
+
+---
+
+## 13. Constants & Defaults Summary
+
+### Server Configuration
+| Constant | Value | Source |
+|----------|-------|--------|
+| `HOME_ASSISTANT_URL` | `https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa` | Hardcoded |
+| `HOME_ASSISTANT_TOKEN` | From `process.env.HOME_ASSISTANT_TOKEN` | Secret |
+| `SERVER_STARTUP_COOLDOWN_MS` | Prevents webhook fires during server restart | routes.ts |
+| `CHARS_PER_SECOND` | 13 | TTS timing |
+| `CHUNK_SIZE` | 2000 | Text chunking |
+| `MAX_CONSECUTIVE_ERRORS` | 5 | Playback error limit |
+| `MAX_SESSION_AGE_MS` | 14,400,000 (4 hours) | Stale session cleanup |
+| Ticker update interval | 300,000 (5 minutes) | haTickerWebhook.ts |
+| Confirmation wait timeout | 23,000 (23 seconds) | Cat lights prompt |
+| Toothbrush poll interval | Periodic | Stop playback when brushing |
+
+### Semester/Academic Constants (from shared/schema.ts)
+| Constant | Value | Purpose |
+|----------|-------|---------|
+| `FIRST_WEEK` | 1 | First week of semester |
+| `LAST_WEEK` | varies | Last week of semester |
+| `DEFAULT_REMINDER_1` | 30 minutes | First task reminder |
+| `DEFAULT_REMINDER_2` | 120 minutes (2 hours) | Second task reminder |
+| `COURSES` | Array of course names | CPPA, CASL, etc. |
+
+### App URLs
+| URL | Purpose |
+|-----|---------|
+| `https://home-view--bkh416.replit.app` | Published/deployed app (used in all HA calls) |
+| `http://172.24.0.2:8123/lovelace/test-home` | Local HA dashboard (tablet navigation target) |
+| `https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa` | Nabu Casa cloud URL for HA API |
+
+---
+
+## Source Code Access Notes
+
+| What | Can Agent Access? | Location |
+|------|------------------|----------|
+| Server routes & webhooks | **YES** | `server/routes.ts` (15,322 lines) |
+| Ticker webhook | **YES** | `server/haTickerWebhook.ts` (222 lines) |
+| Spotify integration | **YES** | `server/spotify.ts` (268 lines) |
+| Spotify player UI | **YES** | `client/src/pages/spotify-player.tsx` (2,448 lines) |
+| REST commands YAML | **YES** | `.local/ha-rest-commands.yaml` (32 lines) |
+| HA configuration.yaml | **NO** | Lives on your HA instance, not in this codebase |
+| HA automations.yaml | **NO** | Lives on your HA instance (only app-created ones visible) |
+| HA scripts.yaml | **NO** | Lives on your HA instance |
+| HA lovelace dashboards | **NO** | Lives on your HA instance |
+| Card-mod configurations | **NO** | Would be in HA lovelace YAML, not in this codebase |
+| HA scenes/helpers | **NO** | Lives on your HA instance |
+
+The app interacts with your HA instance purely through the **REST API** — it does not store or manage your HA YAML configuration files. All automations, scripts, and dashboard configs on the HA side would need to be checked directly on your Home Assistant instance.
+________________________________________

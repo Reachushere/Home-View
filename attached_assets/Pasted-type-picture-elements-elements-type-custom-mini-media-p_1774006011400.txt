@@ -1,0 +1,696 @@
+type: picture-elements
+elements:
+  - type: custom:mini-media-player
+    entity: media_player.spotify_byhomeyyz
+    artwork: full-cover
+    background: /local/lovelace/overlays/Round Menu/5/Echo Idle.png
+    name: Spotify
+    idle_view:
+      when_idle: true
+    when_standby: /local/lovelace/overlays/Round Menu/5/Echo Idle.png
+    consider_idle_after: 5
+    icon: none
+    hide:
+      power: true
+      source: true
+      name: true
+      info: true
+      play_stop: true
+      progress: true
+      controls: true
+      volume: true
+      volume_level: true
+      artwork_border: true
+      icon: true
+    group: false
+    style:
+      left: 22%
+      top: 22%
+      width: 36.7%
+      height: 36.7%
+  - type: custom:now-playing-poster
+    entity: media_player.55_sharp_roku_tv
+    style:
+      left: 77.8%
+      top: 33.5%
+      width: 32.7%
+      height: 50%
+  - type: custom:now-playing-poster
+    entity: media_player.everywhere_2
+    style:
+      left: 47.8%
+      top: 33.5%
+      width: 12.7%
+  - type: custom:now-playing-poster
+    entity: media_player.everywhere_2
+    style:
+      left: 47.8%
+      top: 33.5%
+      width: 12.7%
+  - type: custom:swipe-card
+    description: now playing
+    card_width: 15px
+    start_card: 1
+    style:
+      left: 26%
+      top: 28%
+      width: 35%
+    parameters:
+      effect: flip
+      grabCursor: true
+      start_card: 0
+      spaceBetween: 4
+      centeredSlides: true
+      slidesPerView: 1
+    cards:
+      - type: custom:auto-entities
+        title: Now Playing
+        filter:
+          include:
+            - entity_id: media_player.everywhere_2
+              state: playing
+            - entity_id: media_player.media_player.kitchen_and_living_room
+              state: playing
+            - entity_id: media_player.hallway_media_group
+              state: playing
+            - entity_id: media_player.pug_media_group
+              state: playing
+            - entity_id: media_player.queen_bedroom_media_group
+              state: playing
+            - entity_id: media_player.kitchen_media_group
+              state: playing
+            - entity_id: media_player.living_room_media_group
+              state: playing
+            - entity_id: media_player.king_bedroom_media_group
+              state: playing
+            - entity_id: media_player.cat_washroom_media_group
+              state: playing
+            - entity_id: media_player.closet_media_group
+              state: playing
+        show_empty: false
+        sort:
+          method: name
+        card:
+          type: entities
+          show_header_toggle: false
+          show_state: false
+          card_mod:
+            - type: custom:mini-media-player
+              description: now playing box
+              entity: media_player.kitchen_and_living_room
+              hide:
+                artwork_border: true
+              artwork: full-cover
+              style:
+                left: 78%
+                top: 78%
+                width: 35%
+        card_mod:
+          style: |
+            ha-card {
+              --card-background-color: rgba(255,0,255,0);
+            }
+            :host {
+              --mini-media-player-button-color: rgba(61,174,217,.4);
+            }
+        image: /local/lovelace/overlays/Round Menu/5/Blank.png
+        style:
+          left: 61%
+          top: 49.5%
+          width: 57.7%
+  - type: custom:mini-media-player
+    description: track/song chooser
+    hide:
+      power: true
+      source: true
+      name: true
+      info: true
+      play_stop: true
+      progress: true
+      controls: true
+      volume: true
+      volume_level: true
+      artwork_border: true
+      icon: true
+    artwork: none
+    source: full
+    sound_mode: full
+    info: scroll
+    entity: media_player.spotify_byhomeyyz
+    shortcuts:
+      label: Stations
+      columns: 4
+      buttons:
+        - type: custom
+          name: Gay FM
+          id: play Gay FM Radio on tunein on the everywhere group
+        - type: custom
+          name: Vibe of Vegas
+          id: play the Vibe of Vegas Radio on tunein on the everywhere group
+        - type: custom
+          name: Dinner Jazz
+          id: play Dinner Jazz music on Spotify on the everywhere group
+        - type: custom
+          name: Chill Electronic
+          id: play Chill Electronic station on Spotify on the everywhere group
+        - type: custom
+          name: CHUM FM
+          id: play 104.5 Chum FM
+        - type: custom
+          name: Spring Cleaning
+          id: play spring cleaning music on Spotify on the everywhere group
+        - name: Pink
+          type: service
+          id: spotcast.start
+          data:
+            device_name: Everywhere
+            uri: spotify:playlist:37i9dQZF1DZ06evO0YT088
+            random_song: true
+            shuffle: true
+        - type: custom
+          name: Easy Listening
+          id: play easy listening on Spotify in the everywhere group
+        - name: Katy Perry
+          type: service
+          id: spotcast.start
+          data:
+            device_name: Everywhere
+            uri: spotify:playlist:37i9dQZF1DZ06evO3Jefw4
+            random_song: true
+            shuffle: true
+        - type: custom
+          name: Disney
+          id: play Disney songs on Spotify on the everywhere group
+        - type: custom
+          id: play Club Riva Lounge Radio on tunein on the everywhere group
+          name: Club Riva Lounge Radio
+        - type: custom
+          name: This is Me
+          id: play This is Me on the everywhere group
+        - type: custom
+          name: Samui Island Radio
+          id: play Samui Island Radio on tunein
+        - type: custom
+          name: Calm My Cat
+          id: Enable Calm My Cat everywhere
+    style:
+      left: 22%
+      top: 85%
+      width: 40%
+    card_mod:
+      style: |
+        ha-card {
+          --card-background-color: rgba(255,0,255,0);
+        }
+        :host {
+          --mini-media-player-button-color: rgba(33,160,206,.9);
+        }
+  - type: custom:swipe-card
+    description: bottom - player controls
+    card_width: 15px
+    start_card: 1
+    style:
+      left: 72.3%
+      top: 87.45%
+      width: 55.55%
+    parameters:
+      effect: flip
+      grabCursor: true
+      start_card: 0
+      spaceBetween: 4
+      centeredSlides: true
+      slidesPerView: 1
+    cards:
+      - type: picture-elements
+        description: BOTTOM CARD 1
+        elements:
+          - type: image
+            description: blank content for picture elements
+            image: /local/lovelace/overlays/Round Menu/5/Blank.png
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              opacity: 0%
+        image: /local/lovelace/overlays/Round Menu/5/BBB0.png
+        style:
+          left: 50%
+          top: 50%
+          width: 100%
+        card_mod:
+          style: |
+            ha-card {
+              border-color: transparent !important;
+              box-shadow: none !important;
+              border-style: none !important;
+              border: none !important;
+            }
+    card_mod:
+      style: |
+        ha-card {
+          border-color: transparent !important;
+          box-shadow: none !important;
+          border-style: none !important;
+          border: none !important;
+        }
+  - type: custom:swipe-card
+    description: bottom - volume
+    card_width: 200px
+    start_card: 1
+    style:
+      left: 72.3%
+      top: 87.45%
+      width: 55.55%
+    parameters:
+      effect: flip
+      grabCursor: true
+      start_card: 0
+      spaceBetween: 4
+      centeredSlides: true
+      slidesPerView: auto
+    cards:
+      - type: picture-elements
+        description: BOTTOM CARD 1
+        elements:
+          - type: image
+            description: blank content for picture elements
+            image: /local/lovelace/overlays/Round Menu/5/Blank.png
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              opacity: 0%
+        image: /local/lovelace/overlays/Round Menu/5/BBB0.png
+        style:
+          left: 50%
+          top: 50%
+          width: 100%
+        card_mod:
+          style: |
+            ha-card {
+              border-color: transparent !important;
+              box-shadow: none !important;
+              border-style: none !important;
+              border: none !important;
+            }
+      - type: picture-elements
+        description: BOTTOM CARD 2
+        elements:
+          - type: image
+            description: blank content for picture elements
+            image: /local/lovelace/overlays/Round Menu/5/Blank.png
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              opacity: 0%
+          - type: custom:mini-media-player
+            entity: media_player.spotify_byhomeyyz
+            group: false
+            volume_stateless: true
+            volume_step: 2
+            max_volume: 30
+            style:
+              left: 9%
+              top: 31%
+              width: 40%
+              transform: scale(1.25,1.25)
+            hide:
+              power: true
+              source: true
+              name: true
+              info: true
+              play_stop: true
+              progress: true
+              controls: true
+              volume: false
+              volume_level: true
+              artwork_border: true
+              icon: true
+            card_mod:
+              style: |
+                ha-card {
+                  border: none !important;
+                  --card-background-color: rgba(255,255,255,0);
+                }
+          - type: custom:mini-media-player
+            entity: media_player.spotify_byhomeyyz
+            name: Spotify
+            volume_stateless: false
+            volume_step: 2
+            max_volume: 40
+            icon: none
+            hide:
+              power: true
+              source: true
+              name: true
+              info: true
+              play_stop: true
+              mute: false
+              progress: true
+              controls: true
+              volume: false
+              volume_level: false
+              artwork_border: true
+              icon: true
+            group: false
+            style:
+              left: 41%
+              top: 36%
+              width: 40%
+              transform: scale(1.25,1.25)
+            card_mod:
+              style: |
+                ha-card {
+                  --card-background-color: rgba(255,0,255,0);
+                }
+        image: /local/lovelace/overlays/Round Menu/5/BBB0 Blur.png
+        style:
+          left: 45%
+          top: 50%
+          width: 100%
+        card_mod:
+          style: |
+            ha-card {
+              --card-background-color: rgba(255,0,255,0);
+
+            }
+    card_mod:
+      style: |
+        ha-card {
+          border-color: transparent !important;
+          box-shadow: none !important;
+          border-style: none !important;
+          border: none !important;
+        }
+  - type: custom:swipe-card
+    description: middle - device chooser
+    card_width: 200px
+    start_card: 1
+    style:
+      left: 72.3%
+      top: 50.2%
+      width: 55.5%
+    parameters:
+      effect: flip
+      grabCursor: true
+      start_card: 0
+      spaceBetween: 4
+      centeredSlides: true
+      slidesPerView: auto
+    cards:
+      - type: picture-elements
+        description: MIDDLE CARD 1
+        elements:
+          - type: image
+            description: blank content for picture elements
+            image: /local/lovelace/overlays/Round Menu/5/Blank.png
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              opacity: 0%
+        image: /local/lovelace/overlays/Round Menu/5/MMM0.png
+        style:
+          left: 50%
+          top: 50%
+          width: 100%
+        card_mod:
+          style: |
+            ha-card {
+              border-color: transparent !important;
+              box-shadow: none !important;
+              border-style: none !important;
+              border: none !important;
+            }
+      - type: picture-elements
+        description: MIDDLE CARD 2
+        elements:
+          - type: image
+            description: blank content for picture elements
+            image: /local/lovelace/overlays/Round Menu/5/Blank.png
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              opacity: 0%
+          - type: custom:mini-media-player
+            entity: media_player.spotify_byhomeyyz
+            volume_stateless: true
+            toggle_power: false
+            artwork: none
+            source: full
+            sound_mode: full
+            replace_mute: stop
+            info: scroll
+            hide:
+              power: true
+              source: true
+              name: true
+              info: true
+              play_stop: true
+              progress: true
+              controls: true
+              volume: true
+              volume_level: true
+              artwork_border: true
+              icon: true
+            shortcuts:
+              columns: 2
+              buttons:
+                - icon: mdi:floor-plan
+                  type: source
+                  name: Everywhere
+                  id: Everywhere
+                - icon: mdi:floor-plan
+                  name: Kitchen LR
+                  type: source
+                  id: Kitchen LR
+                - icon: mdi:coat-rack
+                  name: Hallway
+                  type: source
+                  id: Hallway
+                - icon: mdi:dog
+                  name: Pug WR
+                  type: source
+                  id: Echo Show - Pug AM
+                - icon: mdi:food-drumstick
+                  name: Kitchen
+                  type: source
+                  id: Kitchen
+                - icon: mdi:sofa
+                  name: Living Room
+                  type: source
+                  id: Living Room
+                - icon: mdi:bed
+                  type: source
+                  name: King Bedroom
+                  id: King Bedroom
+                - icon: mdi:cat
+                  name: Cat Washroom
+                  type: source
+                  id: Cat WR
+            style:
+              left: 16%
+              top: 20%
+              width: 60%
+              transform: scale(1.1,1.1)
+            card_mod:
+              style: |
+                ha-card {
+                  --card-background-color: rgba(255,0,255,0);
+                }
+                :host {
+                  --mini-media-player-button-color: rgba(0,177,253,.7);
+                }
+        image: /local/lovelace/overlays/Round Menu/5/MMM0 Blur.png
+        style:
+          left: 45%
+          top: 50%
+          width: 100%
+        card_mod:
+          style: |
+            ha-card {
+              border-color: transparent !important;
+              box-shadow: none !important;
+              border-style: none !important;
+              border: none !important;
+            }
+    card_mod:
+      style: |
+        ha-card {
+          border-color: transparent !important;
+          box-shadow: none !important;
+          border-style: none !important;
+          border: none !important;
+        }
+  - type: custom:swipe-card
+    description: Top - Player
+    card_width: 200px
+    start_card: 1
+    style:
+      left: 72.3%
+      top: 12.8%
+      width: 55.75%
+    parameters:
+      effect: flip
+      grabCursor: true
+      start_card: 0
+      spaceBetween: 4
+      centeredSlides: true
+      slidesPerView: auto
+    cards:
+      - type: picture-elements
+        description: TOP CARD 1
+        elements:
+          - type: image
+            description: blank content for picture elements
+            image: /local/lovelace/overlays/Round Menu/5/Blank.png
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              opacity: 0%
+        image: /local/lovelace/overlays/Round Menu/5/TTT0.png
+        style:
+          left: 50%
+          top: 50%
+          width: 100%
+        card_mod:
+          style: |
+            ha-card {
+              border-color: transparent !important;
+              box-shadow: none !important;
+              border-style: none !important;
+              border: none !important;
+            }
+      - type: picture-elements
+        description: TOP CARD 2
+        elements:
+          - type: image
+            description: blank content for picture elements
+            image: /local/lovelace/overlays/Round Menu/5/Blank.png
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              opacity: 0%
+          - type: custom:mini-media-player
+            volume_stateless: false
+            entity: media_player.spotify_byhomeyyz
+            toggle_power: true
+            artwork: none
+            source: icon
+            sound_mode: full
+            info: none
+            hide:
+              power: true
+              source: true
+              name: true
+              info: true
+              play_stop: false
+              progress: false
+              controls: false
+              volume: true
+              volume_level: true
+              artwork_border: true
+              icon: true
+            style:
+              left: 25%
+              top: 31%
+              width: 55%
+              transform: scale(1.25,1.25)
+            card_mod:
+              style: |
+                ha-card {
+                  border: none !important;
+                  --card-background-color: rgba(255,255,255,0);
+                }
+          - type: custom:mini-media-player
+            volume_stateless: false
+            entity: media_player.spotify_byhomeyyz
+            toggle_power: false
+            artwork: none
+            source: icon
+            sound_mode: full
+            replace_mute: stop
+            info: none
+            hide:
+              power: true
+              source: true
+              name: true
+              info: true
+              play_stop: true
+              progress: true
+              controls: true
+              volume: true
+              volume_level: true
+              artwork_border: true
+              icon: false
+            style:
+              left: 7%
+              top: 31%
+              width: 25%
+              transform: scale(1.25,1.25)
+            card_mod:
+              style: |
+                ha-card {
+                  border: none !important;
+                  --card-background-color: rgba(255,255,255,0);
+                }
+        image: /local/lovelace/overlays/Round Menu/5/TTT0 Blur.png
+        style:
+          left: 45%
+          top: 50%
+          width: 100%
+        card_mod:
+          style: |
+            ha-card {
+              border-color: transparent !important;
+              box-shadow: none !important;
+              border-style: none !important;
+              border: none !important;
+            }
+  - type: image
+    image: /local/lovelace/overlays/Round Menu/5/Player.png
+    style:
+      left: 97.5%
+      top: 13%
+      width: 2%
+    card_mod:
+      style: |
+        ha-card {
+          border-color: transparent !important;
+          box-shadow: none !important;
+          border-style: none !important;
+          border: none !important;
+        }
+  - type: image
+    image: /local/lovelace/overlays/Round Menu/5/Volume Icon.png
+    style:
+      left: 97.5%
+      top: 87.5%
+      width: 2%
+    card_mod:
+      style: |
+        ha-card {
+          border-color: transparent !important;
+          box-shadow: none !important;
+          border-style: none !important;
+          border: none !important;
+        }
+  - type: image
+    image: /local/lovelace/overlays/Round Menu/5/Speaker.png
+    style:
+      left: 97.5%
+      top: 50%
+      width: 2%
+    card_mod:
+      style: |
+        ha-card {
+          border-color: transparent !important;
+          box-shadow: none !important;
+          border-style: none !important;
+          border: none !important;
+        }
+image: /local/lovelace/overlays/Round Menu/5/Music BG20.png

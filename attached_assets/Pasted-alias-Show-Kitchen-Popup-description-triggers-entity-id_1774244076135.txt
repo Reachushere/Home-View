@@ -1,0 +1,493 @@
+alias: Show Kitchen Popup
+description: ""
+triggers:
+  - entity_id: input_boolean.show_me_the_kitchen
+    to: "on"
+    trigger: state
+actions:
+  - data:
+      browser_ID:
+        - fb591309-f509aaf7
+        - 59fbb209-8a50ffe5
+        - c07e00bf-f10dd641
+        - 2678f0e0-dee599b7
+        - cb98e245-3661cd97
+        - 02392750-18703322
+        - a78b9372-c9f2beba
+        - a7e540bf-a1c30e93
+        - ede9e9e8-f98c46bc
+        - dee76664-b3a63c09
+        - 966a79bc-d5c1f299
+        - 6507d68f-6563ca6c
+        - e975a4ac-6a899569
+      dismissable: true
+      size: wide
+      autoclose: false
+      timeout: 600000
+      right_button: I'm done
+      content:
+        type: picture-elements
+        elements:
+          - type: image
+            image: null
+            entity: light.kitchen_group
+            tap_action:
+              action: toggle
+            state_image:
+              "on": /local/lovelace/overlays/Round Menu/5/King Day6.png
+              "off": /local/lovelace/overlays/Round Menu/5/King Night8.png
+            style:
+              top: 13.5%
+              left: 15.0%
+              width: 30.3%
+              transform: scale(1.30,1.01)
+            card_mod:
+              style: |
+                ha-card {
+                  border-radius: 12px;
+                 }
+          - entity: automation.motion_kitchen_detects2
+            title: Toggle Kitchen Motion Sensors
+            tap_action:
+              action: toggle
+            image: null
+            state_image:
+              "on": /local/lovelace/overlays/Round Menu/5/Motion On4.png
+              "off": /local/lovelace/overlays/Round Menu/5/Motion Off4.png
+            style:
+              left: 95.1%
+              top: 50.05%
+              width: 5%
+              opacity: 100%
+            type: image
+          - type: custom:bubble-card
+            card_type: media-player
+            show_state: true
+            show_last_changed: false
+            show_attribute: false
+            entity: media_player.kitchen_lr
+            hide:
+              previous_button: true
+              next_button: true
+            style:
+              left: 60%
+              top: 69%
+              width: 29%
+              transform: scale(.9, .9)
+            styles: |
+              .bubble-media-player-container {
+                background: rgba(255,255,255,0.1) !important;
+                  border-radius: 18px;
+              }
+              .bubble-icon {
+                color: black !important;
+              }
+              .bubble-icon-container {
+                background-color: rgba(255,255,255,1) !important;
+              }
+              .bubble-mute-button {
+                color: rgba(255,255,255,1) !important;
+              }
+              * { 
+                font-size: 12px !important;
+              }
+              .large .bubble-play-pause-button {
+                background: rgba(1,1,1,1) !important;
+              }
+              .bubble-play-pause-button {
+                color: rgba(1,1,1,1) !important;
+                background-color: rgba(255,255,255,1) !important;
+              }
+          - type: custom:bubble-card
+            card_type: media-player
+            show_state: true
+            show_last_changed: false
+            show_attribute: false
+            hide:
+              previous_button: true
+              next_button: true
+            entity: media_player.everywhere_5
+            style:
+              left: 60%
+              top: 78%
+              width: 29%
+              transform: scale(.9, .9)
+            styles: |
+              .bubble-media-player-container {
+                background: rgba(255,255,255,0.1) !important;
+                  border-radius: 18px;
+              }
+              .bubble-icon {
+                color: black !important;
+              }
+              .bubble-icon-container {
+                background-color: rgba(255,255,255,1) !important;
+              }
+              .bubble-mute-button {
+                color: rgba(255,255,255,1) !important;
+              }
+              * { 
+                font-size: 12px !important;
+              }
+              .large .bubble-play-pause-button {
+                background: rgba(1,1,1,1) !important;
+              }
+              .bubble-play-pause-button {
+                color: rgba(1,1,1,1) !important;
+                background-color: rgba(255,255,255,1) !important;
+              }
+          - type: custom:mushroom-cover-card
+            entity: cover.blind_lr_curtain
+            show_position_control: true
+            show_buttons_control: true
+            icon_type: none
+            show_tilt_position_control: false
+            fill_container: true
+            name: Living Room Main Window Blind
+            style:
+              top: 52.5%
+              left: 30.2%
+              width: 37%
+              height: 5%
+            card_mod:
+              style:
+                mushroom-cover-buttons-control$:
+                  mushroom-button:nth-child(1)$: |
+                    .button ::slotted(*) {
+                      --card-mod-icon-color: black;
+                      bg-color: white;
+                      --bg-color: white;
+                    }
+                    .button {
+                      --bg-color: rgba(0,0,0,0);
+                      bg-color: white;
+                      background: white;
+                      --background: white;
+                    }
+                  mushroom-button:nth-child(2)$: |
+                    .button {
+                      --card-mod-icon-color: black;
+                      --bg-color: white;
+                      bg-color: white;
+                      background: white;
+                      --background: white;
+                    }
+                  mushroom-button:nth-child(3)$: |
+                    .button {
+                      --card-mod-icon-color: black;
+                      --bg-color: white;
+                      bg-color: white;
+                      background: white;
+                      --background: white;
+                    }
+                    .button ::slotted(*) {
+                      --card-mod-icon-color: black;
+                      bg-color: white;
+                      --bg-color: white;
+                    }
+                mushroom-button$: |
+                  .button {
+                    background: white;
+                    --background: white;
+                    bg-color: white;
+                    --bg-color: white;
+                  }
+                  .button ::slotted(*) {
+                    --card-mod-icon-color: black;
+                    bg-color: white;
+                    --bg-color: white;
+                    background: white;
+                    --background: white;
+                  }
+                mushroom-shape-icon$: |
+                  .shape {
+                    --shape-color: rgba(255,255,255,1) !important;
+                    box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.66);
+                    --icon-symbol-size: 21px;
+                    --icon-size: 35px;
+                    bg-color: white;
+                    --bg-color: white;
+                    background: white;
+                    --background: white;
+                    padding-bottom: 0px;
+                    padding-top: 0px;
+                    margin-top: -0px;
+                    margin-bottom: -0px;
+                  }
+                mushroom-state-info$: |
+                  .container {
+                    --card-primary-color: white !important;
+                    --primary-text-color: white !important;
+                    primary-text-color: black !important;
+                    secondary-text-color: black !important;
+                    --card-secondary-color: white !important;;
+                    --secondary-text-color: white !important;
+                    flex-direction: row !important;
+                    align-items: baseline;
+                    gap: 6px;
+                    margin-top: 0px
+                    padding-right: 8px;
+                    padding-left: 8px !important;
+                    padding-bottom: 0px !important;
+                    padding-top: 0px !important;
+                  }
+                .: |
+                  ha-card {
+                    background-color: rgba(1,1,1,0);
+                    border: none;
+                    --card-primary-font-size: 14px;
+                    --card-secondary-font-size: 12px;
+                    padding-right: 8px !important;
+                    padding-left: 8px !important;
+                    padding-bottom: 42px !important;
+                    padding-top: 42px !important;
+                    margin-top: 42px;
+                    margin-bottom: 42px;
+                    margin-left: 0px;
+                    margin-right: 0px;
+                    border-radius: 12px;
+                     font-family: raleway-light.woff2;
+                  }
+                  ha-state-icon {
+                    --icon-symbol-size: 24px;
+                    padding-bottom: 42px;
+                    padding-top: 42px !important;
+                    color: rgba(0,0,0,0);
+                    margin-top: 42px;
+                    margin-bottom: 42px;
+                  }
+          - type: custom:mushroom-cover-card
+            entity: cover.blind_lr_balcony2_curtain
+            show_position_control: true
+            show_buttons_control: true
+            icon_type: none
+            show_tilt_position_control: false
+            fill_container: true
+            name: Balcony Blind
+            style:
+              top: 67%
+              left: 30.2%
+              width: 37%
+              height: 5%
+            card_mod:
+              style:
+                mushroom-cover-buttons-control$:
+                  mushroom-button:nth-child(1)$: |
+                    .button ::slotted(*) {
+                      --card-mod-icon-color: black;
+                      bg-color: white;
+                      --bg-color: white;
+                    }
+                    .button {
+                      --bg-color: rgba(0,0,0,0);
+                      bg-color: white;
+                      background: white;
+                      --background: white;
+                    }
+                  mushroom-button:nth-child(2)$: |
+                    .button {
+                      --card-mod-icon-color: black;
+                      --bg-color: white;
+                      bg-color: white;
+                      background: white;
+                      --background: white;
+                    }
+                  mushroom-button:nth-child(3)$: |
+                    .button {
+                      --card-mod-icon-color: black;
+                      --bg-color: white;
+                      bg-color: white;
+                      background: white;
+                      --background: white;
+                    }
+                    .button ::slotted(*) {
+                      --card-mod-icon-color: black;
+                      bg-color: white;
+                      --bg-color: white;
+                    }
+                mushroom-button$: |
+                  .button {
+                    background: white;
+                    --background: white;
+                    bg-color: white;
+                    --bg-color: white;
+                  }
+                  .button ::slotted(*) {
+                    --card-mod-icon-color: black;
+                    bg-color: white;
+                    --bg-color: white;
+                    background: white;
+                    --background: white;
+                  }
+                mushroom-shape-icon$: |
+                  .shape {
+                    --shape-color: rgba(255,255,255,1) !important;
+                    box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.66);
+                    --icon-symbol-size: 21px;
+                    --icon-size: 35px;
+                    bg-color: white;
+                    --bg-color: white;
+                    background: white;
+                    --background: white;
+                    padding-bottom: 0px;
+                    padding-top: 0px;
+                    margin-top: -0px;
+                    margin-bottom: -0px;
+                  }
+                mushroom-state-info$: |
+                  .container {
+                    --card-primary-color: white !important;
+                    --primary-text-color: white !important;
+                    primary-text-color: black !important;
+                    secondary-text-color: black !important;
+                    --card-secondary-color: white !important;;
+                    --secondary-text-color: white !important;
+                    flex-direction: row !important;
+                    align-items: baseline;
+                    gap: 6px;
+                    margin-top: 0px
+                    padding-right: 8px;
+                    padding-left: 8px !important;
+                    padding-bottom: 0px !important;
+                    padding-top: 0px !important;
+                  }
+                .: |
+                  ha-card {
+                    background-color: rgba(1,1,1,0);
+                    border: none;
+                    --card-primary-font-size: 14px;
+                    --card-secondary-font-size: 12px;
+                    padding-right: 8px !important;
+                    padding-left: 8px !important;
+                    padding-bottom: 42px !important;
+                    padding-top: 42px !important;
+                    margin-top: 42px;
+                    margin-bottom: 42px;
+                    margin-left: 0px;
+                    margin-right: 0px;
+                    border-radius: 12px;
+                     font-family: raleway-light.woff2;
+                  }
+                  ha-state-icon {
+                    --icon-symbol-size: 24px;
+                    padding-bottom: 42px;
+                    padding-top: 42px !important;
+                    color: rgba(0,0,0,0);
+                    margin-top: 42px;
+                    margin-bottom: 42px;
+                  }
+          - type: custom:button-card
+            entity: sensor.formaldehyde_detector_kitchen_temperature
+            show_name: false
+            show_badge: false
+            show_icon: false
+            show_state: true
+            image: null
+            style:
+              left: 42%
+              top: 15%
+              transform: scale(1.2, 1.2)
+            card_mod:
+              style: |
+                ha-card {
+                  primary-text-size: 42px;
+                  background: rgba(1,1,1,.6);
+                  primary-text-color: white;
+                  --secondary-text-color: white;
+                  color: white;
+                  margin-right: 5px;
+                  margin-top: 5px;
+                  margin-bottom: 5px;
+                  margin-left: 5px;
+                  --text-color: rgba(255,255,255,1);
+                  --primary-text-color: rgba(255,255,255,1);
+                  --secondary-text-color: rgba(255,255,255,1);
+                  border: .3px solid white;
+                  border-radius: 6px;
+                  font-family: raleway-light.woff2;
+                }
+          - type: custom:auto-entities
+            card_param: entities
+            filter:
+              include:
+                - entity_id: light.light_kitchen_hutch_socket_1
+                - entity_id: light.light_kitchen_cupboards_led_bars
+                - entity_id: light.light_kitchen_duct_socket_1
+                - entity_id: light.light_group_kitchen_track
+                - entity_id: light.kitchen_island_group
+                - entity_id: light.light_kitchen_island_corner
+                - entity_id: light.lights_kitchen_island_rainbow
+                - entity_id: light.light_kitchen_utility_cart_socket_1
+                - entity_id: switch.light_kitchen_amber_laundry_beacon_socket_1
+                - entity_id: switch.light_kitchen_cat_food_beacon_socket_1
+                - entity_id: light.light_kitchen_cat_water_beacon_socket
+                - entity_id: switch.light_kitchen_red_beacon_socket_1
+              exclude: null
+            sort:
+              method: domain
+              numeric: true
+            show_empty: true
+            view_layout:
+              grid-area: header
+            style:
+              top: 39.5%
+              left: 70%
+              width: 35%
+              "--ha-card-background": rgba(1,1,1,0)
+            card:
+              show_name: true
+              show_icon: true
+              show_state: true
+              type: entities
+              style:
+                top: 80%
+                left: 50%
+                width: 100%
+                .entities .entity:
+                  $: |
+                    state-badge {
+                      margin-top: 0px;
+                      margin-bottom: 0px;
+                    }
+              columns: 24
+              state_color: true
+              show_header_toggle: false
+              card_mod:
+                style:
+                  hui-generic-entity-row:
+                    $: |
+                      .info {
+                        margin-bottom: -33.5px !important;
+                        margin-top: -33.5px !important;
+                        margin-left: -2px !important;  
+                        margin-right: -6px !important;  
+                        padding-right: -6px !important; 
+                        padding-left: -2px !important; 
+                        border: none;
+                         }
+                  .: |
+                    #states > * {
+                      margin: 0px 0px !important;
+                      margin-top: -13.5px !important;
+                      margin-bottom: -13.5px !important;
+                      padding-right: 0px !important; 
+                      padding-left: 0px !important; 
+                      padding-top: -13.5px !important; 
+                      padding-bottom: -13.5px !important; 
+                      margin-left: -5px !important; 
+                      margin-right: -0px !important; 
+                      font-size: 13px;
+                      --mdc-icon-size: 16px;
+                      border: none;
+                    }
+        image: /local/lovelace/overlays/Round Menu/5/Kitchen BG34.png
+        style:
+          top: 50%
+          left: 50%
+          width: 125%
+          height: 125%
+    action: browser_mod.popup
+  - target:
+      entity_id: input_boolean.show_me_the_kitchen
+    action: input_boolean.turn_off
+    data: {}

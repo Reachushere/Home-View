@@ -1,0 +1,158 @@
+  - type: custom:html-card
+    content: |
+      <div class="ticker-wrap">
+        <div class="ticker">
+        <div class="ticker">
+          <span class="ticker__item" style="color: #39FF14;">Ragweed Pollen Index: [[ sensor.toronto_ragweed_pollen_day_0 ]]</span></span>
+          <span class="ticker__item" style="color: #39FF14;">Grass Pollen Index: [[ sensor.toronto_grass_pollen_day_0 ]]</span></span>
+          <span class="ticker__item" style="color: #39FF14;">Tree Pollen Index: [[ sensor.toronto_tree_pollen_day_0 ]]</span></span>
+          <span class="ticker__item" style="text-transform: uppercase; color: #00E7FF; font-weight: bold;">Forecast: </span>
+          <span="ticker__item" style="color: white;">[[ sensor.toronto_summary ]]</span>
+          <span class="ticker__item" style="text-transform: uppercase; color: #00E7FF; font-weight: bold;">In the news today: </span>
+          <span="ticker__item" style="color: white;">
+                [[ sensor.ctv_news_politics_attributes_0 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/CTV News8.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.cbs_news_top_stories_attributes_0 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/CBS News2.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+
+
+
+
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.cnn_news_attributes_0 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/CNN.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+
+
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.ctv_news_toronto_attributes_0 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/CTV News8.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.global_news_politics_attributes_0 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/Global News9.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.cnn_news_attributes_1 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/CNN.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.global_news_toronto_attributes_0 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/Global News9.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.ctv_news_politics_attributes_1 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/CTV News8.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.cbs_news_top_stories_attributes_1 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/CBS News2.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+
+          
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.global_news_headlines_attributes_1 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/Global News9.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.cnn_news_attributes_2 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/CNN.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.ctv_news_toronto_attributes_1 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/CTV News8.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.global_news_politics_attributes_1 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/Global News9.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.cnn_news_attributes_3 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/CNN.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.global_news_toronto_attributes_1 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/Global News9.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.ctv_news_politics_attributes_2 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/CTV News8.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+            <span class="ticker__item" style="color: white;">
+                [[ sensor.cnn_news_attributes_4 ]]
+                <img src="/local/lovelace/overlays/Round Menu/4/CNN.png" alt="logo" style="height: 20px; vertical-align: middle;">
+            </span>
+        </div>
+      <style>
+        ha-card {
+          height: 0px;
+          
+        }    
+
+          @keyframes ticker {
+              0% {
+                  transform: translate3d(0, 0, 0);
+                  visibility: visible;
+              }
+              100% {
+                  transform: translate3d(-100%, 0, 0);
+              }
+          }
+
+          .ticker-wrap {
+              font-family: tahoma;
+              font-size: 14px;
+              position: fixed;
+              bottom: 0;
+              left: 0;
+              width: 100%;
+              overflow: hidden;
+              background-color: black;
+              visibility: visible;
+              padding-left: 100%;
+              box-sizing: content-box;
+          }
+
+          .ticker {
+              display: inline-block;
+              height: 1rem;
+              font-family: tahoma;
+              font-size: 20px;
+              line-height: 2rem;
+              white-space: nowrap;
+              padding-right: 0; /* Adjusted to remove extra space */
+              box-sizing: content-box;
+              animation: ticker 265s linear infinite;
+          }
+
+          .ticker__item {
+              display: inline-block;
+          }
+
+          .ticker__item:before {
+              content: " »» ";
+              color: rgba(0, 166, 255, 1);
+              font-size: 20px;
+          }
+
+          .ticker__item:after {
+              margin-right: 10px;
+          }
+      </style>
+    style:
+      top: 98.2%
+      width: 100%
+      height: 5%
+      opacity: 100%
+      transform: scale(75%, 75%);

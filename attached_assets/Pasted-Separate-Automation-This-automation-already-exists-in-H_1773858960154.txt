@@ -1,0 +1,41 @@
+Separate Automation:
+
+This automation already exists in Home Assistant, but will be new for you and should not be related to or connected to any other existing automation or webhook.
+
+alias: Button Press - Shower Cat Main
+description: ""
+triggers:
+  - device_id: ed988f462d29d706cdbad84f9ff60b70
+    domain: zha
+    type: remote_button_short_press
+    subtype: remote_button_short_press
+    trigger: device
+conditions: []
+actions:
+  - action: scene.turn_on
+    metadata: {}
+    target:
+      entity_id: scene.shower_cat_main_switch_on
+    data: {}
+mode: parallel
+max: 10
+
+
+Change the automation to add/include the following by creating any new rest sensors and provide me updated YAML for the UI:
+
+- **Trigger:** `remote_button_short_press`
+- **Behavior:**
+  - In addition to the scene.turn_on activation, add plays next priority PDF file (Checks for unlistened weekly course files, based on course ranking numbers identified to the left of the course row boxes on the Courses page.  File to be chosen in order of priority: check module file in module folder for course ranked "1" for current semester and play from 1 chunk before the last read chunk for context and remove strikethrough for this chunk only before playing.  If no read chunks, play from beginning.  If no unread chunks, check module file in module folder for course ranked "2" for current semester and play from one chunk before the last read chunk for context and remove strikethrough for this chunk only before playing.  If not unread chunks in Module 2 folder, move to module file in module folder for course ranked "3" for current semester and play from one chunk before the last read chunk for context or and remove strikethrough for this chunk only before playing.  If all three folders have no unread module files, then play files in the reading folder for course ranked course "1" for current semester based on the same unread/read logic, then reading files in the reading folder for course ranked "2" for current semester based on the same unread/read logic, then reading files in the reading folder for course ranked "3" for current semester based on the same unread/read logic.
+
+If a file is found, do not play a confirmation prompt on Home Assistant Voice.  Clear any stale or stuck playback attempts in player, confirm to user with response "Okay, I will now play *insert course code, module or reading file and week number, ie: CPPA Module for week 9 or CFNF Reading Files for Week 9* based on the current semester week and the unread/read ranking logic.  Generate TTS audio chunk-by-chunk from pre-extracted OneDrive files, open player on Cat Tablet in Silk Browser full screen and player stays on same browser tab without openeing a new tab from the main app, and open PDF follow-along on Fire Stick TV and shows full screen on Samsung TV, play on Nest speaker.  After each chunk is played, save a checkmark in the checkbox beside the chunk on the left on the player page and save on server so listened to chunks are recorded.  Strikethrough the text of any chunks that are listened to.
+
+If no files to play or no response to Home Assistant Voice prompt for 15 seconds, play 104.5 ChumFM on echo cat washroom speakers.
+
+When playing file, stop every 5 chunks and ask user "Bryn, are you paying attention?"  Do not wait for a response, immediately continue playing next chunk.
+
+Trigger: **Light OFF:** stops all playback immediately, saves chunk progress. Confirms to user "Okay, the file position for CPPA Module File has been saved.  See you next time Bryn"
+
+Trigger: **Toothbrush** `sensor.toothbrush_bryn_toothbrush_state` | Polled by server every 3s during playback; "running"/"brushing" stops all playback immediately, saves chunk progress. Confirms to user "Okay, the file position for CPPA Module File has been saved.  See you next time Bryn"
+
+Trigger: User voice command to Home Assistant Voice: "Okay Nabu, Turn the Player Off" stops all playback immediately, saves chunk progress. Confirms to user "Okay, the file position for CPPA Module File has been saved.  See you next time Bryn"
+

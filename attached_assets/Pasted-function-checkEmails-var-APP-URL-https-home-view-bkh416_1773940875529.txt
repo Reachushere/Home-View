@@ -1,0 +1,99 @@
+function checkEmails() {
+  var APP_URL = 'https://home-view--bkh416.replit.app';
+  var AUTH = '5747';
+  
+  // 1. TICKER — subject contains "Ticker"
+  processThreads('subject:Ticker is:unread', function(msg) {
+    UrlFetchApp.fetch(APP_URL + '/api/webhook/ticker', {
+      method: 'post',
+      contentType: 'application/json',
+      payload: JSON.stringify({
+        emailId: msg.getId(),
+        subject: msg.getSubject(),
+        body: msg.getPlainBody().trim(),
+        auth: AUTH
+      }),
+      muteHttpExceptions: true
+    });
+  });
+  
+  // 2. REMINDER — subject contains "Reminder"
+  processThreads('subject:Reminder is:unread', function(msg) {
+    UrlFetchApp.fetch(APP_URL + '/api/webhook/reminder', {
+      method: 'post',
+      contentType: 'application/json',
+      payload: JSON.stringify({
+        subject: msg.getSubject(),
+        body: msg.getPlainBody().trim(),
+        auth: AUTH
+      }),
+      muteHttpExceptions: true
+    });
+  });
+  
+  // 3. DELETE — subject contains "Delete"
+  processThreads('subject:Delete is:unread', function(msg) {
+    UrlFetchApp.fetch(APP_URL + '/api/webhook/delete', {
+      method: 'post',
+      contentType: 'application/json',
+      payload: JSON.stringify({
+        body: msg.getPlainBody().trim(),
+        auth: AUTH
+      }),
+      muteHttpExceptions: true
+    });
+  });
+  
+  // 4. CALENDAR ENTRIES — forwarded from your own addresses
+  processThreads('(from:Bryn.kai-hendricks@outlook.com OR from:Bkaihendricks@torontomu.ca) is:unread', function(msg) {
+    var subj = msg.getSubject();
+    if (/^(ticker|reminder|delete)\b/i.test(subj)) return false;
+    UrlFetchApp.fetch(APP_URL + '/api/webhook/email-homework', {
+      method: 'post',
+      contentType: 'application/json',
+      headers: { 'X-Webhook-Secret': AUTH },
+      payload: JSON.stringify({
+        subject: subj,
+        body: msg.getPlainBody().trim(),
+        from: msg.getFrom()
+      }),
+      muteHttpExceptions: true
+    });
+  });
+  
+  // 5. D2L BRIGHTSPACE — announcements to ticker
+  processThreads('from:NotificationEmail@toronto-mu.brightspace.com is:unread', function(msg) {
+    var subj = msg.getSubject();
+    var courseMatch = subj.match(/\[([^\]]+)\]/);
+    var courseName = courseMatch ? courseMatch[1].trim() : 'University';
+    UrlFetchApp.fetch(APP_URL + '/api/announcements/webhook', {
+      method: 'post',
+      contentType: 'application/json',
+      payload: JSON.stringify({
+        emailId: msg.getId(),
+        subject: subj,
+        body: msg.getPlainBody().trim(),
+        snippet: msg.getPlainBody().trim().substring(0, 200),
+        courseName: courseName,
+        receivedAt: msg.getDate().toISOString()
+      }),
+      muteHttpExceptions: true
+    });
+  });
+}
+
+
+function processThreads(query, callback) {
+  var threads = GmailApp.search(query, 0, 10);
+  for (var i = 0; i < threads.length; i++) {
+    var messages = threads[i].getMessages();
+    for (var j = 0; j < messages.length; j++) {
+      var msg = messages[j];
+      if (!msg.isUnread()) continue;
+      var result = callback(msg);
+      if (result !== false) {
+        msg.markRead();
+      }
+    }
+  }
+}

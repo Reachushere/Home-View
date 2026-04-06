@@ -1,0 +1,177 @@
+Cat Washroom Study Reading System - Semester Folder Mapping
+  =============================================================
+
+  This document maps out the OneDrive folder structure the player uses for each semester from Winter 2026 through Fall 2029.
+
+  Priority Sequence: The player checks weeks in order from Week 1 to the current week, playing the earliest unfinished file first. Within each week, modules are prioritized over readings (readings are blocked until all modules for that course are complete). Courses are played in order of their configured play priority.
+
+  Base Path: OneDrive > Files > School > 1. TMU > Courses > [Year] > [Semester] > [CourseCode - CourseName] > [Week Folder] > Module or Reading
+
+
+  ======================================================================
+  WINTER 2026 (Current Semester)
+  Semester: Jan 12 - Apr 17, 2026
+  Reading Week: Feb 9 (inserted between Week 4 and Week 5)
+  ======================================================================
+
+  Active Courses:
+    - CPPA122 - Local Politics (Prof: Caryl Arundel)
+    - CFNF400 - Human Sexuality (Prof: Alex McKay)
+    - CASL101 - American Sign Language (Prof: Christina Moreau)
+
+  Full Paths Example (CPPA122):
+    /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/
+
+  Week Folders:
+    Week 1 - Jan 12-16  → Module/ , Reading/
+    Week 2 - Jan 17-23  → Module/ , Reading/
+    Week 3 - Jan 24-30  → Module/ , Reading/
+    Week 4 - Jan 31-Feb 6  → Module/ , Reading/
+    Reading Week - STUDY (no files)
+    Week 5 - Feb 14-20  → Module/ , Reading/
+    Week 6 - Feb 21-27  → Module/ , Reading/
+    Week 7 - Feb 28-Mar 6  → Module/ , Reading/
+    Week 8 - Mar 7-13  → Module/ , Reading/
+    Week 9 - Mar 14-20  → Module/ , Reading/
+    Week 10 - Mar 21-27  → Module/ , Reading/    ← CURRENT CONTENT WEEK
+    Week 11 - Mar 28-Apr 3  → Module/ , Reading/
+    Week 12 - Apr 4-10  → Module/ , Reading/
+    Week 13 - Apr 11-17  → Module/ , Reading/
+
+  Database Folder Keys (how files are stored internally):
+    week-1-cppa122-module, week-1-cppa122-reading
+    week-1-cfnf400-module, week-1-cfnf400-reading
+    week-1-casl101-module, week-1-casl101-reading
+    ... (same pattern for weeks 2-13)
+
+
+  ======================================================================
+  SPRING & SUMMER 2026
+  Semester: May 4 - Aug 7, 2026 (no reading week)
+  ======================================================================
+
+  Base Path: /School/1. TMU/Courses/2026/Spring & Summer/[Course]/
+
+    Week 1 - May 4-8       Week 8 - Jun 20-26
+    Week 2 - May 9-15      Week 9 - Jun 27-Jul 3
+    Week 3 - May 16-22     Week 10 - Jul 4-10
+    Week 4 - May 23-29     Week 11 - Jul 11-17
+    Week 5 - May 30-Jun 5  Week 12 - Jul 18-24
+    Week 6 - Jun 6-12      Week 13 - Jul 25-31
+    Week 7 - Jun 13-19
+
+  Each week has Module/ and Reading/ subfolders.
+
+
+  ======================================================================
+  FALL 2026
+  Semester: Sep 7 - Dec 11, 2026
+  Reading Week: ~Oct 12 (between Week 5 and Week 6)
+  ======================================================================
+
+  Base Path: /School/1. TMU/Courses/2026/Fall/[Course]/
+
+    Week 1 - Sep 7-11      Week 8 - Oct 31-Nov 6
+    Week 2 - Sep 12-18     Week 9 - Nov 7-13
+    Week 3 - Sep 19-25     Week 10 - Nov 14-20
+    Week 4 - Sep 26-Oct 2  Week 11 - Nov 21-27
+    Week 5 - Oct 3-9       Week 12 - Nov 28-Dec 4
+    Reading Week - STUDY    Week 13 - Dec 5-11
+    Week 6 - Oct 17-23
+    Week 7 - Oct 24-30
+
+
+  ======================================================================
+  WINTER 2027
+  Semester: Jan 11 - Apr 16, 2027
+  Reading Week: ~Feb 8
+  ======================================================================
+
+  Base Path: /School/1. TMU/Courses/2027/Winter/[Course]/
+
+    Week 1 - Jan 11-15     Week 8 - Mar 6-12
+    Week 2 - Jan 16-22     Week 9 - Mar 13-19
+    Week 3 - Jan 23-29     Week 10 - Mar 20-26
+    Week 4 - Jan 30-Feb 5  Week 11 - Mar 27-Apr 2
+    Reading Week - STUDY    Week 12 - Apr 3-9
+    Week 5 - Feb 13-19     Week 13 - Apr 10-16
+    Week 6 - Feb 20-26
+    Week 7 - Feb 27-Mar 5
+
+
+  ======================================================================
+  SPRING & SUMMER 2027
+  Semester: May 3 - Aug 6, 2027
+  ======================================================================
+  Base Path: /School/1. TMU/Courses/2027/Spring & Summer/[Course]/
+  13 weeks: May 3 through Jul 30
+
+
+  ======================================================================
+  FALL 2027
+  Semester: Sep 13 - Dec 17, 2027
+  Reading Week: ~Oct 18
+  ======================================================================
+  Base Path: /School/1. TMU/Courses/2027/Fall/[Course]/
+  13 weeks: Sep 13 through Dec 17
+
+
+  ======================================================================
+  WINTER 2028
+  Semester: Jan 10 - Apr 14, 2028
+  Reading Week: ~Feb 7
+  ======================================================================
+  Base Path: /School/1. TMU/Courses/2028/Winter/[Course]/
+  13 weeks: Jan 10 through Apr 14
+
+
+  ======================================================================
+  SPRING & SUMMER 2028
+  Semester: May 1 - Aug 4, 2028
+  ======================================================================
+  Base Path: /School/1. TMU/Courses/2028/Spring & Summer/[Course]/
+  13 weeks: May 1 through Jul 28
+
+
+  ======================================================================
+  FALL 2028
+  Semester: Sep 11 - Dec 15, 2028
+  Reading Week: ~Oct 16
+  ======================================================================
+  Base Path: /School/1. TMU/Courses/2028/Fall/[Course]/
+  13 weeks: Sep 11 through Dec 15
+
+
+  ======================================================================
+  WINTER 2029
+  Semester: Jan 8 - Apr 13, 2029
+  Reading Week: ~Feb 5
+  ======================================================================
+  Base Path: /School/1. TMU/Courses/2029/Winter/[Course]/
+  13 weeks: Jan 8 through Apr 13
+
+
+  ======================================================================
+  SPRING & SUMMER 2029
+  Semester: May 7 - Aug 10, 2029
+  ======================================================================
+  Base Path: /School/1. TMU/Courses/2029/Spring & Summer/[Course]/
+  13 weeks: May 7 through Aug 3
+
+
+  ======================================================================
+  FALL 2029
+  Semester: Sep 10 - Dec 14, 2029
+  Reading Week: ~Oct 15
+  ======================================================================
+  Base Path: /School/1. TMU/Courses/2029/Fall/[Course]/
+  13 weeks: Sep 10 through Dec 14
+
+
+  ---
+  Player Logic Summary:
+  1. Player starts from Week 1 and scans up to the current week
+  2. First unlistened file found (by priority) is played
+  3. Modules MUST be completed before readings for each course
+  4. Course priority order determines which course is played first
+  5. Partially-listened files resume from where they left off

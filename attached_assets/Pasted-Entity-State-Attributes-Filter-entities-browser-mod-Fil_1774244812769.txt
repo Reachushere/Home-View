@@ -1,0 +1,307 @@
+Entity
+State
+Attributes
+Filter entities
+browser_mod
+Filter states
+Filter attributes
+binary_sensor.browser_mod_9e820163_c8edaf00
+browser_mod_9e820163_c8edaf00
+off
+device_class: motion
+friendly_name: browser_mod_9e820163_c8edaf00
+type: browser_mod
+browserID: browser_mod_9e820163_c8edaf00
+activityType: none
+binary_sensor.browser_mod_9e820163_c8edaf00_browser_charging
+browser_mod_9e820163_c8edaf00 Browser charging
+on
+icon: mdi:power-plug
+friendly_name: browser_mod_9e820163_c8edaf00 Browser charging
+type: browser_mod
+browserID: browser_mod_9e820163_c8edaf00
+binary_sensor.browser_mod_9e820163_c8edaf00_browser_dark_mode
+browser_mod_9e820163_c8edaf00 Browser dark mode
+on
+icon: mdi:theme-light-dark
+friendly_name: browser_mod_9e820163_c8edaf00 Browser dark mode
+type: browser_mod
+browserID: browser_mod_9e820163_c8edaf00
+binary_sensor.browser_mod_9e820163_c8edaf00_browser_fullykiosk
+browser_mod_9e820163_c8edaf00 Browser FullyKiosk
+off
+icon: mdi:alpha-f
+friendly_name: browser_mod_9e820163_c8edaf00 Browser FullyKiosk
+type: browser_mod
+browserID: browser_mod_9e820163_c8edaf00
+data: undefined
+binary_sensor.browser_mod_bca0ad74_8329db40
+browser_mod_bca0ad74_8329db40
+off
+device_class: motion
+friendly_name: browser_mod_bca0ad74_8329db40
+type: browser_mod
+browserID: browser_mod_bca0ad74_8329db40
+activityType: none
+binary_sensor.browser_mod_bca0ad74_8329db40_browser_charging
+browser_mod_bca0ad74_8329db40 Browser charging
+on
+icon: mdi:power-plug
+friendly_name: browser_mod_bca0ad74_8329db40 Browser charging
+type: browser_mod
+browserID: browser_mod_bca0ad74_8329db40
+binary_sensor.browser_mod_bca0ad74_8329db40_browser_dark_mode
+browser_mod_bca0ad74_8329db40 Browser dark mode
+on
+icon: mdi:theme-light-dark
+friendly_name: browser_mod_bca0ad74_8329db40 Browser dark mode
+type: browser_mod
+browserID: browser_mod_bca0ad74_8329db40
+binary_sensor.browser_mod_bca0ad74_8329db40_browser_fullykiosk
+browser_mod_bca0ad74_8329db40 Browser FullyKiosk
+off
+icon: mdi:alpha-f
+friendly_name: browser_mod_bca0ad74_8329db40 Browser FullyKiosk
+type: browser_mod
+browserID: browser_mod_bca0ad74_8329db40
+data: undefined
+light.browser_mod_9e820163_c8edaf00_screen
+browser_mod_9e820163_c8edaf00 Screen
+on
+supported_color_modes: brightness
+friendly_name: browser_mod_9e820163_c8edaf00 Screen
+supported_features: 0
+color_mode: brightness
+brightness: 255
+type: browser_mod
+browserID: browser_mod_9e820163_c8edaf00
+light.browser_mod_bca0ad74_8329db40_screen
+browser_mod_bca0ad74_8329db40 Screen
+on
+supported_color_modes: brightness
+friendly_name: browser_mod_bca0ad74_8329db40 Screen
+supported_features: 0
+color_mode: brightness
+brightness: 255
+type: browser_mod
+browserID: browser_mod_bca0ad74_8329db40
+media_player.browser_mod_9e820163_c8edaf00
+browser_mod_9e820163_c8edaf00
+off
+friendly_name: browser_mod_9e820163_c8edaf00
+supported_features: 152463
+type: browser_mod
+browserID: browser_mod_9e820163_c8edaf00
+video_interaction_required: false
+audio_interaction_required: true
+media_player.browser_mod_bca0ad74_8329db40
+browser_mod_bca0ad74_8329db40
+off
+friendly_name: browser_mod_bca0ad74_8329db40
+supported_features: 152463
+type: browser_mod
+browserID: browser_mod_bca0ad74_8329db40
+video_interaction_required: false
+audio_interaction_required: true
+sensor.browser_mod_9e820163_c8edaf00_browser_battery
+browser_mod_9e820163_c8edaf00 Browser battery
+100
+unit_of_measurement: %
+device_class: battery
+friendly_name: browser_mod_9e820163_c8edaf00 Browser battery
+type: browser_mod
+browserID: browser_mod_9e820163_c8edaf00
+sensor.browser_mod_9e820163_c8edaf00_browser_height
+browser_mod_9e820163_c8edaf00 Browser height
+800
+unit_of_measurement: px
+icon: mdi:arrow-up-down
+friendly_name: browser_mod_9e820163_c8edaf00 Browser height
+type: browser_mod
+browserID: browser_mod_9e820163_c8edaf00
+sensor.browser_mod_9e820163_c8edaf00_browser_id
+browser_mod_9e820163_c8edaf00 Browser ID
+browser_mod_9e820163_c8edaf00
+icon: mdi:server
+friendly_name: browser_mod_9e820163_c8edaf00 Browser ID
+type: browser_mod
+browserID: browser_mod_9e820163_c8edaf00
+sensor.browser_mod_9e820163_c8edaf00_browser_path
+browser_mod_9e820163_c8edaf00 Browser path
+/lovelace/spotify-yasu
+icon: mdi:web
+friendly_name: browser_mod_9e820163_c8edaf00 Browser path
+type: browser_mod
+browserID: browser_mod_9e820163_c8edaf00
+pathSegments: , lovelace, spotify-yasu
+sensor.browser_mod_9e820163_c8edaf00_browser_user
+browser_mod_9e820163_c8edaf00 Browser user
+nonadmin
+icon: mdi:account
+friendly_name: browser_mod_9e820163_c8edaf00 Browser user
+type: browser_mod
+browserID: browser_mod_9e820163_c8edaf00
+userData: 
+id: 3ad58f26d23b4ef482f6de1fc58df305
+name: nonadmin
+is_owner: false
+is_admin: true
+credentials:
+  - auth_provider_type: homeassistant
+    auth_provider_id: null
+mfa_modules:
+  - id: totp
+    name: Authenticator app
+    enabled: false
+
+person: person.non_admin
+sensor.browser_mod_9e820163_c8edaf00_browser_useragent
+browser_mod_9e820163_c8edaf00 Browser userAgent
+Mozilla/5.0 (Linux; Android 11; KFTUWI Build/RS8338.3339N; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/132.0.6834.209 Safari/537.36 Home Assistant/2026.3.2-20802 (Android 11; KFTUWI)
+icon: mdi:account-details
+friendly_name: browser_mod_9e820163_c8edaf00 Browser userAgent
+type: browser_mod
+browserID: browser_mod_9e820163_c8edaf00
+userAgent: Mozilla/5.0 (Linux; Android 11; KFTUWI Build/RS8338.3339N; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/132.0.6834.209 Safari/537.36 Home Assistant/2026.3.2-20802 (Android 11; KFTUWI)
+sensor.browser_mod_9e820163_c8edaf00_browser_visibility
+browser_mod_9e820163_c8edaf00 Browser visibility
+visible
+friendly_name: browser_mod_9e820163_c8edaf00 Browser visibility
+type: browser_mod
+browserID: browser_mod_9e820163_c8edaf00
+sensor.browser_mod_9e820163_c8edaf00_browser_width
+browser_mod_9e820163_c8edaf00 Browser width
+1280
+unit_of_measurement: px
+icon: mdi:arrow-left-right
+friendly_name: browser_mod_9e820163_c8edaf00 Browser width
+type: browser_mod
+browserID: browser_mod_9e820163_c8edaf00
+sensor.browser_mod_9e820163_c8edaf00_panel
+browser_mod_9e820163_c8edaf00 Panel
+Overview - Test-home
+icon: hass:view-dashboard
+friendly_name: browser_mod_9e820163_c8edaf00 Panel
+type: browser_mod
+browserID: browser_mod_9e820163_c8edaf00
+panelTitle: Overview
+panelUrlPath: lovelace
+panelComponentName: lovelace
+panelIcon: mdi:view-dashboard
+panelNarrow: false
+panelRequireAdmin: false
+viewTitle: Test-home
+viewUrlPath: test-home
+viewNarrow: false
+fullUrlPath: lovelace/test-home
+popupOpen: false
+openPopups: 
+sensor.browser_mod_bca0ad74_8329db40_browser_battery
+browser_mod_bca0ad74_8329db40 Browser battery
+100
+unit_of_measurement: %
+device_class: battery
+friendly_name: browser_mod_bca0ad74_8329db40 Browser battery
+type: browser_mod
+browserID: browser_mod_bca0ad74_8329db40
+sensor.browser_mod_bca0ad74_8329db40_browser_height
+browser_mod_bca0ad74_8329db40 Browser height
+800
+unit_of_measurement: px
+icon: mdi:arrow-up-down
+friendly_name: browser_mod_bca0ad74_8329db40 Browser height
+type: browser_mod
+browserID: browser_mod_bca0ad74_8329db40
+sensor.browser_mod_bca0ad74_8329db40_browser_id
+browser_mod_bca0ad74_8329db40 Browser ID
+browser_mod_bca0ad74_8329db40
+icon: mdi:server
+friendly_name: browser_mod_bca0ad74_8329db40 Browser ID
+type: browser_mod
+browserID: browser_mod_bca0ad74_8329db40
+sensor.browser_mod_bca0ad74_8329db40_browser_path
+browser_mod_bca0ad74_8329db40 Browser path
+/lovelace/spotify-yasu
+icon: mdi:web
+friendly_name: browser_mod_bca0ad74_8329db40 Browser path
+type: browser_mod
+browserID: browser_mod_bca0ad74_8329db40
+pathSegments: , lovelace, spotify-yasu
+sensor.browser_mod_bca0ad74_8329db40_browser_user
+browser_mod_bca0ad74_8329db40 Browser user
+nonadmin
+icon: mdi:account
+friendly_name: browser_mod_bca0ad74_8329db40 Browser user
+type: browser_mod
+browserID: browser_mod_bca0ad74_8329db40
+userData: 
+id: 3ad58f26d23b4ef482f6de1fc58df305
+name: nonadmin
+is_owner: false
+is_admin: true
+credentials:
+  - auth_provider_type: homeassistant
+    auth_provider_id: null
+mfa_modules:
+  - id: totp
+    name: Authenticator app
+    enabled: false
+
+person: person.non_admin
+sensor.browser_mod_bca0ad74_8329db40_browser_useragent
+browser_mod_bca0ad74_8329db40 Browser userAgent
+Mozilla/5.0 (Linux; Android 11; KFTUWI Build/RS8338.3339N; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/142.0.7444.236 Safari/537.36 Home Assistant/2026.3.2-20802 (Android 11; KFTUWI)
+icon: mdi:account-details
+friendly_name: browser_mod_bca0ad74_8329db40 Browser userAgent
+type: browser_mod
+browserID: browser_mod_bca0ad74_8329db40
+userAgent: Mozilla/5.0 (Linux; Android 11; KFTUWI Build/RS8338.3339N; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/142.0.7444.236 Safari/537.36 Home Assistant/2026.3.2-20802 (Android 11; KFTUWI)
+sensor.browser_mod_bca0ad74_8329db40_browser_visibility
+browser_mod_bca0ad74_8329db40 Browser visibility
+visible
+friendly_name: browser_mod_bca0ad74_8329db40 Browser visibility
+type: browser_mod
+browserID: browser_mod_bca0ad74_8329db40
+sensor.browser_mod_bca0ad74_8329db40_browser_width
+browser_mod_bca0ad74_8329db40 Browser width
+1280
+unit_of_measurement: px
+icon: mdi:arrow-left-right
+friendly_name: browser_mod_bca0ad74_8329db40 Browser width
+type: browser_mod
+browserID: browser_mod_bca0ad74_8329db40
+sensor.browser_mod_bca0ad74_8329db40_panel
+browser_mod_bca0ad74_8329db40 Panel
+Overview - Test-home
+icon: hass:view-dashboard
+friendly_name: browser_mod_bca0ad74_8329db40 Panel
+type: browser_mod
+browserID: browser_mod_bca0ad74_8329db40
+panelTitle: Overview
+panelUrlPath: lovelace
+panelComponentName: lovelace
+panelIcon: mdi:view-dashboard
+panelNarrow: false
+panelRequireAdmin: false
+viewTitle: Test-home
+viewUrlPath: test-home
+viewNarrow: false
+fullUrlPath: lovelace/test-home
+popupOpen: false
+openPopups: 
+update.browser_mod_update
+browser_mod update
+off
+auto_update: false
+display_precision: 0
+installed_version: v2.10.0
+in_progress: false
+latest_version: v2.10.0
+release_summary: null
+release_url: https://github.com/thomasloven/hass-browser_mod/releases/v2.10.0
+skipped_version: null
+title: null
+update_percentage: null
+entity_picture: https://brands.home-assistant.io/_/browser_mod/icon.png
+friendly_name: browser_mod update
+supported_features: 23

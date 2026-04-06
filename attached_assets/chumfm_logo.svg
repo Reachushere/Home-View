@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <circle cx="100" cy="100" r="95" fill="#1a1a2e" stroke="#e94560" stroke-width="4"/>
+  <text x="100" y="72" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="36" fill="#e94560">CHUM</text>
+  <text x="100" y="110" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="30" fill="white">104.5</text>
+  <text x="100" y="140" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="22" fill="#e94560">FM</text>
+</svg>
