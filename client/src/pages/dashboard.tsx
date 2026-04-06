@@ -18969,9 +18969,7 @@ export default function Dashboard() {
                       {quickAddStep === 0 ? 'ADD' : quickAddStep === 1 ? 'TASK NAME' : quickAddStep === 2 ? 'COURSE' : quickAddStep === 3 ? 'DATE & TIME' : quickAddStep === 4 ? 'DISPLAY OPTIONS' : quickAddStep === 5 ? 'PRIORITY' : quickAddStep === 6 ? 'REMINDERS' : quickAddStep === 7 ? 'ATTACHMENTS' : quickAddStep === 8 ? 'NOTES & LINKS' : quickAddStep === 9 ? 'SUBTASKS & PROJECT' : quickAddStep === 10 ? 'REPEAT' : quickAddStep === 11 ? 'INVITE' : 'REVIEW'}
                     </h2>
                   </div>
-                  <button onClick={handleQuickAddClose} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-quick-add">
-                    <X className="h-4 w-4" />
-                  </button>
+                  <div />
                 </div>
 
                 {/* Step indicator */}
@@ -19061,21 +19059,21 @@ export default function Dashboard() {
                           <img src={teacherWhiteIconPath} alt="Course" className="h-3.5 w-3.5" style={{ filter: 'brightness(1)' }} />
                           Course
                         </button>
-                        {(["module", "reading", "essay", "discussion", "poll", "quiz", "exam", "other", "reminder", "meeting", "scholarship", "project"] as const).map(type => {
+                        {(["module", "reading", "essay", "discussion", "poll", "quiz", "exam", "project", "reminder", "meeting", "scholarship", "other"] as const).map(type => {
                           const TypeIcon = iconMap[type] || FileText;
                           const typeColors: Record<string, { bg: string; border: string; hover: string }> = {
                             reading: { bg: 'rgba(56,130,255,0.25)', border: 'rgba(56,130,255,0.55)', hover: 'rgba(56,130,255,0.35)' },
-                            module: { bg: 'rgba(16,200,120,0.25)', border: 'rgba(16,200,120,0.55)', hover: 'rgba(16,200,120,0.35)' },
+                            module: { bg: 'rgba(180,120,220,0.25)', border: 'rgba(180,120,220,0.55)', hover: 'rgba(180,120,220,0.35)' },
                             essay: { bg: 'rgba(255,180,30,0.25)', border: 'rgba(255,180,30,0.55)', hover: 'rgba(255,180,30,0.35)' },
                             project: { bg: 'rgba(255,100,50,0.25)', border: 'rgba(255,100,50,0.55)', hover: 'rgba(255,100,50,0.35)' },
-                            discussion: { bg: 'rgba(180,120,220,0.25)', border: 'rgba(180,120,220,0.55)', hover: 'rgba(180,120,220,0.35)' },
+                            discussion: { bg: 'rgba(0,210,240,0.25)', border: 'rgba(0,210,240,0.55)', hover: 'rgba(0,210,240,0.35)' },
                             poll: { bg: 'rgba(255,70,160,0.25)', border: 'rgba(255,70,160,0.55)', hover: 'rgba(255,70,160,0.35)' },
                             exam: { bg: 'rgba(220,30,30,0.3)', border: 'rgba(220,30,30,0.6)', hover: 'rgba(220,30,30,0.4)' },
-                            quiz: { bg: 'rgba(180,160,40,0.25)', border: 'rgba(180,160,40,0.55)', hover: 'rgba(180,160,40,0.35)' },
-                            reminder: { bg: 'rgba(0,210,240,0.25)', border: 'rgba(0,210,240,0.55)', hover: 'rgba(0,210,240,0.35)' },
-                            meeting: { bg: 'rgba(80,100,220,0.3)', border: 'rgba(100,120,240,0.6)', hover: 'rgba(80,100,220,0.4)' },
-                            scholarship: { bg: 'rgba(202,138,4,0.25)', border: 'rgba(202,138,4,0.55)', hover: 'rgba(202,138,4,0.35)' },
-                            other: { bg: 'rgba(160,170,180,0.2)', border: 'rgba(160,170,180,0.5)', hover: 'rgba(160,170,180,0.3)' },
+                            quiz: { bg: 'rgba(16,200,120,0.25)', border: 'rgba(16,200,120,0.55)', hover: 'rgba(16,200,120,0.35)' },
+                            reminder: { bg: 'rgba(80,100,220,0.3)', border: 'rgba(100,120,240,0.6)', hover: 'rgba(80,100,220,0.4)' },
+                            meeting: { bg: 'rgba(202,138,4,0.25)', border: 'rgba(202,138,4,0.55)', hover: 'rgba(202,138,4,0.35)' },
+                            scholarship: { bg: 'rgba(160,170,180,0.2)', border: 'rgba(160,170,180,0.5)', hover: 'rgba(160,170,180,0.3)' },
+                            other: { bg: 'rgba(180,160,40,0.25)', border: 'rgba(180,160,40,0.55)', hover: 'rgba(180,160,40,0.35)' },
                           };
                           const tc = typeColors[type] || { bg: 'rgba(255,255,255,0.05)', border: 'rgba(255,255,255,0.1)', hover: 'rgba(255,255,255,0.2)' };
                           const isSelected = quickAddData.type === type;
@@ -20150,16 +20148,29 @@ export default function Dashboard() {
 
                 {/* Footer with navigation */}
                 <div className="flex items-center justify-between px-4 py-3 border-t border-white/10 bg-black/20 flex-shrink-0">
-                  <button
-                    onClick={() => { if (quickAddStep > 0) setQuickAddStep(s => s - 1); else handleQuickAddClose(); }}
-                    className="inline-flex items-center justify-center rounded-md px-3 py-1.5 text-white transition-opacity duration-200"
-                    style={{ fontSize: "11px", border: '1.5px solid rgba(255,255,255,0.6)', background: 'linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.15) 48%, rgba(255,255,255,0.06) 52%, rgba(255,255,255,0.22) 100%)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)' }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.22) 48%, rgba(255,255,255,0.1) 52%, rgba(255,255,255,0.3) 100%)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.15) 48%, rgba(255,255,255,0.06) 52%, rgba(255,255,255,0.22) 100%)'; }}
-                    data-testid="quick-add-back"
-                  >
-                    {quickAddStep === 0 ? 'Cancel' : <><ChevronLeft className="h-3 w-3 mr-1" /> Back</>}
-                  </button>
+                  {quickAddStep > 0 ? (
+                    <button
+                      onClick={() => setQuickAddStep(s => s - 1)}
+                      className="inline-flex items-center justify-center rounded-md px-3 py-1.5 text-white transition-opacity duration-200"
+                      style={{ fontSize: "11px", border: '1.5px solid rgba(255,255,255,0.6)', background: 'linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.15) 48%, rgba(255,255,255,0.06) 52%, rgba(255,255,255,0.22) 100%)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.22) 48%, rgba(255,255,255,0.1) 52%, rgba(255,255,255,0.3) 100%)'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.15) 48%, rgba(255,255,255,0.06) 52%, rgba(255,255,255,0.22) 100%)'; }}
+                      data-testid="quick-add-back"
+                    >
+                      <ChevronLeft className="h-3 w-3 mr-1" /> Back
+                    </button>
+                  ) : <div />}
+
+                  {quickAddStep === 0 && (
+                    <button
+                      onClick={handleQuickAddClose}
+                      className="inline-flex items-center justify-center rounded-md px-3 py-1.5 text-white/70 hover:text-white transition-colors duration-200"
+                      style={{ fontSize: "11px", border: '1px solid rgba(255,255,255,0.25)', background: 'rgba(255,255,255,0.06)' }}
+                      data-testid="quick-add-cancel-step0"
+                    >
+                      Cancel
+                    </button>
+                  )}
 
                   {quickAddStep < 12 && quickAddStep > 0 && (() => {
                     const canNext = !((quickAddStep === 1 && !quickAddData.title.trim()) || (quickAddStep === 3 && !quickAddData.dueDate));
