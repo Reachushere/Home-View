@@ -27785,7 +27785,7 @@ export default function Dashboard() {
                           {/* Time Slots - Scrollable area */}
             <div ref={calendarScrollRef} className="flex-1 overflow-y-auto relative" style={{ borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', scrollbarWidth: 'none' }}>
               <div style={{ backgroundColor: '#faf8f5', borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', position: 'relative' }}>
-                {/* Countdown bars overlay - absolute at current time Y, starts at tomorrow column, clips at today+2 */}
+                {/* Countdown bars overlay - sticky within visible scroll area */}
                 {(() => {
                   const twoWeeksOut = new Date(stableToday.getTime() + 14 * 24 * 60 * 60 * 1000);
                   const allCountdown = (allTasks || []).filter(t => {
@@ -27807,14 +27807,6 @@ export default function Dashboard() {
                     return true;
                   });
                   if (deduped.length === 0) return null;
-                  const currentHourNow = getETHours(new Date());
-                  const currentMinNow = new Date().getMinutes();
-                  let topPx = 0;
-                  for (let h = 0; h < currentHourNow; h++) {
-                    topPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
-                  }
-                  const currentSlotH = gridSizes.timeSlotHeights[currentHourNow] || gridSizes.timeSlotHeight;
-                  topPx += Math.round(currentSlotH * (currentMinNow / 60));
                   const todayDow = stableToday.getDay();
                   const dws = gridSizes.dayColumnWidths;
                   const totalFr = dws.reduce((s: number, v: number) => s + v, 0);
@@ -27828,8 +27820,10 @@ export default function Dashboard() {
                   const widthFrac = frSpan / totalFr;
                   const barH = 3;
                   const barGap = 14;
+                  const totalBarsHeight = deduped.length * barGap;
+                  const stickyTop = Math.max(10, Math.round((calendarScrollRef.current?.clientHeight || 400) / 2 - totalBarsHeight / 2));
                   return (
-                    <div style={{ position: 'absolute', top: `${topPx}px`, left: `${fixedPx}px`, right: 0, zIndex: 1, pointerEvents: 'none', overflow: 'visible' }} data-testid="countdown-bars-overlay">
+                    <div style={{ position: 'sticky', top: `${stickyTop}px`, left: `${fixedPx}px`, right: 0, zIndex: 1, pointerEvents: 'none', overflow: 'visible', height: 0, marginLeft: `${fixedPx}px` }} data-testid="countdown-bars-overlay">
                       <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, top: 0, overflow: 'visible' }}>
                         {deduped.map((cd, idx) => {
                           const t = cd.task;
