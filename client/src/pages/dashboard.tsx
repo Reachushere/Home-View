@@ -15184,6 +15184,33 @@ export default function Dashboard() {
           onMouseEnter={() => { topPillHoveredRef.current = true; if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); }}
           onMouseLeave={() => { if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); topPillTimeoutRef.current = setTimeout(() => { topPillHoveredRef.current = false; if (!isSettingsPanelOpen && !isTodoFlyoutOpen && !isProjectsFlyoutOpen && !isRadioDialogOpen && !isCompletedTasksOpen && !isQuickAddOpen && !isAlexaDialogOpen && !isEmailWizardOpen && !isKeyContactsOpen && !isSystemHealthOpen && !isFeedbackOpen && !isSchoolCoursesDialogOpen && !isNewCourseWizardOpen) closeTopPill(); }, 1500); }}
         />
+        {/* Spacing slider above pill */}
+        <div style={{
+          position: 'absolute',
+          top: '-16px',
+          left: '0px',
+          display: isTopPillOpen ? 'flex' : 'none',
+          alignItems: 'center',
+          gap: '6px',
+          pointerEvents: 'auto',
+          zIndex: 2,
+          opacity: isTopPillOpen ? 1 : 0,
+          transition: 'opacity 0.3s ease',
+        }}>
+          <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', letterSpacing: '0.3px' }}>Spacing</span>
+          <input
+            type="range"
+            min="-20"
+            max="40"
+            step="1"
+            value={blinkSettings.tallPillButtonSpacing}
+            onChange={(e) => setBlinkSettings(prev => ({ ...prev, tallPillButtonSpacing: Number(e.target.value) }))}
+            style={{ width: '80px', height: '2px', cursor: 'pointer', accentColor: '#3b82f6' }}
+            data-testid="slider-pill-spacing-inline"
+          />
+          <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.4)', minWidth: '22px' }}>{blinkSettings.tallPillButtonSpacing}px</span>
+        </div>
+
         {/* Glass pill background */}
         <div style={{
           position: 'absolute',
@@ -27564,7 +27591,66 @@ export default function Dashboard() {
               
                           {/* Time Slots - Scrollable area */}
             <div ref={calendarScrollRef} className="flex-1 overflow-y-auto relative" style={{ borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', scrollbarWidth: 'none' }}>
-              <div style={{ backgroundColor: '#faf8f5', borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px' }}>
+              <div style={{ backgroundColor: '#faf8f5', borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', position: 'relative' }}>
+                {/* Countdown bars overlay - one stacked block at current time */}
+                {(() => {
+                  const today = startOfDayET(new Date());
+                  const currentHourNow = getETHours(new Date());
+                  const currentMinNow = new Date().getMinutes();
+                  const twoWeeksOut = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
+                  const allCountdown = (allTasks || []).filter(t => {
+                    if (t.showCountdownBar === false || t.showCountdownBarMain === false || t.isCompleted) return false;
+                    const tDue = startOfDayET(new Date(t.dueDate));
+                    if (tDue <= today || tDue > twoWeeksOut) return false;
+                    return true;
+                  }).map(t => {
+                    const tDue = startOfDayET(new Date(t.dueDate));
+                    const daysLeft = Math.max(0, Math.round((tDue.getTime() - today.getTime()) / (1000*60*60*24)));
+                    return { task: t, tDue, daysLeft };
+                  }).sort((a, b) => a.tDue.getTime() - b.tDue.getTime() || (a.task.title || '').localeCompare(b.task.title || ''));
+                  const seenNames = new Map<string, number>();
+                  const deduped = allCountdown.filter(cd => {
+                    const name = (cd.task.title || '').trim().toLowerCase();
+                    if (!name) return true;
+                    if (seenNames.has(name)) return false;
+                    seenNames.set(name, 1);
+                    return true;
+                  });
+                  if (deduped.length === 0) return null;
+                  let topPx = 0;
+                  for (let h = 0; h < currentHourNow; h++) {
+                    topPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
+                  }
+                  const currentSlotH = gridSizes.timeSlotHeights[currentHourNow] || gridSizes.timeSlotHeight;
+                  topPx += Math.round(currentSlotH * (currentMinNow / 60));
+                  const barH = 3;
+                  const barGap = 14;
+                  return (
+                    <div style={{ position: 'absolute', top: `${topPx}px`, left: 0, right: 0, zIndex: 1, pointerEvents: 'none', overflow: 'visible' }} data-testid="countdown-bars-overlay">
+                      {deduped.map((cd, idx) => {
+                        const t = cd.task;
+                        const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
+                        const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
+                        const needsPulse = isNotStarted && cd.daysLeft <= 2 && !t.isCompleted;
+                        const labelText = (t.title || '').replace(/[\[\]]/g, '').replace(/^\s+/, '');
+                        const barHPx = needsPulse ? 4 : barH;
+                        const yOff = idx * barGap;
+                        return (
+                          <div key={`cbar-main-${t.id}`} className="countdown-bar-wrapper" style={{ position: 'absolute', left: 0, right: 0, top: `${yOff}px`, height: `${barGap}px`, pointerEvents: 'auto', cursor: 'default', overflow: 'hidden' }} data-testid={`countdown-bar-${t.id}`}>
+                            <div style={{ position: 'absolute', left: '0px', top: '2px', right: 0, height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
+                              <div style={{ width: '10px', minWidth: '10px', height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
+                              <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
+                                <span style={{ fontSize: '9px', fontWeight: 500, color: barColor, letterSpacing: '-0.2px', lineHeight: '10px' }}>{cd.daysLeft}d</span>
+                              </div>
+                              <span style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(0,0,0,0.85)', whiteSpace: 'nowrap', flexShrink: 0, paddingLeft: '1px', paddingRight: '3px', lineHeight: '10px' }}>{labelText}</span>
+                              <div className={needsPulse ? 'countdown-bar-pulse' : ''} style={{ flex: 1, height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '0 2px 2px 0', minWidth: '10px', boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined }} />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                })()}
                 {timeSlots.map((hour, hourIdx) => {
                   const currentHour = new Date().getHours();
                   const isCurrentHour = hour === currentHour;
@@ -27692,86 +27778,7 @@ export default function Dashboard() {
                             }}
                           />
                           <div className="absolute top-0 bottom-0 z-[1] pointer-events-none" style={{ left: `${gridSizes.timeSlotHeight + 3}px`, width: '1px', borderLeft: '1px dotted rgba(180, 180, 180, 0.45)' }} />
-                          {/* Countdown bars on main calendar */}
-                          {(() => {
-                            const today = startOfDayET(new Date());
-                            const todayDayIdx = weekDays.findIndex(wd => isSameDayET(wd, today));
-                            const twoWeeksOut = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
-                            const barStartIdx = todayDayIdx >= 0 ? todayDayIdx + 1 : 0;
-                            if (barStartIdx < 0 || barStartIdx >= weekDays.length) return null;
-                            const lastDayInWeek = startOfDayET(weekDays[weekDays.length - 1]);
-                            const allCountdown = (allTasks || []).filter(t => {
-                              if (t.showCountdownBar === false || t.showCountdownBarMain === false || t.isCompleted) return false;
-                              const tDue = startOfDayET(new Date(t.dueDate));
-                              if (tDue <= today || tDue > twoWeeksOut) return false;
-                              let tDueDayIdx = weekDays.findIndex(wd => isSameDayET(wd, tDue));
-                              if (tDueDayIdx < 0) { if (tDue > lastDayInWeek) tDueDayIdx = weekDays.length - 1; else return false; }
-                              if (tDueDayIdx <= barStartIdx) return false;
-                              return true;
-                            }).map(t => {
-                              const tDue = startOfDayET(new Date(t.dueDate));
-                              let tDueDayIdx = weekDays.findIndex(wd => isSameDayET(wd, tDue));
-                              const beyond = tDueDayIdx < 0;
-                              if (beyond) tDueDayIdx = weekDays.length - 1;
-                              const tDueHour = (() => { if (t.eventStartTime) { const [h] = t.eventStartTime.split(':').map(Number); return Math.min(h, 22); } const d = new Date(t.dueDate); const h = getETHours(d); return h === 0 ? 18 : Math.min(h, 22); })();
-                              const daysLeft = Math.max(0, Math.round((tDue.getTime() - today.getTime()) / (1000*60*60*24)));
-                              const barStart = todayDayIdx >= 0 ? todayDayIdx + 1 : 0;
-                              return { task: t, tDue, tDueDayIdx, tDueHour, beyond, daysLeft, startDay: barStart, endDay: tDueDayIdx };
-                            }).sort((a, b) => a.tDue.getTime() - b.tDue.getTime() || a.tDueHour - b.tDueHour);
-                            const seenNames = new Map<string, number>();
-                            const deduped = allCountdown.filter(cd => {
-                              const name = (cd.task.title || '').trim().toLowerCase();
-                              if (!name) return true;
-                              if (seenNames.has(name)) return false;
-                              seenNames.set(name, 1);
-                              return true;
-                            });
-                            const barH = 3;
-                            const barGap = 17;
-                            const taskLanes: number[] = [];
-                            const occupied: { startDay: number; endDay: number; lane: number; tDueHour: number }[] = [];
-                            deduped.forEach(cd => {
-                              let lane = 0;
-                              while (occupied.some(o => o.lane === lane && o.tDueHour === cd.tDueHour && !(cd.startDay > o.endDay || cd.endDay < o.startDay))) {
-                                lane++;
-                              }
-                              occupied.push({ startDay: cd.startDay, endDay: cd.endDay, lane, tDueHour: cd.tDueHour });
-                              taskLanes.push(lane);
-                            });
-                            const matchingBars = deduped.map((cd, idx) => ({ ...cd, lane: taskLanes[idx] })).filter(cd => {
-                              if (hour !== cd.tDueHour) return false;
-                              return dayIdx >= cd.startDay && dayIdx <= cd.endDay;
-                            });
-                            if (matchingBars.length === 0) return null;
-                            return matchingBars.map(cd => {
-                              const t = cd.task;
-                              const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
-                              const isBarCell = dayIdx >= cd.startDay && dayIdx <= cd.startDay + 1 && dayIdx <= cd.endDay;
-                              if (!isBarCell) return null;
-                              const isFirstCell = dayIdx === cd.startDay;
-                              const isLastCell = dayIdx === cd.startDay + 1 || dayIdx === cd.endDay;
-                              const topPx = 2 + cd.lane * barGap;
-                              const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
-                              const needsPulse = isNotStarted && cd.daysLeft <= 2 && !t.isCompleted;
-                              const labelText = (t.title || '').replace(/[\[\]]/g, '').replace(/^\s+/, '');
-                              const barHPx = needsPulse ? 4 : barH;
-                              if (isFirstCell) {
-                                return (
-                                  <div key={`cbar-main-${t.id}`} className="countdown-bar-wrapper" style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '200%', pointerEvents: 'auto', zIndex: 1, overflow: 'hidden', cursor: 'default' }} data-testid={`countdown-span-main-${t.id}-day-${dayIdx}`}>
-                                    <div style={{ position: 'absolute', left: '0px', top: `${topPx}px`, right: 0, height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
-                                      <div style={{ width: '10px', minWidth: '10px', height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
-                                      <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
-                                        <span style={{ fontSize: '9px', fontWeight: 500, color: barColor, letterSpacing: '-0.2px', lineHeight: '10px' }}>{cd.daysLeft}d</span>
-                                      </div>
-                                      <span style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(0,0,0,0.85)', whiteSpace: 'nowrap', flexShrink: 0, paddingLeft: '1px', paddingRight: '3px', lineHeight: '10px' }}>{labelText}</span>
-                                      <div className={needsPulse ? 'countdown-bar-pulse' : ''} style={{ flex: 1, height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '0 2px 2px 0', minWidth: '10px', boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined }} />
-                                    </div>
-                                  </div>
-                                );
-                              }
-                              return null;
-                            });
-                          })()}
+                          {/* Countdown bars removed from cells - rendered as overlay block */}
                           {sleepLabelStart && !isToday && (
                             <div style={{
                               position: 'absolute',
