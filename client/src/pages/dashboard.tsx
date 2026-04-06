@@ -18279,14 +18279,14 @@ export default function Dashboard() {
           const courseFullName = task.courseName?.includes(' - ') ? task.courseName.split(' - ').slice(1).join(' - ') : '';
           const daysUntil = task.dueDate ? differenceInCalendarDays(startOfDayET(new Date(task.dueDate)), startOfDayET(new Date())) : 0;
           return (
-            <div key={task.id} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', padding: '6px 10px', borderRadius: '8px', background: `${courseColor}15`, border: `1px solid ${courseColor}33`, borderLeft: `3px solid ${courseColor}`, opacity: task.isCompleted ? 0.45 : 1, transition: 'opacity 0.2s ease', flex: '1 1 auto', minWidth: '200px', maxWidth: '100%' }} data-testid={`day-detail-task-${task.id}`}>
+            <div key={task.id} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', padding: '6px 10px', borderRadius: '8px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.18)', borderLeft: `3px solid ${courseColor}`, opacity: task.isCompleted ? 0.45 : 1, transition: 'opacity 0.2s ease', flex: '1 1 auto', minWidth: '200px', maxWidth: '100%' }} data-testid={`day-detail-task-${task.id}`}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', paddingTop: '2px', flexShrink: 0 }}>
                 <input type="checkbox" checked={!!task.isCompleted} onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })} style={{ width: '16px', height: '16px', accentColor: courseColor, cursor: 'pointer' }} data-testid={`day-detail-check-${task.id}`} />
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
                   <span style={{ fontSize: '14px' }}>{icon}</span>
-                  <span style={{ fontSize: '13px', fontWeight: 600, color: courseColor, textDecoration: task.isCompleted ? 'line-through' : 'none', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid={`day-detail-title-${task.id}`}>{(task.title || '').replace(/^\[.*?\]\s*/g, '').trim() || task.title}</span>
+                  <span style={{ fontSize: '13px', fontWeight: 600, color: courseColor, textDecoration: task.isCompleted ? 'line-through' : 'none', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid={`day-detail-title-${task.id}`}>{(() => { let t = (task.title || '').replace(/^\[.*?\]\s*/g, '').trim(); if (task.courseName) { const full = task.courseName.replace(/[\[\]]/g, '').trim(); if (t.toUpperCase().startsWith(full.toUpperCase())) { t = t.slice(full.length).replace(/^\s*[-:]\s*/, '').trim(); } else { const cc = task.courseName.split(' - ')[0]?.trim(); if (cc && t.toUpperCase().startsWith(cc.toUpperCase())) { const afterCode = t.slice(cc.length).replace(/^\s*[-:]\s*/, '').trim(); const longName = task.courseName.split(' - ').slice(1).join(' - ').trim(); if (longName && afterCode.toUpperCase().startsWith(longName.toUpperCase())) { t = afterCode.slice(longName.length).replace(/^\s*[-:]\s*/, '').trim(); } else { t = afterCode; } } } } return t || task.title; })()}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginBottom: '4px' }}>
                   {task.courseName && (
@@ -28265,7 +28265,7 @@ export default function Dashboard() {
                                   const TIcon = effectiveType === 'class' ? null : (iconMap[effectiveType] || null);
                                   const moduleBoxColor = (() => {
                                     const cMatch2 = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode.toUpperCase());
-                                    if (cMatch2?.taskBgColor) return cMatch2.taskBgColor;
+                                    if (cMatch2?.color) return cMatch2.color;
                                     return cMatch2?.colorEnd || (gradColors?.end || otherRowColors.labelEnd);
                                   })();
                                   return (
@@ -28521,7 +28521,10 @@ export default function Dashboard() {
                         const typeBarColor = calendarTypeBarColors[effectiveType] || calendarTypeBarColors.other;
                         const TIcon = effectiveType === 'class' ? null : (iconMap[effectiveType] || null);
                         const cMatchBar = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode);
-                        const moduleBoxColor = cMatchBar?.color || colors?.bg || typeBarColor;
+                        const moduleBoxColor = (() => {
+                          if (cMatchBar?.color) return cMatchBar.color;
+                          return colors?.bg || typeBarColor;
+                        })();
                         return (
                           <div style={{
                             display: 'flex',
