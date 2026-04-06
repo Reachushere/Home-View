@@ -15181,7 +15181,7 @@ export default function Dashboard() {
         {/* Spacing slider above pill */}
         <div style={{
           position: 'absolute',
-          top: '-16px',
+          top: '-19px',
           left: '0px',
           display: isTopPillOpen ? 'flex' : 'none',
           alignItems: 'center',
@@ -15199,6 +15199,7 @@ export default function Dashboard() {
             step="1"
             value={blinkSettings.tallPillButtonSpacing}
             onChange={(e) => setBlinkSettings(prev => ({ ...prev, tallPillButtonSpacing: Number(e.target.value) }))}
+            className="pill-spacing-slider"
             style={{ width: '80px', height: '2px', cursor: 'pointer', accentColor: '#3b82f6' }}
             data-testid="slider-pill-spacing-inline"
           />
@@ -15230,7 +15231,7 @@ export default function Dashboard() {
 
           {/* Up arrow to hide pill */}
           <div
-            style={{ position: 'relative', zIndex: 1, flexShrink: 0, width: '31px', height: '31px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', marginRight: '-4px', marginLeft: '-10px' }}
+            style={{ position: 'relative', zIndex: 1, flexShrink: 0, width: '31px', height: '31px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', marginRight: '-4px', marginLeft: '0px' }}
             className="pill-button-hover"
             onClick={() => closeTopPill()}
             title="Hide toolbar"

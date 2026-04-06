@@ -2545,6 +2545,30 @@ input[type="date"]::-webkit-datetime-edit-year-field {
   50% { opacity: 1; }
 }
 
+.pill-spacing-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255,255,255,0.2);
+  border-radius: 2px;
+}
+.pill-spacing-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #3b82f6;
+  cursor: pointer;
+}
+.pill-spacing-slider::-moz-range-thumb {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #3b82f6;
+  border: 0;
+  cursor: pointer;
+}
+
 .countdown-bar-pulse {
   animation: countdownBarPulse 1.5s ease-in-out infinite;
 }
