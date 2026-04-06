@@ -4171,7 +4171,7 @@ export default function Dashboard() {
       dayColumnWidths: [1, 1, 1, 1, 1, 1, 1], // flex proportions for 7 days (Sun-Sat)
       progressColumnWidth: 0.87, // homework progress column
       allDayRowHeight: 36,
-      courseRowHeight: 36,
+      courseRowHeight: 26,
       otherRowHeight: 57,
       timeSlotHeight: 36,
       timeSlotHeights: defaultHeights
@@ -7294,6 +7294,12 @@ export default function Dashboard() {
     },
     onSuccess: () => { toast({ title: "Sent", description: "Announcement sent to Alexa now." }); },
     onError: () => { toast({ title: "Error", description: "Failed to send.", variant: "destructive" }); },
+  });
+
+  const stopAllSpeakersMutation = useMutation({
+    mutationFn: async () => { const res = await apiRequest('POST', '/api/speakers/stop-all'); return res.json(); },
+    onSuccess: () => { toast({ title: "Stopped", description: "All speakers and devices have been stopped." }); },
+    onError: () => { toast({ title: "Error", description: "Failed to stop speakers.", variant: "destructive" }); },
   });
 
   const haAutomationsQuery = useQuery<any[]>({ queryKey: ['/api/ha-automations'] });
@@ -11877,7 +11883,19 @@ export default function Dashboard() {
           <div className="sm:rounded-lg shadow-2xl w-[520px] max-w-[95vw] max-h-[600px] flex flex-col overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }} data-testid="alexa-dialog">
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
               <span className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>ALEXA ANNOUNCEMENTS</span>
-              <span className="text-white/40 text-[10px]">{scheduledAlexaList.length} scheduled</span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => stopAllSpeakersMutation.mutate()}
+                  disabled={stopAllSpeakersMutation.isPending}
+                  className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-semibold transition-all"
+                  style={{ background: 'linear-gradient(180deg, #dc2626 0%, #991b1b 100%)', color: 'white', border: '1px solid rgba(255,255,255,0.25)', opacity: stopAllSpeakersMutation.isPending ? 0.6 : 1, boxShadow: '0 2px 6px rgba(220,38,38,0.4)' }}
+                  data-testid="button-kill-switch"
+                >
+                  <Square className="w-3 h-3" fill="white" />
+                  {stopAllSpeakersMutation.isPending ? 'STOPPING...' : 'STOP ALL'}
+                </button>
+                <span className="text-white/40 text-[10px]">{scheduledAlexaList.length} scheduled</span>
+              </div>
             </div>
 
             {/* Compose area */}
@@ -18251,7 +18269,7 @@ export default function Dashboard() {
       {!isTodoFlyoutOpen && (
         <div 
           className="fixed text-white/60 text-[11px] font-medium z-[70] pointer-events-none"
-          style={{ bottom: '40px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7 - 2 + 3 + 2 + 8 + 2 + 4}px`, transformOrigin: 'right bottom' }}
+          style={{ bottom: '40px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7 - 2 + 3 + 2 + 8 + 2 + 4 + 12}px`, transformOrigin: 'right bottom' }}
         >
           © 2026
         </div>
@@ -18439,15 +18457,15 @@ export default function Dashboard() {
           const courseFullName = effectiveCourseName?.includes(' - ') ? effectiveCourseName.split(' - ').slice(1).join(' - ') : '';
           const daysUntil = task.dueDate ? differenceInCalendarDays(startOfDayET(new Date(task.dueDate)), startOfDayET(new Date())) : 0;
           return (
-            <div key={task.id} draggable onDragStart={(e) => { e.dataTransfer.setData('text/plain', String(task.id)); e.dataTransfer.effectAllowed = 'move'; (e.currentTarget as HTMLElement).style.opacity = '0.5'; }} onDragEnd={(e) => { (e.currentTarget as HTMLElement).style.opacity = task.isCompleted ? '0.45' : '1'; }} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '2px 6px', borderRadius: '5px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.18)', borderLeft: `3px solid ${courseColor}`, opacity: task.isCompleted ? 0.45 : 1, transition: 'opacity 0.2s ease, transform 0.15s ease', flex: '0 1 auto', minWidth: 0, maxWidth: '100%', cursor: 'grab', overflow: 'hidden' }} data-testid={`day-detail-task-${task.id}`}>
+            <div key={task.id} draggable onDragStart={(e) => { e.dataTransfer.setData('text/plain', String(task.id)); e.dataTransfer.effectAllowed = 'move'; (e.currentTarget as HTMLElement).style.opacity = '0.5'; }} onDragEnd={(e) => { (e.currentTarget as HTMLElement).style.opacity = task.isCompleted ? '0.45' : '1'; }} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '2px 6px', borderRadius: '5px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.18)', borderLeft: `3px solid ${courseColor}`, opacity: task.isCompleted ? 0.45 : 1, transition: 'opacity 0.2s ease, transform 0.15s ease', flex: 1, minWidth: 0, cursor: 'grab', overflow: 'hidden' }} data-testid={`day-detail-task-${task.id}`}>
               <GripVertical style={{ width: '10px', height: '10px', color: 'rgba(255,255,255,0.35)', cursor: 'grab', flexShrink: 0 } as any} />
               <input type="checkbox" checked={!!task.isCompleted} onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })} style={{ width: '12px', height: '12px', accentColor: courseColor, cursor: 'pointer', flexShrink: 0 }} data-testid={`day-detail-check-${task.id}`} />
               <TaskTypeIcon style={{ width: '10px', height: '10px', color: '#ffffff', flexShrink: 0 } as any} />
               <span style={{ fontSize: '10px', fontWeight: 600, color: '#ffffff', textDecoration: task.isCompleted ? 'line-through' : 'none', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }} data-testid={`day-detail-title-${task.id}`}>{(() => { let t = (task.title || '').replace(/^\[.*?\]\s*/g, '').trim(); const cn = effectiveCourseName; if (cn) { const full = cn.replace(/[\[\]]/g, '').trim(); const cc = cn.split(' - ')[0]?.trim() || ''; const ccAlpha = cc.replace(/[0-9]/g, '').trim(); const longName = cn.split(' - ').slice(1).join(' - ').trim(); const prefixes = [full, cc, ccAlpha].filter(Boolean).sort((a, b) => b.length - a.length); for (const pfx of prefixes) { if (pfx && t.toUpperCase().startsWith(pfx.toUpperCase())) { let rest = t.slice(pfx.length).replace(/^\s*[-:]\s*/, '').trim(); if (longName && rest.toUpperCase().startsWith(longName.toUpperCase())) { rest = rest.slice(longName.length).replace(/^\s*[-:]\s*/, '').trim(); } if (rest) { t = rest; break; } } } } return t || task.title; })()}</span>
-              {effectiveCourseName && <span style={{ fontSize: '8px', fontWeight: 600, color: '#ffffff', background: courseColor, borderRadius: '3px', padding: '0px 4px', flexShrink: 0, whiteSpace: 'nowrap', lineHeight: '14px' }}>{effectiveCourseName.split(' - ')[0]}</span>}
-              <span style={{ fontSize: '8px', fontWeight: 600, color: '#ffffff', background: pColor, borderRadius: '3px', padding: '0px 3px', flexShrink: 0, textTransform: 'uppercase', lineHeight: '14px' }}>{(task.priority || 'medium').slice(0, 3)}</span>
-              {dueTime && <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.7)', flexShrink: 0, whiteSpace: 'nowrap' }}>{dueTime}</span>}
-              {task.weekNumber && <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.6)', flexShrink: 0 }}>W{task.weekNumber}</span>}
+              {effectiveCourseName && <span style={{ fontSize: '8px', fontWeight: 600, color: courseColor, flexShrink: 0, whiteSpace: 'nowrap', lineHeight: '14px' }}>{effectiveCourseName.split(' - ')[0]}</span>}
+              <span style={{ fontSize: '8px', fontWeight: 600, color: pColor, flexShrink: 0, textTransform: 'uppercase', lineHeight: '14px' }}>{(task.priority || 'medium').slice(0, 3)}</span>
+              {dueTime && <span style={{ fontSize: '8px', color: '#ffffff', flexShrink: 0, whiteSpace: 'nowrap' }}>{dueTime}</span>}
+              {task.weekNumber && <span style={{ fontSize: '8px', color: '#ffffff', flexShrink: 0 }}>W{task.weekNumber}</span>}
               <button onClick={() => { setEditingTask(task as any); }} style={{ width: '18px', height: '18px', borderRadius: '4px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }} data-testid={`day-detail-edit-${task.id}`} title="Edit task">
                 <Pencil style={{ width: '9px', height: '9px', color: '#ffffff' }} />
               </button>
@@ -18487,7 +18505,7 @@ export default function Dashboard() {
                   {[{ label: 'Morning', hours: amHours }, { label: 'Afternoon', hours: pmHours }].map((half, halfIdx) => (
                     <div key={half.label} style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: halfIdx === 0 ? '2px solid rgba(255,255,255,0.25)' : 'none' }}>
                       <div style={{ padding: '4px 0', textAlign: 'center', borderBottom: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.06)', flexShrink: 0 }}>
-                        <span style={{ fontSize: '10px', fontWeight: 800, color: '#ffffff', letterSpacing: '1px', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textTransform: 'uppercase' }}>{half.label}</span>
+                        <span style={{ fontSize: '11px', fontWeight: 400, color: '#ffffff', letterSpacing: '2.5px', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textTransform: 'uppercase' }}>{half.label}</span>
                       </div>
                       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                         {half.hours.map(hour => {
@@ -18504,7 +18522,7 @@ export default function Dashboard() {
                                 onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)'; }}
                                 onDragLeave={(e) => { (e.currentTarget as HTMLElement).style.background = ''; }}
                                 onDrop={(e) => { e.preventDefault(); (e.currentTarget as HTMLElement).style.background = ''; const taskId = parseInt(e.dataTransfer.getData('text/plain')); if (!taskId) return; const hh = String(hour).padStart(2, '0'); const newStart = `${hh}:00`; const newEnd = `${String((hour + 1) % 24).padStart(2, '0')}:00`; fetch(`/api/tasks/${taskId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ eventStartTime: newStart, eventEndTime: newEnd }) }).then(() => { queryClient.invalidateQueries({ queryKey: ['/api/tasks'] }); }); }}
-                                style={{ flex: 1, minWidth: 0, padding: hasTask ? '1px 4px' : '0 4px', display: 'flex', flexDirection: 'column', gap: '2px', justifyContent: 'center', overflow: 'hidden', transition: 'background 0.15s ease' }}
+                                style={{ flex: 1, minWidth: 0, padding: hasTask ? '1px 4px' : '0 4px', display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', gap: '2px', alignItems: 'stretch', overflow: 'hidden', transition: 'background 0.15s ease' }}
                               >
                                 {tasks.map(t => renderDetailTask(t))}
                               </div>
@@ -25934,7 +25952,7 @@ export default function Dashboard() {
               const beforeW = gridSizes.dayColumnWidths.slice(0, todayIdx).reduce((a: number, b: number) => a + b, 0);
               const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
               return (
-                <div className="absolute bottom-0 pointer-events-none" style={{ top: '0px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px) - 1px)`, width: '1px', backgroundColor: '#ffffff', zIndex: 100 }} />
+                <div className="absolute bottom-0 pointer-events-none" style={{ top: '0px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px) + 2px)`, width: '1px', backgroundColor: '#ffffff', zIndex: 100 }} />
               );
             })()}
             
@@ -26781,9 +26799,9 @@ export default function Dashboard() {
                                 style={{
                                   margin: '2px 2px 2px 2px',
                                   marginRight: '0px',
-                                  backgroundColor: task.isCompleted ? '#e5e7eb' : (() => { const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === course.name); if (cMatch?.taskBgColor) return cMatch.taskBgColor; return cMatch?.colorEnd || course.bg; })(),
-                                  borderColor: task.isCompleted ? '#d1d5db' : course.darkColor,
-                                  color: task.isCompleted ? undefined : (course.fontColor || 'black'),
+                                  backgroundColor: task.isCompleted ? '#e5e7eb' : '#f0f0f0',
+                                  borderColor: task.isCompleted ? '#d1d5db' : '#c0c4cc',
+                                  color: task.isCompleted ? '#aaa' : '#6b7280',
                                 }}
                                 data-testid={`course-module-task-static-${task.id}`}
                               >
@@ -26791,11 +26809,11 @@ export default function Dashboard() {
                                   checked={task.isCompleted || false}
                                   onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
                                   onClick={(e) => e.stopPropagation()}
-                                  className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                  className="h-2.5 w-2.5 shrink-0 border-gray-400 data-[state=checked]:bg-gray-500 data-[state=checked]:border-gray-500"
                                   data-testid={`checkbox-module-static-${task.id}`}
                                 />
                                 <Flag
-                                  className={`h-[9px] w-[9px] flex-shrink-0 cursor-pointer ${task.flagged ? 'text-red-500 fill-red-500' : 'text-black/20 hover:text-red-400'}`}
+                                  className={`h-[8px] w-[8px] flex-shrink-0 cursor-pointer ${task.flagged ? 'text-red-500 fill-red-500' : 'text-gray-300 hover:text-red-400'}`}
                                   onClick={(e) => { e.stopPropagation(); flagMutation.mutate({ id: task.id, flagged: !task.flagged }); }}
                                   data-testid={`flag-toggle-${task.id}`}
                                 />
@@ -26803,7 +26821,7 @@ export default function Dashboard() {
                                   onClick={() => setEditingTask(task)}
                                   className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
                                 >
-                                  <span className="font-bold">{task.title}</span>
+                                  <span className="font-medium" style={{ fontSize: '7px' }}>{task.title}</span>
                                 </span>
                               </div>
                             </div>
@@ -26872,9 +26890,9 @@ export default function Dashboard() {
                                         height: 'calc(100% - 4px)', 
                                         marginTop: '2px', 
                                         marginBottom: '2px',
-                                        backgroundColor: task.isCompleted ? '#e5e7eb' : 'white',
-                                        color: task.isCompleted ? undefined : (course.fontColor || 'black'),
-                                        border: `1px solid ${task.isCompleted ? '#d1d5db' : course.darkColor}`,
+                                        backgroundColor: task.isCompleted ? '#e5e7eb' : '#f0f0f0',
+                                        color: task.isCompleted ? '#aaa' : '#6b7280',
+                                        border: `1px solid ${task.isCompleted ? '#d1d5db' : '#c0c4cc'}`,
                                       }}
                                       data-testid={`course-fullweek-task-today-${task.id}`}
                                     >
@@ -26882,14 +26900,14 @@ export default function Dashboard() {
                                         checked={task.isCompleted || false}
                                         onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
                                         onClick={(e) => e.stopPropagation()}
-                                        className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                        className="h-2.5 w-2.5 shrink-0 border-gray-400 data-[state=checked]:bg-gray-500 data-[state=checked]:border-gray-500"
                                         data-testid={`checkbox-fullweek-${task.id}`}
                                       />
                                       <span 
                                         onClick={() => setEditingTask(task)}
                                         className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
                                       >
-                                        <span className="font-bold">{task.title}</span>
+                                        <span className="font-medium" style={{ fontSize: '7px' }}>{task.title}</span>
                                       </span>
                                     </div>
                                   </div>
@@ -27979,7 +27997,7 @@ export default function Dashboard() {
                   const leftFrac = frBefore / totalFr;
                   const widthFrac = frSpan / totalFr;
                   const barH = 3;
-                  const barGap = 14;
+                  const barGap = 18;
                   const totalBarsHeight = deduped.length * barGap;
                   return (
                     <div ref={countdownOverlayRef} data-bars-height={String(totalBarsHeight)} style={{ position: 'sticky', top: `calc(50% - ${Math.round(totalBarsHeight / 2)}px)`, zIndex: 50, pointerEvents: 'none', overflow: 'visible', height: 0 }} data-testid="countdown-bars-overlay">
@@ -27998,7 +28016,7 @@ export default function Dashboard() {
                               <div style={{ position: 'absolute', left: '0px', top: '2px', right: 0, height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
                                 <div style={{ width: '10px', minWidth: '10px', height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
                                 <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
-                                  <span style={{ fontSize: '9px', fontWeight: 500, color: barColor, letterSpacing: '-0.2px', lineHeight: '10px' }}>{cd.daysLeft}d</span>
+                                  <span style={{ fontSize: '9px', fontWeight: 500, color: barColor, letterSpacing: '-0.2px', lineHeight: '10px' }}>{cd.daysLeft}<span style={{ letterSpacing: '0.5px' }}> </span>d</span>
                                 </div>
                                 <span style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(0,0,0,0.85)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flexShrink: 1, minWidth: 0, paddingLeft: '1px', paddingRight: '3px', lineHeight: '10px' }}>{labelText}</span>
                                 <div className={needsPulse ? 'countdown-bar-pulse' : ''} style={{ flex: 1, height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '0 2px 2px 0', minWidth: '4px', boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined }} />
@@ -28269,41 +28287,21 @@ export default function Dashboard() {
                             const isDueToday = !task.isCompleted && isSameDayET(new Date(task.dueDate), stableToday);
                             const isDueTomorrow = !task.isCompleted && isSameDayET(new Date(task.dueDate), tomorrow);
                             
-                            // Calculate height based on duration for events with start/end times
-                            let taskHeight = Math.min(40, rowHeight - 4); // Same height for all tasks, clamped to row
-                            let topOffset = 2; // Default top offset
+                            let taskHeight = rowHeight - 4;
+                            let topOffset = 2;
                             
-                            if (task.eventStartTime && task.eventEndTime) {
-                              const [startHour, startMin] = task.eventStartTime.split(':').map(Number);
-                              const [endHour, endMin] = task.eventEndTime.split(':').map(Number);
-                              const startMinutes = startHour * 60 + startMin;
-                              let endMinutes = endHour * 60 + endMin;
-                              if (endMinutes <= startMinutes) endMinutes = startMinutes + 60;
-                              const calendarEndMinutes = 24 * 60;
-                              endMinutes = Math.min(endMinutes, calendarEndMinutes);
-                              const durationMinutes = endMinutes - startMinutes;
-                              taskHeight = Math.max(40, (durationMinutes / 60) * 44 - 4);
-                              topOffset = (startMin / 60) * 44;
-                              const slotHeight = rowHeight;
-                              const maxTaskHeight = slotHeight - topOffset - 2;
-                              if (taskHeight > maxTaskHeight) {
-                                taskHeight = Math.max(20, maxTaskHeight);
-                              }
-                            } else if (task.eventStartTime) {
+                            if (task.eventStartTime) {
                               const [, startMin] = task.eventStartTime.split(':').map(Number);
                               if (startMin > 0) {
                                 topOffset = (startMin / 60) * rowHeight;
-                                taskHeight = Math.min(taskHeight, rowHeight - topOffset - 2);
-                                taskHeight = Math.max(20, taskHeight);
                               }
                             } else {
                               const dueMin = getETMinutes(new Date(task.dueDate));
                               if (dueMin > 0) {
                                 topOffset = (dueMin / 60) * rowHeight;
-                                taskHeight = Math.min(taskHeight, rowHeight - topOffset - 2);
-                                taskHeight = Math.max(20, taskHeight);
                               }
                             }
+                            taskHeight = Math.max(20, rowHeight - topOffset - 2);
                             
                             return (
                               <div
@@ -28340,8 +28338,8 @@ export default function Dashboard() {
                                 onTouchStart={(e) => handleTouchStart(e, task.id, task.title)}
                                 onTouchEnd={handleTouchEnd}
                                 onTouchMove={handleTouchMove}
-                                onMouseEnter={() => {}}
-                                onMouseLeave={() => {}}
+                                onMouseEnter={(e) => { if (totalItems > 1) { const el = e.currentTarget as HTMLElement; el.style.width = 'calc(100% - 4px)'; el.style.zIndex = '55'; el.style.boxShadow = '0 4px 16px rgba(0,0,0,0.25)'; } }}
+                                onMouseLeave={(e) => { if (totalItems > 1) { const el = e.currentTarget as HTMLElement; const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); el.style.width = hasNextDueBox ? `calc(${columnWidth / 2}% - 4px)` : `calc(${columnWidth}% - 4px)`; el.style.zIndex = selectedTaskId === task.id ? '50' : (draggedTask?.id === task.id ? '45' : '43'); el.style.boxShadow = ''; } }}
                                 className={`absolute shadow-sm cursor-grab active:cursor-grabbing rounded overflow-hidden ${
                                   draggedTask?.id === task.id ? "opacity-50" : ""
                                 } ${
@@ -28362,6 +28360,7 @@ export default function Dashboard() {
                                     width: (() => { const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return hasNextDueBox ? `calc(${columnWidth / 2}% - 4px)` : `calc(${columnWidth}% - 4px)`; })(),
                                     minHeight: `${taskHeight}px`,
                                     zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43),
+                                    transition: 'width 0.2s ease, z-index 0s, box-shadow 0.2s ease',
                                     background: bgGradient,
                                     border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1.5px solid ${borderColor}`,
                                     transformOrigin: 'center center',
@@ -28403,7 +28402,7 @@ export default function Dashboard() {
                                         <div style={{ width: '10px', height: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><img src={teacherWhiteIconPath} alt="Class" style={{ width: '10px', height: '10px', objectFit: 'contain' }} data-testid={`type-icon-time-${task.id}`} /></div>
                                       ) : (() => { const SIcon = iconMap[effectiveType] || MoreHorizontal; return <div style={{ width: '10px', height: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><SIcon style={{ width: '10px', height: '10px', color: 'white' } as any} data-testid={`type-icon-time-${task.id}`} /></div>; })()}
                                       </div>
-                                      <span style={{ fontSize: '9px', fontWeight: 500, color: 'white', letterSpacing: '0.3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, padding: '1px 3px' }}>
+                                      <span style={{ fontSize: '9px', fontWeight: 500, color: '#000000', letterSpacing: '0.3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, padding: '1px 3px' }}>
                                         {(() => { const raw = (task.title || '').replace(/[\[\]]/g, '').replace(/^\s+/, '').replace(/^online\s+/i, ''); const t = raw; const isModRead = /^(module|reading|module\s*(?:&|and)\s*reading)$/i.test(t.trim()); if (isModRead && task.courseName) { const cc = task.courseName.split(' - ')[0]?.trim(); if (cc) return `${cc} ${t}`; } return t; })()}
                                       </span>
                                       
@@ -30913,8 +30912,8 @@ export default function Dashboard() {
                                     </div>
                                   )}
                                   <div style={{ display: 'flex', justifyContent: hasTime ? 'space-between' : 'center', alignItems: 'center', marginTop: '1px' }}>
-                                    {remainLabel && <span style={{ fontSize: '7px', fontWeight: 600, color: textColor, fontFamily: "system-ui, sans-serif" }}>{remainLabel} left</span>}
-                                    <span style={{ fontSize: '6.5px', color: item.dark ? textColor : 'rgba(0,0,0,0.6)', fontFamily: "system-ui, sans-serif" }}>Fri {hoursLeftLabel}</span>
+                                    {remainLabel && <span style={{ fontSize: '7px', fontWeight: 600, color: textColor, fontFamily: "system-ui, sans-serif" }}>Time Remaining</span>}
+                                    <span style={{ fontSize: '6.5px', color: item.dark ? textColor : 'rgba(0,0,0,0.6)', fontFamily: "system-ui, sans-serif" }}>{remainLabel || ''} / Fri {hoursLeftLabel}</span>
                                   </div>
                                 </div>
                               );
@@ -32105,8 +32104,8 @@ export default function Dashboard() {
                                         <div style={{ width: `${Math.min(100, pctOfTimeNeeded)}%`, height: '100%', borderRadius: '2px', background: barColor, transition: 'width 0.5s ease' }} />
                                       </div>
                                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1px' }}>
-                                        <span style={{ fontSize: '7.5px', fontWeight: 600, color: '#ffffff', fontFamily: "system-ui, sans-serif" }}>{remainLabel} left</span>
-                                        <span style={{ fontSize: '7px', color: '#ffffff', fontFamily: "system-ui, sans-serif" }}>Fri {hoursLeftLabel}</span>
+                                        <span style={{ fontSize: '7.5px', fontWeight: 600, color: '#ffffff', fontFamily: "system-ui, sans-serif" }}>Time Remaining</span>
+                                        <span style={{ fontSize: '7px', color: '#ffffff', fontFamily: "system-ui, sans-serif" }}>{remainLabel} / Fri {hoursLeftLabel}</span>
                                       </div>
                                     </div>
                                   );

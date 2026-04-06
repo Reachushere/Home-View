@@ -8145,6 +8145,42 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
+  app.post("/api/speakers/stop-all", async (_req, res) => {
+    try {
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+      const allEntities = [
+        BATHROOM_ECHO_ENTITY, KITCHEN_ECHO_ENTITY, NEST_SPEAKER_ENTITY, CAT_WR_HA_VOICE_ENTITY,
+        ...CAT_ECHO_ENTITIES, CAT_WR_MEDIA_GROUP, EVERYWHERE_GROUP_ENTITY,
+        "media_player.echo_closet_am",
+        "media_player.echo_lr_couch_r_am", "media_player.echo_lr_couch_l_am",
+        "media_player.echo_hallway_entrance_am",
+        "media_player.echo_king_l_am", "media_player.echo_king_r_am",
+        "media_player.echo_king_tv_am", "media_player.echo_kitchen_cupboards_left_am",
+        "media_player.echo_kitchen_cupboards_r_am", "media_player.echo_kitchen_fridge_am",
+        "media_player.echo_kitchen_hutch_am", "media_player.echo_kitchen_island_corner_am",
+        "media_player.echo_lr_hub_am", "media_player.echo_lr_studio_white_am",
+      ];
+      await Promise.allSettled(allEntities.map(entity =>
+        fetch(`${haUrl}/api/services/media_player/media_stop`, {
+          method: 'POST', headers: haHeaders,
+          body: JSON.stringify({ entity_id: entity }),
+        })
+      ));
+      await Promise.allSettled(allEntities.map(entity =>
+        fetch(`${haUrl}/api/services/media_player/media_pause`, {
+          method: 'POST', headers: haHeaders,
+          body: JSON.stringify({ entity_id: entity }),
+        })
+      ));
+      console.log(`[Kill Switch] Stopped all ${allEntities.length} speakers/devices`);
+      res.json({ success: true, stoppedCount: allEntities.length });
+    } catch (err: any) {
+      console.error("[Kill Switch] Error:", err.message);
+      res.status(500).json({ message: "Failed to stop all speakers" });
+    }
+  });
+
   app.get("/api/ha/alexa-entities", async (_req, res) => {
     try {
       const all = await db.select().from(scheduledAlexaAnnouncements).where(eq(scheduledAlexaAnnouncements.isEnabled, true));
