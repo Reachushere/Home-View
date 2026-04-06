@@ -6902,12 +6902,16 @@ export default function Dashboard() {
   });
 
   const allTasks = useMemo(() => {
-    if (authLevel === '5747') return allTasksRaw;
-    return allTasksRaw.filter(t => {
+    const stripBrackets = (tasks: Task[]) => tasks.map(t => ({
+      ...t,
+      title: (t.title || '').replace(/^\s*\[[^\]]*\]\s*/g, ''),
+    }));
+    if (authLevel === '5747') return stripBrackets(allTasksRaw);
+    return stripBrackets(allTasksRaw.filter(t => {
       const desc = (t as any).description || '';
       if (/\[Label:\s*(Personal|Financial)\]/i.test(desc)) return false;
       return true;
-    });
+    }));
   }, [allTasksRaw, authLevel]);
 
   const hasUnackedReminders = allTasks.some((t: any) => t.type === 'reminder' && t.isAcknowledged === false && !t.isCompleted);
@@ -11784,7 +11788,7 @@ export default function Dashboard() {
                       <span className="text-[10px] px-1.5 py-0.5 rounded font-semibold shrink-0" style={{ minWidth: '60px', textAlign: 'center', backgroundColor: a.courseName === 'Custom' ? 'rgba(255,255,255,0.1)' : a.courseName === 'URGENT' ? 'rgba(239,68,68,0.4)' : a.courseName === 'REMINDER' ? 'rgba(234,179,8,0.35)' : 'rgba(99,102,241,0.3)', color: a.courseName === 'Custom' ? '#9ca3af' : a.courseName === 'URGENT' ? '#fca5a5' : a.courseName === 'REMINDER' ? '#fde047' : '#a5b4fc' }}>
                         {a.courseName === 'Custom' ? '📌' : a.courseName}
                       </span>
-                      <span className="text-white text-[12px] flex-1 min-w-0 truncate text-left">{a.body || a.snippet || a.subject}</span>
+                      <span className="text-white text-[12px] flex-1 min-w-0 truncate text-left">{(a.body || a.snippet || a.subject || '').replace(/^\s*\[[^\]]*\]\s*/g, '')}</span>
                       {!a._isSynthetic && (
                         <div className="flex items-center gap-1 shrink-0">
                           {['5747', '4201', '1010'].map(p => {
@@ -12808,7 +12812,7 @@ export default function Dashboard() {
                               return (
                                 <div key={ti} style={{ position: 'absolute', top: `${topPct}%`, left: '1px', right: '1px', minHeight: '14px', backgroundColor: bg, borderRadius: '2px', padding: '1px 3px', overflow: 'hidden', fontSize: '7px', color: '#fff', fontWeight: 600, lineHeight: '1.2', opacity: task.isCompleted ? 0.4 : 1, textDecoration: task.isCompleted ? 'line-through' : 'none', zIndex: 5, cursor: 'pointer' }}
                                   onClick={() => setEditingTask(task)} data-testid={`mobile-task-${task.id}`}
-                                >{task.title}</div>
+                                >{(task.title || '').replace(/^\s*\[[^\]]*\]\s*/g, '')}</div>
                               );
                             })}
                           </div>
@@ -13376,7 +13380,7 @@ export default function Dashboard() {
                   <div key={task.id} className="flex items-center gap-2 py-1.5 border-b border-white/10" data-testid={`grey-classify-row-${task.id}`}>
                     <div className="flex-shrink-0 text-[8px] text-white/40 w-[42px] text-right">{dueFmt}</div>
                     {coursePart && <div className="flex-shrink-0 text-[7px] font-bold px-1 py-0.5 rounded" style={{ background: 'rgba(255,255,255,0.1)' }}>{coursePart}</div>}
-                    <div className="flex-1 text-[9px] text-white/90 truncate min-w-0" title={task.title}>{task.title}</div>
+                    <div className="flex-1 text-[9px] text-white/90 truncate min-w-0" title={task.title}>{(task.title || '').replace(/^\s*\[[^\]]*\]\s*/g, '')}</div>
                     <div className="flex-shrink-0 flex gap-0.5 flex-wrap justify-end" style={{ maxWidth: '320px' }}>
                       {typeOptions.map(type => {
                         const isSelected = selected === type;
@@ -16586,7 +16590,7 @@ export default function Dashboard() {
                         return (<>{courseCode && <span style={{ marginBottom: '-2px' }}>{courseCode}</span>}{nameWords.map((w: string, wi: number) => (<span key={wi} style={{ fontSize: '7px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: '1', whiteSpace: 'nowrap' }}>{w}</span>))}</>);
                       })()}</span>
                       </span>
-                      <span className="text-[15px] font-normal" style={{ color: isTodayTask ? '#FFFF00' : 'rgba(255,255,255,0.9)', letterSpacing: '0.2px' }}>{a.courseName === 'Custom' ? (a.body || a.snippet || '') : a.subject}</span>
+                      <span className="text-[15px] font-normal" style={{ color: isTodayTask ? '#FFFF00' : 'rgba(255,255,255,0.9)', letterSpacing: '0.2px' }}>{a.courseName === 'Custom' ? (a.body || a.snippet || '') : (a.subject || '').replace(/^\s*\[[^\]]*\]\s*/g, '')}</span>
                       {!isTodayTask && a.courseName !== 'Custom' && displaySnippet && <span className="text-[14px] font-light text-white/55">{displaySnippet}</span>}
                       {!isTodayTask && <span className="text-[14px] font-light text-white/55 ml-1">{timeAgo}</span>}
                     </span>
