@@ -30201,7 +30201,8 @@ export default function Dashboard() {
                         const circumference = 2 * Math.PI * radius;
                         const offset = circumference - (item.p.percent / 100) * circumference;
                         const isModule = item.type === 'module';
-                        const textColor = item.fontOverride || (item.dark ? '#fff' : '#000');
+                        const circleColor = item.dark ? '#fff' : '#000';
+                        const textColor = item.fontOverride || circleColor;
                         const dragKey = `${pd.courseCode}-${item.type}`;
                         const isDragOver = hwDragOverTarget === dragKey;
                         return (
@@ -30223,9 +30224,9 @@ export default function Dashboard() {
                             <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginTop: '8px' }}>
                               <div style={{ position: 'relative', width: circleSize, height: circleSize, flexShrink: 0 }}>
                                 <svg width={circleSize} height={circleSize} style={{ transform: 'rotate(-90deg)' }}>
-                                  <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke={textColor === '#000' || textColor === 'black' ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.3)'} strokeWidth={strokeWidth} />
+                                  <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke={circleColor === '#000' || circleColor === 'black' ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.3)'} strokeWidth={strokeWidth} />
                                   {item.p.hasFiles && item.p.percent > 0 && (
-                                    <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke={textColor} strokeWidth={strokeWidth} strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
+                                    <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke={circleColor} strokeWidth={strokeWidth} strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
                                   )}
                                 </svg>
                                 <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700, color: textColor, fontFamily: "system-ui, -apple-system, 'Segoe UI', sans-serif", letterSpacing: '-0.3px' }}>
