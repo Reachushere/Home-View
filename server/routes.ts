@@ -381,13 +381,13 @@ const MAX_SESSION_AGE_MS = 4 * 60 * 60 * 1000; // 4 hours max session
 const CHARS_PER_SECOND = 13; // Conservative: let chunk finish before sending next
 const CHUNK_SIZE = 2000; // Characters per TTS chunk
 
-// Helper to generate OpenAI TTS audio and save to object storage for playback
+// Helper to generate OpenAI TTS audio and save locally for playback
 async function generateAndSaveTTSAudio(text: string, fileId: string, voice: string = "echo", slowPace: boolean = false): Promise<string> {
-  const publicPath = process.env.PUBLIC_OBJECT_SEARCH_PATHS?.split(',')[0]?.trim();
-  if (!publicPath) {
-    throw new Error("PUBLIC_OBJECT_SEARCH_PATHS not configured");
-  }
-  
+  const fs = await import("fs");
+  const path = await import("path");
+  const ttsDir = path.join(process.cwd(), 'dist', 'public', 'tts-audio');
+  if (!fs.existsSync(ttsDir)) fs.mkdirSync(ttsDir, { recursive: true });
+
   // Normalize text for TTS
   let normalizedText = text
     .replace(/https?:\/\/[^\s]+/gi, '')
@@ -402,39 +402,21 @@ async function generateAndSaveTTSAudio(text: string, fileId: string, voice: stri
     .replace(/\s+/g, ' ')
     .trim()
     .slice(0, 4096); // OpenAI limit
-  
+
   console.log(`Generating OpenAI TTS for ${normalizedText.length} chars, file: ${fileId}`);
-  
+
   const ttsStart = Date.now();
   const audioBuffer = await textToSpeech(normalizedText, voice as "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer", "mp3", slowPace);
   console.log(`OpenAI TTS completed in ${Date.now() - ttsStart}ms, ${audioBuffer.length} bytes`);
-  
+
   if (audioBuffer.length === 0) {
     throw new Error(`TTS returned empty audio buffer for file: ${fileId}`);
   }
-  
-  const audioFileName = `tts-audio/${fileId}-${Date.now()}.mp3`;
-  const { bucketName, objectName } = parsePublicObjectPath(`${publicPath}/${audioFileName}`);
-  
-  const bucket = objectStorageClient.bucket(bucketName);
-  const file = bucket.file(objectName);
-  
-  await new Promise<void>((resolve, reject) => {
-    const stream = file.createWriteStream({
-      contentType: 'audio/mpeg',
-      metadata: {
-        cacheControl: 'public, max-age=3600',
-      },
-      resumable: false,
-    });
-    stream.on('finish', () => resolve());
-    stream.on('error', (err: any) => reject(err));
-    stream.end(audioBuffer);
-  });
-  
-  // Return a proxy URL through the app (object storage public access is blocked)
-  const proxyUrl = `/api/tts-audio/${encodeURIComponent(audioFileName)}`;
-  console.log(`TTS audio saved, proxy path: ${proxyUrl}`);
+
+  const audioFileName = `${fileId}-${Date.now()}.mp3`;
+  fs.writeFileSync(path.join(ttsDir, audioFileName), audioBuffer);
+  const proxyUrl = `/tts-audio/${audioFileName}`;
+  console.log(`TTS audio saved locally: ${proxyUrl}`);
   return proxyUrl;
 }
 
@@ -7622,24 +7604,22 @@ async function pollStatus(timeout){
   // GET /api/tts-audio/:filename - Proxy TTS audio from object storage
   app.get("/api/tts-audio/:filename", async (req, res) => {
     try {
+      const fs = await import("fs");
+      const pathMod = await import("path");
       const audioPath = decodeURIComponent(req.params.filename);
-      const publicPath = process.env.PUBLIC_OBJECT_SEARCH_PATHS?.split(',')[0]?.trim();
-      if (!publicPath) {
-        return res.status(500).json({ error: "Storage not configured" });
+      const localPath = pathMod.join(process.cwd(), 'dist', 'public', audioPath);
+      if (fs.existsSync(localPath)) {
+        res.set('Content-Type', 'audio/mpeg');
+        res.set('Cache-Control', 'public, max-age=3600');
+        return res.sendFile(localPath);
       }
-      const { bucketName, objectName } = parsePublicObjectPath(`${publicPath}/${audioPath}`);
-      const bucket = objectStorageClient.bucket(bucketName);
-      const file = bucket.file(objectName);
-      
-      const [exists] = await file.exists();
-      if (!exists) {
-        return res.status(404).json({ error: "Audio file not found" });
+      const ttsLocalPath = pathMod.join(process.cwd(), 'dist', 'public', 'tts-audio', pathMod.basename(audioPath));
+      if (fs.existsSync(ttsLocalPath)) {
+        res.set('Content-Type', 'audio/mpeg');
+        res.set('Cache-Control', 'public, max-age=3600');
+        return res.sendFile(ttsLocalPath);
       }
-      
-      res.set('Content-Type', 'audio/mpeg');
-      res.set('Cache-Control', 'public, max-age=3600');
-      const stream = file.createReadStream();
-      stream.pipe(res);
+      return res.status(404).json({ error: "Audio file not found" });
     } catch (error: any) {
       console.error("Error serving TTS audio:", error.message);
       res.status(500).json({ error: "Failed to serve audio" });
