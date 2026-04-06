@@ -18256,6 +18256,7 @@ export default function Dashboard() {
           return course?.color || '#6b7280';
         };
         const typeIconMap: Record<string, string> = { module: '📘', reading: '📖', essay: '📝', discussion: '💬', poll: '📊', quiz: '❓', exam: '📋', project: '🔧', reminder: '⏰', meeting: '🤝', scholarship: '🎓', other: '📌', class: '🏫' };
+        const useLucideIcon = true;
         const timeSlots: string[] = [];
         for (let h = 6; h <= 21; h++) { timeSlots.push(`${h === 0 ? 12 : h > 12 ? h - 12 : h}:00 ${h < 12 ? 'AM' : 'PM'}`); }
         const getTaskHour = (task: any) => {
@@ -18272,27 +18273,28 @@ export default function Dashboard() {
         });
         const priorityColors: Record<string, string> = { high: '#ef4444', medium: '#f59e0b', low: '#22c55e' };
         const renderDetailTask = (task: any) => {
-          const courseColor = getTaskCourseColor(task.courseName);
-          const icon = typeIconMap[task.type] || '📌';
+          const bracketMatch = !task.courseName && task.title ? task.title.match(/^\[(.*?)\]\s*/) : null;
+          const effectiveCourseName = task.courseName || (bracketMatch ? bracketMatch[1] : null);
+          const courseColor = getTaskCourseColor(effectiveCourseName);
+          const TaskTypeIcon = iconMap[task.type] || MoreHorizontal;
           const dueTime = task.dueDate ? format(new Date(task.dueDate), 'h:mm a') : '';
           const pColor = priorityColors[task.priority || 'medium'] || '#f59e0b';
-          const courseFullName = task.courseName?.includes(' - ') ? task.courseName.split(' - ').slice(1).join(' - ') : '';
+          const courseFullName = effectiveCourseName?.includes(' - ') ? effectiveCourseName.split(' - ').slice(1).join(' - ') : '';
           const daysUntil = task.dueDate ? differenceInCalendarDays(startOfDayET(new Date(task.dueDate)), startOfDayET(new Date())) : 0;
           return (
-            <div key={task.id} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', padding: '6px 10px', borderRadius: '8px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.18)', borderLeft: `3px solid ${courseColor}`, opacity: task.isCompleted ? 0.45 : 1, transition: 'opacity 0.2s ease', flex: '1 1 auto', minWidth: '200px', maxWidth: '100%' }} data-testid={`day-detail-task-${task.id}`}>
+            <div key={task.id} draggable onDragStart={(e) => { e.dataTransfer.setData('text/plain', String(task.id)); e.dataTransfer.effectAllowed = 'move'; (e.currentTarget as HTMLElement).style.opacity = '0.5'; }} onDragEnd={(e) => { (e.currentTarget as HTMLElement).style.opacity = task.isCompleted ? '0.45' : '1'; }} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', padding: '6px 10px', borderRadius: '8px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.18)', borderLeft: `3px solid ${courseColor}`, opacity: task.isCompleted ? 0.45 : 1, transition: 'opacity 0.2s ease, transform 0.15s ease', flex: '1 1 auto', minWidth: '200px', maxWidth: '100%', cursor: 'grab' }} data-testid={`day-detail-task-${task.id}`}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', paddingTop: '2px', flexShrink: 0 }}>
                 <input type="checkbox" checked={!!task.isCompleted} onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })} style={{ width: '16px', height: '16px', accentColor: courseColor, cursor: 'pointer' }} data-testid={`day-detail-check-${task.id}`} />
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
-                  <span style={{ fontSize: '14px' }}>{icon}</span>
-                  <span style={{ fontSize: '13px', fontWeight: 600, color: courseColor, textDecoration: task.isCompleted ? 'line-through' : 'none', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid={`day-detail-title-${task.id}`}>{(() => { let t = (task.title || '').replace(/^\[.*?\]\s*/g, '').trim(); if (task.courseName) { const full = task.courseName.replace(/[\[\]]/g, '').trim(); const cc = task.courseName.split(' - ')[0]?.trim() || ''; const ccAlpha = cc.replace(/[0-9]/g, '').trim(); const longName = task.courseName.split(' - ').slice(1).join(' - ').trim(); const prefixes = [full, cc, ccAlpha].filter(Boolean).sort((a, b) => b.length - a.length); for (const pfx of prefixes) { if (pfx && t.toUpperCase().startsWith(pfx.toUpperCase())) { let rest = t.slice(pfx.length).replace(/^\s*[-:]\s*/, '').trim(); if (longName && rest.toUpperCase().startsWith(longName.toUpperCase())) { rest = rest.slice(longName.length).replace(/^\s*[-:]\s*/, '').trim(); } if (rest) { t = rest; break; } } } } return t || task.title; })()}</span>
+                  <div style={{ width: '18px', height: '18px', borderRadius: '4px', background: `${courseColor}33`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><TaskTypeIcon style={{ width: '12px', height: '12px', color: courseColor } as any} /></div>
+                  <span style={{ fontSize: '13px', fontWeight: 600, color: courseColor, textDecoration: task.isCompleted ? 'line-through' : 'none', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid={`day-detail-title-${task.id}`}>{(() => { let t = (task.title || '').replace(/^\[.*?\]\s*/g, '').trim(); const cn = effectiveCourseName; if (cn) { const full = cn.replace(/[\[\]]/g, '').trim(); const cc = cn.split(' - ')[0]?.trim() || ''; const ccAlpha = cc.replace(/[0-9]/g, '').trim(); const longName = cn.split(' - ').slice(1).join(' - ').trim(); const prefixes = [full, cc, ccAlpha].filter(Boolean).sort((a, b) => b.length - a.length); for (const pfx of prefixes) { if (pfx && t.toUpperCase().startsWith(pfx.toUpperCase())) { let rest = t.slice(pfx.length).replace(/^\s*[-:]\s*/, '').trim(); if (longName && rest.toUpperCase().startsWith(longName.toUpperCase())) { rest = rest.slice(longName.length).replace(/^\s*[-:]\s*/, '').trim(); } if (rest) { t = rest; break; } } } } return t || task.title; })()}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginBottom: '4px' }}>
-                  {task.courseName && (
-                    <span style={{ fontSize: '10px', fontWeight: 600, color: '#ffffff', background: `${courseColor}22`, padding: '1px 6px', borderRadius: '4px', border: `1px solid ${courseColor}44` }} data-testid={`day-detail-course-${task.id}`}>{task.courseName.split(' - ')[0]}{courseFullName ? ` - ${courseFullName}` : ''}</span>
+                  {effectiveCourseName && (
+                    <span style={{ fontSize: '10px', fontWeight: 600, color: '#ffffff' }} data-testid={`day-detail-course-${task.id}`}>{effectiveCourseName.split(' - ')[0]}{courseFullName ? ` - ${courseFullName}` : ''}</span>
                   )}
-                  <span style={{ fontSize: '10px', color: '#ffffff', textTransform: 'capitalize' }}>{task.type}</span>
                   <span style={{ fontSize: '9px', fontWeight: 600, color: pColor, background: `${pColor}22`, padding: '1px 5px', borderRadius: '3px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{task.priority}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', fontSize: '10px', color: '#ffffff' }}>
@@ -18339,11 +18341,18 @@ export default function Dashboard() {
                 <div className="flex items-center gap-2">
                   <CalendarDays className="text-white" style={{ width: '15px', height: '15px' }} />
                   <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }} data-testid="day-detail-title">
-                    DAY VIEW — {format(detailDate, 'EEEE, MMMM d, yyyy').toUpperCase()} {isDetailToday ? '(TODAY)' : ''}
+                    DAY VIEW — {format(detailDate, 'EEEE, MMMM d, yyyy').toUpperCase()} {isDetailToday ? '(TODAY)' : ''} · {dayTasks.length} task{dayTasks.length !== 1 ? 's' : ''}
                   </h2>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span style={{ fontSize: '11px', color: '#ffffff' }}>{dayTasks.length} task{dayTasks.length !== 1 ? 's' : ''}</span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); mobileOpenQuickAdd(); }}
+                    style={{ width: '26px', height: '26px', borderRadius: '6px', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#ffffff', fontSize: '16px', fontWeight: 300, lineHeight: 1 }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.25)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; }}
+                    data-testid="day-detail-add-task"
+                    title="Add Task"
+                  >+</button>
                 </div>
               </div>
 
@@ -18366,7 +18375,7 @@ export default function Dashboard() {
                     const hour = idx + 6;
                     const tasks = tasksByHour[hour] || [];
                     return (
-                      <div key={hour} style={{ flex: 1, minHeight: 0, borderBottom: '1px solid rgba(255,255,255,0.15)', padding: tasks.length > 0 ? '2px 8px' : '0 8px', display: 'flex', flexDirection: 'row', gap: '4px', alignItems: 'center', flexWrap: 'wrap' }}>
+                      <div key={hour} onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)'; }} onDragLeave={(e) => { (e.currentTarget as HTMLElement).style.background = ''; }} onDrop={(e) => { e.preventDefault(); (e.currentTarget as HTMLElement).style.background = ''; const taskId = parseInt(e.dataTransfer.getData('text/plain')); if (!taskId) return; const hh = String(hour).padStart(2, '0'); const newStart = `${hh}:00`; const newEnd = `${String(hour + 1).padStart(2, '0')}:00`; fetch(`/api/tasks/${taskId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ eventStartTime: newStart, eventEndTime: newEnd }) }).then(() => { queryClient.invalidateQueries({ queryKey: ['/api/tasks'] }); }); }} style={{ flex: 1, minHeight: 0, borderBottom: '1px solid rgba(255,255,255,0.15)', padding: tasks.length > 0 ? '2px 8px' : '0 8px', display: 'flex', flexDirection: 'row', gap: '4px', alignItems: 'center', flexWrap: 'wrap', transition: 'background 0.15s ease' }}>
                         {tasks.map(t => renderDetailTask(t))}
                       </div>
                     );
@@ -18382,11 +18391,11 @@ export default function Dashboard() {
                   )}
                 </div>
               </div>
-              <div style={{ flexShrink: 0, padding: '8px 16px', borderTop: '1px solid rgba(255,255,255,0.15)', display: 'flex', justifyContent: 'center' }}>
+              <div style={{ flexShrink: 0, padding: '6px 16px', borderTop: '1px solid rgba(255,255,255,0.25)', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', background: 'rgba(0,0,0,0.15)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', borderRadius: '0 0 8px 8px' }}>
                 <button
                   onClick={() => setDayDetailDate(null)}
                   style={{
-                    padding: '6px 32px',
+                    padding: '5px 24px',
                     borderRadius: '6px',
                     background: 'rgba(255,255,255,0.12)',
                     border: '1px solid rgba(255,255,255,0.3)',
@@ -27815,14 +27824,7 @@ export default function Dashboard() {
               
                           {/* Time Slots - Scrollable area */}
             <div ref={calendarScrollRef} className="flex-1 overflow-y-auto relative" style={{ borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', scrollbarWidth: 'none' }} onScroll={(e) => {
-              const st = (e.target as HTMLDivElement).scrollTop;
-              calScrollTopRef.current = st;
-              const el = countdownOverlayRef.current;
-              if (el) {
-                const vh = calendarScrollRef.current?.clientHeight || 400;
-                const barsH = el.dataset.barsHeight ? parseInt(el.dataset.barsHeight) : 100;
-                el.style.top = `${st + Math.max(10, Math.round(vh / 2 - barsH / 2))}px`;
-              }
+              calScrollTopRef.current = (e.target as HTMLDivElement).scrollTop;
             }}>
               <div style={{ backgroundColor: '#faf8f5', borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', position: 'relative' }}>
                 {/* Countdown bars overlay - sticky within visible scroll area */}
@@ -27854,7 +27856,7 @@ export default function Dashboard() {
                   let frBefore = 0;
                   for (let i = 0; i <= todayDow && i < dws.length; i++) frBefore += dws[i];
                   let frSpan = 0;
-                  for (let i = todayDow + 1; i <= Math.min(todayDow + 2, dws.length - 1); i++) frSpan += dws[i];
+                  for (let i = todayDow + 1; i < dws.length; i++) frSpan += dws[i];
                   if (frSpan === 0) return null;
                   const leftFrac = frBefore / totalFr;
                   const widthFrac = frSpan / totalFr;
@@ -27865,7 +27867,7 @@ export default function Dashboard() {
                   const currentScroll = calScrollTopRef.current;
                   const centerTop = currentScroll + Math.max(10, Math.round(visibleHeight / 2 - totalBarsHeight / 2));
                   return (
-                    <div ref={countdownOverlayRef} data-bars-height={String(totalBarsHeight)} style={{ position: 'absolute', top: `${centerTop}px`, left: `${fixedPx}px`, right: 0, zIndex: 1, pointerEvents: 'none', overflow: 'visible', height: 0, marginLeft: `${fixedPx}px` }} data-testid="countdown-bars-overlay">
+                    <div ref={countdownOverlayRef} data-bars-height={String(totalBarsHeight)} style={{ position: 'sticky', top: `${Math.max(10, Math.round((calendarScrollRef.current?.clientHeight || 400) / 2 - totalBarsHeight / 2))}px`, left: 0, right: 0, zIndex: 1, pointerEvents: 'none', overflow: 'visible', height: 0, marginLeft: `${fixedPx}px` }} data-testid="countdown-bars-overlay">
                       <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, top: 0, overflow: 'visible' }}>
                         {deduped.map((cd, idx) => {
                           const t = cd.task;
