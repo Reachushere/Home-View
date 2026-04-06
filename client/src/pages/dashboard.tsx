@@ -27956,7 +27956,7 @@ export default function Dashboard() {
                                         <div style={{ width: '10px', height: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><img src={teacherWhiteIconPath} alt="Class" style={{ width: '10px', height: '10px', objectFit: 'contain' }} data-testid={`type-icon-time-${task.id}`} /></div>
                                       ) : (() => { const SIcon = iconMap[effectiveType] || MoreHorizontal; return <div style={{ width: '10px', height: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><SIcon style={{ width: '10px', height: '10px', color: 'white' } as any} data-testid={`type-icon-time-${task.id}`} /></div>; })()}
                                       </div>
-                                      <span style={{ fontSize: '9px', fontWeight: 500, color: 'white', letterSpacing: '0.3px', textShadow: '0 1px 2px rgba(0,0,0,0.3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, padding: '1px 3px' }}>
+                                      <span style={{ fontSize: '9px', fontWeight: 500, color: 'black', letterSpacing: '0.3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, padding: '1px 3px' }}>
                                         {(() => { const raw = (task.title || '').replace(/[\[\]]/g, '').replace(/^\s+/, '').replace(/^online\s+/i, ''); const t = raw; const isModRead = /^(module|reading|module\s*(?:&|and)\s*reading)$/i.test(t.trim()); if (isModRead && task.courseName) { const cc = task.courseName.split(' - ')[0]?.trim(); if (cc) return `${cc} ${t}`; } return t; })()}
                                       </span>
                                       
@@ -28012,7 +28012,7 @@ export default function Dashboard() {
                                   <MoreHorizontal className="shrink-0" style={{ width: '11px', height: '11px', position: 'relative', zIndex: 1, color: 'white' } as any} data-testid={`type-icon-gcal-${event.id}`} />
                                 </div>
                                 <div style={{ background: gcalColor, padding: '2px 4px', display: 'flex', alignItems: 'center', flex: 1, minWidth: 0 }}>
-                                  <span style={{ fontSize: '9px', fontWeight: 700, color: 'white', letterSpacing: '0.3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                                  <span style={{ fontSize: '9px', fontWeight: 500, color: 'black', letterSpacing: '0.3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
                                     {event.title}
                                   </span>
                                 </div>
@@ -28226,7 +28226,7 @@ export default function Dashboard() {
                               flex: 1,
                               minWidth: 0,
                             }}>
-                              <span style={{ fontSize: '9px', fontWeight: 700, color: 'white', letterSpacing: '0.3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                              <span style={{ fontSize: '9px', fontWeight: 500, color: 'black', letterSpacing: '0.3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
                                 {(() => { const raw = (task.title || '').replace(/[\[\]]/g, '').replace(/^\s+/, '').replace(/^online\s+/i, ''); const t = raw || (task.courseName || '').replace(/[\[\]]/g, ''); if (task.type === 'class' && task.courseName) { const namePart = task.courseName.replace(/[\[\]]/g, '').split(' - ').slice(1).join(' - ').trim(); return <><span style={{ fontWeight: 900 }}>Class:</span> {namePart || task.courseName.replace(/[\[\]]/g, '')}</>; } const isModRead = /^(module|reading|module\s*(?:&|and)\s*reading)$/i.test(t.trim()); if (isModRead && task.courseName) { const cc2 = task.courseName.replace(/[\[\]]/g, '').split(' - ')[0]?.trim(); if (cc2) return `${cc2} ${t}`; } return t; })()}
                               </span>
                             </div>
