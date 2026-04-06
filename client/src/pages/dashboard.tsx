@@ -27219,14 +27219,14 @@ export default function Dashboard() {
                                 />
                                 <span
                                   onClick={() => setEditingTask(task)}
-                                  className={`truncate flex-1 min-w-0 cursor-pointer hover:opacity-80 ${task.isCompleted ? "line-through" : ""}`}
-                                  style={{ fontWeight: 400, color: 'white' }}
+                                  className={`truncate cursor-pointer hover:opacity-80 pl-1 flex-1 min-w-0 ${task.isCompleted ? "line-through" : ""}`}
+                                  style={{ fontWeight: 400, color: 'black', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textShadow: 'none', WebkitTextStroke: '0', letterSpacing: '0.1px' }}
                                 >
                                   {(task.title || '').replace(/[\[\]]/g, '')}
                                 </span>
                                 {task.referenceLink && (
                                   <a href={task.referenceLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={task.referenceLink} data-testid={`link-icon-other-${task.id}`}>
-                                    <ExternalLink className="h-2.5 w-2.5 text-white/60 hover:text-white" />
+                                    <ExternalLink className="h-2.5 w-2.5 text-black/60 hover:text-black" />
                                   </a>
                                 )}
                               </div>
@@ -27252,7 +27252,7 @@ export default function Dashboard() {
                                 data-testid={`other-project-${proj.id}`}
                               >
                                 <FolderKanban className="h-3 w-3 shrink-0" style={{ color: proj.color || '#6b7280' }} />
-                                <span className="truncate pl-0.5 flex-1 min-w-0" style={{ fontWeight: 400, color: 'white' }}>{proj.name}</span>
+                                <span className="truncate cursor-pointer hover:opacity-80 pl-1 flex-1 min-w-0" style={{ fontWeight: 400, color: 'black', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textShadow: 'none', WebkitTextStroke: '0', letterSpacing: '0.1px' }}>{proj.name}</span>
                               </div>
                             );
                           })}
