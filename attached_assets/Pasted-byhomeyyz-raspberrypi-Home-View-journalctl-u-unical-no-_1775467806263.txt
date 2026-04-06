@@ -1,0 +1,68 @@
+byhomeyyz@raspberrypi:~/Home-View $ journalctl -u unical --no-pager | tail -30 | grep -i "error\|fail\|onedrive\|401\|403"
+Apr 06 05:29:22 raspberrypi node[4991]: 5:29:22 AM [express] GET /api/onedrive/files 500 in 135ms :: {"error":"OneDrive expired - visit /api/onedrive/auth"}
+Apr 06 05:29:23 raspberrypi node[4991]: [OneDrive] Refresh failed: Error: Refresh failed: {"error":"invalid_grant","error_description":"AADSTS70000: The request was denied because one or more scopes requested are unauthorized or expired. The user must first sign in and grant the client application access to the requested scope. Trace ID: 16a6e3fb-eb14-4d81-80ab-5be46354f800 Correlation ID: 7e3efafe-7e30-417d-849e-6d6584a1dbe4 Timestamp: 2026-04-06 09:29:23Z","error_codes":[70000],"timestamp":"2026-04-06 09:29:23Z","trace_id":"16a6e3fb-eb14-4d81-80ab-5be46354f800","correlation_id":"7e3efafe-7e30-417d-849e-6d6584a1dbe4","error_uri":"https://login.microsoftonline.com/error?code=70000"}
+Apr 06 05:29:23 raspberrypi node[4991]: Error listing OneDrive files: Error: OneDrive expired - visit /api/onedrive/auth
+Apr 06 05:29:23 raspberrypi node[4991]: 5:29:23 AM [express] GET /api/onedrive/files 500 in 219ms :: {"error":"OneDrive expired - visit /api/onedrive/auth"}
+Apr 06 05:29:30 raspberrypi node[4991]: 5:29:30 AM [express] GET /api/health 200 in 1ms :: {"status":"ok","uptime":62,"ha":{"connected":true,"lastSuccessAt":"2026-04-06T09:28:38.043Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":1,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-06T09:29:30.320Z"}
+Apr 06 05:29:30 raspberrypi node[4991]: 5:29:30 AM [express] GET /api/health 200 in 1ms :: {"status":"ok","uptime":62,"ha":{"connected":true,"lastSuccessAt":"2026-04-06T09:28:38.043Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":1,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-06T09:29:30.346Z"}
+Apr 06 05:29:31 raspberrypi node[4991]: 5:29:31 AM [express] GET /api/health 200 in 1ms :: {"status":"ok","uptime":64,"ha":{"connected":true,"lastSuccessAt":"2026-04-06T09:28:38.043Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":1,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-06T09:29:31.872Z"}
+Apr 06 05:29:42 raspberrypi node[4991]: 5:29:42 AM [express] GET /api/health 200 in 1ms :: {"status":"ok","uptime":74,"ha":{"connected":true,"lastSuccessAt":"2026-04-06T09:29:39.079Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":2,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-06T09:29:42.284Z"}
+byhomeyyz@raspberrypi:~/Home-View $ cd ~/Home-View && node -e "const t=require('./.onedrive_tokens.json'); fetch('https://graph.microsoft.com/v1.0/me/drive/root/children',{headers:{Authorization:'Bearer '+t.access_token}}).then(r=>r.json()).then(d=>{if(d.value)console.log('Folders:',d.value.map(i=>i.name));else console.log('Error:',JSON.stringify(d))})"
+Folders: [
+  '1. Printing Files',
+  '15 Wellesley Park',
+  'Amazon',
+  'AppData',
+  'Apps',
+  'Asus',
+  'Attachments',
+  'Audio Recordings',
+  'BKH Communications',
+  'Condos & Apartments',
+  'Creative',
+  'Creative Cloud Files',
+  'Crossover Pilot',
+  'Desktop',
+  'Documents',
+  'Downloaded_Folder',
+  'Fido',
+  'File History',
+  'FOI and ATIP',
+  'Job Search',
+  'Microsoft Copilot Chat Files',
+  'Microsoft Edge Drop Files',
+  'Microsoft File Share',
+  'Microsoft Teams Chat Files',
+  'Misc',
+  'No Kings - No Tyrants',
+  'Personal',
+  'Personal Vault',
+  'PhoneLink',
+  'Pics',
+  'Pictures',
+  'Printing2',
+  'QuickNotes',
+  'Random',
+  'School',
+  'Search',
+  'Temp',
+  'Uni-Cal Attachments',
+  'Videos',
+  'Volunteer',
+  'Work',
+  '1138-1660-154-RCTNGL-labels-template-half-inch-noborders_TESTED_1.docx',
+  'Book (6).xlsx',
+  'Capital One combine.pdf',
+  'Checklist-PAG-210404-locked.xlsx',
+  'CV and letter for Bryn Kai-Hendricks_EO-2021-84_Public Engagement and Education Officer (Conflict) (Conflict).pdf',
+  'Document (45).docx',
+  'Leases.docx',
+  'Name Mark.png',
+  'Notifications for Fire TV_4.6.0_Apkpure.apk',
+  'Photo.pdf',
+  'Presentation.pptx',
+  'Rent Balance.pdf',
+  'The Symbiotic Slide South.docx',
+  'Utensils.pdf'
+]
+byhomeyyz@raspberrypi:~/Home-View $
