@@ -26002,7 +26002,7 @@ export default function Dashboard() {
                   })(), 
                   label: (() => {
                     const startColor = courseData.color || `rgb(${Math.max(0, rgb.r - 40)}, ${Math.max(0, rgb.g - 40)}, ${Math.max(0, rgb.b - 40)})`;
-                    const endColor = courseData.colorEnd || `rgb(${Math.min(255, rgb.r + 40)}, ${Math.min(255, rgb.g + 40)}, ${Math.min(255, rgb.b + 40)})`;
+                    const endColor = courseData.colorEnd || `rgb(${Math.min(255, rgb.r + 100)}, ${Math.min(255, rgb.g + 100)}, ${Math.min(255, rgb.b + 100)})`;
                     if (courseData.colorStops) {
                       try {
                         const stops: Array<{position: number; color: string}> = JSON.parse(courseData.colorStops);
