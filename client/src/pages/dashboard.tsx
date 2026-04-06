@@ -2023,6 +2023,11 @@ export default function Dashboard() {
     return null;
   });
   const [currentTime, setCurrentTime] = useState(new Date());
+  const stableToday = useMemo(() => startOfDayET(currentTime), [currentTime.getDate()]);
+  const stableNextSat = useMemo(() => {
+    const dow = currentTime.getDay();
+    return startOfDayET(addDays(currentTime, dow === 6 ? 7 : (6 - dow)));
+  }, [currentTime.getDate()]);
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
   const [showWeatherHistoryPanel, setShowWeatherHistoryPanel] = useState(false);
   const [weatherHistoryData, setWeatherHistoryData] = useState<any[]>([]);
@@ -26402,13 +26407,12 @@ export default function Dashboard() {
                       </div>
                       <div className="flex-1 min-w-0">
                       {fullWeekTasks.map((task, taskIdx) => {
-                        const today = startOfDayET(new Date());
-                        const tomorrow = addDays(today, 1);
+                        const tomorrow = addDays(stableToday, 1);
                         const taskDueDate = startOfDayET(new Date(task.dueDate));
-                        const isDueToday = !task.isCompleted && isSameDayET(taskDueDate, today);
+                        const isDueToday = !task.isCompleted && isSameDayET(taskDueDate, stableToday);
                         const isDueTomorrow = !task.isCompleted && isSameDayET(taskDueDate, tomorrow);
                         
-                        const currentDayOfWeek = today.getDay();
+                        const currentDayOfWeek = stableToday.getDay();
                         const isWednesdayOrLater = currentDayOfWeek >= 3 && currentDayOfWeek <= 5;
                         const shouldBlink = !task.isCompleted && isWednesdayOrLater;
                         
@@ -26464,12 +26468,9 @@ export default function Dashboard() {
                               const isBeforeToday = dayOfWeek < currentDayOfWeek;
                               const isTodayColumn = dayOfWeek === currentDayOfWeek;
                               const isFriday = dayOfWeek === 5;
-                              const isActualToday = isSameDayET(day, today);
-                              const isActuallyPast = !isActualToday && startOfDayET(day) < today;
-                              const mrNow = new Date();
-                              const mrDow = mrNow.getDay();
-                              const mrSat = startOfDayET(addDays(mrNow, mrDow === 6 ? 7 : (6 - mrDow)));
-                              const isMrNextSchoolWeek = !isActualToday && day.getDay() !== 6 && startOfDayET(day) >= mrSat;
+                              const isActualToday = isSameDayET(day, stableToday);
+                              const isActuallyPast = !isActualToday && startOfDayET(day) < stableToday;
+                              const isMrNextSchoolWeek = !isActualToday && day.getDay() !== 6 && startOfDayET(day) >= stableNextSat;
                               const cellBg = isActualToday ? '#e4ecf5' : isMrNextSchoolWeek ? dimColor(course.bg, 0.375) : isActuallyPast ? dimColor(course.bg) : dimColor(course.bg, 0.75);
                               
                               // If this day is before today, show empty cell
@@ -26743,13 +26744,10 @@ export default function Dashboard() {
                     });
 
                     return weekDays.map((day, dayIdx) => {
-                    const isDayToday = isSameDayET(day, new Date());
-                    const isDayAfterToday = day > new Date() && !isDayToday;
-                    const isDayBeforeToday = !isDayToday && day < new Date();
-                    const nwNow = new Date();
-                    const nwDow = nwNow.getDay();
-                    const nwSat = startOfDayET(addDays(nwNow, nwDow === 6 ? 7 : (6 - nwDow)));
-                    const isDayNextSchoolWeek = !isDayToday && day.getDay() !== 6 && startOfDayET(day) >= nwSat;
+                    const isDayToday = isSameDayET(day, stableToday);
+                    const isDayAfterToday = startOfDayET(day) > stableToday && !isDayToday;
+                    const isDayBeforeToday = !isDayToday && startOfDayET(day) < stableToday;
+                    const isDayNextSchoolWeek = !isDayToday && day.getDay() !== 6 && startOfDayET(day) >= stableNextSat;
                     const cellBgColor = isDayToday ? '#e4ecf5' : isDayNextSchoolWeek ? dimColor(course.bg, 0.375) : dimColor(course.bg, 0.75);
                     const cellDate = startOfDayET(day);
                     
@@ -26832,10 +26830,9 @@ export default function Dashboard() {
                           }
                           return false;
                         }).map(proj => {
-                          const today = startOfDayET(new Date());
-                          const tomorrow = addDays(today, 1);
+                          const tomorrow = addDays(stableToday, 1);
                           const projTarget = startOfDayET(new Date(proj.targetDate!));
-                          const isDueToday = isSameDayET(projTarget, today);
+                          const isDueToday = isSameDayET(projTarget, stableToday);
                           const isDueTomorrow = isSameDayET(projTarget, tomorrow);
                           const isOnTargetDay = isSameDayET(projTarget, cellDate);
                           return (
@@ -26865,9 +26862,8 @@ export default function Dashboard() {
                             return <div key={`empty-${itemIdx}`} style={{ height: '2px' }} />;
                           }
                           const task = item.task;
-                          const today = startOfDayET(new Date());
-                          const tomorrow = addDays(today, 1);
-                          const isDueToday = !task.isCompleted && isSameDayET(new Date(task.dueDate), today);
+                          const tomorrow = addDays(stableToday, 1);
+                          const isDueToday = !task.isCompleted && isSameDayET(new Date(task.dueDate), stableToday);
                           const isDueTomorrow = !task.isCompleted && isSameDayET(new Date(task.dueDate), tomorrow);
                           
                           if (item.isPrep) {
@@ -27287,7 +27283,7 @@ export default function Dashboard() {
                     )}
                     {weekDays.map((day, dayIdx) => {
                       const cellDate = startOfDayET(day);
-                      const isOtherToday = isSameDayET(day, new Date());
+                      const isOtherToday = isSameDayET(day, stableToday);
                       const dayOtherTasks = otherTasks.filter(task => {
                         const taskDueDate = startOfDayET(new Date(task.dueDate));
                         if (isSameDayET(taskDueDate, cellDate)) return true;
@@ -27308,12 +27304,9 @@ export default function Dashboard() {
                       });
                       const otherCellCount = dayOtherTasks.length + dayOtherProjs.length;
                       const otherHasScroll = otherCellCount > 3;
-                      const isOtherBeforeToday = !isOtherToday && day < new Date();
+                      const isOtherBeforeToday = !isOtherToday && startOfDayET(day) < stableToday;
                       const otherBaseBg = otherRowColors.courseRowColor || otherRowColors.cellBg;
-                      const onwNow = new Date();
-                      const onwDow = onwNow.getDay();
-                      const onwSat = startOfDayET(addDays(onwNow, onwDow === 6 ? 7 : (6 - onwDow)));
-                      const isOtherNextSchoolWeek = !isOtherToday && day.getDay() !== 6 && startOfDayET(day) >= onwSat;
+                      const isOtherNextSchoolWeek = !isOtherToday && day.getDay() !== 6 && startOfDayET(day) >= stableNextSat;
                       const otherCellBg = isOtherToday ? '#e4ecf5' : isOtherNextSchoolWeek ? dimColor(otherBaseBg, 0.375) : dimColor(otherBaseBg, 0.75);
                       return (
                         <div
@@ -27324,9 +27317,8 @@ export default function Dashboard() {
                         >
                           <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', borderLeft: day.getDay() === 6 ? '3px solid #000' : '1.5px dotted rgba(0,0,0,0.25)', zIndex: 5, pointerEvents: 'none' }} />
                           {dayOtherTasks.map(task => {
-                            const today = startOfDayET(new Date());
-                            const tomorrow = addDays(today, 1);
-                            const isDueToday = !task.isCompleted && isSameDayET(new Date(task.dueDate), today);
+                            const tomorrow = addDays(stableToday, 1);
+                            const isDueToday = !task.isCompleted && isSameDayET(new Date(task.dueDate), stableToday);
                             const isDueTomorrow = !task.isCompleted && isSameDayET(new Date(task.dueDate), tomorrow);
                             const isUnackedReminder = task.type === 'reminder' && !(task as any).isAcknowledged;
                             return (
@@ -27364,10 +27356,9 @@ export default function Dashboard() {
                             );
                           })}
                           {dayOtherProjs.map(proj => {
-                            const today = startOfDayET(new Date());
-                            const tomorrow = addDays(today, 1);
+                            const tomorrow = addDays(stableToday, 1);
                             const projTarget = startOfDayET(new Date(proj.targetDate!));
-                            const isDueToday = isSameDayET(projTarget, today);
+                            const isDueToday = isSameDayET(projTarget, stableToday);
                             const isDueTomorrow = isSameDayET(projTarget, tomorrow);
                             return (
                               <div
@@ -27602,61 +27593,78 @@ export default function Dashboard() {
               
                           {/* Time Slots - Scrollable area */}
             <div ref={calendarScrollRef} className="flex-1 overflow-y-auto relative" style={{ borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', scrollbarWidth: 'none' }}>
-              {/* Countdown bars - sticky overlay that stays visible while scrolling */}
-              {(() => {
-                const today = startOfDayET(new Date());
-                const twoWeeksOut = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
-                const allCountdown = (allTasks || []).filter(t => {
-                  if (t.showCountdownBar === false || t.showCountdownBarMain === false || t.isCompleted) return false;
-                  const tDue = startOfDayET(new Date(t.dueDate));
-                  if (tDue <= today || tDue > twoWeeksOut) return false;
-                  return true;
-                }).map(t => {
-                  const tDue = startOfDayET(new Date(t.dueDate));
-                  const daysLeft = Math.max(0, Math.round((tDue.getTime() - today.getTime()) / (1000*60*60*24)));
-                  return { task: t, tDue, daysLeft };
-                }).sort((a, b) => a.tDue.getTime() - b.tDue.getTime() || (a.task.title || '').localeCompare(b.task.title || ''));
-                const seenNames = new Map<string, number>();
-                const deduped = allCountdown.filter(cd => {
-                  const name = (cd.task.title || '').trim().toLowerCase();
-                  if (!name) return true;
-                  if (seenNames.has(name)) return false;
-                  seenNames.set(name, 1);
-                  return true;
-                });
-                if (deduped.length === 0) return null;
-                const barH = 3;
-                const barGap = 14;
-                const totalHeight = deduped.length * barGap;
-                return (
-                  <div style={{ position: 'sticky', top: 0, left: 0, right: 0, zIndex: 46, pointerEvents: 'none', height: 0, overflow: 'visible' }} data-testid="countdown-bars-overlay">
-                    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: `${totalHeight}px`, background: 'rgba(250,248,245,0.92)', borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
-                      {deduped.map((cd, idx) => {
-                        const t = cd.task;
-                        const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
-                        const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
-                        const needsPulse = isNotStarted && cd.daysLeft <= 2 && !t.isCompleted;
-                        const labelText = (t.title || '').replace(/[\[\]]/g, '').replace(/^\s+/, '');
-                        const barHPx = needsPulse ? 4 : barH;
-                        const yOff = idx * barGap;
-                        return (
-                          <div key={`cbar-main-${t.id}`} className="countdown-bar-wrapper" style={{ position: 'absolute', left: 0, right: 0, top: `${yOff}px`, height: `${barGap}px`, pointerEvents: 'auto', cursor: 'default', overflow: 'hidden' }} data-testid={`countdown-bar-${t.id}`}>
-                            <div style={{ position: 'absolute', left: '0px', top: '2px', right: 0, height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
-                              <div style={{ width: '10px', minWidth: '10px', height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
-                              <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '9px', fontWeight: 500, color: barColor, letterSpacing: '-0.2px', lineHeight: '10px' }}>{cd.daysLeft}d</span>
-                              </div>
-                              <span style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(0,0,0,0.85)', whiteSpace: 'nowrap', flexShrink: 0, paddingLeft: '1px', paddingRight: '3px', lineHeight: '10px' }}>{labelText}</span>
-                              <div className={needsPulse ? 'countdown-bar-pulse' : ''} style={{ flex: 1, height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '0 2px 2px 0', minWidth: '10px', boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined }} />
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })()}
               <div style={{ backgroundColor: '#faf8f5', borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', position: 'relative' }}>
+                {/* Countdown bars overlay - absolute at current time Y, starts at tomorrow column, clips at today+2 */}
+                {(() => {
+                  const twoWeeksOut = new Date(stableToday.getTime() + 14 * 24 * 60 * 60 * 1000);
+                  const allCountdown = (allTasks || []).filter(t => {
+                    if (t.showCountdownBar === false || t.showCountdownBarMain === false || t.isCompleted) return false;
+                    const tDue = startOfDayET(new Date(t.dueDate));
+                    if (tDue <= stableToday || tDue > twoWeeksOut) return false;
+                    return true;
+                  }).map(t => {
+                    const tDue = startOfDayET(new Date(t.dueDate));
+                    const daysLeft = Math.max(0, Math.round((tDue.getTime() - stableToday.getTime()) / (1000*60*60*24)));
+                    return { task: t, tDue, daysLeft };
+                  }).sort((a, b) => a.tDue.getTime() - b.tDue.getTime() || (a.task.title || '').localeCompare(b.task.title || ''));
+                  const seenNames = new Map<string, number>();
+                  const deduped = allCountdown.filter(cd => {
+                    const name = (cd.task.title || '').trim().toLowerCase();
+                    if (!name) return true;
+                    if (seenNames.has(name)) return false;
+                    seenNames.set(name, 1);
+                    return true;
+                  });
+                  if (deduped.length === 0) return null;
+                  const currentHourNow = getETHours(new Date());
+                  const currentMinNow = new Date().getMinutes();
+                  let topPx = 0;
+                  for (let h = 0; h < currentHourNow; h++) {
+                    topPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
+                  }
+                  const currentSlotH = gridSizes.timeSlotHeights[currentHourNow] || gridSizes.timeSlotHeight;
+                  topPx += Math.round(currentSlotH * (currentMinNow / 60));
+                  const todayDow = stableToday.getDay();
+                  const dws = gridSizes.dayColumnWidths;
+                  const totalFr = dws.reduce((s: number, v: number) => s + v, 0);
+                  const fixedPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
+                  let frBefore = 0;
+                  for (let i = 0; i <= todayDow && i < dws.length; i++) frBefore += dws[i];
+                  let frSpan = 0;
+                  for (let i = todayDow + 1; i <= Math.min(todayDow + 2, dws.length - 1); i++) frSpan += dws[i];
+                  if (frSpan === 0) return null;
+                  const leftFrac = frBefore / totalFr;
+                  const widthFrac = frSpan / totalFr;
+                  const barH = 3;
+                  const barGap = 14;
+                  return (
+                    <div style={{ position: 'absolute', top: `${topPx}px`, left: `${fixedPx}px`, right: 0, zIndex: 1, pointerEvents: 'none', overflow: 'visible' }} data-testid="countdown-bars-overlay">
+                      <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, top: 0, overflow: 'visible' }}>
+                        {deduped.map((cd, idx) => {
+                          const t = cd.task;
+                          const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
+                          const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
+                          const needsPulse = isNotStarted && cd.daysLeft <= 2 && !t.isCompleted;
+                          const labelText = (t.title || '').replace(/[\[\]]/g, '').replace(/^\s+/, '');
+                          const barHPx = needsPulse ? 4 : barH;
+                          const yOff = idx * barGap;
+                          return (
+                            <div key={`cbar-main-${t.id}`} className="countdown-bar-wrapper" style={{ position: 'absolute', left: 0, right: 0, top: `${yOff}px`, height: `${barGap}px`, pointerEvents: 'auto', cursor: 'default', overflow: 'hidden' }} onDoubleClick={() => setEditingTask(t as any)} data-testid={`countdown-bar-${t.id}`}>
+                              <div style={{ position: 'absolute', left: '0px', top: '2px', right: 0, height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
+                                <div style={{ width: '10px', minWidth: '10px', height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
+                                <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
+                                  <span style={{ fontSize: '9px', fontWeight: 500, color: barColor, letterSpacing: '-0.2px', lineHeight: '10px' }}>{cd.daysLeft}d</span>
+                                </div>
+                                <span style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(0,0,0,0.85)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flexShrink: 1, minWidth: 0, paddingLeft: '1px', paddingRight: '3px', lineHeight: '10px' }}>{labelText}</span>
+                                <div className={needsPulse ? 'countdown-bar-pulse' : ''} style={{ flex: 1, height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '0 2px 2px 0', minWidth: '4px', boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined }} />
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })()}
                 {timeSlots.map((hour, hourIdx) => {
                   const currentHour = new Date().getHours();
                   const isCurrentHour = hour === currentHour;
@@ -27911,9 +27919,8 @@ export default function Dashboard() {
                           }).map((task, taskIdx) => {
                             const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || (task.title?.match(/^\[([^\]\s]+)/)?.[1]?.toUpperCase() || (() => { const t = (task.title || '').toUpperCase(); const alpha = t.match(/^([A-Z]+)/)?.[1]; if (!alpha) return ''; return Object.keys(dynamicCourseColors).find(k => k.startsWith(alpha) && k.length > alpha.length) || ''; })());
                             const colors = dynamicCourseColors[courseCode];
-                            const today = startOfDayET(new Date());
-                            const tomorrow = addDays(today, 1);
-                            const isDueToday = !task.isCompleted && isSameDayET(new Date(task.dueDate), today);
+                            const tomorrow = addDays(stableToday, 1);
+                            const isDueToday = !task.isCompleted && isSameDayET(new Date(task.dueDate), stableToday);
                             const isDueTomorrow = !task.isCompleted && isSameDayET(new Date(task.dueDate), tomorrow);
                             
                             // Calculate height based on duration for events with start/end times
@@ -28217,9 +28224,8 @@ export default function Dashboard() {
                   
                   const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || (task.title?.match(/^\[([^\]\s]+)/)?.[1]?.toUpperCase() || (() => { const t = (task.title || '').toUpperCase(); const alpha = t.match(/^([A-Z]+)/)?.[1]; if (!alpha) return ''; return Object.keys(dynamicCourseColors).find(k => k.startsWith(alpha) && k.length > alpha.length) || ''; })());
                   const colors = dynamicCourseColors[courseCode];
-                  const today = startOfDayET(new Date());
-                  const tomorrow = addDays(today, 1);
-                  const isDueToday = !task.isCompleted && isSameDayET(new Date(task.dueDate), today);
+                  const tomorrow = addDays(stableToday, 1);
+                  const isDueToday = !task.isCompleted && isSameDayET(new Date(task.dueDate), stableToday);
                   const isDueTomorrow = !task.isCompleted && isSameDayET(new Date(task.dueDate), tomorrow);
                   
                   const taskDay = weekDays[dayIdx];
