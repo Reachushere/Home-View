@@ -26434,10 +26434,6 @@ export default function Dashboard() {
                                         backgroundColor: task.isCompleted ? '#e5e7eb' : 'white',
                                         color: task.isCompleted ? undefined : (course.fontColor || 'black'),
                                         border: `1px solid ${task.isCompleted ? '#d1d5db' : course.darkColor}`,
-                                        filter: hoveredCountdownTaskId === task.id ? 'brightness(1.15)' : undefined,
-                                        boxShadow: hoveredCountdownTaskId === task.id ? '0 2px 8px rgba(0,0,0,0.35)' : undefined,
-                                        zIndex: hoveredCountdownTaskId === task.id ? 55 : undefined,
-                                        transition: 'filter 0.2s ease, box-shadow 0.2s ease',
                                       }}
                                       data-testid={`course-fullweek-task-today-${task.id}`}
                                     >
@@ -26811,10 +26807,7 @@ export default function Dashboard() {
                                   style={{ 
                                     backgroundColor: (() => { const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === course.name); if (cMatch?.taskBgColor) return cMatch.taskBgColor; return cMatch?.colorEnd || course.bg; })(),
                                     borderColor: course.darkColor,
-                                    zIndex: hoveredCountdownTaskId === task.id ? 55 : 1,
-                                    filter: hoveredCountdownTaskId === task.id ? 'brightness(1.15)' : undefined,
-                                    boxShadow: hoveredCountdownTaskId === task.id ? '0 2px 8px rgba(0,0,0,0.35)' : undefined,
-                                    transition: 'filter 0.2s ease, box-shadow 0.2s ease',
+                                    zIndex: 1,
                                     overflow: 'hidden',
                                     position: 'relative',
                                   }}
@@ -26846,7 +26839,7 @@ export default function Dashboard() {
                           const hasLeftConnector = hasPrepDays || (spanInfo && !isSpanFirst);
                           const hasRightConnector = spanInfo && !isSpanLast;
                           return (
-                            <div key={task.id} className="relative w-full min-w-0" style={{ zIndex: hoveredCountdownTaskId === task.id ? 55 : undefined }}>
+                            <div key={task.id} className="relative w-full min-w-0">
                             {hasLeftConnector && (
                               <div style={{ position: 'absolute', left: '-5px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '1px', backgroundColor: course.darkColor, zIndex: 2 }} />
                             )}
@@ -26858,9 +26851,6 @@ export default function Dashboard() {
                               style={{ 
                                 backgroundColor: (() => { const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === course.name); if (cMatch?.taskBgColor) return cMatch.taskBgColor; return cMatch?.colorEnd || course.bg; })(),
                                 borderColor: course.darkColor,
-                                filter: hoveredCountdownTaskId === task.id ? 'brightness(1.15)' : undefined,
-                                boxShadow: hoveredCountdownTaskId === task.id ? '0 2px 8px rgba(0,0,0,0.35)' : undefined,
-                                transition: 'filter 0.2s ease, box-shadow 0.2s ease',
                                 paddingRight: dueModulePdfUrl && courseDeliveryModes[task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''] === 'virtual' ? '54px' : dueModulePdfUrl ? '30px' : courseDeliveryModes[task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''] === 'virtual' ? '26px' : undefined,
                                 position: 'relative',
                               }}
@@ -28208,12 +28198,9 @@ export default function Dashboard() {
                           left: (() => { const sidebarPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0); const dayFrac = `(${gridSizes.dayColumnWidths.slice(0, dayIdx).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)})`; const dayW = `(${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${sidebarPx}px)`; if (oi.totalCols > 1) { return `calc(${sidebarPx}px + ${dayFrac} * (100% - ${sidebarPx}px) + (${dayW}) * ${oi.col} / ${oi.totalCols} + 2px)`; } return `calc(${sidebarPx}px + ${dayFrac} * (100% - ${sidebarPx}px) + 2px)`; })(),
                           width: (() => { const sidebarPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0); const dayW = `(${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${sidebarPx}px)`; const now = new Date(); const currentHourNow = now.getHours(); const taskDay2 = weekDays[dayIdx]; const isTodayCol = isSameDayET(taskDay2, now); const taskCoversCurrentHour = startHour <= currentHourNow && (endHour > currentHourNow || (endHour === currentHourNow && endMin > 0)); const isCurrentHourOverlap = isTodayCol && taskCoversCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); const colDivisor = oi.totalCols > 1 ? oi.totalCols : (isCurrentHourOverlap ? 2 : 1); return `calc((${dayW}) / ${colDivisor} - 4px)`; })(),
                           height: `${heightPx}px`,
-                          zIndex: hoveredCountdownTaskId === task.id ? 55 : (selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43)),
+                          zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43),
                           background: bgGradient,
                           border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1.5px solid ${borderColor}`,
-                          filter: hoveredCountdownTaskId === task.id ? 'brightness(1.15)' : undefined,
-                          boxShadow: hoveredCountdownTaskId === task.id ? '0 2px 8px rgba(0,0,0,0.35)' : undefined,
-                          transition: 'filter 0.2s ease, box-shadow 0.2s ease',
                           display: 'flex',
                           flexDirection: 'column' as const,
                           backfaceVisibility: 'hidden' as const,
