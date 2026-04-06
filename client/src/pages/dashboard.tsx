@@ -15044,7 +15044,7 @@ export default function Dashboard() {
                       {next.flagged ? (
                         <Flag className="h-[10px] w-[10px] text-red-400 fill-red-400 flex-shrink-0" />
                       ) : (
-                        <span data-countdown-bullet={next.id} style={{ color: isDueZero ? '#dc2626' : '#ffffff', fontSize: '14px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span>
+                        <span data-countdown-bullet={next.id} style={{ color: diffDays >= 3 ? 'rgb(0, 180, 0)' : diffDays === 2 ? '#e89200' : '#dc2626', fontSize: '18px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span>
                       )}
                       {isDueZero ? (
                         <>
@@ -15072,7 +15072,7 @@ export default function Dashboard() {
                     onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                     data-testid="countdown-prep-task-number"
                   >
-                    {prepDaysText === 'today' ? (<><span data-countdown-bullet={`prep-${nextPrep.id}`} style={{ color: '#ffffff', fontSize: '14px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span><span data-countdown-badge style={{ backgroundColor: '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>0</span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>days,</span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>start preparing for </span><span style={{ fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px', color: '#ffffff' }}><b style={{ textTransform: 'uppercase' }}>{prepTaskName}</b>.</span></>) : prepDaysText === 'now' ? (<><span data-countdown-bullet={`prep-${nextPrep.id}`} style={{ color: '#ffffff', fontSize: '14px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>Preparation for <b style={{ textTransform: 'uppercase' }}>{prepTaskName}</b> is in progress.</span></>) : (<><span data-countdown-bullet={`prep-${nextPrep.id}`} style={{ color: '#ffffff', fontSize: '14px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span><span data-countdown-badge style={{ backgroundColor: Number(prepDaysText) >= 3 ? 'rgb(0, 180, 0)' : Number(prepDaysText) === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{prepDaysText}</span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>{Number(prepDaysText) === 1 ? 'day,' : 'days,'}</span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>start preparing for <b style={{ textTransform: 'uppercase' }}>{prepTaskName}</b>.</span></>)}
+                    {prepDaysText === 'today' ? (<><span data-countdown-bullet={`prep-${nextPrep.id}`} style={{ color: '#dc2626', fontSize: '18px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span><span data-countdown-badge style={{ backgroundColor: '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>0</span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>days,</span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>start preparing for </span><span style={{ fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px', color: '#ffffff' }}><b style={{ textTransform: 'uppercase' }}>{prepTaskName}</b>.</span></>) : prepDaysText === 'now' ? (<><span data-countdown-bullet={`prep-${nextPrep.id}`} style={{ color: '#dc2626', fontSize: '18px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>Preparation for <b style={{ textTransform: 'uppercase' }}>{prepTaskName}</b> is in progress.</span></>) : (<><span data-countdown-bullet={`prep-${nextPrep.id}`} style={{ color: Number(prepDaysText) >= 3 ? 'rgb(0, 180, 0)' : Number(prepDaysText) === 2 ? '#e89200' : '#dc2626', fontSize: '18px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span><span data-countdown-badge style={{ backgroundColor: Number(prepDaysText) >= 3 ? 'rgb(0, 180, 0)' : Number(prepDaysText) === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{prepDaysText}</span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>{Number(prepDaysText) === 1 ? 'day,' : 'days,'}</span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>start preparing for <b style={{ textTransform: 'uppercase' }}>{prepTaskName}</b>.</span></>)}
                   </div>
                 )}
                 {(() => {
@@ -15092,7 +15092,7 @@ export default function Dashboard() {
                       {next.flagged ? (
                         <Flag className="h-[10px] w-[10px] text-red-400 fill-red-400 flex-shrink-0" />
                       ) : (
-                        <span data-countdown-bullet={next.id} style={{ color: isDueZero2 ? '#dc2626' : '#ffffff', fontSize: '14px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span>
+                        <span data-countdown-bullet={next.id} style={{ color: diffDays >= 3 ? 'rgb(0, 180, 0)' : diffDays === 2 ? '#e89200' : '#dc2626', fontSize: '18px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span>
                       )}
                       {isDueZero2 ? (
                         <>
@@ -18232,11 +18232,6 @@ export default function Dashboard() {
           if (!t.dueDate) return false;
           return isSameDayET(new Date(t.dueDate), detailDate);
         }).sort((a, b) => {
-          if (a.isCompleted !== b.isCompleted) return a.isCompleted ? 1 : -1;
-          const priorityOrder: Record<string, number> = { high: 0, medium: 1, low: 2 };
-          const pa = priorityOrder[a.priority || 'medium'] ?? 1;
-          const pb = priorityOrder[b.priority || 'medium'] ?? 1;
-          if (pa !== pb) return pa - pb;
           const da = a.dueDate ? new Date(a.dueDate).getTime() : 0;
           const db = b.dueDate ? new Date(b.dueDate).getTime() : 0;
           return da - db;
@@ -18248,86 +18243,134 @@ export default function Dashboard() {
           return course?.color || '#6b7280';
         };
         const typeIconMap: Record<string, string> = { module: '📘', reading: '📖', essay: '📝', discussion: '💬', poll: '📊', quiz: '❓', exam: '📋', project: '🔧', reminder: '⏰', meeting: '🤝', scholarship: '🎓', other: '📌', class: '🏫' };
-        return (
-          <div className="fixed inset-0 z-[10000] flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)' }} onClick={() => setDayDetailDate(null)} data-testid="day-detail-overlay">
-            <div onClick={(e) => e.stopPropagation()} style={{ width: '92%', maxWidth: '520px', maxHeight: '88vh', display: 'flex', flexDirection: 'column', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.15)' }} data-testid="day-detail-panel">
-              <div style={{ background: `linear-gradient(135deg, ${colorSettings.headerBar} 0%, ${colorSettings.mainBackground} 100%)`, padding: '16px 20px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.15)' }}>
-                <div>
-                  <div style={{ fontSize: '18px', fontWeight: 700, color: '#ffffff', fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }} data-testid="day-detail-title">{detailDateStr}</div>
-                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', marginTop: '2px' }}>{dayTasks.length} task{dayTasks.length !== 1 ? 's' : ''} {isDetailToday ? '— Today' : ''}</div>
-                </div>
-                <button onClick={() => setDayDetailDate(null)} style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#ffffff', fontSize: '16px', flexShrink: 0 }} data-testid="day-detail-close-top">
-                  <X className="h-4 w-4" />
-                </button>
+        const timeSlots: string[] = [];
+        for (let h = 6; h <= 21; h++) { timeSlots.push(`${h === 0 ? 12 : h > 12 ? h - 12 : h}:00 ${h < 12 ? 'AM' : 'PM'}`); }
+        const getTaskHour = (task: any) => {
+          if (task.eventStartTime) { const parts = task.eventStartTime.split(':'); return parseInt(parts[0], 10); }
+          if (task.dueDate) { const d = new Date(task.dueDate); const h = d.getHours(); return h; }
+          return -1;
+        };
+        const tasksByHour: Record<number, typeof dayTasks> = {};
+        const unscheduledTasks: typeof dayTasks = [];
+        dayTasks.forEach(t => {
+          const h = getTaskHour(t);
+          if (h >= 6 && h <= 21) { if (!tasksByHour[h]) tasksByHour[h] = []; tasksByHour[h].push(t); }
+          else { unscheduledTasks.push(t); }
+        });
+        const priorityColors: Record<string, string> = { high: '#ef4444', medium: '#f59e0b', low: '#22c55e' };
+        const renderDetailTask = (task: any) => {
+          const courseColor = getTaskCourseColor(task.courseName);
+          const icon = typeIconMap[task.type] || '📌';
+          const dueTime = task.dueDate ? format(new Date(task.dueDate), 'h:mm a') : '';
+          const pColor = priorityColors[task.priority || 'medium'] || '#f59e0b';
+          const courseFullName = task.courseName?.includes(' - ') ? task.courseName.split(' - ').slice(1).join(' - ') : '';
+          const daysUntil = task.dueDate ? differenceInCalendarDays(startOfDayET(new Date(task.dueDate)), startOfDayET(new Date())) : 0;
+          return (
+            <div key={task.id} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '10px 14px', borderRadius: '8px', background: 'rgba(255,255,255,0.06)', border: `1px solid ${courseColor}33`, borderLeft: `3px solid ${courseColor}`, opacity: task.isCompleted ? 0.45 : 1, transition: 'opacity 0.2s ease' }} data-testid={`day-detail-task-${task.id}`}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', paddingTop: '2px', flexShrink: 0 }}>
+                <input type="checkbox" checked={!!task.isCompleted} onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })} style={{ width: '16px', height: '16px', accentColor: courseColor, cursor: 'pointer' }} data-testid={`day-detail-check-${task.id}`} />
               </div>
-
-              <div style={{ flex: 1, overflowY: 'auto', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, padding: '8px 12px 12px' }}>
-                {dayTasks.length === 0 ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 16px', color: 'rgba(255,255,255,0.4)' }}>
-                    <div style={{ fontSize: '32px', marginBottom: '12px' }}>📭</div>
-                    <div style={{ fontSize: '13px', fontWeight: 500 }}>No tasks for this day</div>
-                  </div>
-                ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    {dayTasks.map(task => {
-                      const courseColor = getTaskCourseColor(task.courseName);
-                      const icon = typeIconMap[task.type] || '📌';
-                      const dueTime = task.dueDate ? format(new Date(task.dueDate), 'h:mm a') : '';
-                      const priorityColors: Record<string, string> = { high: '#ef4444', medium: '#f59e0b', low: '#22c55e' };
-                      const pColor = priorityColors[task.priority || 'medium'] || '#f59e0b';
-                      return (
-                        <div key={task.id} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '10px 12px', borderRadius: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', opacity: task.isCompleted ? 0.5 : 1, transition: 'opacity 0.2s ease' }} data-testid={`day-detail-task-${task.id}`}>
-                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', paddingTop: '2px', flexShrink: 0 }}>
-                            <input
-                              type="checkbox"
-                              checked={!!task.isCompleted}
-                              onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })}
-                              style={{ width: '18px', height: '18px', accentColor: courseColor, cursor: 'pointer', borderRadius: '4px' }}
-                              data-testid={`day-detail-check-${task.id}`}
-                            />
-                          </div>
-
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px' }}>
-                              <span style={{ fontSize: '13px' }}>{icon}</span>
-                              <span style={{ fontSize: '13px', fontWeight: 600, color: '#ffffff', textDecoration: task.isCompleted ? 'line-through' : 'none', fontFamily: "'Raleway', sans-serif" }} data-testid={`day-detail-title-${task.id}`}>{task.title}</span>
-                            </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                              {task.courseName && (
-                                <span style={{ fontSize: '10px', fontWeight: 600, color: courseColor, background: `${courseColor}22`, padding: '1px 6px', borderRadius: '4px', border: `1px solid ${courseColor}44` }} data-testid={`day-detail-course-${task.id}`}>{task.courseName.split(' - ')[0]}</span>
-                              )}
-                              <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', textTransform: 'capitalize' }}>{task.type}</span>
-                              {dueTime && <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>Due {dueTime}</span>}
-                              <span style={{ fontSize: '9px', fontWeight: 600, color: pColor, background: `${pColor}22`, padding: '0px 5px', borderRadius: '3px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{task.priority}</span>
-                            </div>
-                            {(task as any).description && !/^\[/.test((task as any).description) && (
-                              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginTop: '4px', lineHeight: 1.4, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }} data-testid={`day-detail-desc-${task.id}`}>{(task as any).description.replace(/\[.*?\]/g, '').trim()}</div>
-                            )}
-                          </div>
-
-                          <button
-                            onClick={() => { setDayDetailDate(null); setTimeout(() => setEditingTask(task), 100); }}
-                            style={{ width: '30px', height: '30px', borderRadius: '6px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, marginTop: '2px' }}
-                            data-testid={`day-detail-edit-${task.id}`}
-                            title="Edit task"
-                          >
-                            <Pencil className="h-3.5 w-3.5 text-white/60 hover:text-white" />
-                          </button>
-                        </div>
-                      );
-                    })}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                  <span style={{ fontSize: '14px' }}>{icon}</span>
+                  <span style={{ fontSize: '13px', fontWeight: 600, color: '#ffffff', textDecoration: task.isCompleted ? 'line-through' : 'none', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid={`day-detail-title-${task.id}`}>{task.title}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginBottom: '4px' }}>
+                  {task.courseName && (
+                    <span style={{ fontSize: '10px', fontWeight: 600, color: courseColor, background: `${courseColor}22`, padding: '1px 6px', borderRadius: '4px', border: `1px solid ${courseColor}44` }} data-testid={`day-detail-course-${task.id}`}>{task.courseName.split(' - ')[0]}{courseFullName ? ` - ${courseFullName}` : ''}</span>
+                  )}
+                  <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', textTransform: 'capitalize' }}>{task.type}</span>
+                  <span style={{ fontSize: '9px', fontWeight: 600, color: pColor, background: `${pColor}22`, padding: '1px 5px', borderRadius: '3px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{task.priority}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', fontSize: '10px', color: 'rgba(255,255,255,0.5)' }}>
+                  {dueTime && <span>⏰ Due {dueTime}</span>}
+                  {task.eventStartTime && task.eventEndTime && <span>🕐 {task.eventStartTime} – {task.eventEndTime}</span>}
+                  {task.startDate && <span>📅 Start: {format(new Date(task.startDate), 'MMM d')}</span>}
+                  {task.prepDays && task.prepDays > 0 && <span>📐 {task.prepDays}d prep</span>}
+                  {(task as any).weight && <span>⚖️ {(task as any).weight}%</span>}
+                  {(task as any).estimatedTime && <span>⏱️ {(task as any).estimatedTime}</span>}
+                  {task.weekNumber && <span>W{task.weekNumber}</span>}
+                  {task.flagged && <span style={{ color: '#ef4444' }}>🚩 Flagged</span>}
+                </div>
+                {task.referenceLink && (
+                  <div style={{ marginTop: '4px' }}>
+                    <a href={task.referenceLink} target="_blank" rel="noopener noreferrer" style={{ fontSize: '10px', color: '#60a5fa', textDecoration: 'underline', wordBreak: 'break-all' }} data-testid={`day-detail-ref-${task.id}`}>{task.referenceLink.length > 60 ? task.referenceLink.slice(0, 60) + '...' : task.referenceLink}</a>
                   </div>
                 )}
+                {(task as any).notes && (
+                  <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginTop: '4px', lineHeight: 1.4, fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }} data-testid={`day-detail-notes-${task.id}`}>📝 {(task as any).notes}</div>
+                )}
+                {(task as any).description && !/^\[/.test((task as any).description) && (
+                  <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.35)', marginTop: '3px', lineHeight: 1.4, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }} data-testid={`day-detail-desc-${task.id}`}>{(task as any).description.replace(/\[.*?\]/g, '').trim()}</div>
+                )}
+                {task.attachments && task.attachments.length > 0 && (
+                  <div style={{ marginTop: '4px', fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>📎 {task.attachments.length} attachment{task.attachments.length !== 1 ? 's' : ''}</div>
+                )}
+              </div>
+              <button onClick={() => { setDayDetailDate(null); setTimeout(() => setEditingTask(task), 100); }} style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, marginTop: '2px' }} data-testid={`day-detail-edit-${task.id}`} title="Edit task">
+                <Pencil className="h-3.5 w-3.5 text-white/60 hover:text-white" />
+              </button>
+            </div>
+          );
+        };
+        return (
+          <div className="fixed inset-0 z-[10002]" onClick={() => setDayDetailDate(null)} data-testid="day-detail-overlay">
+            <div className="fixed inset-0 bg-black/50" />
+            <div
+              className="fixed left-[50%] translate-x-[-50%] z-[10002] overflow-hidden flex flex-col text-[11px] text-white p-0 sm:rounded-lg"
+              style={{ top: 'calc(3vh - 6px)', width: 'calc(96vw + 24px)', maxWidth: 'calc(96vw + 24px)', bottom: 'calc(3vh + 32px)', color: 'white', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
+              onClick={(e) => e.stopPropagation()}
+              data-testid="day-detail-panel"
+            >
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
+                <div className="flex items-center gap-2">
+                  <CalendarDays className="text-white" style={{ width: '15px', height: '15px' }} />
+                  <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }} data-testid="day-detail-title">
+                    DAY VIEW — {format(detailDate, 'EEEE, MMMM d, yyyy').toUpperCase()} {isDetailToday ? '(TODAY)' : ''}
+                  </h2>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>{dayTasks.length} task{dayTasks.length !== 1 ? 's' : ''}</span>
+                  <button onClick={() => setDayDetailDate(null)} style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#ffffff', flexShrink: 0, backdropFilter: 'blur(8px)' }} data-testid="day-detail-close-top">
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
               </div>
 
-              <div style={{ padding: '10px 16px', background: `linear-gradient(180deg, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 0%, ${colorSettings.mainBackground} 100%)`, borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'center' }}>
-                <button
-                  onClick={() => setDayDetailDate(null)}
-                  style={{ padding: '8px 32px', borderRadius: '8px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#ffffff', fontSize: '12px', fontWeight: 500, cursor: 'pointer', fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}
-                  data-testid="day-detail-close-bottom"
-                >
-                  Close
-                </button>
+              <div style={{ flex: 1, overflowY: 'auto', display: 'flex', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent' }}>
+                <div style={{ width: '70px', flexShrink: 0, borderRight: '1px solid rgba(255,255,255,0.1)' }}>
+                  {timeSlots.map((label, idx) => {
+                    const hour = idx + 6;
+                    const hasTask = !!tasksByHour[hour];
+                    return (
+                      <div key={hour} style={{ height: '52px', display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end', paddingRight: '8px', paddingTop: '2px', borderBottom: '1px solid rgba(255,255,255,0.05)', position: 'relative' }}>
+                        <span style={{ fontSize: '10px', fontWeight: hasTask ? 600 : 400, color: hasTask ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.25)', fontFamily: "ui-monospace, monospace" }}>{label}</span>
+                        {hasTask && <div style={{ position: 'absolute', right: '-3px', top: '8px', width: '5px', height: '5px', borderRadius: '50%', background: '#60a5fa' }} />}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div style={{ flex: 1, minWidth: 0, position: 'relative' }}>
+                  {timeSlots.map((_, idx) => {
+                    const hour = idx + 6;
+                    const tasks = tasksByHour[hour] || [];
+                    return (
+                      <div key={hour} style={{ minHeight: tasks.length > 0 ? `${Math.max(52, tasks.length * 90)}px` : '52px', borderBottom: '1px solid rgba(255,255,255,0.05)', padding: tasks.length > 0 ? '4px 12px' : '0 12px', display: 'flex', flexDirection: 'column', gap: '4px', justifyContent: 'center' }}>
+                        {tasks.map(t => renderDetailTask(t))}
+                      </div>
+                    );
+                  })}
+
+                  {unscheduledTasks.length > 0 && (
+                    <div style={{ borderTop: '1px solid rgba(255,255,255,0.15)', padding: '8px 12px' }}>
+                      <div style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(255,255,255,0.5)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Unscheduled / Other Hours</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        {unscheduledTasks.map(t => renderDetailTask(t))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
