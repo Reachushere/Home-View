@@ -11088,14 +11088,17 @@ export default function Dashboard() {
   
   {
     const todayStartLocal = startOfDayET(new Date());
-    weekDays = weekDays.map(d => {
-      if (startOfDayET(d) < todayStartLocal) {
-        const nd = addDays(d, 7);
-        return new Date(nd.getFullYear(), nd.getMonth(), nd.getDate(), 12, 0, 0);
-      }
-      return d;
-    });
-    if (calendarWeekMode === 'next') {
+    const isViewingCurrentWeek = weekDays.some(d => isSameDayET(d, todayStartLocal));
+    if (isViewingCurrentWeek) {
+      weekDays = weekDays.map(d => {
+        if (startOfDayET(d) < todayStartLocal) {
+          const nd = addDays(d, 7);
+          return new Date(nd.getFullYear(), nd.getMonth(), nd.getDate(), 12, 0, 0);
+        }
+        return d;
+      });
+    }
+    if (calendarWeekMode === 'next' && isViewingCurrentWeek) {
       weekDays = weekDays.map(d => {
         const nd = addDays(d, 7);
         return new Date(nd.getFullYear(), nd.getMonth(), nd.getDate(), 12, 0, 0);
