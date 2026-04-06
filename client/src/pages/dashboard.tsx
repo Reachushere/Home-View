@@ -1382,6 +1382,8 @@ export default function Dashboard() {
   useEffect(() => {
     const checkMorningReview = async () => {
       if (authLevel !== '5747') return;
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('catWashFollow') || params.get('followOnly') || params.get('fullscreen')) return;
       const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
       const hour = eastern.getHours();
       if (hour < 9) return;
@@ -1392,19 +1394,12 @@ export default function Dashboard() {
           if (dismissData.dismissUntil && Date.now() < Number(dismissData.dismissUntil)) return;
         }
       } catch (_) {}
-      const localDismiss = localStorage.getItem('morning_review_dismiss_until');
-      if (localDismiss && Date.now() < Number(localDismiss)) return;
       const todayStr = `${eastern.getFullYear()}-${String(eastern.getMonth()+1).padStart(2,'0')}-${String(eastern.getDate()).padStart(2,'0')}`;
-      const shownToday = localStorage.getItem('morning_review_shown_date');
-      if (shownToday === todayStr) return;
       try {
         const lastShownRes = await fetch('/api/morning-review/last-shown');
         if (lastShownRes.ok) {
           const lastShownData = await lastShownRes.json();
-          if (lastShownData.date === todayStr) {
-            localStorage.setItem('morning_review_shown_date', todayStr);
-            return;
-          }
+          if (lastShownData.date === todayStr) return;
         }
       } catch (_) {}
       try {
@@ -1414,7 +1409,6 @@ export default function Dashboard() {
           if (data.items && data.items.length > 0) {
             setMorningReviewItems(data.items);
             setShowMorningReview(true);
-            localStorage.setItem('morning_review_shown_date', todayStr);
           }
         }
       } catch (e) {
@@ -3560,8 +3554,16 @@ export default function Dashboard() {
   }, [semesterCourseAssignments, courseFolderLinks]);
   const folderLinkDismissedRef = useRef(false);
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('catWashFollow') || params.get('followOnly') || params.get('fullscreen')) return;
     if (folderLinkMissingCourses.length > 0 && desktopIsFull && !folderLinkDismissedRef.current) {
-      const timer = setTimeout(() => setFolderLinkDialogOpen(true), 2000);
+      const dismissedKey = 'folderLinkDismissed';
+      const dismissed = localStorage.getItem(dismissedKey);
+      if (dismissed) {
+        const dismissedTime = parseInt(dismissed, 10);
+        if (Date.now() - dismissedTime < 24 * 60 * 60 * 1000) return;
+      }
+      const timer = setTimeout(() => setFolderLinkDialogOpen(true), 5000);
       return () => clearTimeout(timer);
     }
   }, [folderLinkMissingCourses.length, desktopIsFull]);
@@ -3703,6 +3705,8 @@ export default function Dashboard() {
     (async () => {
       try {
         if (authLevel !== '5747') return;
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('catWashFollow') || params.get('followOnly') || params.get('fullscreen')) return;
         const now = new Date();
         const dow = now.getDay();
         const hour = now.getHours();
@@ -3710,16 +3714,11 @@ export default function Dashboard() {
         const isMonMorning = dow === 1 && hour < 12;
         if (!isSunEvening && !isMonMorning) return;
         const weekKey = `weeklyPlan_${format(startOfDayET(now), 'yyyy-ww')}`;
-        const localDismissed = localStorage.getItem(weekKey);
-        if (localDismissed) return;
         try {
           const res = await fetch('/api/weekly-planning/dismissed');
           if (res.ok) {
             const data = await res.json();
-            if (data.weekKey === weekKey) {
-              localStorage.setItem(weekKey, '1');
-              return;
-            }
+            if (data.weekKey === weekKey) return;
           }
         } catch (_) {}
         setWeeklyPlanningOpen(true);
@@ -6919,6 +6918,8 @@ export default function Dashboard() {
   useEffect(() => {
     if (!allTasksRaw || allTasksRaw.length === 0) return;
     if (authLevel !== '5747') return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('catWashFollow') || params.get('followOnly') || params.get('fullscreen')) return;
     const stored = localStorage.getItem('grey_classify_prompts');
     const promptData: { dates: string[] } = stored ? (() => { try { return JSON.parse(stored); } catch { return { dates: [] }; } })() : { dates: [] };
     if (promptData.dates.length >= 2) return;
@@ -22976,7 +22977,7 @@ export default function Dashboard() {
                   >Done</button>
                 ) : (
                   <button
-                    onClick={() => { folderLinkDismissedRef.current = true; setFolderLinkDialogOpen(false); }}
+                    onClick={() => { folderLinkDismissedRef.current = true; localStorage.setItem('folderLinkDismissed', String(Date.now())); setFolderLinkDialogOpen(false); }}
                     style={{ fontSize: '11px', padding: '6px 20px', borderRadius: '6px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}
                     data-testid="folder-link-dismiss"
                   >Cancel</button>
