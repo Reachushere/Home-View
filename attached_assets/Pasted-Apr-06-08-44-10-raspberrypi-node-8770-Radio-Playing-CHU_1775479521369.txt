@@ -1,0 +1,23 @@
+Apr 06 08:44:10 raspberrypi node[8770]: [Radio] Playing CHUM FM 104.5 on Cat Washroom speaker group
+byhomeyyz@raspberrypi:~/Home-View $ sudo journalctl -u unical --since "10 minutes ago" | grep -E "Cat Lights|FileOrder" | tail -20
+Apr 06 08:43:35 raspberrypi node[8770]: [Cat Lights] Synced new file: Municipal Priorities for 2020 and Beyond_ Part One - StrategyCorp.pdf → week-11-cppa122-reading (saved locally)
+Apr 06 08:43:35 raspberrypi node[8770]: [Cat Lights] Synced new file: Municipal Priorities for 2020 and Beyond_ Part Two - StrategyCorp.pdf → week-11-cppa122-reading (saved locally)
+Apr 06 08:43:35 raspberrypi node[8770]: [Cat Lights] Synced new file: out.pdf → week-11-cppa122-reading (saved locally)
+Apr 06 08:43:36 raspberrypi node[8770]: [Cat Lights] Synced new file: PUBLIC OPINION RESEARCH REPORT.pdf → week-11-cppa122-reading (saved locally)
+Apr 06 08:43:37 raspberrypi node[8770]: [Cat Lights] Synced new file: CFNF400, Module 11 - Learning Objectives.pdf → week-11-cfnf400-module (saved locally)
+Apr 06 08:43:39 raspberrypi node[8770]: [Cat Lights] Synced new file: Units 3,14 - 3,16.pdf → week-11-casl101-module (saved locally)
+Apr 06 08:43:39 raspberrypi node[8770]: [Cat Lights] OneDrive sync complete
+Apr 06 08:43:39 raspberrypi node[8770]: [Cat Lights] Syncing OneDrive for 3 courses, week 12
+Apr 06 08:43:41 raspberrypi node[8770]: [Cat Lights] Synced new file: CPPA122, Module 12 - Introduction.pdf → week-12-cppa122-module (saved locally)
+Apr 06 08:43:43 raspberrypi node[8770]: [Cat Lights] Synced new file: CFNF400, Module 12 - Learning Objectives.pdf → week-12-cfnf400-module (saved locally)
+Apr 06 08:43:43 raspberrypi node[8770]: [Cat Lights] OneDrive sync complete
+Apr 06 08:43:44 raspberrypi node[8770]: [FileOrder] 2 files, modulesBlocked=true, 2 eligible
+Apr 06 08:43:44 raspberrypi node[8770]: [FileOrder] Found unlistened files in week 12: CPPA122, Module 12 - Introduction.pdf (chunk=0) → CFNF400, Module 12 - Learning Objectives.pdf (chunk=0)
+Apr 06 08:43:44 raspberrypi node[8770]: [Cat Lights] Found next file: your CPPA Module for week 12 — CPPA122, Module 12 - Introduction.pdf (id=231)
+Apr 06 08:43:44 raspberrypi node[8770]: [Cat Lights] Sending TTS prompt: "Would you like to play your CPPA Module for week 12?"
+Apr 06 08:43:44 raspberrypi node[8770]: [Cat Lights] Stopped any existing media before TTS prompt
+Apr 06 08:43:44 raspberrypi node[8770]: [Cat Lights] TTS prompt played via HA Cloud TTS
+Apr 06 08:43:46 raspberrypi node[8770]: [Cat Lights] Waiting up to 23s for confirmation (webhook-primary, backup poll every 10s)...
+Apr 06 08:44:10 raspberrypi node[8770]: [Cat Lights] No confirmation received — playing CHUM FM on Echo speakers
+Apr 06 08:44:10 raspberrypi node[8770]: [Cat Lights] Late confirmation window open for 10 minutes (file: CPPA122, Module 12 - Introduction.pdf)
+byhomeyyz@raspberrypi:~/Home-View $

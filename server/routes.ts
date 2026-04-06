@@ -13038,12 +13038,25 @@ document.body.removeChild(a);
             haServiceCallSafe('input_boolean/turn_off', { entity_id: MODULE_READING_CONFIRMED }, 'Cat Lights Bool'),
             haServiceCallSafe('input_boolean/turn_on', { entity_id: MODULE_READING_PENDING }, 'Cat Lights Bool'),
           ]);
-          await haServiceCall('tts/speak', {
-            entity_id: HA_CLOUD_TTS_ENTITY,
-            media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
-            message: "One moment, checking your readings."
-          }, 'Cat Lights Quick TTS');
-          console.log(`[Cat Lights] Quick acknowledgment played via HA Cloud TTS`);
+          let ackPlayed = false;
+          try {
+            const ackPath = await generateAndSaveTTSAudio("One moment, checking your readings.", `cat-lights-ack-${Date.now()}`);
+            const ackResult = await playOnNestSpeaker(`${DEPLOYED_APP_URL}${ackPath}`);
+            if (ackResult.success) {
+              ackPlayed = true;
+              console.log(`[Cat Lights] Quick acknowledgment played on Nest speaker`);
+            }
+          } catch (ackErr: any) {
+            console.warn(`[Cat Lights] Nest ack failed: ${ackErr.message}`);
+          }
+          if (!ackPlayed) {
+            await haServiceCall('tts/speak', {
+              entity_id: HA_CLOUD_TTS_ENTITY,
+              media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
+              message: "One moment, checking your readings."
+            }, 'Cat Lights Quick TTS');
+            console.log(`[Cat Lights] Quick acknowledgment played via HA Cloud TTS (fallback)`);
+          }
         } catch (e: any) {
           console.warn(`[Cat Lights] Quick acknowledgment failed: ${e.message}`);
         }
@@ -13117,21 +13130,26 @@ document.body.removeChild(a);
 
         let ttsPlayed = false;
         try {
-          await haServiceCall('tts/speak', {
-            entity_id: HA_CLOUD_TTS_ENTITY,
-            media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
-            message: ttsMessage
-          }, 'Cat Lights Cloud TTS');
-          ttsPlayed = true;
-          console.log(`[Cat Lights] TTS prompt played via HA Cloud TTS`);
-        } catch (e: any) {
-          console.warn(`[Cat Lights] HA Cloud TTS failed: ${e.message} — trying Edge TTS fallback`);
-          try {
-            const audioPath = await generateAndSaveTTSAudio(ttsMessage, `cat-lights-prompt-${Date.now()}`);
-            const appUrl2 = DEPLOYED_APP_URL;
-            await haServiceCall('media_player/play_media', { entity_id: CAT_WR_HA_VOICE_ENTITY, media_content_id: `${appUrl2}${audioPath}`, media_content_type: "music" }, 'Cat Lights TTS');
+          const audioPath = await generateAndSaveTTSAudio(ttsMessage, `cat-lights-prompt-${Date.now()}`);
+          const nestResult = await playOnNestSpeaker(`${DEPLOYED_APP_URL}${audioPath}`);
+          if (nestResult.success) {
             ttsPlayed = true;
-            console.log(`[Cat Lights] TTS prompt played via Edge TTS on HA Voice`);
+            console.log(`[Cat Lights] TTS prompt played on Nest speaker (actuallyPlaying=${nestResult.actuallyPlaying})`);
+          } else {
+            console.warn(`[Cat Lights] Nest speaker prompt failed — falling back to HA Cloud TTS`);
+          }
+        } catch (e: any) {
+          console.warn(`[Cat Lights] Nest speaker prompt failed: ${e.message} — falling back to HA Cloud TTS`);
+        }
+        if (!ttsPlayed) {
+          try {
+            await haServiceCall('tts/speak', {
+              entity_id: HA_CLOUD_TTS_ENTITY,
+              media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
+              message: ttsMessage
+            }, 'Cat Lights Cloud TTS');
+            ttsPlayed = true;
+            console.log(`[Cat Lights] TTS prompt played via HA Cloud TTS (fallback)`);
           } catch (e2: any) {
             console.error(`[Cat Lights] All TTS methods failed: ${e2.message}`);
           }
