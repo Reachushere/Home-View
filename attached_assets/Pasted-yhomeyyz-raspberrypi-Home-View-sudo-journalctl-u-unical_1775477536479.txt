@@ -1,0 +1,43 @@
+yhomeyyz@raspberrypi:~/Home-View $ sudo journalctl -u unical --since "2 minutes ago" | grep -E "Cat Lights|prompt|confirm|CHUM|file"
+Apr 06 08:10:35 raspberrypi node[7671]: [AudioPrep] ===== Preparing file 135: K34-7-2019-eng - Supplementary.pdf =====
+Apr 06 08:11:01 raspberrypi node[7671]: [TRACE 8:11:01 AM] [CatLights] WEBHOOK RECEIVED | state={"active":false,"sessionId":1,"file":null,"chunk":null,"lightsPrompt":false,"trigger":null,"msSinceStop":1410679,"msSinceManualStop":null,"msSinceStart":null} | {"body":{"state":"on"}}
+Apr 06 08:11:01 raspberrypi node[7671]: [Cat Lights] ====== WEBHOOK TRIGGERED ======
+Apr 06 08:11:01 raspberrypi node[7671]: [Cat Lights] Timestamp: 4/6/2026, 8:11:01 AM
+Apr 06 08:11:01 raspberrypi node[7671]: [Cat Lights] Request body: {"state":"on"}
+Apr 06 08:11:01 raspberrypi node[7671]: [Cat Lights] Body parsing: state="on", action="", rawToState=undefined, trigger="none"
+Apr 06 08:11:01 raspberrypi node[7671]: [Cat Lights] Using body state directly: on
+Apr 06 08:11:01 raspberrypi node[7671]: [TRACE 8:11:01 AM] [CatLights] STATE RESOLVED: on | state={"active":false,"sessionId":1,"file":null,"chunk":null,"lightsPrompt":false,"trigger":null,"msSinceStop":1410680,"msSinceManualStop":null,"msSinceStart":null} | {"bodyState":"on","bodyAction":"","method":"body"}
+Apr 06 08:11:01 raspberrypi node[7671]: [Cat Lights] Light state: on (body state: on)
+Apr 06 08:11:01 raspberrypi node[7671]: [Cat Lights] Architecture: server-side TTS → Google Nest speaker (media_player.play_media)
+Apr 06 08:11:02 raspberrypi node[7671]: [FileOrder] 1 files, modulesBlocked=true, 1 eligible
+Apr 06 08:11:02 raspberrypi node[7671]: [FileOrder] Found unlistened files in week 12: CFNF400, Module 12 - Learning Objectives.pdf (chunk=0)
+Apr 06 08:11:02 raspberrypi node[7671]: [Cat Lights] Using cached file — syncing OneDrive in background
+Apr 06 08:11:02 raspberrypi node[7671]: [Cat Lights] Syncing OneDrive for 3 courses, week 12
+Apr 06 08:11:02 raspberrypi node[7671]: [Cat Lights] Early device wake: tablet wake + brightness sent (TV deferred until confirmation)
+Apr 06 08:11:02 raspberrypi node[7671]: [Cat Lights] Quick acknowledgment played via HA Cloud TTS
+Apr 06 08:11:02 raspberrypi node[7671]: [Cat Lights] Found next file: your CFNF Module for week 12 — CFNF400, Module 12 - Learning Objectives.pdf (id=146)
+Apr 06 08:11:02 raspberrypi node[7671]: [Cat Lights] Sending TTS prompt: "Would you like to play your CFNF Module for week 12?"
+Apr 06 08:11:02 raspberrypi node[7671]: [Cat Lights] Stopped any existing media before TTS prompt
+Apr 06 08:11:03 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CPPA122: The resource could not be found.
+Apr 06 08:11:03 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CFNF400: The resource could not be found.
+Apr 06 08:11:04 raspberrypi node[7671]: [Cat Lights] TTS prompt played via HA Cloud TTS
+Apr 06 08:11:04 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CASL101: The resource could not be found.
+Apr 06 08:11:04 raspberrypi node[7671]: [Cat Lights] OneDrive sync complete
+Apr 06 08:11:06 raspberrypi node[7671]: [Cat Lights] Waiting up to 23s for confirmation (webhook-primary, backup poll every 10s)...
+Apr 06 08:11:24 raspberrypi node[7671]: [TRACE 8:11:24 AM] [CatLights] WEBHOOK RECEIVED | state={"active":false,"sessionId":1,"file":null,"chunk":null,"lightsPrompt":true,"trigger":null,"msSinceStop":1433993,"msSinceManualStop":null,"msSinceStart":null} | {"body":{"state":"off"}}
+Apr 06 08:11:24 raspberrypi node[7671]: [Cat Lights] ====== WEBHOOK TRIGGERED ======
+Apr 06 08:11:24 raspberrypi node[7671]: [Cat Lights] Timestamp: 4/6/2026, 8:11:24 AM
+Apr 06 08:11:24 raspberrypi node[7671]: [Cat Lights] Request body: {"state":"off"}
+Apr 06 08:11:24 raspberrypi node[7671]: [Cat Lights] Body parsing: state="off", action="", rawToState=undefined, trigger="none"
+Apr 06 08:11:24 raspberrypi node[7671]: [Cat Lights] Using body state directly: off
+Apr 06 08:11:24 raspberrypi node[7671]: [TRACE 8:11:24 AM] [CatLights] STATE RESOLVED: off | state={"active":false,"sessionId":1,"file":null,"chunk":null,"lightsPrompt":true,"trigger":null,"msSinceStop":1433994,"msSinceManualStop":null,"msSinceStart":null} | {"bodyState":"off","bodyAction":"","method":"body"}
+Apr 06 08:11:24 raspberrypi node[7671]: [Cat Lights] Light state: off (body state: off)
+Apr 06 08:11:24 raspberrypi node[7671]: [Cat Lights] Architecture: server-side TTS → Google Nest speaker (media_player.play_media)
+Apr 06 08:11:24 raspberrypi node[7671]: [TRACE 8:11:24 AM] [CatLights] LIGHT OFF — stopping all playback | state={"active":false,"sessionId":1,"file":null,"chunk":null,"lightsPrompt":true,"trigger":null,"msSinceStop":1433994,"msSinceManualStop":null,"msSinceStart":null}
+Apr 06 08:11:24 raspberrypi node[7671]: [Cat Lights] Light off — stopping all playback and saving progress
+Apr 06 08:11:29 raspberrypi node[7671]: [Cat Lights] No confirmation received — playing CHUM FM on Echo speakers
+Apr 06 08:11:29 raspberrypi node[7671]: [Cat Lights] Late confirmation window open for 10 minutes (file: CFNF400, Module 12 - Learning Objectives.pdf)
+Apr 06 08:11:29 raspberrypi node[7671]: [Radio] Playing CHUM FM 104.5 on Cat Washroom speaker group
+Apr 06 08:11:35 raspberrypi node[7671]: [Cat Lights] Fire Stick + Samsung TV turn-off sent
+Apr 06 08:11:35 raspberrypi node[7671]: [Cat Lights] Stopped: echoSpeakers, tv
+byhomeyyz@raspberrypi:~/Home-View $
