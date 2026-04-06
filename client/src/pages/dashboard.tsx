@@ -15052,14 +15052,14 @@ export default function Dashboard() {
                       {isDueZero ? (
                         <>
                           <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}>DUE TODAY:</span>
-                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: next.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{next.title}</span>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: next.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{(next.title || '').replace(/\[.*?\]\s*/g, '').trim() || next.title}</span>
                         </>
                       ) : (
                         <>
                           <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span>
                           <span data-countdown-badge style={{ backgroundColor: diffDays >= 3 ? 'rgb(0, 180, 0)' : diffDays === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{diffDays}</span>
                           <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays === 1 ? 'day,' : 'days,'}</span>
-                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have </span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: next.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{next.title}.</span>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have </span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: next.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{(next.title || '').replace(/\[.*?\]\s*/g, '').trim() || next.title}.</span>
                         </>
                       )}
                     </div>
@@ -15100,14 +15100,14 @@ export default function Dashboard() {
                       {isDueZero2 ? (
                         <>
                           <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}>DUE TODAY:</span>
-                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: next.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{next.title}</span>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: next.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{(next.title || '').replace(/\[.*?\]\s*/g, '').trim() || next.title}</span>
                         </>
                       ) : (
                         <>
                           <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span>
                           <span data-countdown-badge style={{ backgroundColor: diffDays >= 3 ? 'rgb(0, 180, 0)' : diffDays === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{diffDays}</span>
                           <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{diffDays === 1 ? 'day,' : 'days,'}</span>
-                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have </span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: next.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{next.title}.</span>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have </span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: next.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{(next.title || '').replace(/\[.*?\]\s*/g, '').trim() || next.title}.</span>
                         </>
                       )}
                     </div>
@@ -15125,14 +15125,14 @@ export default function Dashboard() {
                     {ft.flagDiffDays === 0 ? (
                       <>
                         <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}>DUE TODAY:</span>
-                        <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: ft.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{ft.title}</span>
+                        <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: ft.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{(ft.title || '').replace(/\[.*?\]\s*/g, '').trim() || ft.title}</span>
                       </>
                     ) : (
                       <>
                         <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span>
                         <span data-countdown-badge style={{ backgroundColor: ft.flagDiffDays >= 3 ? 'rgb(0, 180, 0)' : ft.flagDiffDays === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{ft.flagDiffDays}</span>
                         <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{ft.flagDiffDays === 1 ? 'day,' : 'days,'}</span>
-                        <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have </span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: ft.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{ft.title}.</span>
+                        <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have </span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: ft.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{(ft.title || '').replace(/\[.*?\]\s*/g, '').trim() || ft.title}.</span>
                       </>
                     )}
                   </div>
@@ -16161,16 +16161,26 @@ export default function Dashboard() {
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
             }}
             className="pill-button-hover"
-            onClick={(e) => {
+            onClick={async (e) => {
               triggerButtonGlow('refresh');
               const icon = (e.currentTarget as HTMLElement).querySelector('svg');
               if (icon) { icon.style.transition = 'transform 0.6s ease'; icon.style.transform = 'rotate(360deg)'; setTimeout(() => { icon.style.transition = 'none'; icon.style.transform = 'rotate(0deg)'; }, 650); }
-              queryClient.invalidateQueries();
-              queryClient.refetchQueries();
-              refreshFileCounts();
-              fetch('/api/google/calendar/events').catch(() => {});
-              fetch('/api/tasks').catch(() => {});
-              fetch('/api/announcements').catch(() => {});
+              toast({ title: "Refreshing...", description: "Syncing all data" });
+              try {
+                await Promise.all([
+                  queryClient.invalidateQueries(),
+                  queryClient.refetchQueries(),
+                  fetch('/api/google/calendar/events').catch(() => {}),
+                  fetch('/api/tasks').catch(() => {}),
+                  fetch('/api/announcements').catch(() => {}),
+                  fetch('/api/weather').then(r => r.json()).then(data => { if (data) setWeatherData(data); }).catch(() => {}),
+                  fetch('/api/spotify/now-playing').catch(() => {}),
+                ]);
+                refreshFileCounts();
+                toast({ title: "Refreshed", description: "All data synced successfully" });
+              } catch {
+                toast({ title: "Refresh complete", description: "Some data may not have updated" });
+              }
             }}
             data-testid="button-refresh-data"
             title="Refresh"
@@ -18276,16 +18286,16 @@ export default function Dashboard() {
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
                   <span style={{ fontSize: '14px' }}>{icon}</span>
-                  <span style={{ fontSize: '13px', fontWeight: 600, color: '#ffffff', textDecoration: task.isCompleted ? 'line-through' : 'none', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid={`day-detail-title-${task.id}`}>{task.title}</span>
+                  <span style={{ fontSize: '13px', fontWeight: 600, color: '#ffffff', textDecoration: task.isCompleted ? 'line-through' : 'none', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid={`day-detail-title-${task.id}`}>{(task.title || '').replace(/\[.*?\]\s*/g, '').trim() || task.title}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginBottom: '4px' }}>
                   {task.courseName && (
                     <span style={{ fontSize: '10px', fontWeight: 600, color: courseColor, background: `${courseColor}22`, padding: '1px 6px', borderRadius: '4px', border: `1px solid ${courseColor}44` }} data-testid={`day-detail-course-${task.id}`}>{task.courseName.split(' - ')[0]}{courseFullName ? ` - ${courseFullName}` : ''}</span>
                   )}
-                  <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', textTransform: 'capitalize' }}>{task.type}</span>
+                  <span style={{ fontSize: '10px', color: '#ffffff', textTransform: 'capitalize' }}>{task.type}</span>
                   <span style={{ fontSize: '9px', fontWeight: 600, color: pColor, background: `${pColor}22`, padding: '1px 5px', borderRadius: '3px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{task.priority}</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', fontSize: '10px', color: 'rgba(255,255,255,0.5)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', fontSize: '10px', color: '#ffffff' }}>
                   {dueTime && <span>⏰ Due {dueTime}</span>}
                   {task.eventStartTime && task.eventEndTime && <span>🕐 {task.eventStartTime} – {task.eventEndTime}</span>}
                   {task.startDate && <span>📅 Start: {format(new Date(task.startDate), 'MMM d')}</span>}
@@ -18301,17 +18311,17 @@ export default function Dashboard() {
                   </div>
                 )}
                 {(task as any).notes && (
-                  <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginTop: '4px', lineHeight: 1.4, fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }} data-testid={`day-detail-notes-${task.id}`}>📝 {(task as any).notes}</div>
+                  <div style={{ fontSize: '10px', color: '#ffffff', marginTop: '4px', lineHeight: 1.4, fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }} data-testid={`day-detail-notes-${task.id}`}>📝 {(task as any).notes}</div>
                 )}
                 {(task as any).description && !/^\[/.test((task as any).description) && (
-                  <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.35)', marginTop: '3px', lineHeight: 1.4, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }} data-testid={`day-detail-desc-${task.id}`}>{(task as any).description.replace(/\[.*?\]/g, '').trim()}</div>
+                  <div style={{ fontSize: '10px', color: '#ffffff', marginTop: '3px', lineHeight: 1.4, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }} data-testid={`day-detail-desc-${task.id}`}>{(task as any).description.replace(/\[.*?\]/g, '').trim()}</div>
                 )}
                 {task.attachments && task.attachments.length > 0 && (
-                  <div style={{ marginTop: '4px', fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>📎 {task.attachments.length} attachment{task.attachments.length !== 1 ? 's' : ''}</div>
+                  <div style={{ marginTop: '4px', fontSize: '10px', color: '#ffffff' }}>📎 {task.attachments.length} attachment{task.attachments.length !== 1 ? 's' : ''}</div>
                 )}
               </div>
-              <button onClick={() => { setDayDetailDate(null); setTimeout(() => setEditingTask(task), 100); }} style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, marginTop: '2px' }} data-testid={`day-detail-edit-${task.id}`} title="Edit task">
-                <Pencil className="h-3.5 w-3.5 text-white/60 hover:text-white" />
+              <button onClick={() => { setEditingTask(task as any); }} style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, marginTop: '2px' }} data-testid={`day-detail-edit-${task.id}`} title="Edit task">
+                <Pencil className="h-3.5 w-3.5 text-white" />
               </button>
             </div>
           );
@@ -18333,21 +18343,18 @@ export default function Dashboard() {
                   </h2>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>{dayTasks.length} task{dayTasks.length !== 1 ? 's' : ''}</span>
-                  <button onClick={() => setDayDetailDate(null)} style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#ffffff', flexShrink: 0, backdropFilter: 'blur(8px)' }} data-testid="day-detail-close-top">
-                    <X className="h-3.5 w-3.5" />
-                  </button>
+                  <span style={{ fontSize: '11px', color: '#ffffff' }}>{dayTasks.length} task{dayTasks.length !== 1 ? 's' : ''}</span>
                 </div>
               </div>
 
               <div style={{ flex: 1, overflowY: 'auto', display: 'flex', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent' }}>
-                <div style={{ width: '70px', flexShrink: 0, borderRight: '1px solid rgba(255,255,255,0.1)' }}>
+                <div style={{ width: '70px', flexShrink: 0, borderRight: '1px solid rgba(255,255,255,0.15)' }}>
                   {timeSlots.map((label, idx) => {
                     const hour = idx + 6;
                     const hasTask = !!tasksByHour[hour];
                     return (
-                      <div key={hour} style={{ height: '52px', display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end', paddingRight: '8px', paddingTop: '2px', borderBottom: '1px solid rgba(255,255,255,0.05)', position: 'relative' }}>
-                        <span style={{ fontSize: '10px', fontWeight: hasTask ? 600 : 400, color: hasTask ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.25)', fontFamily: "ui-monospace, monospace" }}>{label}</span>
+                      <div key={hour} style={{ height: '52px', display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end', paddingRight: '8px', paddingTop: '2px', borderBottom: '1px solid rgba(255,255,255,0.15)', position: 'relative' }}>
+                        <span style={{ fontSize: '10px', fontWeight: hasTask ? 600 : 400, color: '#ffffff', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{label}</span>
                         {hasTask && <div style={{ position: 'absolute', right: '-3px', top: '8px', width: '5px', height: '5px', borderRadius: '50%', background: '#60a5fa' }} />}
                       </div>
                     );
@@ -18359,7 +18366,7 @@ export default function Dashboard() {
                     const hour = idx + 6;
                     const tasks = tasksByHour[hour] || [];
                     return (
-                      <div key={hour} style={{ minHeight: tasks.length > 0 ? `${Math.max(52, tasks.length * 90)}px` : '52px', borderBottom: '1px solid rgba(255,255,255,0.05)', padding: tasks.length > 0 ? '4px 12px' : '0 12px', display: 'flex', flexDirection: 'column', gap: '4px', justifyContent: 'center' }}>
+                      <div key={hour} style={{ minHeight: tasks.length > 0 ? `${Math.max(52, tasks.length * 90)}px` : '52px', borderBottom: '1px solid rgba(255,255,255,0.15)', padding: tasks.length > 0 ? '4px 12px' : '0 12px', display: 'flex', flexDirection: 'column', gap: '4px', justifyContent: 'center' }}>
                         {tasks.map(t => renderDetailTask(t))}
                       </div>
                     );
@@ -18367,13 +18374,34 @@ export default function Dashboard() {
 
                   {unscheduledTasks.length > 0 && (
                     <div style={{ borderTop: '1px solid rgba(255,255,255,0.15)', padding: '8px 12px' }}>
-                      <div style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(255,255,255,0.5)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Unscheduled / Other Hours</div>
+                      <div style={{ fontSize: '10px', fontWeight: 600, color: '#ffffff', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Unscheduled / Other Hours</div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                         {unscheduledTasks.map(t => renderDetailTask(t))}
                       </div>
                     </div>
                   )}
                 </div>
+              </div>
+              <div style={{ flexShrink: 0, padding: '8px 16px', borderTop: '1px solid rgba(255,255,255,0.15)', display: 'flex', justifyContent: 'center' }}>
+                <button
+                  onClick={() => setDayDetailDate(null)}
+                  style={{
+                    padding: '6px 32px',
+                    borderRadius: '6px',
+                    background: 'rgba(255,255,255,0.12)',
+                    border: '1px solid rgba(255,255,255,0.3)',
+                    color: '#ffffff',
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    cursor: 'pointer',
+                    fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.2)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.12)'; }}
+                  data-testid="day-detail-close-bottom"
+                >
+                  Close
+                </button>
               </div>
             </div>
           </div>
