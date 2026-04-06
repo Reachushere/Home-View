@@ -1,0 +1,102 @@
+byhomeyyz@raspberrypi:~/Home-View $ cd ~/Home-View && node -e "
+const fs=require('fs');
+let c=fs.readFileSync('server/onedrive.ts','utf-8');
+
+// Add imports after the first line
+c=c.replace(
+  \"import { Client } from '@microsoft/microsoft-graph-client';\",
+  \"import { Client } from '@microsoft/microsoft-graph-client';\\nimport * as fs2 from 'fs';\\nimport * as path from 'path';\"
+);
+
+// Add new code block before 'let connectionSettings'
+const newCode=\`
+const MS_CLIENT_ID='14d82eec-204b-4c2f-b7e8-296a70dab67e';
+const OD_SCOPES='Files.ReadWrite.All User.Read Notes.ReadWrite.All Mail.ReadWrite Mail.Send Calendars.ReadWrite offline_access';
+let cachedAT:string|null=null;
+let cachedExp=0;
+
+function tokenPath(){return path.join(process.cwd(),'.onedrive_tokens.json');}
+function loadTokens(){try{if(fs2.existsSync(tokenPath()))return JSON.parse(fs2.readFileSync(tokenPath(),'utf-8'));}catch{}return null;}
+function saveTokens(t:any){try{fs2.writeFileSync(tokenPath(),JSON.stringify(t,null,2));}catch(e){console.error('[OneDrive] save err',e);}}
+
+async function doRefresh(rt:string){
+  const p=new URLSearchParams({client_id:MS_CLIENT_ID,grant_type:'refresh_token',refresh_token:rt,scope:OD_SCOPES});
+  const r=await fetch('https://login.microsoftonline.com/common/oauth2/v2.0/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:p.toString()});
+  if(!r.ok)throw new Error('Refresh failed: '+await r.text());
+  return r.json();
+}
+
+export async function startDeviceCodeFlow(){
+  const p=new URLSearchParams({client_id:MS_CLIENT_ID,scope:OD_SCOPES});
+  const r=await fetch('https://login.microsoftonline.com/common/oauth2/v2.0/devicecode',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:p.toString()});
+  if(!r.ok)throw new Error('Device code failed: '+await r.text());
+  return r.json();
+}
+
+export async function pollDeviceCodeAuth(dc:string,interval=5,expiresIn=900){
+"onsole.log('DONE: onedrive.ts patched successfully');('OneDrive not connected');onSettings.settings.oauth.credentials.a
+-bash: !r.ok: event not found
+-bash: !r.ok: event not found
+export function isOneDriveConnected(){const t=loadTokens();if(t&&t.refresh_token)return true;return cd ~/Home-View && node -e "
+const fs=require('fs');
+let c=fs.readFileSync('server/onedrive.ts','utf-8');
+
+// Add imports after the first line
+c=c.replace(
+  \"import { Client } from '@microsoft/microsoft-graph-client';\",
+  \"import { Client } from '@microsoft/microsoft-graph-client';\\nimport * as fs2 from 'fs';\\nimport * as path from 'path';\"
+);
+
+// Add new code block before 'let connectionSettings'
+const newCode=\`
+const MS_CLIENT_ID='14d82eec-204b-4c2f-b7e8-296a70dab67e';
+const OD_SCOPES='Files.ReadWrite.All User.Read Notes.ReadWrite.All Mail.ReadWrite Mail.Send Calendars.ReadWrite offline_access';
+let cachedAT:string|null=null;
+let cachedExp=0;
+
+function tokenPath(){return path.join(process.cwd(),'.onedrive_tokens.json');}
+function loadTokens(){try{if(fs2.existsSync(tokenPath()))return JSON.parse(fs2.readFileSync(tokenPath(),'utf-8'));}catch{}return null(process.env.REPLIT_CONNECTORS_HOSTNAME&&(process.env.REPL_IDENTITY||process.env.WEB_REPL_RENEWAL));}
+[eval]:49
+export function isOneDriveConnected(){const t=loadTokens();if(t&&t.refresh_token)return true;return cd ~/Home-View && node -e
+                                                                                                                        
+
+SyntaxError: Unexpected end of input
+    at makeContextifyScript (node:internal/vm:185:14)
+    at node:internal/process/execution:107:22
+    at [eval]-wrapper:6:24
+    at runScript (node:internal/process/execution:101:62)
+    at evalScript (node:internal/process/execution:133:3)
+    at node:internal/main/eval_string:51:3
+
+Node.js v20.20.2
+-bash: syntax error near unexpected token `('
+-bash: `: command not found
+-bash: syntax error near unexpected token `('
+-bash: //: Is a directory
+-bash: syntax error near unexpected token `('
+-bash: syntax error near unexpected token `{'
+-bash: syntax error near unexpected token `('
+-bash: syntax error near unexpected token `('
+-bash: syntax error near unexpected token `('
+-bash: syntax error near unexpected token `{'
+-bash: try{: command not found
+-bash: syntax error near unexpected token `('
+-bash: syntax error near unexpected token `('
+-bash: syntax error near unexpected token `{refresh_token:r.refresh_token'
+-bash: return: r.access_token: numeric argument required
+-bash: return: can only `return' from a function or sourced script
+-bash: syntax error near unexpected token `e'
+-bash: syntax error near unexpected token `}'
+-bash: const: command not found
+-bash: const: command not found
+-bash: !xrt: event not found
+-bash: syntax error near unexpected token `('
+-bash: syntax error near unexpected token `:null'
+-bash: !connectionSettings: event not found
+-bash: return: accessToken: numeric argument required
+-bash: return: can only `return' from a function or sourced script
+-bash: }`: command not found
+-bash: syntax error near unexpected token `('
+-bash: syntax error near unexpected token `}'
+-bash: syntax error near unexpected token `'server/onedrive.ts',c'
+-bash: syntax error near unexpected token `'DONE: onedrive.ts patched successfully''
