@@ -30951,7 +30951,7 @@ export default function Dashboard() {
                               const timeLeftStr = daysLeft > 0 ? `${daysLeft}d, ${hrsLeft}h` : `${hrsLeft}h`;
                               return (
                                 <div style={{ width: '100%', padding: '0 3px', marginTop: '1px', textAlign: 'center' }} data-testid={`${item.type}-time-remaining-${pd.courseCode.toLowerCase()}`}>
-                                  <span style={{ fontSize: '7px', fontWeight: 600, color: barColor, fontFamily: "system-ui, sans-serif" }}>{timeLeftStr}</span>
+                                  <span style={{ fontSize: '7px', fontWeight: 600, color: '#ffffff', fontFamily: "system-ui, sans-serif" }}>{timeLeftStr}</span>
                                 </div>
                               );
                             })()}
