@@ -2998,7 +2998,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       }
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 8000);
-      const response = await fetch(`http://localhost:${port}/api/news`, { signal: controller.signal });
+      const response = await fetch(`http://localhost:5000/api/news`, { signal: controller.signal });
       clearTimeout(timeout);
       if (response.ok) {
         const data = await response.json();
@@ -9960,7 +9960,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       const result = await db.execute(sql`
         DELETE FROM tasks
         WHERE id NOT IN (
-          SELECT MAX(id) FROM tasks GROUP BY title, due_date, course_name, COALESCE(task_type, 'homework')
+          SELECT MAX(id) FROM tasks GROUP BY title, due_date, course_name
         )
       `);
       const deleted = (result as any).rowCount || 0;
