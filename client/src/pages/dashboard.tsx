@@ -12477,12 +12477,13 @@ export default function Dashboard() {
           }}
         >
           <div onClick={() => setTickerDialogOpen(true)} style={{
-              position: isMobileLandscape ? 'relative' : 'absolute',
+              position: isMobileLandscape ? 'relative' : 'fixed',
               top: isMobileLandscape ? undefined : 0,
               left: isMobileLandscape ? undefined : 0,
               right: isMobileLandscape ? undefined : 0,
               width: isMobileLandscape ? '48px' : '100%',
-              height: isMobileLandscape ? 'auto' : '34px',
+              height: isMobileLandscape ? 'auto' : `calc(34px + env(safe-area-inset-top, 0px))`,
+              paddingTop: isMobileLandscape ? undefined : 'env(safe-area-inset-top, 0px)',
               overflow: 'hidden',
               background: 'linear-gradient(90deg, #000000 0%, #14141e 50%, #000000 100%)',
               borderBottom: isMobileLandscape ? 'none' : '1px solid rgba(255,255,255,0.15)',
@@ -16576,6 +16577,23 @@ export default function Dashboard() {
           data-testid="button-share-main"
         />
       )}
+      {desktopIsFull && (
+        <Download
+          className="text-white/80 cursor-pointer hover:text-white"
+          strokeWidth={2.5}
+          style={{ height: '18px', width: '18px', position: 'fixed', bottom: '43px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7 - 2 + 3 + 2 + 8 + 2 - 28 + 5 + 3 + 1 + 24}px`, zIndex: 70 }}
+          onClick={() => {
+            const a = document.createElement('a');
+            a.href = '/api/export-backup';
+            a.download = '';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          }}
+          data-testid="button-download-backup"
+          title="Download full backup"
+        />
+      )}
 
       {/* Timer bar - controls left, bottom-aligned with timer, label above */}
       <div style={{
@@ -18421,51 +18439,17 @@ export default function Dashboard() {
           const courseFullName = effectiveCourseName?.includes(' - ') ? effectiveCourseName.split(' - ').slice(1).join(' - ') : '';
           const daysUntil = task.dueDate ? differenceInCalendarDays(startOfDayET(new Date(task.dueDate)), startOfDayET(new Date())) : 0;
           return (
-            <div key={task.id} draggable onDragStart={(e) => { e.dataTransfer.setData('text/plain', String(task.id)); e.dataTransfer.effectAllowed = 'move'; (e.currentTarget as HTMLElement).style.opacity = '0.5'; }} onDragEnd={(e) => { (e.currentTarget as HTMLElement).style.opacity = task.isCompleted ? '0.45' : '1'; }} style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', padding: '6px 10px', borderRadius: '8px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.18)', borderLeft: `3px solid ${courseColor}`, opacity: task.isCompleted ? 0.45 : 1, transition: 'opacity 0.2s ease, transform 0.15s ease', flex: '1 1 auto', minWidth: '200px', maxWidth: '100%', cursor: 'grab' }} data-testid={`day-detail-task-${task.id}`}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, alignSelf: 'stretch' }}>
-                <GripVertical style={{ width: '14px', height: '14px', color: 'rgba(255,255,255,0.35)', cursor: 'grab' } as any} />
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, alignSelf: 'stretch' }}>
-                <input type="checkbox" checked={!!task.isCompleted} onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })} style={{ width: '16px', height: '16px', accentColor: courseColor, cursor: 'pointer' }} data-testid={`day-detail-check-${task.id}`} />
-              </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
-                  <TaskTypeIcon style={{ width: '14px', height: '14px', color: '#ffffff', flexShrink: 0 } as any} />
-                  <span style={{ fontSize: '13px', fontWeight: 600, color: '#ffffff', textDecoration: task.isCompleted ? 'line-through' : 'none', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid={`day-detail-title-${task.id}`}>{(() => { let t = (task.title || '').replace(/^\[.*?\]\s*/g, '').trim(); const cn = effectiveCourseName; if (cn) { const full = cn.replace(/[\[\]]/g, '').trim(); const cc = cn.split(' - ')[0]?.trim() || ''; const ccAlpha = cc.replace(/[0-9]/g, '').trim(); const longName = cn.split(' - ').slice(1).join(' - ').trim(); const prefixes = [full, cc, ccAlpha].filter(Boolean).sort((a, b) => b.length - a.length); for (const pfx of prefixes) { if (pfx && t.toUpperCase().startsWith(pfx.toUpperCase())) { let rest = t.slice(pfx.length).replace(/^\s*[-:]\s*/, '').trim(); if (longName && rest.toUpperCase().startsWith(longName.toUpperCase())) { rest = rest.slice(longName.length).replace(/^\s*[-:]\s*/, '').trim(); } if (rest) { t = rest; break; } } } } return t || task.title; })()}</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginBottom: '4px' }}>
-                  {effectiveCourseName && (
-                    <span style={{ fontSize: '10px', fontWeight: 600, color: '#ffffff', background: courseColor, padding: '1px 6px', borderRadius: '4px', lineHeight: '16px' }} data-testid={`day-detail-course-${task.id}`}>{effectiveCourseName.split(' - ')[0]}{courseFullName ? ` - ${courseFullName}` : ''}</span>
-                  )}
-                  <span style={{ fontSize: '9px', fontWeight: 600, color: pColor, background: `${pColor}22`, padding: '1px 5px', borderRadius: '3px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{task.priority}</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', fontSize: '10px', color: '#ffffff' }}>
-                  {dueTime && <span>⏰ Due {dueTime}</span>}
-                  {task.eventStartTime && task.eventEndTime && <span>🕐 {task.eventStartTime} – {task.eventEndTime}</span>}
-                  {task.startDate && <span>📅 Start: {format(new Date(task.startDate), 'MMM d')}</span>}
-                  {task.prepDays && task.prepDays > 0 && <span>📐 {task.prepDays}d prep</span>}
-                  {(task as any).weight && <span>⚖️ {(task as any).weight}%</span>}
-                  {(task as any).estimatedTime && <span>⏱️ {(task as any).estimatedTime}</span>}
-                  {task.weekNumber && <span>W{task.weekNumber}</span>}
-                  {task.flagged && <span style={{ color: '#ef4444' }}>🚩 Flagged</span>}
-                </div>
-                {task.referenceLink && (
-                  <div style={{ marginTop: '4px' }}>
-                    <a href={task.referenceLink} target="_blank" rel="noopener noreferrer" style={{ fontSize: '10px', color: '#60a5fa', textDecoration: 'underline', wordBreak: 'break-all' }} data-testid={`day-detail-ref-${task.id}`}>{task.referenceLink.length > 60 ? task.referenceLink.slice(0, 60) + '...' : task.referenceLink}</a>
-                  </div>
-                )}
-                {(task as any).notes && (
-                  <div style={{ fontSize: '10px', color: '#ffffff', marginTop: '4px', lineHeight: 1.4, fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }} data-testid={`day-detail-notes-${task.id}`}>📝 {(task as any).notes}</div>
-                )}
-                {(task as any).description && !/^\[/.test((task as any).description) && (
-                  <div style={{ fontSize: '10px', color: '#ffffff', marginTop: '3px', lineHeight: 1.4, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }} data-testid={`day-detail-desc-${task.id}`}>{(task as any).description.replace(/\[.*?\]/g, '').trim()}</div>
-                )}
-                {task.attachments && task.attachments.length > 0 && (
-                  <div style={{ marginTop: '4px', fontSize: '10px', color: '#ffffff' }}>📎 {task.attachments.length} attachment{task.attachments.length !== 1 ? 's' : ''}</div>
-                )}
-              </div>
-              <button onClick={() => { setEditingTask(task as any); }} style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, marginTop: '2px' }} data-testid={`day-detail-edit-${task.id}`} title="Edit task">
-                <Pencil className="h-3.5 w-3.5 text-white" />
+            <div key={task.id} draggable onDragStart={(e) => { e.dataTransfer.setData('text/plain', String(task.id)); e.dataTransfer.effectAllowed = 'move'; (e.currentTarget as HTMLElement).style.opacity = '0.5'; }} onDragEnd={(e) => { (e.currentTarget as HTMLElement).style.opacity = task.isCompleted ? '0.45' : '1'; }} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '2px 6px', borderRadius: '5px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.18)', borderLeft: `3px solid ${courseColor}`, opacity: task.isCompleted ? 0.45 : 1, transition: 'opacity 0.2s ease, transform 0.15s ease', flex: '0 1 auto', minWidth: 0, maxWidth: '100%', cursor: 'grab', overflow: 'hidden' }} data-testid={`day-detail-task-${task.id}`}>
+              <GripVertical style={{ width: '10px', height: '10px', color: 'rgba(255,255,255,0.35)', cursor: 'grab', flexShrink: 0 } as any} />
+              <input type="checkbox" checked={!!task.isCompleted} onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })} style={{ width: '12px', height: '12px', accentColor: courseColor, cursor: 'pointer', flexShrink: 0 }} data-testid={`day-detail-check-${task.id}`} />
+              <TaskTypeIcon style={{ width: '10px', height: '10px', color: '#ffffff', flexShrink: 0 } as any} />
+              <span style={{ fontSize: '10px', fontWeight: 600, color: '#ffffff', textDecoration: task.isCompleted ? 'line-through' : 'none', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }} data-testid={`day-detail-title-${task.id}`}>{(() => { let t = (task.title || '').replace(/^\[.*?\]\s*/g, '').trim(); const cn = effectiveCourseName; if (cn) { const full = cn.replace(/[\[\]]/g, '').trim(); const cc = cn.split(' - ')[0]?.trim() || ''; const ccAlpha = cc.replace(/[0-9]/g, '').trim(); const longName = cn.split(' - ').slice(1).join(' - ').trim(); const prefixes = [full, cc, ccAlpha].filter(Boolean).sort((a, b) => b.length - a.length); for (const pfx of prefixes) { if (pfx && t.toUpperCase().startsWith(pfx.toUpperCase())) { let rest = t.slice(pfx.length).replace(/^\s*[-:]\s*/, '').trim(); if (longName && rest.toUpperCase().startsWith(longName.toUpperCase())) { rest = rest.slice(longName.length).replace(/^\s*[-:]\s*/, '').trim(); } if (rest) { t = rest; break; } } } } return t || task.title; })()}</span>
+              {effectiveCourseName && <span style={{ fontSize: '8px', fontWeight: 600, color: '#ffffff', background: courseColor, borderRadius: '3px', padding: '0px 4px', flexShrink: 0, whiteSpace: 'nowrap', lineHeight: '14px' }}>{effectiveCourseName.split(' - ')[0]}</span>}
+              <span style={{ fontSize: '8px', fontWeight: 600, color: '#ffffff', background: pColor, borderRadius: '3px', padding: '0px 3px', flexShrink: 0, textTransform: 'uppercase', lineHeight: '14px' }}>{(task.priority || 'medium').slice(0, 3)}</span>
+              {dueTime && <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.7)', flexShrink: 0, whiteSpace: 'nowrap' }}>{dueTime}</span>}
+              {task.weekNumber && <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.6)', flexShrink: 0 }}>W{task.weekNumber}</span>}
+              <button onClick={() => { setEditingTask(task as any); }} style={{ width: '18px', height: '18px', borderRadius: '4px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }} data-testid={`day-detail-edit-${task.id}`} title="Edit task">
+                <Pencil style={{ width: '9px', height: '9px', color: '#ffffff' }} />
               </button>
             </div>
           );
@@ -18500,10 +18484,10 @@ export default function Dashboard() {
 
               <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent' }}>
                 <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
-                  {[{ label: 'AM', hours: amHours }, { label: 'PM', hours: pmHours }].map((half, halfIdx) => (
+                  {[{ label: 'Morning', hours: amHours }, { label: 'Afternoon', hours: pmHours }].map((half, halfIdx) => (
                     <div key={half.label} style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: halfIdx === 0 ? '2px solid rgba(255,255,255,0.25)' : 'none' }}>
                       <div style={{ padding: '4px 0', textAlign: 'center', borderBottom: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.06)', flexShrink: 0 }}>
-                        <span style={{ fontSize: '10px', fontWeight: 700, color: 'rgba(255,255,255,0.7)', letterSpacing: '1px', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{half.label}</span>
+                        <span style={{ fontSize: '10px', fontWeight: 800, color: '#ffffff', letterSpacing: '1px', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textTransform: 'uppercase' }}>{half.label}</span>
                       </div>
                       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                         {half.hours.map(hour => {
@@ -18511,16 +18495,16 @@ export default function Dashboard() {
                           const hasTask = tasks.length > 0;
                           const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
                           return (
-                            <div key={hour} style={{ flex: 1, minHeight: '28px', display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                              <div style={{ width: '42px', flexShrink: 0, display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end', paddingRight: '6px', paddingTop: '3px', borderRight: '1px solid rgba(255,255,255,0.12)', position: 'relative' }}>
-                                <span style={{ fontSize: '10px', fontWeight: hasTask ? 700 : 400, color: hasTask ? '#ffffff' : 'rgba(255,255,255,0.5)', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{displayHour}:00</span>
+                            <div key={hour} style={{ flex: 1, minHeight: '28px', display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.25)' }}>
+                              <div style={{ width: '42px', flexShrink: 0, display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end', paddingRight: '6px', paddingTop: '3px', borderRight: '1px solid rgba(255,255,255,0.25)', position: 'relative' }}>
+                                <span style={{ fontSize: '10px', fontWeight: hasTask ? 700 : 500, color: '#ffffff', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{displayHour}:00</span>
                                 {hasTask && <div style={{ position: 'absolute', right: '-3px', top: '8px', width: '5px', height: '5px', borderRadius: '50%', background: '#60a5fa', zIndex: 1 }} />}
                               </div>
                               <div
                                 onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)'; }}
                                 onDragLeave={(e) => { (e.currentTarget as HTMLElement).style.background = ''; }}
                                 onDrop={(e) => { e.preventDefault(); (e.currentTarget as HTMLElement).style.background = ''; const taskId = parseInt(e.dataTransfer.getData('text/plain')); if (!taskId) return; const hh = String(hour).padStart(2, '0'); const newStart = `${hh}:00`; const newEnd = `${String((hour + 1) % 24).padStart(2, '0')}:00`; fetch(`/api/tasks/${taskId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ eventStartTime: newStart, eventEndTime: newEnd }) }).then(() => { queryClient.invalidateQueries({ queryKey: ['/api/tasks'] }); }); }}
-                                style={{ flex: 1, minWidth: 0, padding: hasTask ? '2px 6px' : '0 6px', display: 'flex', flexDirection: 'row', gap: '4px', alignItems: 'center', flexWrap: 'wrap', transition: 'background 0.15s ease' }}
+                                style={{ flex: 1, minWidth: 0, padding: hasTask ? '1px 4px' : '0 4px', display: 'flex', flexDirection: 'column', gap: '2px', justifyContent: 'center', overflow: 'hidden', transition: 'background 0.15s ease' }}
                               >
                                 {tasks.map(t => renderDetailTask(t))}
                               </div>
@@ -27960,7 +27944,7 @@ export default function Dashboard() {
               calScrollTopRef.current = st;
             }}>
 
-              <div style={{ backgroundColor: '#faf8f5', borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', position: 'relative', paddingBottom: '40px' }}>
+              <div style={{ backgroundColor: '#faf8f5', borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', position: 'relative', paddingBottom: '0px' }}>
                 {/* Countdown bars — at top of content div so sticky positioning works when scrolling down */}
                 {(() => {
                   const twoWeeksOut = new Date(stableToday.getTime() + 14 * 24 * 60 * 60 * 1000);

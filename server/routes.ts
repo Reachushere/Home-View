@@ -9589,6 +9589,46 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     }, HA_HEARTBEAT_INTERVAL_MS);
   }, 10000);
 
+  app.get("/api/export-backup", async (_req, res) => {
+    try {
+      const [tasks, files, semesterSettings, allSemesters, projects, deletedFolders, customFolders] = await Promise.all([
+        storage.getTasks(),
+        storage.getFiles(),
+        storage.getActiveSemesterSettings(),
+        storage.getAllSemesterSettings(),
+        storage.getProjects(),
+        storage.getDeletedFolders(),
+        storage.getCustomFolders(),
+      ]);
+      const subtasksByTask: Record<number, any[]> = {};
+      for (const t of tasks) {
+        const subs = await storage.getSubtasksByTask(t.id);
+        if (subs.length > 0) subtasksByTask[t.id] = subs;
+      }
+      const allLinks = await storage.getAllTaskLinks();
+      const backup = {
+        exportedAt: new Date().toISOString(),
+        version: '1.0',
+        tasks,
+        subtasks: subtasksByTask,
+        taskLinks: allLinks,
+        files,
+        semesterSettings: allSemesters,
+        activeSemesterSettings: semesterSettings,
+        projects,
+        deletedFolders,
+        customFolders,
+      };
+      const filename = `unical-backup-${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}.json`;
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.json(backup);
+    } catch (err: any) {
+      console.error('[Export] Backup failed:', err);
+      res.status(500).json({ error: 'Export failed', message: err.message });
+    }
+  });
+
   app.get("/api/health", async (_req, res) => {
     const uptimeSeconds = Math.round((Date.now() - SERVER_START_TIME) / 1000);
     res.json({
