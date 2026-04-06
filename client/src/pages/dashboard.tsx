@@ -2416,6 +2416,10 @@ export default function Dashboard() {
   const [topPillUndocked, setTopPillUndocked] = useState(false);
   const [topPillPos, setTopPillPos] = useState<{x: number; y: number}>({ x: 0, y: 0 });
   const topPillDragRef = useRef<{startX: number; startY: number; origX: number; origY: number} | null>(null);
+  const topPillPosRef = useRef(topPillPos);
+  topPillPosRef.current = topPillPos;
+  const topPillUndockedRef = useRef(topPillUndocked);
+  topPillUndockedRef.current = topPillUndocked;
   const closeTopPill = useCallback(() => {
     setIsTopPillOpen(false);
   }, []);
@@ -2424,14 +2428,14 @@ export default function Dashboard() {
     e.stopPropagation();
     const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
     const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
-    topPillDragRef.current = { startX: clientX, startY: clientY, origX: topPillPos.x, origY: topPillPos.y };
+    topPillDragRef.current = { startX: clientX, startY: clientY, origX: topPillPosRef.current.x, origY: topPillPosRef.current.y };
     const onMove = (ev: MouseEvent | TouchEvent) => {
       if (!topPillDragRef.current) return;
       const cx = 'touches' in ev ? ev.touches[0].clientX : ev.clientX;
       const cy = 'touches' in ev ? ev.touches[0].clientY : ev.clientY;
       const dx = cx - topPillDragRef.current.startX;
       const dy = cy - topPillDragRef.current.startY;
-      if (!topPillUndocked && Math.abs(dy) > 8) {
+      if (!topPillUndockedRef.current && Math.abs(dy) > 8) {
         setTopPillUndocked(true);
       }
       setTopPillPos({ x: topPillDragRef.current.origX + dx, y: topPillDragRef.current.origY + dy });
@@ -2447,7 +2451,7 @@ export default function Dashboard() {
     document.addEventListener('mouseup', onUp);
     document.addEventListener('touchmove', onMove, { passive: false });
     document.addEventListener('touchend', onUp);
-  }, [topPillPos, topPillUndocked]);
+  }, []);
   const redockTopPill = useCallback(() => {
     setTopPillUndocked(false);
     setTopPillPos({ x: 0, y: 0 });
