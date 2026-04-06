@@ -1,0 +1,22 @@
+byhomeyyz@raspberrypi:~/Home-View $ journalctl -u unical --no-pager | grep -i "onedrive\|device\|Auth" | tail -20
+Apr 06 05:07:22 raspberrypi node[4700]: 5:07:22 AM [express] GET /api/onedrive/status 304 in 1ms :: {"connected":false}
+Apr 06 05:07:24 raspberrypi node[4700]: 5:07:24 AM [express] GET /api/onedrive/status 304 in 1ms :: {"connected":false}
+Apr 06 05:07:28 raspberrypi node[4700]: 5:07:28 AM [express] GET /api/onedrive/status 304 in 0ms :: {"connected":false}
+Apr 06 05:07:30 raspberrypi node[4700]: 5:07:30 AM [express] GET /api/onedrive/status 304 in 1ms :: {"connected":false}
+Apr 06 05:07:34 raspberrypi node[4700]: 5:07:34 AM [express] GET /api/onedrive/status 304 in 0ms :: {"connected":false}
+Apr 06 05:07:36 raspberrypi node[4700]: 5:07:36 AM [express] GET /api/onedrive/status 304 in 0ms :: {"connected":false}
+Apr 06 05:07:40 raspberrypi node[4700]: 5:07:40 AM [express] GET /api/onedrive/status 304 in 1ms :: {"connected":false}
+Apr 06 05:07:42 raspberrypi node[4700]: 5:07:42 AM [express] GET /api/onedrive/status 304 in 1ms :: {"connected":false}
+Apr 06 05:07:46 raspberrypi node[4700]: 5:07:46 AM [express] GET /api/onedrive/status 304 in 1ms :: {"connected":false}
+Apr 06 05:07:48 raspberrypi node[4700]: 5:07:48 AM [express] GET /api/onedrive/status 304 in 0ms :: {"connected":false}
+Apr 06 05:07:52 raspberrypi node[4700]: 5:07:52 AM [express] GET /api/onedrive/status 304 in 0ms :: {"connected":false}
+Apr 06 05:07:54 raspberrypi node[4700]: 5:07:54 AM [express] GET /api/onedrive/status 304 in 0ms :: {"connected":false}
+Apr 06 05:07:58 raspberrypi node[4700]: 5:07:58 AM [express] GET /api/onedrive/status 304 in 0ms :: {"connected":false}
+Apr 06 05:08:00 raspberrypi node[4700]: 5:08:00 AM [express] GET /api/onedrive/status 304 in 1ms :: {"connected":false}
+Apr 06 05:08:04 raspberrypi node[4700]: 5:08:04 AM [express] GET /api/onedrive/status 304 in 1ms :: {"connected":false}
+Apr 06 05:08:06 raspberrypi node[4700]: 5:08:06 AM [express] GET /api/onedrive/status 304 in 1ms :: {"connected":false}
+Apr 06 05:08:10 raspberrypi node[4700]: 5:08:10 AM [express] GET /api/onedrive/status 304 in 1ms :: {"connected":false}
+Apr 06 05:08:12 raspberrypi node[4700]: 5:08:12 AM [express] GET /api/onedrive/status 304 in 1ms :: {"connected":false}
+Apr 06 05:08:16 raspberrypi node[4700]: 5:08:16 AM [express] GET /api/onedrive/status 304 in 1ms :: {"connected":false}
+Apr 06 05:08:18 raspberrypi node[4700]: 5:08:18 AM [express] GET /api/onedrive/status 304 in 0ms :: {"connected":false}
+byhomeyyz@raspberrypi:~/Home-View $
