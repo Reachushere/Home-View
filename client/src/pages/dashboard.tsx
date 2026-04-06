@@ -1785,6 +1785,7 @@ export default function Dashboard() {
   const selectedWeekRef = useRef(selectedWeek);
   selectedWeekRef.current = selectedWeek;
   const timelineSyncDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const calendarDrivingScrollRef = useRef(false);
   const [hwFloating, setHwFloatingRaw] = useState(() => {
     const saved = localStorage.getItem('hwFloating');
     return saved ? { showControls: false, isPlaying: false, ...JSON.parse(saved) } : { detached: false, minimized: false, showControls: false, isPlaying: false, x: 100, y: 100 };
@@ -11083,7 +11084,6 @@ export default function Dashboard() {
 
   const scrollHomeworkToWeek = (weekNum: number) => {
     if (!homeworkScrollRef.current) return;
-    if (hwUserScrollingRef.current) return;
     const currentWeekNum = semesterSettings?.semesterStartDate
       ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart)
       : selectedWeek;
@@ -11096,9 +11096,11 @@ export default function Dashboard() {
     else if (diff >= 4) sectionId = 'threeweeks';
     const el = homeworkScrollRef.current.querySelector(`[data-homework-section="${sectionId}"]`);
     if (el) {
+      calendarDrivingScrollRef.current = true;
       const scrollContainer = homeworkScrollRef.current;
       const elTop = (el as HTMLElement).offsetTop - scrollContainer.offsetTop;
       scrollContainer.scrollTo({ top: elTop, behavior: 'smooth' });
+      setTimeout(() => { calendarDrivingScrollRef.current = false; }, 1200);
     }
   };
 
@@ -22131,6 +22133,29 @@ export default function Dashboard() {
                   <div />
                 </div>
                 <div className="overflow-y-auto flex-1 min-h-0 p-4">
+                  {weatherAlerts.length > 0 && (
+                    <div className="mb-4" data-testid="weather-history-warnings">
+                      <div className="flex items-center gap-2 mb-2">
+                        <img src={weatherAlertLogoPath} alt="Warning" style={{ height: '18px', width: 'auto', objectFit: 'contain' }} />
+                        <span className="text-[12px] font-semibold" style={{ color: '#ff4444' }}>Active Weather Warnings ({weatherAlerts.length})</span>
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        {weatherAlerts.map((alert, ai) => (
+                          <div key={ai} className="rounded-md px-3 py-2" style={{ background: 'rgba(255,68,68,0.12)', border: '1px solid rgba(255,68,68,0.35)' }} data-testid={`weather-history-alert-${ai}`}>
+                            <div className="flex items-start gap-2">
+                              <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-[1px]" style={{ color: '#ff4444' }} />
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div className="text-[11px] font-bold" style={{ color: '#ff6666' }}>{alert.title}</div>
+                                {alert.summary && <div className="text-[10px] mt-0.5" style={{ color: 'rgba(255,255,255,0.7)' }}>{alert.summary}</div>}
+                                {alert.description && <div className="text-[9px] mt-1 leading-[1.4]" style={{ color: 'rgba(255,255,255,0.5)', maxHeight: '60px', overflow: 'auto' }}>{alert.description}</div>}
+                                {alert.type && <span className="text-[8px] uppercase tracking-wider mt-1 inline-block px-1.5 py-0.5 rounded" style={{ background: 'rgba(255,68,68,0.2)', color: '#ff8888' }}>{alert.type}</span>}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   {weatherHistoryLoading ? (
                     <div className="text-white/70 text-center py-8 text-[12px]">Loading weather history...</div>
                   ) : weatherHistoryData.length === 0 ? (
@@ -30572,7 +30597,7 @@ export default function Dashboard() {
           <div style={{ width: '100%', height: '15px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', flexShrink: 0, position: 'relative', zIndex: 3, border: '0.5px solid rgba(255,255,255,0.15)' }}>
             <span style={{ fontSize: '10px', fontWeight: 500, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
           </div>
-          <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }} ref={homeworkScrollRef} onScroll={() => { hwUserScrollingRef.current = true; if (hwUserScrollEndTimer.current) clearTimeout(hwUserScrollEndTimer.current); hwUserScrollEndTimer.current = setTimeout(() => { hwUserScrollingRef.current = false; }, 800); setHwIsScrolling(true); if (hwScrollTimerRef.current) clearTimeout(hwScrollTimerRef.current); hwScrollTimerRef.current = setTimeout(() => setHwIsScrolling(false), 300); const sc = homeworkScrollRef.current; if (sc) { setHwScrolledDown(sc.scrollTop > 5); const sections = sc.querySelectorAll('[data-semester-label]'); let bestLabel: string | null = null; let bestDist = Infinity; const containerTop = sc.getBoundingClientRect().top; sections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestDist) { bestDist = dist; bestLabel = el.getAttribute('data-semester-label') || null; } }); if (bestLabel) setHwVisibleSemLabel(bestLabel); const hwSections = sc.querySelectorAll('[data-homework-section]'); let bestSec: string | null = null; let bestSecDist = Infinity; hwSections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestSecDist) { bestSecDist = dist; bestSec = el.getAttribute('data-homework-section') || null; } }); setHwVisibleSection(bestSec); if (timelineSyncRef.current && bestSec) { if (timelineSyncDebounceRef.current) clearTimeout(timelineSyncDebounceRef.current); timelineSyncDebounceRef.current = setTimeout(() => { const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : null; const rwStart = semesterSettings?.readingWeekStart || null; if (!semStart) return; let targetWeek: number | null = null; const bestElNow = homeworkScrollRef.current?.querySelector(`[data-homework-section="${bestSec}"]`); const weekStartAttr = bestElNow?.getAttribute('data-week-start'); if (weekStartAttr) { const wk = getWeekNumber(new Date(weekStartAttr), semStart, rwStart); if (wk >= 1) targetWeek = wk; } if (targetWeek !== null && targetWeek >= 1 && targetWeek !== selectedWeekRef.current) { startTransition(() => setSelectedWeek(targetWeek!)); } }, 250); } } }}>
+          <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }} ref={homeworkScrollRef} onScroll={() => { hwUserScrollingRef.current = true; if (hwUserScrollEndTimer.current) clearTimeout(hwUserScrollEndTimer.current); hwUserScrollEndTimer.current = setTimeout(() => { hwUserScrollingRef.current = false; }, 800); setHwIsScrolling(true); if (hwScrollTimerRef.current) clearTimeout(hwScrollTimerRef.current); hwScrollTimerRef.current = setTimeout(() => setHwIsScrolling(false), 300); const sc = homeworkScrollRef.current; if (sc) { setHwScrolledDown(sc.scrollTop > 5); const sections = sc.querySelectorAll('[data-semester-label]'); let bestLabel: string | null = null; let bestDist = Infinity; const containerTop = sc.getBoundingClientRect().top; sections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestDist) { bestDist = dist; bestLabel = el.getAttribute('data-semester-label') || null; } }); if (bestLabel) setHwVisibleSemLabel(bestLabel); const hwSections = sc.querySelectorAll('[data-homework-section]'); let bestSec: string | null = null; let bestSecDist = Infinity; hwSections.forEach(el => { const rect = el.getBoundingClientRect(); const dist = Math.abs(rect.top - containerTop); if (dist < bestSecDist) { bestSecDist = dist; bestSec = el.getAttribute('data-homework-section') || null; } }); setHwVisibleSection(bestSec); if (timelineSyncRef.current && bestSec && !calendarDrivingScrollRef.current) { if (timelineSyncDebounceRef.current) clearTimeout(timelineSyncDebounceRef.current); timelineSyncDebounceRef.current = setTimeout(() => { if (calendarDrivingScrollRef.current) return; const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : null; const rwStart = semesterSettings?.readingWeekStart || null; if (!semStart) return; let targetWeek: number | null = null; const bestElNow = homeworkScrollRef.current?.querySelector(`[data-homework-section="${bestSec}"]`); const weekStartAttr = bestElNow?.getAttribute('data-week-start'); if (weekStartAttr) { const wk = getWeekNumber(new Date(weekStartAttr), semStart, rwStart); if (wk >= 1) targetWeek = wk; } if (targetWeek !== null && targetWeek >= 1 && targetWeek !== selectedWeekRef.current) { startTransition(() => setSelectedWeek(targetWeek!)); } }, 250); } } }}>
             {isLoading && allTasks.length === 0 ? (
               <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
             ) : (
