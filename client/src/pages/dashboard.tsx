@@ -2421,6 +2421,7 @@ export default function Dashboard() {
   const topPillUndockedRef = useRef(topPillUndocked);
   topPillUndockedRef.current = topPillUndocked;
   const closeTopPill = useCallback(() => {
+    if (topPillUndockedRef.current) return;
     setIsTopPillOpen(false);
   }, []);
   const handleTopPillGrabStart = useCallback((e: React.MouseEvent | React.TouchEvent) => {
@@ -2437,6 +2438,7 @@ export default function Dashboard() {
       const dy = cy - topPillDragRef.current.startY;
       if (!topPillUndockedRef.current && Math.abs(dy) > 8) {
         setTopPillUndocked(true);
+        setIsTopPillOpen(true);
       }
       setTopPillPos({ x: topPillDragRef.current.origX + dx, y: topPillDragRef.current.origY + dy });
     };
@@ -2460,6 +2462,7 @@ export default function Dashboard() {
   useEffect(() => {
     if (!isTopPillOpen) return;
     const handleClickOutside = (e: MouseEvent) => {
+      if (topPillUndockedRef.current) return;
       const pillEl = topPillRef.current;
       if (pillEl && !pillEl.contains(e.target as Node)) {
         const target = e.target as HTMLElement;
