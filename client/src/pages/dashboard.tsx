@@ -18395,26 +18395,17 @@ export default function Dashboard() {
                   )}
                 </div>
               </div>
-              <div style={{ flexShrink: 0, padding: '6px 16px', borderTop: '1px solid rgba(255,255,255,0.25)', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', background: 'rgba(0,0,0,0.15)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', borderRadius: '0 0 8px 8px' }}>
-                <button
+              <div className="px-2 pb-2 flex justify-end">
+                <Button 
+                  type="button" 
+                  variant="outline"
+                  className="border !border-white/30 text-white/70 hover:text-white hover:!border-white/50 hover:bg-transparent transition-opacity duration-200 h-8 w-[110px]"
+                  style={{ fontSize: '12px' }}
                   onClick={() => setDayDetailDate(null)}
-                  style={{
-                    padding: '5px 24px',
-                    borderRadius: '6px',
-                    background: 'rgba(255,255,255,0.12)',
-                    border: '1px solid rgba(255,255,255,0.3)',
-                    color: '#ffffff',
-                    fontSize: '11px',
-                    fontWeight: 500,
-                    cursor: 'pointer',
-                    fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.2)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.12)'; }}
                   data-testid="day-detail-close-bottom"
                 >
                   Close
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -27833,7 +27824,7 @@ export default function Dashboard() {
               calScrollTopRef.current = st;
             }}>
 
-              <div style={{ backgroundColor: '#faf8f5', borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', position: 'relative' }}>
+              <div style={{ backgroundColor: '#faf8f5', borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', position: 'relative', paddingBottom: '40px' }}>
                 {timeSlots.map((hour, hourIdx) => {
                   const currentHour = new Date().getHours();
                   const isCurrentHour = hour === currentHour;
