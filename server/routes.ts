@@ -7605,6 +7605,20 @@ async function pollStatus(timeout){
     }
   });
 
+  // GET /api/source-download/:file - Download source files for Pi sync
+  app.get("/api/source-download/:file", async (req, res) => {
+    const path = await import("path");
+    const fs = await import("fs");
+    const fileMap: Record<string, string> = {
+      'routes.ts': path.resolve(process.cwd(), 'server/routes.ts'),
+      'pdf-reader.tsx': path.resolve(process.cwd(), 'client/src/pages/pdf-reader.tsx'),
+    };
+    const filePath = fileMap[req.params.file];
+    if (!filePath || !fs.existsSync(filePath)) return res.status(404).send('Not found');
+    res.setHeader('Content-Type', 'text/plain');
+    res.sendFile(filePath);
+  });
+
   // GET /api/tts-audio/:filename - Proxy TTS audio from object storage
   app.get("/api/tts-audio/:filename", async (req, res) => {
     try {

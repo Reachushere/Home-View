@@ -1,0 +1,84 @@
+byhomeyyz@raspberrypi:~/Home-View $ npm run build && sudo systemctl restart unical
+npm warn Unknown builtin config "globalignorefile". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> rest-express@1.0.0 build
+> tsx script/build.ts
+
+building client...
+vite v7.3.0 building client environment for production...
+✓ 17 modules transformed.
+✗ Build failed in 1.99s
+[vite:esbuild] Transform failed with 1 error:
+/home/byhomeyyz/Home-View/client/src/pages/pdf-reader.tsx:1:1: ERROR: Expected identifier but found "!"
+file: /home/byhomeyyz/Home-View/client/src/pages/pdf-reader.tsx:1:1
+
+Expected identifier but found "!"
+1  |  <!DOCTYPE html>
+   |   ^
+2  |  <html lang="en">
+3  |    <head>
+
+    at failureErrorWithLog (/home/byhomeyyz/Home-View/node_modules/vite/node_modules/esbuild/lib/main.js:1467:15)
+    at /home/byhomeyyz/Home-View/node_modules/vite/node_modules/esbuild/lib/main.js:736:50
+    at responseCallbacks.<computed> (/home/byhomeyyz/Home-View/node_modules/vite/node_modules/esbuild/lib/main.js:603:9)
+    at handleIncomingPacket (/home/byhomeyyz/Home-View/node_modules/vite/node_modules/esbuild/lib/main.js:658:12)
+    at Socket.readFromStdout (/home/byhomeyyz/Home-View/node_modules/vite/node_modules/esbuild/lib/main.js:581:7)
+    at Socket.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+    at Pipe.onStreamRead (node:internal/stream_base_commons:191:23) {
+  errors: [Getter/Setter],
+  warnings: [Getter/Setter],
+  frame: '\n' +
+    '\x1B[33mExpected identifier but found "!"\x1B[39m\n' +
+    '1  |  <!DOCTYPE html>\n' +
+    '   |   ^\n' +
+    '2  |  <html lang="en">\n' +
+    '3  |    <head>\n',
+  loc: {
+    column: 1,
+    file: '/home/byhomeyyz/Home-View/client/src/pages/pdf-reader.tsx',
+    length: 1,
+    line: 1,
+    lineText: '<!DOCTYPE html>',
+    namespace: '',
+    suggestion: ''
+  },
+  code: 'PLUGIN_ERROR',
+  plugin: 'vite:esbuild',
+  hook: 'transform',
+  id: '/home/byhomeyyz/Home-View/client/src/pages/pdf-reader.tsx',
+  watchFiles: [
+    '/home/byhomeyyz/Home-View/client/index.html',
+    '/home/byhomeyyz/Home-View/client/src/main.tsx',
+    '/home/byhomeyyz/Home-View/package.json',
+    '/home/byhomeyyz/Home-View/node_modules/preact/compat/jsx-runtime.mjs',
+    '/home/byhomeyyz/Home-View/node_modules/preact/compat/client.mjs',
+    '/home/byhomeyyz/Home-View/client/src/App.tsx',
+    '/home/byhomeyyz/Home-View/client/src/index.css',
+    '/home/byhomeyyz/Home-View/node_modules/preact/compat/dist/compat.module.js',
+    '/home/byhomeyyz/Home-View/node_modules/preact/jsx-runtime/dist/jsxRuntime.module.js',
+    '/home/byhomeyyz/Home-View/node_modules/@tanstack/react-query/build/modern/index.js',
+    '/home/byhomeyyz/Home-View/node_modules/wouter/esm/index.js',
+    '/home/byhomeyyz/Home-View/client/src/lib/queryClient.ts',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/toaster.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/tooltip.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/access-gate.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/not-found.tsx',
+    '/home/byhomeyyz/Home-View/node_modules/lucide-react/dist/esm/lucide-react.js',
+    '/home/byhomeyyz/Home-View/client/src/pages/files.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/projects.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/pdf-reader.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/pdf-viewer.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/onedrive.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/spotify-player.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/onenote.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/code-checker.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/mobile-notes.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/ticker.tsx',
+    '/home/byhomeyyz/Home-View/node_modules/preact/dist/preact.module.js',
+    '/home/byhomeyyz/Home-View/node_modules/preact/hooks/dist/hooks.module.js'
+  ]
+}
+byhomeyyz@raspberrypi:~/Home-View $

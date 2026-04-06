@@ -7,6 +7,10 @@ channel = "stable-24_05"
 packages = ["espeak-ng"]
 
 [[ports]]
+localPort = 3456
+externalPort = 3003
+
+[[ports]]
 localPort = 5000
 externalPort = 80
 
