@@ -15349,13 +15349,13 @@ export default function Dashboard() {
             </div>
             <div
               className="cursor-grab active:cursor-grabbing"
-              style={{ width: '20px', height: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.5, marginTop: '-2px' }}
+              style={{ width: '20px', height: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.5, marginTop: '7px' }}
               onMouseDown={handleTopPillGrabStart}
               onTouchStart={handleTopPillGrabStart}
               title="Drag to undock"
               data-testid="grab-undock-top-pill"
             >
-              <svg width="14" height="6" viewBox="0 0 14 6"><circle cx="3" cy="1.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="7" cy="1.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="11" cy="1.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="3" cy="4.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="7" cy="4.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="11" cy="4.5" r="1" fill="rgba(255,255,255,0.6)"/></svg>
+              <svg width="14" height="10" viewBox="0 0 14 10"><circle cx="3" cy="1.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="7" cy="1.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="11" cy="1.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="3" cy="5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="7" cy="5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="11" cy="5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="3" cy="8.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="7" cy="8.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="11" cy="8.5" r="1" fill="rgba(255,255,255,0.6)"/></svg>
             </div>
           </div>
 
