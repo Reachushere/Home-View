@@ -27213,20 +27213,20 @@ export default function Dashboard() {
                                   checked={task.isCompleted || false}
                                   onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
                                   onClick={(e) => e.stopPropagation()}
-                                  className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                  className="h-3 w-3 shrink-0 bg-white border-black data-[state=checked]:bg-white data-[state=checked]:border-black data-[state=checked]:text-black"
                                   style={{ marginLeft: '-1px' }}
                                   data-testid={`checkbox-other-${task.id}`}
                                 />
                                 <span
                                   onClick={() => setEditingTask(task)}
-                                  className={`truncate text-black flex-1 min-w-0 cursor-pointer hover:opacity-80 ${task.isCompleted ? "line-through" : ""}`}
-                                  style={{ fontWeight: 400 }}
+                                  className={`truncate flex-1 min-w-0 cursor-pointer hover:opacity-80 ${task.isCompleted ? "line-through" : ""}`}
+                                  style={{ fontWeight: 400, color: 'white' }}
                                 >
                                   {(task.title || '').replace(/[\[\]]/g, '')}
                                 </span>
                                 {task.referenceLink && (
                                   <a href={task.referenceLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={task.referenceLink} data-testid={`link-icon-other-${task.id}`}>
-                                    <ExternalLink className="h-2.5 w-2.5 text-black/60 hover:text-black" />
+                                    <ExternalLink className="h-2.5 w-2.5 text-white/60 hover:text-white" />
                                   </a>
                                 )}
                               </div>
@@ -27252,7 +27252,7 @@ export default function Dashboard() {
                                 data-testid={`other-project-${proj.id}`}
                               >
                                 <FolderKanban className="h-3 w-3 shrink-0" style={{ color: proj.color || '#6b7280' }} />
-                                <span className="truncate text-black pl-0.5 flex-1 min-w-0" style={{ fontWeight: 400 }}>{proj.name}</span>
+                                <span className="truncate pl-0.5 flex-1 min-w-0" style={{ fontWeight: 400, color: 'white' }}>{proj.name}</span>
                               </div>
                             );
                           })}
@@ -30398,7 +30398,7 @@ export default function Dashboard() {
                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, borderRadius: '6px', overflow: 'hidden', gap: '2px' }}>
                       {[
                         { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `play-module-${pd.courseCode.toLowerCase()}`, testUpload: `upload-module-${pd.courseCode.toLowerCase()}`, bg: pd.progressStartColor || getCourseGradientColors(pd.courseCode).start, dark: true, fontOverride: '#fff' },
-                        { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, bg: (() => { const s = pd.progressStartColor || getCourseGradientColors(pd.courseCode).start; const e = pd.progressEndColor || getCourseGradientColors(pd.courseCode).end; const parse = (c: string) => { const m = c.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i); if (m) return { r: parseInt(m[1],16), g: parseInt(m[2],16), b: parseInt(m[3],16) }; const m2 = c.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/); if (m2) return { r: +m2[1], g: +m2[2], b: +m2[3] }; return null; }; const sp = parse(s); const ep = parse(e); if (sp && ep) { const mix = (a: number, b: number) => Math.round(a * 0.35 + b * 0.65); return `rgb(${mix(sp.r, ep.r)}, ${mix(sp.g, ep.g)}, ${mix(sp.b, ep.b)})`; } return e; })(), dark: true, fontOverride: '#fff' },
+                        { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, bg: (() => { const s = pd.progressStartColor || getCourseGradientColors(pd.courseCode).start; const e = pd.progressEndColor || getCourseGradientColors(pd.courseCode).end; const parse = (c: string) => { const m = c.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i); if (m) return { r: parseInt(m[1],16), g: parseInt(m[2],16), b: parseInt(m[3],16) }; const m2 = c.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/); if (m2) return { r: +m2[1], g: +m2[2], b: +m2[3] }; return null; }; const sp = parse(s); const ep = parse(e); if (sp && ep) { const mix = (a: number, b: number) => Math.round(a * 0.55 + b * 0.45); return `rgb(${mix(sp.r, ep.r)}, ${mix(sp.g, ep.g)}, ${mix(sp.b, ep.b)})`; } return e; })(), dark: true, fontOverride: '#fff' },
                       ].map(item => {
                         const circleSize = 34;
                         const strokeWidth = 3;
@@ -31594,7 +31594,7 @@ export default function Dashboard() {
                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, borderRadius: '6px', overflow: 'hidden' }}>
                           {[
                             { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `float-play-module-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-module-${pd.courseCode.toLowerCase()}`, bg: pd.progressStartColor || getCourseGradientColors(pd.courseCode).start, dark: true, fontOverride: '#fff' },
-                            { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `float-play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-reading-${pd.courseCode.toLowerCase()}`, bg: (() => { const s = pd.progressStartColor || getCourseGradientColors(pd.courseCode).start; const e = pd.progressEndColor || getCourseGradientColors(pd.courseCode).end; const parse = (c: string) => { const m = c.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i); if (m) return { r: parseInt(m[1],16), g: parseInt(m[2],16), b: parseInt(m[3],16) }; const m2 = c.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/); if (m2) return { r: +m2[1], g: +m2[2], b: +m2[3] }; return null; }; const sp = parse(s); const ep = parse(e); if (sp && ep) { const mix = (a: number, b: number) => Math.round(a * 0.35 + b * 0.65); return `rgb(${mix(sp.r, ep.r)}, ${mix(sp.g, ep.g)}, ${mix(sp.b, ep.b)})`; } return e; })(), dark: true, fontOverride: '#fff' },
+                            { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `float-play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-reading-${pd.courseCode.toLowerCase()}`, bg: (() => { const s = pd.progressStartColor || getCourseGradientColors(pd.courseCode).start; const e = pd.progressEndColor || getCourseGradientColors(pd.courseCode).end; const parse = (c: string) => { const m = c.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i); if (m) return { r: parseInt(m[1],16), g: parseInt(m[2],16), b: parseInt(m[3],16) }; const m2 = c.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/); if (m2) return { r: +m2[1], g: +m2[2], b: +m2[3] }; return null; }; const sp = parse(s); const ep = parse(e); if (sp && ep) { const mix = (a: number, b: number) => Math.round(a * 0.55 + b * 0.45); return `rgb(${mix(sp.r, ep.r)}, ${mix(sp.g, ep.g)}, ${mix(sp.b, ep.b)})`; } return e; })(), dark: true, fontOverride: '#fff' },
                           ].map(item => {
                             const circleSize = 44;
                             const strokeWidth = 3.5;
