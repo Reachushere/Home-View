@@ -15795,67 +15795,13 @@ export default function Dashboard() {
           </div>
 
           {/* ── Tools ── */}
-          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 28)}px`, border: '1.5px solid rgba(110,110,110,0.8)', position: 'relative', top: '1px', margin: '0 3px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(100,100,100,0.75) 0%, rgba(75,75,75,0.55) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 30)}px`, border: '1.5px solid rgba(110,110,110,0.8)', position: 'relative', top: '1px', margin: '0 3px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(100,100,100,0.75) 0%, rgba(75,75,75,0.55) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           {isAdmin && (
             <div style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <Wrench className="h-[18px] w-[18px] text-white/70" style={{ position: 'relative', top: '-6px', left: '-1px' }} />
               <span style={{ position: 'absolute', top: '13px', fontSize: '7.5px', color: '#ffffff', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', right: '50%', transform: 'translateX(32%)' }}>Tools</span>
             </div>
           )}
-          {/* Home Assistant (moved from bottom pill) */}
-          {isAdmin && (
-          <div 
-            style={{ 
-              marginTop: '0px', width: '44px', height: '43px', borderRadius: '50%',
-              background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
-              position: 'relative' as const, zIndex: 1,
-              border: '1.5px solid rgba(255,255,255,0.35)',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
-            }}
-            className="pill-button-hover"
-            onClick={() => {
-              window.open('http://172.24.0.2:8123/config/dashboard', '_blank');
-            }}
-            data-testid="button-home-assistant"
-            title="Open Home Assistant"
-          >
-            <svg viewBox="0 0 24 24" fill="white" style={{ height: '20px', width: '20px' }}>
-              <path d="M12 0L1.5 6v12L12 24l10.5-6V6L12 0zm0 2.1l8.5 4.9v9.8L12 21.9l-8.5-5.1V7L12 2.1zM8.5 9.5v5h2v-3h3v3h2v-5L12 7l-3.5 2.5z"/>
-            </svg>
-          </div>
-          )}
-
-          {/* Astronomy / Sky Map Button */}
-          <div className="pill-button-hover" style={{ 
-            marginTop: '0px', width: '44px', height: '43px', borderRadius: '50%',
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
-            position: 'relative' as const, zIndex: 1,
-            border: '1.5px solid rgba(255,255,255,0.35)',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
-          }}>
-            <Button 
-              size="icon"
-              variant="ghost"
-              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
-              style={{ background: 'transparent' }}
-              data-testid="button-astronomy"
-              title="Astronomy / Sky Map"
-              onClick={() => { setSkyMapDate(new Date()); setSkyMapOpen(true); }}
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ height: '19px', width: '19px' }}>
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
-                <path d="M2 12h20" />
-                <path d="M12 2a10 10 0 0 1 4 7.5A10 10 0 0 1 12 17" strokeOpacity="0.4" />
-                <circle cx="18" cy="5" r="1" fill="white" stroke="none" />
-                <circle cx="6" cy="18" r="0.7" fill="white" stroke="none" />
-                <circle cx="20" cy="14" r="0.5" fill="white" stroke="none" />
-              </svg>
-            </Button>
-          </div>
-
           {/* Undo Button */}
           {undoStack.length > 0 ? (
             <div 
@@ -15927,6 +15873,60 @@ export default function Dashboard() {
             </div>
           )}
 
+
+          {/* Home Assistant */}
+          {isAdmin && (
+          <div 
+            style={{ 
+              marginTop: '0px', width: '44px', height: '43px', borderRadius: '50%',
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+              position: 'relative' as const, zIndex: 1,
+              border: '1.5px solid rgba(255,255,255,0.35)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+            }}
+            className="pill-button-hover"
+            onClick={() => {
+              window.open('http://172.24.0.2:8123/config/dashboard', '_blank');
+            }}
+            data-testid="button-home-assistant"
+            title="Open Home Assistant"
+          >
+            <svg viewBox="0 0 24 24" fill="white" style={{ height: '20px', width: '20px' }}>
+              <path d="M12 0L1.5 6v12L12 24l10.5-6V6L12 0zm0 2.1l8.5 4.9v9.8L12 21.9l-8.5-5.1V7L12 2.1zM8.5 9.5v5h2v-3h3v3h2v-5L12 7l-3.5 2.5z"/>
+            </svg>
+          </div>
+          )}
+
+          {/* Astronomy / Sky Map Button */}
+          <div className="pill-button-hover" style={{ 
+            marginTop: '0px', width: '44px', height: '43px', borderRadius: '50%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+            position: 'relative' as const, zIndex: 1,
+            border: '1.5px solid rgba(255,255,255,0.35)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+          }}>
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
+              style={{ background: 'transparent' }}
+              data-testid="button-astronomy"
+              title="Astronomy / Sky Map"
+              onClick={() => { setSkyMapDate(new Date()); setSkyMapOpen(true); }}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ height: '19px', width: '19px' }}>
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+                <path d="M2 12h20" />
+                <path d="M12 2a10 10 0 0 1 4 7.5A10 10 0 0 1 12 17" strokeOpacity="0.4" />
+                <circle cx="18" cy="5" r="1" fill="white" stroke="none" />
+                <circle cx="6" cy="18" r="0.7" fill="white" stroke="none" />
+                <circle cx="20" cy="14" r="0.5" fill="white" stroke="none" />
+              </svg>
+            </Button>
+          </div>
 
           {/* Key Contacts Button */}
           <div className="pill-button-hover" style={{ 
@@ -18269,7 +18269,7 @@ export default function Dashboard() {
       {!isTodoFlyoutOpen && (
         <div 
           className="fixed text-white/60 text-[11px] font-medium z-[70] pointer-events-none"
-          style={{ bottom: '40px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7 - 2 + 3 + 2 + 8 + 2 + 4 + 12}px`, transformOrigin: 'right bottom' }}
+          style={{ bottom: '40px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7 - 2 + 3 + 2 + 8 + 2 + 4 + 9}px`, transformOrigin: 'right bottom' }}
         >
           © 2026
         </div>
@@ -18457,7 +18457,7 @@ export default function Dashboard() {
           const courseFullName = effectiveCourseName?.includes(' - ') ? effectiveCourseName.split(' - ').slice(1).join(' - ') : '';
           const daysUntil = task.dueDate ? differenceInCalendarDays(startOfDayET(new Date(task.dueDate)), startOfDayET(new Date())) : 0;
           return (
-            <div key={task.id} draggable onDragStart={(e) => { e.dataTransfer.setData('text/plain', String(task.id)); e.dataTransfer.effectAllowed = 'move'; (e.currentTarget as HTMLElement).style.opacity = '0.5'; }} onDragEnd={(e) => { (e.currentTarget as HTMLElement).style.opacity = task.isCompleted ? '0.45' : '1'; }} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '2px 6px', borderRadius: '5px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.18)', borderLeft: `3px solid ${courseColor}`, opacity: task.isCompleted ? 0.45 : 1, transition: 'opacity 0.2s ease, transform 0.15s ease', flex: 1, minWidth: 0, cursor: 'grab', overflow: 'hidden' }} data-testid={`day-detail-task-${task.id}`}>
+            <div key={task.id} draggable onDragStart={(e) => { e.dataTransfer.setData('text/plain', String(task.id)); e.dataTransfer.effectAllowed = 'move'; (e.currentTarget as HTMLElement).style.opacity = '0.5'; }} onDragEnd={(e) => { (e.currentTarget as HTMLElement).style.opacity = task.isCompleted ? '0.45' : '1'; }} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '2px 6px', borderRadius: '5px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.18)', borderLeft: `3px solid ${courseColor}`, opacity: task.isCompleted ? 0.45 : 1, transition: 'opacity 0.2s ease, transform 0.15s ease', flex: '0 1 auto', minWidth: 0, maxWidth: '100%', cursor: 'grab', overflow: 'hidden' }} data-testid={`day-detail-task-${task.id}`}>
               <GripVertical style={{ width: '10px', height: '10px', color: 'rgba(255,255,255,0.35)', cursor: 'grab', flexShrink: 0 } as any} />
               <input type="checkbox" checked={!!task.isCompleted} onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })} style={{ width: '12px', height: '12px', accentColor: courseColor, cursor: 'pointer', flexShrink: 0 }} data-testid={`day-detail-check-${task.id}`} />
               <TaskTypeIcon style={{ width: '10px', height: '10px', color: '#ffffff', flexShrink: 0 } as any} />
@@ -18522,7 +18522,7 @@ export default function Dashboard() {
                                 onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)'; }}
                                 onDragLeave={(e) => { (e.currentTarget as HTMLElement).style.background = ''; }}
                                 onDrop={(e) => { e.preventDefault(); (e.currentTarget as HTMLElement).style.background = ''; const taskId = parseInt(e.dataTransfer.getData('text/plain')); if (!taskId) return; const hh = String(hour).padStart(2, '0'); const newStart = `${hh}:00`; const newEnd = `${String((hour + 1) % 24).padStart(2, '0')}:00`; fetch(`/api/tasks/${taskId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ eventStartTime: newStart, eventEndTime: newEnd }) }).then(() => { queryClient.invalidateQueries({ queryKey: ['/api/tasks'] }); }); }}
-                                style={{ flex: 1, minWidth: 0, padding: hasTask ? '1px 4px' : '0 4px', display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', gap: '2px', alignItems: 'stretch', overflow: 'hidden', transition: 'background 0.15s ease' }}
+                                style={{ flex: 1, minWidth: 0, padding: hasTask ? '1px 4px' : '0 4px', display: 'flex', flexDirection: 'column', gap: '2px', justifyContent: 'center', overflow: 'hidden', transition: 'background 0.15s ease' }}
                               >
                                 {tasks.map(t => renderDetailTask(t))}
                               </div>
@@ -25952,7 +25952,7 @@ export default function Dashboard() {
               const beforeW = gridSizes.dayColumnWidths.slice(0, todayIdx).reduce((a: number, b: number) => a + b, 0);
               const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
               return (
-                <div className="absolute bottom-0 pointer-events-none" style={{ top: '0px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px) + 2px)`, width: '1px', backgroundColor: '#ffffff', zIndex: 100 }} />
+                <div className="absolute bottom-0 pointer-events-none" style={{ top: '0px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px) + 3px)`, width: '1px', backgroundColor: '#ffffff', zIndex: 100 }} />
               );
             })()}
             
