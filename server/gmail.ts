@@ -261,10 +261,34 @@ export async function fetchRecentEmails(maxResults: number = 10, query?: string)
   }
 }
 
+async function gmailGetWithToken(endpoint: string, token: string): Promise<any> {
+  const resp = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/${endpoint}`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!resp.ok) {
+    const errBody = await resp.text();
+    throw new Error(`Gmail API error ${resp.status}: ${errBody}`);
+  }
+  return resp.json();
+}
+
 export async function fetchD2LAnnouncements(maxResults: number = 20): Promise<D2LAnnouncement[]> {
   try {
+    let useSecondAccount = false;
+    let secondToken: string | null = null;
+    try {
+      const { getSecondAccountGmailAccessToken } = await import('./secondGoogleAccount');
+      secondToken = await getSecondAccountGmailAccessToken();
+      useSecondAccount = true;
+    } catch (e: any) {
+      console.log('[D2L] Second account not available, falling back to primary Gmail:', e.message);
+    }
+
     const query = encodeURIComponent(`from:${D2L_SENDER}`);
-    const listData = await gmailGet(`messages?q=${query}&maxResults=${maxResults}`);
+    const fetcher = useSecondAccount && secondToken
+      ? (ep: string) => gmailGetWithToken(ep, secondToken!)
+      : gmailGet;
+    const listData = await fetcher(`messages?q=${query}&maxResults=${maxResults}`);
 
     const messages = listData.messages || [];
     if (messages.length === 0) return [];
@@ -273,7 +297,7 @@ export async function fetchD2LAnnouncements(maxResults: number = 20): Promise<D2
 
     for (const msg of messages) {
       try {
-        const detail = await gmailGet(`messages/${msg.id}?format=full`);
+        const detail = await fetcher(`messages/${msg.id}?format=full`);
 
         const headers = detail.payload?.headers || [];
         const subject = headers.find((h: any) => h.name?.toLowerCase() === 'subject')?.value || 'No Subject';
