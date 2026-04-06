@@ -2705,15 +2705,9 @@ export default function Dashboard() {
   useEffect(() => {
     const mountDelay = setTimeout(() => {
       setTopPillMounted(true);
-      setIsTopPillOpen(true);
-    }, 800);
-    topPillTimeoutRef.current = setTimeout(() => {
       topPillInitDoneRef.current = true;
-      if (!topPillHoveredRef.current) {
-        closeTopPill();
-      }
-    }, 4000);
-    return () => { clearTimeout(mountDelay); if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); };
+    }, 800);
+    return () => { clearTimeout(mountDelay); };
   }, []);
   const [draggedFileForMove, setDraggedFileForMove] = useState<{id: number; folder: string} | null>(null);
   const [moveFileId, setMoveFileId] = useState<number | null>(null);
