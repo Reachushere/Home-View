@@ -1957,6 +1957,10 @@ export default function Dashboard() {
   });
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
+  const [showWeatherHistoryPanel, setShowWeatherHistoryPanel] = useState(false);
+  const [weatherHistoryData, setWeatherHistoryData] = useState<any[]>([]);
+  const [weatherHistoryLoading, setWeatherHistoryLoading] = useState(false);
+  const [weatherHistoryBackfilled, setWeatherHistoryBackfilled] = useState(false);
   const [isScholarshipsOpen, setIsScholarshipsOpen] = useState(false);
   const [isKeyContactsOpen, setIsKeyContactsOpen] = useState(false);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
@@ -15812,6 +15816,41 @@ export default function Dashboard() {
             </Button>
           </div>
 
+          {/* Weather History Button */}
+          <div className="pill-button-hover" style={{ 
+            marginTop: '0px', width: '44px', height: '43px', borderRadius: '50%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+            position: 'relative' as const, zIndex: 1,
+            border: '1.5px solid rgba(255,255,255,0.35)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+          }}
+            onClick={async () => {
+              triggerButtonGlow('weatherhistory');
+              setShowWeatherHistoryPanel(true);
+              setWeatherHistoryLoading(true);
+              try {
+                const resp = await fetch('/api/weather-history');
+                const data = await resp.json();
+                setWeatherHistoryData(data);
+                if (data.length === 0 && !weatherHistoryBackfilled) {
+                  setWeatherHistoryBackfilled(true);
+                  const backfillResp = await fetch('/api/weather-history/backfill', { method: 'POST' });
+                  if (backfillResp.ok) {
+                    const freshResp = await fetch('/api/weather-history');
+                    const freshData = await freshResp.json();
+                    setWeatherHistoryData(freshData);
+                  }
+                }
+              } catch (e) { console.error('Weather history fetch error:', e); }
+              setWeatherHistoryLoading(false);
+            }}
+            data-testid="button-weather-history"
+            title="Weather History"
+          >
+            <Cloud className="text-white" style={{ height: '22px', width: '22px' }} />
+          </div>
+
           {/* Email Management Button */}
           <div className="pill-button-hover" style={{ 
             marginTop: '0px', width: '44px', height: '43px', borderRadius: '50%',
@@ -22009,6 +22048,59 @@ export default function Dashboard() {
               </div>
             </DialogContent>
           </Dialog>
+
+          {showWeatherHistoryPanel && (
+            <div className="fixed inset-0 z-[9999] flex items-center justify-center" onClick={() => setShowWeatherHistoryPanel(false)} data-testid="weather-history-overlay">
+              <div className="absolute inset-0 bg-black/50" />
+              <div className="relative w-[700px] max-h-[80vh] rounded-lg overflow-hidden" onClick={e => e.stopPropagation()} style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
+                <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+                  <div className="flex items-center gap-2">
+                    <Cloud className="h-4 w-4 text-white" />
+                    <span className="text-white font-semibold text-[13px]">Toronto Weather History</span>
+                  </div>
+                  <button onClick={() => setShowWeatherHistoryPanel(false)} className="text-white/70 hover:text-white text-lg" data-testid="button-close-weather-history">&times;</button>
+                </div>
+                <div className="overflow-y-auto max-h-[calc(80vh-50px)] p-4">
+                  {weatherHistoryLoading ? (
+                    <div className="text-white/70 text-center py-8 text-[12px]">Loading weather history...</div>
+                  ) : weatherHistoryData.length === 0 ? (
+                    <div className="text-white/70 text-center py-8 text-[12px]">No weather records yet. Recording will begin hourly.</div>
+                  ) : (() => {
+                    const grouped: Record<string, any[]> = {};
+                    weatherHistoryData.forEach((r: any) => {
+                      const d = new Date(r.recordedAt);
+                      const key = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', timeZone: 'America/Toronto' });
+                      if (!grouped[key]) grouped[key] = [];
+                      grouped[key].push(r);
+                    });
+                    return Object.entries(grouped).map(([dateStr, records]) => (
+                      <div key={dateStr} className="mb-4">
+                        <div className="text-white font-semibold text-[12px] mb-2 border-b border-white/20 pb-1">{dateStr}</div>
+                        <div className="grid gap-[2px]">
+                          {records.sort((a: any, b: any) => new Date(b.recordedAt).getTime() - new Date(a.recordedAt).getTime()).map((r: any) => {
+                            const t = new Date(r.recordedAt);
+                            const timeStr = t.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/Toronto' });
+                            const tempColor = r.temperature <= 0 ? '#93c5fd' : r.temperature <= 10 ? '#60a5fa' : r.temperature <= 20 ? '#fbbf24' : r.temperature <= 30 ? '#f97316' : '#ef4444';
+                            return (
+                              <div key={r.id} className="flex items-center gap-3 text-[11px] py-[3px] px-2 rounded" style={{ background: 'rgba(255,255,255,0.05)' }} data-testid={`weather-record-${r.id}`}>
+                                <span className="text-white/60 w-[70px] shrink-0">{timeStr}</span>
+                                <span className="font-bold w-[45px] shrink-0" style={{ color: tempColor }}>{Math.round(r.temperature)}°C</span>
+                                <span className="text-white/50 w-[55px] shrink-0">FL {r.feelsLike != null ? `${Math.round(r.feelsLike)}°` : '--'}</span>
+                                <span className="text-white/70 w-[100px] shrink-0">{r.condition || '--'}</span>
+                                <span className="text-white/50 w-[70px] shrink-0">💨 {r.windSpeed != null ? `${Math.round(r.windSpeed)} km/h` : '--'}</span>
+                                <span className="text-white/40 w-[50px] shrink-0">💧 {r.humidity != null ? `${r.humidity}%` : '--'}</span>
+                                {r.precipitation > 0 && <span className="text-blue-300">🌧 {r.precipitation}mm</span>}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ));
+                  })()}
+                </div>
+              </div>
+            </div>
+          )}
 
           <Dialog open={isProfileDialogOpen} onOpenChange={setIsProfileDialogOpen}>
             <DialogContent className="max-w-md text-[11px] text-white [&_*:not(input)]:text-white [&_label]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ top: 'calc(55% - 30px)', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>

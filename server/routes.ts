@@ -2305,6 +2305,80 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
     }
   });
 
+  app.get("/api/weather-history", async (req, res) => {
+    try {
+      const fromStr = req.query.from as string;
+      const toStr = req.query.to as string;
+      const from = fromStr ? new Date(fromStr) : new Date(Date.now() - 60 * 24 * 60 * 60 * 1000);
+      const to = toStr ? new Date(toStr) : new Date();
+      const records = await storage.getWeatherHistory(from, to);
+      res.json(records);
+    } catch (err) {
+      console.error("Error fetching weather history:", err);
+      res.status(500).json({ error: "Failed to fetch weather history" });
+    }
+  });
+
+  app.post("/api/weather-history/record", async (_req, res) => {
+    try {
+      const weatherResp = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=43.6275&longitude=-79.3962&current=temperature_2m,apparent_temperature,wind_speed_10m,wind_direction_10m,relative_humidity_2m,weather_code,precipitation&timezone=America/Toronto`);
+      const data = await weatherResp.json();
+      if (!data.current) { res.status(500).json({ error: "No current data" }); return; }
+      const c = data.current;
+      const wmoToCondition: Record<number, string> = {0:'Clear',1:'Mostly Clear',2:'Partly Cloudy',3:'Overcast',45:'Foggy',48:'Foggy',51:'Light Drizzle',53:'Drizzle',55:'Heavy Drizzle',61:'Light Rain',63:'Rain',65:'Heavy Rain',66:'Freezing Rain',67:'Heavy Freezing Rain',71:'Light Snow',73:'Snow',75:'Heavy Snow',77:'Snow Grains',80:'Light Showers',81:'Showers',82:'Heavy Showers',85:'Light Snow Showers',86:'Heavy Snow Showers',95:'Thunderstorms',96:'Thunderstorms w/ Hail',99:'Severe Thunderstorms'};
+      const record = await storage.createWeatherRecord({
+        recordedAt: new Date(),
+        temperature: c.temperature_2m,
+        feelsLike: c.apparent_temperature,
+        windSpeed: c.wind_speed_10m,
+        windDirection: c.wind_direction_10m,
+        humidity: c.relative_humidity_2m,
+        condition: wmoToCondition[c.weather_code] || 'Unknown',
+        weatherCode: c.weather_code,
+        precipitation: c.precipitation,
+      });
+      res.json(record);
+    } catch (err) {
+      console.error("Error recording weather:", err);
+      res.status(500).json({ error: "Failed to record weather" });
+    }
+  });
+
+  app.post("/api/weather-history/backfill", async (_req, res) => {
+    try {
+      const endDate = new Date();
+      const startDate = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000);
+      const startStr = startDate.toISOString().split('T')[0];
+      const endStr = endDate.toISOString().split('T')[0];
+      const url = `https://archive-api.open-meteo.com/v1/archive?latitude=43.6275&longitude=-79.3962&start_date=${startStr}&end_date=${endStr}&hourly=temperature_2m,apparent_temperature,wind_speed_10m,wind_direction_10m,relative_humidity_2m,weather_code,precipitation&timezone=America/Toronto`;
+      const resp = await fetch(url);
+      const data = await resp.json();
+      if (!data.hourly || !data.hourly.time) { res.status(500).json({ error: "No hourly data from archive" }); return; }
+      const h = data.hourly;
+      const wmoToCondition: Record<number, string> = {0:'Clear',1:'Mostly Clear',2:'Partly Cloudy',3:'Overcast',45:'Foggy',48:'Foggy',51:'Light Drizzle',53:'Drizzle',55:'Heavy Drizzle',61:'Light Rain',63:'Rain',65:'Heavy Rain',66:'Freezing Rain',67:'Heavy Freezing Rain',71:'Light Snow',73:'Snow',75:'Heavy Snow',77:'Snow Grains',80:'Light Showers',81:'Showers',82:'Heavy Showers',85:'Light Snow Showers',86:'Heavy Snow Showers',95:'Thunderstorms',96:'Thunderstorms w/ Hail',99:'Severe Thunderstorms'};
+      let count = 0;
+      for (let i = 0; i < h.time.length; i++) {
+        if (h.temperature_2m[i] === null) continue;
+        await storage.createWeatherRecord({
+          recordedAt: new Date(h.time[i]),
+          temperature: h.temperature_2m[i],
+          feelsLike: h.apparent_temperature?.[i] ?? null,
+          windSpeed: h.wind_speed_10m?.[i] ?? null,
+          windDirection: h.wind_direction_10m?.[i] ?? null,
+          humidity: h.relative_humidity_2m?.[i] ?? null,
+          condition: wmoToCondition[h.weather_code?.[i]] || null,
+          weatherCode: h.weather_code?.[i] ?? null,
+          precipitation: h.precipitation?.[i] ?? null,
+        });
+        count++;
+      }
+      res.json({ message: `Backfilled ${count} hourly records from ${startStr} to ${endStr}` });
+    } catch (err) {
+      console.error("Error backfilling weather:", err);
+      res.status(500).json({ error: "Failed to backfill weather history" });
+    }
+  });
+
   app.get("/api/weather-alerts", async (_req, res) => {
     try {
       const now = Date.now();
@@ -9630,6 +9704,18 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
   checkAndActivateSemester();
   setInterval(checkAndActivateSemester, 6 * 60 * 60 * 1000);
+
+  const recordWeatherHourly = async () => {
+    try {
+      const resp = await fetch(`http://localhost:${port}/api/weather-history/record`, { method: 'POST' });
+      if (resp.ok) console.log('[Weather History] Recorded hourly weather data');
+      else console.error('[Weather History] Failed to record:', await resp.text());
+    } catch (e: any) {
+      console.error('[Weather History] Error:', e.message);
+    }
+  };
+  setTimeout(recordWeatherHourly, 15000);
+  setInterval(recordWeatherHourly, 60 * 60 * 1000);
 
   const syncD2LFromGmail = async () => {
     try {

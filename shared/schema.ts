@@ -798,5 +798,22 @@ export const insertSavedEmailSearchSchema = createInsertSchema(savedEmailSearche
 export type SavedEmailSearch = typeof savedEmailSearches.$inferSelect;
 export type InsertSavedEmailSearch = z.infer<typeof insertSavedEmailSearchSchema>;
 
+export const weatherHistory = pgTable("weather_history", {
+  id: serial("id").primaryKey(),
+  recordedAt: timestamp("recorded_at").notNull(),
+  temperature: real("temperature").notNull(),
+  feelsLike: real("feels_like"),
+  windSpeed: real("wind_speed"),
+  windDirection: integer("wind_direction"),
+  humidity: integer("humidity"),
+  condition: text("condition"),
+  weatherCode: integer("weather_code"),
+  precipitation: real("precipitation"),
+});
+
+export const insertWeatherHistorySchema = createInsertSchema(weatherHistory).omit({ id: true });
+export type WeatherHistory = typeof weatherHistory.$inferSelect;
+export type InsertWeatherHistory = z.infer<typeof insertWeatherHistorySchema>;
+
 // Export chat models for AI integrations
 export * from "./models/chat";
