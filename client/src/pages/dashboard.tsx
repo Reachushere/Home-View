@@ -19064,7 +19064,7 @@ export default function Dashboard() {
                           <img src={teacherWhiteIconPath} alt="Course" className="h-3.5 w-3.5" style={{ filter: 'brightness(1)' }} />
                           Course
                         </button>
-                        {(["module", "reading", "essay", "discussion", "poll", "quiz", "exam", "project", "reminder", "meeting", "scholarship", "other"] as const).map(type => {
+                        {(["module", "reading", "essay", "discussion", "poll", "quiz", "exam", "other", "reminder", "meeting", "scholarship", "project"] as const).map(type => {
                           const TypeIcon = iconMap[type] || FileText;
                           const typeColors: Record<string, { bg: string; border: string; hover: string }> = {
                             reading: { bg: 'rgba(56,130,255,0.25)', border: 'rgba(56,130,255,0.55)', hover: 'rgba(56,130,255,0.35)' },
