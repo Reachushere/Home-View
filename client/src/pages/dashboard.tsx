@@ -27667,13 +27667,13 @@ export default function Dashboard() {
                               if (isFirstCell) {
                                 return (
                                   <div key={`cbar-main-${t.id}`} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '200%', pointerEvents: 'none', zIndex: 2, overflow: 'visible' }} data-testid={`countdown-span-main-${t.id}-day-${dayIdx}`}>
-                                    <div style={{ position: 'absolute', left: '0px', top: `${topPx}px`, right: 0, height: `${barHPx}px`, display: 'flex', alignItems: 'center' }}>
-                                      <div style={{ width: '10px', minWidth: '10px', height: '100%', background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px' }} />
-                                      <div style={{ display: 'flex', alignItems: 'center', gap: '3px', whiteSpace: 'nowrap', padding: '0 4px', flexShrink: 0 }}>
-                                        <span style={{ fontSize: '11px', fontWeight: 300, color: barColor, letterSpacing: '-0.2px' }}>{cd.daysLeft}d</span>
-                                        <span style={{ fontSize: '9px', fontWeight: 600, color: 'rgba(0,0,0,0.55)', whiteSpace: 'nowrap' }}>{labelText}</span>
+                                    <div style={{ position: 'absolute', left: '0px', top: `${topPx}px`, right: 0, height: `${barHPx}px`, display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
+                                      <div style={{ width: '10px', minWidth: '10px', height: '100%', background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
+                                      <div style={{ width: '22px', minWidth: '22px', textAlign: 'right', paddingRight: '2px', flexShrink: 0 }}>
+                                        <span style={{ fontSize: '10px', fontWeight: 300, color: barColor, letterSpacing: '-0.2px' }}>{cd.daysLeft}d</span>
                                       </div>
-                                      <div className={needsPulse ? 'countdown-bar-pulse' : ''} style={{ flex: 1, height: '100%', background: barColor, opacity: 0.85, borderRadius: '0 2px 2px 0', boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined }} />
+                                      <span style={{ fontSize: '9px', fontWeight: 600, color: 'rgba(0,0,0,0.55)', whiteSpace: 'nowrap', flexShrink: 0, paddingRight: '3px' }}>{labelText}</span>
+                                      <div className={needsPulse ? 'countdown-bar-pulse' : ''} style={{ flex: 1, height: '100%', background: barColor, opacity: 0.85, borderRadius: '0 2px 2px 0', minWidth: '10px', boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined }} />
                                     </div>
                                   </div>
                                 );
