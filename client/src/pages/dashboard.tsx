@@ -30896,17 +30896,12 @@ export default function Dashboard() {
                                 : `${remainMin}m`) : null;
                               const hoursLeftLabel = hoursLeft >= 24 ? `${Math.floor(hoursLeft / 24)}d${Math.round(hoursLeft % 24)}h` : `${Math.round(hoursLeft)}h`;
                               const barColor = isCritical ? '#ef4444' : isUrgent ? '#f59e0b' : '#22c55e';
+                              const daysLeft = Math.floor(hoursLeft / 24);
+                              const hrsLeft = Math.round(hoursLeft % 24);
+                              const timeLeftStr = daysLeft > 0 ? `${daysLeft}d, ${hrsLeft}h` : `${hrsLeft}h`;
                               return (
-                                <div style={{ width: '100%', padding: '0 3px', marginTop: '1px' }} data-testid={`${item.type}-time-remaining-${pd.courseCode.toLowerCase()}`}>
-                                  {hasTime && (
-                                    <div style={{ width: '100%', height: '3px', borderRadius: '2px', background: item.dark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)', overflow: 'hidden', position: 'relative' }}>
-                                      <div style={{ width: `${Math.min(100, pctOfTimeNeeded)}%`, height: '100%', borderRadius: '2px', background: barColor, transition: 'width 0.5s ease' }} />
-                                    </div>
-                                  )}
-                                  <div style={{ display: 'flex', justifyContent: hasTime ? 'space-between' : 'center', alignItems: 'center', marginTop: '1px' }}>
-                                    {remainLabel && <span style={{ fontSize: '7px', fontWeight: 600, color: textColor, fontFamily: "system-ui, sans-serif" }}>Time Remaining</span>}
-                                    <span style={{ fontSize: '6.5px', color: item.dark ? textColor : 'rgba(0,0,0,0.6)', fontFamily: "system-ui, sans-serif" }}>{remainLabel || ''} / Fri {hoursLeftLabel}</span>
-                                  </div>
+                                <div style={{ width: '100%', padding: '0 3px', marginTop: '1px', textAlign: 'center' }} data-testid={`${item.type}-time-remaining-${pd.courseCode.toLowerCase()}`}>
+                                  <span style={{ fontSize: '7px', fontWeight: 600, color: barColor, fontFamily: "system-ui, sans-serif" }}>{timeLeftStr}</span>
                                 </div>
                               );
                             })()}
