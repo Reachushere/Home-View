@@ -23473,8 +23473,13 @@ export default function Dashboard() {
                     springSummerTerm: wizardData.springSummerTerm || null,
                   }),
                 }).then(r => r.json()).then(result => {
-                  if (result.success) {
+                  if (result.success && result.path) {
                     console.log(`[OneDrive] Renamed TBD folder: ${result.from} → ${result.to}`);
+                    const codeUpper = wizardData.courseCode.replace(/\s/g, '').toUpperCase();
+                    const updatedLinks = { ...courseFolderLinks };
+                    updatedLinks[codeUpper] = { weeksPath: result.path };
+                    saveCourseFolderLinks(updatedLinks);
+                    console.log(`[OneDrive] Auto-connected weeksPath for ${codeUpper}: ${result.path}`);
                     queryClient.invalidateQueries({ queryKey: ['/api/onedrive'] });
                     queryClient.invalidateQueries({ queryKey: ['/api/semester-settings'] });
                     queryClient.invalidateQueries({ queryKey: ['/api/semesters'] });
