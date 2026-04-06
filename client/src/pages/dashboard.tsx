@@ -1926,6 +1926,7 @@ export default function Dashboard() {
     moduleUnread: number;
     readingUnread: number;
     moduleRemainingMin: number;
+    readingRemainingMin: number;
     hasNoData: boolean;
     handlePlayModule: () => void;
     handlePlayReading: () => void;
@@ -26770,6 +26771,22 @@ export default function Dashboard() {
                       }
                       return Math.round(remaining * MINS_PER_CHUNK);
                     })();
+                    const readingRemainingMin = (() => {
+                      const MINS_PER_CHUNK = 1.2;
+                      let remaining = 0;
+                      const preparedReadingFiles = readingFiles.filter((f: any) => f.totalChunks && f.totalChunks > 0);
+                      for (const f of preparedReadingFiles) {
+                        if (f.listened) continue;
+                        const total = f.totalChunks || 0;
+                        let checked = 0;
+                        if (f.checkedChunks && f.checkedChunks !== 'null' && f.checkedChunks !== '[]') {
+                          try { const arr = JSON.parse(f.checkedChunks); if (Array.isArray(arr)) checked = arr.length; } catch {}
+                        }
+                        if (checked === 0 && f.lastChunkIndex != null && f.lastChunkIndex > 0) checked = f.lastChunkIndex;
+                        remaining += Math.max(0, total - checked);
+                      }
+                      return Math.round(remaining * MINS_PER_CHUNK);
+                    })();
                     const hasNoData = false;
                     const courseMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode);
                     const courseHexColor = courseMatch?.color || '#6b7280';
@@ -26862,6 +26879,7 @@ export default function Dashboard() {
                       moduleUnread,
                       readingUnread,
                       moduleRemainingMin,
+                      readingRemainingMin,
                       hasNoData,
                       handlePlayModule: () => handlePlayFiles('module'),
                       handlePlayReading: () => handlePlayFiles('reading'),
@@ -27477,9 +27495,9 @@ export default function Dashboard() {
                                     data-testid={`countdown-span-main-${t.id}-day-${dayIdx}`}
                                   >
                                     {isEndCell && (
-                                      <div style={{ position: 'absolute', left: '1px', top: `${barH + 1}px`, display: 'flex', alignItems: 'center', gap: '2px', whiteSpace: 'nowrap', lineHeight: 1 }}>
-                                        <span style={{ fontSize: '8px', fontWeight: 800, color: barColor, textShadow: '0 0 3px rgba(255,255,255,0.9)' }}>{cd.daysLeft}d</span>
-                                        <span style={{ fontSize: '7px', fontWeight: 600, color: 'rgba(0,0,0,0.45)', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '70px' }}>{labelText}</span>
+                                      <div style={{ position: 'absolute', left: '1px', top: `${barH + 1}px`, display: 'flex', alignItems: 'center', gap: '3px', whiteSpace: 'nowrap', lineHeight: 1 }}>
+                                        <span style={{ fontSize: '11px', fontWeight: 800, color: barColor, textShadow: '0 0 3px rgba(255,255,255,0.9)' }}>{cd.daysLeft}d</span>
+                                        <span style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(0,0,0,0.55)', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100px' }}>{labelText}</span>
                                       </div>
                                     )}
                                   </div>
@@ -30194,7 +30212,7 @@ export default function Dashboard() {
                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, borderRadius: '6px', overflow: 'hidden', gap: '2px' }}>
                       {[
                         { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `play-module-${pd.courseCode.toLowerCase()}`, testUpload: `upload-module-${pd.courseCode.toLowerCase()}`, bg: pd.progressStartColor || getCourseGradientColors(pd.courseCode).start, dark: true, fontOverride: '#fff' },
-                        { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, bg: (() => { const s = pd.progressStartColor || getCourseGradientColors(pd.courseCode).start; const e = pd.progressEndColor || getCourseGradientColors(pd.courseCode).end; const parse = (c: string) => { const m = c.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i); if (m) return { r: parseInt(m[1],16), g: parseInt(m[2],16), b: parseInt(m[3],16) }; const m2 = c.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/); if (m2) return { r: +m2[1], g: +m2[2], b: +m2[3] }; return null; }; const sp = parse(s); const ep = parse(e); if (sp && ep) { const mix = (a: number, b: number) => Math.round(a * 0.6 + b * 0.4); return `rgb(${mix(sp.r, ep.r)}, ${mix(sp.g, ep.g)}, ${mix(sp.b, ep.b)})`; } return e; })(), dark: true, fontOverride: '#fff' },
+                        { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, bg: (() => { const s = pd.progressStartColor || getCourseGradientColors(pd.courseCode).start; const e = pd.progressEndColor || getCourseGradientColors(pd.courseCode).end; const parse = (c: string) => { const m = c.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i); if (m) return { r: parseInt(m[1],16), g: parseInt(m[2],16), b: parseInt(m[3],16) }; const m2 = c.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/); if (m2) return { r: +m2[1], g: +m2[2], b: +m2[3] }; return null; }; const sp = parse(s); const ep = parse(e); if (sp && ep) { const mix = (a: number, b: number) => Math.round(a * 0.35 + b * 0.65); return `rgb(${mix(sp.r, ep.r)}, ${mix(sp.g, ep.g)}, ${mix(sp.b, ep.b)})`; } return e; })(), dark: true, fontOverride: '#fff' },
                       ].map(item => {
                         const circleSize = 34;
                         const strokeWidth = 3;
@@ -30238,23 +30256,26 @@ export default function Dashboard() {
                                 <Play fill={textColor} stroke={textColor} style={{ width: '14px', height: '14px' }} />
                               </div>
                             </div>
-                            {isModule && pd.moduleRemainingMin > 0 && pd.moduleP.hasFiles && pd.moduleP.percent < 100 && (() => {
+                            {(() => {
+                              const remainMin = isModule ? pd.moduleRemainingMin : pd.readingRemainingMin;
+                              const pData = isModule ? pd.moduleP : pd.readingP;
+                              if (!remainMin || remainMin <= 0 || !pData.hasFiles || pData.percent >= 100) return null;
                               const now = new Date();
                               const dayOfWeek = now.getDay();
                               const daysUntilFri = dayOfWeek <= 5 ? 5 - dayOfWeek : 6;
                               const fri = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilFri, 23, 59, 59);
                               const hoursLeft = Math.max(0, (fri.getTime() - now.getTime()) / (1000 * 60 * 60));
-                              const remainHrs = pd.moduleRemainingMin / 60;
+                              const remainHrs = remainMin / 60;
                               const pctOfTimeNeeded = Math.min(100, (remainHrs / Math.max(0.1, hoursLeft)) * 100);
                               const isUrgent = pctOfTimeNeeded > 50;
                               const isCritical = pctOfTimeNeeded > 80;
-                              const remainLabel = pd.moduleRemainingMin >= 60
-                                ? `${Math.floor(pd.moduleRemainingMin / 60)}h${pd.moduleRemainingMin % 60 > 0 ? Math.round(pd.moduleRemainingMin % 60) + 'm' : ''}`
-                                : `${pd.moduleRemainingMin}m`;
+                              const remainLabel = remainMin >= 60
+                                ? `${Math.floor(remainMin / 60)}h${remainMin % 60 > 0 ? Math.round(remainMin % 60) + 'm' : ''}`
+                                : `${remainMin}m`;
                               const hoursLeftLabel = hoursLeft >= 24 ? `${Math.floor(hoursLeft / 24)}d${Math.round(hoursLeft % 24)}h` : `${Math.round(hoursLeft)}h`;
                               const barColor = isCritical ? '#ef4444' : isUrgent ? '#f59e0b' : '#22c55e';
                               return (
-                                <div style={{ width: '100%', padding: '0 3px', marginTop: '1px' }} data-testid={`module-time-remaining-${pd.courseCode.toLowerCase()}`}>
+                                <div style={{ width: '100%', padding: '0 3px', marginTop: '1px' }} data-testid={`${item.type}-time-remaining-${pd.courseCode.toLowerCase()}`}>
                                   <div style={{ width: '100%', height: '3px', borderRadius: '2px', background: 'rgba(255,255,255,0.15)', overflow: 'hidden', position: 'relative' }}>
                                     <div style={{ width: `${Math.min(100, pctOfTimeNeeded)}%`, height: '100%', borderRadius: '2px', background: barColor, transition: 'width 0.5s ease' }} />
                                   </div>
@@ -31387,7 +31408,7 @@ export default function Dashboard() {
                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, borderRadius: '6px', overflow: 'hidden' }}>
                           {[
                             { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `float-play-module-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-module-${pd.courseCode.toLowerCase()}`, bg: pd.progressStartColor || getCourseGradientColors(pd.courseCode).start, dark: true, fontOverride: '#fff' },
-                            { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `float-play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-reading-${pd.courseCode.toLowerCase()}`, bg: (() => { const s = pd.progressStartColor || getCourseGradientColors(pd.courseCode).start; const e = pd.progressEndColor || getCourseGradientColors(pd.courseCode).end; const parse = (c: string) => { const m = c.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i); if (m) return { r: parseInt(m[1],16), g: parseInt(m[2],16), b: parseInt(m[3],16) }; const m2 = c.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/); if (m2) return { r: +m2[1], g: +m2[2], b: +m2[3] }; return null; }; const sp = parse(s); const ep = parse(e); if (sp && ep) { const mix = (a: number, b: number) => Math.round(a * 0.6 + b * 0.4); return `rgb(${mix(sp.r, ep.r)}, ${mix(sp.g, ep.g)}, ${mix(sp.b, ep.b)})`; } return e; })(), dark: true, fontOverride: '#fff' },
+                            { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `float-play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-reading-${pd.courseCode.toLowerCase()}`, bg: (() => { const s = pd.progressStartColor || getCourseGradientColors(pd.courseCode).start; const e = pd.progressEndColor || getCourseGradientColors(pd.courseCode).end; const parse = (c: string) => { const m = c.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i); if (m) return { r: parseInt(m[1],16), g: parseInt(m[2],16), b: parseInt(m[3],16) }; const m2 = c.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/); if (m2) return { r: +m2[1], g: +m2[2], b: +m2[3] }; return null; }; const sp = parse(s); const ep = parse(e); if (sp && ep) { const mix = (a: number, b: number) => Math.round(a * 0.35 + b * 0.65); return `rgb(${mix(sp.r, ep.r)}, ${mix(sp.g, ep.g)}, ${mix(sp.b, ep.b)})`; } return e; })(), dark: true, fontOverride: '#fff' },
                           ].map(item => {
                             const circleSize = 44;
                             const strokeWidth = 3.5;
