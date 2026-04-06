@@ -15354,23 +15354,23 @@ export default function Dashboard() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '7px' }}>
               <div
                 className="cursor-grab active:cursor-grabbing"
-                style={{ width: '20px', height: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.5 }}
+                style={{ width: '20px', height: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: topPillUndocked ? 0.8 : 0.5 }}
                 onMouseDown={handleTopPillGrabStart}
                 onTouchStart={handleTopPillGrabStart}
                 title="Drag to undock"
                 data-testid="grab-undock-top-pill"
               >
-                <svg width="14" height="10" viewBox="0 0 14 10"><circle cx="3" cy="1.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="7" cy="1.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="11" cy="1.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="3" cy="5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="7" cy="5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="11" cy="5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="3" cy="8.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="7" cy="8.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="11" cy="8.5" r="1" fill="rgba(255,255,255,0.6)"/></svg>
+                <svg width="14" height="10" viewBox="0 0 14 10"><circle cx="3" cy="1.5" r="1" fill={topPillUndocked ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.6)"}/><circle cx="7" cy="1.5" r="1" fill={topPillUndocked ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.6)"}/><circle cx="11" cy="1.5" r="1" fill={topPillUndocked ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.6)"}/><circle cx="3" cy="5" r="1" fill={topPillUndocked ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.6)"}/><circle cx="7" cy="5" r="1" fill={topPillUndocked ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.6)"}/><circle cx="11" cy="5" r="1" fill={topPillUndocked ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.6)"}/><circle cx="3" cy="8.5" r="1" fill={topPillUndocked ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.6)"}/><circle cx="7" cy="8.5" r="1" fill={topPillUndocked ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.6)"}/><circle cx="11" cy="8.5" r="1" fill={topPillUndocked ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.6)"}/></svg>
               </div>
               {topPillUndocked && (
                 <div
-                  style={{ width: '18px', height: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', opacity: 0.7, borderRadius: '3px', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)' }}
+                  style={{ width: '18px', height: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', opacity: 0.8, borderRadius: '3px', background: 'rgba(0,0,0,0.15)', border: '1px solid rgba(0,0,0,0.25)' }}
                   className="pill-button-hover"
                   onClick={(e) => { e.stopPropagation(); redockTopPill(); }}
                   title="Snap back to top"
                   data-testid="button-redock-top-pill"
                 >
-                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 8V2M5 2L2 5M5 2L8 5" stroke="rgba(255,255,255,0.8)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 8V2M5 2L2 5M5 2L8 5" stroke="rgba(0,0,0,0.7)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </div>
               )}
             </div>
