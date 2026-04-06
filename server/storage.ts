@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { tasks, files, semesterSettings, secondGoogleAccount, thirdGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, accessTokens, shiftSchedule, semesterChecklist, courseWeekMappings, scholarships, keyContacts, announcements, entityComments, pendingReviewItems, dismissedReviewTitles, sharedNotebookLinks, savedEmailSearches, weatherHistory, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type ThirdGoogleAccount, type InsertThirdGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, type AccessToken, type InsertAccessToken, type ShiftScheduleEntry, type InsertShiftScheduleEntry, type SemesterChecklistItem, type InsertSemesterChecklistItem, type CourseWeekMapping, type InsertCourseWeekMapping, type Scholarship, type InsertScholarship, type KeyContact, type InsertKeyContact, type Announcement, type InsertAnnouncement, type EntityComment, type PendingReviewItem, type InsertPendingReviewItem, type SharedNotebookLink, type InsertSharedNotebookLink, type SavedEmailSearch, type InsertSavedEmailSearch, type WeatherHistory, type InsertWeatherHistory, getWeekNumber } from "@shared/schema";
+import { tasks, files, semesterSettings, secondGoogleAccount, thirdGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, accessTokens, shiftSchedule, semesterChecklist, courseWeekMappings, scholarships, keyContacts, announcements, entityComments, pendingReviewItems, dismissedReviewTitles, sharedNotebookLinks, savedEmailSearches, weatherHistory, weatherAlertHistory, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type ThirdGoogleAccount, type InsertThirdGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, type AccessToken, type InsertAccessToken, type ShiftScheduleEntry, type InsertShiftScheduleEntry, type SemesterChecklistItem, type InsertSemesterChecklistItem, type CourseWeekMapping, type InsertCourseWeekMapping, type Scholarship, type InsertScholarship, type KeyContact, type InsertKeyContact, type Announcement, type InsertAnnouncement, type EntityComment, type PendingReviewItem, type InsertPendingReviewItem, type SharedNotebookLink, type InsertSharedNotebookLink, type SavedEmailSearch, type InsertSavedEmailSearch, type WeatherHistory, type InsertWeatherHistory, type WeatherAlertHistory, type InsertWeatherAlertHistory, getWeekNumber } from "@shared/schema";
 import { eq, and, gte, lte, desc, or, isNull } from "drizzle-orm";
 
 export interface IStorage {
@@ -115,6 +115,8 @@ export interface IStorage {
   deleteSavedEmailSearch(id: number): Promise<void>;
   getWeatherHistory(from: Date, to: Date): Promise<WeatherHistory[]>;
   createWeatherRecord(data: InsertWeatherHistory): Promise<WeatherHistory>;
+  getWeatherAlertHistory(from: Date, to: Date): Promise<WeatherAlertHistory[]>;
+  createWeatherAlertRecord(data: InsertWeatherAlertHistory): Promise<WeatherAlertHistory>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -881,6 +883,17 @@ export class DatabaseStorage implements IStorage {
 
   async createWeatherRecord(data: InsertWeatherHistory): Promise<WeatherHistory> {
     const [created] = await db.insert(weatherHistory).values(data).returning();
+    return created;
+  }
+
+  async getWeatherAlertHistory(from: Date, to: Date): Promise<WeatherAlertHistory[]> {
+    return await db.select().from(weatherAlertHistory)
+      .where(and(gte(weatherAlertHistory.recordedAt, from), lte(weatherAlertHistory.recordedAt, to)))
+      .orderBy(desc(weatherAlertHistory.recordedAt));
+  }
+
+  async createWeatherAlertRecord(data: InsertWeatherAlertHistory): Promise<WeatherAlertHistory> {
+    const [created] = await db.insert(weatherAlertHistory).values(data).returning();
     return created;
   }
 }

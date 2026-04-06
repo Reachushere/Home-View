@@ -815,5 +815,19 @@ export const insertWeatherHistorySchema = createInsertSchema(weatherHistory).omi
 export type WeatherHistory = typeof weatherHistory.$inferSelect;
 export type InsertWeatherHistory = z.infer<typeof insertWeatherHistorySchema>;
 
+export const weatherAlertHistory = pgTable("weather_alert_history", {
+  id: serial("id").primaryKey(),
+  recordedAt: timestamp("recorded_at").notNull(),
+  title: text("title").notNull(),
+  summary: text("summary"),
+  description: text("description"),
+  alertType: text("alert_type"),
+  url: text("url"),
+});
+
+export const insertWeatherAlertHistorySchema = createInsertSchema(weatherAlertHistory).omit({ id: true });
+export type WeatherAlertHistory = typeof weatherAlertHistory.$inferSelect;
+export type InsertWeatherAlertHistory = z.infer<typeof insertWeatherAlertHistorySchema>;
+
 // Export chat models for AI integrations
 export * from "./models/chat";

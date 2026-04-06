@@ -7,8 +7,8 @@ import path from "path";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { db } from "./db";
-import { sql, eq } from "drizzle-orm";
-import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, COURSES, type RepeatType, type RepeatIntervalUnit, type InsertTask, type FileRecord, degreeTrackingData, feedbackNotes, insertFeedbackNoteSchema, appState, announcements, scheduledAlexaAnnouncements, haAutomations, notepadNotes, notepadAttachments } from "@shared/schema";
+import { sql, eq, and, gte } from "drizzle-orm";
+import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, COURSES, type RepeatType, type RepeatIntervalUnit, type InsertTask, type FileRecord, degreeTrackingData, feedbackNotes, insertFeedbackNoteSchema, appState, announcements, scheduledAlexaAnnouncements, haAutomations, notepadNotes, notepadAttachments, weatherAlertHistory as weatherAlertHistoryTable } from "@shared/schema";
 import { z } from "zod";
 import { LIBERAL_STUDIES_COURSES, OPEN_ELECTIVE_COURSES } from "@shared/electiveCourses";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
@@ -2379,6 +2379,20 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
     }
   });
 
+  app.get("/api/weather-alert-history", async (req, res) => {
+    try {
+      const fromStr = req.query.from as string;
+      const toStr = req.query.to as string;
+      const from = fromStr ? new Date(fromStr) : new Date(Date.now() - 60 * 24 * 60 * 60 * 1000);
+      const to = toStr ? new Date(toStr) : new Date();
+      const records = await storage.getWeatherAlertHistory(from, to);
+      res.json(records);
+    } catch (err) {
+      console.error("Error fetching weather alert history:", err);
+      res.status(500).json({ error: "Failed to fetch weather alert history" });
+    }
+  });
+
   app.get("/api/weather-alerts", async (_req, res) => {
     try {
       const now = Date.now();
@@ -2387,6 +2401,27 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       }
 
       const alerts = await fetchWeatherAlertsFromECCC();
+      if (alerts.length > 0) {
+        for (const alert of alerts) {
+          try {
+            const existing = await db.select().from(weatherAlertHistoryTable)
+              .where(and(
+                eq(weatherAlertHistoryTable.title, alert.title),
+                gte(weatherAlertHistoryTable.recordedAt, new Date(Date.now() - 24 * 60 * 60 * 1000))
+              )).limit(1);
+            if (existing.length === 0) {
+              await storage.createWeatherAlertRecord({
+                recordedAt: new Date(),
+                title: alert.title,
+                summary: alert.summary || null,
+                description: alert.description || null,
+                alertType: alert.type || null,
+                url: alert.url || null,
+              });
+            }
+          } catch (e) { console.error("Error saving weather alert:", e); }
+        }
+      }
       const result = { alerts, count: alerts.length, hasAlerts: alerts.length > 0, timestamp: new Date().toISOString() };
       weatherAlertCache.data = result;
       weatherAlertCache.timestamp = now;
@@ -9707,7 +9742,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
   const recordWeatherHourly = async () => {
     try {
-      const resp = await fetch(`http://localhost:${port}/api/weather-history/record`, { method: 'POST' });
+      const resp = await fetch(`http://localhost:${process.env.PORT || 5000}/api/weather-history/record`, { method: 'POST' });
       if (resp.ok) console.log('[Weather History] Recorded hourly weather data');
       else console.error('[Weather History] Failed to record:', await resp.text());
     } catch (e: any) {

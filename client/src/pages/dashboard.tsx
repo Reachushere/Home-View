@@ -2028,6 +2028,7 @@ export default function Dashboard() {
   const [weatherHistoryData, setWeatherHistoryData] = useState<any[]>([]);
   const [weatherHistoryLoading, setWeatherHistoryLoading] = useState(false);
   const [weatherHistoryBackfilled, setWeatherHistoryBackfilled] = useState(false);
+  const [weatherAlertHistoryData, setWeatherAlertHistoryData] = useState<any[]>([]);
   const [isScholarshipsOpen, setIsScholarshipsOpen] = useState(false);
   const [isKeyContactsOpen, setIsKeyContactsOpen] = useState(false);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
@@ -15218,7 +15219,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Tasks ── */}
-          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', paddingRight: '7px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 25)}px`, border: '1.5px solid rgba(50,120,210,0.6)', position: 'relative', top: '1px', margin: '0 6px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(40,110,210,0.5) 0%, rgba(25,80,180,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', paddingRight: '7px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 25)}px`, border: '1.5px solid rgba(50,120,210,0.6)', position: 'relative', top: '1px', margin: '0 3px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(40,110,210,0.5) 0%, rgba(25,80,180,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           <div style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <ListChecks className="h-[18px] w-[18px] text-white/70" style={{ position: 'relative', top: '-5px', left: '-2px' }} />
             <span style={{ position: 'absolute', top: '13px', fontSize: '7.5px', color: '#ffffff', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', right: '50%', transform: 'translateX(32%)' }}>Tasks</span>
@@ -15506,7 +15507,7 @@ export default function Dashboard() {
 
 
           {/* ── School ── */}
-          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 25)}px`, border: '1.5px solid rgba(34,197,94,0.7)', position: 'relative', top: '1px', margin: '0 6px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(34,197,94,0.55) 0%, rgba(22,163,74,0.4) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 25)}px`, border: '1.5px solid rgba(34,197,94,0.7)', position: 'relative', top: '1px', margin: '0 3px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(34,197,94,0.55) 0%, rgba(22,163,74,0.4) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           <div style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <GraduationCap className="h-[20px] w-[20px] text-white/70" style={{ position: 'relative', top: '-7px', left: '-2px' }} />
             <span style={{ position: 'absolute', top: '13px', fontSize: '7.5px', color: '#ffffff', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', right: '50%', transform: 'translateX(38%)' }}>School</span>
@@ -15611,7 +15612,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Entertainment ── */}
-          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 25)}px`, border: '1.5px solid rgba(160,100,240,0.6)', position: 'relative', top: '1px', margin: '0 6px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(150,90,235,0.5) 0%, rgba(120,60,210,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 25)}px`, border: '1.5px solid rgba(160,100,240,0.6)', position: 'relative', top: '1px', margin: '0 3px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(150,90,235,0.5) 0%, rgba(120,60,210,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           <div style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <img src={soundIconPath} alt="Sound" style={{ height: '22px', width: '22px', objectFit: 'contain', position: 'relative', opacity: 0.7, top: '-7px', left: '-2px' }} />
             <span style={{ position: 'absolute', top: '13px', fontSize: '7.5px', color: '#ffffff', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', right: '50%', transform: 'translateX(38%)' }}>Sound</span>
@@ -15730,7 +15731,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Tools ── */}
-          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 28)}px`, border: '1.5px solid rgba(110,110,110,0.8)', position: 'relative', top: '1px', margin: '0 6px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(100,100,100,0.75) 0%, rgba(75,75,75,0.55) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 28)}px`, border: '1.5px solid rgba(110,110,110,0.8)', position: 'relative', top: '1px', margin: '0 3px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(100,100,100,0.75) 0%, rgba(75,75,75,0.55) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           {isAdmin && (
             <div style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <Wrench className="h-[18px] w-[18px] text-white/70" style={{ position: 'relative', top: '-6px', left: '-1px' }} />
@@ -15907,9 +15908,16 @@ export default function Dashboard() {
               setShowWeatherHistoryPanel(true);
               setWeatherHistoryLoading(true);
               try {
-                const resp = await fetch('/api/weather-history');
+                const [resp, alertHistResp] = await Promise.all([
+                  fetch('/api/weather-history'),
+                  fetch('/api/weather-alert-history')
+                ]);
                 const data = await resp.json();
                 setWeatherHistoryData(data);
+                if (alertHistResp.ok) {
+                  const alertData = await alertHistResp.json();
+                  setWeatherAlertHistoryData(alertData);
+                }
                 if (data.length === 0 && !weatherHistoryBackfilled) {
                   setWeatherHistoryBackfilled(true);
                   const backfillResp = await fetch('/api/weather-history/backfill', { method: 'POST' });
@@ -22156,6 +22164,33 @@ export default function Dashboard() {
                                 {alert.summary && <div className="text-[10px] mt-0.5" style={{ color: 'rgba(255,255,255,0.7)' }}>{alert.summary}</div>}
                                 {alert.description && <div className="text-[9px] mt-1 leading-[1.4]" style={{ color: 'rgba(255,255,255,0.5)', maxHeight: '60px', overflow: 'auto' }}>{alert.description}</div>}
                                 {alert.type && <span className="text-[8px] uppercase tracking-wider mt-1 inline-block px-1.5 py-0.5 rounded" style={{ background: 'rgba(255,68,68,0.2)', color: '#ff8888' }}>{alert.type}</span>}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {weatherAlertHistoryData.length > 0 && (
+                    <div className="mb-4" data-testid="weather-history-past-alerts">
+                      <div className="flex items-center gap-2 mb-2">
+                        <img src={weatherAlertLogoPath} alt="Past Alerts" style={{ height: '18px', width: 'auto', objectFit: 'contain', opacity: 0.6 }} />
+                        <span className="text-[12px] font-semibold" style={{ color: '#ff8844' }}>Past Weather Alerts ({weatherAlertHistoryData.length})</span>
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        {weatherAlertHistoryData.map((alert: any, ai: number) => (
+                          <div key={ai} className="rounded-md px-3 py-2" style={{ background: 'rgba(255,136,68,0.08)', border: '1px solid rgba(255,136,68,0.25)' }} data-testid={`weather-history-past-alert-${ai}`}>
+                            <div className="flex items-start gap-2">
+                              <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-[1px]" style={{ color: '#ff8844' }} />
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[11px] font-bold" style={{ color: '#ffaa66' }}>{alert.title}</span>
+                                  <span className="text-[8px]" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                                    {new Date(alert.recordedAt).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'America/Toronto' })}
+                                  </span>
+                                </div>
+                                {alert.summary && <div className="text-[10px] mt-0.5" style={{ color: 'rgba(255,255,255,0.6)' }}>{alert.summary}</div>}
+                                {alert.alertType && <span className="text-[8px] uppercase tracking-wider mt-1 inline-block px-1.5 py-0.5 rounded" style={{ background: 'rgba(255,136,68,0.15)', color: '#ffaa66' }}>{alert.alertType}</span>}
                               </div>
                             </div>
                           </div>
