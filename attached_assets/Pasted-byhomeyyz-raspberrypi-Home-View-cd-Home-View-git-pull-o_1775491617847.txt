@@ -1,0 +1,32 @@
+byhomeyyz@raspberrypi:~/Home-View $ cd ~/Home-View
+git pull origin main
+kill $(lsof -t -i:5000) 2>/dev/null; sleep 1; npm run dev
+From https://github.com/Reachushere/Home-View
+ * branch                main       -> FETCH_HEAD
+Already up to date.
+npm warn Unknown builtin config "globalignorefile". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+[TTS] Rate limit active until 2026-05-01T00:00:00.000Z — using Edge TTS
+[Raw Story] Monitor DISABLED in development (only runs in production)
+[Email Router] Unified email intake ready at POST /api/webhook/email
+[Gmail Ticker] Webhook endpoint ready at POST /api/webhook/ticker
+=== [Alexa Scheduler] Started (checking every 30 seconds) ===
+12:06:43 PM [express] serving on port 5000
+=== [Reminder] Starting reminder scheduler (checking every 60 seconds) ===
+[Reminder] Loaded 1092 sent reminder keys from database
+12:06:47 PM [express] GET /api/version 200 in 3ms :: {"version":"1775491602983"}
+[BABEL] Note: The code generator has deoptimised the styling of /home/byhomeyyz/Home-View/client/src/pages/dashboard.tsx as it exceeds the max of 500KB.
+12:06:53 PM [express] GET /api/version 200 in 1ms :: {"version":"1775491602983"}
+12:06:53 PM [express] GET /api/version 200 in 1ms :: {"version":"1775491602983"}
+12:06:53 PM [express] GET /api/kitchen/status 304 in 1ms :: {"isPlaying":false,"progress":null}
+12:06:53 PM [express] GET /api/partner-status 500 in 1ms :: {"error":"Home Assistant not configured"}
+12:06:54 PM [express] GET /api/files/recently-prepared 304 in 1ms :: {"files":[]}
+12:06:54 PM [express] GET /api/kitchen/status 304 in 1ms :: {"isPlaying":false,"progress":null}
+[HA Health] ✗ Connection LOST: fetch failed
+[HA Health] Initial check: disconnected
+12:06:54 PM [express] GET /api/files/recently-prepared 304 in 1ms :: {"files":[]}
+12:06:54 PM [express] GET /api/partner-status 500 in 1ms :: {"error":"Home Assistant not configured"}
+12:06:54 PM [express] GET /api/health 200 in 2ms :: {"status":"ok","uptime":11,"ha":{"connected":false,"lastSuccessAt":null,"lastFailureAt":"2026-04-06T16:06:54.097Z","consecutiveFailures":1,"totalChecks":1,"totalFailures":1,"lastError":"fetch failed","downSince":"2026-04-06T16:06:54.097Z","commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-06T16:06:54.156Z"}
