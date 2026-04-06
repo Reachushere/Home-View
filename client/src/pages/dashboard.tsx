@@ -30945,8 +30945,8 @@ export default function Dashboard() {
                         const circumference = 2 * Math.PI * radius;
                         const offset = circumference - (item.p.percent / 100) * circumference;
                         const isModule = item.type === 'module';
-                        const circleColor = item.dark ? '#fff' : '#000';
-                        const textColor = item.fontOverride || circleColor;
+                        const circleColor = item.fontOverride || (item.dark ? '#fff' : '#000');
+                        const textColor = circleColor;
                         const dragKey = `${pd.courseCode}-${item.type}`;
                         const isDragOver = hwDragOverTarget === dragKey;
                         return (
@@ -32142,7 +32142,7 @@ export default function Dashboard() {
                             const circumference = 2 * Math.PI * radius;
                             const offset = circumference - (item.p.percent / 100) * circumference;
                             const isModule = item.type === 'module';
-                            const textColor = item.dark ? '#fff' : '#000';
+                            const textColor = item.fontOverride || (item.dark ? '#fff' : '#000');
                             const dragKey = `float-${pd.courseCode}-${item.type}`;
                             const isDragOver = hwDragOverTarget === dragKey;
                             return (
@@ -32153,16 +32153,16 @@ export default function Dashboard() {
                                 onDrop={(e) => { e.preventDefault(); e.stopPropagation(); setHwDragOverTarget(null); const file = e.dataTransfer.files?.[0]; if (file) item.drop(file); }}
                                 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', position: 'relative', flex: 1, minWidth: 0, backgroundColor: item.bg, padding: '5px 3px 4px', borderRadius: '6px', outline: isDragOver ? '2px solid rgba(255,255,255,0.8)' : 'none', outlineOffset: '-2px', transition: 'outline 0.15s ease', opacity: 1, isolation: 'isolate' }}
                                 data-testid={`float-drop-${item.type}-${pd.courseCode.toLowerCase()}`}>
-                                <span style={{ position: 'absolute', top: '3px', left: 0, right: 0, textAlign: 'center', fontSize: '10px', fontWeight: 400, color: item.fontOverride || (item.dark ? '#ffffff' : '#000000'), letterSpacing: '0.5px', fontFamily: "'Raleway', sans-serif", zIndex: 5, whiteSpace: 'nowrap' }}>{item.label}</span>
+                                <span style={{ position: 'absolute', top: '3px', left: 0, right: 0, textAlign: 'center', fontSize: '10px', fontWeight: 400, color: textColor, letterSpacing: '0.5px', fontFamily: "'Raleway', sans-serif", zIndex: 5, whiteSpace: 'nowrap' }}>{item.label}</span>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '8px' }}>
                                   <div style={{ position: 'relative', width: circleSize, height: circleSize, marginLeft: '0px' }}>
                                     <svg width={circleSize} height={circleSize} style={{ transform: 'rotate(-90deg)' }}>
-                                      <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth={strokeWidth} />
+                                      <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke={textColor === '#000' || textColor === 'black' ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.3)'} strokeWidth={strokeWidth} />
                                       {item.p.hasFiles && item.p.percent > 0 && (
-                                        <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke="#ffffff" strokeWidth={strokeWidth} strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
+                                        <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke={textColor} strokeWidth={strokeWidth} strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
                                       )}
                                     </svg>
-                                    <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700, color: item.fontOverride || (item.dark ? '#ffffff' : '#000000'), fontFamily: "system-ui, -apple-system, 'Segoe UI', sans-serif", letterSpacing: '-0.3px' }}>
+                                    <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700, color: textColor, fontFamily: "system-ui, -apple-system, 'Segoe UI', sans-serif", letterSpacing: '-0.3px' }}>
                                       {item.p.hasFiles ? `${item.p.percent}%` : 'N/A'}
                                     </span>
                                   </div>
@@ -32172,7 +32172,7 @@ export default function Dashboard() {
                                         {item.unread}
                                       </div>
                                     )}
-                                    <Play fill="#ffffff" stroke="#ffffff" style={{ width: '18px', height: '18px' }} />
+                                    <Play fill={textColor} stroke={textColor} style={{ width: '18px', height: '18px' }} />
                                   </div>
                                 </div>
                                 {isModule && pd.moduleRemainingMin > 0 && pd.moduleP.hasFiles && pd.moduleP.percent < 100 && (() => {
