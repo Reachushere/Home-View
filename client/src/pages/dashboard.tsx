@@ -27418,7 +27418,12 @@ export default function Dashboard() {
                               const tDueDayIdx = weekDays.findIndex(wd => isSameDayET(wd, tDue));
                               if (tDueDayIdx < 0) return false;
                               const isDueDay = dayIdx === tDueDayIdx;
-                              if (tDueHour !== hour) return false;
+                              if (isDueDay) {
+                                if (tDueHour !== hour) return false;
+                              } else {
+                                const firstSlot = timeSlots[0] ?? 8;
+                                if (hour !== firstSlot) return false;
+                              }
                               return dayIdx >= endDayIdx && dayIdx <= tDueDayIdx;
                             });
                             if (countdownTasks.length === 0) return null;
