@@ -9973,6 +9973,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   let catLightsConfirmResolve: ((value: boolean) => void) | null = null;
   let catLightsLastPromptAt: number | null = null;
   let catLightsPromptPending = false;
+  let catLightsPromptSession = 0;
   let catLightsLateConfirmFile: any = null;
   let catLightsLateConfirmWeek: number | null = null;
   let catLightsLateConfirmExpiry: number = 0;
@@ -12849,6 +12850,7 @@ document.body.removeChild(a);
       if (lightState === 'off') {
         catWashTrace('CatLights', 'LIGHT OFF — stopping all playback');
         console.log("[Cat Lights] Light off — stopping all playback and saving progress");
+        const offSession = catLightsPromptSession;
         const stopped: string[] = [];
         if (catWashPlaybackActive) {
           stopped.push(`playback:${catWashPlaybackState?.fileName || ''}`);
@@ -12871,7 +12873,12 @@ document.body.removeChild(a);
         ]);
         stopped.push("tv");
         console.log(`[Cat Lights] Fire Stick + Samsung TV turn-off sent`);
-        catLightsPromptPending = false;
+        if (catLightsPromptSession === offSession) {
+          catLightsPromptPending = false;
+          console.log(`[Cat Lights] Cleared promptPending (session ${offSession} still current)`);
+        } else {
+          console.log(`[Cat Lights] Skipped clearing promptPending — new ON session ${catLightsPromptSession} started during OFF cleanup (was ${offSession})`);
+        }
         catWashPlaybackTrigger = null;
         await clearPlaybackSession();
         console.log(`[Cat Lights] Stopped: ${stopped.join(', ') || 'nothing was playing'}`);
