@@ -1,0 +1,113 @@
+rest:
+  - resource: "https://home-view--bkh416.replit.app/api/ha/news"
+    scan_interval: 300
+    sensor:
+      - name: "App News Headlines"
+        value_template: "{{ value_json.headlines | length }}"
+        json_attributes:
+          - headlines
+
+  - resource: https://home-view--bkh416.replit.app/api/weather
+    scan_interval: 900
+    sensor:
+      - name: UniCal Weather
+        value_template: "{{ value_json.current.temp }}"
+        json_attributes_path: "$.current"
+        json_attributes:
+          - temp
+          - feels_like
+          - humidity
+          - description
+          - icon
+
+  - resource: https://home-view--bkh416.replit.app/api/weather-alerts
+    scan_interval: 900
+    sensor:
+      - name: UniCal Weather Alerts
+        value_template: "{{ value_json.alerts | length }}"
+        json_attributes:
+          - alerts
+
+  - resource: https://home-view--bkh416.replit.app/api/pollen
+    scan_interval: 3600
+    sensor:
+      - name: UniCal Pollen
+        value_template: "{{ value_json.overall_risk }}"
+        json_attributes:
+          - overall_risk
+          - allergens
+
+  - resource: https://home-view--bkh416.replit.app/api/news
+    scan_interval: 1800
+    sensor:
+      - name: UniCal News
+        value_template: "{{ value_json | length }}"
+
+  - resource: "https://home-view--bkh416.replit.app/api/news"
+    scan_interval: 300
+    sensor:
+      - name: "App News"
+        value_template: "{{ value_json | length }}"
+        json_attributes:
+          - "0"
+          - "1"
+          - "2"
+          - "3"
+          - "4"
+          - "5"
+          - "6"
+          - "7"
+          - "8"
+          - "9"
+          - "10"
+          - "11"
+          - "12"
+          - "13"
+          - "14"
+
+rest_command:
+  cat_lights_webhook:
+    url: "https://home-view--bkh416.replit.app/api/webhook/cat-lights"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+    payload: '{"state": "{{ states(''light.cat_lights'') }}"}'
+    content_type: "application/json"
+
+  cat_wash_webhook:
+    url: "https://home-view--bkh416.replit.app/api/webhook/cat-wash"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+
+  cat_knob_press_webhook:
+    url: "https://home-view--bkh416.replit.app/api/webhook/cat-knob-press"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+    payload: "{}"
+    content_type: "application/json"
+
+  cat_volume_webhook:
+    url: "https://home-view--bkh416.replit.app/api/webhook/cat-volume"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+    payload: '{"direction": "{{ direction }}", "speed": "{{ speed }}"}'
+    content_type: "application/json"
+
+  cat_lights_confirm_webhook:
+    url: "https://home-view--bkh416.replit.app/api/webhook/cat-lights-confirm"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+    payload: "{}"
+    content_type: "application/json"
+
+input_boolean:
+  module_reading_pending:
+    name: Module Reading Pending
+    initial: false
+  module_reading_confirmed:
+    name: Module Reading Confirmed
+    initial: false
