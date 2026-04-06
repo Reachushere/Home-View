@@ -1,3 +1,4 @@
+import 'dotenv/config';
 process.env.TZ = 'America/Toronto';
 
 import express, { type Request, Response, NextFunction } from "express";
