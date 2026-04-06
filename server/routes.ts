@@ -10289,7 +10289,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       const name = (semesterSettings as any)[`course${i}Name`];
       if (!code || !code.trim()) continue;
       const codeClean = code.replace(/\s/g, '');
-      const folderName = name ? `${codeClean} - ${name}` : codeClean;
+      const folderName = name || codeClean;
       courses.push({ code: codeClean, path: `${basePath}/${folderName}` });
     }
     return courses;
@@ -10298,8 +10298,10 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   async function syncOneDriveFilesForWeek(semesterSettings: any, currentWeekNumber: number, logPrefix: string = '[Sync]'): Promise<void> {
     try {
       const { listOneDriveItems } = await import("./onedrive");
-      const { ObjectStorageService } = await import("./replit_integrations/object_storage");
-      const objectStorageSync = new ObjectStorageService();
+      const fs = await import("fs");
+      const path = await import("path");
+      const localUploadsDir = path.join(process.cwd(), 'dist', 'public', 'uploads');
+      if (!fs.existsSync(localUploadsDir)) fs.mkdirSync(localUploadsDir, { recursive: true });
       const courses = await getSemesterOneDriveCourses(semesterSettings);
       console.log(`${logPrefix} Syncing OneDrive for ${courses.length} courses, week ${currentWeekNumber}`);
       for (const course of courses) {
@@ -10320,12 +10322,12 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
               const downloadResponse = await fetch(file.downloadUrl);
               if (!downloadResponse.ok) continue;
               const fileBuffer = Buffer.from(await downloadResponse.arrayBuffer());
-              const uploadUrl = await objectStorageSync.getObjectEntityUploadURL();
-              const uploadResponse = await fetch(uploadUrl, { method: 'PUT', body: fileBuffer, headers: { 'Content-Type': 'application/pdf' } });
-              if (!uploadResponse.ok) continue;
-              const objectPath = objectStorageSync.normalizeObjectEntityPath(uploadUrl);
+              const localFileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+              const localFilePath = path.join(localUploadsDir, localFileName);
+              fs.writeFileSync(localFilePath, fileBuffer);
+              const objectPath = `/local/uploads/${localFileName}`;
               const newFile = await storage.createFile({ originalName: file.name, displayName: file.name, objectPath, contentType: 'application/pdf', size: file.size, folder: folderName, listened: false });
-              console.log(`${logPrefix} Synced new file: ${file.name} → ${folderName}`);
+              console.log(`${logPrefix} Synced new file: ${file.name} → ${folderName} (saved locally)`);
               if (newFile?.id) {
                 queueFileForPreparation(newFile.id);
               }
@@ -11923,7 +11925,18 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
       let buffer: Buffer | null = null;
 
-      if (file.objectPath?.startsWith('/School/')) {
+      if (file.objectPath?.startsWith('/local/uploads/')) {
+        const fs = await import("fs");
+        const path = await import("path");
+        const localFileName = file.objectPath.replace('/local/uploads/', '');
+        const localFilePath = path.join(process.cwd(), 'dist', 'public', 'uploads', localFileName);
+        if (fs.existsSync(localFilePath)) {
+          buffer = fs.readFileSync(localFilePath);
+          console.log(`[ExtractText] Read ${buffer.length} bytes from local file: ${localFileName}`);
+        } else {
+          console.error(`[ExtractText] Local file not found: ${localFilePath}`);
+        }
+      } else if (file.objectPath?.startsWith('/School/')) {
         console.log(`[ExtractText] Downloading from OneDrive path: ${file.objectPath}`);
         const { getOneDriveClient } = await import("./onedrive");
         const client = await getOneDriveClient();
