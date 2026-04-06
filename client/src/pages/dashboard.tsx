@@ -30420,7 +30420,7 @@ export default function Dashboard() {
                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, borderRadius: '6px', overflow: 'hidden', gap: '2px' }}>
                       {[
                         { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `play-module-${pd.courseCode.toLowerCase()}`, testUpload: `upload-module-${pd.courseCode.toLowerCase()}`, bg: pd.progressStartColor || getCourseGradientColors(pd.courseCode).start, dark: true, fontOverride: '#fff' },
-                        { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, bg: (() => { const s = pd.progressStartColor || getCourseGradientColors(pd.courseCode).start; const e = pd.progressEndColor || getCourseGradientColors(pd.courseCode).end; const parse = (c: string) => { const m = c.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i); if (m) return { r: parseInt(m[1],16), g: parseInt(m[2],16), b: parseInt(m[3],16) }; const m2 = c.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/); if (m2) return { r: +m2[1], g: +m2[2], b: +m2[3] }; return null; }; const sp = parse(s); const ep = parse(e); if (sp && ep) { const mix = (a: number, b: number) => Math.round(a * 0.55 + b * 0.45); return `rgb(${mix(sp.r, ep.r)}, ${mix(sp.g, ep.g)}, ${mix(sp.b, ep.b)})`; } return e; })(), dark: true, fontOverride: '#fff' },
+                        { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, bg: pd.progressEndColor || getCourseGradientColors(pd.courseCode).end, dark: true, fontOverride: '#fff' },
                       ].map(item => {
                         const circleSize = 34;
                         const strokeWidth = 3;
@@ -30467,28 +30467,31 @@ export default function Dashboard() {
                             {(() => {
                               const remainMin = isModule ? pd.moduleRemainingMin : pd.readingRemainingMin;
                               const pData = isModule ? pd.moduleP : pd.readingP;
-                              if (!remainMin || remainMin <= 0 || !pData.hasFiles || pData.percent >= 100) return null;
+                              if (pData.percent >= 100) return null;
                               const now = new Date();
                               const dayOfWeek = now.getDay();
                               const daysUntilFri = dayOfWeek <= 5 ? 5 - dayOfWeek : 6;
                               const fri = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilFri, 23, 59, 59);
                               const hoursLeft = Math.max(0, (fri.getTime() - now.getTime()) / (1000 * 60 * 60));
-                              const remainHrs = remainMin / 60;
-                              const pctOfTimeNeeded = Math.min(100, (remainHrs / Math.max(0.1, hoursLeft)) * 100);
-                              const isUrgent = pctOfTimeNeeded > 50;
-                              const isCritical = pctOfTimeNeeded > 80;
-                              const remainLabel = remainMin >= 60
+                              const hasTime = remainMin && remainMin > 0;
+                              const remainHrs = hasTime ? remainMin / 60 : 0;
+                              const pctOfTimeNeeded = hasTime ? Math.min(100, (remainHrs / Math.max(0.1, hoursLeft)) * 100) : 0;
+                              const isUrgent = hasTime && pctOfTimeNeeded > 50;
+                              const isCritical = hasTime && pctOfTimeNeeded > 80;
+                              const remainLabel = hasTime ? (remainMin >= 60
                                 ? `${Math.floor(remainMin / 60)}h${remainMin % 60 > 0 ? Math.round(remainMin % 60) + 'm' : ''}`
-                                : `${remainMin}m`;
+                                : `${remainMin}m`) : null;
                               const hoursLeftLabel = hoursLeft >= 24 ? `${Math.floor(hoursLeft / 24)}d${Math.round(hoursLeft % 24)}h` : `${Math.round(hoursLeft)}h`;
                               const barColor = isCritical ? '#ef4444' : isUrgent ? '#f59e0b' : '#22c55e';
                               return (
                                 <div style={{ width: '100%', padding: '0 3px', marginTop: '1px' }} data-testid={`${item.type}-time-remaining-${pd.courseCode.toLowerCase()}`}>
-                                  <div style={{ width: '100%', height: '3px', borderRadius: '2px', background: 'rgba(255,255,255,0.15)', overflow: 'hidden', position: 'relative' }}>
-                                    <div style={{ width: `${Math.min(100, pctOfTimeNeeded)}%`, height: '100%', borderRadius: '2px', background: barColor, transition: 'width 0.5s ease' }} />
-                                  </div>
-                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1px' }}>
-                                    <span style={{ fontSize: '7px', fontWeight: 600, color: '#ffffff', fontFamily: "system-ui, sans-serif" }}>{remainLabel} left</span>
+                                  {hasTime && (
+                                    <div style={{ width: '100%', height: '3px', borderRadius: '2px', background: 'rgba(255,255,255,0.15)', overflow: 'hidden', position: 'relative' }}>
+                                      <div style={{ width: `${Math.min(100, pctOfTimeNeeded)}%`, height: '100%', borderRadius: '2px', background: barColor, transition: 'width 0.5s ease' }} />
+                                    </div>
+                                  )}
+                                  <div style={{ display: 'flex', justifyContent: hasTime ? 'space-between' : 'center', alignItems: 'center', marginTop: '1px' }}>
+                                    {remainLabel && <span style={{ fontSize: '7px', fontWeight: 600, color: '#ffffff', fontFamily: "system-ui, sans-serif" }}>{remainLabel} left</span>}
                                     <span style={{ fontSize: '6.5px', color: '#ffffff', fontFamily: "system-ui, sans-serif" }}>Fri {hoursLeftLabel}</span>
                                   </div>
                                 </div>
@@ -31616,7 +31619,7 @@ export default function Dashboard() {
                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, borderRadius: '6px', overflow: 'hidden' }}>
                           {[
                             { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `float-play-module-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-module-${pd.courseCode.toLowerCase()}`, bg: pd.progressStartColor || getCourseGradientColors(pd.courseCode).start, dark: true, fontOverride: '#fff' },
-                            { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `float-play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-reading-${pd.courseCode.toLowerCase()}`, bg: (() => { const s = pd.progressStartColor || getCourseGradientColors(pd.courseCode).start; const e = pd.progressEndColor || getCourseGradientColors(pd.courseCode).end; const parse = (c: string) => { const m = c.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i); if (m) return { r: parseInt(m[1],16), g: parseInt(m[2],16), b: parseInt(m[3],16) }; const m2 = c.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/); if (m2) return { r: +m2[1], g: +m2[2], b: +m2[3] }; return null; }; const sp = parse(s); const ep = parse(e); if (sp && ep) { const mix = (a: number, b: number) => Math.round(a * 0.55 + b * 0.45); return `rgb(${mix(sp.r, ep.r)}, ${mix(sp.g, ep.g)}, ${mix(sp.b, ep.b)})`; } return e; })(), dark: true, fontOverride: '#fff' },
+                            { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `float-play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-reading-${pd.courseCode.toLowerCase()}`, bg: pd.progressEndColor || getCourseGradientColors(pd.courseCode).end, dark: true, fontOverride: '#fff' },
                           ].map(item => {
                             const circleSize = 44;
                             const strokeWidth = 3.5;
