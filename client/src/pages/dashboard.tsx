@@ -27454,34 +27454,32 @@ export default function Dashboard() {
                                   }}
                                   data-testid={`countdown-span-main-${t.id}-day-${dayIdx}`}
                                 >
-                                  {isTaskCell && (
-                                    <span style={{
-                                      position: 'absolute',
-                                      right: '2px',
-                                      top: '-10px',
-                                      fontSize: '7px',
-                                      fontWeight: 600,
-                                      color: 'rgba(0,0,0,0.5)',
-                                      lineHeight: 1,
-                                      whiteSpace: 'nowrap',
-                                      overflow: 'hidden',
-                                      textOverflow: 'ellipsis',
-                                      maxWidth: '90%',
-                                    }}>{labelText}</span>
-                                  )}
                                   {isEndCell && (
-                                    <span style={{
+                                    <div style={{
                                       position: 'absolute',
                                       left: '2px',
-                                      top: '-10px',
-                                      fontSize: '7px',
-                                      fontWeight: 800,
-                                      color: barColor,
-                                      lineHeight: 1,
+                                      top: '-12px',
+                                      display: 'flex',
+                                      alignItems: 'baseline',
+                                      gap: '3px',
                                       whiteSpace: 'nowrap',
-                                      textShadow: '0 0 3px rgba(255,255,255,0.8)',
-                                      opacity: 1,
-                                    }}>{daysLeft}d</span>
+                                      lineHeight: 1,
+                                    }}>
+                                      <span style={{
+                                        fontSize: '9px',
+                                        fontWeight: 800,
+                                        color: barColor,
+                                        textShadow: '0 0 3px rgba(255,255,255,0.8)',
+                                      }}>{daysLeft}d</span>
+                                      <span style={{
+                                        fontSize: '8px',
+                                        fontWeight: 600,
+                                        color: 'rgba(0,0,0,0.5)',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        maxWidth: '80px',
+                                      }}>{labelText}</span>
+                                    </div>
                                   )}
                                 </div>
                               );
