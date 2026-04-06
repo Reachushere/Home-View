@@ -2413,6 +2413,9 @@ export default function Dashboard() {
     });
   }, []);
   const pillFlyoutWasOpenRef = useRef(false);
+  const [topPillUndocked, setTopPillUndocked] = useState(false);
+  const [topPillPos, setTopPillPos] = useState<{x: number; y: number}>({ x: 0, y: 0 });
+  const topPillDragRef = useRef<{startX: number; startY: number; origX: number; origY: number} | null>(null);
   const closeTopPill = useCallback(() => {
     setIsTopPillOpen(false);
   }, []);
@@ -2737,9 +2740,6 @@ export default function Dashboard() {
   const topPillTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const topPillInitDoneRef = useRef(false);
   const topPillHoveredRef = useRef(false);
-  const [topPillUndocked, setTopPillUndocked] = useState(false);
-  const [topPillPos, setTopPillPos] = useState<{x: number; y: number}>({ x: 0, y: 0 });
-  const topPillDragRef = useRef<{startX: number; startY: number; origX: number; origY: number} | null>(null);
   const openTopPill = useCallback(() => {
     if (!topPillInitDoneRef.current) return;
     setIsTopPillOpen(true);
