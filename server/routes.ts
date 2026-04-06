@@ -10553,19 +10553,20 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   }, 15000);
 
   function findNextFileByPriority(allFiles: any[], currentWeekNumber: number, excludeFileId?: number): any | null {
-    const weekFiles = allFiles.filter((f: any) => {
-      if (f.listened) return false;
-      if (excludeFileId && f.id === excludeFileId) return false;
-      const weekMatch = f.folder?.match(/week-(\d+)/i);
-      return weekMatch && parseInt(weekMatch[1], 10) === currentWeekNumber;
-    });
-    if (weekFiles.length === 0) {
-      console.log(`[FileOrder] No unlistened files found in week ${currentWeekNumber}`);
-      return null;
+    for (let week = currentWeekNumber; week >= 1; week--) {
+      const weekFiles = allFiles.filter((f: any) => {
+        if (f.listened) return false;
+        if (excludeFileId && f.id === excludeFileId) return false;
+        const weekMatch = f.folder?.match(/week-(\d+)/i);
+        return weekMatch && parseInt(weekMatch[1], 10) === week;
+      });
+      if (weekFiles.length === 0) continue;
+      const ordered = orderFilesByCoursePriority(weekFiles);
+      console.log(`[FileOrder] Found unlistened files in week ${week}: ${ordered.map((f: any) => `${f.originalName} (chunk=${f.lastChunkIndex||0})`).join(' → ')}`);
+      return ordered[0] || null;
     }
-    const ordered = orderFilesByCoursePriority(weekFiles);
-    console.log(`[FileOrder] Found unlistened files in week ${currentWeekNumber}: ${ordered.map((f: any) => `${f.originalName} (chunk=${f.lastChunkIndex||0})`).join(' → ')}`);
-    return ordered[0] || null;
+    console.log(`[FileOrder] No unlistened files found in weeks 1-${currentWeekNumber}`);
+    return null;
   }
 
   function isSpotifyPlayingOnEverywhere(): boolean {
@@ -13106,30 +13107,29 @@ document.body.removeChild(a);
           console.warn(`[Cat Lights] Pre-prompt media stop error (non-fatal): ${e.message}`);
         }
 
-        await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.35 }, 'Cat Lights Vol');
+        await haServiceCallSafe('media_player/volume_set', { entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.35 }, 'Cat Lights HA Vol');
 
         let ttsPlayed = false;
         try {
-          const audioPath = await generateAndSaveTTSAudio(ttsMessage, `cat-lights-prompt-${Date.now()}`);
-          const nestResult = await playOnNestSpeaker(`${DEPLOYED_APP_URL}${audioPath}`);
-          if (nestResult.success) {
-            ttsPlayed = true;
-            console.log(`[Cat Lights] TTS prompt played on Nest speaker (actuallyPlaying=${nestResult.actuallyPlaying})`);
-          } else {
-            console.warn(`[Cat Lights] Nest speaker prompt failed — falling back to HA Cloud TTS`);
-          }
+          await haServiceCall('tts/speak', {
+            entity_id: HA_CLOUD_TTS_ENTITY,
+            media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
+            message: ttsMessage
+          }, 'Cat Lights HA Cloud TTS Prompt');
+          ttsPlayed = true;
+          console.log(`[Cat Lights] TTS prompt played via HA Cloud TTS (primary)`);
         } catch (e: any) {
-          console.warn(`[Cat Lights] Nest speaker prompt failed: ${e.message} — falling back to HA Cloud TTS`);
+          console.warn(`[Cat Lights] HA Cloud TTS prompt failed: ${e.message} — falling back to Nest speaker`);
         }
         if (!ttsPlayed) {
           try {
-            await haServiceCall('tts/speak', {
-              entity_id: HA_CLOUD_TTS_ENTITY,
-              media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
-              message: ttsMessage
-            }, 'Cat Lights Cloud TTS');
-            ttsPlayed = true;
-            console.log(`[Cat Lights] TTS prompt played via HA Cloud TTS (fallback)`);
+            await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.35 }, 'Cat Lights Nest Vol');
+            const audioPath = await generateAndSaveTTSAudio(ttsMessage, `cat-lights-prompt-${Date.now()}`);
+            const nestResult = await playOnNestSpeaker(`${DEPLOYED_APP_URL}${audioPath}`);
+            if (nestResult.success) {
+              ttsPlayed = true;
+              console.log(`[Cat Lights] TTS prompt played on Nest speaker (fallback)`);
+            }
           } catch (e2: any) {
             console.error(`[Cat Lights] All TTS methods failed: ${e2.message}`);
           }
