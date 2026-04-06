@@ -1,13 +1,55 @@
 // Gmail integration for D2L announcement emails
 // Uses direct REST API calls with the connected Gmail access token
+import * as fs from 'fs';
+import * as path from 'path';
 
 let connectionSettings: any;
+let gmailCachedAT: string | null = null;
+let gmailCachedExp = 0;
+
+function loadGoogleTokens() {
+  try {
+    const p = path.join(process.cwd(), '.google_tokens.json');
+    if (fs.existsSync(p)) return JSON.parse(fs.readFileSync(p, 'utf-8'));
+  } catch {}
+  return null;
+}
+
+function saveGoogleTokens(t: any) {
+  try { fs.writeFileSync(path.join(process.cwd(), '.google_tokens.json'), JSON.stringify(t, null, 2)); } catch {}
+}
+
+async function refreshGoogleToken(rt: string) {
+  const clientId = process.env.GOOGLE_SECOND_ACCOUNT_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_SECOND_ACCOUNT_CLIENT_SECRET;
+  if (!clientId || !clientSecret) throw new Error('Google OAuth credentials not configured');
+  const p = new URLSearchParams({ client_id: clientId, client_secret: clientSecret, grant_type: 'refresh_token', refresh_token: rt });
+  const r = await fetch('https://oauth2.googleapis.com/token', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: p.toString() });
+  if (!r.ok) throw new Error('Gmail token refresh failed: ' + await r.text());
+  return r.json();
+}
 
 export async function getGmailAccessToken(): Promise<string> {
   return getAccessToken();
 }
 
 async function getAccessToken(): Promise<string> {
+  if (gmailCachedAT && gmailCachedExp > Date.now() + 60000) return gmailCachedAT;
+
+  const stored = loadGoogleTokens();
+  if (stored && stored.refresh_token) {
+    try {
+      const r = await refreshGoogleToken(stored.refresh_token);
+      const ea = Date.now() + (r.expires_in || 3600) * 1000;
+      gmailCachedAT = r.access_token;
+      gmailCachedExp = ea;
+      saveGoogleTokens({ refresh_token: r.refresh_token || stored.refresh_token, access_token: r.access_token, expires_at: ea });
+      return r.access_token;
+    } catch (e) {
+      console.error('[Gmail] Refresh failed:', e);
+    }
+  }
+
   if (connectionSettings && connectionSettings.settings.expires_at && new Date(connectionSettings.settings.expires_at).getTime() > Date.now()) {
     return connectionSettings.settings.access_token;
   }
@@ -20,7 +62,7 @@ async function getAccessToken(): Promise<string> {
     : null;
 
   if (!xReplitToken) {
-    throw new Error('X-Replit-Token not found for repl/depl');
+    throw new Error('Gmail not connected - run connect_google.js on the Pi');
   }
 
   connectionSettings = await fetch(

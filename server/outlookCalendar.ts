@@ -1,12 +1,49 @@
 import { Client } from '@microsoft/microsoft-graph-client';
 import { storage } from './storage';
+import * as fs from 'fs';
+import * as path from 'path';
 
-// Outlook connector - uses dedicated Outlook integration with Calendar permissions
 let outlookConnectionSettings: any;
+let outlookCachedAT: string | null = null;
+let outlookCachedExp = 0;
+
+const MS_CLIENT_ID = '14d82eec-204b-4c2f-b7e8-296a70dab67e';
+const OUTLOOK_SCOPES = 'Calendars.ReadWrite Mail.ReadWrite Mail.Send User.Read offline_access';
+
+function loadMsTokens() {
+  try {
+    const p = path.join(process.cwd(), '.onedrive_tokens.json');
+    if (fs.existsSync(p)) return JSON.parse(fs.readFileSync(p, 'utf-8'));
+  } catch {}
+  return null;
+}
+
+function saveMsTokens(t: any) {
+  try { fs.writeFileSync(path.join(process.cwd(), '.onedrive_tokens.json'), JSON.stringify(t, null, 2)); } catch {}
+}
+
+async function refreshMsToken(rt: string) {
+  const p = new URLSearchParams({ client_id: MS_CLIENT_ID, grant_type: 'refresh_token', refresh_token: rt, scope: 'Files.ReadWrite.All User.Read Notes.ReadWrite.All Calendars.ReadWrite Mail.ReadWrite Mail.Send offline_access' });
+  const r = await fetch('https://login.microsoftonline.com/consumers/oauth2/v2.0/token', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: p.toString() });
+  if (!r.ok) throw new Error('Outlook token refresh failed: ' + await r.text());
+  return r.json();
+}
 
 async function getOutlookAccessToken() {
-  if (outlookConnectionSettings && outlookConnectionSettings.settings.expires_at && new Date(outlookConnectionSettings.settings.expires_at).getTime() > Date.now()) {
-    return outlookConnectionSettings.settings.access_token;
+  if (outlookCachedAT && outlookCachedExp > Date.now() + 60000) return outlookCachedAT;
+
+  const stored = loadMsTokens();
+  if (stored && stored.refresh_token) {
+    try {
+      const r = await refreshMsToken(stored.refresh_token);
+      const ea = Date.now() + (r.expires_in || 3600) * 1000;
+      outlookCachedAT = r.access_token;
+      outlookCachedExp = ea;
+      saveMsTokens({ refresh_token: r.refresh_token || stored.refresh_token, access_token: r.access_token, expires_at: ea });
+      return r.access_token;
+    } catch (e) {
+      console.error('[Outlook] Refresh failed:', e);
+    }
   }
 
   const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
@@ -17,7 +54,7 @@ async function getOutlookAccessToken() {
     : null;
 
   if (!xReplitToken) {
-    throw new Error('X-Replit-Token not found for repl/depl');
+    throw new Error('Outlook not connected');
   }
 
   outlookConnectionSettings = await fetch(

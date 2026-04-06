@@ -1,14 +1,56 @@
-// Google Calendar Integration - Replit Connector
+// Google Calendar Integration
 import { google } from 'googleapis';
+import * as fs from 'fs';
+import * as path from 'path';
 
 let connectionSettings: any;
+let gcalCachedAT: string | null = null;
+let gcalCachedExp = 0;
+
+function loadGoogleTokens() {
+  try {
+    const p = path.join(process.cwd(), '.google_tokens.json');
+    if (fs.existsSync(p)) return JSON.parse(fs.readFileSync(p, 'utf-8'));
+  } catch {}
+  return null;
+}
+
+function saveGoogleTokens(t: any) {
+  try { fs.writeFileSync(path.join(process.cwd(), '.google_tokens.json'), JSON.stringify(t, null, 2)); } catch {}
+}
+
+async function refreshGoogleToken(rt: string) {
+  const clientId = process.env.GOOGLE_SECOND_ACCOUNT_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_SECOND_ACCOUNT_CLIENT_SECRET;
+  if (!clientId || !clientSecret) throw new Error('Google OAuth credentials not configured');
+  const p = new URLSearchParams({ client_id: clientId, client_secret: clientSecret, grant_type: 'refresh_token', refresh_token: rt });
+  const r = await fetch('https://oauth2.googleapis.com/token', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: p.toString() });
+  if (!r.ok) throw new Error('Google Calendar token refresh failed: ' + await r.text());
+  return r.json();
+}
 
 async function getAccessToken() {
+  if (gcalCachedAT && gcalCachedExp > Date.now() + 60000) return gcalCachedAT;
+
+  const stored = loadGoogleTokens();
+  if (stored && stored.refresh_token) {
+    try {
+      const r = await refreshGoogleToken(stored.refresh_token);
+      const ea = Date.now() + (r.expires_in || 3600) * 1000;
+      gcalCachedAT = r.access_token;
+      gcalCachedExp = ea;
+      saveGoogleTokens({ refresh_token: r.refresh_token || stored.refresh_token, access_token: r.access_token, expires_at: ea });
+      return r.access_token;
+    } catch (e) {
+      console.error('[Google Calendar] Refresh failed:', e);
+    }
+  }
+
   if (connectionSettings && connectionSettings.settings.expires_at && new Date(connectionSettings.settings.expires_at).getTime() > Date.now()) {
     return connectionSettings.settings.access_token;
   }
   
-  const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME
+  const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
   const xReplitToken = process.env.REPL_IDENTITY 
     ? 'repl ' + process.env.REPL_IDENTITY 
     : process.env.WEB_REPL_RENEWAL 
@@ -16,7 +58,7 @@ async function getAccessToken() {
     : null;
 
   if (!xReplitToken) {
-    throw new Error('X_REPLIT_TOKEN not found for repl/depl');
+    throw new Error('Google Calendar not connected - run connect_google.js on the Pi');
   }
 
   connectionSettings = await fetch(
