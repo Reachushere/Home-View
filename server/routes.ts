@@ -23,7 +23,7 @@ import { parseTickerCommand, extractInlineExpiry } from "./gmailTicker";
 import { sendGmail, fetchD2LAnnouncements, fetchRecentEmails } from "./gmail";
 import { getSchedulerStatus } from "./reminderScheduler";
 import { fetchTMUCalendarEvents } from "./tmuCalendar";
-import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder, getOneDriveFileContentAsText, getOneDriveItemByPath, createOneDriveTextFile, updateOneDriveFileContent, deleteOneDriveItem, resolveSharedNotebookUrl, getSharedNotebookSections, getPagesBySectionId } from "./onedrive";
+import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder, getOneDriveFileContentAsText, getOneDriveItemByPath, createOneDriveTextFile, updateOneDriveFileContent, deleteOneDriveItem, resolveSharedNotebookUrl, getSharedNotebookSections, getPagesBySectionId, startDeviceCodeFlow, pollDeviceCodeAuth, isOneDriveConnected } from "./onedrive";
 import * as spotifyApi from "./spotify";
 
 // Helper function to generate repeated task due dates
@@ -4761,6 +4761,38 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
   });
 
   // ============= END CUSTOM FOLDERS ROUTES =============
+
+  // ============= ONEDRIVE AUTH ROUTES =============
+
+  app.get("/api/onedrive/status", async (_req, res) => {
+    res.json({ connected: isOneDriveConnected() });
+  });
+
+  app.post("/api/onedrive/auth", async (_req, res) => {
+    try {
+      const result = await startDeviceCodeFlow();
+      pollDeviceCodeAuth(result.device_code, result.interval, result.expires_in)
+        .then(success => {
+          if (success) {
+            console.log('[OneDrive Auth] Device code authentication completed successfully');
+          } else {
+            console.log('[OneDrive Auth] Device code authentication failed or expired');
+          }
+        })
+        .catch(err => {
+          console.error('[OneDrive Auth] Polling error:', err);
+        });
+
+      res.json({
+        user_code: result.user_code,
+        verification_uri: result.verification_uri,
+        expires_in: result.expires_in,
+      });
+    } catch (err: any) {
+      console.error('[OneDrive Auth] Error:', err);
+      res.status(500).json({ error: err.message });
+    }
+  });
 
   // ============= ONEDRIVE ROUTES =============
   

@@ -1,13 +1,165 @@
 // OneDrive integration for browsing and accessing PDF files
 import { Client } from '@microsoft/microsoft-graph-client';
+import * as fs from 'fs';
+import * as path from 'path';
 
+const MICROSOFT_GRAPH_POWERSHELL_CLIENT_ID = '14d82eec-204b-4c2f-b7e8-296a70dab67e';
+const ONEDRIVE_SCOPES = 'Files.ReadWrite.All User.Read Notes.ReadWrite.All Mail.ReadWrite Mail.Send Calendars.ReadWrite offline_access';
+
+let cachedAccessToken: string | null = null;
+let cachedTokenExpiresAt: number = 0;
 let connectionSettings: any;
 
-async function getAccessToken() {
-  if (connectionSettings && connectionSettings.settings.expires_at && new Date(connectionSettings.settings.expires_at).getTime() > Date.now()) {
-    return connectionSettings.settings.access_token;
+function getTokenFilePath(): string {
+  return path.join(process.cwd(), '.onedrive_tokens.json');
+}
+
+function loadStoredTokens(): { refresh_token?: string; access_token?: string; expires_at?: number } | null {
+  try {
+    const filePath = getTokenFilePath();
+    if (fs.existsSync(filePath)) {
+      return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    }
+  } catch {}
+  return null;
+}
+
+function saveTokens(tokens: { refresh_token: string; access_token: string; expires_at: number }) {
+  try {
+    fs.writeFileSync(getTokenFilePath(), JSON.stringify(tokens, null, 2));
+  } catch (err) {
+    console.error('[OneDrive] Failed to save tokens:', err);
   }
-  
+}
+
+async function refreshAccessToken(refreshToken: string): Promise<{ access_token: string; refresh_token: string; expires_in: number }> {
+  const params = new URLSearchParams({
+    client_id: MICROSOFT_GRAPH_POWERSHELL_CLIENT_ID,
+    grant_type: 'refresh_token',
+    refresh_token: refreshToken,
+    scope: ONEDRIVE_SCOPES,
+  });
+
+  const response = await fetch('https://login.microsoftonline.com/common/oauth2/v2.0/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: params.toString(),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Token refresh failed (${response.status}): ${errorText}`);
+  }
+
+  return response.json();
+}
+
+export async function startDeviceCodeFlow(): Promise<{ user_code: string; verification_uri: string; device_code: string; expires_in: number; interval: number }> {
+  const params = new URLSearchParams({
+    client_id: MICROSOFT_GRAPH_POWERSHELL_CLIENT_ID,
+    scope: ONEDRIVE_SCOPES,
+  });
+
+  const response = await fetch('https://login.microsoftonline.com/common/oauth2/v2.0/devicecode', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: params.toString(),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Device code request failed: ${errorText}`);
+  }
+
+  return response.json();
+}
+
+export async function pollDeviceCodeAuth(deviceCode: string, interval: number = 5, expiresIn: number = 900): Promise<boolean> {
+  const deadline = Date.now() + expiresIn * 1000;
+
+  while (Date.now() < deadline) {
+    await new Promise(r => setTimeout(r, interval * 1000));
+
+    const params = new URLSearchParams({
+      client_id: MICROSOFT_GRAPH_POWERSHELL_CLIENT_ID,
+      grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
+      device_code: deviceCode,
+    });
+
+    const response = await fetch('https://login.microsoftonline.com/common/oauth2/v2.0/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: params.toString(),
+    });
+
+    const data = await response.json();
+
+    if (data.access_token) {
+      const expiresAt = Date.now() + (data.expires_in || 3600) * 1000;
+      cachedAccessToken = data.access_token;
+      cachedTokenExpiresAt = expiresAt;
+
+      saveTokens({
+        refresh_token: data.refresh_token,
+        access_token: data.access_token,
+        expires_at: expiresAt,
+      });
+
+      console.log('[OneDrive] Device code auth successful — tokens saved');
+      return true;
+    }
+
+    if (data.error === 'authorization_pending') {
+      continue;
+    }
+
+    if (data.error === 'slow_down') {
+      interval += 5;
+      continue;
+    }
+
+    if (data.error === 'expired_token' || data.error === 'authorization_declined') {
+      console.log(`[OneDrive] Device code flow ended: ${data.error}`);
+      return false;
+    }
+  }
+
+  return false;
+}
+
+export function isOneDriveConnected(): boolean {
+  const tokens = loadStoredTokens();
+  if (tokens?.refresh_token) return true;
+  const hasReplit = !!(process.env.REPLIT_CONNECTORS_HOSTNAME && (process.env.REPL_IDENTITY || process.env.WEB_REPL_RENEWAL));
+  return hasReplit;
+}
+
+async function getAccessToken() {
+  if (cachedAccessToken && cachedTokenExpiresAt > Date.now() + 60000) {
+    return cachedAccessToken;
+  }
+
+  const storedTokens = loadStoredTokens();
+  if (storedTokens?.refresh_token) {
+    try {
+      const result = await refreshAccessToken(storedTokens.refresh_token);
+      const expiresAt = Date.now() + (result.expires_in || 3600) * 1000;
+      cachedAccessToken = result.access_token;
+      cachedTokenExpiresAt = expiresAt;
+
+      saveTokens({
+        refresh_token: result.refresh_token || storedTokens.refresh_token,
+        access_token: result.access_token,
+        expires_at: expiresAt,
+      });
+
+      return result.access_token;
+    } catch (err) {
+      console.error('[OneDrive] Refresh token failed:', err);
+      throw new Error('OneDrive token expired — please re-authenticate via /api/onedrive/auth');
+    }
+  }
+
   const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
   const xReplitToken = process.env.REPL_IDENTITY 
     ? 'repl ' + process.env.REPL_IDENTITY 
@@ -16,7 +168,7 @@ async function getAccessToken() {
     : null;
 
   if (!xReplitToken) {
-    throw new Error('X_REPLIT_TOKEN not found for repl/depl');
+    throw new Error('OneDrive not connected — visit /api/onedrive/auth to connect');
   }
 
   connectionSettings = await fetch(
