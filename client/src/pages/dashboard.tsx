@@ -25916,6 +25916,8 @@ export default function Dashboard() {
                 const todayDate = startOfDayET(new Date());
                 const dayDate = startOfDayET(day);
                 const diffDays = Math.round((dayDate.getTime() - todayDate.getTime()) / (1000 * 60 * 60 * 24));
+                const nowDayOfWeek = new Date().getDay();
+                const isNextWeekDay = !isPast && !isTodayForecast && nowDayOfWeek !== 6 && diffDays > (6 - (nowDayOfWeek === 0 ? 7 : nowDayOfWeek));
                 const showForecastWeather = !isPast && diffDays >= 0 && effectiveWCode !== undefined;
                 const fwSkyBg = showForecastWeather ? (() => {
                   const wc = effectiveWCode!;
@@ -25972,7 +25974,7 @@ export default function Dashboard() {
                   return '';
                 })() : '';
                 return (
-                  <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : 1 }} data-testid={`weather-above-${dateStr}`}>
+                  <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : isNextWeekDay ? 0.3 : 1 }} data-testid={`weather-above-${dateStr}`}>
                     {showForecastWeather && fwSkyBg && (
                       <div className="absolute inset-0 z-0" style={{ background: fwSkyBg, overflow: 'hidden', pointerEvents: 'none', opacity: isTodayForecast ? 1 : 0.7 }}>
                         {fwEffectsHtml && <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }} dangerouslySetInnerHTML={{ __html: fwEffectsHtml }} />}
