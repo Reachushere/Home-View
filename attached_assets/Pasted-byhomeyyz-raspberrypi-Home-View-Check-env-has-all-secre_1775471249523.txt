@@ -1,0 +1,35 @@
+byhomeyyz@raspberrypi:~/Home-View $ # Check .env has all secrets
+grep -c "=" ~/Home-View/.env
+
+# Check tokens exist
+ls -la ~/Home-View/.onedrive_tokens.json ~/Home-View/.google_tokens.json
+
+# Check service is running
+sudo systemctl status unical
+
+# Check funnel is running
+sudo tailscale funnel status
+12
+-rw-rw-r-- 1 byhomeyyz byhomeyyz  434 Apr  6 05:50 /home/byhomeyyz/Home-View/.google_tokens.json
+-rw-rw-r-- 1 byhomeyyz byhomeyyz 2050 Apr  6 05:50 /home/byhomeyyz/Home-View/.onedrive_tokens.json
+● unical.service - UniCal Dashboard
+     Loaded: loaded (/etc/systemd/system/unical.service; enabled; preset: enabled)
+     Active: active (running) since Mon 2026-04-06 05:49:54 EDT; 37min ago
+ Invocation: ad011df7a0004d1e9c64d9bfa4fc532d
+   Main PID: 5519 (node)
+      Tasks: 15 (limit: 9570)
+        CPU: 37.498s
+     CGroup: /system.slice/unical.service
+             └─5519 /usr/bin/node -e "require('dotenv').config(); require('./dist/index.cjs')"
+
+Apr 06 06:27:11 raspberrypi node[5519]: [AudioPrep] Generating chunk 3/52 for CPPA122, Module 8 - Introduction.pdf (147>
+Apr 06 06:27:11 raspberrypi node[5519]: [AudioPrep] Failed to generate chunk 3 for CPPA122, Module 8 - Introduction.pdf>
+Apr 06 06:27:14 raspberrypi node[5519]: [AudioPrep] Generating chunk 4/52 for CPPA122, Module 8 - Introduction.pdf (120>
+Apr 06 06:27:14 raspberrypi node[5519]: [AudioPrep] Failed to generate chunk 4 for CPPA122, Module 8 - Introduction.pdf>
+Apr 06 06:27:16 raspberrypi node[5519]: [AudioPrep] Generating chunk 5/52 for CPPA122, Module 8 - Introduction.pdf (116>
+Apr 06 06:27:16 raspberrypi node[5519]: [AudioPrep] Failed to generate chunk 5 for CPPA122, Module 8 - Introduction.pdf>
+Apr 06 06:27:19 raspberrypi node[5519]: [AudioPrep] Generating chunk 6/52 for CPPA122, Module 8 - Introduction.pdf (147>
+Apr 06 06:27:19 raspberrypi node[5519]: [AudioPrep] Failed to generate chunk 6 for CPPA122, Module 8 - Introduction.pdf>
+Apr 06 06:27:22 raspberrypi node[5519]: [AudioPrep] Generating chunk 7/52 for CPPA122, Module 8 - Introduction.pdf (148>
+Apr 06 06:27:22 raspberrypi node[5519]: [AudioPrep] Failed to generate chunk 7 for CPPA122, Module 8 - Introduction.pdf>
+lines 1-20/20 (END)
