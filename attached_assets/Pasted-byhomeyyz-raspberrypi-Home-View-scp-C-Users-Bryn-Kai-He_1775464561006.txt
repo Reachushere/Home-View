@@ -1,0 +1,507 @@
+byhomeyyz@raspberrypi:~/Home-View $ scp C:\Users\Bryn Kai-Hendricks\OneDrive\School\1. TMU\Administrative\Replit\Automations\Master\unical_db_backup.sql byhomeyyz@172.24.1.204:~/Home-View/
+The authenticity of host '172.24.1.204 (172.24.1.204)' can't be established.
+ED25519 key fingerprint is SHA256:O7yjcsOC+ICwHVmIeCM2445X3uGIwveY7IwHmBmVlvw.
+This key is not known by any other names.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '172.24.1.204' (ED25519) to the list of known hosts.
+byhomeyyz@172.24.1.204's password:
+ssh: Could not resolve hostname c: No address associated with hostname
+scp: Connection closed
+byhomeyyz@raspberrypi:~/Home-View $ [200~cd ~/Home-View
+-bash: [200~cd: command not found
+byhomeyyz@raspberrypi:~/Home-View $ psql postgresql://dashboard:W3belong@4201@localhost:5432/dashboard_db < unical_db_backup.sql~
+-bash: unical_db_backup.sql~: No such file or directory
+byhomeyyz@raspberrypi:~/Home-View $ PGPASSWORD='W3belong@4201' psql -h localhost -U dashboard -d dashboard_db < unical_db_backup.sql
+SET
+SET
+SET
+SET
+SET
+ set_config
+------------
+
+(1 row)
+
+SET
+SET
+SET
+SET
+SET
+SET
+ERROR:  relation "access_tokens" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "access_tokens_id_seq" already exists
+ERROR:  cannot change owner of sequence "access_tokens_id_seq"
+DETAIL:  Sequence "access_tokens_id_seq" is linked to table "access_tokens".
+ALTER SEQUENCE
+ERROR:  relation "announcements" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "announcements_id_seq" already exists
+ERROR:  cannot change owner of sequence "announcements_id_seq"
+DETAIL:  Sequence "announcements_id_seq" is linked to table "announcements".
+ALTER SEQUENCE
+ERROR:  relation "app_state" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "conversations" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "conversations_id_seq" already exists
+ERROR:  cannot change owner of sequence "conversations_id_seq"
+DETAIL:  Sequence "conversations_id_seq" is linked to table "conversations".
+ALTER SEQUENCE
+ERROR:  relation "course_week_mappings" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "course_week_mappings_id_seq" already exists
+ERROR:  cannot change owner of sequence "course_week_mappings_id_seq"
+DETAIL:  Sequence "course_week_mappings_id_seq" is linked to table "course_week_mappings".
+ALTER SEQUENCE
+ERROR:  relation "custom_folders" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "custom_folders_id_seq" already exists
+ERROR:  cannot change owner of sequence "custom_folders_id_seq"
+DETAIL:  Sequence "custom_folders_id_seq" is linked to table "custom_folders".
+ALTER SEQUENCE
+ERROR:  relation "degree_tracking_data" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "degree_tracking_data_id_seq" already exists
+ERROR:  cannot change owner of sequence "degree_tracking_data_id_seq"
+DETAIL:  Sequence "degree_tracking_data_id_seq" is linked to table "degree_tracking_data".
+ALTER SEQUENCE
+ERROR:  relation "deleted_folders" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "deleted_folders_id_seq" already exists
+ERROR:  cannot change owner of sequence "deleted_folders_id_seq"
+DETAIL:  Sequence "deleted_folders_id_seq" is linked to table "deleted_folders".
+ALTER SEQUENCE
+ERROR:  relation "dismissed_review_titles" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "dismissed_review_titles_id_seq" already exists
+ERROR:  cannot change owner of sequence "dismissed_review_titles_id_seq"
+DETAIL:  Sequence "dismissed_review_titles_id_seq" is linked to table "dismissed_review_titles".
+ALTER SEQUENCE
+ERROR:  relation "entity_comments" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "entity_comments_id_seq" already exists
+ERROR:  cannot change owner of sequence "entity_comments_id_seq"
+DETAIL:  Sequence "entity_comments_id_seq" is linked to table "entity_comments".
+ALTER SEQUENCE
+ERROR:  relation "feedback_notes" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "feedback_notes_id_seq" already exists
+ERROR:  cannot change owner of sequence "feedback_notes_id_seq"
+DETAIL:  Sequence "feedback_notes_id_seq" is linked to table "feedback_notes".
+ALTER SEQUENCE
+ERROR:  relation "files" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "files_id_seq" already exists
+ERROR:  cannot change owner of sequence "files_id_seq"
+DETAIL:  Sequence "files_id_seq" is linked to table "files".
+ALTER SEQUENCE
+ERROR:  relation "ha_automations" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "ha_automations_id_seq" already exists
+ERROR:  cannot change owner of sequence "ha_automations_id_seq"
+DETAIL:  Sequence "ha_automations_id_seq" is linked to table "ha_automations".
+ALTER SEQUENCE
+ERROR:  relation "key_contacts" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "key_contacts_id_seq" already exists
+ERROR:  cannot change owner of sequence "key_contacts_id_seq"
+DETAIL:  Sequence "key_contacts_id_seq" is linked to table "key_contacts".
+ALTER SEQUENCE
+ERROR:  relation "messages" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "messages_id_seq" already exists
+ERROR:  cannot change owner of sequence "messages_id_seq"
+DETAIL:  Sequence "messages_id_seq" is linked to table "messages".
+ALTER SEQUENCE
+ERROR:  relation "notepad_attachments" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "notepad_attachments_id_seq" already exists
+ERROR:  cannot change owner of sequence "notepad_attachments_id_seq"
+DETAIL:  Sequence "notepad_attachments_id_seq" is linked to table "notepad_attachments".
+ALTER SEQUENCE
+ERROR:  relation "notepad_notes" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "notepad_notes_id_seq" already exists
+ERROR:  cannot change owner of sequence "notepad_notes_id_seq"
+DETAIL:  Sequence "notepad_notes_id_seq" is linked to table "notepad_notes".
+ALTER SEQUENCE
+ERROR:  relation "pending_review_items" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "pending_review_items_id_seq" already exists
+ERROR:  cannot change owner of sequence "pending_review_items_id_seq"
+DETAIL:  Sequence "pending_review_items_id_seq" is linked to table "pending_review_items".
+ALTER SEQUENCE
+ERROR:  relation "projects" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "projects_id_seq" already exists
+ERROR:  cannot change owner of sequence "projects_id_seq"
+DETAIL:  Sequence "projects_id_seq" is linked to table "projects".
+ALTER SEQUENCE
+ERROR:  relation "saved_email_searches" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "saved_email_searches_id_seq" already exists
+ERROR:  cannot change owner of sequence "saved_email_searches_id_seq"
+DETAIL:  Sequence "saved_email_searches_id_seq" is linked to table "saved_email_searches".
+ALTER SEQUENCE
+ERROR:  relation "scheduled_alexa_announcements" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "scheduled_alexa_announcements_id_seq" already exists
+ERROR:  cannot change owner of sequence "scheduled_alexa_announcements_id_seq"
+DETAIL:  Sequence "scheduled_alexa_announcements_id_seq" is linked to table "scheduled_alexa_announcements".
+ALTER SEQUENCE
+ERROR:  relation "scholarships" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "scholarships_id_seq" already exists
+ERROR:  cannot change owner of sequence "scholarships_id_seq"
+DETAIL:  Sequence "scholarships_id_seq" is linked to table "scholarships".
+ALTER SEQUENCE
+ERROR:  relation "second_google_account" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "second_google_account_id_seq" already exists
+ERROR:  cannot change owner of sequence "second_google_account_id_seq"
+DETAIL:  Sequence "second_google_account_id_seq" is linked to table "second_google_account".
+ALTER SEQUENCE
+ERROR:  relation "semester_checklist" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "semester_checklist_id_seq" already exists
+ERROR:  cannot change owner of sequence "semester_checklist_id_seq"
+DETAIL:  Sequence "semester_checklist_id_seq" is linked to table "semester_checklist".
+ALTER SEQUENCE
+ERROR:  relation "semester_settings" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "semester_settings_id_seq" already exists
+ERROR:  cannot change owner of sequence "semester_settings_id_seq"
+DETAIL:  Sequence "semester_settings_id_seq" is linked to table "semester_settings".
+ALTER SEQUENCE
+ERROR:  relation "shared_notebook_links" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "shared_notebook_links_id_seq" already exists
+ERROR:  cannot change owner of sequence "shared_notebook_links_id_seq"
+DETAIL:  Sequence "shared_notebook_links_id_seq" is linked to table "shared_notebook_links".
+ALTER SEQUENCE
+ERROR:  relation "shift_schedule" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "shift_schedule_id_seq" already exists
+ERROR:  cannot change owner of sequence "shift_schedule_id_seq"
+DETAIL:  Sequence "shift_schedule_id_seq" is linked to table "shift_schedule".
+ALTER SEQUENCE
+ERROR:  relation "sticky_notes" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "sticky_notes_id_seq" already exists
+ERROR:  cannot change owner of sequence "sticky_notes_id_seq"
+DETAIL:  Sequence "sticky_notes_id_seq" is linked to table "sticky_notes".
+ALTER SEQUENCE
+ERROR:  relation "subtasks" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "subtasks_id_seq" already exists
+ERROR:  cannot change owner of sequence "subtasks_id_seq"
+DETAIL:  Sequence "subtasks_id_seq" is linked to table "subtasks".
+ALTER SEQUENCE
+CREATE TABLE
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "task_links" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "task_links_id_seq" already exists
+ERROR:  cannot change owner of sequence "task_links_id_seq"
+DETAIL:  Sequence "task_links_id_seq" is linked to table "task_links".
+ALTER SEQUENCE
+ERROR:  relation "tasks" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "tasks_id_seq" already exists
+ERROR:  cannot change owner of sequence "tasks_id_seq"
+DETAIL:  Sequence "tasks_id_seq" is linked to table "tasks".
+ALTER SEQUENCE
+ERROR:  relation "third_google_account" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "third_google_account_id_seq" already exists
+ERROR:  cannot change owner of sequence "third_google_account_id_seq"
+DETAIL:  Sequence "third_google_account_id_seq" is linked to table "third_google_account".
+ALTER SEQUENCE
+ERROR:  relation "weather_alert_history" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "weather_alert_history_id_seq" already exists
+ERROR:  cannot change owner of sequence "weather_alert_history_id_seq"
+DETAIL:  Sequence "weather_alert_history_id_seq" is linked to table "weather_alert_history".
+ALTER SEQUENCE
+ERROR:  relation "weather_history" already exists
+ERROR:  must be able to SET ROLE "postgres"
+ERROR:  relation "weather_history_id_seq" already exists
+ERROR:  cannot change owner of sequence "weather_history_id_seq"
+DETAIL:  Sequence "weather_history_id_seq" is linked to table "weather_history".
+ALTER SEQUENCE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+COPY 14
+COPY 3
+COPY 9
+COPY 0
+COPY 14
+COPY 0
+COPY 22
+COPY 39
+COPY 0
+COPY 0
+COPY 0
+COPY 80
+COPY 0
+COPY 8
+COPY 0
+COPY 0
+COPY 3
+COPY 510
+COPY 0
+COPY 0
+COPY 0
+COPY 0
+COPY 1
+COPY 9
+COPY 12
+COPY 1
+COPY 125
+COPY 15
+COPY 0
+COPY 5
+COPY 0
+COPY 124
+COPY 1
+COPY 0
+COPY 1514
+ setval
+--------
+     46
+(1 row)
+
+ setval
+--------
+     17
+(1 row)
+
+ setval
+--------
+      1
+(1 row)
+
+ setval
+--------
+     14
+(1 row)
+
+ setval
+--------
+      1
+(1 row)
+
+ setval
+--------
+  95856
+(1 row)
+
+ setval
+--------
+    195
+(1 row)
+
+ setval
+--------
+      1
+(1 row)
+
+ setval
+--------
+      1
+(1 row)
+
+ setval
+--------
+      1
+(1 row)
+
+ setval
+--------
+    179
+(1 row)
+
+ setval
+--------
+      1
+(1 row)
+
+ setval
+--------
+      8
+(1 row)
+
+ setval
+--------
+      1
+(1 row)
+
+ setval
+--------
+      1
+(1 row)
+
+ setval
+--------
+      3
+(1 row)
+
+ setval
+--------
+    688
+(1 row)
+
+ setval
+--------
+      6
+(1 row)
+
+ setval
+--------
+      1
+(1 row)
+
+ setval
+--------
+      3
+(1 row)
+
+ setval
+--------
+      1
+(1 row)
+
+ setval
+--------
+      2
+(1 row)
+
+ setval
+--------
+      9
+(1 row)
+
+ setval
+--------
+     13
+(1 row)
+
+ setval
+--------
+      2
+(1 row)
+
+ setval
+--------
+ 912545
+(1 row)
+
+ setval
+--------
+     17
+(1 row)
+
+ setval
+--------
+      1
+(1 row)
+
+ setval
+--------
+      1
+(1 row)
+
+ setval
+--------
+   1272
+(1 row)
+
+ setval
+--------
+      2
+(1 row)
+
+ setval
+--------
+      1
+(1 row)
+
+ setval
+--------
+   1514
+(1 row)
+
+ERROR:  multiple primary keys for table "access_tokens" are not allowed
+ERROR:  relation "access_tokens_token_unique" already exists
+ERROR:  multiple primary keys for table "announcements" are not allowed
+ERROR:  multiple primary keys for table "app_state" are not allowed
+ERROR:  multiple primary keys for table "conversations" are not allowed
+ERROR:  multiple primary keys for table "course_week_mappings" are not allowed
+ERROR:  multiple primary keys for table "custom_folders" are not allowed
+ALTER TABLE
+ERROR:  multiple primary keys for table "degree_tracking_data" are not allowed
+ERROR:  relation "deleted_folders_folder_id_unique" already exists
+ERROR:  multiple primary keys for table "deleted_folders" are not allowed
+ERROR:  multiple primary keys for table "dismissed_review_titles" are not allowed
+ERROR:  multiple primary keys for table "entity_comments" are not allowed
+ERROR:  multiple primary keys for table "feedback_notes" are not allowed
+ERROR:  relation "files_object_path_unique" already exists
+ERROR:  multiple primary keys for table "files" are not allowed
+ERROR:  multiple primary keys for table "ha_automations" are not allowed
+ERROR:  multiple primary keys for table "key_contacts" are not allowed
+ERROR:  multiple primary keys for table "messages" are not allowed
+ERROR:  multiple primary keys for table "notepad_attachments" are not allowed
+ERROR:  multiple primary keys for table "notepad_notes" are not allowed
+ERROR:  multiple primary keys for table "pending_review_items" are not allowed
+ERROR:  multiple primary keys for table "projects" are not allowed
+ERROR:  multiple primary keys for table "saved_email_searches" are not allowed
+ERROR:  multiple primary keys for table "scheduled_alexa_announcements" are not allowed
+ERROR:  multiple primary keys for table "scholarships" are not allowed
+ERROR:  multiple primary keys for table "second_google_account" are not allowed
+ERROR:  multiple primary keys for table "semester_checklist" are not allowed
+ERROR:  multiple primary keys for table "semester_settings" are not allowed
+ERROR:  multiple primary keys for table "shared_notebook_links" are not allowed
+ERROR:  relation "shift_schedule_date_unique" already exists
+ERROR:  multiple primary keys for table "shift_schedule" are not allowed
+ERROR:  multiple primary keys for table "sticky_notes" are not allowed
+ERROR:  multiple primary keys for table "subtasks" are not allowed
+ALTER TABLE
+ERROR:  multiple primary keys for table "task_links" are not allowed
+ERROR:  multiple primary keys for table "tasks" are not allowed
+ERROR:  multiple primary keys for table "third_google_account" are not allowed
+ERROR:  multiple primary keys for table "weather_alert_history" are not allowed
+ERROR:  multiple primary keys for table "weather_history" are not allowed
+ERROR:  constraint "messages_conversation_id_conversations_id_fk" for relation "messages" already exists
+byhomeyyz@raspberrypi:~/Home-View $
