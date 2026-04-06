@@ -1,0 +1,610 @@
+byhomeyyz@raspberrypi:~/Home-View $ node -e "require('dotenv').config(); require('./dist/index.cjs')"
+◇ injected env (12) from .env // tip: ⌘ override existing { override: true }
+[TTS] Rate limit active until 2026-05-01T00:00:00.000Z — using Edge TTS
+[Raw Story] Top-3 change monitor started (checking every 10 minutes)
+[Email Router] Unified email intake ready at POST /api/webhook/email
+[Gmail Ticker] Webhook endpoint ready at POST /api/webhook/ticker
+=== [Alexa Scheduler] Started (checking every 30 seconds) ===
+[Startup Fix] showCountdownBar migration failed: TypeError: Tt.getAllTasks is not a function
+    at /home/byhomeyyz/Home-View/dist/index.cjs:762:3149
+    at DGt (/home/byhomeyyz/Home-View/dist/index.cjs:762:3431)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async /home/byhomeyyz/Home-View/dist/index.cjs:1621:10799
+4:40:03 AM [express] serving on port 5000
+=== [Reminder] Starting reminder scheduler (checking every 60 seconds) ===
+[Reminder] Loaded 1068 sent reminder keys from database
+[Startup] Auto-synced 125 CRCU shifts
+[HA Health] Initial check: connected
+[Startup] Sent startup notification to HA
+[Startup] Sent startup push notification
+[Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_device_sn (Feeder - LR Rascal Device SN)
+[Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_mac_address (Feeder - LR Rascal MAC Address)
+[Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_wi_fi_ssid (Feeder - LR Rascal Wi-Fi SSID)
+[Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_wi_fi_signal_strength (Feeder - LR Rascal Wi-Fi Signal Strength)
+[Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_desiccant_remaining_days (Feeder - LR Rascal Desiccant Remaining Days)
+[Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_battery_level (Feeder - LR Rascal Battery Level)
+[Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_battery_ac (Feeder - LR Rascal Battery / AC %)
+[Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_today_s_feeding_plan (Feeder - LR Rascal Today's Feeding Plan)
+[Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_today_s_feeding_quantity_weight (Feeder - LR Rascal Today's Feeding Quantity (Weight))
+[Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_today_s_feeding_quantity_volume (Feeder - LR Rascal Today's Feeding Quantity (Volume))
+[Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_today_s_feeding_times (Feeder - LR Rascal Today's Feeding Times)
+[Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_today_s_eating_times (Feeder - LR Rascal Today's Eating Times)
+[Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_today_s_total_eating_time (Feeder - LR Rascal Today's Total Eating Time)
+[Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_last_feed_time (Feeder - LR Rascal Last Feed Time)
+[Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_last_feed_quantity_weight (Feeder - LR Rascal Last Feed Quantity (Weight))
+[Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_last_feed_quantity_volume (Feeder - LR Rascal Last Feed Quantity (Volume))
+[Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_next_feed_time (Feeder - LR Rascal Next Feed Time)
+[Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_next_feed_quantity_weight (Feeder - LR Rascal Next Feed Quantity (Weight))
+[Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_next_feed_quantity_volume (Feeder - LR Rascal Next Feed Quantity (Volume))
+[Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_display_value (Feeder - LR Rascal Display Value)
+[Cleanup] Found Rascal entity: button.feeder_lr_rascal_manual_feed (Feeder - LR Rascal Manual Feed)
+[Cleanup] Found Rascal entity: button.feeder_lr_rascal_enable_feeding_plan (Feeder - LR Rascal Enable Feeding Plan)
+[Cleanup] Found Rascal entity: button.feeder_lr_rascal_disable_feeding_plan (Feeder - LR Rascal Disable Feeding Plan)
+[Cleanup] Found Rascal entity: button.feeder_lr_rascal_manually_open_lid (Feeder - LR Rascal Manually Open Lid)
+[Cleanup] Found Rascal entity: button.feeder_lr_rascal_turn_on_display (Feeder - LR Rascal Turn On Display)
+[Cleanup] Found Rascal entity: button.feeder_lr_rascal_turn_off_display (Feeder - LR Rascal Turn Off Display)
+[Cleanup] Found Rascal entity: button.feeder_lr_rascal_turn_on_sound (Feeder - LR Rascal Turn On Sound)
+[Cleanup] Found Rascal entity: button.feeder_lr_rascal_turn_off_sound (Feeder - LR Rascal Turn Off Sound)
+[Cleanup] Found Rascal entity: button.feeder_lr_rascal_desiccant_replaced (Feeder - LR Rascal Desiccant Reset)
+[Cleanup] Found Rascal entity: binary_sensor.feeder_lr_rascal_lid (Feeder - LR Rascal Lid)
+[Cleanup] Found Rascal entity: binary_sensor.feeder_lr_rascal_food_dispenser (Feeder - LR Rascal Food Dispenser)
+[Cleanup] Found Rascal entity: binary_sensor.feeder_lr_rascal_lid_status (Feeder - LR Rascal Lid Status)
+[Cleanup] Found Rascal entity: binary_sensor.feeder_lr_rascal_food_status (Feeder - LR Rascal Food Status)
+[Cleanup] Found Rascal entity: binary_sensor.feeder_lr_rascal_wi_fi (Feeder - LR Rascal Wi-Fi)
+[Cleanup] Found Rascal entity: binary_sensor.feeder_lr_rascal_sleep_mode (Feeder - LR Rascal Sleep Mode)
+[Cleanup] Found Rascal entity: binary_sensor.feeder_lr_rascal_battery_status (Feeder - LR Rascal Battery Status)
+[Cleanup] Found Rascal entity: binary_sensor.feeder_lr_rascal_sound_status (Feeder - LR Rascal Sound Status)
+[Cleanup] Found Rascal entity: binary_sensor.feeder_lr_rascal_buttons_lock (Feeder - LR Rascal Buttons Lock)
+[Cleanup] Found Rascal entity: binary_sensor.feeder_lr_rascal_display_status (Feeder - LR Rascal Display Status)
+[Cleanup] Found Rascal entity: number.feeder_lr_rascal_desiccant_cycle (Feeder - LR Rascal Desiccant Cycle)
+[Cleanup] Found Rascal entity: number.feeder_lr_rascal_volume_level (Feeder - LR Rascal Volume Level)
+[Cleanup] Found Rascal entity: number.feeder_lr_rascal_lid_close_time (Feeder - LR Rascal Lid Close Time)
+[Cleanup] Found Rascal entity: select.feeder_lr_rascal_manual_feed_quantity (Feeder - LR Rascal Manual Feed Quantity)
+[Cleanup] Found Rascal entity: select.feeder_lr_rascal_lid_speed (Feeder - LR Rascal Lid Speed)
+[Cleanup] Found Rascal entity: select.feeder_lr_rascal_lid_mode (Feeder - LR Rascal Lid Mode)
+[Cleanup] Found Rascal entity: select.feeder_lr_rascal_icon_on_display (Feeder - LR Rascal Icon on Display)
+[Cleanup] Found Rascal entity: text.feeder_lr_rascal_text_on_display (Feeder - LR Rascal Text on Display)
+[Cleanup] Found Rascal entity: update.feeder_lr_rascal_firmware (Feeder - LR Rascal Firmware)
+[Cleanup] Found Rascal entity: number.rascal_set_weight (Rascal Set weight)
+[Cleanup] Found Rascal entity: calendar.reachushereinyyz_gmail_com (Reachushereinyyz@gmail.com)
+[Cleanup] Found Rascal entity: automation.cat_water_rascal_announcement (Cat Water Rascal Announcement)
+[Cleanup] Turned off automation: automation.cat_water_rascal_announcement
+[Cleanup] Found Rascal entity: automation.rascal_cat_food_low (Rascal Cat Food Low)
+[Cleanup] Turned off automation: automation.rascal_cat_food_low
+[Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_today_s_feeding_quantity (Today's Feeding Quantity)
+[Cleanup] Found Rascal entity: number.feeder_lr_rascal_desiccant_frequency (Desiccant Frequency)
+[Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_last_feed_quantity (Last Feed Quantity)
+[Weather History] Failed to record: {"message":"Not authenticated"}
+[AudioPrep] One-time: clearing 31 pre-generated audio caches (voice migration to echo+slowPace)
+[OneDrive] All year/semester placeholder folders already exist
+[AudioPrep] One-time: clearing 32 cached extracted texts (citation cleanup improvement)
+[AudioPrep] Startup: 47 unprepared files found, queuing (current week 12)
+[AudioPrep] Queued file 121 for preparation (queue size: 1)
+[AudioPrep] Queued file 154 for preparation (queue size: 1)
+[AudioPrep] Queued file 153 for preparation (queue size: 2)
+[AudioPrep] Queued file 159 for preparation (queue size: 3)
+[AudioPrep] Queued file 137 for preparation (queue size: 4)
+[AudioPrep] Queued file 135 for preparation (queue size: 5)
+[AudioPrep] Queued file 150 for preparation (queue size: 6)
+[AudioPrep] Queued file 158 for preparation (queue size: 7)
+[AudioPrep] Queued file 127 for preparation (queue size: 8)
+[AudioPrep] Queued file 128 for preparation (queue size: 9)
+[AudioPrep] Queued file 129 for preparation (queue size: 10)
+[AudioPrep] Queued file 130 for preparation (queue size: 11)
+[AudioPrep] Queued file 131 for preparation (queue size: 12)
+[AudioPrep] Queued file 149 for preparation (queue size: 13)
+[AudioPrep] Queued file 157 for preparation (queue size: 14)
+[AudioPrep] Queued file 125 for preparation (queue size: 15)
+[AudioPrep] Queued file 126 for preparation (queue size: 16)
+[AudioPrep] Queued file 148 for preparation (queue size: 17)
+[AudioPrep] Queued file 155 for preparation (queue size: 18)
+[AudioPrep] Queued file 156 for preparation (queue size: 19)
+[AudioPrep] Queued file 160 for preparation (queue size: 20)
+[AudioPrep] Queued file 161 for preparation (queue size: 21)
+[AudioPrep] Queued file 102 for preparation (queue size: 22)
+[AudioPrep] Queued file 103 for preparation (queue size: 23)
+[AudioPrep] Queued file 104 for preparation (queue size: 24)
+[AudioPrep] Queued file 105 for preparation (queue size: 25)
+[AudioPrep] Queued file 106 for preparation (queue size: 26)
+[AudioPrep] Queued file 97 for preparation (queue size: 27)
+[AudioPrep] Queued file 98 for preparation (queue size: 28)
+[AudioPrep] Queued file 99 for preparation (queue size: 29)
+[AudioPrep] Queued file 100 for preparation (queue size: 30)
+[AudioPrep] Queued file 94 for preparation (queue size: 31)
+[AudioPrep] Queued file 95 for preparation (queue size: 32)
+[AudioPrep] Queued file 96 for preparation (queue size: 33)
+[AudioPrep] Queued file 92 for preparation (queue size: 34)
+[AudioPrep] Queued file 93 for preparation (queue size: 35)
+[AudioPrep] Queued file 162 for preparation (queue size: 36)
+[AudioPrep] Queued file 163 for preparation (queue size: 37)
+[AudioPrep] Queued file 164 for preparation (queue size: 38)
+[AudioPrep] Queued file 172 for preparation (queue size: 39)
+[AudioPrep] Queued file 173 for preparation (queue size: 40)
+[AudioPrep] Queued file 174 for preparation (queue size: 41)
+[AudioPrep] Queued file 175 for preparation (queue size: 42)
+[AudioPrep] Queued file 176 for preparation (queue size: 43)
+[AudioPrep] Queued file 177 for preparation (queue size: 44)
+[AudioPrep] Queued file 178 for preparation (queue size: 45)
+[AudioPrep] Queued file 179 for preparation (queue size: 46)
+[AudioPrep] ===== Preparing file 121: PUBLIC OPINION RESEARCH REPORT.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from PUBLIC OPINION RESEARCH REPORT.pdf — skipping
+[AudioPrep] ===== Preparing file 154: Units 3,14 - 3,16.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from Units 3,14 - 3,16.pdf — skipping
+[AudioPrep] ===== Preparing file 153: Units 3,6 - 3,13.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from Units 3,6 - 3,13.pdf — skipping
+[AudioPrep] ===== Preparing file 159: Units 3,1 - 3,5.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from Units 3,1 - 3,5.pdf — skipping
+[AudioPrep] ===== Preparing file 137: CherylN.CollierJonat_2024_ThePoliticsofOntarioSecondEdition.pdf =====
+[ExtractText] Downloading from OneDrive path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 8 - Mar 7-13/Reading/CherylN.CollierJonat_2024_ThePoliticsofOntarioSecondEdition.pdf
+[ExtractText] Error for CherylN.CollierJonat_2024_ThePoliticsofOntarioSecondEdition.pdf: X_REPLIT_TOKEN not found for repl/depl
+[AudioPrep] No usable text extracted from CherylN.CollierJonat_2024_ThePoliticsofOntarioSecondEdition.pdf — skipping
+[AudioPrep] ===== Preparing file 135: K34-7-2019-eng - Supplementary.pdf =====
+[ExtractText] Downloading from OneDrive path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 7 - Feb 28-Mar 6/Reading/K34-7-2019-eng - Supplementary.pdf
+[ExtractText] Error for K34-7-2019-eng - Supplementary.pdf: X_REPLIT_TOKEN not found for repl/depl
+[AudioPrep] No usable text extracted from K34-7-2019-eng - Supplementary.pdf — skipping
+[AudioPrep] ===== Preparing file 150: CFNF400, Module 7 - Assignment Detail.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CFNF400, Module 7 - Assignment Detail.pdf — skipping
+[AudioPrep] ===== Preparing file 158: Units 2,10 - 2,12.pdf =====
+[ExtractText] Downloading from OneDrive path: /School/1. TMU/Courses/2026/Winter/CASL101 - American Sign Language/Week 7 - Feb 28-Mar 6/Module/Units 2,10 - 2,12.pdf
+[ExtractText] Error for Units 2,10 - 2,12.pdf: X_REPLIT_TOKEN not found for repl/depl
+[AudioPrep] No usable text extracted from Units 2,10 - 2,12.pdf — skipping
+[AudioPrep] ===== Preparing file 127: CPPA122, Module 6 - Introduction.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CPPA122, Module 6 - Introduction.pdf — skipping
+[AudioPrep] ===== Preparing file 128: Can Public Adm - 2023 - Eidelman - How do municipal mayors and councillors communicate with other levels of government .pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from Can Public Adm - 2023 - Eidelman - How do municipal mayors and councillors communicate with other levels of government .pdf — skipping
+[AudioPrep] ===== Preparing file 129: Canadian Geographer   Le g ographe canadien - 2022 - Gibson - Do more  with less  The realities of local government in.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from Canadian Geographer   Le g ographe canadien - 2022 - Gibson - Do more  with less  The realities of local government in.pdf — skipping
+[AudioPrep] ===== Preparing file 130: How to get cities out of their constitutional straitjacket.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from How to get cities out of their constitutional straitjacket.pdf — skipping
+[AudioPrep] ===== Preparing file 131: What we expect from regional and city governments is increasingly out of step with their powers _ CBC News.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from What we expect from regional and city governments is increasingly out of step with their powers _ CBC News.pdf — skipping
+[AudioPrep] ===== Preparing file 149: CFNF400, Module 6 - Topic Overview.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CFNF400, Module 6 - Topic Overview.pdf — skipping
+[AudioPrep] ===== Preparing file 157: Units 2,7 - 2,9.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from Units 2,7 - 2,9.pdf — skipping
+[AudioPrep] ===== Preparing file 125: CAMA Strong Mayors White Paper - Final English - March 23 2023_0.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CAMA Strong Mayors White Paper - Final English - March 23 2023_0.pdf — skipping
+[AudioPrep] ===== Preparing file 126: imfg_perspectives_4_hidden_in_plain_view_lucas_2013.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from imfg_perspectives_4_hidden_in_plain_view_lucas_2013.pdf — skipping
+[AudioPrep] ===== Preparing file 148: CFNF400, Module 5 - Learning Objectives.pdf =====
+[ExtractText] Downloading from OneDrive path: /School/1. TMU/Courses/2026/Winter/CFNF400 - Human Sexuality/Week 5 - Feb 7-13/Module/CFNF400, Module 5 - Learning Objectives.pdf
+[ExtractText] Error for CFNF400, Module 5 - Learning Objectives.pdf: X_REPLIT_TOKEN not found for repl/depl
+[AudioPrep] No usable text extracted from CFNF400, Module 5 - Learning Objectives.pdf — skipping
+[AudioPrep] ===== Preparing file 155: Units 2,1 - 2,6.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from Units 2,1 - 2,6.pdf — skipping
+[AudioPrep] ===== Preparing file 156: Units 2,7 - 2,9.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from Units 2,7 - 2,9.pdf — skipping
+[AudioPrep] ===== Preparing file 160: CPPA122, Module 5 - Introduction.pdf =====
+[ExtractText] Downloading from OneDrive path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 5 - Feb 7-13/Module/CPPA122, Module 5 - Introduction.pdf
+[ExtractText] Error for CPPA122, Module 5 - Introduction.pdf: X_REPLIT_TOKEN not found for repl/depl
+[AudioPrep] No usable text extracted from CPPA122, Module 5 - Introduction.pdf — skipping
+[AudioPrep] ===== Preparing file 161: urban-politics-local-government-in-canada.pdf =====
+[ExtractText] Downloading from OneDrive path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 5 - Feb 7-13/Module/urban-politics-local-government-in-canada.pdf
+[ExtractText] Error for urban-politics-local-government-in-canada.pdf: X_REPLIT_TOKEN not found for repl/depl
+[AudioPrep] No usable text extracted from urban-politics-local-government-in-canada.pdf — skipping
+[AudioPrep] ===== Preparing file 102: 156CB68A.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from 156CB68A.pdf — skipping
+[AudioPrep] ===== Preparing file 103: 62263157-c416-47a7-8207-8eab759500b8.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from 62263157-c416-47a7-8207-8eab759500b8.pdf — skipping
+[AudioPrep] ===== Preparing file 104: CherylN.CollierJonat_2024_ThePoliticsofOntarioSecondEdition.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CherylN.CollierJonat_2024_ThePoliticsofOntarioSecondEdition.pdf — skipping
+[AudioPrep] ===== Preparing file 105: Municipal 101 _ AMO.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from Municipal 101 _ AMO.pdf — skipping
+[AudioPrep] ===== Preparing file 106: shaping-the-metropolis-institutions-and-urbanization-in-the-united-states-and-canada-9780773558427_compress.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from shaping-the-metropolis-institutions-and-urbanization-in-the-united-states-and-canada-9780773558427_compress.pdf — skipping
+[AudioPrep] ===== Preparing file 97: 44320906-Supplementary.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from 44320906-Supplementary.pdf — skipping
+[AudioPrep] ===== Preparing file 98: AM.OrgCdnLocGovt.Spicer.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from AM.OrgCdnLocGovt.Spicer.pdf — skipping
+[AudioPrep] ===== Preparing file 99: IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf — skipping
+[AudioPrep] ===== Preparing file 100: CPPA122, Module 3 - Introduction.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CPPA122, Module 3 - Introduction.pdf — skipping
+[AudioPrep] ===== Preparing file 94: CPPA122, Module 2 - Introduction.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CPPA122, Module 2 - Introduction.pdf — skipping
+[AudioPrep] ===== Preparing file 95: 156CBA1A.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from 156CBA1A.pdf — skipping
+[AudioPrep] ===== Preparing file 96: 156C823F.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from 156C823F.pdf — skipping
+[AudioPrep] ===== Preparing file 92: CPPA122, Module 1 - Welcome.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CPPA122, Module 1 - Welcome.pdf — skipping
+[AudioPrep] ===== Preparing file 93: A Citizen's Guide to Government.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from A Citizen's Guide to Government.pdf — skipping
+[AudioPrep] ===== Preparing file 162: Assignment_2_-_Policy_Paper.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from Assignment_2_-_Policy_Paper.pdf — skipping
+[AudioPrep] ===== Preparing file 163: Assignment_2_-_Policy_Paper.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from Assignment_2_-_Policy_Paper.pdf — skipping
+[AudioPrep] ===== Preparing file 164: Assignment_2_-_Policy_Paper.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from Assignment_2_-_Policy_Paper.pdf — skipping
+[AudioPrep] ===== Preparing file 172: CPPA Course Schedule.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CPPA Course Schedule.pdf — skipping
+[AudioPrep] ===== Preparing file 173: CPPA Course Schedule.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CPPA Course Schedule.pdf — skipping
+[AudioPrep] ===== Preparing file 174: CPPA Course Schedule.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CPPA Course Schedule.pdf — skipping
+[AudioPrep] ===== Preparing file 175: CPPA Course Schedule.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CPPA Course Schedule.pdf — skipping
+[AudioPrep] ===== Preparing file 176: CASL Course Schedule.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CASL Course Schedule.pdf — skipping
+[AudioPrep] ===== Preparing file 177: CASL Course Schedule.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CASL Course Schedule.pdf — skipping
+[AudioPrep] ===== Preparing file 178: CASL Course Schedule.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CASL Course Schedule.pdf — skipping
+[AudioPrep] ===== Preparing file 179: CASL Course Schedule.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CASL Course Schedule.pdf — skipping
+[Gmail] Error fetching D2L announcements: Gmail API error 403: {
+  "error": {
+    "code": 403,
+    "message": "Gmail API has not been used in project 690968796215 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/gmail.googleapis.com/overview?project=690968796215 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.",
+    "errors": [
+      {
+        "message": "Gmail API has not been used in project 690968796215 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/gmail.googleapis.com/overview?project=690968796215 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.",
+        "domain": "usageLimits",
+        "reason": "accessNotConfigured",
+        "extendedHelp": "https://console.developers.google.com"
+      }
+    ],
+    "status": "PERMISSION_DENIED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+        "reason": "SERVICE_DISABLED",
+        "domain": "googleapis.com",
+        "metadata": {
+          "service": "gmail.googleapis.com",
+          "activationUrl": "https://console.developers.google.com/apis/api/gmail.googleapis.com/overview?project=690968796215",
+          "containerInfo": "690968796215",
+          "consumer": "projects/690968796215",
+          "serviceTitle": "Gmail API"
+        }
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.LocalizedMessage",
+        "locale": "en-US",
+        "message": "Gmail API has not been used in project 690968796215 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/gmail.googleapis.com/overview?project=690968796215 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.Help",
+        "links": [
+          {
+            "description": "Google developers console API activation",
+            "url": "https://console.developers.google.com/apis/api/gmail.googleapis.com/overview?project=690968796215"
+          }
+        ]
+      }
+    ]
+  }
+}
+
+[AudioPrep] Startup scan: 69 unprepared files found — queueing
+[AudioPrep] Queued file 92 for preparation (queue size: 1)
+[AudioPrep] Queued file 93 for preparation (queue size: 1)
+[AudioPrep] Queued file 94 for preparation (queue size: 2)
+[AudioPrep] Queued file 95 for preparation (queue size: 3)
+[AudioPrep] Queued file 96 for preparation (queue size: 4)
+[AudioPrep] Queued file 97 for preparation (queue size: 5)
+[AudioPrep] Queued file 98 for preparation (queue size: 6)
+[AudioPrep] Queued file 99 for preparation (queue size: 7)
+[AudioPrep] Queued file 100 for preparation (queue size: 8)
+[AudioPrep] Queued file 101 for preparation (queue size: 9)
+[AudioPrep] Queued file 102 for preparation (queue size: 10)
+[AudioPrep] Queued file 103 for preparation (queue size: 11)
+[AudioPrep] Queued file 104 for preparation (queue size: 12)
+[AudioPrep] Queued file 105 for preparation (queue size: 13)
+[AudioPrep] Queued file 106 for preparation (queue size: 14)
+[AudioPrep] Queued file 107 for preparation (queue size: 15)
+[AudioPrep] Queued file 108 for preparation (queue size: 16)
+[AudioPrep] Queued file 109 for preparation (queue size: 17)
+[AudioPrep] Queued file 110 for preparation (queue size: 18)
+[AudioPrep] Queued file 111 for preparation (queue size: 19)
+[AudioPrep] Queued file 112 for preparation (queue size: 20)
+[AudioPrep] Queued file 113 for preparation (queue size: 21)
+[AudioPrep] Queued file 114 for preparation (queue size: 22)
+[AudioPrep] Queued file 115 for preparation (queue size: 23)
+[AudioPrep] Queued file 116 for preparation (queue size: 24)
+[AudioPrep] Queued file 117 for preparation (queue size: 25)
+[AudioPrep] Queued file 118 for preparation (queue size: 26)
+[AudioPrep] Queued file 119 for preparation (queue size: 27)
+[AudioPrep] Queued file 120 for preparation (queue size: 28)
+[AudioPrep] Queued file 121 for preparation (queue size: 29)
+[AudioPrep] Queued file 122 for preparation (queue size: 30)
+[AudioPrep] Queued file 123 for preparation (queue size: 31)
+[AudioPrep] Queued file 125 for preparation (queue size: 32)
+[AudioPrep] Queued file 126 for preparation (queue size: 33)
+[AudioPrep] Queued file 127 for preparation (queue size: 34)
+[AudioPrep] Queued file 128 for preparation (queue size: 35)
+[AudioPrep] Queued file 129 for preparation (queue size: 36)
+[AudioPrep] Queued file 130 for preparation (queue size: 37)
+[AudioPrep] Queued file 131 for preparation (queue size: 38)
+[AudioPrep] Queued file 132 for preparation (queue size: 39)
+[AudioPrep] Queued file 133 for preparation (queue size: 40)
+[AudioPrep] Queued file 134 for preparation (queue size: 41)
+[AudioPrep] Queued file 135 for preparation (queue size: 42)
+[AudioPrep] Queued file 136 for preparation (queue size: 43)
+[AudioPrep] Queued file 137 for preparation (queue size: 44)
+[AudioPrep] Queued file 138 for preparation (queue size: 45)
+[AudioPrep] Queued file 139 for preparation (queue size: 46)
+[AudioPrep] Queued file 140 for preparation (queue size: 47)
+[AudioPrep] Queued file 141 for preparation (queue size: 48)
+[AudioPrep] Queued file 142 for preparation (queue size: 49)
+[AudioPrep] Queued file 143 for preparation (queue size: 50)
+[AudioPrep] Queued file 144 for preparation (queue size: 51)
+[AudioPrep] Queued file 145 for preparation (queue size: 52)
+[AudioPrep] Queued file 146 for preparation (queue size: 53)
+[AudioPrep] Queued file 147 for preparation (queue size: 54)
+[AudioPrep] Queued file 148 for preparation (queue size: 55)
+[AudioPrep] Queued file 149 for preparation (queue size: 56)
+[AudioPrep] Queued file 150 for preparation (queue size: 57)
+[AudioPrep] Queued file 151 for preparation (queue size: 58)
+[AudioPrep] Queued file 152 for preparation (queue size: 59)
+[AudioPrep] Queued file 153 for preparation (queue size: 60)
+[AudioPrep] Queued file 154 for preparation (queue size: 61)
+[AudioPrep] Queued file 155 for preparation (queue size: 62)
+[AudioPrep] Queued file 156 for preparation (queue size: 63)
+[AudioPrep] Queued file 157 for preparation (queue size: 64)
+[AudioPrep] Queued file 158 for preparation (queue size: 65)
+[AudioPrep] Queued file 159 for preparation (queue size: 66)
+[AudioPrep] Queued file 160 for preparation (queue size: 67)
+[AudioPrep] Queued file 161 for preparation (queue size: 68)
+[AudioPrep] ===== Preparing file 92: CPPA122, Module 1 - Welcome.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CPPA122, Module 1 - Welcome.pdf — skipping
+[AudioPrep] ===== Preparing file 93: A Citizen's Guide to Government.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from A Citizen's Guide to Government.pdf — skipping
+[AudioPrep] ===== Preparing file 94: CPPA122, Module 2 - Introduction.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CPPA122, Module 2 - Introduction.pdf — skipping
+[AudioPrep] ===== Preparing file 95: 156CBA1A.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from 156CBA1A.pdf — skipping
+[AudioPrep] ===== Preparing file 96: 156C823F.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from 156C823F.pdf — skipping
+[AudioPrep] ===== Preparing file 97: 44320906-Supplementary.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from 44320906-Supplementary.pdf — skipping
+[AudioPrep] ===== Preparing file 98: AM.OrgCdnLocGovt.Spicer.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from AM.OrgCdnLocGovt.Spicer.pdf — skipping
+[AudioPrep] ===== Preparing file 99: IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf — skipping
+[AudioPrep] ===== Preparing file 100: CPPA122, Module 3 - Introduction.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CPPA122, Module 3 - Introduction.pdf — skipping
+[AudioPrep] ===== Preparing file 101: CPPA122, Module 4 - Introduction.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CPPA122, Module 4 - Introduction.pdf — skipping
+[AudioPrep] ===== Preparing file 102: 156CB68A.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from 156CB68A.pdf — skipping
+[AudioPrep] ===== Preparing file 103: 62263157-c416-47a7-8207-8eab759500b8.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from 62263157-c416-47a7-8207-8eab759500b8.pdf — skipping
+[AudioPrep] ===== Preparing file 104: CherylN.CollierJonat_2024_ThePoliticsofOntarioSecondEdition.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CherylN.CollierJonat_2024_ThePoliticsofOntarioSecondEdition.pdf — skipping
+[AudioPrep] ===== Preparing file 105: Municipal 101 _ AMO.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from Municipal 101 _ AMO.pdf — skipping
+[AudioPrep] ===== Preparing file 106: shaping-the-metropolis-institutions-and-urbanization-in-the-united-states-and-canada-9780773558427_compress.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from shaping-the-metropolis-institutions-and-urbanization-in-the-united-states-and-canada-9780773558427_compress.pdf — skipping
+[AudioPrep] ===== Preparing file 107: CFNF400, Module 4 - Learning Objectives.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CFNF400, Module 4 - Learning Objectives.pdf — skipping
+[AudioPrep] ===== Preparing file 108: CPPA122, Module 10 - Introduction.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CPPA122, Module 10 - Introduction.pdf — skipping
+[AudioPrep] ===== Preparing file 109: 156CBEBA.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from 156CBEBA.pdf — skipping
+[AudioPrep] ===== Preparing file 110: 26929898.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from 26929898.pdf — skipping
+[AudioPrep] ===== Preparing file 111: AUMA-UP42-ResPapr-CommEngageLocalComm.Jones_.Oct11.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from AUMA-UP42-ResPapr-CommEngageLocalComm.Jones_.Oct11.pdf — skipping
+[AudioPrep] ===== Preparing file 112: The Paradox of Participation_ An Overview of Public Participation and Local Government in Canada_26_01_13_02_25_03.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from The Paradox of Participation_ An Overview of Public Participation and Local Government in Canada_26_01_13_02_25_03.pdf — skipping
+[AudioPrep] ===== Preparing file 113: CPPA122, Module 11 - Introduction.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CPPA122, Module 11 - Introduction.pdf — skipping
+[AudioPrep] ===== Preparing file 114: 156CBA19.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from 156CBA19.pdf — skipping
+[AudioPrep] ===== Preparing file 115: ANALYSIS_ Potential impact of tariffs on municipalities _ Alberta Municipalities.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from ANALYSIS_ Potential impact of tariffs on municipalities _ Alberta Municipalities.pdf — skipping
+[AudioPrep] ===== Preparing file 116: Canadian municipalities continue leading the tariff fight - Municipal World.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from Canadian municipalities continue leading the tariff fight - Municipal World.pdf — skipping
+[AudioPrep] ===== Preparing file 117: Let’s empower municipalities, too often the little siblings of federalism.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from Let’s empower municipalities, too often the little siblings of federalism.pdf — skipping
+[AudioPrep] ===== Preparing file 118: Municipal Priorities for 2020 and Beyond_ Part One - StrategyCorp.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from Municipal Priorities for 2020 and Beyond_ Part One - StrategyCorp.pdf — skipping
+[AudioPrep] ===== Preparing file 119: Municipal Priorities for 2020 and Beyond_ Part Two - StrategyCorp.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from Municipal Priorities for 2020 and Beyond_ Part Two - StrategyCorp.pdf — skipping
+[AudioPrep] ===== Preparing file 120: out.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from out.pdf — skipping
+[AudioPrep] ===== Preparing file 121: PUBLIC OPINION RESEARCH REPORT.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from PUBLIC OPINION RESEARCH REPORT.pdf — skipping
+[AudioPrep] ===== Preparing file 122: CPPA122, Module 12 - Introduction.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CPPA122, Module 12 - Introduction.pdf — skipping
+[AudioPrep] ===== Preparing file 123: CPPA122, Module 13 - End of the Course.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CPPA122, Module 13 - End of the Course.pdf — skipping
+[AudioPrep] ===== Preparing file 125: CAMA Strong Mayors White Paper - Final English - March 23 2023_0.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CAMA Strong Mayors White Paper - Final English - March 23 2023_0.pdf — skipping
+[AudioPrep] ===== Preparing file 126: imfg_perspectives_4_hidden_in_plain_view_lucas_2013.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from imfg_perspectives_4_hidden_in_plain_view_lucas_2013.pdf — skipping
+[AudioPrep] ===== Preparing file 127: CPPA122, Module 6 - Introduction.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CPPA122, Module 6 - Introduction.pdf — skipping
+[AudioPrep] ===== Preparing file 128: Can Public Adm - 2023 - Eidelman - How do municipal mayors and councillors communicate with other levels of government .pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from Can Public Adm - 2023 - Eidelman - How do municipal mayors and councillors communicate with other levels of government .pdf — skipping
+[AudioPrep] ===== Preparing file 129: Canadian Geographer   Le g ographe canadien - 2022 - Gibson - Do more  with less  The realities of local government in.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from Canadian Geographer   Le g ographe canadien - 2022 - Gibson - Do more  with less  The realities of local government in.pdf — skipping
+[AudioPrep] ===== Preparing file 130: How to get cities out of their constitutional straitjacket.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from How to get cities out of their constitutional straitjacket.pdf — skipping
+[AudioPrep] ===== Preparing file 131: What we expect from regional and city governments is increasingly out of step with their powers _ CBC News.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from What we expect from regional and city governments is increasingly out of step with their powers _ CBC News.pdf — skipping
+[AudioPrep] ===== Preparing file 132: CPPA122, Module 7 - Introduction.pdf =====
+[ExtractText] Downloading from OneDrive path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 7 - Feb 28-Mar 6/Module/CPPA122, Module 7 - Introduction.pdf
+[ExtractText] Error for CPPA122, Module 7 - Introduction.pdf: X_REPLIT_TOKEN not found for repl/depl
+[AudioPrep] No usable text extracted from CPPA122, Module 7 - Introduction.pdf — skipping
+[AudioPrep] ===== Preparing file 133: Bold Election Ideas for the Toronto Region – IMFG.pdf =====
+[ExtractText] Downloading from OneDrive path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 7 - Feb 28-Mar 6/Reading/Bold Election Ideas for the Toronto Region – IMFG.pdf
+[ExtractText] Error for Bold Election Ideas for the Toronto Region – IMFG.pdf: X_REPLIT_TOKEN not found for repl/depl
+[AudioPrep] No usable text extracted from Bold Election Ideas for the Toronto Region – IMFG.pdf — skipping
+[AudioPrep] ===== Preparing file 134: Can Public Adm - 2018 - Heritz - From self‐determination to service delivery  Assessing Indigenous inclusion in municipal.pdf =====
+[ExtractText] Downloading from OneDrive path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 7 - Feb 28-Mar 6/Reading/Can Public Adm - 2018 - Heritz - From self‐determination to service delivery  Assessing Indigenous inclusion in municipal.pdf
+[ExtractText] Error for Can Public Adm - 2018 - Heritz - From self‐determination to service delivery  Assessing Indigenous inclusion in municipal.pdf: X_REPLIT_TOKEN not found for repl/depl
+[AudioPrep] No usable text extracted from Can Public Adm - 2018 - Heritz - From self‐determination to service delivery  Assessing Indigenous inclusion in municipal.pdf — skipping
+[AudioPrep] ===== Preparing file 135: K34-7-2019-eng - Supplementary.pdf =====
+[ExtractText] Downloading from OneDrive path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 7 - Feb 28-Mar 6/Reading/K34-7-2019-eng - Supplementary.pdf
+[ExtractText] Error for K34-7-2019-eng - Supplementary.pdf: X_REPLIT_TOKEN not found for repl/depl
+[AudioPrep] No usable text extracted from K34-7-2019-eng - Supplementary.pdf — skipping
+[AudioPrep] ===== Preparing file 136: CPPA122, Module 8 - Introduction.pdf =====
+[ExtractText] Downloading from OneDrive path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 8 - Mar 7-13/Module/CPPA122, Module 8 - Introduction.pdf
+[ExtractText] Error for CPPA122, Module 8 - Introduction.pdf: X_REPLIT_TOKEN not found for repl/depl
+[AudioPrep] No usable text extracted from CPPA122, Module 8 - Introduction.pdf — skipping
+[AudioPrep] ===== Preparing file 137: CherylN.CollierJonat_2024_ThePoliticsofOntarioSecondEdition.pdf =====
+[ExtractText] Downloading from OneDrive path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 8 - Mar 7-13/Reading/CherylN.CollierJonat_2024_ThePoliticsofOntarioSecondEdition.pdf
+[ExtractText] Error for CherylN.CollierJonat_2024_ThePoliticsofOntarioSecondEdition.pdf: X_REPLIT_TOKEN not found for repl/depl
+[AudioPrep] No usable text extracted from CherylN.CollierJonat_2024_ThePoliticsofOntarioSecondEdition.pdf — skipping
+[AudioPrep] ===== Preparing file 138: IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf =====
+[ExtractText] Downloading from OneDrive path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 8 - Mar 7-13/Reading/IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf
+[ExtractText] Error for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf: X_REPLIT_TOKEN not found for repl/depl
+[AudioPrep] No usable text extracted from IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf — skipping
+[AudioPrep] ===== Preparing file 139: CPPA122, Module 9 - Introduction.pdf =====
+[ExtractText] Downloading from OneDrive path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 9 - Mar 14-20/Module/CPPA122, Module 9 - Introduction.pdf
+[ExtractText] Error for CPPA122, Module 9 - Introduction.pdf: X_REPLIT_TOKEN not found for repl/depl
+[AudioPrep] No usable text extracted from CPPA122, Module 9 - Introduction.pdf — skipping
+[AudioPrep] ===== Preparing file 140: Can Public Adm - 2019 - Lucas - Multilevel policy from the municipal perspective  A pan‐Canadian survey.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from Can Public Adm - 2019 - Lucas - Multilevel policy from the municipal perspective  A pan‐Canadian survey.pdf — skipping
+[AudioPrep] ===== Preparing file 141: proquest.com_printviewfile_accountid=13631.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from proquest.com_printviewfile_accountid=13631.pdf — skipping
+[AudioPrep] ===== Preparing file 142: Reflections on Who Does What – IMFG.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from Reflections on Who Does What – IMFG.pdf — skipping
+[AudioPrep] ===== Preparing file 143: Uber launches lawsuit over 'bad faith' council vote, calls on court to overturn ridesharing cap.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from Uber launches lawsuit over 'bad faith' council vote, calls on court to overturn ridesharing cap.pdf — skipping
+[AudioPrep] ===== Preparing file 144: CFNF400, Module 10 - Learning Objectives.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CFNF400, Module 10 - Learning Objectives.pdf — skipping
+[AudioPrep] ===== Preparing file 145: CFNF400, Module 11 - Learning Objectives.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CFNF400, Module 11 - Learning Objectives.pdf — skipping
+[AudioPrep] ===== Preparing file 146: CFNF400, Module 12 - Learning Objectives.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CFNF400, Module 12 - Learning Objectives.pdf — skipping
+[AudioPrep] ===== Preparing file 147: CFNF400, Module 13 - Assignment Detail.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CFNF400, Module 13 - Assignment Detail.pdf — skipping
+[AudioPrep] ===== Preparing file 148: CFNF400, Module 5 - Learning Objectives.pdf =====
+[ExtractText] Downloading from OneDrive path: /School/1. TMU/Courses/2026/Winter/CFNF400 - Human Sexuality/Week 5 - Feb 7-13/Module/CFNF400, Module 5 - Learning Objectives.pdf
+[ExtractText] Error for CFNF400, Module 5 - Learning Objectives.pdf: X_REPLIT_TOKEN not found for repl/depl
+[AudioPrep] No usable text extracted from CFNF400, Module 5 - Learning Objectives.pdf — skipping
+[AudioPrep] ===== Preparing file 149: CFNF400, Module 6 - Topic Overview.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CFNF400, Module 6 - Topic Overview.pdf — skipping
+[AudioPrep] ===== Preparing file 150: CFNF400, Module 7 - Assignment Detail.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CFNF400, Module 7 - Assignment Detail.pdf — skipping
+[AudioPrep] ===== Preparing file 151: CFNF400, Module 8 - Learning Objectives.pdf =====
+[ExtractText] Downloading from OneDrive path: /School/1. TMU/Courses/2026/Winter/CFNF400 - Human Sexuality/Week 8 - Mar 7-13/Module/CFNF400, Module 8 - Learning Objectives.pdf
+[ExtractText] Error for CFNF400, Module 8 - Learning Objectives.pdf: X_REPLIT_TOKEN not found for repl/depl
+[AudioPrep] No usable text extracted from CFNF400, Module 8 - Learning Objectives.pdf — skipping
+[AudioPrep] ===== Preparing file 152: CFNF400, Module 9 - Learning Objectives.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from CFNF400, Module 9 - Learning Objectives.pdf — skipping
+[AudioPrep] ===== Preparing file 153: Units 3,6 - 3,13.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from Units 3,6 - 3,13.pdf — skipping
+[AudioPrep] ===== Preparing file 154: Units 3,14 - 3,16.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from Units 3,14 - 3,16.pdf — skipping
+[AudioPrep] ===== Preparing file 155: Units 2,1 - 2,6.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from Units 2,1 - 2,6.pdf — skipping
+[AudioPrep] ===== Preparing file 156: Units 2,7 - 2,9.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from Units 2,7 - 2,9.pdf — skipping
+[AudioPrep] ===== Preparing file 157: Units 2,7 - 2,9.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from Units 2,7 - 2,9.pdf — skipping
+[AudioPrep] ===== Preparing file 158: Units 2,10 - 2,12.pdf =====
+[ExtractText] Downloading from OneDrive path: /School/1. TMU/Courses/2026/Winter/CASL101 - American Sign Language/Week 7 - Feb 28-Mar 6/Module/Units 2,10 - 2,12.pdf
+[ExtractText] Error for Units 2,10 - 2,12.pdf: X_REPLIT_TOKEN not found for repl/depl
+[AudioPrep] No usable text extracted from Units 2,10 - 2,12.pdf — skipping
+[AudioPrep] ===== Preparing file 159: Units 3,1 - 3,5.pdf =====
+[ExtractText] Object storage download error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+[AudioPrep] No usable text extracted from Units 3,1 - 3,5.pdf — skipping
+[AudioPrep] ===== Preparing file 160: CPPA122, Module 5 - Introduction.pdf =====
+[ExtractText] Downloading from OneDrive path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 5 - Feb 7-13/Module/CPPA122, Module 5 - Introduction.pdf
+[ExtractText] Error for CPPA122, Module 5 - Introduction.pdf: X_REPLIT_TOKEN not found for repl/depl
+[AudioPrep] No usable text extracted from CPPA122, Module 5 - Introduction.pdf — skipping
+[AudioPrep] ===== Preparing file 161: urban-politics-local-government-in-canada.pdf =====
+[ExtractText] Downloading from OneDrive path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 5 - Feb 7-13/Module/urban-politics-local-government-in-canada.pdf
+[ExtractText] Error for urban-politics-local-government-in-canada.pdf: X_REPLIT_TOKEN not found for repl/depl
+[AudioPrep] No usable text extracted from urban-politics-local-government-in-canada.pdf — skipping
+[Raw Story] Initial top-3 stored (no email on first run)
