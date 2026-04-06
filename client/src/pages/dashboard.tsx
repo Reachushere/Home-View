@@ -3137,6 +3137,10 @@ export default function Dashboard() {
   };
   const [draggedFile, setDraggedFile] = useState<{ url: string; name: string } | null>(null);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [celebrationEnabled, setCelebrationEnabled] = useState<boolean>(() => {
+    const saved = localStorage.getItem('celebrationEnabled');
+    return saved !== null ? saved === 'true' : true;
+  });
   const [completedTaskHistory, setCompletedTaskHistory] = useState<number[]>(() => {
     const saved = localStorage.getItem('completedTaskHistory');
     return saved ? JSON.parse(saved) : [];
@@ -10025,7 +10029,7 @@ export default function Dashboard() {
           localStorage.setItem('completedTaskHistory', JSON.stringify(newHistory));
           return newHistory;
         });
-        setShowCelebration(true);
+        if (celebrationEnabled) setShowCelebration(true);
       }
       if (!variables._skipUndo) {
         const task = allTasks.find(t => t.id === variables.id);
@@ -10553,7 +10557,7 @@ export default function Dashboard() {
       refreshFileCounts();
       setPreviewFile(null);
       toast({ title: "File marked as completed and moved to Completed folder" });
-      setShowCelebration(true);
+      if (celebrationEnabled) setShowCelebration(true);
     },
   });
 
@@ -24270,6 +24274,22 @@ export default function Dashboard() {
                   </div>
                   <div className="text-[8px]" style={{ color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>
                     {calendarWeekMode === 'next' ? 'Showing next week — all columns show upcoming week dates' : 'Showing current week — green columns indicate next week days'}
+                  </div>
+                  <div className="flex items-center justify-between" style={{ marginTop: '6px' }}>
+                    <Label className="text-xs font-medium">Completion Celebration</Label>
+                    <input
+                      type="checkbox"
+                      checked={celebrationEnabled}
+                      onChange={(e) => {
+                        setCelebrationEnabled(e.target.checked);
+                        localStorage.setItem('celebrationEnabled', String(e.target.checked));
+                      }}
+                      className="h-1.5 w-1.5 rounded border-gray-300 accent-[#3b82f6]"
+                      data-testid="toggle-celebration"
+                    />
+                  </div>
+                  <div className="text-[8px]" style={{ color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>
+                    {celebrationEnabled ? 'Graphic and applause play when a task is completed' : 'Celebration graphic and sound disabled'}
                   </div>
                 </div>
                 {/* Blinking & Spacing Settings */}
