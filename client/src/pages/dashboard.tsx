@@ -1089,7 +1089,7 @@ export default function Dashboard() {
   const [quickAddStep, setQuickAddStep] = useState(0);
   const [quickAddData, setQuickAddData] = useState({
     type: "",
-    taskLabel: "" as "" | "household" | "financial" | "personal" | "outside" | "other",
+    taskLabel: "" as "" | "school" | "household" | "financial" | "personal" | "outside" | "other",
     title: "",
     courseName: "",
     dueDate: "",
@@ -18986,6 +18986,7 @@ export default function Dashboard() {
                           <p className="text-white/50 text-[10px] text-center mb-2">Label (optional)</p>
                           <div className="grid grid-cols-3 gap-1.5">
                             {([
+                              { key: 'school' as const, label: 'School', icon: '🎓', bg: 'rgba(0,76,156,0.2)', border: 'rgba(0,76,156,0.5)', hover: 'rgba(0,76,156,0.3)' },
                               { key: 'household' as const, label: 'Household', icon: '🏠', bg: 'rgba(245,158,11,0.2)', border: 'rgba(245,158,11,0.5)', hover: 'rgba(245,158,11,0.3)' },
                               { key: 'financial' as const, label: 'Financial', icon: '💰', bg: 'rgba(16,185,129,0.2)', border: 'rgba(16,185,129,0.5)', hover: 'rgba(16,185,129,0.3)' },
                               { key: 'personal' as const, label: 'Personal', icon: '👤', bg: 'rgba(139,92,246,0.2)', border: 'rgba(139,92,246,0.5)', hover: 'rgba(139,92,246,0.3)' },
