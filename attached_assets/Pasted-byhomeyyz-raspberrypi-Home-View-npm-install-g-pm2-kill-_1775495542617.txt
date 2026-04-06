@@ -1,0 +1,33 @@
+byhomeyyz@raspberrypi:~/Home-View $ npm install -g pm2
+kill $(lsof -t -i:5000) 2>/dev/null
+cd ~/Home-View && pm2 start npm --name "unical" -- run dev
+pm2 startup
+pm2 save
+npm warn Unknown builtin config "globalignorefile". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm error code EACCES
+npm error syscall mkdir
+npm error path /usr/local/lib/node_modules/pm2
+npm error errno -13
+npm error Error: EACCES: permission denied, mkdir '/usr/local/lib/node_modules/pm2'
+npm error     at async mkdir (node:internal/fs/promises:856:10)
+npm error     at async /usr/local/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/arborist/reify.js:585:20
+npm error     at async Promise.allSettled (index 0)
+npm error     at async #reifyPackages (/usr/local/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/arborist/reify.js:317:11)
+npm error     at async Arborist.reify (/usr/local/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/arborist/reify.js:127:5)
+npm error     at async Install.exec (/usr/local/lib/node_modules/npm/lib/commands/install.js:146:5)
+npm error     at async Npm.exec (/usr/local/lib/node_modules/npm/lib/npm.js:193:9)
+npm error     at async module.exports (/usr/local/lib/node_modules/npm/lib/cli/entry.js:67:5) {
+npm error   errno: -13,
+npm error   code: 'EACCES',
+npm error   syscall: 'mkdir',
+npm error   path: '/usr/local/lib/node_modules/pm2'
+npm error }
+npm error
+npm error The operation was rejected by your operating system.
+npm error It is likely you do not have the permissions to access this file as the current user
+npm error
+npm error If you believe this might be a permissions issue, please double-check the permissions of the file and its containing directories, or try running the command again as root/Administrator.
+npm error A complete log of this run can be found in: /home/byhomeyyz/.npm/_logs/2026-04-06T17_11_34_648Z-debug-0.log
+-bash: pm2: command not found
+-bash: pm2: command not found
+-bash: pm2: command not found
