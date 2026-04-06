@@ -10096,13 +10096,19 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const abSuffix = isInSpringSummerHalfA() ? 'A' : 'B';
     for (const [key, priority] of Object.entries(coursePlayPriority)) {
       const parts = key.split(':');
-      const keyCode = (parts[1] || '').toUpperCase().replace(/\s/g, '');
-      const keySuffix = parts[2] || '';
-      if (keyCode === codeWithNum && priority > 0) {
+      let keyCode: string;
+      let keySuffix = '';
+      if (parts.length >= 2) {
+        keyCode = (parts[1] || '').toUpperCase().replace(/\s/g, '');
+        keySuffix = parts[2] || '';
+      } else {
+        keyCode = key.toUpperCase().replace(/\s/g, '');
+      }
+      if (keyCode === codeWithNum && (priority as number) > 0) {
         if (keySuffix) {
-          if (keySuffix === abSuffix) return priority;
+          if (keySuffix === abSuffix) return priority as number;
         } else {
-          return priority;
+          return priority as number;
         }
       }
     }
@@ -13028,6 +13034,7 @@ document.body.removeChild(a);
             }, 'Cat Lights HA Ack');
             ackPlayed = true;
             console.log(`[Cat Lights] Quick acknowledgment played via HA Cloud TTS (primary)`);
+            await new Promise(r => setTimeout(r, 3500));
           } catch (ackErr: any) {
             console.warn(`[Cat Lights] HA ack failed: ${ackErr.message}`);
           }
@@ -13038,6 +13045,7 @@ document.body.removeChild(a);
               if (ackResult.success) {
                 ackPlayed = true;
                 console.log(`[Cat Lights] Quick acknowledgment played on Nest speaker (fallback)`);
+                await new Promise(r => setTimeout(r, 3500));
               }
             } catch (e: any) {
               console.warn(`[Cat Lights] Nest ack fallback also failed: ${e.message}`);
@@ -13105,13 +13113,6 @@ document.body.removeChild(a);
       const ttsMessage = `Would you like to play ${fileDesc}?`;
       console.log(`[Cat Lights] Sending TTS prompt: "${ttsMessage}"`);
       try {
-        try {
-          await stopAllCatWashroomSpeakers(haUrl);
-          console.log(`[Cat Lights] Stopped any existing media before TTS prompt`);
-        } catch (e: any) {
-          console.warn(`[Cat Lights] Pre-prompt media stop error (non-fatal): ${e.message}`);
-        }
-
         await haServiceCallSafe('media_player/volume_set', { entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.50 }, 'Cat Lights HA Vol');
 
         let ttsPlayed = false;
