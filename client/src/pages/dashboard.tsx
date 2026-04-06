@@ -27415,8 +27415,15 @@ export default function Dashboard() {
                                 const h = getETHours(d);
                                 return h === 0 ? 18 : h;
                               })();
-                              const tDueDayIdx = weekDays.findIndex(wd => isSameDayET(wd, tDue));
-                              if (tDueDayIdx < 0) return false;
+                              let tDueDayIdx = weekDays.findIndex(wd => isSameDayET(wd, tDue));
+                              const lastDayInWeek = startOfDayET(weekDays[weekDays.length - 1]);
+                              if (tDueDayIdx < 0) {
+                                if (tDue > lastDayInWeek) {
+                                  tDueDayIdx = weekDays.length - 1;
+                                } else {
+                                  return false;
+                                }
+                              }
                               if (endDayIdx < 0 || endDayIdx >= weekDays.length) return false;
                               if (tDueDayIdx <= endDayIdx) return false;
                               if (hour !== tDueHour) return false;
@@ -27428,8 +27435,11 @@ export default function Dashboard() {
                               const daysLeft = Math.max(0, Math.round((tDue.getTime() - today.getTime()) / (1000*60*60*24)));
                               const courseCode = t.courseName?.split(' - ')[0]?.trim() || '';
                               const barColor = t.countdownBarColor || (daysLeft <= 1 ? '#ef4444' : daysLeft === 2 ? '#f97316' : daysLeft <= 4 ? '#f59e0b' : '#22c55e');
-                              const tDueDayIdx = weekDays.findIndex(wd => isSameDayET(wd, tDue));
-                              const isTaskCell = dayIdx === tDueDayIdx;
+                              const lastDayInWeekR = startOfDayET(weekDays[weekDays.length - 1]);
+                              let tDueDayIdx = weekDays.findIndex(wd => isSameDayET(wd, tDue));
+                              const taskBeyondWeek = tDueDayIdx < 0 && tDue > lastDayInWeekR;
+                              if (taskBeyondWeek) tDueDayIdx = weekDays.length - 1;
+                              const isTaskCell = !taskBeyondWeek && dayIdx === tDueDayIdx;
                               const isEndCell = dayIdx === endDayIdx;
                               const barY = 50 + tIdx * 5;
                               const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
