@@ -15246,6 +15246,25 @@ export default function Dashboard() {
             data-testid="slider-pill-spacing-inline"
           />
           <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.4)', minWidth: '22px' }}>{blinkSettings.tallPillButtonSpacing}px</span>
+          <button
+            onClick={async () => {
+              const btn = document.querySelector('[data-testid="publish-guide-btn"]') as HTMLButtonElement;
+              if (btn) { btn.textContent = '...'; btn.disabled = true; }
+              try {
+                const res = await fetch('/api/publish-guide', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+                const data = await res.json();
+                if (data.success) {
+                  if (btn) { btn.textContent = 'Sent!'; setTimeout(() => { btn.textContent = 'Publish'; btn.disabled = false; }, 3000); }
+                } else {
+                  if (btn) { btn.textContent = 'Error'; setTimeout(() => { btn.textContent = 'Publish'; btn.disabled = false; }, 3000); }
+                }
+              } catch {
+                if (btn) { btn.textContent = 'Error'; setTimeout(() => { btn.textContent = 'Publish'; btn.disabled = false; }, 3000); }
+              }
+            }}
+            data-testid="publish-guide-btn"
+            style={{ fontSize: '7px', padding: '1px 5px', borderRadius: '3px', background: 'rgba(34,197,94,0.3)', border: '1px solid rgba(34,197,94,0.5)', color: '#4ade80', cursor: 'pointer', fontWeight: 600, whiteSpace: 'nowrap', marginLeft: '4px', lineHeight: '14px' }}
+          >Publish</button>
         </div>
 
         {/* Glass pill background */}
