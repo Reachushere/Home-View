@@ -18390,8 +18390,14 @@ export default function Dashboard() {
         };
         const typeIconMap: Record<string, string> = { module: '📘', reading: '📖', essay: '📝', discussion: '💬', poll: '📊', quiz: '❓', exam: '📋', project: '🔧', reminder: '⏰', meeting: '🤝', scholarship: '🎓', other: '📌', class: '🏫' };
         const useLucideIcon = true;
-        const timeSlots: string[] = [];
-        for (let h = 6; h <= 21; h++) { timeSlots.push(`${h === 0 ? 12 : h > 12 ? h - 12 : h}:00 ${h < 12 ? 'AM' : 'PM'}`); }
+        const formatHour12 = (h: number) => {
+          if (h === 0) return '12 AM';
+          if (h < 12) return `${h} AM`;
+          if (h === 12) return '12 PM';
+          return `${h - 12} PM`;
+        };
+        const amHours = Array.from({ length: 12 }, (_, i) => i);
+        const pmHours = Array.from({ length: 12 }, (_, i) => i + 12);
         const getTaskHour = (task: any) => {
           if (task.eventStartTime) { const parts = task.eventStartTime.split(':'); return parseInt(parts[0], 10); }
           if (task.dueDate) { const d = new Date(task.dueDate); const h = d.getHours(); return h; }
@@ -18401,7 +18407,7 @@ export default function Dashboard() {
         const unscheduledTasks: typeof dayTasks = [];
         dayTasks.forEach(t => {
           const h = getTaskHour(t);
-          if (h >= 6 && h <= 21) { if (!tasksByHour[h]) tasksByHour[h] = []; tasksByHour[h].push(t); }
+          if (h >= 0 && h <= 23) { if (!tasksByHour[h]) tasksByHour[h] = []; tasksByHour[h].push(t); }
           else { unscheduledTasks.push(t); }
         });
         const priorityColors: Record<string, string> = { high: '#ef4444', medium: '#f59e0b', low: '#22c55e' };
@@ -18492,40 +18498,47 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div style={{ flex: 1, overflowY: 'auto', display: 'flex', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent' }}>
-                <div style={{ width: '70px', flexShrink: 0, borderRight: '1px solid rgba(255,255,255,0.15)', display: 'flex', flexDirection: 'column' }}>
-                  {timeSlots.map((label, idx) => {
-                    const hour = idx + 6;
-                    const hasTask = !!tasksByHour[hour];
-                    return (
-                      <div key={hour} style={{ flex: 1, minHeight: 0, display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end', paddingRight: '8px', paddingTop: '2px', borderBottom: '1px solid rgba(255,255,255,0.15)', position: 'relative' }}>
-                        <span style={{ fontSize: '10px', fontWeight: hasTask ? 600 : 400, color: '#ffffff', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{label}</span>
-                        {hasTask && <div style={{ position: 'absolute', right: '-3px', top: '8px', width: '5px', height: '5px', borderRadius: '50%', background: '#60a5fa' }} />}
+              <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent' }}>
+                <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
+                  {[{ label: 'AM', hours: amHours }, { label: 'PM', hours: pmHours }].map((half, halfIdx) => (
+                    <div key={half.label} style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: halfIdx === 0 ? '2px solid rgba(255,255,255,0.25)' : 'none' }}>
+                      <div style={{ padding: '4px 0', textAlign: 'center', borderBottom: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.06)', flexShrink: 0 }}>
+                        <span style={{ fontSize: '10px', fontWeight: 700, color: 'rgba(255,255,255,0.7)', letterSpacing: '1px', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{half.label}</span>
                       </div>
-                    );
-                  })}
-                </div>
-
-                <div style={{ flex: 1, minWidth: 0, position: 'relative', display: 'flex', flexDirection: 'column' }}>
-                  {timeSlots.map((_, idx) => {
-                    const hour = idx + 6;
-                    const tasks = tasksByHour[hour] || [];
-                    return (
-                      <div key={hour} onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)'; }} onDragLeave={(e) => { (e.currentTarget as HTMLElement).style.background = ''; }} onDrop={(e) => { e.preventDefault(); (e.currentTarget as HTMLElement).style.background = ''; const taskId = parseInt(e.dataTransfer.getData('text/plain')); if (!taskId) return; const hh = String(hour).padStart(2, '0'); const newStart = `${hh}:00`; const newEnd = `${String(hour + 1).padStart(2, '0')}:00`; fetch(`/api/tasks/${taskId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ eventStartTime: newStart, eventEndTime: newEnd }) }).then(() => { queryClient.invalidateQueries({ queryKey: ['/api/tasks'] }); }); }} style={{ flex: 1, minHeight: 0, borderBottom: '1px solid rgba(255,255,255,0.15)', padding: tasks.length > 0 ? '2px 8px' : '0 8px', display: 'flex', flexDirection: 'row', gap: '4px', alignItems: 'center', flexWrap: 'wrap', transition: 'background 0.15s ease' }}>
-                        {tasks.map(t => renderDetailTask(t))}
-                      </div>
-                    );
-                  })}
-
-                  {unscheduledTasks.length > 0 && (
-                    <div style={{ borderTop: '1px solid rgba(255,255,255,0.15)', padding: '8px 12px' }}>
-                      <div style={{ fontSize: '10px', fontWeight: 600, color: '#ffffff', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Unscheduled / Other Hours</div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                        {unscheduledTasks.map(t => renderDetailTask(t))}
+                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                        {half.hours.map(hour => {
+                          const tasks = tasksByHour[hour] || [];
+                          const hasTask = tasks.length > 0;
+                          const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+                          return (
+                            <div key={hour} style={{ flex: 1, minHeight: '28px', display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                              <div style={{ width: '42px', flexShrink: 0, display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end', paddingRight: '6px', paddingTop: '3px', borderRight: '1px solid rgba(255,255,255,0.12)', position: 'relative' }}>
+                                <span style={{ fontSize: '10px', fontWeight: hasTask ? 700 : 400, color: hasTask ? '#ffffff' : 'rgba(255,255,255,0.5)', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{displayHour}:00</span>
+                                {hasTask && <div style={{ position: 'absolute', right: '-3px', top: '8px', width: '5px', height: '5px', borderRadius: '50%', background: '#60a5fa', zIndex: 1 }} />}
+                              </div>
+                              <div
+                                onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)'; }}
+                                onDragLeave={(e) => { (e.currentTarget as HTMLElement).style.background = ''; }}
+                                onDrop={(e) => { e.preventDefault(); (e.currentTarget as HTMLElement).style.background = ''; const taskId = parseInt(e.dataTransfer.getData('text/plain')); if (!taskId) return; const hh = String(hour).padStart(2, '0'); const newStart = `${hh}:00`; const newEnd = `${String((hour + 1) % 24).padStart(2, '0')}:00`; fetch(`/api/tasks/${taskId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ eventStartTime: newStart, eventEndTime: newEnd }) }).then(() => { queryClient.invalidateQueries({ queryKey: ['/api/tasks'] }); }); }}
+                                style={{ flex: 1, minWidth: 0, padding: hasTask ? '2px 6px' : '0 6px', display: 'flex', flexDirection: 'row', gap: '4px', alignItems: 'center', flexWrap: 'wrap', transition: 'background 0.15s ease' }}
+                              >
+                                {tasks.map(t => renderDetailTask(t))}
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
-                  )}
+                  ))}
                 </div>
+                {unscheduledTasks.length > 0 && (
+                  <div style={{ borderTop: '1px solid rgba(255,255,255,0.2)', padding: '8px 12px', flexShrink: 0 }}>
+                    <div style={{ fontSize: '10px', fontWeight: 600, color: '#ffffff', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Unscheduled</div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      {unscheduledTasks.map(t => renderDetailTask(t))}
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="flex justify-end px-4 py-[10px] border-t border-white/40 shrink-0 rounded-b-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, ${colorSettings.headerBar}bb 0%, ${colorSettings.headerBar}cc 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15), 0 -2px 8px rgba(0,0,0,0.08)' }}>
                 <button onClick={() => setDayDetailDate(null)} className="px-5 py-[5px] rounded text-[11px] font-medium text-white/80 hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)' }} data-testid="day-detail-close-bottom">Close</button>
