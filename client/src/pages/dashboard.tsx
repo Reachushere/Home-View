@@ -9848,6 +9848,7 @@ export default function Dashboard() {
   });
   
   const [isCalendarSettingsOpen, setIsCalendarSettingsOpen] = useState(false);
+  const [isDialogManagerOpen, setIsDialogManagerOpen] = useState(false);
   const [showAllDayRow, setShowAllDayRow] = useState<boolean>(() => {
     const saved = localStorage.getItem('showAllDayRow');
     return saved !== null ? JSON.parse(saved) : false;
@@ -17332,6 +17333,14 @@ export default function Dashboard() {
           </div>
           <div className="px-2 pb-2 flex justify-end">
                 <div className="flex items-center gap-2">
+                <button
+                  className="px-3 py-[5px] rounded text-[11px] font-medium text-white/60 hover:text-white transition-colors"
+                  style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                  onClick={() => setIsDialogManagerOpen(true)}
+                  data-testid="button-dialog-manager"
+                >
+                  Dialogs
+                </button>
                 <Button 
                   type="button" 
                   variant="outline"
@@ -17365,6 +17374,122 @@ export default function Dashboard() {
                 </div>
           </div>
         </div>
+      )}
+
+      {isDialogManagerOpen && createPortal(
+        <div className="fixed inset-0 z-[10010]" onClick={() => setIsDialogManagerOpen(false)}>
+          <div className="fixed z-[10011] overflow-hidden flex flex-col" style={{ left: '50%', top: '50%', transform: 'translate(-50%, -50%)', width: '340px', maxHeight: '80vh', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', borderRadius: '12px', boxShadow: '0 8px 40px rgba(0,0,0,0.4)' }} onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+              <span className="text-white text-[12px] font-medium" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>DIALOG MANAGER</span>
+              <X className="text-white/60 hover:text-white cursor-pointer transition-colors" style={{ width: '14px', height: '14px' }} onClick={() => setIsDialogManagerOpen(false)} />
+            </div>
+            <div className="flex-1 overflow-y-auto px-3 py-2" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent' }}>
+              <p className="text-[9px] text-white/40 mb-2 px-1">Toggle dialogs on/off. Use "Close" to dismiss any stuck dialog.</p>
+              {[
+                { label: 'Settings Panel', active: isSettingsPanelOpen, close: () => startTransition(() => setIsSettingsPanelOpen(false)) },
+                { label: 'School Courses', active: isSchoolCoursesDialogOpen, close: () => startTransition(() => setIsSchoolCoursesDialogOpen(false)) },
+                { label: 'Day Detail View', active: !!dayDetailDate, close: () => setDayDetailDate(null) },
+                { label: 'Task Editor', active: !!editingTask, close: () => setEditingTaskRaw(null) },
+                { label: 'Weather History', active: showWeatherHistoryPanel, close: () => setShowWeatherHistoryPanel(false) },
+                { label: 'Morning Review', active: showMorningReview, close: () => setShowMorningReview(false) },
+                { label: 'Monthly Report', active: isMonthlyReportOpen, close: () => setIsMonthlyReportOpen(false) },
+                { label: 'Notepad', active: isNotepadOpen, close: () => setIsNotepadOpen(false) },
+                { label: 'Sky Map', active: skyMapOpen, close: () => setSkyMapOpen(false) },
+                { label: 'Alexa', active: isAlexaDialogOpen, close: () => setIsAlexaDialogOpen(false) },
+                { label: 'Radio', active: isRadioDialogOpen, close: () => setIsRadioDialogOpen(false) },
+                { label: 'Email Wizard', active: isEmailWizardOpen, close: () => setIsEmailWizardOpen(false) },
+                { label: 'Quick Add', active: isQuickAddOpen, close: () => setIsQuickAddOpen(false) },
+                { label: 'To-Do Flyout', active: isTodoFlyoutOpen, close: () => setIsTodoFlyoutOpen(false) },
+                { label: 'Projects Flyout', active: isProjectsFlyoutOpen, close: () => setIsProjectsFlyoutOpen(false) },
+                { label: 'Completed Tasks', active: isCompletedTasksOpen, close: () => setIsCompletedTasksOpen(false) },
+                { label: 'Key Contacts', active: isKeyContactsOpen, close: () => setIsKeyContactsOpen(false) },
+                { label: 'Scholarships', active: isScholarshipsOpen, close: () => setIsScholarshipsOpen(false) },
+                { label: 'Feedback', active: isFeedbackOpen, close: () => setIsFeedbackOpen(false) },
+                { label: 'System Health', active: isSystemHealthOpen, close: () => setIsSystemHealthOpen(false) },
+                { label: 'Profile', active: isProfileDialogOpen, close: () => setIsProfileDialogOpen(false) },
+                { label: 'Book / PDF Reader', active: !!bookReaderOverlay, close: () => setBookReaderOverlayRaw(null) },
+                { label: 'Shift Schedule', active: shiftScheduleOpen, close: () => setShiftScheduleOpen(false) },
+                { label: 'New Course Wizard', active: isNewCourseWizardOpen, close: () => setIsNewCourseWizardOpen(false) },
+                { label: 'Calendar Settings', active: isCalendarSettingsOpen, close: () => setIsCalendarSettingsOpen(false) },
+                { label: 'Share Dialog', active: isShareDialogOpen, close: () => setIsShareDialogOpen(false) },
+                { label: 'Semester Checklist', active: showSemesterChecklist, close: () => setShowSemesterChecklist(false) },
+                { label: 'Readings Popup', active: !!readingsPopupCourse, close: () => setReadingsPopupCourse(null) },
+                { label: 'Upload Dialog', active: isUploadDialogOpen, close: () => setIsUploadDialogOpen(false) },
+                { label: 'PDF Upload', active: showPdfUploadDialog, close: () => setShowPdfUploadDialog(false) },
+                { label: 'Medical Wizard', active: isMedicalWizardOpen, close: () => setIsMedicalWizardOpen(false) },
+                { label: 'Automation Wizard', active: showAutomationWizard, close: () => setShowAutomationWizard(false) },
+                { label: 'Pill Menu', active: isPillMenuOpen, close: () => setIsPillMenuOpen(false) },
+                { label: 'Top Pill', active: isTopPillOpen, close: () => { setIsTopPillOpenState(false); } },
+                { label: 'Remaining Courses', active: isRemainingCoursesDialogOpen, close: () => setIsRemainingCoursesDialogOpen(false) },
+                { label: 'Week Readings', active: isWeekReadingsOpen, close: () => setIsWeekReadingsOpen(false) },
+                { label: 'Celebration', active: showCelebration, close: () => setShowCelebration(false) },
+                { label: 'Partner Away Popup', active: showPartnerAwayPopup, close: () => setShowPartnerAwayPopup(false) },
+              ].map(d => (
+                <div key={d.label} className="flex items-center justify-between px-2 py-[6px] rounded hover:bg-white/5" data-testid={`dialog-toggle-${d.label.toLowerCase().replace(/\s+/g, '-')}`}>
+                  <span className="text-[11px] text-white/80">{d.label}</span>
+                  <div className="flex items-center gap-2">
+                    {d.active && (
+                      <span className="text-[8px] font-bold px-[5px] py-[1px] rounded-full bg-green-500/30 text-green-300 uppercase tracking-wider">Open</span>
+                    )}
+                    <button
+                      className={`px-2 py-[2px] rounded text-[10px] font-medium transition-colors ${d.active ? 'bg-red-500/20 text-red-300 hover:bg-red-500/40 border border-red-400/30' : 'bg-white/5 text-white/30 border border-white/10 cursor-not-allowed'}`}
+                      onClick={() => { if (d.active) d.close(); }}
+                      disabled={!d.active}
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-end px-4 py-[10px] border-t border-white/40 shrink-0 rounded-b-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, ${colorSettings.headerBar}bb 0%, ${colorSettings.headerBar}cc 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15), 0 -2px 8px rgba(0,0,0,0.08)' }}>
+              <div className="flex gap-2">
+                <button className="px-4 py-[5px] rounded text-[11px] font-medium text-red-300 hover:text-red-200 transition-colors" style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)' }} onClick={() => {
+                  startTransition(() => setIsSettingsPanelOpen(false));
+                  setIsSchoolCoursesDialogOpen(false);
+                  setDayDetailDate(null);
+                  setEditingTaskRaw(null);
+                  setShowWeatherHistoryPanel(false);
+                  setShowMorningReview(false);
+                  setIsMonthlyReportOpen(false);
+                  setIsNotepadOpen(false);
+                  setSkyMapOpen(false);
+                  setIsAlexaDialogOpen(false);
+                  setIsRadioDialogOpen(false);
+                  setIsEmailWizardOpen(false);
+                  setIsQuickAddOpen(false);
+                  setIsTodoFlyoutOpen(false);
+                  setIsProjectsFlyoutOpen(false);
+                  setIsCompletedTasksOpen(false);
+                  setIsKeyContactsOpen(false);
+                  setIsScholarshipsOpen(false);
+                  setIsFeedbackOpen(false);
+                  setIsSystemHealthOpen(false);
+                  setIsProfileDialogOpen(false);
+                  setBookReaderOverlayRaw(null);
+                  setShiftScheduleOpen(false);
+                  setIsNewCourseWizardOpen(false);
+                  setIsCalendarSettingsOpen(false);
+                  setIsShareDialogOpen(false);
+                  setShowSemesterChecklist(false);
+                  setReadingsPopupCourse(null);
+                  setIsUploadDialogOpen(false);
+                  setShowPdfUploadDialog(false);
+                  setIsMedicalWizardOpen(false);
+                  setShowAutomationWizard(false);
+                  setIsPillMenuOpen(false);
+                  setIsRemainingCoursesDialogOpen(false);
+                  setIsWeekReadingsOpen(false);
+                  setShowCelebration(false);
+                  setShowPartnerAwayPopup(false);
+                  setIsDialogManagerOpen(false);
+                }} data-testid="button-close-all-dialogs">Close All</button>
+                <button className="px-5 py-[5px] rounded text-[11px] font-medium text-white/80 hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)' }} onClick={() => setIsDialogManagerOpen(false)} data-testid="button-close-dialog-manager">Done</button>
+              </div>
+            </div>
+          </div>
+        </div>,
+        document.body
       )}
 
       <Dialog open={icsImportOpen} onOpenChange={(open) => { if (!open) { setIcsImportOpen(false); setIcsImportEvents([]); } }}>
@@ -27823,6 +27948,72 @@ export default function Dashboard() {
             }}>
 
               <div style={{ backgroundColor: '#faf8f5', borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', position: 'relative', paddingBottom: '40px' }}>
+                {/* Countdown bars — at top of content div so sticky positioning works when scrolling down */}
+                {(() => {
+                  const twoWeeksOut = new Date(stableToday.getTime() + 14 * 24 * 60 * 60 * 1000);
+                  const allCountdown = (allTasks || []).filter(t => {
+                    if (t.showCountdownBar === false || t.showCountdownBarMain === false || t.isCompleted) return false;
+                    const tDue = startOfDayET(new Date(t.dueDate));
+                    if (tDue <= stableToday || tDue > twoWeeksOut) return false;
+                    return true;
+                  }).map(t => {
+                    const tDue = startOfDayET(new Date(t.dueDate));
+                    const daysLeft = Math.max(0, Math.round((tDue.getTime() - stableToday.getTime()) / (1000*60*60*24)));
+                    return { task: t, tDue, daysLeft };
+                  }).sort((a, b) => a.tDue.getTime() - b.tDue.getTime() || (a.task.title || '').localeCompare(b.task.title || ''));
+                  const seenNames = new Map<string, number>();
+                  const deduped = allCountdown.filter(cd => {
+                    const name = (cd.task.title || '').trim().toLowerCase();
+                    if (!name) return true;
+                    if (seenNames.has(name)) return false;
+                    seenNames.set(name, 1);
+                    return true;
+                  });
+                  if (deduped.length === 0) return null;
+                  const todayDow = stableToday.getDay();
+                  const dws = gridSizes.dayColumnWidths;
+                  const totalFr = dws.reduce((s: number, v: number) => s + v, 0);
+                  const fixedPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
+                  let frBefore = 0;
+                  for (let i = 0; i <= todayDow && i < dws.length; i++) frBefore += dws[i];
+                  let frSpan = 0;
+                  for (let i = todayDow + 1; i <= Math.min(todayDow + 2, dws.length - 1); i++) frSpan += dws[i];
+                  if (frSpan === 0) return null;
+                  const leftFrac = frBefore / totalFr;
+                  const widthFrac = frSpan / totalFr;
+                  const barH = 3;
+                  const barGap = 14;
+                  const totalBarsHeight = deduped.length * barGap;
+                  return (
+                    <div ref={countdownOverlayRef} data-bars-height={String(totalBarsHeight)} style={{ position: 'sticky', top: `calc(50% - ${Math.round(totalBarsHeight / 2)}px)`, zIndex: 50, pointerEvents: 'none', overflow: 'visible', height: 0 }} data-testid="countdown-bars-overlay">
+                      <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, top: 0, overflow: 'visible' }}>
+                        <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, top: 0 }}>
+                        {deduped.map((cd, idx) => {
+                          const t = cd.task;
+                          const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
+                          const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
+                          const needsPulse = isNotStarted && cd.daysLeft <= 2 && !t.isCompleted;
+                          const labelText = (t.title || '').replace(/[\[\]]/g, '').replace(/^\s+/, '');
+                          const barHPx = needsPulse ? 4 : barH;
+                          const yOff = idx * barGap;
+                          return (
+                            <div key={`cbar-main-${t.id}`} className="countdown-bar-wrapper" style={{ position: 'absolute', left: 0, right: 0, top: `${yOff}px`, height: `${barGap}px`, pointerEvents: 'auto', cursor: 'default', overflow: 'hidden' }} onDoubleClick={() => setEditingTask(t as any)} data-testid={`countdown-bar-${t.id}`}>
+                              <div style={{ position: 'absolute', left: '0px', top: '2px', right: 0, height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
+                                <div style={{ width: '10px', minWidth: '10px', height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
+                                <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
+                                  <span style={{ fontSize: '9px', fontWeight: 500, color: barColor, letterSpacing: '-0.2px', lineHeight: '10px' }}>{cd.daysLeft}d</span>
+                                </div>
+                                <span style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(0,0,0,0.85)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flexShrink: 1, minWidth: 0, paddingLeft: '1px', paddingRight: '3px', lineHeight: '10px' }}>{labelText}</span>
+                                <div className={needsPulse ? 'countdown-bar-pulse' : ''} style={{ flex: 1, height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '0 2px 2px 0', minWidth: '4px', boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined }} />
+                              </div>
+                            </div>
+                          );
+                        })}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
                 {timeSlots.map((hour, hourIdx) => {
                   const currentHour = new Date().getHours();
                   const isCurrentHour = hour === currentHour;
@@ -28560,72 +28751,6 @@ export default function Dashboard() {
                   );
                 })()}
 
-                {/* Countdown bars — inside #faf8f5 content div so they scroll with calendar */}
-                {(() => {
-                  const twoWeeksOut = new Date(stableToday.getTime() + 14 * 24 * 60 * 60 * 1000);
-                  const allCountdown = (allTasks || []).filter(t => {
-                    if (t.showCountdownBar === false || t.showCountdownBarMain === false || t.isCompleted) return false;
-                    const tDue = startOfDayET(new Date(t.dueDate));
-                    if (tDue <= stableToday || tDue > twoWeeksOut) return false;
-                    return true;
-                  }).map(t => {
-                    const tDue = startOfDayET(new Date(t.dueDate));
-                    const daysLeft = Math.max(0, Math.round((tDue.getTime() - stableToday.getTime()) / (1000*60*60*24)));
-                    return { task: t, tDue, daysLeft };
-                  }).sort((a, b) => a.tDue.getTime() - b.tDue.getTime() || (a.task.title || '').localeCompare(b.task.title || ''));
-                  const seenNames = new Map<string, number>();
-                  const deduped = allCountdown.filter(cd => {
-                    const name = (cd.task.title || '').trim().toLowerCase();
-                    if (!name) return true;
-                    if (seenNames.has(name)) return false;
-                    seenNames.set(name, 1);
-                    return true;
-                  });
-                  if (deduped.length === 0) return null;
-                  const todayDow = stableToday.getDay();
-                  const dws = gridSizes.dayColumnWidths;
-                  const totalFr = dws.reduce((s: number, v: number) => s + v, 0);
-                  const fixedPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
-                  let frBefore = 0;
-                  for (let i = 0; i <= todayDow && i < dws.length; i++) frBefore += dws[i];
-                  let frSpan = 0;
-                  for (let i = todayDow + 1; i <= Math.min(todayDow + 2, dws.length - 1); i++) frSpan += dws[i];
-                  if (frSpan === 0) return null;
-                  const leftFrac = frBefore / totalFr;
-                  const widthFrac = frSpan / totalFr;
-                  const barH = 3;
-                  const barGap = 14;
-                  const totalBarsHeight = deduped.length * barGap;
-                  return (
-                    <div ref={countdownOverlayRef} data-bars-height={String(totalBarsHeight)} style={{ position: 'sticky', top: `calc(50% - ${Math.round(totalBarsHeight / 2)}px)`, zIndex: 50, pointerEvents: 'none', overflow: 'visible', height: 0 }} data-testid="countdown-bars-overlay">
-                      <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, top: 0, overflow: 'visible' }}>
-                        <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, top: 0 }}>
-                        {deduped.map((cd, idx) => {
-                          const t = cd.task;
-                          const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
-                          const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
-                          const needsPulse = isNotStarted && cd.daysLeft <= 2 && !t.isCompleted;
-                          const labelText = (t.title || '').replace(/[\[\]]/g, '').replace(/^\s+/, '');
-                          const barHPx = needsPulse ? 4 : barH;
-                          const yOff = idx * barGap;
-                          return (
-                            <div key={`cbar-main-${t.id}`} className="countdown-bar-wrapper" style={{ position: 'absolute', left: 0, right: 0, top: `${yOff}px`, height: `${barGap}px`, pointerEvents: 'auto', cursor: 'default', overflow: 'hidden' }} onDoubleClick={() => setEditingTask(t as any)} data-testid={`countdown-bar-${t.id}`}>
-                              <div style={{ position: 'absolute', left: '0px', top: '2px', right: 0, height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
-                                <div style={{ width: '10px', minWidth: '10px', height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
-                                <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
-                                  <span style={{ fontSize: '9px', fontWeight: 500, color: barColor, letterSpacing: '-0.2px', lineHeight: '10px' }}>{cd.daysLeft}d</span>
-                                </div>
-                                <span style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(0,0,0,0.85)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flexShrink: 1, minWidth: 0, paddingLeft: '1px', paddingRight: '3px', lineHeight: '10px' }}>{labelText}</span>
-                                <div className={needsPulse ? 'countdown-bar-pulse' : ''} style={{ flex: 1, height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '0 2px 2px 0', minWidth: '4px', boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined }} />
-                              </div>
-                            </div>
-                          );
-                        })}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })()}
                 
             </div>
           </div>
@@ -30719,7 +30844,7 @@ export default function Dashboard() {
                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, borderRadius: '6px', overflow: 'hidden', gap: '2px' }}>
                       {[
                         { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `play-module-${pd.courseCode.toLowerCase()}`, testUpload: `upload-module-${pd.courseCode.toLowerCase()}`, bg: pd.progressStartColor || getCourseGradientColors(pd.courseCode).start, dark: true, fontOverride: pd.courseFontColor || '#fff' },
-                        { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, bg: pd.progressEndColor || getCourseGradientColors(pd.courseCode).end, dark: true, fontOverride: pd.courseFontColor || '#fff' },
+                        { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, bg: pd.progressEndColor || getCourseGradientColors(pd.courseCode).end, dark: false, fontOverride: '#000' },
                       ].map(item => {
                         const circleSize = 34;
                         const strokeWidth = 3;
@@ -30786,13 +30911,13 @@ export default function Dashboard() {
                               return (
                                 <div style={{ width: '100%', padding: '0 3px', marginTop: '1px' }} data-testid={`${item.type}-time-remaining-${pd.courseCode.toLowerCase()}`}>
                                   {hasTime && (
-                                    <div style={{ width: '100%', height: '3px', borderRadius: '2px', background: 'rgba(255,255,255,0.15)', overflow: 'hidden', position: 'relative' }}>
+                                    <div style={{ width: '100%', height: '3px', borderRadius: '2px', background: item.dark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)', overflow: 'hidden', position: 'relative' }}>
                                       <div style={{ width: `${Math.min(100, pctOfTimeNeeded)}%`, height: '100%', borderRadius: '2px', background: barColor, transition: 'width 0.5s ease' }} />
                                     </div>
                                   )}
                                   <div style={{ display: 'flex', justifyContent: hasTime ? 'space-between' : 'center', alignItems: 'center', marginTop: '1px' }}>
                                     {remainLabel && <span style={{ fontSize: '7px', fontWeight: 600, color: textColor, fontFamily: "system-ui, sans-serif" }}>{remainLabel} left</span>}
-                                    <span style={{ fontSize: '6.5px', color: textColor, fontFamily: "system-ui, sans-serif" }}>Fri {hoursLeftLabel}</span>
+                                    <span style={{ fontSize: '6.5px', color: item.dark ? textColor : 'rgba(0,0,0,0.6)', fontFamily: "system-ui, sans-serif" }}>Fri {hoursLeftLabel}</span>
                                   </div>
                                 </div>
                               );
@@ -31921,7 +32046,7 @@ export default function Dashboard() {
                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, borderRadius: '6px', overflow: 'hidden' }}>
                           {[
                             { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `float-play-module-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-module-${pd.courseCode.toLowerCase()}`, bg: pd.progressStartColor || getCourseGradientColors(pd.courseCode).start, dark: true, fontOverride: pd.courseFontColor || '#fff' },
-                            { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `float-play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-reading-${pd.courseCode.toLowerCase()}`, bg: pd.progressEndColor || getCourseGradientColors(pd.courseCode).end, dark: true, fontOverride: pd.courseFontColor || '#fff' },
+                            { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `float-play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-reading-${pd.courseCode.toLowerCase()}`, bg: pd.progressEndColor || getCourseGradientColors(pd.courseCode).end, dark: false, fontOverride: '#000' },
                           ].map(item => {
                             const circleSize = 44;
                             const strokeWidth = 3.5;
