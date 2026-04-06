@@ -27442,7 +27442,8 @@ export default function Dashboard() {
                             const cellEventsList = getCalendarEventsForHour(day, hour);
                             const cellHasTasks = cellTasksList.length > 0 || cellEventsList.length > 0;
                             return matchingBars.map(cd => {
-                              if (cellHasTasks && dayIdx !== cd.startDay && dayIdx !== cd.endDay) return null;
+                              const isOwnTaskCell = !cd.beyond && dayIdx === cd.tDueDayIdx;
+                              if (cellHasTasks && !isOwnTaskCell && dayIdx !== cd.startDay) return null;
                               const t = cd.task;
                               const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
                               const isTaskCell = !cd.beyond && dayIdx === cd.tDueDayIdx;
