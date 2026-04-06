@@ -1,0 +1,76 @@
+byhomeyyz@raspberrypi:~/Home-View $ sudo journalctl -u unical --since "5 minutes ago" | grep -E "Cat Lights|Cat Wash|PlaybackFlow|STARTING|confirm|selectNextFile|No files|No unlistened"
+Apr 06 08:40:53 raspberrypi node[8770]: [Cat Lights] ====== WEBHOOK TRIGGERED ======
+Apr 06 08:40:53 raspberrypi node[8770]: [Cat Lights] Timestamp: 4/6/2026, 8:40:53 AM
+Apr 06 08:40:53 raspberrypi node[8770]: [Cat Lights] Request body: {"state":"off"}
+Apr 06 08:40:53 raspberrypi node[8770]: [Cat Lights] Body parsing: state="off", action="", rawToState=undefined, trigger="none"
+Apr 06 08:40:53 raspberrypi node[8770]: [Cat Lights] Using body state directly: off
+Apr 06 08:40:53 raspberrypi node[8770]: [Cat Lights] Light state: off (body state: off)
+Apr 06 08:40:53 raspberrypi node[8770]: [Cat Lights] Architecture: server-side TTS → Google Nest speaker (media_player.play_media)
+Apr 06 08:40:53 raspberrypi node[8770]: [Cat Lights] Light off — stopping all playback and saving progress
+Apr 06 08:41:03 raspberrypi node[8770]: [Cat Lights] Fire Stick + Samsung TV turn-off sent
+Apr 06 08:41:03 raspberrypi node[8770]: [Cat Lights] Cleared promptPending (session 0 still current)
+Apr 06 08:41:03 raspberrypi node[8770]: [Cat Lights] Stopped: echoSpeakers, tv
+Apr 06 08:42:12 raspberrypi node[8770]: [Cat Lights] ====== WEBHOOK TRIGGERED ======
+Apr 06 08:42:12 raspberrypi node[8770]: [Cat Lights] Timestamp: 4/6/2026, 8:42:12 AM
+Apr 06 08:42:12 raspberrypi node[8770]: [Cat Lights] Request body: {"state":"on"}
+Apr 06 08:42:12 raspberrypi node[8770]: [Cat Lights] Body parsing: state="on", action="", rawToState=undefined, trigger="none"
+Apr 06 08:42:12 raspberrypi node[8770]: [Cat Lights] Using body state directly: on
+Apr 06 08:42:12 raspberrypi node[8770]: [Cat Lights] Light state: on (body state: on)
+Apr 06 08:42:12 raspberrypi node[8770]: [Cat Lights] Architecture: server-side TTS → Google Nest speaker (media_player.play_media)
+Apr 06 08:42:12 raspberrypi node[8770]: [FileOrder] No unlistened files found in week 12
+Apr 06 08:42:12 raspberrypi node[8770]: [Cat Lights] No cached files found — syncing OneDrive for weeks 1-12
+Apr 06 08:42:12 raspberrypi node[8770]: [Cat Lights] Syncing OneDrive for 3 courses, week 1
+Apr 06 08:42:12 raspberrypi node[8770]: [Cat Lights] Early device wake: tablet wake + brightness sent (TV deferred until confirmation)
+Apr 06 08:42:12 raspberrypi node[8770]: [Cat Lights] Quick acknowledgment played via HA Cloud TTS
+Apr 06 08:42:15 raspberrypi node[8770]: [Cat Lights] Synced new file: CPPA122, Module 1 - Welcome.pdf → week-1-cppa122-module (saved locally)
+Apr 06 08:42:16 raspberrypi node[8770]: [Cat Lights] Synced new file: A Citizen's Guide to Government.pdf → week-1-cppa122-reading (saved locally)
+Apr 06 08:42:19 raspberrypi node[8770]: [Cat Lights] OneDrive sync complete
+Apr 06 08:42:19 raspberrypi node[8770]: [Cat Lights] Syncing OneDrive for 3 courses, week 2
+Apr 06 08:42:21 raspberrypi node[8770]: [Cat Lights] Synced new file: CPPA122, Module 2 - Introduction.pdf → week-2-cppa122-module (saved locally)
+Apr 06 08:42:22 raspberrypi node[8770]: [Cat Lights] Synced new file: 156C823F.pdf → week-2-cppa122-reading (saved locally)
+Apr 06 08:42:22 raspberrypi node[8770]: [Cat Lights] Synced new file: 156CBA1A.pdf → week-2-cppa122-reading (saved locally)
+Apr 06 08:42:24 raspberrypi node[8770]: [Cat Lights] OneDrive sync complete
+Apr 06 08:42:24 raspberrypi node[8770]: [Cat Lights] Syncing OneDrive for 3 courses, week 3
+Apr 06 08:42:26 raspberrypi node[8770]: [Cat Lights] Synced new file: CPPA122, Module 3 - Introduction.pdf → week-3-cppa122-module (saved locally)
+Apr 06 08:42:27 raspberrypi node[8770]: [Cat Lights] Synced new file: 44320906-Supplementary.pdf → week-3-cppa122-reading (saved locally)
+Apr 06 08:42:27 raspberrypi node[8770]: [Cat Lights] Synced new file: AM.OrgCdnLocGovt.Spicer.pdf → week-3-cppa122-reading (saved locally)
+Apr 06 08:42:27 raspberrypi node[8770]: [Cat Lights] Synced new file: IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf → week-3-cppa122-reading (saved locally)
+Apr 06 08:42:30 raspberrypi node[8770]: [Cat Lights] OneDrive sync complete
+Apr 06 08:42:30 raspberrypi node[8770]: [Cat Lights] Syncing OneDrive for 3 courses, week 4
+Apr 06 08:42:32 raspberrypi node[8770]: [Cat Lights] Synced new file: CPPA122, Module 4 - Introduction.pdf → week-4-cppa122-module (saved locally)
+Apr 06 08:42:36 raspberrypi node[8770]: [Cat Lights] Synced new file: 156CB68A.pdf → week-4-cppa122-reading (saved locally)
+Apr 06 08:42:38 raspberrypi node[8770]: [Cat Lights] Synced new file: 62263157-c416-47a7-8207-8eab759500b8.pdf → week-4-cppa122-reading (saved locally)
+Apr 06 08:42:39 raspberrypi node[8770]: [Cat Lights] Synced new file: CherylN.CollierJonat_2024_ThePoliticsofOntarioSecondEdition.pdf → week-4-cppa122-reading (saved locally)
+Apr 06 08:42:40 raspberrypi node[8770]: [Cat Lights] Synced new file: Municipal 101 _ AMO.pdf → week-4-cppa122-reading (saved locally)
+Apr 06 08:42:42 raspberrypi node[8770]: [Cat Lights] Synced new file: shaping-the-metropolis-institutions-and-urbanization-in-the-united-states-and-canada-9780773558427_compress.pdf → week-4-cppa122-reading (saved locally)
+Apr 06 08:42:44 raspberrypi node[8770]: [Cat Lights] Synced new file: CFNF400, Module 4 - Learning Objectives.pdf → week-4-cfnf400-module (saved locally)
+Apr 06 08:42:45 raspberrypi node[8770]: [Cat Lights] OneDrive sync complete
+Apr 06 08:42:45 raspberrypi node[8770]: [Cat Lights] Syncing OneDrive for 3 courses, week 5
+Apr 06 08:42:47 raspberrypi node[8770]: [Cat Lights] Synced new file: CAMA Strong Mayors White Paper - Final English - March 23 2023_0.pdf → week-5-cppa122-reading (saved locally)
+Apr 06 08:42:48 raspberrypi node[8770]: [Cat Lights] Synced new file: imfg_perspectives_4_hidden_in_plain_view_lucas_2013.pdf → week-5-cppa122-reading (saved locally)
+Apr 06 08:42:51 raspberrypi node[8770]: [Cat Lights] Synced new file: Units 2,1 - 2,6.pdf → week-5-casl101-module (saved locally)
+Apr 06 08:42:51 raspberrypi node[8770]: [Cat Lights] OneDrive sync complete
+Apr 06 08:42:51 raspberrypi node[8770]: [Cat Lights] Syncing OneDrive for 3 courses, week 6
+Apr 06 08:42:57 raspberrypi node[8770]: [Cat Lights] Synced new file: CPPA122, Module 6 - Introduction.pdf → week-6-cppa122-module (saved locally)
+Apr 06 08:42:58 raspberrypi node[8770]: [Cat Lights] Synced new file: Can Public Adm - 2023 - Eidelman - How do municipal mayors and councillors communicate with other levels of government .pdf → week-6-cppa122-reading (saved locally)
+Apr 06 08:42:59 raspberrypi node[8770]: [Cat Lights] Synced new file: Canadian Geographer   Le g ographe canadien - 2022 - Gibson - Do more  with less  The realities of local government in.pdf → week-6-cppa122-reading (saved locally)
+Apr 06 08:42:59 raspberrypi node[8770]: [Cat Lights] Synced new file: How to get cities out of their constitutional straitjacket.pdf → week-6-cppa122-reading (saved locally)
+Apr 06 08:43:00 raspberrypi node[8770]: [Cat Lights] Synced new file: What we expect from regional and city governments is increasingly out of step with their powers _ CBC News.pdf → week-6-cppa122-reading (saved locally)
+Apr 06 08:43:01 raspberrypi node[8770]: [Cat Lights] Synced new file: CFNF400, Module 6 - Topic Overview.pdf → week-6-cfnf400-module (saved locally)
+Apr 06 08:43:03 raspberrypi node[8770]: [Cat Lights] Synced new file: Units 2,7 - 2,9.pdf → week-6-casl101-module (saved locally)
+Apr 06 08:43:03 raspberrypi node[8770]: [Cat Lights] OneDrive sync complete
+Apr 06 08:43:03 raspberrypi node[8770]: [Cat Lights] Syncing OneDrive for 3 courses, week 7
+Apr 06 08:43:05 raspberrypi node[8770]: [Cat Lights] Synced new file: CFNF400, Module 7 - Assignment Detail.pdf → week-7-cfnf400-module (saved locally)
+Apr 06 08:43:06 raspberrypi node[8770]: [Cat Lights] OneDrive sync complete
+Apr 06 08:43:06 raspberrypi node[8770]: [Cat Lights] Syncing OneDrive for 3 courses, week 8
+Apr 06 08:43:09 raspberrypi node[8770]: [Cat Lights] OneDrive sync complete
+Apr 06 08:43:09 raspberrypi node[8770]: [Cat Lights] Syncing OneDrive for 3 courses, week 9
+Apr 06 08:43:11 raspberrypi node[8770]: [Cat Lights] Synced new file: Can Public Adm - 2019 - Lucas - Multilevel policy from the municipal perspective  A pan‐Canadian survey.pdf → week-9-cppa122-reading (saved locally)
+Apr 06 08:43:11 raspberrypi node[8770]: [Cat Lights] Synced new file: proquest.com_printviewfile_accountid=13631.pdf → week-9-cppa122-reading (saved locally)
+Apr 06 08:43:11 raspberrypi node[8770]: [Cat Lights] Synced new file: Reflections on Who Does What – IMFG.pdf → week-9-cppa122-reading (saved locally)
+Apr 06 08:43:18 raspberrypi node[8770]: [Cat Lights] Synced new file: Uber launches lawsuit over 'bad faith' council vote, calls on court to overturn ridesharing cap.pdf → week-9-cppa122-reading (saved locally)
+Apr 06 08:43:21 raspberrypi node[8770]: [Cat Lights] Synced new file: CFNF400, Module 9 - Learning Objectives.pdf → week-9-cfnf400-module (saved locally)
+Apr 06 08:43:23 raspberrypi node[8770]: [Cat Lights] Synced new file: Units 3,1 - 3,5.pdf → week-9-casl101-module (saved locally)
+Apr 06 08:43:23 raspberrypi node[8770]: [Cat Lights] OneDrive sync complete
+Apr 06 08:43:23 raspberrypi node[8770]: [Cat Lights] Syncing OneDrive for 3 courses, week 10
+byhomeyyz@raspberrypi:~/Home-View $
