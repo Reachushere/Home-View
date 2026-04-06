@@ -2458,6 +2458,7 @@ export default function Dashboard() {
   const [pollenData, setPollenData] = useState<{ tree: { value: number; level: string }; grass: { value: number; level: string }; weed: { value: number; level: string }; overall: { value: number; level: string }; aqi: number } | null>(null);
   const [weatherAlerts, setWeatherAlerts] = useState<{ title: string; summary: string; description: string; type: string; url: string }[]>([]);
   const [weatherAlertDialogOpen, setWeatherAlertDialogOpen] = useState(false);
+  const [dayDetailDate, setDayDetailDate] = useState<Date | null>(null);
   const [skyMapOpen, setSkyMapOpen] = useState(false);
   const [skyMapTick, setSkyMapTick] = useState(0);
   useEffect(() => {
@@ -15794,6 +15795,35 @@ export default function Dashboard() {
           </div>
           )}
 
+          {/* Astronomy / Sky Map Button */}
+          <div className="pill-button-hover" style={{ 
+            marginTop: '0px', width: '44px', height: '43px', borderRadius: '50%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+            position: 'relative' as const, zIndex: 1,
+            border: '1.5px solid rgba(255,255,255,0.35)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+          }}>
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
+              style={{ background: 'transparent' }}
+              data-testid="button-astronomy"
+              title="Astronomy / Sky Map"
+              onClick={() => { setSkyMapDate(new Date()); setSkyMapOpen(true); }}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ height: '19px', width: '19px' }}>
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+                <path d="M2 12h20" />
+                <path d="M12 2a10 10 0 0 1 4 7.5A10 10 0 0 1 12 17" strokeOpacity="0.4" />
+                <circle cx="18" cy="5" r="1" fill="white" stroke="none" />
+                <circle cx="6" cy="18" r="0.7" fill="white" stroke="none" />
+                <circle cx="20" cy="14" r="0.5" fill="white" stroke="none" />
+              </svg>
+            </Button>
+          </div>
 
           {/* Undo Button */}
           {undoStack.length > 0 ? (
@@ -18192,6 +18222,117 @@ export default function Dashboard() {
           </div>
         </div>
       )}
+
+      {dayDetailDate && (() => {
+        const detailDate = dayDetailDate;
+        const detailDateStr = format(detailDate, 'EEEE, MMMM d, yyyy');
+        const detailDateKey = format(detailDate, 'yyyy-MM-dd');
+        const isDetailToday = isSameDayET(detailDate, new Date());
+        const dayTasks = allTasks.filter(t => {
+          if (!t.dueDate) return false;
+          return isSameDayET(new Date(t.dueDate), detailDate);
+        }).sort((a, b) => {
+          if (a.isCompleted !== b.isCompleted) return a.isCompleted ? 1 : -1;
+          const priorityOrder: Record<string, number> = { high: 0, medium: 1, low: 2 };
+          const pa = priorityOrder[a.priority || 'medium'] ?? 1;
+          const pb = priorityOrder[b.priority || 'medium'] ?? 1;
+          if (pa !== pb) return pa - pb;
+          const da = a.dueDate ? new Date(a.dueDate).getTime() : 0;
+          const db = b.dueDate ? new Date(b.dueDate).getTime() : 0;
+          return da - db;
+        });
+        const getTaskCourseColor = (courseName: string | null | undefined) => {
+          if (!courseName) return '#6b7280';
+          const cn = courseName.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '');
+          const course = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') === cn);
+          return course?.color || '#6b7280';
+        };
+        const typeIconMap: Record<string, string> = { module: '📘', reading: '📖', essay: '📝', discussion: '💬', poll: '📊', quiz: '❓', exam: '📋', project: '🔧', reminder: '⏰', meeting: '🤝', scholarship: '🎓', other: '📌', class: '🏫' };
+        return (
+          <div className="fixed inset-0 z-[10000] flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)' }} onClick={() => setDayDetailDate(null)} data-testid="day-detail-overlay">
+            <div onClick={(e) => e.stopPropagation()} style={{ width: '92%', maxWidth: '520px', maxHeight: '88vh', display: 'flex', flexDirection: 'column', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.15)' }} data-testid="day-detail-panel">
+              <div style={{ background: `linear-gradient(135deg, ${colorSettings.headerBar} 0%, ${colorSettings.mainBackground} 100%)`, padding: '16px 20px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.15)' }}>
+                <div>
+                  <div style={{ fontSize: '18px', fontWeight: 700, color: '#ffffff', fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }} data-testid="day-detail-title">{detailDateStr}</div>
+                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', marginTop: '2px' }}>{dayTasks.length} task{dayTasks.length !== 1 ? 's' : ''} {isDetailToday ? '— Today' : ''}</div>
+                </div>
+                <button onClick={() => setDayDetailDate(null)} style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#ffffff', fontSize: '16px', flexShrink: 0 }} data-testid="day-detail-close-top">
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div style={{ flex: 1, overflowY: 'auto', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, padding: '8px 12px 12px' }}>
+                {dayTasks.length === 0 ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 16px', color: 'rgba(255,255,255,0.4)' }}>
+                    <div style={{ fontSize: '32px', marginBottom: '12px' }}>📭</div>
+                    <div style={{ fontSize: '13px', fontWeight: 500 }}>No tasks for this day</div>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    {dayTasks.map(task => {
+                      const courseColor = getTaskCourseColor(task.courseName);
+                      const icon = typeIconMap[task.type] || '📌';
+                      const dueTime = task.dueDate ? format(new Date(task.dueDate), 'h:mm a') : '';
+                      const priorityColors: Record<string, string> = { high: '#ef4444', medium: '#f59e0b', low: '#22c55e' };
+                      const pColor = priorityColors[task.priority || 'medium'] || '#f59e0b';
+                      return (
+                        <div key={task.id} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '10px 12px', borderRadius: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', opacity: task.isCompleted ? 0.5 : 1, transition: 'opacity 0.2s ease' }} data-testid={`day-detail-task-${task.id}`}>
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', paddingTop: '2px', flexShrink: 0 }}>
+                            <input
+                              type="checkbox"
+                              checked={!!task.isCompleted}
+                              onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })}
+                              style={{ width: '18px', height: '18px', accentColor: courseColor, cursor: 'pointer', borderRadius: '4px' }}
+                              data-testid={`day-detail-check-${task.id}`}
+                            />
+                          </div>
+
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px' }}>
+                              <span style={{ fontSize: '13px' }}>{icon}</span>
+                              <span style={{ fontSize: '13px', fontWeight: 600, color: '#ffffff', textDecoration: task.isCompleted ? 'line-through' : 'none', fontFamily: "'Raleway', sans-serif" }} data-testid={`day-detail-title-${task.id}`}>{task.title}</span>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                              {task.courseName && (
+                                <span style={{ fontSize: '10px', fontWeight: 600, color: courseColor, background: `${courseColor}22`, padding: '1px 6px', borderRadius: '4px', border: `1px solid ${courseColor}44` }} data-testid={`day-detail-course-${task.id}`}>{task.courseName.split(' - ')[0]}</span>
+                              )}
+                              <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', textTransform: 'capitalize' }}>{task.type}</span>
+                              {dueTime && <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>Due {dueTime}</span>}
+                              <span style={{ fontSize: '9px', fontWeight: 600, color: pColor, background: `${pColor}22`, padding: '0px 5px', borderRadius: '3px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{task.priority}</span>
+                            </div>
+                            {(task as any).description && !/^\[/.test((task as any).description) && (
+                              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginTop: '4px', lineHeight: 1.4, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }} data-testid={`day-detail-desc-${task.id}`}>{(task as any).description.replace(/\[.*?\]/g, '').trim()}</div>
+                            )}
+                          </div>
+
+                          <button
+                            onClick={() => { setDayDetailDate(null); setTimeout(() => setEditingTask(task), 100); }}
+                            style={{ width: '30px', height: '30px', borderRadius: '6px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, marginTop: '2px' }}
+                            data-testid={`day-detail-edit-${task.id}`}
+                            title="Edit task"
+                          >
+                            <Pencil className="h-3.5 w-3.5 text-white/60 hover:text-white" />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              <div style={{ padding: '10px 16px', background: `linear-gradient(180deg, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 0%, ${colorSettings.mainBackground} 100%)`, borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'center' }}>
+                <button
+                  onClick={() => setDayDetailDate(null)}
+                  style={{ padding: '8px 32px', borderRadius: '8px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#ffffff', fontSize: '12px', fontWeight: 500, cursor: 'pointer', fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}
+                  data-testid="day-detail-close-bottom"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {skyMapOpen && (() => {
         const d = skyMapDate;
@@ -25415,6 +25556,15 @@ export default function Dashboard() {
             >
               Current
             </Button>
+            <div style={{ width: '1px', height: '12px', background: 'rgba(255,255,255,0.5)', marginLeft: '2px', marginBottom: '5px' }} />
+            <Button
+              variant="ghost"
+              className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight"
+              onClick={() => setDayDetailDate(startOfDayET(new Date()))}
+              data-testid="button-today-view"
+            >
+              Today View
+            </Button>
           </div>
           
           {weatherData?.daily && (
@@ -25643,7 +25793,7 @@ export default function Dashboard() {
                         className="absolute inset-0 cursor-pointer z-10"
                         style={{ opacity: sleepDisabledDays.has(shiftDateStr) ? 0.3 : 0 }}
                         onClick={(e) => { e.stopPropagation(); updateSleepDisabledDays(shiftDateStr); }}
-                        onDoubleClick={(e) => { e.stopPropagation(); setSkyMapDate(day); setSkyMapOpen(true); }}
+                        onDoubleClick={(e) => { e.stopPropagation(); setDayDetailDate(startOfDayET(day)); }}
                         data-testid={`toggle-sleep-${shiftDateStr}`}
                       />
                     )}
@@ -26173,14 +26323,12 @@ export default function Dashboard() {
                         </>
                       );
                     })()}
-                    {isToday && (
-                      <div
-                        className="absolute inset-0"
-                        style={{ zIndex: 25, cursor: 'pointer' }}
-                        onClick={(e) => { e.stopPropagation(); setSkyMapDate(day); setSkyMapOpen(true); }}
-                        data-testid={`sky-map-trigger-${format(day, "yyyy-MM-dd")}`}
-                      />
-                    )}
+                    <div
+                      className="absolute inset-0"
+                      style={{ zIndex: 25, cursor: 'pointer' }}
+                      onDoubleClick={(e) => { e.stopPropagation(); setDayDetailDate(startOfDayET(day)); }}
+                      data-testid={`day-header-click-${format(day, "yyyy-MM-dd")}`}
+                    />
                     {idx < 6 && (
                       <div
                         className="absolute right-0 top-0 bottom-0 w-[1px] cursor-col-resize bg-white/20 hover:bg-white/50"
