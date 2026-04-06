@@ -18825,7 +18825,7 @@ export default function Dashboard() {
         ];
         const totalFloors = 50;
         const floorHeight = 100 / totalFloors;
-        const floor42Top = 100 - (50 * floorHeight);
+        const floor42Top = 100 - (42 * floorHeight);
         return (
           <div className="fixed inset-0 z-[10001] flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }} onClick={() => setSkyMapOpen(false)} data-testid="sky-map-overlay">
             <div className="relative rounded-xl shadow-2xl overflow-hidden" style={{ width: '900px', maxWidth: '95vw', height: '760px', maxHeight: '93vh', background: 'linear-gradient(180deg, #0a0e27 0%, #111827 30%, #1a1a2e 100%)' }} onClick={(e) => e.stopPropagation()} data-testid="sky-map-dialog">
