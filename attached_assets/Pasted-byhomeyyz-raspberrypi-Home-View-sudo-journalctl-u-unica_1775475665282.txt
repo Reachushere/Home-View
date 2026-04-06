@@ -1,0 +1,85 @@
+byhomeyyz@raspberrypi:~/Home-View $ sudo journalctl -u unical --since "2 minutes ago" | grep -E "Cat Lights|prompt|file|text extract|0 chars"
+Apr 06 07:39:30 raspberrypi node[7671]: 7:39:30 AM [express] GET /api/files/recently-prepared 304 in 1ms :: {"files":[]}
+Apr 06 07:39:48 raspberrypi node[7671]: [TRACE 7:39:48 AM] [CatLights] WEBHOOK RECEIVED | state={"active":false,"sessionId":0,"file":null,"chunk":null,"lightsPrompt":false,"trigger":null,"msSinceStop":null,"msSinceManualStop":null,"msSinceStart":null} | {"body":{"state":"on"}}
+Apr 06 07:39:48 raspberrypi node[7671]: [Cat Lights] ====== WEBHOOK TRIGGERED ======
+Apr 06 07:39:48 raspberrypi node[7671]: [Cat Lights] Timestamp: 4/6/2026, 7:39:48 AM
+Apr 06 07:39:48 raspberrypi node[7671]: [Cat Lights] Request body: {"state":"on"}
+Apr 06 07:39:48 raspberrypi node[7671]: [Cat Lights] Body parsing: state="on", action="", rawToState=undefined, trigger="none"
+Apr 06 07:39:48 raspberrypi node[7671]: [Cat Lights] Using body state directly: on
+Apr 06 07:39:48 raspberrypi node[7671]: [TRACE 7:39:48 AM] [CatLights] STATE RESOLVED: on | state={"active":false,"sessionId":0,"file":null,"chunk":null,"lightsPrompt":false,"trigger":null,"msSinceStop":null,"msSinceManualStop":null,"msSinceStart":null} | {"bodyState":"on","bodyAction":"","method":"body"}
+Apr 06 07:39:48 raspberrypi node[7671]: [Cat Lights] Light state: on (body state: on)
+Apr 06 07:39:48 raspberrypi node[7671]: [Cat Lights] Architecture: server-side TTS → Google Nest speaker (media_player.play_media)
+Apr 06 07:39:48 raspberrypi node[7671]: [FileOrder] No unlistened files found in week 12
+Apr 06 07:39:48 raspberrypi node[7671]: [Cat Lights] No cached files found — syncing OneDrive for weeks 1-12
+Apr 06 07:39:48 raspberrypi node[7671]: [Cat Lights] Syncing OneDrive for 3 courses, week 1
+Apr 06 07:39:48 raspberrypi node[7671]: [Cat Lights] Early device wake: tablet wake + brightness sent (TV deferred until confirmation)
+Apr 06 07:39:48 raspberrypi node[7671]: [Cat Lights] Quick acknowledgment played via HA Cloud TTS
+Apr 06 07:39:49 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CPPA122: The resource could not be found.
+Apr 06 07:39:49 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CFNF400: The resource could not be found.
+Apr 06 07:39:49 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CASL101: The resource could not be found.
+Apr 06 07:39:49 raspberrypi node[7671]: [Cat Lights] OneDrive sync complete
+Apr 06 07:39:49 raspberrypi node[7671]: [Cat Lights] Syncing OneDrive for 3 courses, week 2
+Apr 06 07:39:50 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CPPA122: The resource could not be found.
+Apr 06 07:39:50 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CFNF400: The resource could not be found.
+Apr 06 07:39:50 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CASL101: The resource could not be found.
+Apr 06 07:39:50 raspberrypi node[7671]: [Cat Lights] OneDrive sync complete
+Apr 06 07:39:50 raspberrypi node[7671]: [Cat Lights] Syncing OneDrive for 3 courses, week 3
+Apr 06 07:39:51 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CPPA122: The resource could not be found.
+Apr 06 07:39:51 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CFNF400: The resource could not be found.
+Apr 06 07:39:51 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CASL101: The resource could not be found.
+Apr 06 07:39:51 raspberrypi node[7671]: [Cat Lights] OneDrive sync complete
+Apr 06 07:39:51 raspberrypi node[7671]: [Cat Lights] Syncing OneDrive for 3 courses, week 4
+Apr 06 07:39:51 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CPPA122: The resource could not be found.
+Apr 06 07:39:51 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CFNF400: The resource could not be found.
+Apr 06 07:39:52 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CASL101: The resource could not be found.
+Apr 06 07:39:52 raspberrypi node[7671]: [Cat Lights] OneDrive sync complete
+Apr 06 07:39:52 raspberrypi node[7671]: [Cat Lights] Syncing OneDrive for 3 courses, week 5
+Apr 06 07:39:52 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CPPA122: The resource could not be found.
+Apr 06 07:39:52 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CFNF400: The resource could not be found.
+Apr 06 07:39:52 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CASL101: The resource could not be found.
+Apr 06 07:39:52 raspberrypi node[7671]: [Cat Lights] OneDrive sync complete
+Apr 06 07:39:52 raspberrypi node[7671]: [Cat Lights] Syncing OneDrive for 3 courses, week 6
+Apr 06 07:39:53 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CPPA122: The resource could not be found.
+Apr 06 07:39:53 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CFNF400: The resource could not be found.
+Apr 06 07:39:53 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CASL101: The resource could not be found.
+Apr 06 07:39:53 raspberrypi node[7671]: [Cat Lights] OneDrive sync complete
+Apr 06 07:39:53 raspberrypi node[7671]: [Cat Lights] Syncing OneDrive for 3 courses, week 7
+Apr 06 07:39:53 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CPPA122: The resource could not be found.
+Apr 06 07:39:54 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CFNF400: The resource could not be found.
+Apr 06 07:39:54 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CASL101: The resource could not be found.
+Apr 06 07:39:54 raspberrypi node[7671]: [Cat Lights] OneDrive sync complete
+Apr 06 07:39:54 raspberrypi node[7671]: [Cat Lights] Syncing OneDrive for 3 courses, week 8
+Apr 06 07:39:54 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CPPA122: The resource could not be found.
+Apr 06 07:39:54 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CFNF400: The resource could not be found.
+Apr 06 07:39:55 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CASL101: The resource could not be found.
+Apr 06 07:39:55 raspberrypi node[7671]: [Cat Lights] OneDrive sync complete
+Apr 06 07:39:55 raspberrypi node[7671]: [Cat Lights] Syncing OneDrive for 3 courses, week 9
+Apr 06 07:39:55 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CPPA122: The resource could not be found.
+Apr 06 07:39:55 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CFNF400: The resource could not be found.
+Apr 06 07:39:55 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CASL101: The resource could not be found.
+Apr 06 07:39:55 raspberrypi node[7671]: [Cat Lights] OneDrive sync complete
+Apr 06 07:39:55 raspberrypi node[7671]: [Cat Lights] Syncing OneDrive for 3 courses, week 10
+Apr 06 07:39:56 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CPPA122: The resource could not be found.
+Apr 06 07:39:56 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CFNF400: The resource could not be found.
+Apr 06 07:39:56 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CASL101: The resource could not be found.
+Apr 06 07:39:56 raspberrypi node[7671]: [Cat Lights] OneDrive sync complete
+Apr 06 07:39:56 raspberrypi node[7671]: [Cat Lights] Syncing OneDrive for 3 courses, week 11
+Apr 06 07:39:56 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CPPA122: The resource could not be found.
+Apr 06 07:39:56 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CFNF400: The resource could not be found.
+Apr 06 07:39:57 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CASL101: The resource could not be found.
+Apr 06 07:39:57 raspberrypi node[7671]: [Cat Lights] OneDrive sync complete
+Apr 06 07:39:57 raspberrypi node[7671]: [Cat Lights] Syncing OneDrive for 3 courses, week 12
+Apr 06 07:39:57 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CPPA122: The resource could not be found.
+Apr 06 07:39:57 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CFNF400: The resource could not be found.
+Apr 06 07:39:57 raspberrypi node[7671]: [Cat Lights] OneDrive sync error for CASL101: The resource could not be found.
+Apr 06 07:39:57 raspberrypi node[7671]: [Cat Lights] OneDrive sync complete
+Apr 06 07:39:57 raspberrypi node[7671]: [FileOrder] No unlistened files found in week 12
+Apr 06 07:39:57 raspberrypi node[7671]: [Cat Lights] No unlistened files for weeks 1-12 — playing CHUM FM on Echo speakers
+Apr 06 07:40:09 raspberrypi node[7671]: [AudioPrep] Generating chunk 45/52 for CPPA122, Module 8 - Introduction.pdf (140 chars)
+Apr 06 07:40:30 raspberrypi node[7671]: 7:40:30 AM [express] GET /api/files/recently-prepared 304 in 1ms :: {"files":[]}
+Apr 06 07:40:31 raspberrypi node[7671]: [AudioPrep] ===== Preparing file 137: CherylN.CollierJonat_2024_ThePoliticsofOntarioSecondEdition.pdf =====
+Apr 06 07:40:31 raspberrypi node[7671]: [TRACE 7:40:31 AM] [KnobPress] STOP BUTTON PRESSED | state={"active":false,"sessionId":0,"file":null,"chunk":null,"lightsPrompt":false,"trigger":null,"msSinceStop":null,"msSinceManualStop":null,"msSinceStart":null} | {"body":{}}
+Apr 06 07:40:38 raspberrypi node[7671]: [AudioPrep] No usable text extracted from CherylN.CollierJonat_2024_ThePoliticsofOntarioSecondEdition.pdf — skipping
+Apr 06 07:40:38 raspberrypi node[7671]: [AudioPrep] ===== Preparing file 138: IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf =====
+Apr 06 07:40:41 raspberrypi node[7671]: [ExtractText] Cached 167589 chars for file 138
+byhomeyyz@raspberrypi:~/Home-View $
