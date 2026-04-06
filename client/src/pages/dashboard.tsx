@@ -27417,6 +27417,8 @@ export default function Dashboard() {
                               })();
                               const tDueDayIdx = weekDays.findIndex(wd => isSameDayET(wd, tDue));
                               if (tDueDayIdx < 0) return false;
+                              if (endDayIdx < 0 || endDayIdx >= weekDays.length) return false;
+                              if (tDueDayIdx <= endDayIdx) return false;
                               const isDueDay = dayIdx === tDueDayIdx;
                               if (isDueDay) {
                                 if (tDueHour !== hour) return false;
