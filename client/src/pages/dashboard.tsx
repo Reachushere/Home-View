@@ -27707,10 +27707,10 @@ export default function Dashboard() {
                                   <div key={`cbar-main-${t.id}`} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '200%', pointerEvents: 'none', zIndex: 2, overflow: 'visible' }} data-testid={`countdown-span-main-${t.id}-day-${dayIdx}`}>
                                     <div style={{ position: 'absolute', left: '0px', top: `${topPx}px`, right: 0, height: `${barHPx}px`, display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
                                       <div style={{ width: '10px', minWidth: '10px', height: '100%', background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
-                                      <div style={{ width: '22px', minWidth: '22px', textAlign: 'right', paddingRight: '2px', flexShrink: 0 }}>
-                                        <span style={{ fontSize: '11px', fontWeight: 300, color: barColor, letterSpacing: '-0.2px' }}>{cd.daysLeft}d</span>
+                                      <div style={{ width: '24px', minWidth: '24px', textAlign: 'right', paddingRight: '3px', flexShrink: 0 }}>
+                                        <span style={{ fontSize: '13px', fontWeight: 500, color: barColor, letterSpacing: '-0.2px' }}>{cd.daysLeft}d</span>
                                       </div>
-                                      <span style={{ fontSize: '11px', fontWeight: 600, color: 'rgba(0,0,0,0.7)', whiteSpace: 'nowrap', flexShrink: 0, paddingRight: '3px' }}>{labelText}</span>
+                                      <span style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(0,0,0,0.85)', whiteSpace: 'nowrap', flexShrink: 0, paddingRight: '4px' }}>{labelText}</span>
                                       <div className={needsPulse ? 'countdown-bar-pulse' : ''} style={{ flex: 1, height: '100%', background: barColor, opacity: 0.85, borderRadius: '0 2px 2px 0', minWidth: '10px', boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined }} />
                                     </div>
                                   </div>
@@ -27992,8 +27992,8 @@ export default function Dashboard() {
                                   );
                                 })()}
                                 {/* Task body */}
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '1px 3px 2px 3px', flex: 1 }}>
-                                  <div style={{ width: '17px', minWidth: '17px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '1px 0 2px 0', flex: 1 }}>
+                                  <div style={{ width: '16px', minWidth: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                                     <Checkbox
                                       checked={task.isCompleted || false}
                                       onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
@@ -28047,7 +28047,7 @@ export default function Dashboard() {
                                   </span>
                                 </div>
                               </div>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '2px 4px 3px 4px', flex: 1 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '2px 4px 3px 0', flex: 1 }}>
                                 <div style={{ width: '17px', minWidth: '17px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                                   <Checkbox
                                     checked={false}
@@ -30054,12 +30054,10 @@ export default function Dashboard() {
             <div style={{ position: 'absolute', top: '21px', left: '22px', right: '8px', height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)', zIndex: 2 }} />
             <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: '6px', bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', zIndex: 2 }}>Homework Progress</span>
             <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: `${effectiveDividerPct}%`, bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', paddingLeft: '6px', zIndex: 2 }}>Most Urgent Assignments</span>
-            <div style={{ position: 'absolute', top: 0, left: '14px', right: '4px', height: '21px', perspective: '400px', overflow: 'hidden', zIndex: 1 }}>
-              <div style={{ width: '100%', height: '100%', position: 'relative', transformStyle: 'preserve-3d', transition: 'transform 0.8s cubic-bezier(0.4, 0.2, 0.2, 1)', transform: hwHeaderFlipped ? 'rotateX(-180deg)' : 'rotateX(0deg)' }}>
-                <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', display: 'flex', alignItems: 'center', padding: '0 6px', flexWrap: 'nowrap', overflow: 'hidden', whiteSpace: 'nowrap' as const }}>
+            <div style={{ position: 'absolute', top: 0, left: '14px', right: '4px', height: '21px', overflow: 'hidden', zIndex: 1, display: 'flex', alignItems: 'center', padding: '0 6px' }}>
                   {weatherData && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: '11px', flexShrink: 0, whiteSpace: 'nowrap' }}>
-                      <span className="text-[8.5px] font-medium" style={{ color: 'rgba(255,255,255,1)', whiteSpace: 'nowrap' }} data-testid="homework-weather-temp">Current: {Math.round(weatherData.temp)}°C</span>
+                      <span className="text-[8.5px] font-medium" style={{ color: 'rgba(255,255,255,1)', whiteSpace: 'nowrap' }} data-testid="homework-weather-temp">{Math.round(weatherData.temp)}°C</span>
                       <span className="text-[8.5px]" style={{ color: 'rgba(255,255,255,1)', whiteSpace: 'nowrap' }} data-testid="homework-weather-desc">{(() => { const WMO: Record<number, string> = {0:'Clear',1:'Mostly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Rime Fog',51:'Lt Drizzle',53:'Drizzle',55:'Hvy Drizzle',61:'Lt Rain',63:'Rain',65:'Hvy Rain',66:'Frzg Rain',67:'Hvy Frzg Rain',71:'Lt Snow',73:'Snow',75:'Hvy Snow',77:'Snow Grains',80:'Lt Showers',81:'Showers',82:'Hvy Showers',85:'Lt Snow Shwrs',86:'Hvy Snow Shwrs',95:'T-Storm',96:'T-Storm Hail',99:'Svr T-Storm'}; return WMO[weatherData.code] || ''; })()}</span>
                       <span className="text-[8.5px]" style={{ color: 'rgba(255,255,255,0.85)', whiteSpace: 'nowrap' }} data-testid="homework-weather-wind">💨 {Math.round(weatherData.windSpeed)} km/h</span>
                     </div>
@@ -30070,8 +30068,6 @@ export default function Dashboard() {
                       {weatherData.sunset && <span className="text-[8.5px]" style={{ marginLeft: '5px', display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }} data-testid="homework-sunset"><span style={{ color: '#FFFF00', display: 'inline-block', transform: 'scaleX(-1) rotate(30deg)' }}>☽</span><span style={{ color: '#FFFF00', marginLeft: '3px', position: 'relative', top: '-2px' }}>↓</span><span style={{ color: 'rgba(255,255,255,1)', marginLeft: '6px' }}>{(() => { const t = new Date(weatherData.sunset); const h = t.getHours(); const m = t.getMinutes(); const ampm = h >= 12 ? 'PM' : 'AM'; return `${h === 0 ? 12 : h > 12 ? h - 12 : h}:${m.toString().padStart(2, '0')} ${ampm}`; })()}</span></span>}
                     </div>
                   )}
-                </div>
-              </div>
             </div>
             <div ref={homeworkSpacerRef} style={{ position: 'absolute', right: '4px', top: 0, width: '0px', height: '100%', minHeight: '14px', backgroundColor: 'transparent' }} />
           </div>
