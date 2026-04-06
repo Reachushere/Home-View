@@ -30844,7 +30844,7 @@ export default function Dashboard() {
                     e.preventDefault();
                   }}
                 >
-                  <span className="text-[8px] font-[785] uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.8)', position: 'absolute', top: '2px', left: '6px' }}>Other</span>
+                  <span className="text-[8px] font-[785] uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.8)', position: 'absolute', top: '2px', left: `calc(${effectiveDividerPct}% - 6px)` }}>Other</span>
                   {otherProgressTasks.length === 0 && (
                     <span className="text-[10px] italic" style={{ color: 'rgba(255,255,255,0.4)', textAlign: 'center', pointerEvents: 'none', paddingLeft: `${effectiveDividerPct}%` }}>No upcoming items</span>
                   )}
@@ -30863,7 +30863,7 @@ export default function Dashboard() {
                       days.push(dd);
                     }
                     return (
-                      <div key={t.id} className="flex items-center gap-1.5 min-w-0 cursor-pointer hover:brightness-125" style={{ lineHeight: '1.5', marginBottom: '0px', padding: '1px 6px 1px 6px', marginTop: '1px', marginLeft: `${effectiveDividerPct}%` }}
+                      <div key={t.id} className="flex items-center gap-1.5 min-w-0 cursor-pointer hover:brightness-125" style={{ lineHeight: '1.5', marginBottom: '0px', padding: '1px 0', marginTop: '1px', marginLeft: `${effectiveDividerPct}%` }}
                         onClick={() => setEditingTask(t)}
                         onMouseEnter={() => setHoveredCountdownTaskIdDebounced(t.id)}
                         onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
@@ -31277,7 +31277,7 @@ export default function Dashboard() {
                         e.preventDefault();
                       }}
                     >
-                    <span className="text-[8px] font-[785] uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.8)', position: 'absolute', top: '2px', left: '6px' }}>Other</span>
+                    <span className="text-[8px] font-[785] uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.8)', position: 'absolute', top: '2px', left: `calc(${effectiveDividerPct}% - 6px)` }}>Other</span>
                     {otherProgressTasks.length === 0 && (
                       <span className="text-[10px] italic" style={{ color: 'rgba(255,255,255,0.4)', textAlign: 'center', pointerEvents: 'none' }}>No upcoming items</span>
                     )}
@@ -31290,7 +31290,7 @@ export default function Dashboard() {
                         <div
                           key={t.id}
                           className="flex items-center gap-1.5 min-w-0 cursor-pointer hover:brightness-125"
-                          style={{ lineHeight: '1.5', marginBottom: '0px', padding: '1px 0', marginTop: '1px' }}
+                          style={{ lineHeight: '1.5', marginBottom: '0px', padding: '1px 0', marginTop: '1px', marginLeft: `calc(${effectiveDividerPct}% - 6px)` }}
                           onMouseEnter={() => setHoveredCountdownTaskIdDebounced(t.id)}
                           onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                           onClick={() => setEditingTask(t)}
