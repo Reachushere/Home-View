@@ -1,0 +1,46 @@
+byhomeyyz@raspberrypi:~/Home-View $ sed -i "s/const resend = new Resend(process.env.RESEND_API_KEY);/const resend = new Resend(process.env.RESEND_API_KEY || 'dummy-key-not-configured');/" server/email.ts
+npm run dev
+npm warn Unknown builtin config "globalignorefile". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+[TTS] Rate limit active until 2026-05-01T00:00:00.000Z — using Edge TTS
+[Raw Story] Monitor DISABLED in development (only runs in production)
+[Email Router] Unified email intake ready at POST /api/webhook/email
+[Gmail Ticker] Webhook endpoint ready at POST /api/webhook/ticker
+=== [Alexa Scheduler] Started (checking every 30 seconds) ===
+[Startup Fix] showCountdownBar migration failed: TypeError: storage.getAllTasks is not a function
+    at <anonymous> (/home/byhomeyyz/Home-View/server/routes.ts:18109:38)
+    at registerRoutes (/home/byhomeyyz/Home-View/server/routes.ts:18120:3)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/byhomeyyz/Home-View/server/index.ts:298:3)
+Error fetching events from third account calendar: Error: Google OAuth credentials not configured for third account
+    at getOAuth2Client (/home/byhomeyyz/Home-View/server/thirdGoogleAccount.ts:15:11)
+    at getValidAccessToken (/home/byhomeyyz/Home-View/server/thirdGoogleAccount.ts:74:24)
+    at getThirdAccountCalendarClient (/home/byhomeyyz/Home-View/server/thirdGoogleAccount.ts:104:29)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async getEventsFromThirdAccountCalendar (/home/byhomeyyz/Home-View/server/thirdGoogleAccount.ts:160:22)
+    at async <anonymous> (/home/byhomeyyz/Home-View/server/routes.ts:18054:24)
+[Startup] Auto-synced 0 CRCU shifts
+node:events:502
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+    at Server.setupListenHandle [as _listen2] (node:net:1908:16)
+    at listenInCluster (node:net:1965:12)
+    at doListen (node:net:2139:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:83:21)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1944:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 5000
+}
+
+Node.js v20.20.2
+byhomeyyz@raspberrypi:~/Home-View $

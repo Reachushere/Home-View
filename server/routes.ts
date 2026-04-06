@@ -18106,7 +18106,7 @@ Return ONLY the JSON object, no markdown formatting.`;
 
   (async () => {
     try {
-      const allTasks = await storage.getAllTasks();
+      const allTasks = await storage.getTasks();
       const tasksToFix = allTasks.filter(t => !t.showCountdownBar);
       if (tasksToFix.length > 0) {
         for (const t of tasksToFix) {
