@@ -27441,12 +27441,20 @@ export default function Dashboard() {
                               const tDueHour = (() => { if (t.eventStartTime) { const [h] = t.eventStartTime.split(':').map(Number); return Math.min(h, 22); } const d = new Date(t.dueDate); const h = getETHours(d); return h === 0 ? 18 : Math.min(h, 22); })();
                               const daysLeft = Math.max(0, Math.round((tDue.getTime() - today.getTime()) / (1000*60*60*24)));
                               return { task: t, tDue, tDueDayIdx, tDueHour, beyond, daysLeft, startDay: endDayIdx, endDay: tDueDayIdx };
-                            }).sort((a, b) => a.tDueDayIdx - b.tDueDayIdx || a.tDueHour - b.tDueHour);
+                            }).sort((a, b) => a.tDue.getTime() - b.tDue.getTime() || a.tDueHour - b.tDueHour);
+                            const seenNames = new Map<string, number>();
+                            const deduped = allCountdown.filter(cd => {
+                              const name = (cd.task.title || '').trim().toLowerCase();
+                              if (!name) return true;
+                              if (seenNames.has(name)) return false;
+                              seenNames.set(name, 1);
+                              return true;
+                            });
                             const barH = 3;
                             const barGap = 14;
                             const taskLanes: number[] = [];
                             const occupied: { startDay: number; endDay: number; lane: number }[] = [];
-                            allCountdown.forEach(cd => {
+                            deduped.forEach(cd => {
                               let lane = 0;
                               while (occupied.some(o => o.lane === lane && !(cd.startDay > o.endDay || cd.endDay < o.startDay))) {
                                 lane++;
@@ -27454,7 +27462,7 @@ export default function Dashboard() {
                               occupied.push({ startDay: cd.startDay, endDay: cd.endDay, lane });
                               taskLanes.push(lane);
                             });
-                            const matchingBars = allCountdown.map((cd, idx) => ({ ...cd, lane: taskLanes[idx] })).filter(cd => {
+                            const matchingBars = deduped.map((cd, idx) => ({ ...cd, lane: taskLanes[idx] })).filter(cd => {
                               if (hour !== cd.tDueHour) return false;
                               return dayIdx >= cd.startDay && dayIdx <= cd.endDay;
                             });
