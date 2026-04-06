@@ -22099,11 +22099,6 @@ export default function Dashboard() {
               <div style={{ padding: '16px 20px 12px', borderBottom: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                 <span style={{ fontWeight: 700, fontSize: '13px' }}>OneDrive Folder Links Required</span>
-                <button
-                  onClick={() => { folderLinkDismissedRef.current = true; setFolderLinkDialogOpen(false); }}
-                  style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.5)', fontSize: '16px', lineHeight: 1, padding: '2px 4px' }}
-                  data-testid="folder-link-dismiss"
-                >✕</button>
               </div>
               <div style={{ padding: '12px 20px 8px', fontSize: '11px', color: 'rgba(255,255,255,0.7)' }}>
                 Link your OneDrive course folder (the one containing Week 1, Week 2, etc.) for each course. Module and Reading subfolders inside each week will be detected automatically.
@@ -22144,15 +22139,21 @@ export default function Dashboard() {
                   <div style={{ textAlign: 'center', padding: '20px', color: '#34d399', fontWeight: 600 }}>All courses linked!</div>
                 )}
               </div>
-              {folderLinkMissingCourses.length === 0 && (
-                <div style={{ padding: '0 20px 16px', display: 'flex', justifyContent: 'flex-end' }}>
+              <div style={{ padding: '0 20px 16px', display: 'flex', justifyContent: 'flex-end' }}>
+                {folderLinkMissingCourses.length === 0 ? (
                   <button
                     onClick={() => setFolderLinkDialogOpen(false)}
                     style={{ fontSize: '11px', padding: '6px 20px', borderRadius: '6px', background: 'rgba(59,130,246,0.5)', border: '1px solid rgba(59,130,246,0.7)', cursor: 'pointer', color: 'white', fontWeight: 600 }}
                     data-testid="folder-link-done"
                   >Done</button>
-                </div>
-              )}
+                ) : (
+                  <button
+                    onClick={() => { folderLinkDismissedRef.current = true; setFolderLinkDialogOpen(false); }}
+                    style={{ fontSize: '11px', padding: '6px 20px', borderRadius: '6px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}
+                    data-testid="folder-link-dismiss"
+                  >Cancel</button>
+                )}
+              </div>
             </div>
             {/* Folder Browser Sub-Dialog */}
             {folderLinkBrowsing && (
