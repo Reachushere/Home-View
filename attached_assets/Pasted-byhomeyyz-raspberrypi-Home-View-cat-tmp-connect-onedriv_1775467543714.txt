@@ -1,0 +1,45 @@
+byhomeyyz@raspberrypi:~/Home-View $ cat > /tmp/connect_onedrive.js << 'EOF'
+const fs = require('fs');
+const readline = require('readline');
+const CID = 'de8bc8b5-d9f9-48b1-a8ad-b748da725064';
+const SCOPES = 'Files.ReadWrite offline_access User.Read';
+
+async function main() {
+  const p = new URLSearchParams({client_id: CID, scope: SCOPES});
+  const r = await fetch('https://login.microsoftonline.com/consumers/oauth2/v2.0/devicecode', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    body: p.toString()
+  });
+  const d = await r.json();
+  if (d.error) { console.log('Error:', d.error_description); return; }
+  console.log('\n' + d.message + '\n');
+
+  const rl = readline.createInterface({input: process.stdin, output: process.stdout});
+  await new Promise(resolve => rl.question('Press Enter AFTER you complete sign-in...', resolve));
+  rl.close();
+
+  console.log('Checking...');
+  const tp = new URLSearchParams({
+    client_id: CID,
+    grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
+    device_code: d.device_code
+  });
+  const tr = await fetch('https://login.microsoftonline.com/consumers/oauth2/v2.0/token', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    body: tp.toString()
+  });
+  const td = await tr.json();
+  if (td.access_token) {
+    fs.writeFileSync('/home/byhomeyyz/Home-View/.onedrive_tokens.json', JSON.stringify({
+      refresh_token: td.refresh_token,
+      access_token: td.access_token,
+      expires_at: Date.now() + (td.expires_in || 3600) * 1000
+    }, null, 2));
+    console.log('SUCCESS! Now run: sudo systemctl restart unical');
+  } else {
+    console.log('Error:', td.error, '-', td.error_description);
+node /tmp/connect_onedrive.js('Error:', e));
+Error: AADSTS70002: The provided client is not supported for this feature. The client application must be marked as 'mobile.' Trace ID: 17fd70de-fe78-4523-a25b-ff17d413f100 Correlation ID: d66b2bd1-92bf-4378-ac38-1dc8888cfe1d Timestamp: 2026-04-06 09:25:25Z
+byhomeyyz@raspberrypi:~/Home-View $
