@@ -18337,7 +18337,7 @@ export default function Dashboard() {
       {!isTodoFlyoutOpen && (
         <div 
           className="fixed text-white/60 text-[11px] font-medium z-[70] pointer-events-none"
-          style={{ bottom: '40px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7 - 2 + 3 + 2 + 8 + 2 + 4 + 9 + 9}px`, transformOrigin: 'right bottom' }}
+          style={{ bottom: '40px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7 - 2 + 3 + 2 + 8 + 2 + 4 + 9 + 9 + 8}px`, transformOrigin: 'right bottom' }}
         >
           © 2026
         </div>
@@ -26109,7 +26109,7 @@ export default function Dashboard() {
               const beforeW = gridSizes.dayColumnWidths.slice(0, todayIdx).reduce((a: number, b: number) => a + b, 0);
               const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
               return (
-                <div className="absolute bottom-0 pointer-events-none" style={{ top: '0px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px))`, width: '3px', backgroundColor: '#000000', zIndex: 100 }} />
+                <div className="absolute bottom-0 pointer-events-none" style={{ top: '0px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px) + 4px)`, width: '3px', backgroundColor: '#000000', zIndex: 100 }} />
               );
             })()}
             
