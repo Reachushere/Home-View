@@ -25819,7 +25819,7 @@ export default function Dashboard() {
                                   if (nextWeek > activeSem.weeks) {
                                     return `Last School Week (${currentWeek})`;
                                   }
-                                  const ssSubSession = activeSem.key.startsWith('ss') && satDate >= new Date('2026-06-20T00:00:00') ? `/${nextWeek - 7}` : '';
+                                  const ssSubSession = activeSem.key.startsWith('ss') && nextWeek > 7 ? `/${nextWeek - 7}` : '';
                                   return `New School Week (${nextWeek}${ssSubSession})`;
                                 }
                                 const nextSem = semDefs.find(s => satDate < new Date(s.start + 'T00:00:00'));
@@ -25870,7 +25870,7 @@ export default function Dashboard() {
                                   const daysDiff = Math.round((calcDate.getTime() - semStartD.getTime()) / (1000*60*60*24));
                                   const semWeek = Math.max(1, Math.min(Math.floor(daysDiff / 7) + 1, activeSem.weeks));
                                   const isSS = activeSem.key.startsWith('ss');
-                                  const ssLabel = isSS && dayDate >= new Date('2026-06-20T00:00:00') ? `/${semWeek - 7}` : '';
+                                  const ssLabel = isSS && semWeek > 7 ? `/${semWeek - 7}` : '';
                                   return `Week ${semWeek}${ssLabel}`;
                                 }
                                 const nextSem = semDefs.find(s => dayDate < new Date(s.start + 'T00:00:00'));
@@ -25919,7 +25919,7 @@ export default function Dashboard() {
                                   const daysDiff = Math.round((calcDate.getTime() - semStartD.getTime()) / (1000*60*60*24));
                                   const semWeek = Math.max(1, Math.min(Math.floor(daysDiff / 7) + 1, activeSem.weeks));
                                   const isSS = activeSem.key.startsWith('ss');
-                                  const ssLabel = isSS && dayDate >= new Date('2026-06-20T00:00:00') ? `/${semWeek - 7}` : '';
+                                  const ssLabel = isSS && semWeek > 7 ? `/${semWeek - 7}` : '';
                                   return `Week ${semWeek}${ssLabel}`;
                                 }
                                 const nextSem = semDefs.find(s => dayDate < new Date(s.start + 'T00:00:00'));
@@ -27666,34 +27666,19 @@ export default function Dashboard() {
                               const barHPx = needsPulse ? 4 : barH;
                               if (isFirstCell) {
                                 return (
-                                  <div key={`cbar-main-${t.id}`} style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, pointerEvents: 'none', zIndex: 2, overflow: 'visible' }} data-testid={`countdown-span-main-${t.id}-day-${dayIdx}`}>
-                                    <div style={{ position: 'absolute', left: '0px', width: '10px', top: `${topPx}px`, height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px' }} />
-                                    <div style={{ position: 'absolute', left: '10px', top: `${topPx - 5}px`, display: 'flex', alignItems: 'center', gap: '3px', whiteSpace: 'nowrap', lineHeight: 1, height: '13px', padding: '0 3px', maxWidth: 'calc(100% - 10px)', overflow: 'hidden' }}>
-                                      <span style={{ fontSize: '11px', fontWeight: 300, color: barColor, letterSpacing: '-0.2px', flexShrink: 0 }}>{cd.daysLeft}d</span>
-                                      <span style={{ fontSize: '9px', fontWeight: 600, color: 'rgba(0,0,0,0.55)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{labelText}</span>
+                                  <div key={`cbar-main-${t.id}`} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '200%', pointerEvents: 'none', zIndex: 2, overflow: 'visible' }} data-testid={`countdown-span-main-${t.id}-day-${dayIdx}`}>
+                                    <div style={{ position: 'absolute', left: '0px', top: `${topPx}px`, right: 0, height: `${barHPx}px`, display: 'flex', alignItems: 'center' }}>
+                                      <div style={{ width: '10px', minWidth: '10px', height: '100%', background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px' }} />
+                                      <div style={{ display: 'flex', alignItems: 'center', gap: '3px', whiteSpace: 'nowrap', padding: '0 4px', flexShrink: 0 }}>
+                                        <span style={{ fontSize: '11px', fontWeight: 300, color: barColor, letterSpacing: '-0.2px' }}>{cd.daysLeft}d</span>
+                                        <span style={{ fontSize: '9px', fontWeight: 600, color: 'rgba(0,0,0,0.55)', whiteSpace: 'nowrap' }}>{labelText}</span>
+                                      </div>
+                                      <div className={needsPulse ? 'countdown-bar-pulse' : ''} style={{ flex: 1, height: '100%', background: barColor, opacity: 0.85, borderRadius: '0 2px 2px 0', boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined }} />
                                     </div>
                                   </div>
                                 );
                               }
-                              return (
-                                <div key={`cbar-main-${t.id}`} style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, pointerEvents: 'none', zIndex: 2 }} data-testid={`countdown-span-main-${t.id}-day-${dayIdx}`}>
-                                  <div
-                                    className={needsPulse ? 'countdown-bar-pulse' : ''}
-                                    style={{
-                                      position: 'absolute',
-                                      left: 0,
-                                      right: 0,
-                                      top: `${topPx}px`,
-                                      height: `${barHPx}px`,
-                                      background: barColor,
-                                      opacity: 0.85,
-                                      pointerEvents: 'none',
-                                      borderRadius: isLastCell ? '0 2px 2px 0' : '0',
-                                      boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined,
-                                    }}
-                                  />
-                                </div>
-                              );
+                              return null;
                             });
                           })()}
                           {sleepLabelStart && !isToday && (
@@ -30359,7 +30344,7 @@ export default function Dashboard() {
                   width: `${effectiveDividerPct}%`,
                   height: `${lastBottom - firstTop}px`,
                   background: '#ffffff',
-                  zIndex: 39,
+                  zIndex: 44,
                   borderRadius: '6px',
                 }} />
               );
@@ -30385,7 +30370,7 @@ export default function Dashboard() {
                     width: `${effectiveDividerPct}%`,
                     height: `${rowHeight}px`,
                     background: 'transparent',
-                    zIndex: 40,
+                    zIndex: 45,
                     display: 'flex',
                     flexDirection: 'column',
                     overflow: 'visible',
@@ -30418,7 +30403,7 @@ export default function Dashboard() {
                             onDragEnter={(e) => { e.preventDefault(); e.stopPropagation(); setHwDragOverTarget(dragKey); }}
                             onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); if (hwDragOverTarget === dragKey) setHwDragOverTarget(null); }}
                             onDrop={(e) => { e.preventDefault(); e.stopPropagation(); setHwDragOverTarget(null); const file = e.dataTransfer.files?.[0]; if (file) item.drop(file); }}
-                            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1px', position: 'relative', flex: '1 1 0', alignSelf: 'stretch', minWidth: 0, background: item.bg, padding: '4px 1px 3px', borderRadius: '6px', overflow: 'visible', outline: isDragOver ? '2px solid rgba(255,255,255,0.8)' : 'none', outlineOffset: '-2px', transition: 'outline 0.15s ease' }}
+                            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1px', position: 'relative', flex: '1 1 0', alignSelf: 'stretch', minWidth: 0, backgroundColor: item.bg, padding: '4px 1px 3px', borderRadius: '6px', overflow: 'visible', outline: isDragOver ? '2px solid rgba(255,255,255,0.8)' : 'none', outlineOffset: '-2px', transition: 'outline 0.15s ease', opacity: 1, isolation: 'isolate' }}
                             data-testid={`drop-${item.type}-${pd.courseCode.toLowerCase()}`}>
                             <div style={{ position: 'absolute', top: '2px', left: 0, right: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2px', zIndex: 5, flexWrap: 'nowrap', overflow: 'hidden' }}>
                               <span style={{ fontSize: '10px', fontWeight: 400, color: textColor, letterSpacing: '0.5px', fontFamily: "'Raleway', sans-serif", whiteSpace: 'nowrap', flexShrink: 0 }}>{item.label}</span>
@@ -31613,7 +31598,7 @@ export default function Dashboard() {
                                 onDragEnter={(e) => { e.preventDefault(); e.stopPropagation(); setHwDragOverTarget(dragKey); }}
                                 onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); if (hwDragOverTarget === dragKey) setHwDragOverTarget(null); }}
                                 onDrop={(e) => { e.preventDefault(); e.stopPropagation(); setHwDragOverTarget(null); const file = e.dataTransfer.files?.[0]; if (file) item.drop(file); }}
-                                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', position: 'relative', flex: 1, minWidth: 0, background: item.bg, padding: '5px 3px 4px', borderRadius: '6px', outline: isDragOver ? '2px solid rgba(255,255,255,0.8)' : 'none', outlineOffset: '-2px', transition: 'outline 0.15s ease' }}
+                                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', position: 'relative', flex: 1, minWidth: 0, backgroundColor: item.bg, padding: '5px 3px 4px', borderRadius: '6px', outline: isDragOver ? '2px solid rgba(255,255,255,0.8)' : 'none', outlineOffset: '-2px', transition: 'outline 0.15s ease', opacity: 1, isolation: 'isolate' }}
                                 data-testid={`float-drop-${item.type}-${pd.courseCode.toLowerCase()}`}>
                                 <span style={{ position: 'absolute', top: '3px', left: 0, right: 0, textAlign: 'center', fontSize: '10px', fontWeight: 400, color: item.fontOverride || (item.dark ? '#ffffff' : '#000000'), letterSpacing: '0.5px', fontFamily: "'Raleway', sans-serif", zIndex: 5, whiteSpace: 'nowrap' }}>{item.label}</span>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '8px' }}>
