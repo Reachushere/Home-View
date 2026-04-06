@@ -6793,8 +6793,10 @@ export default function Dashboard() {
     });
   };
   const lastAutoWeekDateRef = useRef(new Date().getDate());
+  const initialWeekSetRef = useRef(false);
   useEffect(() => {
-    if (weeks.length > 0) {
+    if (weeks.length > 0 && !initialWeekSetRef.current) {
+      initialWeekSetRef.current = true;
       const today = new Date();
       const currentWeek = findCurrentWeekFromList(weeks, today);
       if (currentWeek) {
