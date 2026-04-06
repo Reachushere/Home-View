@@ -10888,15 +10888,15 @@ export default function Dashboard() {
     for (let y = 2025; y <= 2030; y++) {
       const winterStart = new Date(y, 0, 12);
       const winterW1Sat = startOfWeek(winterStart, { weekStartsOn: 6 });
-      semDefs.push({ label: 'Winter ' + y, start: winterW1Sat, end: addDays(winterW1Sat, NUM_WEEKS * 7 - 1) });
+      semDefs.push({ label: 'Winter ' + y, start: winterW1Sat, end: addDays(winterW1Sat, (NUM_WEEKS + 1) * 7 - 1) });
 
       const springSumStart = new Date(y, 4, 5);
       const springSumW1Sat = startOfWeek(springSumStart, { weekStartsOn: 6 });
-      semDefs.push({ label: 'Spring/Summer ' + y, start: springSumW1Sat, end: addDays(springSumW1Sat, NUM_WEEKS * 7 - 1) });
+      semDefs.push({ label: 'Spring/Summer ' + y, start: springSumW1Sat, end: addDays(springSumW1Sat, (NUM_WEEKS + 1) * 7 - 1) });
 
       const fallStart = new Date(y, 8, 8);
       const fallW1Sat = startOfWeek(fallStart, { weekStartsOn: 6 });
-      semDefs.push({ label: 'Fall ' + y, start: fallW1Sat, end: addDays(fallW1Sat, NUM_WEEKS * 7 - 1) });
+      semDefs.push({ label: 'Fall ' + y, start: fallW1Sat, end: addDays(fallW1Sat, (NUM_WEEKS + 1) * 7 - 1) });
     }
     const todayStart = startOfDayET(new Date());
     const currentWeekSat = startOfWeek(todayStart, { weekStartsOn: 6 });
@@ -10913,7 +10913,7 @@ export default function Dashboard() {
           matched = sem;
           const diffD = Math.floor((wStart.getTime() - sem.start.getTime()) / 86400000);
           wNum = Math.floor(diffD / 7) + 1;
-          if (wNum > NUM_WEEKS) { matched = null; wNum = null; }
+          if (wNum > NUM_WEEKS) { wNum = NUM_WEEKS; }
           break;
         }
       }
