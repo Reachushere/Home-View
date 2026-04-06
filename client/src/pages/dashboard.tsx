@@ -22118,7 +22118,7 @@ export default function Dashboard() {
           {showWeatherHistoryPanel && (() => {
             const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
             return (
-            <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 99999 }} onClick={() => setShowWeatherHistoryPanel(false)} data-testid="weather-history-overlay">
+            <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 100100 }} onClick={() => setShowWeatherHistoryPanel(false)} data-testid="weather-history-overlay">
               <div className="absolute inset-0 bg-black/50" />
               <div className="relative w-[720px] max-h-[80vh] rounded-lg flex flex-col" onClick={e => e.stopPropagation()} style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
                 <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 rounded-t-lg shrink-0" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
