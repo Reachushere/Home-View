@@ -82,7 +82,7 @@ function ConnectionBanner() {
     const check = async () => {
       try {
         const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 5000);
+        const timer = setTimeout(() => controller.abort(), 15000);
         const resp = await fetch("/api/health", { signal: controller.signal });
         clearTimeout(timer);
         if (resp.ok) {

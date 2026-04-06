@@ -1819,6 +1819,14 @@ export default function Dashboard() {
     const saved = localStorage.getItem('timelineSyncCalendar');
     return saved === 'true';
   });
+  useEffect(() => {
+    fetch('/api/ui-settings/timelineSyncCalendar').then(r => r.json()).then(d => {
+      if (d.value != null) { const v = d.value === true || d.value === 'true'; setTimelineSyncCalendar(v); localStorage.setItem('timelineSyncCalendar', String(v)); }
+    }).catch(() => {});
+    fetch('/api/ui-settings/hwFloating').then(r => r.json()).then(d => {
+      if (d.value != null && typeof d.value === 'object') { setHwFloatingRaw((prev: any) => ({ ...prev, ...d.value, showControls: false, isPlaying: false })); localStorage.setItem('hwFloating', JSON.stringify(d.value)); }
+    }).catch(() => {});
+  }, []);
   const timelineSyncRef = useRef(timelineSyncCalendar);
   timelineSyncRef.current = timelineSyncCalendar;
   const selectedWeekRef = useRef(selectedWeek);
@@ -1833,6 +1841,7 @@ export default function Dashboard() {
     setHwFloatingRaw((prev: any) => {
       const next = typeof val === 'function' ? val(prev) : val;
       localStorage.setItem('hwFloating', JSON.stringify(next));
+      fetch('/api/ui-settings/hwFloating', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: next }) }).catch(() => {});
       return next;
     });
   };
@@ -1893,6 +1902,11 @@ export default function Dashboard() {
     const saved = localStorage.getItem('hwDividerPercent');
     return saved ? parseFloat(saved) : 33;
   });
+  useEffect(() => {
+    fetch('/api/ui-settings/hwDividerPercent').then(r => r.json()).then(d => {
+      if (d.value != null) { const v = parseFloat(d.value); if (!isNaN(v) && v >= 20 && v <= 63) { setHwDividerPercent(v); localStorage.setItem('hwDividerPercent', String(v)); } }
+    }).catch(() => {});
+  }, []);
   const effectiveDividerPct = hwFloating.detached ? 0 : hwDividerPercent;
   const hwDividerDragRef = useRef<{ startX: number; startPercent: number; containerWidth: number } | null>(null);
   const centerCircleOnGroupBar = (el: HTMLDivElement | null) => {
@@ -4510,7 +4524,7 @@ export default function Dashboard() {
       document.removeEventListener('mouseup', onUp);
       document.removeEventListener('touchmove', onMove);
       document.removeEventListener('touchend', onUp);
-      setHwDividerPercent(pct => { localStorage.setItem('hwDividerPercent', String(pct)); return pct; });
+      setHwDividerPercent(pct => { localStorage.setItem('hwDividerPercent', String(pct)); fetch('/api/ui-settings/hwDividerPercent', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: pct }) }).catch(() => {}); return pct; });
       hwDividerDragRef.current = null;
     };
     document.addEventListener('mousemove', onMove);
@@ -17949,7 +17963,27 @@ export default function Dashboard() {
                   ...(colorUpdates.taskBgColor !== undefined ? { taskBgColor: colorUpdates.taskBgColor } : {}),
                   ...(colorUpdates.courseFontColor !== undefined ? { courseFontColor: colorUpdates.courseFontColor } : {}),
                 };
-                setCoursesData({ courses: updatedCourses });
+                const updatedData = { courses: updatedCourses };
+                setCoursesData(updatedData);
+                localStorage.setItem('coursesData', JSON.stringify(updatedData));
+                saveDegreeToServer('coursesData', updatedData);
+                const semPayload: Record<string, string | null> = {};
+                const prefix = `course${matchIdx + 1}`;
+                if (colorUpdates.color) semPayload[`${prefix}Color`] = colorUpdates.color;
+                if (colorUpdates.colorEnd) semPayload[`${prefix}ColorEnd`] = colorUpdates.colorEnd;
+                if (colorUpdates.colorStops !== undefined) semPayload[`${prefix}ColorStops`] = colorUpdates.colorStops || null;
+                if (colorUpdates.borderColor !== undefined) semPayload[`${prefix}BorderColor`] = colorUpdates.borderColor || null;
+                if (colorUpdates.courseRowColor !== undefined) semPayload[`${prefix}CourseRowColor`] = colorUpdates.courseRowColor || null;
+                if (colorUpdates.taskBgColor !== undefined) semPayload[`${prefix}TaskBgColor`] = colorUpdates.taskBgColor || null;
+                if (colorUpdates.courseFontColor !== undefined) semPayload[`${prefix}CourseFontColor`] = colorUpdates.courseFontColor || null;
+                if (Object.keys(semPayload).length > 0) {
+                  fetch('/api/semester', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(semPayload) })
+                    .then(() => {
+                      queryClient.invalidateQueries({ queryKey: ["/api/semester"] });
+                      queryClient.invalidateQueries({ queryKey: ["/api/semesters"] });
+                    })
+                    .catch(() => {});
+                }
               }
             }}
             onSaveCourseInfo={(updates) => {
@@ -30294,7 +30328,7 @@ export default function Dashboard() {
             </div>
           </div>
           <div
-            onClick={(e) => { e.stopPropagation(); const next = !timelineSyncCalendar; setTimelineSyncCalendar(next); localStorage.setItem('timelineSyncCalendar', String(next)); }}
+            onClick={(e) => { e.stopPropagation(); const next = !timelineSyncCalendar; setTimelineSyncCalendar(next); localStorage.setItem('timelineSyncCalendar', String(next)); fetch('/api/ui-settings/timelineSyncCalendar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: next }) }).catch(() => {}); }}
             className="absolute z-[71]"
             style={{ top: '-13px', left: '1px', display: 'flex', alignItems: 'center', gap: '3px', cursor: 'pointer', padding: '1px 4px 1px 2px', borderRadius: '4px 4px 0 0' }}
             data-testid="timeline-sync-toggle-container"
@@ -31358,7 +31392,7 @@ export default function Dashboard() {
                                   style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'flex', alignItems: 'center', gap: '3px', color: '#ffffff' }}
                                 >
                                   {task.type === 'class' && <img src={teacherIconPath} alt="" style={{ width: '11px', height: '11px', objectFit: 'contain', opacity: 0.85, flexShrink: 0, filter: 'invert(1)' }} />}
-                                  <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title; })() : task.title.replace(/[\[\]]/g, '')}</span>
+                                  <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title.replace(/[\[\]]/g, ''); })() : task.title.replace(/[\[\]]/g, '')}</span>
                                 </button>
                                 <div className="text-[9px]" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '0px', whiteSpace: 'nowrap' }}>
                                   <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', color: '#ffffff', lineHeight: '14px' }}>{courseName.replace(/\[|\]/g, '')}</span>
@@ -31547,7 +31581,7 @@ export default function Dashboard() {
                                               style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'flex', alignItems: 'center', gap: '3px', color: '#ffffff' }}
                                             >
                                               {task.type === 'class' && <img src={teacherIconPath} alt="" style={{ width: '11px', height: '11px', objectFit: 'contain', opacity: 0.85, flexShrink: 0, filter: 'invert(1)' }} />}
-                                              <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title; })() : task.title.replace(/[\[\]]/g, '')}</span>
+                                              <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title.replace(/[\[\]]/g, ''); })() : task.title.replace(/[\[\]]/g, '')}</span>
                                             </button>
                                             <div className="text-[9px]" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '2px', whiteSpace: 'nowrap' }}>
                                               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', color: '#ffffff', lineHeight: '14px' }}>{courseName.replace(/\[|\]/g, '')}</span>
@@ -31727,7 +31761,7 @@ export default function Dashboard() {
                                               style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'flex', alignItems: 'center', gap: '3px', color: '#ffffff' }}
                                             >
                                               {task.type === 'class' && <img src={teacherIconPath} alt="" style={{ width: '11px', height: '11px', objectFit: 'contain', opacity: 0.85, flexShrink: 0, filter: 'invert(1)' }} />}
-                                              <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title; })() : task.title.replace(/[\[\]]/g, '')}</span>
+                                              <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title.replace(/[\[\]]/g, ''); })() : task.title.replace(/[\[\]]/g, '')}</span>
                                             </button>
                                             <div className="text-[9px]" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '4px', whiteSpace: 'nowrap', overflow: 'hidden' }}>
                                               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', color: '#ffffff', lineHeight: '14px' }}>{courseName.replace(/\[|\]/g, '')}</span>
@@ -31925,7 +31959,7 @@ export default function Dashboard() {
                                               style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'flex', alignItems: 'center', gap: '3px', color: '#ffffff' }}
                                             >
                                               {task.type === 'class' && <img src={teacherIconPath} alt="" style={{ width: '11px', height: '11px', objectFit: 'contain', opacity: 0.85, flexShrink: 0, filter: 'invert(1)' }} />}
-                                              <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title; })() : task.title.replace(/[\[\]]/g, '')}</span>
+                                              <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title.replace(/[\[\]]/g, ''); })() : task.title.replace(/[\[\]]/g, '')}</span>
                                             </button>
                                             <div className="text-[9px]" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '4px', whiteSpace: 'nowrap', overflow: 'hidden' }}>
                                               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', color: '#ffffff', lineHeight: '14px' }}>{(task.courseName?.split(' - ').slice(1).join(' - ') || task.courseName?.split(' - ')[0] || '').replace(/\[|\]/g, '')}</span>
@@ -32160,7 +32194,7 @@ export default function Dashboard() {
                                               style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'flex', alignItems: 'center', gap: '3px', color: '#ffffff' }}
                                             >
                                               {task.type === 'class' && <img src={teacherIconPath} alt="" style={{ width: '11px', height: '11px', objectFit: 'contain', opacity: 0.85, flexShrink: 0, filter: 'invert(1)' }} />}
-                                              <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title; })() : task.title.replace(/[\[\]]/g, '')}</span>
+                                              <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title.replace(/[\[\]]/g, ''); })() : task.title.replace(/[\[\]]/g, '')}</span>
                                             </button>
                                             <div className="text-[9px]" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '4px', whiteSpace: 'nowrap', overflow: 'hidden' }}>
                                               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', color: '#ffffff', lineHeight: '14px' }}>{courseName.replace(/\[|\]/g, '')}</span>
