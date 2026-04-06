@@ -2549,6 +2549,15 @@ input[type="date"]::-webkit-datetime-edit-year-field {
   animation: countdownBarPulse 1.5s ease-in-out infinite;
 }
 
+.countdown-bar-wrapper {
+  z-index: 1;
+  transition: z-index 0s;
+}
+
+.countdown-bar-wrapper:hover {
+  z-index: 46 !important;
+}
+
 .side-tab-hover-left:hover {
   left: 0px !important;
 }

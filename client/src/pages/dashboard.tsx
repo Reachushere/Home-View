@@ -27704,7 +27704,7 @@ export default function Dashboard() {
                               const barHPx = needsPulse ? 4 : barH;
                               if (isFirstCell) {
                                 return (
-                                  <div key={`cbar-main-${t.id}`} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '200%', pointerEvents: 'none', zIndex: 2, overflow: 'hidden' }} data-testid={`countdown-span-main-${t.id}-day-${dayIdx}`}>
+                                  <div key={`cbar-main-${t.id}`} className="countdown-bar-wrapper" style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '200%', pointerEvents: 'auto', zIndex: 1, overflow: 'hidden', cursor: 'default' }} data-testid={`countdown-span-main-${t.id}-day-${dayIdx}`}>
                                     <div style={{ position: 'absolute', left: '0px', top: `${topPx}px`, right: 0, height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
                                       <div style={{ width: '10px', minWidth: '10px', height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
                                       <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
@@ -30127,7 +30127,7 @@ export default function Dashboard() {
                 scrollbarWidth: 'none',
                 padding: '0',
               }}>
-                <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '1px 6px 0px 6px', overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', background: (() => { const stops = otherRowColors.labelStops ? (() => { try { return JSON.parse(otherRowColors.labelStops); } catch { return []; } })() : []; const allStops = [{ position: 0, color: otherRowColors.labelStart }, ...stops, { position: 100, color: otherRowColors.labelEnd }]; return `linear-gradient(180deg, ${allStops.map((s: any) => `${s.color} ${s.position}%`).join(', ')})`; })() }}
+                <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', paddingTop: '14px', overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', background: (() => { const stops = otherRowColors.labelStops ? (() => { try { return JSON.parse(otherRowColors.labelStops); } catch { return []; } })() : []; const allStops = [{ position: 0, color: otherRowColors.labelStart }, ...stops, { position: 100, color: otherRowColors.labelEnd }]; return `linear-gradient(180deg, ${allStops.map((s: any) => `${s.color} ${s.position}%`).join(', ')})`; })() }}
                   onWheel={(e) => {
                     e.stopPropagation();
                     e.currentTarget.scrollTop += e.deltaY;
@@ -30136,7 +30136,7 @@ export default function Dashboard() {
                 >
                   <span className="text-[8px] font-[785] uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.8)', position: 'absolute', top: '2px', left: '6px' }}>Other</span>
                   {otherProgressTasks.length === 0 && (
-                    <span className="text-[10px] italic" style={{ color: 'rgba(255,255,255,0.4)', textAlign: 'center', pointerEvents: 'none' }}>No upcoming items</span>
+                    <span className="text-[10px] italic" style={{ color: 'rgba(255,255,255,0.4)', textAlign: 'center', pointerEvents: 'none', paddingLeft: `${effectiveDividerPct}%` }}>No upcoming items</span>
                   )}
                   {otherProgressTasks.map(t => {
                     const tDueDate = new Date(t.dueDate);
@@ -30153,34 +30153,24 @@ export default function Dashboard() {
                       days.push(dd);
                     }
                     return (
-                      <div key={t.id} className="flex items-center gap-1.5 min-w-0 cursor-pointer hover:brightness-125" style={{ lineHeight: '1.5', marginBottom: '0px', padding: '1px 0', marginTop: '1px' }}
+                      <div key={t.id} className="flex items-center gap-1.5 min-w-0 cursor-pointer hover:brightness-125" style={{ lineHeight: '1.5', marginBottom: '0px', padding: '1px 6px 1px 6px', marginTop: '1px', marginLeft: `${effectiveDividerPct}%` }}
                         onClick={() => setEditingTask(t)}
                         onMouseEnter={() => setHoveredCountdownTaskIdDebounced(t.id)}
                         onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                       >
                         <span style={{ fontSize: '10px', color: '#ffffff', flexShrink: 0 }}>•</span>
                         <span className="truncate" style={{ fontSize: '9px', color: '#ffffff', textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400, flex: 1, minWidth: 0 }}>{t.title}</span>
-                        <div className="flex-shrink-0 flex items-center justify-end" style={{ marginLeft: 'auto' }}>
-                          <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 9px)`, gap: '1px' }}>
-                            {days.map((dd, di) => {
-                              const isFirst = di === 0;
-                              const isDue = differenceInDays(dd, tDue) === 0;
-                              return (
-                                <div key={di} style={{
-                                  width: '9px', height: '9px', borderRadius: '1px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                  background: isFirst ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.08)',
-                                  border: isFirst ? '1px solid rgba(255,255,255,0.5)' : '0.5px solid rgba(255,255,255,0.12)',
-                                }}>
-                                  {isDue ? (
-                                    <span style={{ fontSize: '8px', lineHeight: 1, color: otherColor, filter: `drop-shadow(0 0 2px ${otherColor})` }}>★</span>
-                                  ) : (
-                                    <span style={{ fontSize: '5px', lineHeight: 1, color: isFirst ? '#ffffff' : 'rgba(255,255,255,0.5)', fontWeight: isFirst ? 700 : 400 }}>{dd.getDate()}</span>
-                                  )}
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
+                        {(() => {
+                          const dueStr = format(tDueDate, 'MMM d');
+                          const daysUntilBadge = daysUntil;
+                          const badgeColor = daysUntilBadge <= 1 ? '#ef4444' : daysUntilBadge <= 3 ? '#f59e0b' : 'rgba(255,255,255,0.3)';
+                          return (
+                            <div className="flex-shrink-0 flex items-center gap-1.5" style={{ marginLeft: 'auto' }}>
+                              <span style={{ fontSize: '8px', color: badgeColor, fontWeight: 500, minWidth: '16px', textAlign: 'left' }}>{daysUntilBadge}d</span>
+                              <span style={{ fontSize: '9px', color: '#ffffff', fontWeight: 400, minWidth: '42px', textAlign: 'right' }}>{dueStr}</span>
+                            </div>
+                          );
+                        })()}
                       </div>
                     );
                   })}
@@ -30314,7 +30304,7 @@ export default function Dashboard() {
                           onClick={() => setEditingTask(t)}
                         >
                           <span style={{ fontSize: '10px', color: textColor, flexShrink: 0 }}>•</span>
-                          <span className="truncate" style={{ fontSize: '9px', color: textColor, textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400, flex: 1, minWidth: 0 }}>{t.title}</span>
+                          <span className="truncate" style={{ fontSize: '9px', color: textColor, textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400, flex: 1, minWidth: 0 }}>{(t.title || '').replace(/[\[\]]/g, '').replace(/^\s+/, '')}</span>
                           {(() => {
                             const tDueDate = new Date(t.dueDate);
                             const tDue = startOfDayET(tDueDate);
@@ -30579,21 +30569,23 @@ export default function Dashboard() {
                       <span className="text-[10px] italic" style={{ color: 'rgba(255,255,255,0.4)', textAlign: 'center', pointerEvents: 'none' }}>No upcoming items</span>
                     )}
                     {otherProgressTasks.map(t => {
-                      const dueStr = format(new Date(t.dueDate), 'MMM d');
+                      const tDueDate = new Date(t.dueDate);
+                      const dueStr = format(tDueDate, 'MMM d');
+                      const daysUntil = Math.max(0, differenceInCalendarDays(tDueDate, new Date()));
+                      const badgeColor = daysUntil <= 1 ? '#ef4444' : daysUntil <= 3 ? '#f59e0b' : 'rgba(255,255,255,0.3)';
                       return (
                         <div
                           key={t.id}
                           className="flex items-center gap-1.5 min-w-0 cursor-pointer hover:brightness-125"
-                          style={{ lineHeight: '1.3', marginBottom: '1px' }}
+                          style={{ lineHeight: '1.5', marginBottom: '0px', padding: '1px 0', marginTop: '1px' }}
                           onMouseEnter={() => setHoveredCountdownTaskIdDebounced(t.id)}
                           onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                           onClick={() => setEditingTask(t)}
                         >
                           <span style={{ fontSize: '10px', color: '#ffffff', flexShrink: 0 }}>•</span>
-                          <span className="truncate" style={{ fontSize: '9px', color: '#ffffff', fontWeight: 400, flex: 1, minWidth: 0 }}>{t.title}</span>
-                          <div className="flex-shrink-0 flex items-center justify-end gap-1" style={{ marginLeft: 'auto', width: '130px' }}>
-                            <div style={{ width: '56px', flexShrink: 0 }} />
-                            <span style={{ fontSize: '8px', color: 'transparent', fontWeight: 400, minWidth: '16px', textAlign: 'left' }}>0d</span>
+                          <span className="truncate" style={{ fontSize: '9px', color: '#ffffff', textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400, flex: 1, minWidth: 0 }}>{t.title}</span>
+                          <div className="flex-shrink-0 flex items-center gap-1.5" style={{ marginLeft: 'auto' }}>
+                            <span style={{ fontSize: '8px', color: badgeColor, fontWeight: 500, minWidth: '16px', textAlign: 'left' }}>{daysUntil}d</span>
                             <span style={{ fontSize: '9px', color: '#ffffff', fontWeight: 400, minWidth: '42px', textAlign: 'right' }}>{dueStr}</span>
                           </div>
                         </div>
