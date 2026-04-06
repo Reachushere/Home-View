@@ -1,6 +1,6 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY || 'dummy-key-not-configured');
 
 const FROM_EMAIL = 'reminders@uni-cal.app';
 const TO_EMAIL = 'bryn.kai-hendricks@outlook.com';
