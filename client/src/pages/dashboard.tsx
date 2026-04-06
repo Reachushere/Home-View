@@ -12435,7 +12435,7 @@ export default function Dashboard() {
       >
         {isMobilePortrait && (
           <div style={{
-            position: 'absolute', top: '12px', left: '50%', transform: 'translateX(-50%)',
+            position: 'absolute', top: '42px', left: '50%', transform: 'translateX(-50%)',
             display: 'flex', alignItems: 'center', gap: '6px',
             background: 'rgba(0,0,0,0.25)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
             borderRadius: '20px', padding: '6px 14px',
@@ -12459,16 +12459,21 @@ export default function Dashboard() {
           }}
         >
           <div onClick={() => setTickerDialogOpen(true)} style={{
-              width: isMobileLandscape ? '48px' : '90%', maxWidth: isMobileLandscape ? '48px' : '340px',
-              height: isMobileLandscape ? 'auto' : '32px',
-              borderRadius: '10px', overflow: 'hidden',
+              position: isMobileLandscape ? 'relative' : 'absolute',
+              top: isMobileLandscape ? undefined : 0,
+              left: isMobileLandscape ? undefined : 0,
+              right: isMobileLandscape ? undefined : 0,
+              width: isMobileLandscape ? '48px' : '100%',
+              height: isMobileLandscape ? 'auto' : '34px',
+              overflow: 'hidden',
               background: 'linear-gradient(90deg, #000000 0%, #14141e 50%, #000000 100%)',
-              border: '0.5px solid rgba(255,255,255,0.2)',
-              display: 'flex', alignItems: 'center', position: 'relative',
+              borderBottom: isMobileLandscape ? 'none' : '1px solid rgba(255,255,255,0.15)',
+              display: 'flex', alignItems: 'center',
               cursor: 'pointer',
+              zIndex: 25,
             }} data-testid="mobile-inline-ticker">
-              <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', padding: '0 4px' }}>
-                <img src={d2lTickerLabel} alt="D2L" style={{ height: isMobileLandscape ? '20px' : '28px', width: 'auto', objectFit: 'contain' }} />
+              <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', padding: '0 6px' }}>
+                <img src={d2lTickerLabel} alt="D2L" style={{ height: isMobileLandscape ? '20px' : '26px', width: 'auto', objectFit: 'contain' }} />
               </div>
               <div style={{ flex: 1, overflow: 'hidden', position: 'relative', height: '100%' }}>
                 {(() => {
@@ -18972,8 +18977,8 @@ export default function Dashboard() {
                   <div />
                 </div>
 
-                {/* Step indicator */}
-                <div className="flex items-center gap-0 px-3 py-2 border-b border-white/10 overflow-x-auto" style={{ scrollbarWidth: 'none', background: 'rgba(255,255,255,0.05)' }}>
+                {/* Step indicator - hidden on type selection */}
+                <div className="flex items-center gap-0 px-3 py-2 border-b border-white/10 overflow-x-auto" style={{ scrollbarWidth: 'none', background: 'rgba(255,255,255,0.05)', display: quickAddStep === 0 ? 'none' : undefined }}>
                   {[
                     { id: 0, label: "Type" },
                     { id: 1, label: "Name" },
