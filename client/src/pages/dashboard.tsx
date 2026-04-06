@@ -27419,13 +27419,7 @@ export default function Dashboard() {
                               if (tDueDayIdx < 0) return false;
                               if (endDayIdx < 0 || endDayIdx >= weekDays.length) return false;
                               if (tDueDayIdx <= endDayIdx) return false;
-                              const isDueDay = dayIdx === tDueDayIdx;
-                              if (isDueDay) {
-                                if (tDueHour !== hour) return false;
-                              } else {
-                                const firstSlot = timeSlots[0] ?? 8;
-                                if (hour !== firstSlot) return false;
-                              }
+                              if (hour !== tDueHour) return false;
                               return dayIdx >= endDayIdx && dayIdx <= tDueDayIdx;
                             });
                             if (countdownTasks.length === 0) return null;
