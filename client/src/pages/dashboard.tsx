@@ -3392,23 +3392,23 @@ export default function Dashboard() {
     saveSemesterAssignments(updated);
   };
   const dragCourseRef = useRef<{ code: string; fromSemKey: string } | null>(null);
-  const [courseFolderLinks, setCourseFolderLinks] = useState<Record<string, { modulePath?: string; readingPath?: string }>>(() => {
+  const [courseFolderLinks, setCourseFolderLinks] = useState<Record<string, { weeksPath?: string; modulePath?: string; readingPath?: string }>>(() => {
     const saved = localStorage.getItem('courseFolderLinks');
     if (saved) { try { return JSON.parse(saved); } catch {} }
     return {};
   });
-  const saveCourseFolderLinks = useCallback((links: Record<string, { modulePath?: string; readingPath?: string }>) => {
+  const saveCourseFolderLinks = useCallback((links: Record<string, { weeksPath?: string; modulePath?: string; readingPath?: string }>) => {
     setCourseFolderLinks(links);
     localStorage.setItem('courseFolderLinks', JSON.stringify(links));
     saveDegreeToServer('courseFolderLinks', links);
   }, []);
   const [folderLinkDialogOpen, setFolderLinkDialogOpen] = useState(false);
-  const [folderLinkBrowsing, setFolderLinkBrowsing] = useState<{ courseCode: string; type: 'module' | 'reading' } | null>(null);
+  const [folderLinkBrowsing, setFolderLinkBrowsing] = useState<{ courseCode: string } | null>(null);
   const [folderLinkBrowsePath, setFolderLinkBrowsePath] = useState('/School/1. TMU/Courses');
   const [folderLinkBrowseItems, setFolderLinkBrowseItems] = useState<Array<{ name: string; type: string; path: string }>>([]);
   const [folderLinkBrowseLoading, setFolderLinkBrowseLoading] = useState(false);
   const folderLinkMissingCourses = useMemo(() => {
-    const missing: Array<{ semKey: string; semLabel: string; courseCode: string; courseName: string; missingModule: boolean; missingReading: boolean }> = [];
+    const missing: Array<{ semKey: string; semLabel: string; courseCode: string; courseName: string }> = [];
     const semStartDatesCheck: Record<string, string> = {
       'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12',
       'ss2026': '2026-05-04', 'f2026': '2026-09-07', 'w2027': '2027-01-11',
@@ -3427,17 +3427,16 @@ export default function Dashboard() {
       for (const course of courses) {
         const code = course.code.toUpperCase().replace(/\s/g, '');
         const link = courseFolderLinks[code];
-        const missingModule = !link?.modulePath;
-        const missingReading = !link?.readingPath;
-        if (missingModule || missingReading) {
-          missing.push({ semKey, semLabel: semLabels[semKey] || semKey, courseCode: code, courseName: course.fullName || course.name, missingModule, missingReading });
+        if (!link?.weeksPath) {
+          missing.push({ semKey, semLabel: semLabels[semKey] || semKey, courseCode: code, courseName: course.fullName || course.name });
         }
       }
     }
     return missing;
   }, [semesterCourseAssignments, courseFolderLinks]);
+  const folderLinkDismissedRef = useRef(false);
   useEffect(() => {
-    if (folderLinkMissingCourses.length > 0 && desktopIsFull) {
+    if (folderLinkMissingCourses.length > 0 && desktopIsFull && !folderLinkDismissedRef.current) {
       const timer = setTimeout(() => setFolderLinkDialogOpen(true), 2000);
       return () => clearTimeout(timer);
     }
@@ -22100,9 +22099,14 @@ export default function Dashboard() {
               <div style={{ padding: '16px 20px 12px', borderBottom: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                 <span style={{ fontWeight: 700, fontSize: '13px' }}>OneDrive Folder Links Required</span>
+                <button
+                  onClick={() => { folderLinkDismissedRef.current = true; setFolderLinkDialogOpen(false); }}
+                  style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.5)', fontSize: '16px', lineHeight: 1, padding: '2px 4px' }}
+                  data-testid="folder-link-dismiss"
+                >✕</button>
               </div>
               <div style={{ padding: '12px 20px 8px', fontSize: '11px', color: 'rgba(255,255,255,0.7)' }}>
-                Link your OneDrive Module and Reading folders for each course to enable automated file syncing.
+                Link your OneDrive course folder (the one containing Week 1, Week 2, etc.) for each course. Module and Reading subfolders inside each week will be detected automatically.
               </div>
               <div style={{ flex: 1, overflowY: 'auto', padding: '4px 20px 16px' }}>
                 {folderLinkMissingCourses.map((mc, idx) => {
@@ -22115,43 +22119,23 @@ export default function Dashboard() {
                         <span>{mc.courseName}</span>
                         <span style={{ marginLeft: 'auto', fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: 400 }}>{mc.semLabel}</span>
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{ width: '55px', fontSize: '10px', color: mc.missingModule ? '#f87171' : '#34d399', fontWeight: 500 }}>Module:</span>
-                          {link.modulePath ? (
-                            <span style={{ fontSize: '10px', color: '#34d399', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>✓ {link.modulePath.split('/').slice(-2).join('/')}</span>
-                          ) : (
-                            <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', flex: 1 }}>Not linked</span>
-                          )}
-                          <button
-                            onClick={() => {
-                              setFolderLinkBrowsing({ courseCode: mc.courseCode, type: 'module' });
-                              const defaultPath = `/School/1. TMU/Courses`;
-                              setFolderLinkBrowsePath(defaultPath);
-                              browseForFolderLink(defaultPath);
-                            }}
-                            style={{ fontSize: '9px', padding: '2px 8px', borderRadius: '4px', background: mc.missingModule ? 'rgba(59,130,246,0.3)' : 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', color: 'white', fontWeight: 500 }}
-                            data-testid={`browse-module-${mc.courseCode}`}
-                          >{link.modulePath ? 'Change' : 'Browse'}</button>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{ width: '55px', fontSize: '10px', color: mc.missingReading ? '#f87171' : '#34d399', fontWeight: 500 }}>Reading:</span>
-                          {link.readingPath ? (
-                            <span style={{ fontSize: '10px', color: '#34d399', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>✓ {link.readingPath.split('/').slice(-2).join('/')}</span>
-                          ) : (
-                            <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', flex: 1 }}>Not linked</span>
-                          )}
-                          <button
-                            onClick={() => {
-                              setFolderLinkBrowsing({ courseCode: mc.courseCode, type: 'reading' });
-                              const defaultPath = `/School/1. TMU/Courses`;
-                              setFolderLinkBrowsePath(defaultPath);
-                              browseForFolderLink(defaultPath);
-                            }}
-                            style={{ fontSize: '9px', padding: '2px 8px', borderRadius: '4px', background: mc.missingReading ? 'rgba(59,130,246,0.3)' : 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', color: 'white', fontWeight: 500 }}
-                            data-testid={`browse-reading-${mc.courseCode}`}
-                          >{link.readingPath ? 'Change' : 'Browse'}</button>
-                        </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span style={{ width: '75px', fontSize: '10px', color: !link.weeksPath ? '#f87171' : '#34d399', fontWeight: 500 }}>Weeks Folder:</span>
+                        {link.weeksPath ? (
+                          <span style={{ fontSize: '10px', color: '#34d399', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>✓ {link.weeksPath.split('/').slice(-2).join('/')}</span>
+                        ) : (
+                          <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', flex: 1 }}>Not linked</span>
+                        )}
+                        <button
+                          onClick={() => {
+                            setFolderLinkBrowsing({ courseCode: mc.courseCode });
+                            const defaultPath = `/School/1. TMU/Courses`;
+                            setFolderLinkBrowsePath(defaultPath);
+                            browseForFolderLink(defaultPath);
+                          }}
+                          style={{ fontSize: '9px', padding: '2px 8px', borderRadius: '4px', background: !link.weeksPath ? 'rgba(59,130,246,0.3)' : 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', color: 'white', fontWeight: 500 }}
+                          data-testid={`browse-weeks-${mc.courseCode}`}
+                        >{link.weeksPath ? 'Change' : 'Browse'}</button>
                       </div>
                     </div>
                   );
@@ -22182,7 +22166,7 @@ export default function Dashboard() {
                 <div style={{ padding: '12px 16px 10px', borderBottom: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
                   <span style={{ fontWeight: 600, fontSize: '12px' }}>
-                    Select {folderLinkBrowsing.type === 'module' ? 'Module' : 'Reading'} Folder for {folderLinkBrowsing.courseCode}
+                    Select Weeks Folder for {folderLinkBrowsing.courseCode}
                   </span>
                 </div>
                 <div style={{ padding: '8px 16px', fontSize: '10px', color: 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -22239,11 +22223,7 @@ export default function Dashboard() {
                       const updated = { ...courseFolderLinks };
                       const code = folderLinkBrowsing.courseCode;
                       if (!updated[code]) updated[code] = {};
-                      if (folderLinkBrowsing.type === 'module') {
-                        updated[code] = { ...updated[code], modulePath: folderLinkBrowsePath };
-                      } else {
-                        updated[code] = { ...updated[code], readingPath: folderLinkBrowsePath };
-                      }
+                      updated[code] = { ...updated[code], weeksPath: folderLinkBrowsePath };
                       saveCourseFolderLinks(updated);
                       setFolderLinkBrowsing(null);
                     }}
