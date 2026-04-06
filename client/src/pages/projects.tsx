@@ -2,14 +2,11 @@ import { useState, useMemo, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { 
   Plus, 
@@ -46,32 +43,32 @@ const COURSE_COLORS: Record<string, string> = {
 
 function getStatusIcon(status: string) {
   switch (status) {
-    case "planning": return <Lightbulb className="w-4 h-4" />;
-    case "in_progress": return <Clock className="w-4 h-4" />;
-    case "on_hold": return <PauseCircle className="w-4 h-4" />;
-    case "completed": return <CheckCircle2 className="w-4 h-4" />;
-    case "cancelled": return <XCircle className="w-4 h-4" />;
-    default: return <FolderOpen className="w-4 h-4" />;
+    case "planning": return <Lightbulb className="w-3.5 h-3.5" />;
+    case "in_progress": return <Clock className="w-3.5 h-3.5" />;
+    case "on_hold": return <PauseCircle className="w-3.5 h-3.5" />;
+    case "completed": return <CheckCircle2 className="w-3.5 h-3.5" />;
+    case "cancelled": return <XCircle className="w-3.5 h-3.5" />;
+    default: return <FolderOpen className="w-3.5 h-3.5" />;
   }
 }
 
-function getStatusColor(status: string) {
+function getStatusBadgeStyle(status: string) {
   switch (status) {
-    case "planning": return "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200";
-    case "in_progress": return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200";
-    case "on_hold": return "bg-gray-100 text-gray-800 dark:bg-gray-800/40 dark:text-gray-200";
-    case "completed": return "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200";
-    case "cancelled": return "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200";
-    default: return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200";
+    case "planning": return { background: 'rgba(96,165,250,0.15)', color: '#93c5fd', border: '1px solid rgba(96,165,250,0.3)' };
+    case "in_progress": return { background: 'rgba(251,191,36,0.15)', color: '#fde68a', border: '1px solid rgba(251,191,36,0.3)' };
+    case "on_hold": return { background: 'rgba(156,163,175,0.15)', color: '#d1d5db', border: '1px solid rgba(156,163,175,0.3)' };
+    case "completed": return { background: 'rgba(34,197,94,0.15)', color: '#86efac', border: '1px solid rgba(34,197,94,0.3)' };
+    case "cancelled": return { background: 'rgba(239,68,68,0.15)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.3)' };
+    default: return { background: 'rgba(156,163,175,0.15)', color: '#d1d5db', border: '1px solid rgba(156,163,175,0.3)' };
   }
 }
 
-function getPriorityColor(priority: string) {
+function getPriorityBadgeStyle(priority: string) {
   switch (priority) {
-    case "high": return "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200";
-    case "medium": return "bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-200";
-    case "low": return "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200";
-    default: return "bg-gray-100 text-gray-800";
+    case "high": return { background: 'rgba(239,68,68,0.12)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.25)' };
+    case "medium": return { background: 'rgba(249,115,22,0.12)', color: '#fdba74', border: '1px solid rgba(249,115,22,0.25)' };
+    case "low": return { background: 'rgba(34,197,94,0.12)', color: '#86efac', border: '1px solid rgba(34,197,94,0.25)' };
+    default: return { background: 'rgba(156,163,175,0.12)', color: '#d1d5db', border: '1px solid rgba(156,163,175,0.25)' };
   }
 }
 
@@ -110,6 +107,22 @@ function ProjectDialog({
     notes: project?.notes || "",
   });
 
+  useEffect(() => {
+    if (open) {
+      setFormData({
+        name: project?.name || "",
+        description: project?.description || "",
+        color: project?.color || "#6366F1",
+        status: project?.status || "planning",
+        courseName: project?.courseName || "",
+        startDate: project?.startDate ? format(new Date(project.startDate), "yyyy-MM-dd") : "",
+        targetDate: project?.targetDate ? format(new Date(project.targetDate), "yyyy-MM-dd") : "",
+        priority: project?.priority || "medium",
+        notes: project?.notes || "",
+      });
+    }
+  }, [open, project]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave(formData);
@@ -118,59 +131,64 @@ function ProjectDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg text-[11px] text-white [&_label]:text-white [&_input]:text-black [&_input]:bg-white [&_select]:text-black [&_select]:bg-white [&_textarea]:text-black [&_textarea]:bg-white [&_input]:text-[11px] [&_select]:text-[11px] [&_textarea]:text-[11px]">
+      <DialogContent 
+        className="max-w-lg text-[11px]"
+        style={{ background: '#1a1f2e', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }}
+      >
         <DialogHeader>
           <DialogTitle className="text-white text-sm">{project ? "Edit Project" : "Create New Project"}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-3">
           <div className="space-y-2">
-            <label className="text-[11px] font-medium text-white">Project Name</label>
+            <label className="text-[11px] font-medium text-white/80">Project Name</label>
             <Input 
               data-testid="input-project-name"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               placeholder="Enter project name"
               required
+              className="bg-white/5 border-white/15 text-white placeholder:text-white/30 text-[11px]"
             />
           </div>
 
           <div className="space-y-2">
-            <label className="text-[11px] font-medium">Description</label>
+            <label className="text-[11px] font-medium text-white/80">Description</label>
             <Textarea 
               data-testid="input-project-description"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Describe your project..."
               rows={3}
+              className="bg-white/5 border-white/15 text-white placeholder:text-white/30 text-[11px]"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-[11px] font-medium">Color</label>
+              <label className="text-[11px] font-medium text-white/80">Color</label>
               <div className="flex gap-2 items-center">
                 <input 
                   type="color"
                   data-testid="input-project-color"
                   value={formData.color}
                   onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                  className="h-9 w-14 rounded-md border cursor-pointer"
+                  className="h-9 w-14 rounded-md border border-white/15 cursor-pointer bg-transparent"
                 />
                 <Input 
                   value={formData.color}
                   onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                  className="flex-1"
+                  className="flex-1 bg-white/5 border-white/15 text-white text-[11px]"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-[11px] font-medium">Status</label>
+              <label className="text-[11px] font-medium text-white/80">Status</label>
               <Select 
                 value={formData.status} 
                 onValueChange={(v) => setFormData({ ...formData, status: v })}
               >
-                <SelectTrigger data-testid="select-project-status" className="bg-white text-black text-[11px] [&>span]:text-black [&>span]:text-[11px]">
+                <SelectTrigger data-testid="select-project-status" className="bg-white/5 border-white/15 text-white text-[11px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -186,12 +204,12 @@ function ProjectDialog({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-[11px] font-medium">Course (optional)</label>
+              <label className="text-[11px] font-medium text-white/80">Course (optional)</label>
               <Select 
                 value={formData.courseName || "none"} 
                 onValueChange={(v) => setFormData({ ...formData, courseName: v === "none" ? "" : v })}
               >
-                <SelectTrigger data-testid="select-project-course" className="bg-white text-black text-[11px] [&>span]:text-black [&>span]:text-[11px]">
+                <SelectTrigger data-testid="select-project-course" className="bg-white/5 border-white/15 text-white text-[11px]">
                   <SelectValue placeholder="Select course" />
                 </SelectTrigger>
                 <SelectContent>
@@ -204,12 +222,12 @@ function ProjectDialog({
             </div>
 
             <div className="space-y-2">
-              <label className="text-[11px] font-medium">Priority</label>
+              <label className="text-[11px] font-medium text-white/80">Priority</label>
               <Select 
                 value={formData.priority} 
                 onValueChange={(v) => setFormData({ ...formData, priority: v })}
               >
-                <SelectTrigger data-testid="select-project-priority" className="bg-white text-black text-[11px] [&>span]:text-black [&>span]:text-[11px]">
+                <SelectTrigger data-testid="select-project-priority" className="bg-white/5 border-white/15 text-white text-[11px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -225,45 +243,48 @@ function ProjectDialog({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-[11px] font-medium">Start Date</label>
+              <label className="text-[11px] font-medium text-white/80">Start Date</label>
               <Input 
                 type="date"
                 data-testid="input-project-start-date"
                 value={formData.startDate}
                 onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                className="bg-white/5 border-white/15 text-white text-[11px]"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-[11px] font-medium">Target Date</label>
+              <label className="text-[11px] font-medium text-white/80">Target Date</label>
               <Input 
                 type="date"
                 data-testid="input-project-target-date"
                 value={formData.targetDate}
                 onChange={(e) => setFormData({ ...formData, targetDate: e.target.value })}
+                className="bg-white/5 border-white/15 text-white text-[11px]"
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <label className="text-[11px] font-medium">Notes</label>
+            <label className="text-[11px] font-medium text-white/80">Notes</label>
             <Textarea 
               data-testid="input-project-notes"
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               placeholder="Additional notes..."
               rows={2}
+              className="bg-white/5 border-white/15 text-white placeholder:text-white/30 text-[11px]"
             />
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="border-white/30 text-white hover:bg-white/10 hover:text-white">
+            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} className="text-white/60 hover:text-white hover:bg-white/10">
               Cancel
             </Button>
             <Button 
               type="submit" 
-              variant="outline"
               data-testid="button-save-project"
-              className="border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 focus:ring-offset-transparent transition-all duration-200"
+              style={{ background: 'linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%)' }}
+              className="text-white border-0 hover:brightness-110"
             >
               {project ? "Save Changes" : "Create Project"}
             </Button>
@@ -281,7 +302,6 @@ function ProjectCard({
   onDelete,
   expanded,
   onToggleExpand,
-  headerBarColor,
   onRename
 }: { 
   project: Project;
@@ -290,7 +310,6 @@ function ProjectCard({
   onDelete: () => void;
   expanded: boolean;
   onToggleExpand: () => void;
-  headerBarColor: string;
   onRename: (name: string) => void;
 }) {
   const completedTasks = tasks.filter(t => t.isCompleted);
@@ -301,33 +320,29 @@ function ProjectCard({
   return (
     <div 
       data-testid={`card-project-${project.id}`}
-      className="rounded-[12px] overflow-hidden flex flex-col hover-elevate transition-all"
+      className="rounded-lg overflow-hidden flex flex-col transition-all hover:translate-y-[-1px]"
       style={{ 
-        background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)',
-        backdropFilter: 'blur(40px)',
-        WebkitBackdropFilter: 'blur(40px)',
-        border: '1px solid rgba(255,255,255,0.5)',
-        borderTop: '1px solid rgba(255,255,255,0.7)',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)'
+        background: '#1a1f2e',
+        border: '1px solid rgba(255,255,255,0.08)',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
       }}
     >
-      {/* Header - matching Today box header */}
       <div 
         style={{ 
-          backgroundColor: headerBarColor,
-          padding: '8px 12px'
+          padding: '10px 14px',
+          borderBottom: '1px solid rgba(255,255,255,0.06)',
+          background: 'rgba(255,255,255,0.03)',
         }}
       >
         <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 flex-1 min-w-0">
+          <div className="flex items-center gap-2.5 flex-1 min-w-0">
             <div 
-              className="w-3 h-3 rounded-full flex-shrink-0 border border-white/30" 
+              className="w-2.5 h-2.5 rounded-full flex-shrink-0" 
               style={{ backgroundColor: project.color || "#6366F1" }} 
             />
             {isEditingName ? (
               <input
-                className="text-xs font-medium text-white bg-white/20 border border-white/40 rounded px-1 py-0.5 outline-none w-full"
-                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
+                className="text-[13px] font-semibold text-white bg-white/10 border border-white/20 rounded px-1.5 py-0.5 outline-none w-full"
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
                 onBlur={() => {
@@ -351,8 +366,7 @@ function ProjectCard({
               />
             ) : (
               <span 
-                className="text-xs font-medium text-white truncate cursor-text"
-                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}
+                className="text-[13px] font-semibold text-white truncate cursor-text"
                 onClick={(e) => { e.stopPropagation(); setEditName(project.name); setIsEditingName(true); }}
                 data-testid={`text-project-name-${project.id}`}
               >
@@ -361,58 +375,56 @@ function ProjectCard({
             )}
           </div>
           <div className="flex items-center gap-0.5 flex-shrink-0">
-            <Button 
-              size="icon" 
-              variant="ghost" 
+            <button 
               onClick={onEdit}
-              className="h-7 w-7 text-white hover:text-white hover:bg-white/20"
+              className="h-6 w-6 flex items-center justify-center rounded text-white/40 hover:text-white hover:bg-white/10 transition-colors"
               data-testid={`button-edit-project-${project.id}`}
             >
-              <Pencil className="w-3.5 h-3.5" />
-            </Button>
-            <Button 
-              size="icon" 
-              variant="ghost" 
+              <Pencil className="w-3 h-3" />
+            </button>
+            <button 
               onClick={onDelete}
-              className="h-7 w-7 text-white hover:text-white hover:bg-white/20"
+              className="h-6 w-6 flex items-center justify-center rounded text-white/40 hover:text-red-400 hover:bg-white/10 transition-colors"
               data-testid={`button-delete-project-${project.id}`}
             >
-              <Trash2 className="w-3.5 h-3.5" />
-            </Button>
+              <Trash2 className="w-3 h-3" />
+            </button>
           </div>
         </div>
       </div>
       
-      {/* Body */}
-      <div className="flex-1 p-3">
+      <div className="flex-1 p-3.5">
         {project.description && (
-          <p className="text-xs text-white/80 mb-3 line-clamp-2">
+          <p className="text-[11px] text-white/50 mb-3 line-clamp-2 leading-relaxed">
             {project.description}
           </p>
         )}
         
-        <div className="flex flex-wrap items-center gap-2 mb-3">
-          <Badge className={`${getStatusColor(project.status || "planning")} text-xs`}>
+        <div className="flex flex-wrap items-center gap-1.5 mb-3">
+          <span 
+            className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full"
+            style={getStatusBadgeStyle(project.status || "planning")}
+          >
             {getStatusIcon(project.status || "planning")}
-            <span className="ml-1">{(project.status || "planning").replace("_", " ")}</span>
-          </Badge>
-          <Badge className={`${getPriorityColor(project.priority || "medium")} text-xs`}>
-            {(project.priority || "medium").toUpperCase()}
-          </Badge>
+            {(project.status || "planning").replace("_", " ")}
+          </span>
+          <span 
+            className="inline-flex items-center text-[10px] font-medium px-2 py-0.5 rounded-full uppercase tracking-wide"
+            style={getPriorityBadgeStyle(project.priority || "medium")}
+          >
+            {project.priority || "medium"}
+          </span>
           {project.courseName && (
-            <Badge 
-              className="text-xs"
-              style={{ 
-                backgroundColor: COURSE_COLORS[project.courseName] || "#6366F1",
-                color: "white"
-              }}
+            <span 
+              className="text-[10px] font-medium px-2 py-0.5 rounded-full text-white"
+              style={{ backgroundColor: COURSE_COLORS[project.courseName] || "#6366F1" }}
             >
               {project.courseName}
-            </Badge>
+            </span>
           )}
         </div>
 
-        <div className="flex items-center gap-4 text-xs text-white/70 mb-3">
+        <div className="flex items-center gap-4 text-[10px] text-white/40 mb-3">
           {project.startDate && (
             <div className="flex items-center gap-1">
               <Calendar className="w-3 h-3" />
@@ -427,54 +439,61 @@ function ProjectCard({
           )}
         </div>
 
-        <div className="space-y-1 mb-3">
-          <div className="flex items-center justify-between text-xs text-white/80">
-            <span>Progress</span>
-            <span className="font-medium">{completedTasks.length}/{tasks.length} tasks</span>
+        <div className="space-y-1.5 mb-3">
+          <div className="flex items-center justify-between text-[10px]">
+            <span className="text-white/40">Progress</span>
+            <span className="text-white/60 font-medium">{completedTasks.length}/{tasks.length}</span>
           </div>
-          <Progress value={progress} className="h-2" />
+          <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+            <div 
+              className="h-full rounded-full transition-all duration-500"
+              style={{ 
+                width: `${progress}%`,
+                background: progress === 100 ? '#22c55e' : 'linear-gradient(90deg, #2563eb, #3b82f6)',
+              }}
+            />
+          </div>
         </div>
 
-        <Button 
-          variant="ghost" 
-          size="sm" 
+        <button 
           onClick={onToggleExpand}
-          className="w-full justify-center gap-1 text-white hover:text-white hover:bg-white/20 text-xs"
+          className="w-full flex items-center justify-center gap-1 text-[10px] text-white/40 hover:text-white/70 py-1.5 rounded transition-colors hover:bg-white/5"
           data-testid={`button-toggle-tasks-${project.id}`}
         >
           {expanded ? (
             <>
-              <ChevronUp className="w-3.5 h-3.5" />
+              <ChevronUp className="w-3 h-3" />
               Hide Tasks
             </>
           ) : (
             <>
-              <ChevronDown className="w-3.5 h-3.5" />
+              <ChevronDown className="w-3 h-3" />
               Show Tasks ({tasks.length})
             </>
           )}
-        </Button>
+        </button>
 
         {expanded && tasks.length > 0 && (
-          <div className="space-y-1 pt-2 mt-2 border-t border-white/30">
+          <div className="space-y-1 pt-2 mt-2" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
             {tasks.map((task) => (
               <div 
                 key={task.id}
-                className={`flex items-center gap-2 p-2 rounded-md text-xs ${
+                className={`flex items-center gap-2 px-2.5 py-1.5 rounded text-[11px] ${
                   task.isCompleted 
-                    ? "bg-green-500/20 line-through text-white/60" 
-                    : "bg-white/20 text-white"
+                    ? "line-through text-white/30" 
+                    : "text-white/80"
                 }`}
+                style={{ background: task.isCompleted ? 'rgba(34,197,94,0.05)' : 'rgba(255,255,255,0.03)' }}
                 data-testid={`task-item-${task.id}`}
               >
                 {task.isCompleted ? (
-                  <CheckCircle2 className="w-3.5 h-3.5 text-green-400 flex-shrink-0" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-green-500/60 flex-shrink-0" />
                 ) : (
-                  <div className="w-3.5 h-3.5 rounded-full border-2 border-white/50 flex-shrink-0" />
+                  <div className="w-3.5 h-3.5 rounded-full border border-white/20 flex-shrink-0" />
                 )}
                 <span className="flex-1 truncate">{task.title}</span>
                 {task.dueDate && (
-                  <span className="text-[10px] text-white/60">
+                  <span className="text-[9px] text-white/30">
                     {format(new Date(task.dueDate), "MMM d")}
                   </span>
                 )}
@@ -507,10 +526,8 @@ function WorkflowView({
     const taskIds = new Set(tasks.map(t => t.id));
     tasks.forEach(t => deps.set(t.id, { blocks: [], blockedBy: [] }));
     
-    // Only process links where both source and target are tasks in this project
     taskLinks.forEach(link => {
       if (link.sourceType === 'task' && link.targetType === 'task') {
-        // Filter to only include links between tasks in THIS project
         if (!taskIds.has(link.sourceId) || !taskIds.has(link.targetId)) return;
         
         if (link.linkType === 'blocks') {
@@ -542,16 +559,16 @@ function WorkflowView({
 
   if (tasks.length === 0) {
     return (
-      <div className="text-center py-8 text-muted-foreground">
-        <GitBranch className="w-12 h-12 mx-auto mb-3 opacity-30" />
-        <p>No tasks in this project yet.</p>
-        <p className="text-sm">Add tasks and create dependencies to see the workflow.</p>
+      <div className="text-center py-8">
+        <GitBranch className="w-10 h-10 mx-auto mb-3 text-white/20" />
+        <p className="text-white/40 text-sm">No tasks in this project yet.</p>
+        <p className="text-white/25 text-xs mt-1">Add tasks and create dependencies to see the workflow.</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {sortedTasks.map((task, index) => {
         const deps = taskDependencies.get(task.id);
         const blockedByTasks = deps?.blockedBy.map(id => taskMap.get(id)).filter(Boolean) || [];
@@ -561,90 +578,87 @@ function WorkflowView({
         return (
           <div key={task.id} className="relative">
             {index > 0 && blockedByTasks.length > 0 && (
-              <div className="absolute left-6 -top-3 h-3 w-0.5 bg-orange-400" />
+              <div className="absolute left-6 -top-2 h-2 w-px" style={{ background: 'rgba(251,191,36,0.4)' }} />
             )}
-            <Card 
-              className={`${
-                task.isCompleted 
-                  ? 'bg-green-50/50 dark:bg-green-900/10' 
+            <div 
+              className="rounded-lg p-3"
+              style={{
+                background: task.isCompleted 
+                  ? 'rgba(34,197,94,0.06)' 
                   : isBlocked 
-                    ? 'bg-orange-50/50 dark:bg-orange-900/10'
-                    : ''
-              }`}
+                    ? 'rgba(251,191,36,0.06)'
+                    : 'rgba(255,255,255,0.03)',
+                border: `1px solid ${task.isCompleted ? 'rgba(34,197,94,0.15)' : isBlocked ? 'rgba(251,191,36,0.15)' : 'rgba(255,255,255,0.06)'}`,
+              }}
               data-testid={`workflow-task-${task.id}`}
             >
-              <CardContent className="p-3">
-                <div className="flex items-start gap-3">
-                  <div className={`mt-0.5 ${task.isCompleted ? 'text-green-500' : isBlocked ? 'text-orange-500' : 'text-blue-500'}`}>
-                    {task.isCompleted ? (
-                      <CheckCircle2 className="w-5 h-5" />
-                    ) : isBlocked ? (
-                      <Lock className="w-5 h-5" />
-                    ) : (
-                      <Unlock className="w-5 h-5" />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className={`font-medium ${task.isCompleted ? 'line-through text-muted-foreground' : ''}`}>
-                      {task.title}
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-muted-foreground">
-                      {task.dueDate && (
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          {format(new Date(task.dueDate), "MMM d")}
-                        </span>
-                      )}
-                      {task.courseName && (
-                        <Badge 
-                          className="text-[10px] py-0"
-                          style={{ 
-                            backgroundColor: COURSE_COLORS[task.courseName] || "#6366F1",
-                            color: "white"
-                          }}
-                        >
-                          {task.courseName}
-                        </Badge>
-                      )}
-                    </div>
-                    
-                    {blockedByTasks.length > 0 && (
-                      <div className="mt-2 flex flex-wrap items-center gap-1 text-xs">
-                        <span className="text-orange-600 dark:text-orange-400 flex items-center gap-1">
-                          <Lock className="w-3 h-3" /> Blocked by:
-                        </span>
-                        {blockedByTasks.map(t => (
-                          <Badge 
-                            key={t!.id} 
-                            variant="outline" 
-                            className={`text-[10px] ${t!.isCompleted ? 'line-through opacity-50' : 'border-orange-300'}`}
-                          >
-                            {t!.title}
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
-                    
-                    {blocksTasks.length > 0 && (
-                      <div className="mt-1 flex flex-wrap items-center gap-1 text-xs">
-                        <span className="text-blue-600 dark:text-blue-400 flex items-center gap-1">
-                          <ArrowRight className="w-3 h-3" /> Blocks:
-                        </span>
-                        {blocksTasks.map(t => (
-                          <Badge 
-                            key={t!.id} 
-                            variant="outline" 
-                            className={`text-[10px] ${t!.isCompleted ? 'line-through opacity-50' : 'border-blue-300'}`}
-                          >
-                            {t!.title}
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5">
+                  {task.isCompleted ? (
+                    <CheckCircle2 className="w-4 h-4 text-green-500" />
+                  ) : isBlocked ? (
+                    <Lock className="w-4 h-4 text-amber-400" />
+                  ) : (
+                    <Unlock className="w-4 h-4 text-blue-400" />
+                  )}
                 </div>
-              </CardContent>
-            </Card>
+                <div className="flex-1 min-w-0">
+                  <div className={`text-[12px] font-medium ${task.isCompleted ? 'line-through text-white/30' : 'text-white/80'}`}>
+                    {task.title}
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 mt-1">
+                    {task.dueDate && (
+                      <span className="flex items-center gap-1 text-[10px] text-white/30">
+                        <Calendar className="w-3 h-3" />
+                        {format(new Date(task.dueDate), "MMM d")}
+                      </span>
+                    )}
+                    {task.courseName && (
+                      <span 
+                        className="text-[9px] font-medium px-1.5 py-0.5 rounded-full text-white"
+                        style={{ backgroundColor: COURSE_COLORS[task.courseName] || "#6366F1" }}
+                      >
+                        {task.courseName}
+                      </span>
+                    )}
+                  </div>
+                  
+                  {blockedByTasks.length > 0 && (
+                    <div className="mt-2 flex flex-wrap items-center gap-1 text-[10px]">
+                      <span className="text-amber-400/70 flex items-center gap-1">
+                        <Lock className="w-2.5 h-2.5" /> Blocked by:
+                      </span>
+                      {blockedByTasks.map(t => (
+                        <span 
+                          key={t!.id} 
+                          className={`px-1.5 py-0.5 rounded text-[9px] ${t!.isCompleted ? 'line-through opacity-40' : ''}`}
+                          style={{ background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.2)', color: '#fde68a' }}
+                        >
+                          {t!.title}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {blocksTasks.length > 0 && (
+                    <div className="mt-1 flex flex-wrap items-center gap-1 text-[10px]">
+                      <span className="text-blue-400/70 flex items-center gap-1">
+                        <ArrowRight className="w-2.5 h-2.5" /> Blocks:
+                      </span>
+                      {blocksTasks.map(t => (
+                        <span 
+                          key={t!.id} 
+                          className={`px-1.5 py-0.5 rounded text-[9px] ${t!.isCompleted ? 'line-through opacity-40' : ''}`}
+                          style={{ background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', color: '#93c5fd' }}
+                        >
+                          {t!.title}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         );
       })}
@@ -654,22 +668,6 @@ function WorkflowView({
 
 export default function ProjectsPage() {
   const { toast } = useToast();
-  const savedColors = useMemo(() => {
-    try {
-      const saved = localStorage.getItem('colorSettings');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return {
-          headerBar: parsed.headerBar || '#160502',
-          mainBackground: parsed.mainBackground || '#3a8bbf',
-          mainBackgroundGradient: parsed.mainBackgroundGradient ?? true,
-          mainBackgroundGradientEnd: parsed.mainBackgroundGradientEnd || '#164a72',
-        };
-      }
-    } catch {}
-    return { headerBar: '#160502', mainBackground: '#3a8bbf', mainBackgroundGradient: true, mainBackgroundGradientEnd: '#164a72' };
-  }, []);
-  const headerBarColor = savedColors.headerBar;
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [expandedProjects, setExpandedProjects] = useState<Set<number>>(new Set());
@@ -800,303 +798,189 @@ export default function ProjectsPage() {
     const completedTasks = tasksWithProjects.filter(t => t.isCompleted);
     const totalTasks = tasksWithProjects.length;
     const completionRate = totalTasks > 0 ? Math.round((completedTasks.length / totalTasks) * 100) : 0;
-    
-    const byPriority = {
-      high: { total: 0, completed: 0 },
-      medium: { total: 0, completed: 0 },
-      low: { total: 0, completed: 0 },
-    };
-    
-    projects.forEach(p => {
-      const tasks = tasksByProject.get(p.id) || [];
-      const priority = (p.priority || 'medium') as keyof typeof byPriority;
-      if (priority in byPriority) {
-        byPriority[priority].total += tasks.length;
-        byPriority[priority].completed += tasks.filter(t => t.isCompleted).length;
-      }
-    });
+    return { totalTasks, completedTasks: completedTasks.length, completionRate, pendingTasks: totalTasks - completedTasks.length };
+  }, [allTasks]);
 
-    return {
-      totalTasks,
-      completedTasks: completedTasks.length,
-      completionRate,
-      pendingTasks: totalTasks - completedTasks.length,
-      byPriority,
-    };
-  }, [allTasks, projects, tasksByProject]);
+  const statItems = [
+    { key: "all", label: "All", count: projectStats.total, color: '#e2e8f0' },
+    { key: "in_progress", label: "Active", count: projectStats.in_progress, color: '#fbbf24' },
+    { key: "planning", label: "Planning", count: projectStats.planning, color: '#60a5fa' },
+    { key: "completed", label: "Done", count: projectStats.completed, color: '#22c55e' },
+    { key: "on_hold", label: "On Hold", count: projectStats.on_hold, color: '#9ca3af' },
+  ];
 
   return (
     <div 
       className="min-h-screen"
       style={{
-        background: savedColors.mainBackgroundGradient 
-          ? `linear-gradient(180deg, ${savedColors.mainBackground} 0%, ${savedColors.mainBackgroundGradientEnd} 100%)`
-          : savedColors.mainBackground,
-        backgroundAttachment: 'fixed',
-        fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif"
+        background: '#0f1219',
+        fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
       }}
     >
-      <header className="border-b border-white/20 sticky top-0 z-10 backdrop-blur-sm" style={{ backgroundColor: savedColors.mainBackgroundGradientEnd }}>
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between gap-4 flex-wrap">
-            <div className="flex items-center gap-4">
+      <header 
+        className="sticky top-0 z-10"
+        style={{ 
+          background: 'linear-gradient(180deg, rgba(15,18,25,0.98) 0%, rgba(15,18,25,0.95) 100%)',
+          backdropFilter: 'blur(12px)',
+          borderBottom: '1px solid rgba(255,255,255,0.06)',
+        }}
+      >
+        <div className="max-w-6xl mx-auto px-5 py-3">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
               <Link href="/">
-                <div 
-                  style={{ 
-                    width: '44px',
-                    height: '44px',
-                    borderRadius: '50%',
-                    background: 'linear-gradient(0deg, #042550 0%, #4578B0 100%)',
-                    padding: '1px',
-                    cursor: 'pointer'
-                  }}
+                <button 
+                  className="h-8 w-8 rounded-lg flex items-center justify-center transition-colors hover:bg-white/10"
+                  style={{ border: '1px solid rgba(255,255,255,0.1)' }}
                   data-testid="button-back-home"
                 >
-                  <Button variant="ghost" size="icon" className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200" style={{ 
-                    background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)',
-                    boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)'
-                  }}>
-                    <ArrowLeft className="w-5 h-5 text-white" />
-                  </Button>
-                </div>
+                  <ArrowLeft className="w-4 h-4 text-white/60" />
+                </button>
               </Link>
               <div>
-                <h1 className="text-base font-bold flex items-center gap-1.5 text-white">
-                  <FolderOpen className="w-3.5 h-3.5" />
+                <h1 className="text-[14px] font-semibold text-white flex items-center gap-1.5">
+                  <FolderOpen className="w-3.5 h-3.5 text-blue-400" />
                   Projects
                 </h1>
-                <p className="text-sm text-white/70">
-                  {projects.length} projects, {allTasks.filter(t => t.projectId).length} tasks assigned
+                <p className="text-[11px] text-white/35 mt-0.5">
+                  {projects.length} project{projects.length !== 1 ? 's' : ''} &middot; {allTasks.filter(t => t.projectId).length} tasks
                 </p>
               </div>
             </div>
             
             <div className="flex items-center gap-2">
-              <div className="flex rounded-md">
-                <Button 
-                  variant={viewMode === "grid" ? "secondary" : "ghost"} 
-                  size="sm"
-                  onClick={() => setViewMode("grid")}
-                  data-testid="button-view-grid"
-                  style={{ 
-                    background: 'linear-gradient(to bottom, #042550, #4578B0)',
-                    boxShadow: '0 0 8px rgba(59, 130, 246, 0.5), 0 0 16px rgba(59, 130, 246, 0.3), inset 0 1px 0 rgba(255,255,255,0.2)'
-                  }}
-                  className="text-white hover:text-white border border-blue-400/50 rounded-md"
-                >
-                  <LayoutGrid className="w-4 h-4" />
-                </Button>
-                <Button 
-                  variant={viewMode === "list" ? "secondary" : "ghost"} 
-                  size="sm"
-                  onClick={() => setViewMode("list")}
-                  data-testid="button-view-list"
-                  className="text-white hover:text-white hover:bg-white/10"
-                >
-                  <LayoutList className="w-4 h-4" />
-                </Button>
-                <Button 
-                  variant={viewMode === "workflow" ? "secondary" : "ghost"} 
-                  size="sm"
-                  onClick={() => setViewMode("workflow")}
-                  data-testid="button-view-workflow"
-                  className="text-white hover:text-white hover:bg-white/10"
-                >
-                  <GitBranch className="w-4 h-4" />
-                </Button>
+              <div className="flex rounded-md overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
+                {[
+                  { mode: "grid" as const, icon: LayoutGrid },
+                  { mode: "list" as const, icon: LayoutList },
+                  { mode: "workflow" as const, icon: GitBranch },
+                ].map(({ mode, icon: Icon }) => (
+                  <button
+                    key={mode}
+                    onClick={() => setViewMode(mode)}
+                    className="h-7 w-8 flex items-center justify-center transition-colors"
+                    style={{ 
+                      background: viewMode === mode ? 'rgba(37,99,235,0.3)' : 'transparent',
+                      color: viewMode === mode ? '#93c5fd' : 'rgba(255,255,255,0.35)',
+                    }}
+                    data-testid={`button-view-${mode}`}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                  </button>
+                ))}
               </div>
               
-              <Button 
-                variant="outline"
+              <button 
                 onClick={() => { setEditingProject(null); setDialogOpen(true); }}
                 data-testid="button-create-project"
-                className="border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 focus:ring-offset-transparent transition-all duration-200"
+                className="h-7 px-3 rounded-md text-[11px] font-medium text-white flex items-center gap-1.5 transition-all hover:brightness-110"
+                style={{ 
+                  background: 'linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%)',
+                  boxShadow: '0 1px 4px rgba(37,99,235,0.3)',
+                }}
               >
-                <Plus className="w-4 h-4 mr-2" />
+                <Plus className="w-3 h-3" />
                 New Project
-              </Button>
+              </button>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-6 mb-6">
-          <div 
-            className={`cursor-pointer hover-elevate rounded-[12px] p-4 text-center ${statusFilter === "all" ? "bg-white/50" : ""}`}
-            onClick={() => setStatusFilter("all")}
-            data-testid="filter-all"
-            style={{ 
-              background: 'rgba(255, 255, 255, 0.35)',
-              border: '1px solid rgba(255, 255, 255, 0.4)',
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)'
-            }}
-          >
-            <div className="text-2xl font-bold text-white" data-testid="stat-total">{projectStats.total}</div>
-            <div className="text-sm text-white/70">All Projects</div>
-          </div>
-          <div 
-            className={`cursor-pointer hover-elevate rounded-[12px] p-4 text-center ${statusFilter === "in_progress" ? "bg-white/50" : ""}`}
-            onClick={() => setStatusFilter("in_progress")}
-            data-testid="filter-in-progress"
-            style={{ 
-              background: 'rgba(255, 255, 255, 0.35)',
-              border: '1px solid rgba(255, 255, 255, 0.4)',
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)'
-            }}
-          >
-            <div className="text-2xl font-bold text-yellow-300" data-testid="stat-in-progress">{projectStats.in_progress}</div>
-            <div className="text-sm text-white/70">In Progress</div>
-          </div>
-          <div 
-            className={`cursor-pointer hover-elevate rounded-[12px] p-4 text-center ${statusFilter === "planning" ? "bg-white/50" : ""}`}
-            onClick={() => setStatusFilter("planning")}
-            data-testid="filter-planning"
-            style={{ 
-              background: 'rgba(255, 255, 255, 0.35)',
-              border: '1px solid rgba(255, 255, 255, 0.4)',
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)'
-            }}
-          >
-            <div className="text-2xl font-bold text-blue-300" data-testid="stat-planning">{projectStats.planning}</div>
-            <div className="text-sm text-white/70">Planning</div>
-          </div>
-          <div 
-            className={`cursor-pointer hover-elevate rounded-[12px] p-4 text-center ${statusFilter === "completed" ? "bg-white/50" : ""}`}
-            onClick={() => setStatusFilter("completed")}
-            data-testid="filter-completed"
-            style={{ 
-              background: 'rgba(255, 255, 255, 0.35)',
-              border: '1px solid rgba(255, 255, 255, 0.4)',
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)'
-            }}
-          >
-            <div className="text-2xl font-bold text-green-300" data-testid="stat-completed">{projectStats.completed}</div>
-            <div className="text-sm text-white/70">Completed</div>
-          </div>
-          <div 
-            className={`cursor-pointer hover-elevate rounded-[12px] p-4 text-center ${statusFilter === "on_hold" ? "bg-white/50" : ""}`}
-            onClick={() => setStatusFilter("on_hold")}
-            data-testid="filter-on-hold"
-            style={{ 
-              background: 'rgba(255, 255, 255, 0.35)',
-              border: '1px solid rgba(255, 255, 255, 0.4)',
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)'
-            }}
-          >
-            <div className="text-2xl font-bold text-gray-300" data-testid="stat-on-hold">{projectStats.on_hold}</div>
-            <div className="text-sm text-white/70">On Hold</div>
-          </div>
+      <main className="max-w-6xl mx-auto px-5 py-5">
+        <div className="flex items-center gap-2 mb-5">
+          {statItems.map(item => (
+            <button
+              key={item.key}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-md text-[11px] font-medium transition-all"
+              onClick={() => setStatusFilter(item.key)}
+              style={{
+                background: statusFilter === item.key ? 'rgba(255,255,255,0.08)' : 'transparent',
+                border: statusFilter === item.key ? '1px solid rgba(255,255,255,0.12)' : '1px solid transparent',
+                color: statusFilter === item.key ? '#fff' : 'rgba(255,255,255,0.4)',
+              }}
+              data-testid={`filter-${item.key.replace('_', '-')}`}
+            >
+              <span className="font-bold" style={{ color: item.color }} data-testid={`stat-${item.key === 'all' ? 'total' : item.key.replace('_', '-')}`}>{item.count}</span>
+              {item.label}
+            </button>
+          ))}
         </div>
 
         {overallProgress.totalTasks > 0 && (
-          <Card className="mb-6">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base flex items-center gap-2">
-                <Target className="w-4 h-4" />
-                Overall Progress
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-primary">{overallProgress.completionRate}%</div>
-                  <div className="text-sm text-muted-foreground">Completion Rate</div>
-                  <Progress value={overallProgress.completionRate} className="h-2 mt-2" />
+          <div 
+            className="mb-5 rounded-lg p-4"
+            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+          >
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-3 flex-1">
+                <div>
+                  <div className="text-[10px] text-white/35 uppercase tracking-wider mb-1">Overall</div>
+                  <div className="text-[18px] font-bold text-white">{overallProgress.completionRate}%</div>
                 </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-green-600">{overallProgress.completedTasks}</div>
-                  <div className="text-sm text-muted-foreground">Completed Tasks</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-orange-600">{overallProgress.pendingTasks}</div>
-                  <div className="text-sm text-muted-foreground">Pending Tasks</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold">{overallProgress.totalTasks}</div>
-                  <div className="text-sm text-muted-foreground">Total Tasks</div>
+                <div className="flex-1">
+                  <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                    <div 
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{ 
+                        width: `${overallProgress.completionRate}%`,
+                        background: overallProgress.completionRate === 100 ? '#22c55e' : 'linear-gradient(90deg, #2563eb, #3b82f6)',
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
-              
-              <div className="grid grid-cols-3 gap-3 mt-4 pt-4 border-t">
+              <div className="flex items-center gap-4 text-[11px]">
                 <div className="text-center">
-                  <div className="flex items-center justify-center gap-1 text-sm font-medium text-red-600">
-                    High Priority
-                  </div>
-                  <div className="text-lg font-bold">
-                    {overallProgress.byPriority.high.completed}/{overallProgress.byPriority.high.total}
-                  </div>
-                  <Progress 
-                    value={overallProgress.byPriority.high.total > 0 
-                      ? (overallProgress.byPriority.high.completed / overallProgress.byPriority.high.total) * 100 
-                      : 0} 
-                    className="h-1.5 mt-1" 
-                  />
+                  <div className="font-bold text-green-400">{overallProgress.completedTasks}</div>
+                  <div className="text-white/30">Done</div>
                 </div>
                 <div className="text-center">
-                  <div className="flex items-center justify-center gap-1 text-sm font-medium text-orange-600">
-                    Medium Priority
-                  </div>
-                  <div className="text-lg font-bold">
-                    {overallProgress.byPriority.medium.completed}/{overallProgress.byPriority.medium.total}
-                  </div>
-                  <Progress 
-                    value={overallProgress.byPriority.medium.total > 0 
-                      ? (overallProgress.byPriority.medium.completed / overallProgress.byPriority.medium.total) * 100 
-                      : 0} 
-                    className="h-1.5 mt-1" 
-                  />
+                  <div className="font-bold text-amber-400">{overallProgress.pendingTasks}</div>
+                  <div className="text-white/30">Pending</div>
                 </div>
                 <div className="text-center">
-                  <div className="flex items-center justify-center gap-1 text-sm font-medium text-green-600">
-                    Low Priority
-                  </div>
-                  <div className="text-lg font-bold">
-                    {overallProgress.byPriority.low.completed}/{overallProgress.byPriority.low.total}
-                  </div>
-                  <Progress 
-                    value={overallProgress.byPriority.low.total > 0 
-                      ? (overallProgress.byPriority.low.completed / overallProgress.byPriority.low.total) * 100 
-                      : 0} 
-                    className="h-1.5 mt-1" 
-                  />
+                  <div className="font-bold text-white/60">{overallProgress.totalTasks}</div>
+                  <div className="text-white/30">Total</div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )}
 
         {projectsLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <div className="flex items-center justify-center py-16">
+            <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-400 border-t-transparent"></div>
           </div>
         ) : filteredProjects.length === 0 ? (
-          <div className="text-center py-12">
-            <FolderOpen className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
-            <h3 className="text-lg font-medium mb-2">
+          <div className="text-center py-16">
+            <FolderOpen className="w-12 h-12 mx-auto text-white/15 mb-4" />
+            <h3 className="text-[14px] font-medium text-white/70 mb-2">
               {statusFilter === "all" ? "No projects yet" : `No ${statusFilter.replace("_", " ")} projects`}
             </h3>
-            <p className="text-muted-foreground mb-4">
+            <p className="text-[12px] text-white mb-4">
               Create a project to organize your tasks and track progress.
             </p>
-            <Button onClick={() => { setEditingProject(null); setDialogOpen(true); }}>
-              <Plus className="w-4 h-4 mr-2" />
+            <button 
+              onClick={() => { setEditingProject(null); setDialogOpen(true); }}
+              className="h-8 px-4 rounded-md text-[12px] font-medium text-white inline-flex items-center gap-1.5 transition-all hover:brightness-110"
+              style={{ 
+                background: 'linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%)',
+                boxShadow: '0 1px 4px rgba(37,99,235,0.3)',
+              }}
+            >
+              <Plus className="w-3.5 h-3.5" />
               Create Your First Project
-            </Button>
+            </button>
           </div>
         ) : viewMode === "workflow" ? (
-          <div className="space-y-6">
-            <div className="flex items-center gap-3 mb-4">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
               <Select 
                 value={selectedProjectId?.toString() || ""} 
                 onValueChange={(v) => setSelectedProjectId(v ? Number(v) : null)}
               >
-                <SelectTrigger className="w-[280px]" data-testid="select-workflow-project">
+                <SelectTrigger className="w-[280px] bg-white/5 border-white/10 text-white text-[11px]" data-testid="select-workflow-project">
                   <SelectValue placeholder="Select a project to view workflow" />
                 </SelectTrigger>
                 <SelectContent>
@@ -1104,7 +988,7 @@ export default function ProjectsPage() {
                     <SelectItem key={p.id} value={p.id.toString()}>
                       <div className="flex items-center gap-2">
                         <div 
-                          className="w-2.5 h-2.5 rounded-full" 
+                          className="w-2 h-2 rounded-full" 
                           style={{ backgroundColor: p.color || "#6366F1" }} 
                         />
                         {p.name}
@@ -1114,9 +998,12 @@ export default function ProjectsPage() {
                 </SelectContent>
               </Select>
               {selectedProjectId && (
-                <Badge className={getStatusColor(projects.find(p => p.id === selectedProjectId)?.status || "planning")}>
+                <span 
+                  className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full"
+                  style={getStatusBadgeStyle(projects.find(p => p.id === selectedProjectId)?.status || "planning")}
+                >
                   {(projects.find(p => p.id === selectedProjectId)?.status || "planning").replace("_", " ")}
-                </Badge>
+                </span>
               )}
             </div>
             
@@ -1127,16 +1014,16 @@ export default function ProjectsPage() {
                 taskLinks={allTaskLinks}
               />
             ) : (
-              <div className="text-center py-12 text-muted-foreground">
-                <GitBranch className="w-16 h-16 mx-auto mb-4 opacity-30" />
-                <p>Select a project above to view its task workflow and dependencies.</p>
+              <div className="text-center py-12">
+                <GitBranch className="w-12 h-12 mx-auto mb-4 text-white/15" />
+                <p className="text-white/40 text-sm">Select a project above to view its task workflow.</p>
               </div>
             )}
           </div>
         ) : (
           <div className={viewMode === "grid" 
-            ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" 
-            : "space-y-8"
+            ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" 
+            : "space-y-3"
           }>
             {filteredProjects.map((project) => (
               <ProjectCard
@@ -1147,8 +1034,7 @@ export default function ProjectsPage() {
                 onDelete={() => handleDeleteProject(project.id)}
                 expanded={expandedProjects.has(project.id)}
                 onToggleExpand={() => toggleProjectExpanded(project.id)}
-                headerBarColor={headerBarColor}
-                onRename={(name) => updateProjectMutation.mutate({ id: project.id, data: { name } })}
+                onRename={(name) => updateProjectMutation.mutate({ id: project.id, data: { ...project, name, description: project.description || "", color: project.color || "#6366F1", status: project.status || "planning", courseName: project.courseName || "", startDate: project.startDate ? format(new Date(project.startDate), "yyyy-MM-dd") : "", targetDate: project.targetDate ? format(new Date(project.targetDate), "yyyy-MM-dd") : "", priority: project.priority || "medium", notes: project.notes || "" } })}
               />
             ))}
           </div>
@@ -1158,10 +1044,7 @@ export default function ProjectsPage() {
       <ProjectDialog
         project={editingProject}
         open={dialogOpen}
-        onOpenChange={(open) => {
-          setDialogOpen(open);
-          if (!open) setEditingProject(null);
-        }}
+        onOpenChange={setDialogOpen}
         onSave={handleSaveProject}
       />
     </div>
