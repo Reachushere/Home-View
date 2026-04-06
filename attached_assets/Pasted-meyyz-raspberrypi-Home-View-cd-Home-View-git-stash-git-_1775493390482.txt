@@ -1,0 +1,56 @@
+meyyz@raspberrypi:~/Home-View $ cd ~/Home-View && git stash && git pull origin main && git stash pop; kill $(lsof -t -i:5000) 2>/dev/null; sleep 1; npm run dev
+Saved working directory and index state WIP on main: 0c4883788 Add a message indicating that the OneDrive folder does not exist yet
+From https://github.com/Reachushere/Home-View
+ * branch                main       -> FETCH_HEAD
+Updating 0c4883788..bd7c378d9
+Fast-forward
+ ...at-home-byhomeyyz-Home-View-node-modules-tslib-tslib-j_1775491505052.txt |   30 +
+ ...yhomeyyz-raspberrypi-Home-View-cd-Home-View-git-pull-o_1775491617847.txt |   32 +
+ ...yhomeyyz-raspberrypi-Home-View-kill-lsof-t-i-5000-2-de_1775491491098.txt |   38 +
+ ...o-that-means-my-git-has-everything-I-need-to-reproduce_1775491400613.txt | 2971 +++++++++++++++++++++++++++++++++++
+ attached_assets/image_1775491663258.png                                     |  Bin 0 -> 36537 bytes
+ attached_assets/image_1775491816694.png                                     |  Bin 0 -> 16430 bytes
+ attached_assets/image_1775491860960.png                                     |  Bin 0 -> 45587 bytes
+ attached_assets/image_1775491895809.png                                     |  Bin 0 -> 32561 bytes
+ attached_assets/image_1775491950298.png                                     |  Bin 0 -> 8137 bytes
+ attached_assets/image_1775492077796.png                                     |  Bin 0 -> 25003 bytes
+ client/src/pages/dashboard.tsx                                              |   36 +-
+ package-lock.json                                                           |   13 +
+ package.json                                                                |    1 +
+ server/routes.ts                                                            |    8 +-
+ 14 files changed, 3112 insertions(+), 17 deletions(-)
+ create mode 100644 attached_assets/Pasted--at-home-byhomeyyz-Home-View-node-modules-tslib-tslib-j_1775491505052.txt
+ create mode 100644 attached_assets/Pasted-byhomeyyz-raspberrypi-Home-View-cd-Home-View-git-pull-o_1775491617847.txt
+ create mode 100644 attached_assets/Pasted-byhomeyyz-raspberrypi-Home-View-kill-lsof-t-i-5000-2-de_1775491491098.txt
+ create mode 100644 attached_assets/Pasted-so-that-means-my-git-has-everything-I-need-to-reproduce_1775491400613.txt
+ create mode 100644 attached_assets/image_1775491663258.png
+ create mode 100644 attached_assets/image_1775491816694.png
+ create mode 100644 attached_assets/image_1775491860960.png
+ create mode 100644 attached_assets/image_1775491895809.png
+ create mode 100644 attached_assets/image_1775491950298.png
+ create mode 100644 attached_assets/image_1775492077796.png
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        new file:   .env
+        new file:   .google_tokens.json
+        new file:   .onedrive_tokens.json
+        new file:   unical_db_backup.sql
+
+Dropped refs/stash@{0} (e94da25a752b85e549ecdf8580083f556d08a515)
+npm warn Unknown builtin config "globalignorefile". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+[TTS] Rate limit active until 2026-05-01T00:00:00.000Z — using Edge TTS
+[Raw Story] Monitor DISABLED in development (only runs in production)
+[Email Router] Unified email intake ready at POST /api/webhook/email
+[Gmail Ticker] Webhook endpoint ready at POST /api/webhook/ticker
+=== [Alexa Scheduler] Started (checking every 30 seconds) ===
+12:36:25 PM [express] serving on port 5000
+=== [Reminder] Starting reminder scheduler (checking every 60 seconds) ===
+[Reminder] Loaded 1092 sent reminder keys from database
+[Startup] Auto-synced 125 CRCU shifts
