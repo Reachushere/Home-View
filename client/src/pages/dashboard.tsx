@@ -28285,7 +28285,7 @@ export default function Dashboard() {
                           const barHPx = needsPulse ? 4 : barH;
                           const yOff = idx * barGap;
                           return (
-                            <div key={`cbar-main-${t.id}`} className="countdown-bar-wrapper" style={{ position: 'absolute', left: '-5px', right: 0, top: `${yOff}px`, height: `${barGap}px`, pointerEvents: 'auto', cursor: 'default', overflow: 'visible' }} onDoubleClick={() => setEditingTask(t as any)} data-testid={`countdown-bar-${t.id}`}>
+                            <div key={`cbar-main-${t.id}`} className="countdown-bar-wrapper" style={{ position: 'absolute', left: '0px', right: 0, top: `${yOff}px`, height: `${barGap}px`, pointerEvents: 'auto', cursor: 'default', overflow: 'visible' }} onDoubleClick={() => setEditingTask(t as any)} data-testid={`countdown-bar-${t.id}`}>
                               <div style={{ position: 'absolute', left: '0px', top: '2px', right: 0, height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
                                 <div style={{ width: '10px', minWidth: '10px', height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
                                 <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>

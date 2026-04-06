@@ -1,0 +1,76 @@
+byhomeyyz@raspberrypi:~/Home-View $ kill $(lsof -t -i:5000) 2>/dev/null; sleep 1; npm run dev
+npm warn Unknown builtin config "globalignorefile". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+[TTS] Rate limit active until 2026-05-01T00:00:00.000Z — using Edge TTS
+[Raw Story] Monitor DISABLED in development (only runs in production)
+[Email Router] Unified email intake ready at POST /api/webhook/email
+[Gmail Ticker] Webhook endpoint ready at POST /api/webhook/ticker
+=== [Alexa Scheduler] Started (checking every 30 seconds) ===
+Error fetching events from third account calendar: Error: Google OAuth credentials not configured for third account
+    at getOAuth2Client (/home/byhomeyyz/Home-View/server/thirdGoogleAccount.ts:15:11)
+    at getValidAccessToken (/home/byhomeyyz/Home-View/server/thirdGoogleAccount.ts:74:24)
+    at getThirdAccountCalendarClient (/home/byhomeyyz/Home-View/server/thirdGoogleAccount.ts:104:29)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async getEventsFromThirdAccountCalendar (/home/byhomeyyz/Home-View/server/thirdGoogleAccount.ts:160:22)
+    at async <anonymous> (/home/byhomeyyz/Home-View/server/routes.ts:18054:24)
+[Startup] Auto-synced 0 CRCU shifts
+11:56:17 AM [express] serving on port 5000
+=== [Reminder] Starting reminder scheduler (checking every 60 seconds) ===
+[Reminder] Loaded 1092 sent reminder keys from database
+11:56:19 AM [express] GET /api/health 200 in 12ms :: {"status":"ok","uptime":2,"ha":{"connected":true,"lastSuccessAt":null,"lastFailureAt":null,"consecutiveFailures":0,"totalChecks":0,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-06T15:56:19.333Z"}
+[Startup] Duplicate cleanup error: column "task_type" does not exist
+[HA Health] ✗ Connection LOST: HTTP 401
+[HA Health] Initial check: disconnected
+11:56:28 AM [express] GET /api/weather-alerts 200 in 195ms :: {"alerts":[],"count":0,"hasAlerts":false,"timestamp":"2026-04-06T15:56:28.771Z"}
+Error listing OneDrive items: GraphError: The resource could not be found.
+    at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+    at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+    at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+    at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+    at Object.next (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+    at /home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:170:75
+    at new Promise (<anonymous>)
+    at Object.__awaiter (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:166:16)
+    at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+    at GraphRequest.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphRequest.ts:391:55) {
+  statusCode: 404,
+  code: 'itemNotFound',
+  requestId: '512e1fa3-2a54-486f-a436-205f442901b8',
+  date: 2026-04-06T19:56:29.000Z,
+  body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-06T15:56:29","request-id":"512e1fa3-2a54-486f-a436-205f442901b8","client-request-id":"8b70297a-2b96-9082-22b8-f7a9a2a7b1a6"}}',
+  headers: Headers {
+    'cache-control': 'no-store, no-cache, max-age=0, private',
+    'transfer-encoding': 'chunked',
+    'content-type': 'application/json',
+    'content-encoding': 'gzip',
+    vary: 'Accept-Encoding',
+    'strict-transport-security': 'max-age=31536000',
+    'request-id': '512e1fa3-2a54-486f-a436-205f442901b8',
+    'client-request-id': '8b70297a-2b96-9082-22b8-f7a9a2a7b1a6',
+    'x-ms-ags-diagnostic': '{"ServerInfo":{"DataCenter":"North Central US","Slice":"E","Ring":"4","ScaleUnit":"004","RoleInstance":"CH01EPF0006B779"}}',
+    splogid: 'f55a07a2-f054-c000-725b-97eff28240f2',
+    date: 'Mon, 06 Apr 2026 15:56:29 GMT'
+  }
+}
+11:56:29 AM [express] POST /api/files/monitor-sync 200 in 1649ms :: {"success":true,"message":"OneDrive Spring_Summer folder not found yet","synced":[]}
+11:56:30 AM [express] GET /api/kitchen/status 200 in 4ms :: {"isPlaying":false,"progress":null}
+11:56:30 AM [express] GET /api/health 200 in 1ms :: {"status":"ok","uptime":13,"ha":{"connected":false,"lastSuccessAt":null,"lastFailureAt":"2026-04-06T15:56:27.574Z","consecutiveFailures":1,"totalChecks":1,"totalFailures":1,"lastError":"HTTP 401","downSince":"2026-04-06T15:56:27.574Z","commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-06T15:56:30.274Z"}
+11:56:30 AM [express] GET /api/partner-status 500 in 1ms :: {"error":"Home Assistant not configured"}
+11:56:30 AM [express] GET /api/version 200 in 1ms :: {"version":"1775490977179"}
+11:56:30 AM [express] GET /api/health 200 in 1ms :: {"status":"ok","uptime":14,"ha":{"connected":false,"lastSuccessAt":null,"lastFailureAt":"2026-04-06T15:56:27.574Z","consecutiveFailures":1,"totalChecks":1,"totalFailures":1,"lastError":"HTTP 401","downSince":"2026-04-06T15:56:27.574Z","commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-06T15:56:30.833Z"}
+11:56:30 AM [express] GET /api/files/recently-prepared 304 in 2ms :: {"files":[]}
+11:56:30 AM [express] GET /api/version 304 in 1ms :: {"version":"1775490977179"}
+11:56:30 AM [express] GET /api/health 200 in 1ms :: {"status":"ok","uptime":14,"ha":{"connected":false,"lastSuccessAt":null,"lastFailureAt":"2026-04-06T15:56:27.574Z","consecutiveFailures":1,"totalChecks":1,"totalFailures":1,"lastError":"HTTP 401","downSince":"2026-04-06T15:56:27.574Z","commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-06T15:56:30.852Z"}
+11:56:31 AM [express] GET /api/version 200 in 2ms :: {"version":"1775490977179"}
+11:56:31 AM [express] GET /api/health 200 in 1ms :: {"status":"ok","uptime":14,"ha":{"connected":false,"lastSuccessAt":null,"lastFailureAt":"2026-04-06T15:56:27.574Z","consecutiveFailures":1,"totalChecks":1,"totalFailures":1,"lastError":"HTTP 401","downSince":"2026-04-06T15:56:27.574Z","commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-06T15:56:31.420Z"}
+11:56:31 AM [express] GET /api/files/recently-prepared 200 in 1ms :: {"files":[]}
+11:56:31 AM [express] GET /api/weather-alerts 200 in 1ms :: {"alerts":[],"count":0,"hasAlerts":false,"timestamp":"2026-04-06T15:56:28.771Z"}
+11:56:31 AM [express] GET /api/partner-status 500 in 1ms :: {"error":"Home Assistant not configured"}
+11:56:31 AM [express] GET /api/kitchen/status 200 in 2ms :: {"isPlaying":false,"progress":null}
+[AudioPrep] One-time: clearing 1 pre-generated audio caches (voice migration to echo+slowPace)
+[AudioPrep] One-time: clearing 2 cached extracted texts (citation cleanup improvement)
+[BABEL] Note: The code generator has deoptimised the styling of /home/byhomeyyz/Home-View/client/src/pages/dashboard.tsx as it exceeds the max of 500KB.
+Error recording weather: TypeError: fetch failed
