@@ -876,6 +876,24 @@ function PartnerShiftWizard({ partnerWizardStep, setPartnerWizardStep, partnerWi
     </div>
   );
 }
+function WeatherMonthGroup({ monthStr, children, defaultOpen }: { monthStr: string; children: React.ReactNode; defaultOpen: boolean }) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  return (
+    <div className="mb-2">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center gap-2 text-white font-semibold text-[13px] py-[6px] px-2 rounded hover:bg-white/10 transition-colors"
+        style={{ borderBottom: '1px solid rgba(255,255,255,0.25)' }}
+        data-testid={`weather-month-toggle-${monthStr}`}
+      >
+        <span style={{ transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.15s', display: 'inline-block', fontSize: '11px' }}>&#9654;</span>
+        <span>{monthStr}</span>
+      </button>
+      {isOpen && <div className="mt-1">{children}</div>}
+    </div>
+  );
+}
+
 function WeatherDateGroup({ dateStr, records, defaultOpen }: { dateStr: string; records: any[]; defaultOpen: boolean }) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const sorted = records.sort((a: any, b: any) => new Date(b.recordedAt).getTime() - new Date(a.recordedAt).getTime());
@@ -22134,13 +22152,34 @@ export default function Dashboard() {
                           <span className="w-[55px] shrink-0">Humidity</span>
                           <span className="w-[50px] shrink-0">Precip</span>
                         </div>
-                        {Object.entries(grouped).map(([dateStr, records]) => {
-                          const firstRecordDate = new Date(records[0].recordedAt);
-                          const isRecent = firstRecordDate >= oneWeekAgo;
-                          return (
-                            <WeatherDateGroup key={dateStr} dateStr={dateStr} records={records} defaultOpen={isRecent} />
-                          );
-                        })}
+                        {(() => {
+                          const now = new Date();
+                          const currentMonthKey = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'America/Toronto' });
+                          const monthGroups: Record<string, { dateStr: string; records: any[] }[]> = {};
+                          Object.entries(grouped).forEach(([dateStr, records]) => {
+                            const d = new Date(records[0].recordedAt);
+                            const monthKey = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'America/Toronto' });
+                            if (!monthGroups[monthKey]) monthGroups[monthKey] = [];
+                            monthGroups[monthKey].push({ dateStr, records });
+                          });
+                          return Object.entries(monthGroups).map(([monthKey, days]) => {
+                            const isCurrentMonth = monthKey === currentMonthKey;
+                            if (isCurrentMonth) {
+                              return days.map(({ dateStr, records }) => {
+                                const firstRecordDate = new Date(records[0].recordedAt);
+                                const isRecent = firstRecordDate >= oneWeekAgo;
+                                return <WeatherDateGroup key={dateStr} dateStr={dateStr} records={records} defaultOpen={isRecent} />;
+                              });
+                            }
+                            return (
+                              <WeatherMonthGroup key={monthKey} monthStr={monthKey} defaultOpen={false}>
+                                {days.map(({ dateStr, records }) => (
+                                  <WeatherDateGroup key={dateStr} dateStr={dateStr} records={records} defaultOpen={false} />
+                                ))}
+                              </WeatherMonthGroup>
+                            );
+                          });
+                        })()}
                       </>
                     );
                   })()}
