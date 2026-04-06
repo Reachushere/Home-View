@@ -27459,13 +27459,7 @@ export default function Dashboard() {
                               return dayIdx >= cd.startDay && dayIdx <= cd.endDay;
                             });
                             if (matchingBars.length === 0) return null;
-                            const cellTasksList = getTasksForHour(day, hour);
-                            const cellContinuing = getContinuingTasksForHour(day, hour);
-                            const cellEventsList = getCalendarEventsForHour(day, hour);
-                            const cellHasTasks = cellTasksList.length > 0 || cellContinuing.length > 0 || cellEventsList.length > 0;
                             return matchingBars.map(cd => {
-                              const isOwnTaskCell = !cd.beyond && dayIdx === cd.tDueDayIdx;
-                              if (cellHasTasks && !isOwnTaskCell && dayIdx !== cd.startDay) return null;
                               const t = cd.task;
                               const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
                               const isTaskCell = !cd.beyond && dayIdx === cd.tDueDayIdx;
@@ -27477,7 +27471,7 @@ export default function Dashboard() {
                               const needsElbow = cd.lane > 0 && dayIdx === cd.endDay;
                               const elbowDropPx = cd.lane * barGap;
                               return (
-                                <div key={`cbar-main-${t.id}`} style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, pointerEvents: 'none', zIndex: 4 + cd.lane }}>
+                                <div key={`cbar-main-${t.id}`} style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, pointerEvents: 'none', zIndex: 2 }}>
                                   {needsElbow && (
                                     <div style={{ position: 'absolute', right: 0, top: `${2}px`, width: barH, height: elbowDropPx, background: barColor, opacity: 0.85 }} />
                                   )}
