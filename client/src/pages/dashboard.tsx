@@ -27005,7 +27005,7 @@ export default function Dashboard() {
                           );
                         })()}
                         
-                        <div className={`flex flex-col gap-0.5${cellHasScroll ? ' course-cell-scroll' : ''}`} style={{ overflowY: cellHasScroll ? 'auto' : 'hidden', overflowX: 'hidden', flex: 1, minHeight: 0, ...(isDayToday ? { paddingTop: '15px' } : {}) }}>
+                        <div className={`flex flex-col gap-0.5${cellHasScroll ? ' course-cell-scroll' : ''}`} style={{ overflowY: cellHasScroll ? 'auto' : 'hidden', overflowX: 'hidden', flex: 1, minHeight: 0, ...(isDayToday ? { paddingTop: '18px' } : {}) }}>
                         {/* Course-associated projects */}
                         {allProjects.filter(proj => {
                           if (!proj.courseName) return false;
