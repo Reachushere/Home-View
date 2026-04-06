@@ -27497,8 +27497,8 @@ export default function Dashboard() {
                                   >
                                     {isEndCell && (
                                       <div style={{ position: 'absolute', left: '1px', top: `${barH + 1}px`, display: 'flex', alignItems: 'center', gap: '3px', whiteSpace: 'nowrap', lineHeight: 1 }}>
-                                        <span style={{ fontSize: '11px', fontWeight: 800, color: barColor, textShadow: '0 0 3px rgba(255,255,255,0.9)' }}>{cd.daysLeft}d</span>
-                                        <span style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(0,0,0,0.55)', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100px' }}>{labelText}</span>
+                                        <span style={{ fontSize: '10px', fontWeight: 600, color: barColor, textShadow: '0 0 3px rgba(255,255,255,0.9)' }}>{cd.daysLeft}d</span>
+                                        <span style={{ fontSize: '9px', fontWeight: 500, color: 'rgba(0,0,0,0.55)', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100px' }}>{labelText}</span>
                                       </div>
                                     )}
                                   </div>
