@@ -11271,20 +11271,6 @@ export default function Dashboard() {
   const countdownOverlayRef = useRef<HTMLDivElement>(null);
   const calendarContentRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const updateCountdownPosition = () => {
-      const el = countdownOverlayRef.current;
-      const sc = calendarScrollRef.current;
-      if (el && sc) {
-        const vh = sc.clientHeight;
-        const st = sc.scrollTop;
-        const barsH = parseInt(el.dataset.barsHeight || '100');
-        el.style.top = `${st + Math.max(10, Math.round(vh / 2 - barsH / 2))}px`;
-      }
-    };
-    const id = requestAnimationFrame(updateCountdownPosition);
-    return () => cancelAnimationFrame(id);
-  });
   
   // Auto-scroll to current time by default
   useEffect(() => {
@@ -18298,20 +18284,20 @@ export default function Dashboard() {
           const daysUntil = task.dueDate ? differenceInCalendarDays(startOfDayET(new Date(task.dueDate)), startOfDayET(new Date())) : 0;
           return (
             <div key={task.id} draggable onDragStart={(e) => { e.dataTransfer.setData('text/plain', String(task.id)); e.dataTransfer.effectAllowed = 'move'; (e.currentTarget as HTMLElement).style.opacity = '0.5'; }} onDragEnd={(e) => { (e.currentTarget as HTMLElement).style.opacity = task.isCompleted ? '0.45' : '1'; }} style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', padding: '6px 10px', borderRadius: '8px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.18)', borderLeft: `3px solid ${courseColor}`, opacity: task.isCompleted ? 0.45 : 1, transition: 'opacity 0.2s ease, transform 0.15s ease', flex: '1 1 auto', minWidth: '200px', maxWidth: '100%', cursor: 'grab' }} data-testid={`day-detail-task-${task.id}`}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', paddingTop: '4px', flexShrink: 0 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, alignSelf: 'stretch' }}>
                 <GripVertical style={{ width: '14px', height: '14px', color: 'rgba(255,255,255,0.35)', cursor: 'grab' } as any} />
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', paddingTop: '2px', flexShrink: 0 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, alignSelf: 'stretch' }}>
                 <input type="checkbox" checked={!!task.isCompleted} onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })} style={{ width: '16px', height: '16px', accentColor: courseColor, cursor: 'pointer' }} data-testid={`day-detail-check-${task.id}`} />
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
-                  <div style={{ width: '18px', height: '18px', borderRadius: '4px', background: `${courseColor}33`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><TaskTypeIcon style={{ width: '12px', height: '12px', color: courseColor } as any} /></div>
+                  <TaskTypeIcon style={{ width: '14px', height: '14px', color: '#ffffff', flexShrink: 0 } as any} />
                   <span style={{ fontSize: '13px', fontWeight: 600, color: '#ffffff', textDecoration: task.isCompleted ? 'line-through' : 'none', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid={`day-detail-title-${task.id}`}>{(() => { let t = (task.title || '').replace(/^\[.*?\]\s*/g, '').trim(); const cn = effectiveCourseName; if (cn) { const full = cn.replace(/[\[\]]/g, '').trim(); const cc = cn.split(' - ')[0]?.trim() || ''; const ccAlpha = cc.replace(/[0-9]/g, '').trim(); const longName = cn.split(' - ').slice(1).join(' - ').trim(); const prefixes = [full, cc, ccAlpha].filter(Boolean).sort((a, b) => b.length - a.length); for (const pfx of prefixes) { if (pfx && t.toUpperCase().startsWith(pfx.toUpperCase())) { let rest = t.slice(pfx.length).replace(/^\s*[-:]\s*/, '').trim(); if (longName && rest.toUpperCase().startsWith(longName.toUpperCase())) { rest = rest.slice(longName.length).replace(/^\s*[-:]\s*/, '').trim(); } if (rest) { t = rest; break; } } } } return t || task.title; })()}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginBottom: '4px' }}>
                   {effectiveCourseName && (
-                    <span style={{ fontSize: '10px', fontWeight: 600, color: '#ffffff', background: `${courseColor}33`, padding: '1px 6px', borderRadius: '4px', lineHeight: '16px' }} data-testid={`day-detail-course-${task.id}`}>{effectiveCourseName.split(' - ')[0]}{courseFullName ? ` - ${courseFullName}` : ''}</span>
+                    <span style={{ fontSize: '10px', fontWeight: 600, color: '#ffffff', background: courseColor, padding: '1px 6px', borderRadius: '4px', lineHeight: '16px' }} data-testid={`day-detail-course-${task.id}`}>{effectiveCourseName.split(' - ')[0]}{courseFullName ? ` - ${courseFullName}` : ''}</span>
                   )}
                   <span style={{ fontSize: '9px', fontWeight: 600, color: pColor, background: `${pColor}22`, padding: '1px 5px', borderRadius: '3px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{task.priority}</span>
                 </div>
@@ -27841,81 +27827,13 @@ export default function Dashboard() {
             </div>)}
               
                           {/* Time Slots - Scrollable area */}
-            <div ref={calendarScrollRef} className="flex-1 overflow-y-auto relative" style={{ borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', scrollbarWidth: 'none' }} onScroll={(e) => {
+            <div style={{ position: 'relative', flex: '1 1 0%', overflow: 'hidden', borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px' }}>
+            <div ref={calendarScrollRef} className="overflow-y-auto" style={{ height: '100%', scrollbarWidth: 'none' }} onScroll={(e) => {
               const st = (e.target as HTMLDivElement).scrollTop;
               calScrollTopRef.current = st;
-              const el = countdownOverlayRef.current;
-              if (el) {
-                const vh = calendarScrollRef.current?.clientHeight || 400;
-                const barsH = parseInt(el.dataset.barsHeight || '100');
-                el.style.top = `${st + Math.max(10, Math.round(vh / 2 - barsH / 2))}px`;
-              }
             }}>
+
               <div style={{ backgroundColor: '#faf8f5', borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', position: 'relative' }}>
-              {/* Countdown bars overlay - sticky, outside content div */}
-              {(() => {
-                const twoWeeksOut = new Date(stableToday.getTime() + 14 * 24 * 60 * 60 * 1000);
-                const allCountdown = (allTasks || []).filter(t => {
-                  if (t.showCountdownBar === false || t.showCountdownBarMain === false || t.isCompleted) return false;
-                  const tDue = startOfDayET(new Date(t.dueDate));
-                  if (tDue <= stableToday || tDue > twoWeeksOut) return false;
-                  return true;
-                }).map(t => {
-                  const tDue = startOfDayET(new Date(t.dueDate));
-                  const daysLeft = Math.max(0, Math.round((tDue.getTime() - stableToday.getTime()) / (1000*60*60*24)));
-                  return { task: t, tDue, daysLeft };
-                }).sort((a, b) => a.tDue.getTime() - b.tDue.getTime() || (a.task.title || '').localeCompare(b.task.title || ''));
-                const seenNames = new Map<string, number>();
-                const deduped = allCountdown.filter(cd => {
-                  const name = (cd.task.title || '').trim().toLowerCase();
-                  if (!name) return true;
-                  if (seenNames.has(name)) return false;
-                  seenNames.set(name, 1);
-                  return true;
-                });
-                if (deduped.length === 0) return null;
-                const todayDow = stableToday.getDay();
-                const dws = gridSizes.dayColumnWidths;
-                const totalFr = dws.reduce((s: number, v: number) => s + v, 0);
-                const fixedPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
-                let frBefore = 0;
-                for (let i = 0; i <= todayDow && i < dws.length; i++) frBefore += dws[i];
-                let frSpan = 0;
-                for (let i = todayDow + 1; i <= Math.min(todayDow + 2, dws.length - 1); i++) frSpan += dws[i];
-                if (frSpan === 0) return null;
-                const leftFrac = frBefore / totalFr;
-                const widthFrac = frSpan / totalFr;
-                const barH = 3;
-                const barGap = 14;
-                const totalBarsHeight = deduped.length * barGap;
-                return (
-                  <div ref={countdownOverlayRef} data-bars-height={String(totalBarsHeight)} style={{ position: 'absolute', top: `${(calScrollTopRef.current || 0) + Math.max(10, Math.round(((calendarScrollRef.current?.clientHeight || 400) / 2) - (totalBarsHeight / 2)))}px`, left: `${fixedPx}px`, right: 0, zIndex: 2, pointerEvents: 'none', overflow: 'visible', height: 0 }} data-testid="countdown-bars-overlay">
-                      <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, top: 0, overflow: 'visible' }}>
-                        {deduped.map((cd, idx) => {
-                          const t = cd.task;
-                          const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
-                          const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
-                          const needsPulse = isNotStarted && cd.daysLeft <= 2 && !t.isCompleted;
-                          const labelText = (t.title || '').replace(/[\[\]]/g, '').replace(/^\s+/, '');
-                          const barHPx = needsPulse ? 4 : barH;
-                          const yOff = idx * barGap;
-                          return (
-                            <div key={`cbar-main-${t.id}`} className="countdown-bar-wrapper" style={{ position: 'absolute', left: 0, right: 0, top: `${yOff}px`, height: `${barGap}px`, pointerEvents: 'auto', cursor: 'default', overflow: 'hidden' }} onDoubleClick={() => setEditingTask(t as any)} data-testid={`countdown-bar-${t.id}`}>
-                              <div style={{ position: 'absolute', left: '0px', top: '2px', right: 0, height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
-                                <div style={{ width: '10px', minWidth: '10px', height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
-                                <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
-                                  <span style={{ fontSize: '9px', fontWeight: 500, color: barColor, letterSpacing: '-0.2px', lineHeight: '10px' }}>{cd.daysLeft}d</span>
-                                </div>
-                                <span style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(0,0,0,0.85)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flexShrink: 1, minWidth: 0, paddingLeft: '1px', paddingRight: '3px', lineHeight: '10px' }}>{labelText}</span>
-                                <div className={needsPulse ? 'countdown-bar-pulse' : ''} style={{ flex: 1, height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '0 2px 2px 0', minWidth: '4px', boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined }} />
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  );
-                })()}
                 {timeSlots.map((hour, hourIdx) => {
                   const currentHour = new Date().getHours();
                   const isCurrentHour = hour === currentHour;
@@ -28655,6 +28573,71 @@ export default function Dashboard() {
                 
             </div>
           </div>
+          </div>
+          {/* Countdown bars overlay — always visible, floats over scroll area */}
+          {(() => {
+            const twoWeeksOut = new Date(stableToday.getTime() + 14 * 24 * 60 * 60 * 1000);
+            const allCountdown = (allTasks || []).filter(t => {
+              if (t.showCountdownBar === false || t.showCountdownBarMain === false || t.isCompleted) return false;
+              const tDue = startOfDayET(new Date(t.dueDate));
+              if (tDue <= stableToday || tDue > twoWeeksOut) return false;
+              return true;
+            }).map(t => {
+              const tDue = startOfDayET(new Date(t.dueDate));
+              const daysLeft = Math.max(0, Math.round((tDue.getTime() - stableToday.getTime()) / (1000*60*60*24)));
+              return { task: t, tDue, daysLeft };
+            }).sort((a, b) => a.tDue.getTime() - b.tDue.getTime() || (a.task.title || '').localeCompare(b.task.title || ''));
+            const seenNames = new Map<string, number>();
+            const deduped = allCountdown.filter(cd => {
+              const name = (cd.task.title || '').trim().toLowerCase();
+              if (!name) return true;
+              if (seenNames.has(name)) return false;
+              seenNames.set(name, 1);
+              return true;
+            });
+            if (deduped.length === 0) return null;
+            const todayDow = stableToday.getDay();
+            const dws = gridSizes.dayColumnWidths;
+            const totalFr = dws.reduce((s: number, v: number) => s + v, 0);
+            const fixedPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
+            let frBefore = 0;
+            for (let i = 0; i <= todayDow && i < dws.length; i++) frBefore += dws[i];
+            let frSpan = 0;
+            for (let i = todayDow + 1; i <= Math.min(todayDow + 2, dws.length - 1); i++) frSpan += dws[i];
+            if (frSpan === 0) return null;
+            const leftFrac = frBefore / totalFr;
+            const widthFrac = frSpan / totalFr;
+            const barH = 3;
+            const barGap = 14;
+            const totalBarsHeight = deduped.length * barGap;
+            return (
+              <div ref={countdownOverlayRef} data-bars-height={String(totalBarsHeight)} style={{ position: 'absolute', top: '50%', transform: `translateY(-${Math.round(totalBarsHeight / 2)}px)`, left: `${fixedPx}px`, right: 0, zIndex: 5, pointerEvents: 'none', overflow: 'visible', height: 0 }} data-testid="countdown-bars-overlay">
+                <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, top: 0, overflow: 'visible' }}>
+                  {deduped.map((cd, idx) => {
+                    const t = cd.task;
+                    const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
+                    const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
+                    const needsPulse = isNotStarted && cd.daysLeft <= 2 && !t.isCompleted;
+                    const labelText = (t.title || '').replace(/[\[\]]/g, '').replace(/^\s+/, '');
+                    const barHPx = needsPulse ? 4 : barH;
+                    const yOff = idx * barGap;
+                    return (
+                      <div key={`cbar-main-${t.id}`} className="countdown-bar-wrapper" style={{ position: 'absolute', left: 0, right: 0, top: `${yOff}px`, height: `${barGap}px`, pointerEvents: 'auto', cursor: 'default', overflow: 'hidden' }} onDoubleClick={() => setEditingTask(t as any)} data-testid={`countdown-bar-${t.id}`}>
+                        <div style={{ position: 'absolute', left: '0px', top: '2px', right: 0, height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
+                          <div style={{ width: '10px', minWidth: '10px', height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
+                          <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
+                            <span style={{ fontSize: '9px', fontWeight: 500, color: barColor, letterSpacing: '-0.2px', lineHeight: '10px' }}>{cd.daysLeft}d</span>
+                          </div>
+                          <span style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(0,0,0,0.85)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flexShrink: 1, minWidth: 0, paddingLeft: '1px', paddingRight: '3px', lineHeight: '10px' }}>{labelText}</span>
+                          <div className={needsPulse ? 'countdown-bar-pulse' : ''} style={{ flex: 1, height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '0 2px 2px 0', minWidth: '4px', boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })()}
           </div>
           </div>
           <div
@@ -30744,7 +30727,7 @@ export default function Dashboard() {
                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, borderRadius: '6px', overflow: 'hidden', gap: '2px' }}>
                       {[
                         { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `play-module-${pd.courseCode.toLowerCase()}`, testUpload: `upload-module-${pd.courseCode.toLowerCase()}`, bg: pd.progressStartColor || getCourseGradientColors(pd.courseCode).start, dark: true, fontOverride: pd.courseFontColor || '#fff' },
-                        { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, bg: pd.progressStartColor || getCourseGradientColors(pd.courseCode).start, dark: true, fontOverride: pd.courseFontColor || '#fff' },
+                        { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, bg: pd.progressEndColor || getCourseGradientColors(pd.courseCode).end, dark: true, fontOverride: pd.courseFontColor || '#fff' },
                       ].map(item => {
                         const circleSize = 34;
                         const strokeWidth = 3;
@@ -31016,7 +30999,7 @@ export default function Dashboard() {
                                   <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title; })() : task.title.replace(/[\[\]]/g, '')}</span>
                                 </button>
                                 <div className="text-[9px]" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '0px', whiteSpace: 'nowrap' }}>
-                                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', color: '#ffffff', background: `${getCourseColor(task.courseName || '')}33`, padding: '0px 4px', borderRadius: '3px', lineHeight: '14px' }}>{courseName.replace(/\[|\]/g, '')}</span>
+                                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', color: getCourseColor(task.courseName || ''), background: 'rgba(255,255,255,0.25)', padding: '0px 4px', borderRadius: '3px', lineHeight: '14px' }}>{courseName.replace(/\[|\]/g, '')}</span>
                                 </div>
                               </div>
                               {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (task.type === 'module' || task.type === 'reading') && (
@@ -31205,7 +31188,7 @@ export default function Dashboard() {
                                               <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title; })() : task.title.replace(/[\[\]]/g, '')}</span>
                                             </button>
                                             <div className="text-[9px]" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '2px', whiteSpace: 'nowrap' }}>
-                                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', color: '#ffffff', background: `${getCourseColor(task.courseName || '')}33`, padding: '0px 4px', borderRadius: '3px', lineHeight: '14px' }}>{courseName.replace(/\[|\]/g, '')}</span>
+                                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', color: getCourseColor(task.courseName || ''), background: 'rgba(255,255,255,0.25)', padding: '0px 4px', borderRadius: '3px', lineHeight: '14px' }}>{courseName.replace(/\[|\]/g, '')}</span>
                                             </div>
                                           </div>
                                           {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (task.type === 'module' || task.type === 'reading') && (
@@ -31385,7 +31368,7 @@ export default function Dashboard() {
                                               <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title; })() : task.title.replace(/[\[\]]/g, '')}</span>
                                             </button>
                                             <div className="text-[9px]" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '4px', whiteSpace: 'nowrap', overflow: 'hidden' }}>
-                                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', color: '#ffffff', background: `${getCourseColor(task.courseName || '')}33`, padding: '0px 4px', borderRadius: '3px', lineHeight: '14px' }}>{courseName.replace(/\[|\]/g, '')}</span>
+                                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', color: getCourseColor(task.courseName || ''), background: 'rgba(255,255,255,0.25)', padding: '0px 4px', borderRadius: '3px', lineHeight: '14px' }}>{courseName.replace(/\[|\]/g, '')}</span>
                                             </div>
                                           </div>
                                           {cfp && (cfp.moduleP.hasFiles || cfp.readingP.hasFiles) && (task.type === 'module' || task.type === 'reading') && (
@@ -31583,7 +31566,7 @@ export default function Dashboard() {
                                               <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title; })() : task.title.replace(/[\[\]]/g, '')}</span>
                                             </button>
                                             <div className="text-[9px]" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '4px', whiteSpace: 'nowrap', overflow: 'hidden' }}>
-                                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', color: '#ffffff', background: `${getCourseColor(task.courseName || '')}33`, padding: '0px 4px', borderRadius: '3px', lineHeight: '14px' }}>{(task.courseName?.split(' - ').slice(1).join(' - ') || task.courseName?.split(' - ')[0] || '').replace(/\[|\]/g, '')}</span>
+                                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', color: getCourseColor(task.courseName || ''), background: 'rgba(255,255,255,0.25)', padding: '0px 4px', borderRadius: '3px', lineHeight: '14px' }}>{(task.courseName?.split(' - ').slice(1).join(' - ') || task.courseName?.split(' - ')[0] || '').replace(/\[|\]/g, '')}</span>
                                             </div>
                                           </div>
                                         </div>
@@ -31818,7 +31801,7 @@ export default function Dashboard() {
                                               <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title; })() : task.title.replace(/[\[\]]/g, '')}</span>
                                             </button>
                                             <div className="text-[9px]" style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: '1.2', paddingTop: '4px', whiteSpace: 'nowrap', overflow: 'hidden' }}>
-                                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', color: '#ffffff', background: `${getCourseColor(task.courseName || '')}33`, padding: '0px 4px', borderRadius: '3px', lineHeight: '14px' }}>{courseName.replace(/\[|\]/g, '')}</span>
+                                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', color: getCourseColor(task.courseName || ''), background: 'rgba(255,255,255,0.25)', padding: '0px 4px', borderRadius: '3px', lineHeight: '14px' }}>{courseName.replace(/\[|\]/g, '')}</span>
                                             </div>
                                           </div>
                                         </div>
@@ -31946,7 +31929,7 @@ export default function Dashboard() {
                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, borderRadius: '6px', overflow: 'hidden' }}>
                           {[
                             { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `float-play-module-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-module-${pd.courseCode.toLowerCase()}`, bg: pd.progressStartColor || getCourseGradientColors(pd.courseCode).start, dark: true, fontOverride: pd.courseFontColor || '#fff' },
-                            { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `float-play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-reading-${pd.courseCode.toLowerCase()}`, bg: pd.progressStartColor || getCourseGradientColors(pd.courseCode).start, dark: true, fontOverride: pd.courseFontColor || '#fff' },
+                            { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `float-play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-reading-${pd.courseCode.toLowerCase()}`, bg: pd.progressEndColor || getCourseGradientColors(pd.courseCode).end, dark: true, fontOverride: pd.courseFontColor || '#fff' },
                           ].map(item => {
                             const circleSize = 44;
                             const strokeWidth = 3.5;
