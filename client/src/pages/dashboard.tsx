@@ -26470,7 +26470,7 @@ export default function Dashboard() {
                               const mrDow = mrNow.getDay();
                               const mrSat = startOfDayET(addDays(mrNow, mrDow === 6 ? 7 : (6 - mrDow)));
                               const isMrNextSchoolWeek = !isActualToday && day.getDay() !== 6 && startOfDayET(day) >= mrSat;
-                              const cellBg = isActualToday ? '#e4ecf5' : isMrNextSchoolWeek ? dimColor(course.bg, 0.375) : isActuallyPast ? dimColor(course.bg) : course.bg;
+                              const cellBg = isActualToday ? '#e4ecf5' : isMrNextSchoolWeek ? dimColor(course.bg, 0.375) : isActuallyPast ? dimColor(course.bg) : dimColor(course.bg, 0.75);
                               
                               // If this day is before today, show empty cell
                               if (isBeforeToday) {
@@ -26750,7 +26750,7 @@ export default function Dashboard() {
                     const nwDow = nwNow.getDay();
                     const nwSat = startOfDayET(addDays(nwNow, nwDow === 6 ? 7 : (6 - nwDow)));
                     const isDayNextSchoolWeek = !isDayToday && day.getDay() !== 6 && startOfDayET(day) >= nwSat;
-                    const cellBgColor = isDayToday ? '#e4ecf5' : isDayNextSchoolWeek ? dimColor(course.bg, 0.75) : course.bg;
+                    const cellBgColor = isDayToday ? '#e4ecf5' : isDayNextSchoolWeek ? dimColor(course.bg, 0.375) : dimColor(course.bg, 0.75);
                     const cellDate = startOfDayET(day);
                     
                     const dueTasks = allTasks?.filter(task => {
@@ -27314,7 +27314,7 @@ export default function Dashboard() {
                       const onwDow = onwNow.getDay();
                       const onwSat = startOfDayET(addDays(onwNow, onwDow === 6 ? 7 : (6 - onwDow)));
                       const isOtherNextSchoolWeek = !isOtherToday && day.getDay() !== 6 && startOfDayET(day) >= onwSat;
-                      const otherCellBg = isOtherToday ? '#e4ecf5' : isOtherNextSchoolWeek ? dimColor(otherBaseBg, 0.75) : otherBaseBg;
+                      const otherCellBg = isOtherToday ? '#e4ecf5' : isOtherNextSchoolWeek ? dimColor(otherBaseBg, 0.375) : dimColor(otherBaseBg, 0.75);
                       return (
                         <div
                           key={dayIdx}
@@ -27602,42 +27602,35 @@ export default function Dashboard() {
               
                           {/* Time Slots - Scrollable area */}
             <div ref={calendarScrollRef} className="flex-1 overflow-y-auto relative" style={{ borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', scrollbarWidth: 'none' }}>
-              <div style={{ backgroundColor: '#faf8f5', borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', position: 'relative' }}>
-                {/* Countdown bars overlay - one stacked block at current time */}
-                {(() => {
-                  const today = startOfDayET(new Date());
-                  const currentHourNow = getETHours(new Date());
-                  const currentMinNow = new Date().getMinutes();
-                  const twoWeeksOut = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
-                  const allCountdown = (allTasks || []).filter(t => {
-                    if (t.showCountdownBar === false || t.showCountdownBarMain === false || t.isCompleted) return false;
-                    const tDue = startOfDayET(new Date(t.dueDate));
-                    if (tDue <= today || tDue > twoWeeksOut) return false;
-                    return true;
-                  }).map(t => {
-                    const tDue = startOfDayET(new Date(t.dueDate));
-                    const daysLeft = Math.max(0, Math.round((tDue.getTime() - today.getTime()) / (1000*60*60*24)));
-                    return { task: t, tDue, daysLeft };
-                  }).sort((a, b) => a.tDue.getTime() - b.tDue.getTime() || (a.task.title || '').localeCompare(b.task.title || ''));
-                  const seenNames = new Map<string, number>();
-                  const deduped = allCountdown.filter(cd => {
-                    const name = (cd.task.title || '').trim().toLowerCase();
-                    if (!name) return true;
-                    if (seenNames.has(name)) return false;
-                    seenNames.set(name, 1);
-                    return true;
-                  });
-                  if (deduped.length === 0) return null;
-                  let topPx = 0;
-                  for (let h = 0; h < currentHourNow; h++) {
-                    topPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
-                  }
-                  const currentSlotH = gridSizes.timeSlotHeights[currentHourNow] || gridSizes.timeSlotHeight;
-                  topPx += Math.round(currentSlotH * (currentMinNow / 60));
-                  const barH = 3;
-                  const barGap = 14;
-                  return (
-                    <div style={{ position: 'absolute', top: `${topPx}px`, left: 0, right: 0, zIndex: 1, pointerEvents: 'none', overflow: 'visible' }} data-testid="countdown-bars-overlay">
+              {/* Countdown bars - sticky overlay that stays visible while scrolling */}
+              {(() => {
+                const today = startOfDayET(new Date());
+                const twoWeeksOut = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
+                const allCountdown = (allTasks || []).filter(t => {
+                  if (t.showCountdownBar === false || t.showCountdownBarMain === false || t.isCompleted) return false;
+                  const tDue = startOfDayET(new Date(t.dueDate));
+                  if (tDue <= today || tDue > twoWeeksOut) return false;
+                  return true;
+                }).map(t => {
+                  const tDue = startOfDayET(new Date(t.dueDate));
+                  const daysLeft = Math.max(0, Math.round((tDue.getTime() - today.getTime()) / (1000*60*60*24)));
+                  return { task: t, tDue, daysLeft };
+                }).sort((a, b) => a.tDue.getTime() - b.tDue.getTime() || (a.task.title || '').localeCompare(b.task.title || ''));
+                const seenNames = new Map<string, number>();
+                const deduped = allCountdown.filter(cd => {
+                  const name = (cd.task.title || '').trim().toLowerCase();
+                  if (!name) return true;
+                  if (seenNames.has(name)) return false;
+                  seenNames.set(name, 1);
+                  return true;
+                });
+                if (deduped.length === 0) return null;
+                const barH = 3;
+                const barGap = 14;
+                const totalHeight = deduped.length * barGap;
+                return (
+                  <div style={{ position: 'sticky', top: 0, left: 0, right: 0, zIndex: 46, pointerEvents: 'none', height: 0, overflow: 'visible' }} data-testid="countdown-bars-overlay">
+                    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: `${totalHeight}px`, background: 'rgba(250,248,245,0.92)', borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
                       {deduped.map((cd, idx) => {
                         const t = cd.task;
                         const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
@@ -27660,8 +27653,9 @@ export default function Dashboard() {
                         );
                       })}
                     </div>
-                  );
-                })()}
+                  </div>
+                );
+              })()}
                 {timeSlots.map((hour, hourIdx) => {
                   const currentHour = new Date().getHours();
                   const isCurrentHour = hour === currentHour;
