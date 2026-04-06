@@ -30468,8 +30468,8 @@ export default function Dashboard() {
                                     <div style={{ width: `${Math.min(100, pctOfTimeNeeded)}%`, height: '100%', borderRadius: '2px', background: barColor, transition: 'width 0.5s ease' }} />
                                   </div>
                                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1px' }}>
-                                    <span style={{ fontSize: '7px', fontWeight: 600, color: barColor, fontFamily: "system-ui, sans-serif" }}>{remainLabel} left</span>
-                                    <span style={{ fontSize: '6.5px', color: 'rgba(255,255,255,0.5)', fontFamily: "system-ui, sans-serif" }}>Fri {hoursLeftLabel}</span>
+                                    <span style={{ fontSize: '7px', fontWeight: 600, color: '#ffffff', fontFamily: "system-ui, sans-serif" }}>{remainLabel} left</span>
+                                    <span style={{ fontSize: '6.5px', color: '#ffffff', fontFamily: "system-ui, sans-serif" }}>Fri {hoursLeftLabel}</span>
                                   </div>
                                 </div>
                               );
@@ -31658,8 +31658,8 @@ export default function Dashboard() {
                                         <div style={{ width: `${Math.min(100, pctOfTimeNeeded)}%`, height: '100%', borderRadius: '2px', background: barColor, transition: 'width 0.5s ease' }} />
                                       </div>
                                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1px' }}>
-                                        <span style={{ fontSize: '7.5px', fontWeight: 600, color: barColor, fontFamily: "system-ui, sans-serif" }}>{remainLabel} left</span>
-                                        <span style={{ fontSize: '7px', color: 'rgba(255,255,255,0.5)', fontFamily: "system-ui, sans-serif" }}>Fri {hoursLeftLabel}</span>
+                                        <span style={{ fontSize: '7.5px', fontWeight: 600, color: '#ffffff', fontFamily: "system-ui, sans-serif" }}>{remainLabel} left</span>
+                                        <span style={{ fontSize: '7px', color: '#ffffff', fontFamily: "system-ui, sans-serif" }}>Fri {hoursLeftLabel}</span>
                                       </div>
                                     </div>
                                   );
