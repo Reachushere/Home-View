@@ -10254,6 +10254,7 @@ export default function Dashboard() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
       queryClient.invalidateQueries({ queryKey: ["/api/weeks"] });
+      setEditingTask(null);
     },
   });
 
@@ -33830,7 +33831,7 @@ export default function Dashboard() {
 
         {/* Edit Dialog */}
         <Dialog open={!!editingTask} onOpenChange={(open) => { if (!open) { const active = document.activeElement; if (active && (active.tagName === 'SELECT' || active.tagName === 'INPUT' || active.closest('[data-radix-popper-content-wrapper]'))) return; setEditingTask(null); setDupResults(null); setDupDiffTimeEvents([]); setDupShowDiffTime(false); setDupSearching(false); setDupDeleting(false); setEmailWizardSelected(new Set()); } }} modal={false}>
-          <DialogContent onInteractOutside={(e) => e.preventDefault()} onPointerDownOutside={(e) => e.preventDefault()} onFocusOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => { const active = document.activeElement; if (active && (active.tagName === 'SELECT' || active.tagName === 'INPUT')) { e.preventDefault(); return; } }} className="max-w-[95vw] sm:max-w-[900px] max-h-[90vh] overflow-y-auto text-white [&_label]:text-white [&_label]:font-normal [&_input]:font-normal [&_select]:font-normal [&_option]:font-normal [&>button[class*='absolute']]:hidden" style={{ zIndex: 10004, background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.25)' }}>
+          <DialogContent onInteractOutside={(e) => e.preventDefault()} onPointerDownOutside={(e) => e.preventDefault()} onFocusOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => { const active = document.activeElement; if (active && (active.tagName === 'SELECT' || active.tagName === 'INPUT')) { e.preventDefault(); return; } }} className="max-w-[95vw] sm:max-w-[900px] max-h-[90vh] flex flex-col overflow-hidden text-white [&_label]:text-white [&_label]:font-normal [&_input]:font-normal [&_select]:font-normal [&_option]:font-normal [&>button[class*='absolute']]:hidden" style={{ zIndex: 10004, background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.25)' }}>
             <DialogHeader className="flex flex-row items-center justify-between px-4 py-3 -mx-6 -mt-6 rounded-t-lg border-b border-white/40" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
               <div className="flex items-center gap-2">
                 {(() => { const TaskIcon = editingTask ? (iconMap[editingTask.type] || Pencil) : Pencil; return <TaskIcon className="h-3 w-3 text-white" />; })()}
@@ -33966,6 +33967,7 @@ export default function Dashboard() {
             </DialogHeader>
             {editingTask && (
               <>
+              <div style={{ overflowY: 'auto', flex: 1, minHeight: 0 }}>
               <TaskForm 
                 key={`edit-task-${editingTask.id}`}
                 task={editingTask}
@@ -34153,7 +34155,8 @@ export default function Dashboard() {
                   )}
                 </div>
               )}
-              <div className="flex justify-end gap-3 pt-3 mt-2 border-t border-white/10">
+              </div>
+              <div className="flex justify-end gap-3 pt-3 mt-2 border-t border-white/10" style={{ flexShrink: 0 }}>
                 <button
                   type="button"
                   className="inline-flex items-center justify-center rounded-md px-4 py-1.5 text-white/70 hover:text-white transition-all duration-200"
