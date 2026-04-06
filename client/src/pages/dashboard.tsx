@@ -28281,7 +28281,7 @@ export default function Dashboard() {
                           const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
                           const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
                           const needsPulse = isNotStarted && cd.daysLeft <= 2 && !t.isCompleted;
-                          const labelText = (t.title || '').replace(/[\[\]]/g, '').replace(/^\s+/, '');
+                          const labelText = (t.title || '').replace(/\[[^\]]*\]\s*/g, '').trim();
                           const barHPx = needsPulse ? 4 : barH;
                           const yOff = idx * barGap;
                           return (
@@ -31042,7 +31042,7 @@ export default function Dashboard() {
                           onClick={() => setEditingTask(t)}
                         >
                           <span style={{ fontSize: '10px', color: textColor, flexShrink: 0 }}>•</span>
-                          <span className="truncate" style={{ fontSize: '9px', color: textColor, textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400, flex: 1, minWidth: 0 }}>{(t.title || '').replace(/[\[\]]/g, '').replace(/^\s+/, '')}</span>
+                          <span className="truncate" style={{ fontSize: '9px', color: textColor, textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontWeight: 400, flex: 1, minWidth: 0 }}>{(() => { let raw = (t.title || '').replace(/\[[^\]]*\]\s*/g, '').trim(); return raw; })()}</span>
                           {(() => {
                             const tDueDate = new Date(t.dueDate);
                             const tDue = startOfDayET(tDueDate);
