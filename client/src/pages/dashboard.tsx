@@ -18279,14 +18279,14 @@ export default function Dashboard() {
           const courseFullName = task.courseName?.includes(' - ') ? task.courseName.split(' - ').slice(1).join(' - ') : '';
           const daysUntil = task.dueDate ? differenceInCalendarDays(startOfDayET(new Date(task.dueDate)), startOfDayET(new Date())) : 0;
           return (
-            <div key={task.id} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '10px 14px', borderRadius: '8px', background: 'rgba(255,255,255,0.06)', border: `1px solid ${courseColor}33`, borderLeft: `3px solid ${courseColor}`, opacity: task.isCompleted ? 0.45 : 1, transition: 'opacity 0.2s ease' }} data-testid={`day-detail-task-${task.id}`}>
+            <div key={task.id} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', padding: '6px 10px', borderRadius: '8px', background: `${courseColor}15`, border: `1px solid ${courseColor}33`, borderLeft: `3px solid ${courseColor}`, opacity: task.isCompleted ? 0.45 : 1, transition: 'opacity 0.2s ease', flex: '1 1 auto', minWidth: '200px', maxWidth: '100%' }} data-testid={`day-detail-task-${task.id}`}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', paddingTop: '2px', flexShrink: 0 }}>
                 <input type="checkbox" checked={!!task.isCompleted} onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })} style={{ width: '16px', height: '16px', accentColor: courseColor, cursor: 'pointer' }} data-testid={`day-detail-check-${task.id}`} />
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
                   <span style={{ fontSize: '14px' }}>{icon}</span>
-                  <span style={{ fontSize: '13px', fontWeight: 600, color: '#ffffff', textDecoration: task.isCompleted ? 'line-through' : 'none', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid={`day-detail-title-${task.id}`}>{(task.title || '').replace(/\[.*?\]\s*/g, '').trim() || task.title}</span>
+                  <span style={{ fontSize: '13px', fontWeight: 600, color: courseColor, textDecoration: task.isCompleted ? 'line-through' : 'none', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid={`day-detail-title-${task.id}`}>{(task.title || '').replace(/[\[\]]/g, '').trim()}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginBottom: '4px' }}>
                   {task.courseName && (
@@ -18348,12 +18348,12 @@ export default function Dashboard() {
               </div>
 
               <div style={{ flex: 1, overflowY: 'auto', display: 'flex', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent' }}>
-                <div style={{ width: '70px', flexShrink: 0, borderRight: '1px solid rgba(255,255,255,0.15)' }}>
+                <div style={{ width: '70px', flexShrink: 0, borderRight: '1px solid rgba(255,255,255,0.15)', display: 'flex', flexDirection: 'column' }}>
                   {timeSlots.map((label, idx) => {
                     const hour = idx + 6;
                     const hasTask = !!tasksByHour[hour];
                     return (
-                      <div key={hour} style={{ height: '52px', display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end', paddingRight: '8px', paddingTop: '2px', borderBottom: '1px solid rgba(255,255,255,0.15)', position: 'relative' }}>
+                      <div key={hour} style={{ flex: 1, minHeight: 0, display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end', paddingRight: '8px', paddingTop: '2px', borderBottom: '1px solid rgba(255,255,255,0.15)', position: 'relative' }}>
                         <span style={{ fontSize: '10px', fontWeight: hasTask ? 600 : 400, color: '#ffffff', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{label}</span>
                         {hasTask && <div style={{ position: 'absolute', right: '-3px', top: '8px', width: '5px', height: '5px', borderRadius: '50%', background: '#60a5fa' }} />}
                       </div>
@@ -18361,12 +18361,12 @@ export default function Dashboard() {
                   })}
                 </div>
 
-                <div style={{ flex: 1, minWidth: 0, position: 'relative' }}>
+                <div style={{ flex: 1, minWidth: 0, position: 'relative', display: 'flex', flexDirection: 'column' }}>
                   {timeSlots.map((_, idx) => {
                     const hour = idx + 6;
                     const tasks = tasksByHour[hour] || [];
                     return (
-                      <div key={hour} style={{ minHeight: tasks.length > 0 ? `${Math.max(52, tasks.length * 90)}px` : '52px', borderBottom: '1px solid rgba(255,255,255,0.15)', padding: tasks.length > 0 ? '4px 12px' : '0 12px', display: 'flex', flexDirection: 'column', gap: '4px', justifyContent: 'center' }}>
+                      <div key={hour} style={{ flex: 1, minHeight: 0, borderBottom: '1px solid rgba(255,255,255,0.15)', padding: tasks.length > 0 ? '2px 8px' : '0 8px', display: 'flex', flexDirection: 'row', gap: '4px', alignItems: 'center', flexWrap: 'wrap' }}>
                         {tasks.map(t => renderDetailTask(t))}
                       </div>
                     );
