@@ -28001,8 +28001,8 @@ export default function Dashboard() {
                                   const gradColors = courseCode ? getCourseGradientColors(courseCode) : null;
                                   const hasCourseGrad = gradColors && gradColors.start !== '#6b7280';
                                   const taskBg = cMatch?.taskBgColor || (colors?.bg) || (hasCourseGrad ? `linear-gradient(180deg, ${gradColors.start}, ${gradColors.end})` : null);
-                                  const bgGradient = task.isCompleted ? '#e5e7eb' : taskBg ? taskBg : (task.type === 'other' || !courseCode ? `linear-gradient(180deg, ${otherRowColors.labelStart}, ${otherRowColors.labelEnd})` : 'linear-gradient(180deg, #6b7280, #9ca3af)');
-                                  const borderColor = task.isCompleted ? '#d1d5db' : hasCourseGrad ? gradColors.start : (task.type === 'other' ? otherRowColors.borderColor : '#6b7280');
+                                  const bgGradient = task.isCompleted ? '#e5e7eb' : taskBg ? taskBg : `linear-gradient(180deg, ${otherRowColors.labelStart}, ${otherRowColors.labelEnd})`;
+                                  const borderColor = task.isCompleted ? '#d1d5db' : hasCourseGrad ? gradColors.start : otherRowColors.borderColor;
                                   return {
                                     top: `${topOffset}px`,
                                     left: (() => { const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return hasNextDueBox ? `calc(${taskIdx * columnWidth / 2}% + 2px)` : `calc(${taskIdx * columnWidth}% + 2px)`; })(),
@@ -28032,7 +28032,7 @@ export default function Dashboard() {
                                   const moduleBoxColor = (() => {
                                     const cMatch2 = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode.toUpperCase());
                                     if (cMatch2?.taskBgColor) return cMatch2.taskBgColor;
-                                    return cMatch2?.colorEnd || (gradColors?.end || '#9ca3af');
+                                    return cMatch2?.colorEnd || (gradColors?.end || otherRowColors.labelEnd);
                                   })();
                                   return (
                                     <div style={{
@@ -28260,8 +28260,8 @@ export default function Dashboard() {
                         const gradColors = courseCode ? getCourseGradientColors(courseCode) : null;
                         const hasCourseGrad = gradColors && gradColors.start !== '#6b7280';
                         const taskBg = cMatch?.taskBgColor || (colors?.bg) || (hasCourseGrad ? `linear-gradient(180deg, ${gradColors.start}, ${gradColors.end})` : null);
-                        const bgGradient = task.isCompleted ? '#e5e7eb' : taskBg ? taskBg : (task.type === 'other' || !courseCode ? `linear-gradient(180deg, ${otherRowColors.labelStart}, ${otherRowColors.labelEnd})` : 'linear-gradient(180deg, #6b7280, #9ca3af)');
-                        const borderColor = task.isCompleted ? '#d1d5db' : hasCourseGrad ? gradColors.start : (task.type === 'other' ? otherRowColors.borderColor : '#6b7280');
+                        const bgGradient = task.isCompleted ? '#e5e7eb' : taskBg ? taskBg : `linear-gradient(180deg, ${otherRowColors.labelStart}, ${otherRowColors.labelEnd})`;
+                        const borderColor = task.isCompleted ? '#d1d5db' : hasCourseGrad ? gradColors.start : otherRowColors.borderColor;
                         return {
                           top: `${topPx}px`,
                           left: (() => { const sidebarPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0); const dayFrac = `(${gridSizes.dayColumnWidths.slice(0, dayIdx).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)})`; const dayW = `(${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${sidebarPx}px)`; if (oi.totalCols > 1) { return `calc(${sidebarPx}px + ${dayFrac} * (100% - ${sidebarPx}px) + (${dayW}) * ${oi.col} / ${oi.totalCols} + 2px)`; } return `calc(${sidebarPx}px + ${dayFrac} * (100% - ${sidebarPx}px) + 2px)`; })(),
