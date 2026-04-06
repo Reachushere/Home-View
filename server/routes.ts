@@ -3255,11 +3255,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
   app.post("/api/notepad/notes", async (req, res) => {
     try {
-      const { title, content, sortOrder } = req.body;
+      const { title, content, sortOrder, groupName } = req.body;
       const [note] = await db.insert(notepadNotes).values({
         title: title || 'Untitled',
         content: content || '',
         sortOrder: sortOrder ?? 0,
+        groupName: groupName || null,
       }).returning();
       res.json(note);
     } catch (err: any) {
@@ -3275,6 +3276,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       if (req.body.title !== undefined) updates.title = req.body.title;
       if (req.body.content !== undefined) updates.content = req.body.content;
       if (req.body.sortOrder !== undefined) updates.sortOrder = req.body.sortOrder;
+      if (req.body.groupName !== undefined) updates.groupName = req.body.groupName;
       const [note] = await db.update(notepadNotes).set(updates).where(eq(notepadNotes.id, id)).returning();
       res.json(note);
     } catch (err: any) {

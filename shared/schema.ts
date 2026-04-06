@@ -561,6 +561,7 @@ export const notepadNotes = pgTable("notepad_notes", {
   title: text("title").notNull().default("Untitled"),
   content: text("content").notNull().default(""),
   sortOrder: integer("sort_order").notNull().default(0),
+  groupName: text("group_name"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

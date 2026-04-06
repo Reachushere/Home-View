@@ -15209,7 +15209,7 @@ export default function Dashboard() {
 
           {/* Up arrow to hide pill */}
           <div
-            style={{ position: 'relative', zIndex: 1, flexShrink: 0, width: '31px', height: '31px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', marginRight: '-4px', marginLeft: '-20px' }}
+            style={{ position: 'relative', zIndex: 1, flexShrink: 0, width: '31px', height: '31px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', marginRight: '-4px', marginLeft: '-10px' }}
             className="pill-button-hover"
             onClick={() => closeTopPill()}
             title="Hide toolbar"

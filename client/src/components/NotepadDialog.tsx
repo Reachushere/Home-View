@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { X, Plus, Trash2, Bold, Italic, List, Type, Palette, Upload, Download, FileText, Image, File, Loader2, Pencil, Check } from 'lucide-react';
+import { X, Plus, Trash2, Bold, Italic, List, Type, Palette, Upload, Download, FileText, Image, File, Loader2, Pencil, Check, FolderPlus, ChevronDown, ChevronRight, Eraser } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 
@@ -23,6 +23,7 @@ interface NotepadNote {
   title: string;
   content: string;
   sortOrder: number;
+  groupName: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -77,6 +78,10 @@ export default function NotepadDialog({ isOpen, onClose, colorSettings }: Notepa
   const [saving, setSaving] = useState(false);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastSavedContentRef = useRef<string>('');
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
+  const [showGroupAssign, setShowGroupAssign] = useState<number | null>(null);
+  const [newGroupName, setNewGroupName] = useState('');
+  const [showNewGroupInput, setShowNewGroupInput] = useState(false);
 
   const { data: notes = [], isLoading } = useQuery<NotepadNote[]>({
     queryKey: ['/api/notepad/notes'],
@@ -112,11 +117,11 @@ export default function NotepadDialog({ isOpen, onClose, colorSettings }: Notepa
   }, [activeNote?.id]);
 
   const createNoteMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (groupName?: string) => {
       const res = await fetch('/api/notepad/notes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: `Note ${notes.length + 1}`, content: '', sortOrder: notes.length }),
+        body: JSON.stringify({ title: `Note ${notes.length + 1}`, content: '', sortOrder: notes.length, groupName: groupName || null }),
       });
       if (!res.ok) throw new Error('Failed to create note');
       return res.json();
@@ -187,6 +192,21 @@ export default function NotepadDialog({ isOpen, onClose, colorSettings }: Notepa
     },
   });
 
+  const assignGroupMutation = useMutation({
+    mutationFn: async ({ id, groupName }: { id: number; groupName: string | null }) => {
+      const res = await fetch(`/api/notepad/notes/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ groupName }),
+      });
+      if (!res.ok) throw new Error('Group assign failed');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/notepad/notes'] });
+      setShowGroupAssign(null);
+    },
+  });
+
   const execCommand = (cmd: string, value?: string) => {
     document.execCommand(cmd, false, value);
     editorRef.current?.focus();
@@ -239,6 +259,29 @@ export default function NotepadDialog({ isOpen, onClose, colorSettings }: Notepa
     setSelectedDownloads(new Set());
   };
 
+  const handleDownloadAll = async () => {
+    for (const att of attachments) {
+      try {
+        const res = await fetch(`/api/notepad/attachments/${att.id}/download`);
+        const data = await res.json();
+        if (data.redirectUrl) {
+          window.open(data.redirectUrl, '_blank');
+        }
+      } catch {
+        toast({ title: 'Download failed', variant: 'destructive' });
+      }
+    }
+  };
+
+  const handleClearNote = async () => {
+    if (!activeNoteId || !editorRef.current) return;
+    if (!confirm('Clear all text in this note?')) return;
+    editorRef.current.innerHTML = '';
+    lastSavedContentRef.current = '';
+    await saveNote(activeNoteId, '');
+    toast({ title: 'Cleared', description: 'Note content has been cleared.' });
+  };
+
   const deleteAttachmentMutation = useMutation({
     mutationFn: async (id: number) => {
       await fetch(`/api/notepad/attachments/${id}`, { method: 'DELETE' });
@@ -247,6 +290,117 @@ export default function NotepadDialog({ isOpen, onClose, colorSettings }: Notepa
       queryClient.invalidateQueries({ queryKey: ['/api/notepad/notes', activeNoteId, 'attachments'] });
     },
   });
+
+  const existingGroups = Array.from(new Set(notes.map(n => n.groupName).filter(Boolean))) as string[];
+  const ungroupedNotes = notes.filter(n => !n.groupName);
+  const groupedNotesMap: Record<string, NotepadNote[]> = {};
+  notes.forEach(n => {
+    if (n.groupName) {
+      if (!groupedNotesMap[n.groupName]) groupedNotesMap[n.groupName] = [];
+      groupedNotesMap[n.groupName].push(n);
+    }
+  });
+
+  const toggleGroupCollapse = (group: string) => {
+    setCollapsedGroups(prev => {
+      const next = new Set(prev);
+      if (next.has(group)) next.delete(group); else next.add(group);
+      return next;
+    });
+  };
+
+  const renderNoteTab = (note: NotepadNote) => (
+    <div
+      key={note.id}
+      className={`flex items-center gap-1 px-2 py-1 rounded cursor-pointer text-[11px] flex-shrink-0 group relative ${activeNoteId === note.id ? 'bg-white/15 text-white' : 'text-white/50 hover:text-white/80 hover:bg-white/5'}`}
+      onClick={() => {
+        if (editorRef.current && activeNoteId && activeNoteId !== note.id) {
+          const content = editorRef.current.innerHTML;
+          if (content !== lastSavedContentRef.current) {
+            saveNote(activeNoteId, content);
+          }
+        }
+        setActiveNoteId(note.id);
+      }}
+      data-testid={`tab-note-${note.id}`}
+    >
+      {editingTabId === note.id ? (
+        <div className="flex items-center gap-1">
+          <input
+            className="bg-white/10 border border-white/30 rounded px-1 text-[11px] text-white w-[80px] outline-none"
+            value={editingTabTitle}
+            onChange={e => setEditingTabTitle(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') renameNoteMutation.mutate({ id: note.id, title: editingTabTitle }); if (e.key === 'Escape') setEditingTabId(null); }}
+            autoFocus
+            onClick={e => e.stopPropagation()}
+            data-testid={`input-rename-tab-${note.id}`}
+          />
+          <button onClick={(e) => { e.stopPropagation(); renameNoteMutation.mutate({ id: note.id, title: editingTabTitle }); }} className="text-green-400 hover:text-green-300"><Check className="h-3 w-3" /></button>
+        </div>
+      ) : (
+        <>
+          <span onDoubleClick={(e) => { e.stopPropagation(); setEditingTabId(note.id); setEditingTabTitle(note.title); }}>{note.title}</span>
+          <button
+            className="opacity-0 group-hover:opacity-100 text-white/30 hover:text-white/60 ml-0.5"
+            onClick={(e) => { e.stopPropagation(); setEditingTabId(note.id); setEditingTabTitle(note.title); }}
+            data-testid={`button-rename-tab-${note.id}`}
+          ><Pencil className="h-2.5 w-2.5" /></button>
+          <button
+            className="opacity-0 group-hover:opacity-100 text-white/30 hover:text-blue-400 ml-0.5"
+            onClick={(e) => { e.stopPropagation(); setShowGroupAssign(showGroupAssign === note.id ? null : note.id); }}
+            title="Assign to group"
+            data-testid={`button-group-tab-${note.id}`}
+          ><FolderPlus className="h-2.5 w-2.5" /></button>
+          {notes.length > 1 && (
+            <button
+              className="opacity-0 group-hover:opacity-100 text-white/30 hover:text-red-400 ml-0.5"
+              onClick={(e) => { e.stopPropagation(); if (confirm('Delete this note?')) deleteNoteMutation.mutate(note.id); }}
+              data-testid={`button-delete-tab-${note.id}`}
+            ><X className="h-2.5 w-2.5" /></button>
+          )}
+        </>
+      )}
+      {showGroupAssign === note.id && (
+        <div className="absolute top-full left-0 mt-1 bg-gray-900 border border-white/20 rounded shadow-xl z-50 py-1 min-w-[140px]" onClick={e => e.stopPropagation()} data-testid={`group-assign-dropdown-${note.id}`}>
+          <button className="block w-full text-left px-3 py-1 text-white/60 hover:bg-white/10 text-[10px]" onClick={() => assignGroupMutation.mutate({ id: note.id, groupName: null })}>
+            No Group
+          </button>
+          {existingGroups.map(g => (
+            <button key={g} className={`block w-full text-left px-3 py-1 hover:bg-white/10 text-[10px] ${note.groupName === g ? 'text-blue-400' : 'text-white/60'}`} onClick={() => assignGroupMutation.mutate({ id: note.id, groupName: g })}>
+              {g}
+            </button>
+          ))}
+          <div className="border-t border-white/10 mt-1 pt-1 px-2">
+            {showNewGroupInput ? (
+              <div className="flex items-center gap-1">
+                <input
+                  className="bg-white/10 border border-white/30 rounded px-1 text-[10px] text-white w-[90px] outline-none py-0.5"
+                  value={newGroupName}
+                  onChange={e => setNewGroupName(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' && newGroupName.trim()) {
+                      assignGroupMutation.mutate({ id: note.id, groupName: newGroupName.trim() });
+                      setNewGroupName('');
+                      setShowNewGroupInput(false);
+                    }
+                    if (e.key === 'Escape') { setShowNewGroupInput(false); setNewGroupName(''); }
+                  }}
+                  autoFocus
+                  placeholder="Group name"
+                  data-testid="input-new-group-name"
+                />
+                <button className="text-green-400 hover:text-green-300" onClick={() => { if (newGroupName.trim()) { assignGroupMutation.mutate({ id: note.id, groupName: newGroupName.trim() }); setNewGroupName(''); setShowNewGroupInput(false); } }}><Check className="h-3 w-3" /></button>
+              </div>
+            ) : (
+              <button className="text-[10px] text-green-400 hover:text-green-300 flex items-center gap-1 py-0.5" onClick={() => setShowNewGroupInput(true)} data-testid="button-create-new-group">
+                <Plus className="h-2.5 w-2.5" /> New Group
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 
   if (!isOpen) return null;
 
@@ -291,59 +445,38 @@ export default function NotepadDialog({ isOpen, onClose, colorSettings }: Notepa
           </div>
         </div>
 
-        <div className="flex items-center gap-1 px-2 py-1 border-b border-white/20 flex-shrink-0 overflow-x-auto" style={{ background: 'rgba(0,0,0,0.2)' }}>
-          {notes.map(note => (
-            <div
-              key={note.id}
-              className={`flex items-center gap-1 px-2 py-1 rounded-t cursor-pointer text-[11px] flex-shrink-0 group ${activeNoteId === note.id ? 'bg-white/15 text-white' : 'text-white/50 hover:text-white/80 hover:bg-white/5'}`}
-              onClick={() => {
-                if (editorRef.current && activeNoteId && activeNoteId !== note.id) {
-                  const content = editorRef.current.innerHTML;
-                  if (content !== lastSavedContentRef.current) {
-                    saveNote(activeNoteId, content);
-                  }
-                }
-                setActiveNoteId(note.id);
-              }}
-              data-testid={`tab-note-${note.id}`}
-            >
-              {editingTabId === note.id ? (
-                <div className="flex items-center gap-1">
-                  <input
-                    className="bg-white/10 border border-white/30 rounded px-1 text-[11px] text-white w-[80px] outline-none"
-                    value={editingTabTitle}
-                    onChange={e => setEditingTabTitle(e.target.value)}
-                    onKeyDown={e => { if (e.key === 'Enter') renameNoteMutation.mutate({ id: note.id, title: editingTabTitle }); if (e.key === 'Escape') setEditingTabId(null); }}
-                    autoFocus
-                    onClick={e => e.stopPropagation()}
-                    data-testid={`input-rename-tab-${note.id}`}
-                  />
-                  <button onClick={(e) => { e.stopPropagation(); renameNoteMutation.mutate({ id: note.id, title: editingTabTitle }); }} className="text-green-400 hover:text-green-300"><Check className="h-3 w-3" /></button>
+        <div className="flex flex-col gap-0.5 px-2 py-1.5 border-b border-white/20 flex-shrink-0 overflow-y-auto" style={{ background: 'rgba(0,0,0,0.2)', maxHeight: '140px' }}>
+          {Object.entries(groupedNotesMap).map(([group, groupNotes]) => (
+            <div key={group}>
+              <div
+                className="flex items-center gap-1 px-1 py-0.5 cursor-pointer text-[10px] text-white/40 hover:text-white/60 uppercase tracking-wider font-semibold"
+                onClick={() => toggleGroupCollapse(group)}
+                data-testid={`group-header-${group}`}
+              >
+                {collapsedGroups.has(group) ? <ChevronRight className="h-2.5 w-2.5" /> : <ChevronDown className="h-2.5 w-2.5" />}
+                <span>{group}</span>
+                <span className="text-[9px] font-normal">({groupNotes.length})</span>
+              </div>
+              {!collapsedGroups.has(group) && (
+                <div className="flex items-center gap-1 pl-3 flex-wrap">
+                  {groupNotes.map(note => renderNoteTab(note))}
                 </div>
-              ) : (
-                <>
-                  <span onDoubleClick={(e) => { e.stopPropagation(); setEditingTabId(note.id); setEditingTabTitle(note.title); }}>{note.title}</span>
-                  <button
-                    className="opacity-0 group-hover:opacity-100 text-white/30 hover:text-white/60 ml-1"
-                    onClick={(e) => { e.stopPropagation(); setEditingTabId(note.id); setEditingTabTitle(note.title); }}
-                    data-testid={`button-rename-tab-${note.id}`}
-                  ><Pencil className="h-2.5 w-2.5" /></button>
-                  {notes.length > 1 && (
-                    <button
-                      className="opacity-0 group-hover:opacity-100 text-white/30 hover:text-red-400 ml-0.5"
-                      onClick={(e) => { e.stopPropagation(); if (confirm('Delete this note?')) deleteNoteMutation.mutate(note.id); }}
-                      data-testid={`button-delete-tab-${note.id}`}
-                    ><X className="h-2.5 w-2.5" /></button>
-                  )}
-                </>
               )}
             </div>
           ))}
-          <button
-            className="flex items-center justify-center h-6 w-6 rounded text-white/40 hover:text-white/80 hover:bg-white/10 flex-shrink-0"
-            onClick={() => createNoteMutation.mutate()}
-            data-testid="button-add-note-tab"
-          ><Plus className="h-3.5 w-3.5" /></button>
+          {ungroupedNotes.length > 0 && Object.keys(groupedNotesMap).length > 0 && (
+            <div className="flex items-center gap-1 px-1 py-0.5 text-[10px] text-white/30 uppercase tracking-wider font-semibold">
+              <span>Ungrouped</span>
+            </div>
+          )}
+          <div className="flex items-center gap-1 flex-wrap">
+            {ungroupedNotes.map(note => renderNoteTab(note))}
+            <button
+              className="flex items-center justify-center h-6 w-6 rounded text-white/40 hover:text-white/80 hover:bg-white/10 flex-shrink-0"
+              onClick={() => createNoteMutation.mutate(undefined)}
+              data-testid="button-add-note-tab"
+            ><Plus className="h-3.5 w-3.5" /></button>
+          </div>
         </div>
 
         {activeNote && (
@@ -357,7 +490,7 @@ export default function NotepadDialog({ isOpen, onClose, colorSettings }: Notepa
               {showFontSize && (
                 <div className="absolute top-full left-0 mt-1 bg-gray-900 border border-white/20 rounded shadow-xl z-50 py-1" data-testid="font-size-dropdown">
                   {FONT_SIZES.map(size => (
-                    <button key={size} className="block w-full text-left px-3 py-1 text-white/80 hover:bg-white/10 text-[11px]" onClick={() => { execCommand('fontSize', '7'); const sel = window.getSelection(); if (sel && sel.rangeCount > 0) { const range = sel.getRangeAt(0); const spans = editorRef.current?.querySelectorAll('font[size="7"]'); spans?.forEach(s => { const span = document.createElement('span'); span.style.fontSize = size; span.innerHTML = s.innerHTML; s.replaceWith(span); }); } setShowFontSize(false); }} data-testid={`font-size-${size}`}>{size}</button>
+                    <button key={size} className="block w-full text-left px-3 py-1 text-white/80 hover:bg-white/10 text-[11px]" onClick={() => { execCommand('fontSize', '7'); const sel = window.getSelection(); if (sel && sel.rangeCount > 0) { const spans = editorRef.current?.querySelectorAll('font[size="7"]'); spans?.forEach(s => { const span = document.createElement('span'); span.style.fontSize = size; span.innerHTML = s.innerHTML; s.replaceWith(span); }); } setShowFontSize(false); }} data-testid={`font-size-${size}`}>{size}</button>
                   ))}
                 </div>
               )}
@@ -394,22 +527,43 @@ export default function NotepadDialog({ isOpen, onClose, colorSettings }: Notepa
             ) : !activeNote ? (
               <div className="flex-1 flex flex-col items-center justify-center text-white/40 gap-3">
                 <p className="text-[13px]">No notes yet</p>
-                <Button size="sm" className="text-[11px]" onClick={() => createNoteMutation.mutate()} data-testid="button-create-first-note">Create a Note</Button>
+                <Button size="sm" className="text-[11px]" onClick={() => createNoteMutation.mutate(undefined)} data-testid="button-create-first-note">Create a Note</Button>
               </div>
             ) : (
-              <div
-                ref={editorRef}
-                contentEditable
-                className="flex-1 p-3 text-[13px] text-white overflow-y-auto focus:outline-none"
-                style={{ fontFamily: "'Segoe UI', 'Helvetica Neue', sans-serif", lineHeight: 1.6, minHeight: 0 }}
-                onInput={handleEditorInput}
-                onKeyDown={(e) => {
-                  if ((e.metaKey || e.ctrlKey) && e.key === 'b') { e.preventDefault(); execCommand('bold'); }
-                  if ((e.metaKey || e.ctrlKey) && e.key === 'i') { e.preventDefault(); execCommand('italic'); }
-                  if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); handleManualSave(); }
-                }}
-                data-testid="input-notepad"
-              />
+              <>
+                <div
+                  ref={editorRef}
+                  contentEditable
+                  className="flex-1 p-3 text-[13px] overflow-y-auto focus:outline-none"
+                  style={{
+                    fontFamily: "'Segoe UI', 'Helvetica Neue', sans-serif",
+                    lineHeight: 1.6,
+                    minHeight: 0,
+                    background: '#ffffff',
+                    color: '#1a1a1a',
+                    borderRadius: '0',
+                  }}
+                  onInput={handleEditorInput}
+                  onKeyDown={(e) => {
+                    if ((e.metaKey || e.ctrlKey) && e.key === 'b') { e.preventDefault(); execCommand('bold'); }
+                    if ((e.metaKey || e.ctrlKey) && e.key === 'i') { e.preventDefault(); execCommand('italic'); }
+                    if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); handleManualSave(); }
+                  }}
+                  data-testid="input-notepad"
+                />
+                <div className="flex items-center justify-end px-3 py-1.5 border-t border-white/15 flex-shrink-0" style={{ background: 'rgba(0,0,0,0.15)' }}>
+                  <Button
+                    size="sm"
+                    className="h-6 px-3 text-[10px] flex items-center gap-1"
+                    style={{ background: 'linear-gradient(180deg, rgba(239,68,68,0.3) 0%, rgba(239,68,68,0.15) 100%)', border: '1px solid rgba(239,68,68,0.4)', color: '#f87171' }}
+                    onClick={handleClearNote}
+                    data-testid="button-clear-note"
+                  >
+                    <Eraser className="h-3 w-3" />
+                    Clear
+                  </Button>
+                </div>
+              </>
             )}
           </div>
 
@@ -420,6 +574,16 @@ export default function NotepadDialog({ isOpen, onClose, colorSettings }: Notepa
                 {selectedDownloads.size > 0 && (
                   <button onClick={handleDownloadSelected} className="text-[9px] text-blue-400 hover:text-blue-300 flex items-center gap-0.5" data-testid="button-download-selected">
                     <Download className="h-3 w-3" /> ({selectedDownloads.size})
+                  </button>
+                )}
+                {attachments.length > 0 && (
+                  <button
+                    onClick={handleDownloadAll}
+                    className="p-1 rounded hover:bg-white/10 text-white/40 hover:text-white/70"
+                    title="Download all attachments"
+                    data-testid="button-download-all"
+                  >
+                    <Download className="h-3.5 w-3.5" />
                   </button>
                 )}
                 <button
@@ -485,13 +649,27 @@ export default function NotepadDialog({ isOpen, onClose, colorSettings }: Notepa
                             }}
                             data-testid={`checkbox-download-${att.id}`}
                           />
-                          <span className="text-[8px] text-white/40">Download</span>
+                          <span className="text-[8px] text-white/40">Select</span>
                         </label>
-                        <button
-                          onClick={() => { if (confirm('Remove attachment?')) deleteAttachmentMutation.mutate(att.id); }}
-                          className="opacity-0 group-hover:opacity-100 text-white/30 hover:text-red-400"
-                          data-testid={`button-delete-attachment-${att.id}`}
-                        ><Trash2 className="h-3 w-3" /></button>
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={async () => {
+                              try {
+                                const res = await fetch(`/api/notepad/attachments/${att.id}/download`);
+                                const data = await res.json();
+                                if (data.redirectUrl) window.open(data.redirectUrl, '_blank');
+                              } catch { toast({ title: 'Download failed', variant: 'destructive' }); }
+                            }}
+                            className="opacity-0 group-hover:opacity-100 text-white/30 hover:text-blue-400"
+                            title="Download"
+                            data-testid={`button-download-attachment-${att.id}`}
+                          ><Download className="h-3 w-3" /></button>
+                          <button
+                            onClick={() => { if (confirm('Remove attachment?')) deleteAttachmentMutation.mutate(att.id); }}
+                            className="opacity-0 group-hover:opacity-100 text-white/30 hover:text-red-400"
+                            data-testid={`button-delete-attachment-${att.id}`}
+                          ><Trash2 className="h-3 w-3" /></button>
+                        </div>
                       </div>
                     </div>
                   ))}
