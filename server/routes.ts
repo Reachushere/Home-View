@@ -1064,8 +1064,21 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
         const now = new Date();
         now.setHours(0, 0, 0, 0);
         if (due.getTime() > now.getTime()) {
-          input.startDate = now.toISOString();
+          input.startDate = now;
         }
+      }
+      const existingTasks = await storage.getTasks();
+      const dueMs = new Date(input.dueDate).getTime();
+      const inputType = input.taskType || 'homework';
+      const duplicate = existingTasks.find(t =>
+        t.title === input.title &&
+        t.courseName === (input.courseName || null) &&
+        (t.taskType || 'homework') === inputType &&
+        Math.abs(new Date(t.dueDate).getTime() - dueMs) < 86400000
+      );
+      if (duplicate) {
+        console.log(`[Tasks] Duplicate prevented: "${input.title}" (${inputType}) for ${input.courseName || 'no course'}`);
+        return res.status(200).json(duplicate);
       }
       const task = await storage.createTask(input);
       
@@ -4014,21 +4027,22 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
           counts[folderKey].partialProgress += 100;
         } else {
           counts[folderKey].unlistened++;
+          const capPct = (pct: number) => Math.min(pct, 99);
           if (file.checkedChunks && file.checkedChunks !== 'null' && file.checkedChunks !== '[]' && file.totalChunks && file.totalChunks > 0) {
             try {
               const checked = JSON.parse(file.checkedChunks);
               if (Array.isArray(checked) && checked.length > 0) {
-                counts[folderKey].partialProgress += Math.round((checked.length / file.totalChunks) * 100);
+                counts[folderKey].partialProgress += capPct(Math.round((checked.length / file.totalChunks) * 100));
               } else if (file.lastChunkIndex != null && file.lastChunkIndex > 0) {
-                counts[folderKey].partialProgress += Math.round((file.lastChunkIndex / file.totalChunks) * 100);
+                counts[folderKey].partialProgress += capPct(Math.round((file.lastChunkIndex / file.totalChunks) * 100));
               }
             } catch {
               if (file.lastChunkIndex != null && file.lastChunkIndex > 0) {
-                counts[folderKey].partialProgress += Math.round((file.lastChunkIndex / file.totalChunks) * 100);
+                counts[folderKey].partialProgress += capPct(Math.round((file.lastChunkIndex / file.totalChunks) * 100));
               }
             }
           } else if (file.totalChunks && file.totalChunks > 0 && file.lastChunkIndex != null && file.lastChunkIndex > 0) {
-            counts[folderKey].partialProgress += Math.round((file.lastChunkIndex / file.totalChunks) * 100);
+            counts[folderKey].partialProgress += capPct(Math.round((file.lastChunkIndex / file.totalChunks) * 100));
           }
         }
       }
@@ -9940,6 +9954,21 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   };
   setTimeout(syncD2LFromGmail, 15000);
   setInterval(syncD2LFromGmail, 10 * 60 * 1000);
+
+  setTimeout(async () => {
+    try {
+      const result = await db.execute(sql`
+        DELETE FROM tasks
+        WHERE id NOT IN (
+          SELECT MAX(id) FROM tasks GROUP BY title, due_date, course_name, COALESCE(task_type, 'homework')
+        )
+      `);
+      const deleted = (result as any).rowCount || 0;
+      if (deleted > 0) console.log(`[Startup] Cleaned up ${deleted} duplicate tasks`);
+    } catch (err: any) {
+      console.error('[Startup] Duplicate cleanup error:', err.message);
+    }
+  }, 5000);
 
   // Self-ping to keep Replit from sleeping (every 4 minutes)
   const SELF_PING_INTERVAL_MS = 4 * 60 * 1000;

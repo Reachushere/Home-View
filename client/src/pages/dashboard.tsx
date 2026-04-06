@@ -2605,7 +2605,8 @@ export default function Dashboard() {
             sunrise: data.daily.sunrise?.[i] ?? undefined,
             sunset: data.daily.sunset?.[i] ?? undefined,
           })) : [];
-          const todayStr = new Date().toISOString().split('T')[0];
+          const nowET = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+          const todayStr = `${nowET.getFullYear()}-${String(nowET.getMonth() + 1).padStart(2, '0')}-${String(nowET.getDate()).padStart(2, '0')}`;
           const todayDaily = daily.find((d: any) => d.date === todayStr);
           const hourly = data.hourly ? data.hourly.time.map((t: string, i: number) => ({
             time: t,
@@ -27657,6 +27658,7 @@ export default function Dashboard() {
                       }
                       let totalProgress = 0;
                       const countableFiles = preparedFiles.length > 0 ? preparedFiles : files;
+                      const capUnlistened = (pct: number) => Math.min(pct, 99);
                       for (const f of countableFiles) {
                         if (f.listened) {
                           totalProgress += 100;
@@ -27665,29 +27667,30 @@ export default function Dashboard() {
                           const liveChecked = isCurrentFile ? checkedChunksRef.current : null;
                           const liveTotal = isCurrentFile ? (ttsChunksRef.current.length || totalChunks) : 0;
                           if (liveChecked && liveChecked.size > 0 && liveTotal > 0) {
-                            totalProgress += Math.round((liveChecked.size / liveTotal) * 100);
+                            totalProgress += capUnlistened(Math.round((liveChecked.size / liveTotal) * 100));
                           } else if (f.checkedChunks && f.checkedChunks !== 'null' && f.checkedChunks !== '[]' && f.totalChunks && f.totalChunks > 0) {
                             try {
                               const checked = JSON.parse(f.checkedChunks);
                               if (Array.isArray(checked) && checked.length > 0) {
-                                totalProgress += Math.round((checked.length / f.totalChunks) * 100);
+                                totalProgress += capUnlistened(Math.round((checked.length / f.totalChunks) * 100));
                               } else if (f.lastChunkIndex != null && f.lastChunkIndex > 0) {
-                                totalProgress += Math.round((f.lastChunkIndex / f.totalChunks) * 100);
+                                totalProgress += capUnlistened(Math.round((f.lastChunkIndex / f.totalChunks) * 100));
                               }
                             } catch {
                               if (f.lastChunkIndex != null && f.lastChunkIndex > 0) {
-                                totalProgress += Math.round((f.lastChunkIndex / f.totalChunks) * 100);
+                                totalProgress += capUnlistened(Math.round((f.lastChunkIndex / f.totalChunks) * 100));
                               }
                             }
                           } else if (isCurrentFile && isPlaying && totalChunks > 0) {
-                            totalProgress += Math.round(((currentChunkIndex + 1) / totalChunks) * 100);
+                            totalProgress += capUnlistened(Math.round(((currentChunkIndex + 1) / totalChunks) * 100));
                           } else if (f.totalChunks && f.totalChunks > 0 && f.lastChunkIndex != null && f.lastChunkIndex >= 0) {
-                            totalProgress += Math.round((f.lastChunkIndex / f.totalChunks) * 100);
+                            totalProgress += capUnlistened(Math.round((f.lastChunkIndex / f.totalChunks) * 100));
                           }
                         }
                       }
-                      const filesPct = Math.min(100, Math.round(totalProgress / countableFiles.length));
-                      return { percent: Math.max(filesPct, fcPct >= 0 ? fcPct : 0), hasFiles: preparedFiles.length > 0 };
+                      const allListened = countableFiles.every(f => f.listened);
+                      const filesPct = Math.min(allListened ? 100 : 99, Math.round(totalProgress / countableFiles.length));
+                      return { percent: Math.max(filesPct, fcPct >= 0 ? Math.min(fcPct, allListened ? 100 : 99) : 0), hasFiles: preparedFiles.length > 0 };
                     };
                     const getProgressColor = (percent: number) => {
                       if (percent === 100) return '#22c55e';
