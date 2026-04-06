@@ -22121,7 +22121,7 @@ export default function Dashboard() {
 
           {showWeatherHistoryPanel && (() => {
             const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-            return (
+            return createPortal(
             <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 100100 }} onClick={() => setShowWeatherHistoryPanel(false)} data-testid="weather-history-overlay">
               <div className="absolute inset-0 bg-black/50" />
               <div className="relative w-[720px] max-h-[80vh] rounded-lg flex flex-col" onClick={e => e.stopPropagation()} style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
@@ -22216,7 +22216,7 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-            );
+            , document.body);
           })()}
 
           <Dialog open={isProfileDialogOpen} onOpenChange={setIsProfileDialogOpen}>
@@ -27980,16 +27980,18 @@ export default function Dashboard() {
                                 })()}
                                 {/* Task body */}
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '1px 3px 2px 3px', flex: 1 }}>
-                                  <Checkbox
-                                    checked={task.isCompleted || false}
-                                    onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                    onClick={(e) => e.stopPropagation()}
-                                    className="h-3.5 w-3.5 shrink-0 bg-white data-[state=checked]:bg-white data-[state=checked]:text-black"
-                                    style={{ border: '1px solid black' }}
-                                    data-testid={`checkbox-time-${task.id}`}
-                                  />
+                                  <div style={{ width: '17px', minWidth: '17px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <Checkbox
+                                      checked={task.isCompleted || false}
+                                      onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                      onClick={(e) => e.stopPropagation()}
+                                      className="h-3.5 w-3.5 shrink-0 bg-white data-[state=checked]:bg-white data-[state=checked]:text-black"
+                                      style={{ border: '1px solid black' }}
+                                      data-testid={`checkbox-time-${task.id}`}
+                                    />
+                                  </div>
                                   {(() => { const hasAtt = (task.attachments?.length && task.attachments.some((att: any) => { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; return !!url; })) || task.referenceLink; return hasAtt ? <img src={pdfAttachIconPath} alt="PDF" style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0 }} data-testid={`attachment-icon-time-${task.id}`} /> : null; })()}
-                                  <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center' }}>
                                     <div style={{ fontSize: '9px', fontWeight: 400, color: '#000000', lineHeight: 1, fontStyle: 'italic' }}>
                                       {task.eventStartTime && task.eventEndTime ? `${formatTimeTo12Hour(task.eventStartTime)} - ${formatTimeTo12Hour(task.eventEndTime)}` : format(new Date(task.dueDate), "h:mm a")}
                                     </div>
@@ -28033,14 +28035,16 @@ export default function Dashboard() {
                                 </div>
                               </div>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '2px 4px 3px 4px', flex: 1 }}>
-                                <Checkbox
-                                  checked={false}
-                                  onCheckedChange={() => toggleDismissCalendarEvent(event.id)}
-                                  className="h-3.5 w-3.5 shrink-0 bg-white data-[state=checked]:bg-white data-[state=checked]:text-black"
-                                  style={{ border: '1px solid black' }}
-                                  data-testid={`checkbox-gcal-${event.id}`}
-                                />
-                                <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ width: '17px', minWidth: '17px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                  <Checkbox
+                                    checked={false}
+                                    onCheckedChange={() => toggleDismissCalendarEvent(event.id)}
+                                    className="h-3.5 w-3.5 shrink-0 bg-white data-[state=checked]:bg-white data-[state=checked]:text-black"
+                                    style={{ border: '1px solid black' }}
+                                    data-testid={`checkbox-gcal-${event.id}`}
+                                  />
+                                </div>
+                                <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center' }}>
                                   <div style={{ fontSize: '9px', fontWeight: 400, color: '#000000', lineHeight: 1, fontStyle: 'italic' }}>
                                     {format(new Date(event.startDate), "h:mm a")}{event.endDate ? ` - ${format(new Date(event.endDate), "h:mm a")}` : ''}
                                   </div>
