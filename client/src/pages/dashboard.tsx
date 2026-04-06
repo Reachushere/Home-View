@@ -27599,7 +27599,7 @@ export default function Dashboard() {
                                     const courseCode = nextSchoolTask?.courseName?.split(' - ')[0]?.trim() || '';
                                     const gradColors = getCourseGradientColors(courseCode);
                                     return (
-                                      <div style={{ flex: 1, position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, #16a34a 0%, #16a34a 60%, #22c55e 100%)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 8px 0 4px' }}>
+                                      <div style={{ flex: 1, position: 'relative', overflow: 'hidden', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 8px 0 4px' }}>
                                         <span style={{ zIndex: 1, fontSize: '9px', color: 'rgba(255,255,255,0.9)', fontWeight: 400, lineHeight: 1.1, textAlign: 'left' }}>Next<br/>Task<br/>Due In</span>
                                         <span style={{ zIndex: 1, fontSize: '20px', color: 'white', fontWeight: 900, lineHeight: 1, flexShrink: 0 }}>{displayTime}<span style={{ fontSize: '10px', fontWeight: 600, marginLeft: '2px' }}>{hoursUntil !== null && hoursUntil < 1 ? 'min' : 'hrs'}</span></span>
                                       </div>
