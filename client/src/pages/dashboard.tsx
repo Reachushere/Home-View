@@ -18286,11 +18286,11 @@ export default function Dashboard() {
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
                   <span style={{ fontSize: '14px' }}>{icon}</span>
-                  <span style={{ fontSize: '13px', fontWeight: 600, color: courseColor, textDecoration: task.isCompleted ? 'line-through' : 'none', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid={`day-detail-title-${task.id}`}>{(task.title || '').replace(/[\[\]]/g, '').trim()}</span>
+                  <span style={{ fontSize: '13px', fontWeight: 600, color: courseColor, textDecoration: task.isCompleted ? 'line-through' : 'none', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid={`day-detail-title-${task.id}`}>{(task.title || '').replace(/^\[.*?\]\s*/g, '').trim() || task.title}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginBottom: '4px' }}>
                   {task.courseName && (
-                    <span style={{ fontSize: '10px', fontWeight: 600, color: courseColor, background: `${courseColor}22`, padding: '1px 6px', borderRadius: '4px', border: `1px solid ${courseColor}44` }} data-testid={`day-detail-course-${task.id}`}>{task.courseName.split(' - ')[0]}{courseFullName ? ` - ${courseFullName}` : ''}</span>
+                    <span style={{ fontSize: '10px', fontWeight: 600, color: '#ffffff', background: `${courseColor}22`, padding: '1px 6px', borderRadius: '4px', border: `1px solid ${courseColor}44` }} data-testid={`day-detail-course-${task.id}`}>{task.courseName.split(' - ')[0]}{courseFullName ? ` - ${courseFullName}` : ''}</span>
                   )}
                   <span style={{ fontSize: '10px', color: '#ffffff', textTransform: 'capitalize' }}>{task.type}</span>
                   <span style={{ fontSize: '9px', fontWeight: 600, color: pColor, background: `${pColor}22`, padding: '1px 5px', borderRadius: '3px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{task.priority}</span>
