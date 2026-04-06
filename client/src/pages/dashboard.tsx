@@ -23411,7 +23411,18 @@ export default function Dashboard() {
                                   />
                                   <span className="text-[10px] font-bold whitespace-nowrap" style={{ color: '#ffffff', marginRight: '3px' }}>{sem.label}</span>
                                   {!sem.key.startsWith('ss') ? (
-                                    <span className="text-[9px] whitespace-nowrap px-1.5 py-0.5 rounded border cursor-pointer hover:bg-white/15 transition-colors" style={{ color: '#ffffff', background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)', marginRight: '3px' }} onClick={(e) => { e.stopPropagation(); setSemDatePickerKey(sem.key); setSemDatePickerHalf('full'); }} data-testid={`dates-pill-${sem.key}`}>{sem.dates}</span>
+                                    <span className="text-[9px] whitespace-nowrap px-1.5 py-0.5 rounded border cursor-pointer hover:bg-white/15 transition-colors" style={{ color: '#ffffff', background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)', marginRight: '3px' }} onClick={(e) => { e.stopPropagation(); setSemDatePickerKey(sem.key); setSemDatePickerHalf('full'); }} data-testid={`dates-pill-${sem.key}`}>{(() => {
+                                      const ps = perSemesterSettings[sem.key] as any;
+                                      if (ps?.week1StartDate || ps?.semesterEndDate) {
+                                        const fmtDate = (d: string) => { if (!d) return '?'; const dt = new Date(d + 'T12:00:00'); return dt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); };
+                                        const semStartDatesLocal: Record<string, string> = { 'f2025': '2025-09-08', 'w2026': '2026-01-12', 'f2026': '2026-09-07', 'w2027': '2027-01-11', 'f2027': '2027-09-13', 'w2028': '2028-01-10', 'f2028': '2028-09-11', 'w2029': '2029-01-08' };
+                                        const semEndDatesLocal: Record<string, string> = { 'f2025': '2025-12-12', 'w2026': '2026-04-17', 'f2026': '2026-12-11', 'w2027': '2027-04-16', 'f2027': '2027-12-17', 'w2028': '2028-04-14', 'f2028': '2028-12-15', 'w2029': '2029-04-13' };
+                                        const startStr = ps.week1StartDate || semStartDatesLocal[sem.key] || '';
+                                        const endStr = ps.semesterEndDate || semEndDatesLocal[sem.key] || '';
+                                        return `${fmtDate(startStr)} – ${fmtDate(endStr)}`;
+                                      }
+                                      return sem.dates;
+                                    })()}</span>
                                   ) : (() => {
                                     const ss = perSemesterSettings[sem.key] as any;
                                     const fmtD = (d: string) => { if (!d) return '?'; const dt = new Date(d + 'T12:00:00'); return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); };
