@@ -27646,17 +27646,15 @@ export default function Dashboard() {
                               taskLanes.push(lane);
                             });
                             const matchingBars = deduped.map((cd, idx) => ({ ...cd, lane: taskLanes[idx] })).filter(cd => {
-                              if (hour !== cd.tDueHour) return false;
+                              if (hour !== 0) return false;
                               return dayIdx >= cd.startDay && dayIdx <= cd.endDay;
                             });
                             if (matchingBars.length === 0) return null;
                             return matchingBars.map(cd => {
                               const t = cd.task;
                               const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
-                              const isBarCell = dayIdx >= cd.startDay && dayIdx <= cd.startDay + 1 && dayIdx <= cd.endDay;
-                              if (!isBarCell) return null;
                               const isFirstCell = dayIdx === cd.startDay;
-                              const isLastCell = dayIdx === cd.startDay + 1 || dayIdx === cd.endDay;
+                              const isLastCell = dayIdx === cd.endDay;
                               const topPx = 2 + cd.lane * barGap;
                               const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
                               const needsPulse = isNotStarted && cd.daysLeft <= 2 && !t.isCompleted;
@@ -30022,7 +30020,7 @@ export default function Dashboard() {
             );
           })()}
           <div style={{ padding: '0 8px', height: courseRowRects.length > 0 ? `${courseRowRects[0].top - (calendarBorderTop || (calendarTop + 15)) - 1}px` : '45px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 46, overflow: 'hidden', marginBottom: '0px', boxShadow: '0 3px 6px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3)' }}>
-            <div style={{ position: 'absolute', top: '21px', left: '22px', right: 0, height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)', zIndex: 2 }} />
+            <div style={{ position: 'absolute', top: '21px', left: '22px', right: '8px', height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)', zIndex: 2 }} />
             <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: '6px', bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', zIndex: 2 }}>Homework Progress</span>
             <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: `${effectiveDividerPct}%`, bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', paddingLeft: '6px', zIndex: 2 }}>Most Urgent Assignments</span>
             <div style={{ position: 'absolute', top: 0, left: '14px', right: '4px', height: '21px', perspective: '400px', overflow: 'hidden', zIndex: 1 }}>
