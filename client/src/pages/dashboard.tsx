@@ -27988,7 +27988,7 @@ export default function Dashboard() {
                           {visibleCalendarEvents.map((event, eventIdx) => {
                             const eventMin = getETMinutes(new Date(event.startDate));
                             const calTopOffset = eventMin > 0 ? (eventMin / 60) * rowHeight : 2;
-                            const calMaxHeight = Math.min(40, rowHeight - calTopOffset - 2);
+                            const calMaxHeight = rowHeight - calTopOffset - 2;
                             const gcalColor = otherRowColors.borderColor || '#6b7280';
                             const gcalBg = otherRowColors.taskBgColor || '#f3f4f6';
                             return (
