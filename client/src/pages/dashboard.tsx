@@ -25466,7 +25466,7 @@ export default function Dashboard() {
           <div ref={calendarBorderRef} className="shadow-lg flex flex-col relative" style={{ background: 'transparent', borderRadius: '8px', overflow: 'hidden', height: 'calc(100%)', width: 'calc(100%)', marginLeft: '0px', marginTop: '-2px' }}>
             <div className="absolute inset-0 rounded-[8px] border border-white pointer-events-none" style={{ zIndex: 101 }} />
             {/* Progress/Saturday divider line - grey separator on left border of Saturday column, spans full height */}
-            <div className="absolute bottom-0 pointer-events-none overflow-hidden" style={{ top: '0px', zIndex: 3, left: `calc(${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px + (${gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px) - 1px)`, width: '3px', backgroundColor: colorSettings.headerBar }}>
+            <div className="absolute bottom-0 pointer-events-none overflow-hidden" style={{ top: '0px', zIndex: 1, left: `calc(${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px + (${gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px) - 1px)`, width: '3px', backgroundColor: colorSettings.headerBar }}>
             </div>
             {/* Black border around today column - always show */}
             {(() => {
@@ -27704,14 +27704,14 @@ export default function Dashboard() {
                               const barHPx = needsPulse ? 4 : barH;
                               if (isFirstCell) {
                                 return (
-                                  <div key={`cbar-main-${t.id}`} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '200%', pointerEvents: 'none', zIndex: 2, overflow: 'visible' }} data-testid={`countdown-span-main-${t.id}-day-${dayIdx}`}>
-                                    <div style={{ position: 'absolute', left: '0px', top: `${topPx}px`, right: 0, height: `${barHPx}px`, display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
-                                      <div style={{ width: '10px', minWidth: '10px', height: '100%', background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
-                                      <div style={{ width: '24px', minWidth: '24px', textAlign: 'right', paddingRight: '3px', flexShrink: 0 }}>
-                                        <span style={{ fontSize: '13px', fontWeight: 500, color: barColor, letterSpacing: '-0.2px' }}>{cd.daysLeft}d</span>
+                                  <div key={`cbar-main-${t.id}`} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '200%', pointerEvents: 'none', zIndex: 2, overflow: 'hidden' }} data-testid={`countdown-span-main-${t.id}-day-${dayIdx}`}>
+                                    <div style={{ position: 'absolute', left: '0px', top: `${topPx}px`, right: 0, height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
+                                      <div style={{ width: '10px', minWidth: '10px', height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
+                                      <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
+                                        <span style={{ fontSize: '9px', fontWeight: 500, color: barColor, letterSpacing: '-0.2px', lineHeight: '10px' }}>{cd.daysLeft}d</span>
                                       </div>
-                                      <span style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(0,0,0,0.85)', whiteSpace: 'nowrap', flexShrink: 0, paddingRight: '4px' }}>{labelText}</span>
-                                      <div className={needsPulse ? 'countdown-bar-pulse' : ''} style={{ flex: 1, height: '100%', background: barColor, opacity: 0.85, borderRadius: '0 2px 2px 0', minWidth: '10px', boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined }} />
+                                      <span style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(0,0,0,0.85)', whiteSpace: 'nowrap', flexShrink: 0, paddingLeft: '1px', paddingRight: '3px', lineHeight: '10px' }}>{labelText}</span>
+                                      <div className={needsPulse ? 'countdown-bar-pulse' : ''} style={{ flex: 1, height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '0 2px 2px 0', minWidth: '10px', boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined }} />
                                     </div>
                                   </div>
                                 );
@@ -27992,8 +27992,8 @@ export default function Dashboard() {
                                   );
                                 })()}
                                 {/* Task body */}
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '1px 0 2px 0', flex: 1 }}>
-                                  <div style={{ width: '16px', minWidth: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '0', flex: 1, minHeight: '14px' }}>
+                                  <div style={{ width: '16px', minWidth: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, height: '14px' }}>
                                     <Checkbox
                                       checked={task.isCompleted || false}
                                       onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
@@ -28004,10 +28004,10 @@ export default function Dashboard() {
                                     />
                                   </div>
                                   {(() => { const hasAtt = (task.attachments?.length && task.attachments.some((att: any) => { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; return !!url; })) || task.referenceLink; return hasAtt ? <img src={pdfAttachIconPath} alt="PDF" style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0 }} data-testid={`attachment-icon-time-${task.id}`} /> : null; })()}
-                                  <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center' }}>
-                                    <div style={{ fontSize: '9px', fontWeight: 400, color: '#000000', lineHeight: 1, fontStyle: 'italic' }}>
+                                  <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', height: '14px' }}>
+                                    <span style={{ fontSize: '9px', fontWeight: 400, color: '#000000', lineHeight: '14px', fontStyle: 'italic' }}>
                                       {task.eventStartTime && task.eventEndTime ? `${formatTimeTo12Hour(task.eventStartTime)} - ${formatTimeTo12Hour(task.eventEndTime)}` : format(new Date(task.dueDate), "h:mm a")}
-                                    </div>
+                                    </span>
                                   </div>
                                   {(() => { const dm = courseDeliveryModes[courseCode] || ''; return dm === 'virtual' ? <img src={zoomCamPath} alt="Zoom" style={{ width: '14px', height: '14px', objectFit: 'contain', borderRadius: '50%', flexShrink: 0 }} data-testid={`zoom-icon-time-${task.id}`} /> : null; })()}
                                 </div>

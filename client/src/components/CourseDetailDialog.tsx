@@ -1645,11 +1645,11 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 {courseInfo.courseType === "core" ? "Core" : courseInfo.courseType === "open_elective" ? "Elective" : "Liberal Studies"}
               </span>
             )}
-            <GraduationCap className="text-white flex-shrink-0" style={{ width: '15px', height: '15px' }} />
+            <GraduationCap className="flex-shrink-0" style={{ width: '15px', height: '15px', color: (editInfo.courseFontColor || courseInfo.courseFontColor) || 'white' }} />
             <div className="min-w-0 flex items-center gap-2">
               <h2
-                className="font-normal text-white truncate"
-                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}
+                className="font-normal truncate"
+                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px', color: (editInfo.courseFontColor || courseInfo.courseFontColor) || 'white' }}
                 data-testid="text-course-title"
               >
                 {courseInfo.courseCode} — {courseInfo.courseName}
