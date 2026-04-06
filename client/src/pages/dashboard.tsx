@@ -27680,9 +27680,9 @@ export default function Dashboard() {
                                     data-testid={`countdown-span-main-${t.id}-day-${dayIdx}`}
                                   >
                                     {isFirstCell && (
-                                      <div style={{ position: 'absolute', left: '2px', top: `${-6}px`, display: 'flex', alignItems: 'center', gap: '3px', whiteSpace: 'nowrap', lineHeight: 1, height: '13px', background: 'rgba(255,255,255,0.85)', borderRadius: '2px', padding: '0 3px' }}>
-                                        <span style={{ fontSize: '11px', fontWeight: 400, color: barColor, letterSpacing: '-0.2px' }}>{cd.daysLeft}d</span>
-                                        <span style={{ fontSize: '9px', fontWeight: 500, color: 'rgba(0,0,0,0.55)', whiteSpace: 'nowrap' }}>{labelText}</span>
+                                      <div style={{ position: 'absolute', left: '-8px', top: `${-6}px`, display: 'flex', alignItems: 'center', gap: '3px', whiteSpace: 'nowrap', lineHeight: 1, height: '13px', background: 'rgba(255,255,255,0.85)', borderRadius: '2px', padding: '0 3px', maxWidth: '200%', overflow: 'hidden' }}>
+                                        <span style={{ fontSize: '11px', fontWeight: 300, color: barColor, letterSpacing: '-0.2px', flexShrink: 0 }}>{cd.daysLeft}d</span>
+                                        <span style={{ fontSize: '9px', fontWeight: 600, color: 'rgba(0,0,0,0.55)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{labelText}</span>
                                       </div>
                                     )}
                                   </div>
@@ -27954,9 +27954,7 @@ export default function Dashboard() {
                                       <div style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%), ${typeBarColor}`, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1px 3px', flexShrink: 0, alignSelf: 'stretch' }}>
                                       {effectiveType === 'class' ? (
                                         <div style={{ width: '10px', height: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><img src={teacherWhiteIconPath} alt="Class" style={{ width: '10px', height: '10px', objectFit: 'contain' }} data-testid={`type-icon-time-${task.id}`} /></div>
-                                      ) : TIcon ? (
-                                        <div style={{ width: '10px', height: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><TIcon style={{ width: '10px', height: '10px', color: 'rgba(255,255,255,0.9)' } as any} data-testid={`type-icon-time-${task.id}`} /></div>
-                                      ) : <div style={{ width: '10px', height: '10px', flexShrink: 0 }} />}
+                                      ) : (() => { const SIcon = iconMap[effectiveType] || MoreHorizontal; return <div style={{ width: '10px', height: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><SIcon style={{ width: '10px', height: '10px', color: 'white' } as any} data-testid={`type-icon-time-${task.id}`} /></div>; })()}
                                       </div>
                                       <span style={{ fontSize: '9px', fontWeight: 500, color: 'white', letterSpacing: '0.3px', textShadow: '0 1px 2px rgba(0,0,0,0.3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, padding: '1px 3px' }}>
                                         {(() => { const raw = (task.title || '').replace(/[\[\]]/g, '').replace(/^\s+/, '').replace(/^online\s+/i, ''); const t = raw; const isModRead = /^(module|reading|module\s*(?:&|and)\s*reading)$/i.test(t.trim()); if (isModRead && task.courseName) { const cc = task.courseName.split(' - ')[0]?.trim(); if (cc) return `${cc} ${t}`; } return t; })()}
@@ -28011,17 +28009,23 @@ export default function Dashboard() {
                               }}
                               data-testid={`gcal-event-${event.id}`}
                             >
-                              <div style={{ background: gcalColor, display: 'flex', alignItems: 'center', padding: '1px 3px', flexShrink: 0 }}>
-                                <span style={{ fontSize: '9px', fontWeight: 500, color: 'white', letterSpacing: '0.3px', textShadow: '0 1px 2px rgba(0,0,0,0.3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
-                                  {event.title}
-                                </span>
+                              <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, borderBottom: '1px solid rgba(0,0,0,0.15)', borderRadius: '2px 2px 0 0', overflow: 'hidden', minHeight: '16px' }}>
+                                <div style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%), ${gcalColor}`, padding: '2px 3px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, minWidth: '17px', position: 'relative' }}>
+                                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 50%, transparent 100%)', pointerEvents: 'none' }} />
+                                  <MoreHorizontal className="shrink-0" style={{ width: '11px', height: '11px', position: 'relative', zIndex: 1, color: 'white' } as any} data-testid={`type-icon-gcal-${event.id}`} />
+                                </div>
+                                <div style={{ background: gcalColor, padding: '2px 4px', display: 'flex', alignItems: 'center', flex: 1, minWidth: 0 }}>
+                                  <span style={{ fontSize: '9px', fontWeight: 700, color: 'white', letterSpacing: '0.3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                                    {event.title}
+                                  </span>
+                                </div>
                               </div>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '1px 3px 2px 3px', flex: 1 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '2px 4px 3px 4px', flex: 1 }}>
                                 <Checkbox
                                   checked={false}
                                   onCheckedChange={() => toggleDismissCalendarEvent(event.id)}
-                                  className="shrink-0 bg-white data-[state=checked]:bg-white data-[state=checked]:text-black"
-                                  style={{ width: '10px', height: '10px', border: '1px solid black', marginLeft: '-1px' }}
+                                  className="h-3.5 w-3.5 shrink-0 bg-white data-[state=checked]:bg-white data-[state=checked]:text-black"
+                                  style={{ border: '1px solid black' }}
                                   data-testid={`checkbox-gcal-${event.id}`}
                                 />
                                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -28204,19 +28208,18 @@ export default function Dashboard() {
                           }}>
                             <div style={{
                               background: `linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%), ${typeBarColor}`,
-                              padding: '2px 4px',
+                              padding: '2px 3px',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
                               position: 'relative',
                               flexShrink: 0,
+                              minWidth: '17px',
                             }}>
                               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 50%, transparent 100%)', pointerEvents: 'none' }} />
                               {effectiveType === 'class' ? (
                                 <img src={teacherWhiteIconPath} alt="Class" style={{ width: '11px', height: '11px', objectFit: 'contain', position: 'relative', zIndex: 1 }} data-testid={`type-icon-multi-${task.id}`} />
-                              ) : TIcon ? (
-                                <TIcon className="h-3 w-3 shrink-0" style={{ position: 'relative', zIndex: 1, color: 'rgba(255,255,255,0.9)' } as any} data-testid={`type-icon-multi-${task.id}`} />
-                              ) : null}
+                              ) : (() => { const MIcon = iconMap[effectiveType] || MoreHorizontal; return <MIcon className="shrink-0" style={{ width: '11px', height: '11px', position: 'relative', zIndex: 1, color: 'white' } as any} data-testid={`type-icon-multi-${task.id}`} />; })()}
                             </div>
                             <div style={{
                               background: moduleBoxColor,
@@ -28234,12 +28237,12 @@ export default function Dashboard() {
                         );
                       })()}
                       {/* Task body */}
-                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '3px', padding: '2px 4px 3px 4px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '2px 4px 3px 4px' }}>
                         <Checkbox
                           checked={task.isCompleted || false}
                           onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
                           className="h-3.5 w-3.5 shrink-0 bg-white data-[state=checked]:bg-white data-[state=checked]:text-black"
-                          style={{ border: '1px solid black', marginTop: '1px' }}
+                          style={{ border: '1px solid black' }}
                           onClick={(e) => e.stopPropagation()}
                         />
                         {(() => { const hasAtt = (task.attachments?.length && task.attachments.some((att: any) => { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; return !!url; })) || task.referenceLink; return hasAtt ? <img src={pdfAttachIconPath} alt="PDF" style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0 }} data-testid={`attachment-icon-multi-${task.id}`} /> : null; })()}
