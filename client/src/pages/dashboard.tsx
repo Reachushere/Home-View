@@ -26826,7 +26826,7 @@ export default function Dashboard() {
                                 checked={task.isCompleted || false}
                                 onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
                                 onClick={(e) => e.stopPropagation()}
-                                className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                className="h-3 w-3 shrink-0 bg-white border-black data-[state=checked]:bg-white data-[state=checked]:border-black data-[state=checked]:text-black"
                                 style={{ marginLeft: '-1px' }}
                                 data-testid={`checkbox-course-row-${task.id}`}
                               />
@@ -27988,7 +27988,6 @@ export default function Dashboard() {
                           {visibleCalendarEvents.map((event, eventIdx) => {
                             const eventMin = getETMinutes(new Date(event.startDate));
                             const calTopOffset = eventMin > 0 ? (eventMin / 60) * rowHeight : 2;
-                            const calMaxHeight = rowHeight - calTopOffset - 2;
                             const gcalColor = otherRowColors.borderColor || '#6b7280';
                             const gcalBg = otherRowColors.taskBgColor || '#f3f4f6';
                             return (
@@ -27999,9 +27998,7 @@ export default function Dashboard() {
                                 top: `${calTopOffset}px`,
                                 left: `calc(${(hourTasks.length + eventIdx) * columnWidth}% + 2px)`,
                                 width: `calc(${columnWidth}% - 4px)`,
-                                height: `${Math.max(20, calMaxHeight)}px`,
-                                maxHeight: `${Math.max(20, calMaxHeight)}px`,
-                                zIndex: 1,
+                                zIndex: 3,
                                 border: `1.5px solid ${gcalColor}`,
                                 backgroundColor: gcalBg,
                                 display: 'flex',
