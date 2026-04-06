@@ -27439,8 +27439,9 @@ export default function Dashboard() {
                             });
                             if (matchingBars.length === 0) return null;
                             const cellTasksList = getTasksForHour(day, hour);
+                            const cellContinuing = getContinuingTasksForHour(day, hour);
                             const cellEventsList = getCalendarEventsForHour(day, hour);
-                            const cellHasTasks = cellTasksList.length > 0 || cellEventsList.length > 0;
+                            const cellHasTasks = cellTasksList.length > 0 || cellContinuing.length > 0 || cellEventsList.length > 0;
                             return matchingBars.map(cd => {
                               const isOwnTaskCell = !cd.beyond && dayIdx === cd.tDueDayIdx;
                               if (cellHasTasks && !isOwnTaskCell && dayIdx !== cd.startDay) return null;
