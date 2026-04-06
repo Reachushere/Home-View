@@ -28633,7 +28633,7 @@ export default function Dashboard() {
                                       position: 'relative',
                                       overflow: 'hidden',
                                     }}>
-                                      <div style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%), ${typeBarColor}`, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1px 3px', flexShrink: 0, alignSelf: 'stretch' }}>
+                                      <div style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%), ${typeBarColor}`, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '16px', minWidth: '16px', flexShrink: 0, alignSelf: 'stretch' }}>
                                       {effectiveType === 'class' ? (
                                         <div style={{ width: '10px', height: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><img src={teacherWhiteIconPath} alt="Class" style={{ width: '10px', height: '10px', objectFit: 'contain' }} data-testid={`type-icon-time-${task.id}`} /></div>
                                       ) : (() => { const SIcon = iconMap[effectiveType] || MoreHorizontal; return <div style={{ width: '10px', height: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><SIcon style={{ width: '10px', height: '10px', color: 'white' } as any} data-testid={`type-icon-time-${task.id}`} /></div>; })()}
@@ -28893,13 +28893,14 @@ export default function Dashboard() {
                           }}>
                             <div style={{
                               background: `linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%), ${typeBarColor}`,
-                              padding: '2px 3px',
+                              padding: '2px 0',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
                               position: 'relative',
                               flexShrink: 0,
-                              minWidth: '17px',
+                              width: '18px',
+                              minWidth: '18px',
                             }}>
                               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 50%, transparent 100%)', pointerEvents: 'none' }} />
                               {effectiveType === 'class' ? (
@@ -28922,7 +28923,8 @@ export default function Dashboard() {
                         );
                       })()}
                       {/* Task body */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '2px 4px 3px 4px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '2px 4px 3px 0' }}>
+                        <div style={{ width: '18px', minWidth: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                         <Checkbox
                           checked={task.isCompleted || false}
                           onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
@@ -28930,6 +28932,7 @@ export default function Dashboard() {
                           style={{ border: '1px solid black' }}
                           onClick={(e) => e.stopPropagation()}
                         />
+                        </div>
                         {(() => { const hasAtt = (task.attachments?.length && task.attachments.some((att: any) => { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; return !!url; })) || task.referenceLink; return hasAtt ? <img src={pdfAttachIconPath} alt="PDF" style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0 }} data-testid={`attachment-icon-multi-${task.id}`} /> : null; })()}
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ fontSize: '9px', fontWeight: 400, color: '#000000', lineHeight: 1.2, fontStyle: 'italic' }}>
