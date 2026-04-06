@@ -27663,8 +27663,20 @@ export default function Dashboard() {
                               const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
                               const needsPulse = isNotStarted && cd.daysLeft <= 2 && !t.isCompleted;
                               const labelText = (t.title || '').replace(/[\[\]]/g, '').replace(/^\s+/, '');
+                              const barHPx = needsPulse ? 4 : barH;
+                              if (isFirstCell) {
+                                return (
+                                  <div key={`cbar-main-${t.id}`} style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, pointerEvents: 'none', zIndex: 2 }} data-testid={`countdown-span-main-${t.id}-day-${dayIdx}`}>
+                                    <div style={{ position: 'absolute', left: '0px', width: '10px', top: `${topPx}px`, height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px' }} />
+                                    <div ref={el => { if (el) el.setAttribute('data-label-w', String(el.offsetWidth)); }} style={{ position: 'absolute', left: '10px', top: `${topPx - 5}px`, display: 'flex', alignItems: 'center', gap: '3px', whiteSpace: 'nowrap', lineHeight: 1, height: '13px', padding: '0 3px', maxWidth: 'calc(200% - 10px)', overflow: 'hidden' }}>
+                                      <span style={{ fontSize: '11px', fontWeight: 300, color: barColor, letterSpacing: '-0.2px', flexShrink: 0 }}>{cd.daysLeft}d</span>
+                                      <span style={{ fontSize: '9px', fontWeight: 600, color: 'rgba(0,0,0,0.55)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{labelText}</span>
+                                    </div>
+                                  </div>
+                                );
+                              }
                               return (
-                                <div key={`cbar-main-${t.id}`} style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, pointerEvents: 'none', zIndex: 2 }}>
+                                <div key={`cbar-main-${t.id}`} style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, pointerEvents: 'none', zIndex: 2 }} data-testid={`countdown-span-main-${t.id}-day-${dayIdx}`}>
                                   <div
                                     className={needsPulse ? 'countdown-bar-pulse' : ''}
                                     style={{
@@ -27672,22 +27684,14 @@ export default function Dashboard() {
                                       left: 0,
                                       right: 0,
                                       top: `${topPx}px`,
-                                      height: needsPulse ? '4px' : `${barH}px`,
+                                      height: `${barHPx}px`,
                                       background: barColor,
                                       opacity: 0.85,
                                       pointerEvents: 'none',
-                                      borderRadius: isFirstCell && isLastCell ? '2px' : isFirstCell ? '2px 0 0 2px' : isLastCell ? '0 2px 2px 0' : '0',
+                                      borderRadius: isLastCell ? '0 2px 2px 0' : '0',
                                       boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined,
                                     }}
-                                    data-testid={`countdown-span-main-${t.id}-day-${dayIdx}`}
-                                  >
-                                    {isFirstCell && (
-                                      <div style={{ position: 'absolute', left: '-8px', top: `${-6}px`, display: 'flex', alignItems: 'center', gap: '3px', whiteSpace: 'nowrap', lineHeight: 1, height: '13px', background: 'rgba(255,255,255,0.85)', borderRadius: '2px', padding: '0 3px', maxWidth: '200%', overflow: 'hidden' }}>
-                                        <span style={{ fontSize: '11px', fontWeight: 300, color: barColor, letterSpacing: '-0.2px', flexShrink: 0 }}>{cd.daysLeft}d</span>
-                                        <span style={{ fontSize: '9px', fontWeight: 600, color: 'rgba(0,0,0,0.55)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{labelText}</span>
-                                      </div>
-                                    )}
-                                  </div>
+                                  />
                                 </div>
                               );
                             });
