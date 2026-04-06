@@ -27421,17 +27421,16 @@ export default function Dashboard() {
                               const daysLeft = Math.max(0, Math.round((tDue.getTime() - today.getTime()) / (1000*60*60*24)));
                               return { task: t, tDue, tDueDayIdx, tDueHour, beyond, daysLeft, startDay: endDayIdx, endDay: tDueDayIdx };
                             }).sort((a, b) => a.tDueDayIdx - b.tDueDayIdx || a.tDueHour - b.tDueHour);
-                            const barH = 4;
-                            const barGap = 8;
-                            const lanes: { startDay: number; endDay: number }[] = [];
+                            const barH = 3;
+                            const barGap = 14;
                             const taskLanes: number[] = [];
+                            const occupied: { startDay: number; endDay: number; lane: number }[] = [];
                             allCountdown.forEach(cd => {
                               let lane = 0;
-                              while (lanes[lane] && !(cd.startDay > lanes[lane].endDay || cd.endDay < lanes[lane].startDay)) {
+                              while (occupied.some(o => o.lane === lane && !(cd.startDay > o.endDay || cd.endDay < o.startDay))) {
                                 lane++;
                               }
-                              if (!lanes[lane]) lanes[lane] = { startDay: cd.startDay, endDay: cd.endDay };
-                              else { lanes[lane].startDay = Math.min(lanes[lane].startDay, cd.startDay); lanes[lane].endDay = Math.max(lanes[lane].endDay, cd.endDay); }
+                              occupied.push({ startDay: cd.startDay, endDay: cd.endDay, lane });
                               taskLanes.push(lane);
                             });
                             const matchingBars = allCountdown.map((cd, idx) => ({ ...cd, lane: taskLanes[idx] })).filter(cd => {
@@ -27439,15 +27438,16 @@ export default function Dashboard() {
                               return dayIdx >= cd.startDay && dayIdx <= cd.endDay;
                             });
                             if (matchingBars.length === 0) return null;
-                            const cellHasTasks = getTasksForHour(day, hour).length > 0 || getCalendarEventsForHour(day, hour).length > 0;
+                            const cellTasksList = getTasksForHour(day, hour);
+                            const cellEventsList = getCalendarEventsForHour(day, hour);
+                            const cellHasTasks = cellTasksList.length > 0 || cellEventsList.length > 0;
                             return matchingBars.map(cd => {
-                              if (cellHasTasks && dayIdx !== cd.startDay) return null;
+                              if (cellHasTasks && dayIdx !== cd.startDay && dayIdx !== cd.endDay) return null;
                               const t = cd.task;
                               const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
                               const isTaskCell = !cd.beyond && dayIdx === cd.tDueDayIdx;
                               const isEndCell = dayIdx === cd.startDay;
-                              const baseBottom = 50;
-                              const laneBottom = baseBottom - cd.lane * barGap;
+                              const topPx = 2 + cd.lane * barGap;
                               const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
                               const needsPulse = isNotStarted && cd.daysLeft <= 2 && !t.isCompleted;
                               const labelText = (t.title || '').replace(/[\[\]]/g, '').replace(/^\s+/, '').substring(0, 20);
@@ -27456,20 +27456,18 @@ export default function Dashboard() {
                               return (
                                 <div key={`cbar-main-${t.id}`} style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, pointerEvents: 'none', zIndex: 4 + cd.lane }}>
                                   {needsElbow && (
-                                    <>
-                                      <div style={{ position: 'absolute', right: 0, bottom: `${baseBottom}%`, width: barH, height: elbowDropPx, background: barColor, opacity: 0.8, borderRadius: '2px 2px 0 0' }} />
-                                    </>
+                                    <div style={{ position: 'absolute', right: 0, top: `${2}px`, width: barH, height: elbowDropPx, background: barColor, opacity: 0.85 }} />
                                   )}
                                   <div
                                     className={needsPulse ? 'countdown-bar-pulse' : ''}
                                     style={{
                                       position: 'absolute',
-                                      left: needsElbow ? 0 : 0,
-                                      right: needsElbow ? 0 : 0,
-                                      bottom: `${laneBottom}%`,
-                                      height: needsPulse ? '5px' : `${barH}px`,
+                                      left: 0,
+                                      right: 0,
+                                      top: `${topPx}px`,
+                                      height: needsPulse ? '4px' : `${barH}px`,
                                       background: barColor,
-                                      opacity: 0.8,
+                                      opacity: 0.85,
                                       pointerEvents: 'none',
                                       borderRadius: isEndCell && isTaskCell ? '2px' : isEndCell ? '2px 0 0 2px' : isTaskCell ? '0 2px 2px 0' : '0',
                                       boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined,
@@ -27477,9 +27475,9 @@ export default function Dashboard() {
                                     data-testid={`countdown-span-main-${t.id}-day-${dayIdx}`}
                                   >
                                     {isEndCell && (
-                                      <div style={{ position: 'absolute', left: '2px', top: '-12px', display: 'flex', alignItems: 'baseline', gap: '3px', whiteSpace: 'nowrap', lineHeight: 1 }}>
-                                        <span style={{ fontSize: '9px', fontWeight: 800, color: barColor, textShadow: '0 0 3px rgba(255,255,255,0.8)' }}>{cd.daysLeft}d</span>
-                                        <span style={{ fontSize: '8px', fontWeight: 600, color: 'rgba(0,0,0,0.5)', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '80px' }}>{labelText}</span>
+                                      <div style={{ position: 'absolute', left: '1px', top: `${barH + 1}px`, display: 'flex', alignItems: 'center', gap: '2px', whiteSpace: 'nowrap', lineHeight: 1 }}>
+                                        <span style={{ fontSize: '8px', fontWeight: 800, color: barColor, textShadow: '0 0 3px rgba(255,255,255,0.9)' }}>{cd.daysLeft}d</span>
+                                        <span style={{ fontSize: '7px', fontWeight: 600, color: 'rgba(0,0,0,0.45)', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '70px' }}>{labelText}</span>
                                       </div>
                                     )}
                                   </div>
