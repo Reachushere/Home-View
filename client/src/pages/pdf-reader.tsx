@@ -689,10 +689,11 @@ export default function PDFReaderPage() {
     try { return Number(localStorage.getItem('lastNavTimestamp') || '0'); } catch { return 0; }
   });
   useEffect(() => {
+    if (followOnly) return;
     const isFireDevice = /\bSilk\b/i.test(navigator.userAgent) || /\bKF[A-Z]{2,4}\b/.test(navigator.userAgent) || /\bFireTV\b/i.test(navigator.userAgent) || /\bAFT[A-Z]\b/.test(navigator.userAgent);
     if (!isFireDevice) return;
     const isFireTV = /\bFireTV\b/i.test(navigator.userAgent) || /\bAFT[A-Z]\b/.test(navigator.userAgent);
-    const deviceRole = (() => { try { return localStorage.getItem('tabletDeviceRole'); } catch { return null; } })() || (isFireTV ? 'tv' : (followOnly ? 'follower' : 'master'));
+    const deviceRole = (() => { try { return localStorage.getItem('tabletDeviceRole'); } catch { return null; } })() || (isFireTV ? 'tv' : 'master');
     const saved = lastNavTimestamp.current;
     lastNavTimestamp.current = typeof saved === 'function' ? saved() : saved;
     const interval = setInterval(async () => {
