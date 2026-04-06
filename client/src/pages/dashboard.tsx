@@ -875,6 +875,53 @@ function PartnerShiftWizard({ partnerWizardStep, setPartnerWizardStep, partnerWi
     </div>
   );
 }
+function WeatherDateGroup({ dateStr, records, defaultOpen }: { dateStr: string; records: any[]; defaultOpen: boolean }) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  const sorted = records.sort((a: any, b: any) => new Date(b.recordedAt).getTime() - new Date(a.recordedAt).getTime());
+  const highTemp = Math.max(...records.map((r: any) => r.temperature));
+  const lowTemp = Math.min(...records.map((r: any) => r.temperature));
+  return (
+    <div className="mb-1">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between text-white font-semibold text-[12px] py-[6px] px-2 rounded hover:bg-white/10 transition-colors"
+        style={{ borderBottom: isOpen ? '1px solid rgba(255,255,255,0.15)' : 'none' }}
+        data-testid={`weather-date-toggle-${dateStr}`}
+      >
+        <div className="flex items-center gap-2">
+          <span style={{ transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.15s', display: 'inline-block', fontSize: '10px' }}>&#9654;</span>
+          <span>{dateStr}</span>
+          <span className="text-white/40 font-normal text-[10px] ml-1">{records.length} records</span>
+        </div>
+        <span className="text-[11px] font-normal text-white/60">
+          H: <span className="text-orange-300 font-medium">{Math.round(highTemp)}°</span>
+          {' '}L: <span className="text-blue-300 font-medium">{Math.round(lowTemp)}°</span>
+        </span>
+      </button>
+      {isOpen && (
+        <div className="grid gap-[2px] pt-1 pb-2">
+          {sorted.map((r: any) => {
+            const t = new Date(r.recordedAt);
+            const timeStr = t.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/Toronto' });
+            const tempColor = r.temperature <= 0 ? '#93c5fd' : r.temperature <= 10 ? '#60a5fa' : r.temperature <= 20 ? '#fbbf24' : r.temperature <= 30 ? '#f97316' : '#ef4444';
+            return (
+              <div key={r.id} className="flex items-center gap-3 text-[11px] py-[3px] px-2 rounded" style={{ background: 'rgba(255,255,255,0.05)' }} data-testid={`weather-record-${r.id}`}>
+                <span className="text-white/60 w-[70px] shrink-0">{timeStr}</span>
+                <span className="font-bold w-[45px] shrink-0" style={{ color: tempColor }}>{Math.round(r.temperature)}°C</span>
+                <span className="text-white/50 w-[55px] shrink-0">{r.feelsLike != null ? `${Math.round(r.feelsLike)}°C` : '--'}</span>
+                <span className="text-white/70 w-[100px] shrink-0">{r.condition || '--'}</span>
+                <span className="text-white/50 w-[75px] shrink-0">{r.windSpeed != null ? `${Math.round(r.windSpeed)} km/h` : '--'}</span>
+                <span className="text-white/40 w-[55px] shrink-0">{r.humidity != null ? `${r.humidity}%` : '--'}</span>
+                <span className="text-white/40 w-[50px] shrink-0">{r.precipitation > 0 ? `${r.precipitation}mm` : '--'}</span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const { toast } = useToast();
   
@@ -22049,16 +22096,18 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
 
-          {showWeatherHistoryPanel && (
-            <div className="fixed inset-0 z-[9999] flex items-center justify-center" onClick={() => setShowWeatherHistoryPanel(false)} data-testid="weather-history-overlay">
+          {showWeatherHistoryPanel && (() => {
+            const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+            return (
+            <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 99999 }} onClick={() => setShowWeatherHistoryPanel(false)} data-testid="weather-history-overlay">
               <div className="absolute inset-0 bg-black/50" />
-              <div className="relative w-[700px] max-h-[80vh] rounded-lg overflow-hidden" onClick={e => e.stopPropagation()} style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
+              <div className="relative w-[720px] max-h-[80vh] rounded-lg overflow-hidden" onClick={e => e.stopPropagation()} style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
                 <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                   <div className="flex items-center gap-2">
                     <Cloud className="h-4 w-4 text-white" />
                     <span className="text-white font-semibold text-[13px]">Toronto Weather History</span>
                   </div>
-                  <button onClick={() => setShowWeatherHistoryPanel(false)} className="text-white/70 hover:text-white text-lg" data-testid="button-close-weather-history">&times;</button>
+                  <div />
                 </div>
                 <div className="overflow-y-auto max-h-[calc(80vh-50px)] p-4">
                   {weatherHistoryLoading ? (
@@ -22073,34 +22122,35 @@ export default function Dashboard() {
                       if (!grouped[key]) grouped[key] = [];
                       grouped[key].push(r);
                     });
-                    return Object.entries(grouped).map(([dateStr, records]) => (
-                      <div key={dateStr} className="mb-4">
-                        <div className="text-white font-semibold text-[12px] mb-2 border-b border-white/20 pb-1">{dateStr}</div>
-                        <div className="grid gap-[2px]">
-                          {records.sort((a: any, b: any) => new Date(b.recordedAt).getTime() - new Date(a.recordedAt).getTime()).map((r: any) => {
-                            const t = new Date(r.recordedAt);
-                            const timeStr = t.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/Toronto' });
-                            const tempColor = r.temperature <= 0 ? '#93c5fd' : r.temperature <= 10 ? '#60a5fa' : r.temperature <= 20 ? '#fbbf24' : r.temperature <= 30 ? '#f97316' : '#ef4444';
-                            return (
-                              <div key={r.id} className="flex items-center gap-3 text-[11px] py-[3px] px-2 rounded" style={{ background: 'rgba(255,255,255,0.05)' }} data-testid={`weather-record-${r.id}`}>
-                                <span className="text-white/60 w-[70px] shrink-0">{timeStr}</span>
-                                <span className="font-bold w-[45px] shrink-0" style={{ color: tempColor }}>{Math.round(r.temperature)}°C</span>
-                                <span className="text-white/50 w-[55px] shrink-0">FL {r.feelsLike != null ? `${Math.round(r.feelsLike)}°` : '--'}</span>
-                                <span className="text-white/70 w-[100px] shrink-0">{r.condition || '--'}</span>
-                                <span className="text-white/50 w-[70px] shrink-0">💨 {r.windSpeed != null ? `${Math.round(r.windSpeed)} km/h` : '--'}</span>
-                                <span className="text-white/40 w-[50px] shrink-0">💧 {r.humidity != null ? `${r.humidity}%` : '--'}</span>
-                                {r.precipitation > 0 && <span className="text-blue-300">🌧 {r.precipitation}mm</span>}
-                              </div>
-                            );
-                          })}
+                    return (
+                      <>
+                        <div className="flex items-center gap-3 text-[10px] text-white/40 font-medium px-2 mb-2 uppercase tracking-wide">
+                          <span className="w-[70px] shrink-0">Time</span>
+                          <span className="w-[45px] shrink-0">Temp</span>
+                          <span className="w-[55px] shrink-0">Feels</span>
+                          <span className="w-[100px] shrink-0">Condition</span>
+                          <span className="w-[75px] shrink-0">Wind</span>
+                          <span className="w-[55px] shrink-0">Humidity</span>
+                          <span className="w-[50px] shrink-0">Precip</span>
                         </div>
-                      </div>
-                    ));
+                        {Object.entries(grouped).map(([dateStr, records]) => {
+                          const firstRecordDate = new Date(records[0].recordedAt);
+                          const isRecent = firstRecordDate >= oneWeekAgo;
+                          return (
+                            <WeatherDateGroup key={dateStr} dateStr={dateStr} records={records} defaultOpen={isRecent} />
+                          );
+                        })}
+                      </>
+                    );
                   })()}
+                </div>
+                <div className="flex justify-end px-4 py-3 border-t border-white/15">
+                  <button onClick={() => setShowWeatherHistoryPanel(false)} className="px-4 py-[5px] rounded text-[12px] font-medium text-white bg-white/15 hover:bg-white/25 transition-colors" data-testid="button-close-weather-history">Close</button>
                 </div>
               </div>
             </div>
-          )}
+            );
+          })()}
 
           <Dialog open={isProfileDialogOpen} onOpenChange={setIsProfileDialogOpen}>
             <DialogContent className="max-w-md text-[11px] text-white [&_*:not(input)]:text-white [&_label]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ top: 'calc(55% - 30px)', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
