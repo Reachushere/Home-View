@@ -18470,25 +18470,25 @@ export default function Dashboard() {
           const courseFullName = effectiveCourseName?.includes(' - ') ? effectiveCourseName.split(' - ').slice(1).join(' - ') : '';
           const daysUntil = task.dueDate ? differenceInCalendarDays(startOfDayET(new Date(task.dueDate)), startOfDayET(new Date())) : 0;
           return (
-            <div key={task.id} draggable onDragStart={(e) => { e.dataTransfer.setData('text/plain', String(task.id)); e.dataTransfer.effectAllowed = 'move'; (e.currentTarget as HTMLElement).style.opacity = '0.5'; }} onDragEnd={(e) => { (e.currentTarget as HTMLElement).style.opacity = task.isCompleted ? '0.45' : '1'; }} style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', padding: '6px 10px', borderRadius: '8px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.18)', borderLeft: `3px solid ${courseColor}`, opacity: task.isCompleted ? 0.45 : 1, transition: 'opacity 0.2s ease, transform 0.15s ease', flex: '1 1 auto', minWidth: 0, maxWidth: '100%', cursor: 'grab' }} data-testid={`day-detail-task-${task.id}`}>
+            <div key={task.id} draggable onDragStart={(e) => { e.dataTransfer.setData('text/plain', String(task.id)); e.dataTransfer.effectAllowed = 'move'; (e.currentTarget as HTMLElement).style.opacity = '0.5'; }} onDragEnd={(e) => { (e.currentTarget as HTMLElement).style.opacity = task.isCompleted ? '0.45' : '1'; }} style={{ display: 'flex', alignItems: 'flex-start', gap: '4px', padding: '3px 6px', borderRadius: '6px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.18)', borderLeft: `3px solid ${courseColor}`, opacity: task.isCompleted ? 0.45 : 1, transition: 'opacity 0.2s ease, transform 0.15s ease', flex: '1 1 auto', minWidth: 0, maxWidth: '100%', cursor: 'grab', height: '100%', boxSizing: 'border-box' as const, overflow: 'hidden' }} data-testid={`day-detail-task-${task.id}`}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, alignSelf: 'stretch' }}>
-                <GripVertical style={{ width: '14px', height: '14px', color: 'rgba(255,255,255,0.35)', cursor: 'grab' } as any} />
+                <GripVertical style={{ width: '10px', height: '10px', color: 'rgba(255,255,255,0.35)', cursor: 'grab' } as any} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, alignSelf: 'stretch' }}>
-                <input type="checkbox" checked={!!task.isCompleted} onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })} style={{ width: '16px', height: '16px', accentColor: courseColor, cursor: 'pointer' }} data-testid={`day-detail-check-${task.id}`} />
+                <input type="checkbox" checked={!!task.isCompleted} onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })} style={{ width: '12px', height: '12px', accentColor: courseColor, cursor: 'pointer' }} data-testid={`day-detail-check-${task.id}`} />
               </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
-                  <TaskTypeIcon style={{ width: '14px', height: '14px', color: '#ffffff', flexShrink: 0 } as any} />
-                  <span style={{ fontSize: '13px', fontWeight: 600, color: '#ffffff', textDecoration: task.isCompleted ? 'line-through' : 'none', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid={`day-detail-title-${task.id}`}>{(() => { let t = (task.title || '').replace(/^\[.*?\]\s*/g, '').trim(); const cn = effectiveCourseName; if (cn) { const full = cn.replace(/[\[\]]/g, '').trim(); const cc = cn.split(' - ')[0]?.trim() || ''; const ccAlpha = cc.replace(/[0-9]/g, '').trim(); const longName = cn.split(' - ').slice(1).join(' - ').trim(); const prefixes = [full, cc, ccAlpha].filter(Boolean).sort((a, b) => b.length - a.length); for (const pfx of prefixes) { if (pfx && t.toUpperCase().startsWith(pfx.toUpperCase())) { let rest = t.slice(pfx.length).replace(/^\s*[-:]\s*/, '').trim(); if (longName && rest.toUpperCase().startsWith(longName.toUpperCase())) { rest = rest.slice(longName.length).replace(/^\s*[-:]\s*/, '').trim(); } if (rest) { t = rest; break; } } } } return t || task.title; })()}</span>
+              <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '1px' }}>
+                  <TaskTypeIcon style={{ width: '11px', height: '11px', color: '#ffffff', flexShrink: 0 } as any} />
+                  <span style={{ fontSize: '11px', fontWeight: 600, color: '#ffffff', textDecoration: task.isCompleted ? 'line-through' : 'none', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} data-testid={`day-detail-title-${task.id}`}>{(() => { let t = (task.title || '').replace(/^\[.*?\]\s*/g, '').trim(); const cn = effectiveCourseName; if (cn) { const full = cn.replace(/[\[\]]/g, '').trim(); const cc = cn.split(' - ')[0]?.trim() || ''; const ccAlpha = cc.replace(/[0-9]/g, '').trim(); const longName = cn.split(' - ').slice(1).join(' - ').trim(); const prefixes = [full, cc, ccAlpha].filter(Boolean).sort((a, b) => b.length - a.length); for (const pfx of prefixes) { if (pfx && t.toUpperCase().startsWith(pfx.toUpperCase())) { let rest = t.slice(pfx.length).replace(/^\s*[-:]\s*/, '').trim(); if (longName && rest.toUpperCase().startsWith(longName.toUpperCase())) { rest = rest.slice(longName.length).replace(/^\s*[-:]\s*/, '').trim(); } if (rest) { t = rest; break; } } } } return t || task.title; })()}</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginBottom: '4px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', marginBottom: '1px', overflow: 'hidden' }}>
                   {effectiveCourseName && (
-                    <span style={{ fontSize: '10px', fontWeight: 600, color: '#ffffff', background: courseColor, padding: '1px 6px', borderRadius: '4px', lineHeight: '16px' }} data-testid={`day-detail-course-${task.id}`}>{effectiveCourseName.split(' - ')[0]}{courseFullName ? ` - ${courseFullName}` : ''}</span>
+                    <span style={{ fontSize: '8px', fontWeight: 600, color: '#ffffff', background: courseColor, padding: '0px 4px', borderRadius: '3px', lineHeight: '14px', whiteSpace: 'nowrap', flexShrink: 0 }} data-testid={`day-detail-course-${task.id}`}>{effectiveCourseName.split(' - ')[0]}{courseFullName ? ` - ${courseFullName}` : ''}</span>
                   )}
-                  <span style={{ fontSize: '9px', fontWeight: 600, color: pColor, background: `${pColor}22`, padding: '1px 5px', borderRadius: '3px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{task.priority}</span>
+                  <span style={{ fontSize: '7px', fontWeight: 600, color: pColor, background: `${pColor}22`, padding: '0px 4px', borderRadius: '3px', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', lineHeight: '12px' }}>{task.priority}</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', fontSize: '10px', color: '#ffffff' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'nowrap', fontSize: '8px', color: '#ffffff', overflow: 'hidden' }}>
                   {dueTime && <span>⏰ Due {dueTime}</span>}
                   {task.eventStartTime && task.eventEndTime && <span>🕐 {task.eventStartTime} – {task.eventEndTime}</span>}
                   {task.startDate && <span>📅 Start: {format(new Date(task.startDate), 'MMM d')}</span>}
@@ -18513,8 +18513,8 @@ export default function Dashboard() {
                   <div style={{ marginTop: '4px', fontSize: '10px', color: '#ffffff' }}>📎 {task.attachments.length} attachment{task.attachments.length !== 1 ? 's' : ''}</div>
                 )}
               </div>
-              <button onClick={() => { setEditingTask(task as any); }} style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, marginTop: '2px' }} data-testid={`day-detail-edit-${task.id}`} title="Edit task">
-                <Pencil className="h-3.5 w-3.5 text-white" />
+              <button onClick={() => { setEditingTask(task as any); }} style={{ width: '20px', height: '20px', borderRadius: '4px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, marginTop: '1px' }} data-testid={`day-detail-edit-${task.id}`} title="Edit task">
+                <Pencil className="h-2.5 w-2.5 text-white" />
               </button>
             </div>
           );
@@ -18547,9 +18547,8 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'row', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent' }}>
+              <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'row' }}>
                 {(() => {
-                  const ROW_H = 80;
                   const amHours = Array.from({ length: 12 }, (_, i) => i);
                   const pmHours = Array.from({ length: 12 }, (_, i) => i + 12);
                   const fmtHour = (h: number) => {
@@ -18568,6 +18567,7 @@ export default function Dashboard() {
                     const [sh, sm] = getTaskStartHourMin(task);
                     return sh >= 0 ? [sh + 1, sm] : [-1, 0];
                   };
+                  const ROW_PCT = 100 / 12;
                   const renderColumn = (hours: number[], colLabel: string) => {
                     const colStart = hours[0];
                     const colTasks = dayTasks.filter(t => {
@@ -18581,35 +18581,35 @@ export default function Dashboard() {
                       taskGroups[sh].push(t);
                     });
                     return (
-                      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'row' }}>
-                        <div style={{ width: '70px', flexShrink: 0, borderRight: '1px solid rgba(255,255,255,0.15)' }}>
+                      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'row', height: '100%' }}>
+                        <div style={{ width: '52px', flexShrink: 0, borderRight: '1px solid rgba(255,255,255,0.15)', display: 'flex', flexDirection: 'column', height: '100%' }}>
                           {hours.map(h => {
                             const hasTask = !!taskGroups[h];
                             return (
-                              <div key={h} style={{ height: `${ROW_H}px`, display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end', paddingRight: '8px', paddingTop: '2px', borderBottom: '1px solid rgba(255,255,255,0.15)', position: 'relative' }}>
-                                <span style={{ fontSize: '10px', fontWeight: hasTask ? 600 : 400, color: '#ffffff', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{fmtHour(h)}</span>
-                                {hasTask && <div style={{ position: 'absolute', right: '-3px', top: '8px', width: '5px', height: '5px', borderRadius: '50%', background: '#60a5fa' }} />}
+                              <div key={h} style={{ flex: 1, display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end', paddingRight: '6px', paddingTop: '1px', borderBottom: '1px solid rgba(255,255,255,0.15)', position: 'relative', minHeight: 0 }}>
+                                <span style={{ fontSize: '9px', fontWeight: hasTask ? 600 : 400, color: '#ffffff', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", whiteSpace: 'nowrap' }}>{fmtHour(h)}</span>
+                                {hasTask && <div style={{ position: 'absolute', right: '-3px', top: '6px', width: '4px', height: '4px', borderRadius: '50%', background: '#60a5fa' }} />}
                               </div>
                             );
                           })}
                         </div>
-                        <div style={{ flex: 1, minWidth: 0, position: 'relative', height: `${hours.length * ROW_H}px`, overflow: 'hidden' }}>
+                        <div style={{ flex: 1, minWidth: 0, position: 'relative', height: '100%' }}>
                           {hours.map(h => (
-                            <div key={h} onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)'; }} onDragLeave={(e) => { (e.currentTarget as HTMLElement).style.background = ''; }} onDrop={(e) => { e.preventDefault(); (e.currentTarget as HTMLElement).style.background = ''; const taskId = parseInt(e.dataTransfer.getData('text/plain')); if (!taskId) return; const hh = String(h).padStart(2, '0'); const newStart = `${hh}:00`; const newEnd = `${String(h + 1).padStart(2, '0')}:00`; fetch(`/api/tasks/${taskId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ eventStartTime: newStart, eventEndTime: newEnd }) }).then(() => { queryClient.invalidateQueries({ queryKey: ['/api/tasks'] }); }); }} style={{ position: 'absolute', top: `${(h - colStart) * ROW_H}px`, left: 0, right: 0, height: `${ROW_H}px`, borderBottom: '1px solid rgba(255,255,255,0.15)', transition: 'background 0.15s ease' }} />
+                            <div key={h} onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)'; }} onDragLeave={(e) => { (e.currentTarget as HTMLElement).style.background = ''; }} onDrop={(e) => { e.preventDefault(); (e.currentTarget as HTMLElement).style.background = ''; const taskId = parseInt(e.dataTransfer.getData('text/plain')); if (!taskId) return; const hh = String(h).padStart(2, '0'); const newStart = `${hh}:00`; const newEnd = `${String(h + 1).padStart(2, '0')}:00`; fetch(`/api/tasks/${taskId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ eventStartTime: newStart, eventEndTime: newEnd }) }).then(() => { queryClient.invalidateQueries({ queryKey: ['/api/tasks'] }); }); }} style={{ position: 'absolute', top: `${(h - colStart) * ROW_PCT}%`, left: 0, right: 0, height: `${ROW_PCT}%`, borderBottom: '1px solid rgba(255,255,255,0.15)', transition: 'background 0.15s ease' }} />
                           ))}
                           {colTasks.map(task => {
                             const [sh, sm] = getTaskStartHourMin(task);
                             const [eh, em] = getTaskEndHourMin(task);
-                            const startPx = (sh - colStart) * ROW_H + (sm / 60) * ROW_H;
-                            const endPx = Math.min((eh - colStart) * ROW_H + (em / 60) * ROW_H, hours.length * ROW_H);
-                            const heightPx = Math.max(ROW_H, endPx - startPx);
+                            const startPct = ((sh - colStart) + sm / 60) * ROW_PCT;
+                            const endPct = Math.min(((eh - colStart) + em / 60) * ROW_PCT, 100);
+                            const heightPct = Math.max(ROW_PCT, endPct - startPct);
                             const sameHourTasks = taskGroups[sh] || [task];
                             const taskIdx = sameHourTasks.findIndex(t => t.id === task.id);
                             const totalAtHour = sameHourTasks.length;
                             const widthPct = 100 / totalAtHour;
                             const leftPct = taskIdx * widthPct;
                             return (
-                              <div key={task.id} style={{ position: 'absolute', top: `${startPx}px`, left: `calc(${leftPct}% + 4px)`, width: `calc(${widthPct}% - 8px)`, minHeight: `${heightPx}px`, zIndex: 10 }}>
+                              <div key={task.id} style={{ position: 'absolute', top: `${startPct}%`, left: `calc(${leftPct}% + 3px)`, width: `calc(${widthPct}% - 6px)`, height: `${heightPct}%`, zIndex: 10, overflow: 'hidden' }}>
                                 {renderDetailTask(task)}
                               </div>
                             );
