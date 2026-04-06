@@ -1,0 +1,21 @@
+byhomeyyz@raspberrypi:~/Home-View $ journalctl -u unical --no-pager | tail -20
+Apr 06 05:07:00 raspberrypi node[4700]: 5:07:00 AM [express] GET /api/onedrive/status 304 in 1ms :: {"connected":false}
+Apr 06 05:07:04 raspberrypi node[4700]: 5:07:04 AM [express] GET /api/onedrive/status 304 in 1ms :: {"connected":false}
+Apr 06 05:07:06 raspberrypi node[4700]: 5:07:06 AM [express] GET /api/onedrive/status 304 in 0ms :: {"connected":false}
+Apr 06 05:07:10 raspberrypi node[4700]: 5:07:10 AM [express] GET /api/onedrive/status 304 in 0ms :: {"connected":false}
+Apr 06 05:07:12 raspberrypi node[4700]: 5:07:12 AM [express] GET /api/onedrive/status 304 in 0ms :: {"connected":false}
+Apr 06 05:07:16 raspberrypi node[4700]: 5:07:16 AM [express] GET /api/onedrive/status 304 in 1ms :: {"connected":false}
+Apr 06 05:07:16 raspberrypi node[4700]: 5:07:16 AM [express] GET /api/onedrive/auth 304 in 1ms
+Apr 06 05:07:18 raspberrypi node[4700]: 5:07:18 AM [express] GET /api/onedrive/status 304 in 1ms :: {"connected":false}
+Apr 06 05:07:22 raspberrypi node[4700]: 5:07:22 AM [express] GET /api/onedrive/status 304 in 1ms :: {"connected":false}
+Apr 06 05:07:24 raspberrypi node[4700]: 5:07:24 AM [express] GET /api/onedrive/status 304 in 1ms :: {"connected":false}
+Apr 06 05:07:28 raspberrypi node[4700]: 5:07:28 AM [express] GET /api/onedrive/status 304 in 0ms :: {"connected":false}
+Apr 06 05:07:30 raspberrypi node[4700]: 5:07:30 AM [express] GET /api/onedrive/status 304 in 1ms :: {"connected":false}
+Apr 06 05:07:30 raspberrypi node[4700]: 5:07:30 AM [express] GET /api/health 200 in 1ms :: {"status":"ok","uptime":147,"ha":{"connected":true,"lastSuccessAt":"2026-04-06T09:07:14.443Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":3,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-06T09:07:30.304Z"}
+Apr 06 05:07:30 raspberrypi node[4700]: 5:07:30 AM [express] GET /api/files/recently-prepared 304 in 0ms :: {"files":[]}
+Apr 06 05:07:30 raspberrypi node[4700]: 5:07:30 AM [express] GET /api/kitchen/status 304 in 1ms :: {"isPlaying":false,"progress":null}
+Apr 06 05:07:30 raspberrypi node[4700]: 5:07:30 AM [express] GET /api/files/recently-prepared 304 in 1ms :: {"files":[]}
+Apr 06 05:07:30 raspberrypi node[4700]: 5:07:30 AM [express] GET /api/health 200 in 1ms :: {"status":"ok","uptime":147,"ha":{"connected":true,"lastSuccessAt":"2026-04-06T09:07:14.443Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":3,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-06T09:07:30.344Z"}
+Apr 06 05:07:30 raspberrypi node[4700]: 5:07:30 AM [express] GET /api/kitchen/status 304 in 1ms :: {"isPlaying":false,"progress":null}
+Apr 06 05:07:30 raspberrypi node[4700]: 5:07:30 AM [express] GET /api/partner-status 304 in 240ms :: {"isAway":true,"isAtWork":false,"state":"not_home","friendlyName":"Yasu"}
+Apr 06 05:07:30 raspberrypi node[4700]: 5:07:30 AM [express] GET /api/partner-status 304 in 73ms :: {"isAway":true,"isAtWork":false,"state":"not_home","friendlyName":"Yasu"}
