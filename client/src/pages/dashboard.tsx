@@ -27514,7 +27514,7 @@ export default function Dashboard() {
                             const today = startOfDayET(new Date());
                             const todayDayIdx = weekDays.findIndex(wd => isSameDayET(wd, today));
                             const twoWeeksOut = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
-                            const endDayIdx = todayDayIdx >= 0 ? todayDayIdx + 1 : 0;
+                            const endDayIdx = todayDayIdx >= 0 ? Math.min(todayDayIdx + 2, weekDays.length - 1) : 0;
                             if (endDayIdx < 0 || endDayIdx >= weekDays.length) return null;
                             const lastDayInWeek = startOfDayET(weekDays[weekDays.length - 1]);
                             const allCountdown = (allTasks || []).filter(t => {
@@ -27562,12 +27562,14 @@ export default function Dashboard() {
                             return matchingBars.map(cd => {
                               const t = cd.task;
                               const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
-                              const isStartCell = dayIdx === cd.startDay;
-                              if (!isStartCell) return null;
+                              const isBarCell = dayIdx >= cd.startDay && dayIdx <= cd.startDay + 1 && dayIdx <= cd.endDay;
+                              if (!isBarCell) return null;
+                              const isFirstCell = dayIdx === cd.startDay;
+                              const isLastCell = dayIdx === cd.startDay + 1 || dayIdx === cd.endDay;
                               const topPx = 2 + cd.lane * barGap;
                               const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
                               const needsPulse = isNotStarted && cd.daysLeft <= 2 && !t.isCompleted;
-                              const labelText = (t.title || '').replace(/[\[\]]/g, '').replace(/^\s+/, '').substring(0, 20);
+                              const labelText = (t.title || '').replace(/[\[\]]/g, '').replace(/^\s+/, '');
                               return (
                                 <div key={`cbar-main-${t.id}`} style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, pointerEvents: 'none', zIndex: 2 }}>
                                   <div
@@ -27581,15 +27583,17 @@ export default function Dashboard() {
                                       background: barColor,
                                       opacity: 0.85,
                                       pointerEvents: 'none',
-                                      borderRadius: '2px',
+                                      borderRadius: isFirstCell && isLastCell ? '2px' : isFirstCell ? '2px 0 0 2px' : isLastCell ? '0 2px 2px 0' : '0',
                                       boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined,
                                     }}
                                     data-testid={`countdown-span-main-${t.id}-day-${dayIdx}`}
                                   >
-                                    <div style={{ position: 'absolute', left: '2px', top: `${-6}px`, display: 'flex', alignItems: 'center', gap: '3px', whiteSpace: 'nowrap', lineHeight: 1, height: '13px', background: 'rgba(255,255,255,0.85)', borderRadius: '2px', padding: '0 3px' }}>
-                                      <span style={{ fontSize: '11px', fontWeight: 500, color: barColor, letterSpacing: '-0.2px' }}>{cd.daysLeft}d</span>
-                                      <span style={{ fontSize: '9px', fontWeight: 500, color: 'rgba(0,0,0,0.55)', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100px' }}>{labelText}</span>
-                                    </div>
+                                    {isFirstCell && (
+                                      <div style={{ position: 'absolute', left: '2px', top: `${-6}px`, display: 'flex', alignItems: 'center', gap: '3px', whiteSpace: 'nowrap', lineHeight: 1, height: '13px', background: 'rgba(255,255,255,0.85)', borderRadius: '2px', padding: '0 3px' }}>
+                                        <span style={{ fontSize: '11px', fontWeight: 400, color: barColor, letterSpacing: '-0.2px' }}>{cd.daysLeft}d</span>
+                                        <span style={{ fontSize: '9px', fontWeight: 500, color: 'rgba(0,0,0,0.55)', whiteSpace: 'nowrap' }}>{labelText}</span>
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                               );
