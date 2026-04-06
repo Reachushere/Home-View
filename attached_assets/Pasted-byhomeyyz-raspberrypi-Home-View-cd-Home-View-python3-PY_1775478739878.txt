@@ -1,0 +1,213 @@
+byhomeyyz@raspberrypi:~/Home-View $ cd ~/Home-View && python3 << 'PYEOF'
+f = open('server/routes.ts','r'); t = f.read(); f.close()
+t = t.replace(
+  """        } else {
+          haCommandQueue.push(cmd);
+        }
+          console.warn(`[HA Queue] Replay failed (attempt ${cmd.attempts}): ${cmd.label} ${cmd.service} — moved to back of queue`);
+        }
+      }
+    }""",
+  """        } else {
+          haCommandQueue.push(cmd);
+          console.warn(`[HA Queue] Replay failed (attempt ${cmd.attempts}): ${cmd.label} ${cmd.service} — moved to back of queue`);
+        }
+      }
+    }""", 1)
+f = open('server/routes.ts','w'); f.write(t); f.close()
+print('routes.ts HA queue syntax fix applied')
+PYEOF
+routes.ts HA queue syntax fix applied
+byhomeyyz@raspberrypi:~/Home-View $ npm run build
+npm warn Unknown builtin config "globalignorefile". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> rest-express@1.0.0 build
+> tsx script/build.ts
+
+building client...
+vite v7.3.0 building client environment for production...
+✓ 2975 modules transformed.
+../dist/public/index.html                                                                     4.01 kB │ gzip:   1.54 kB
+../dist/public/assets/CN2_1773897525570-afBA9WIn.png                                          4.64 kB
+../dist/public/assets/Zoomcam_1773655084814-Dd0RqcMf.png                                      6.41 kB
+../dist/public/assets/saturn_planet-DyCcVDqz.jpg                                              9.35 kB
+../dist/public/assets/uranus_planet-BBf9JheU.jpg                                             14.81 kB
+../dist/public/assets/Button_1769701329320-vj3a_XjG.png                                      14.88 kB
+../dist/public/assets/Fox_News_1773610204651-Cm2F7G44.png                                    18.91 kB
+../dist/public/assets/Animoji_1769350617739-DKdhEpD6.webp                                    21.31 kB
+../dist/public/assets/Wifi_1773656687145-BkFdNwBM.png                                        21.68 kB
+../dist/public/assets/Global_White_1773536754594-C17BPXU2.png                                22.80 kB
+../dist/public/assets/jupiter_planet-BIMUlata.jpg                                            26.92 kB
+../dist/public/assets/ABC_1773609250051-CfAo4DiJ.png                                         31.54 kB
+../dist/public/assets/Zoom2_1773776262533-u1jCiZQ5.png                                       31.94 kB
+../dist/public/assets/MSNBC_1773536950584-DXnjYP_H.png                                       32.99 kB
+../dist/public/assets/CTV2_1773545440801-BQRb6VTL.png                                        34.23 kB
+../dist/public/assets/Sound_1775176942072-DQdszRIH.png                                       41.57 kB
+../dist/public/assets/cbc-news-logo-black-and-white_1773536865600-CmQYEfGd.png               42.50 kB
+../dist/public/assets/Weather_Alert_1773608511887-BFQqPgnq.png                               42.94 kB
+../dist/public/assets/mars_planet-CmC43G73.jpg                                               44.56 kB
+../dist/public/assets/ChatGPT_Image_Jan_22__2026__02_34_52_PM_1769110943463-7zS7ot_E.png     44.81 kB
+../dist/public/assets/CNN_1773536484180-DucbTf95.png                                         48.85 kB
+../dist/public/assets/Raw_Story_1773607642361-CKfjYmZ7.png                                   58.82 kB
+../dist/public/assets/venus_planet-pWHYImPJ.jpg                                              59.79 kB
+../dist/public/assets/Closet_Night_1774008796953-DXicaVTT.png                                60.27 kB
+../dist/public/assets/Degree_1775175568321-Dz3bFyki.png                                      63.04 kB
+../dist/public/assets/Teacher_White2_1775164260333-DzP7w8Fj.png                              64.77 kB
+../dist/public/assets/Teacher_1775101022422-6YMTUW-g.png                                     64.78 kB
+../dist/public/assets/Reminders_1775175754351-2hYnQH-_.png                                   65.19 kB
+../dist/public/assets/victory-fanfare-CYW8HOv7.mp3                                           67.20 kB
+../dist/public/assets/BBC_1773609711103-BfBjSiKV.png                                         73.89 kB
+../dist/public/assets/Pug_Night_1774008796949-3yLPls61.png                                   79.00 kB
+../dist/public/assets/Cat_Night_1774008796951-Dcd6HiVq.png                                   79.73 kB
+../dist/public/assets/image_1772579486577-DIShbgJ0.png                                       80.83 kB
+../dist/public/assets/Yasu_1774341165517-DKbY5fn0.png                                        83.10 kB
+../dist/public/assets/Forecast2_1773897989398-DSI3LWIa.png                                  116.96 kB
+../dist/public/assets/BG2_1769977873184-BMC0LH4N.jpg                                        124.20 kB
+../dist/public/assets/Chang-School2_1770607146365-_XjUzhwY.png                              128.19 kB
+../dist/public/assets/Hallway_Night_1774008796945-BuzRBJO8.png                              129.78 kB
+../dist/public/assets/crowd-cheer-DkUts2go.mp3                                              142.08 kB
+../dist/public/assets/Newspaper2_1773898792176-DFEQePQK.png                                 143.21 kB
+../dist/public/assets/Queen_Night_1774008796950-B57EmMzY.png                                228.53 kB
+../dist/public/assets/Living_Room_Night_1774008796948-CTbz7lx7.png                          292.86 kB
+../dist/public/assets/King_Night_1774008796946-qs8T8Rav.png                                 321.84 kB
+../dist/public/assets/Kitchen_Night_1774008796947-DzGdhLNI.png                              333.69 kB
+../dist/public/assets/image_1775263840386-D9P4kHhc.png                                      494.62 kB
+../dist/public/assets/TMU2_1772842397746-B9XhF-lv.png                                       788.80 kB
+../dist/public/assets/Bryn_1774341392117-CfDPXLO2.png                                     1,069.12 kB
+../dist/public/assets/mass-background2_1774005959332-mw-YgJzQ.png                         1,426.94 kB
+../dist/public/assets/Floorplan11_1774005505273-BEWw-gX1.png                              1,553.36 kB
+../dist/public/assets/Echo_1774213902054-Dum5d4T4.png                                     2,055.05 kB
+../dist/public/assets/Music_BG20_1774006032495-CxhBg4I3.png                               2,114.88 kB
+../dist/public/assets/style-DHgAkI1K.css                                                    256.49 kB │ gzip:  41.58 kB
+../dist/public/assets/index-CSluw79h.js                                                   2,913.63 kB │ gzip: 737.68 kB
+✓ built in 46.91s
+building server...
+✘ [ERROR] Unexpected "}"
+
+    server/routes.ts:422:0:
+      422 │ }
+          ╵ ^
+
+1 error
+Error: Build failed with 1 error:
+server/routes.ts:422:0: ERROR: Unexpected "}"
+    at failureErrorWithLog (/home/byhomeyyz/Home-View/node_modules/esbuild/lib/main.js:1467:15)
+    at /home/byhomeyyz/Home-View/node_modules/esbuild/lib/main.js:926:25
+    at /home/byhomeyyz/Home-View/node_modules/esbuild/lib/main.js:878:52
+    at buildResponseToResult (/home/byhomeyyz/Home-View/node_modules/esbuild/lib/main.js:924:7)
+    at /home/byhomeyyz/Home-View/node_modules/esbuild/lib/main.js:951:16
+    at responseCallbacks.<computed> (/home/byhomeyyz/Home-View/node_modules/esbuild/lib/main.js:603:9)
+    at handleIncomingPacket (/home/byhomeyyz/Home-View/node_modules/esbuild/lib/main.js:658:12)
+    at Socket.readFromStdout (/home/byhomeyyz/Home-View/node_modules/esbuild/lib/main.js:581:7)
+    at Socket.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+    at Pipe.onStreamRead (node:internal/stream_base_commons:191:23) {
+  errors: [Getter/Setter],
+  warnings: [Getter/Setter]
+}
+byhomeyyz@raspberrypi:~/Home-View $ sed -n '415,425p' server/routes.ts
+  }
+
+  const audioFileName = `${fileId}-${Date.now()}.mp3`;
+  fs.writeFileSync(require("path").join(ttsDir, audioFileName), audioBuffer);
+  const proxyUrl = `/tts-audio/${audioFileName}`;
+  console.log(`TTS audio saved locally: ${proxyUrl}`);
+  return proxyUrl;
+}
+
+// Parse public object path to bucket/object name
+function parsePublicObjectPath(path: string): { bucketName: string; objectName: string } {
+byhomeyyz@raspberrypi:~/Home-View $ cd ~/Home-View && curl -o server/routes.ts "https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/routes-download.ts"
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 48297  100 48297    0     0   137k      0 --:--:-- --:--:-- --:--:--  137k
+byhomeyyz@raspberrypi:~/Home-View $ curl -o client/src/pages/pdf-reader.tsx "https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/pdf-reader-download.tsx"
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 48297  100 48297    0     0   180k      0 --:--:-- --:--:-- --:--:--  180k
+byhomeyyz@raspberrypi:~/Home-View $ npm run build && sudo systemctl restart unical
+npm warn Unknown builtin config "globalignorefile". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> rest-express@1.0.0 build
+> tsx script/build.ts
+
+building client...
+vite v7.3.0 building client environment for production...
+✓ 20 modules transformed.
+✗ Build failed in 2.05s
+[vite:esbuild] Transform failed with 1 error:
+/home/byhomeyyz/Home-View/client/src/pages/pdf-reader.tsx:1:1: ERROR: Expected identifier but found "!"
+file: /home/byhomeyyz/Home-View/client/src/pages/pdf-reader.tsx:1:1
+
+Expected identifier but found "!"
+1  |  <!DOCTYPE html>
+   |   ^
+2  |  <html lang="en">
+3  |    <head>
+
+    at failureErrorWithLog (/home/byhomeyyz/Home-View/node_modules/vite/node_modules/esbuild/lib/main.js:1467:15)
+    at /home/byhomeyyz/Home-View/node_modules/vite/node_modules/esbuild/lib/main.js:736:50
+    at responseCallbacks.<computed> (/home/byhomeyyz/Home-View/node_modules/vite/node_modules/esbuild/lib/main.js:603:9)
+    at handleIncomingPacket (/home/byhomeyyz/Home-View/node_modules/vite/node_modules/esbuild/lib/main.js:658:12)
+    at Socket.readFromStdout (/home/byhomeyyz/Home-View/node_modules/vite/node_modules/esbuild/lib/main.js:581:7)
+    at Socket.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+    at Pipe.onStreamRead (node:internal/stream_base_commons:191:23) {
+  errors: [Getter/Setter],
+  warnings: [Getter/Setter],
+  frame: '\n' +
+    '\x1B[33mExpected identifier but found "!"\x1B[39m\n' +
+    '1  |  <!DOCTYPE html>\n' +
+    '   |   ^\n' +
+    '2  |  <html lang="en">\n' +
+    '3  |    <head>\n',
+  loc: {
+    column: 1,
+    file: '/home/byhomeyyz/Home-View/client/src/pages/pdf-reader.tsx',
+    length: 1,
+    line: 1,
+    lineText: '<!DOCTYPE html>',
+    namespace: '',
+    suggestion: ''
+  },
+  code: 'PLUGIN_ERROR',
+  plugin: 'vite:esbuild',
+  hook: 'transform',
+  id: '/home/byhomeyyz/Home-View/client/src/pages/pdf-reader.tsx',
+  watchFiles: [
+    '/home/byhomeyyz/Home-View/client/index.html',
+    '/home/byhomeyyz/Home-View/client/src/main.tsx',
+    '/home/byhomeyyz/Home-View/package.json',
+    '/home/byhomeyyz/Home-View/node_modules/preact/compat/jsx-runtime.mjs',
+    '/home/byhomeyyz/Home-View/node_modules/preact/compat/client.mjs',
+    '/home/byhomeyyz/Home-View/client/src/App.tsx',
+    '/home/byhomeyyz/Home-View/client/src/index.css',
+    '/home/byhomeyyz/Home-View/node_modules/preact/compat/dist/compat.module.js',
+    '/home/byhomeyyz/Home-View/node_modules/preact/jsx-runtime/dist/jsxRuntime.module.js',
+    '/home/byhomeyyz/Home-View/node_modules/wouter/esm/index.js',
+    '/home/byhomeyyz/Home-View/node_modules/@tanstack/react-query/build/modern/index.js',
+    '/home/byhomeyyz/Home-View/node_modules/lucide-react/dist/esm/lucide-react.js',
+    '/home/byhomeyyz/Home-View/client/src/lib/queryClient.ts',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/toaster.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/tooltip.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/access-gate.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/not-found.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/files.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/projects.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/pdf-reader.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/pdf-viewer.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/onedrive.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/spotify-player.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/onenote.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/mobile-notes.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/code-checker.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/ticker.tsx',
+    '/home/byhomeyyz/Home-View/node_modules/preact/dist/preact.module.js',
+    '/home/byhomeyyz/Home-View/node_modules/preact/hooks/dist/hooks.module.js'
+  ]
+}
+byhomeyyz@raspberrypi:~/Home-View $
