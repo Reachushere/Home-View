@@ -18470,7 +18470,7 @@ export default function Dashboard() {
           const courseFullName = effectiveCourseName?.includes(' - ') ? effectiveCourseName.split(' - ').slice(1).join(' - ') : '';
           const daysUntil = task.dueDate ? differenceInCalendarDays(startOfDayET(new Date(task.dueDate)), startOfDayET(new Date())) : 0;
           return (
-            <div key={task.id} draggable onDragStart={(e) => { e.dataTransfer.setData('text/plain', String(task.id)); e.dataTransfer.effectAllowed = 'move'; (e.currentTarget as HTMLElement).style.opacity = '0.5'; }} onDragEnd={(e) => { (e.currentTarget as HTMLElement).style.opacity = task.isCompleted ? '0.45' : '1'; }} style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', padding: '6px 10px', borderRadius: '8px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.18)', borderLeft: `3px solid ${courseColor}`, opacity: task.isCompleted ? 0.45 : 1, transition: 'opacity 0.2s ease, transform 0.15s ease', flex: '1 1 auto', minWidth: '200px', maxWidth: '100%', cursor: 'grab' }} data-testid={`day-detail-task-${task.id}`}>
+            <div key={task.id} draggable onDragStart={(e) => { e.dataTransfer.setData('text/plain', String(task.id)); e.dataTransfer.effectAllowed = 'move'; (e.currentTarget as HTMLElement).style.opacity = '0.5'; }} onDragEnd={(e) => { (e.currentTarget as HTMLElement).style.opacity = task.isCompleted ? '0.45' : '1'; }} style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', padding: '6px 10px', borderRadius: '8px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.18)', borderLeft: `3px solid ${courseColor}`, opacity: task.isCompleted ? 0.45 : 1, transition: 'opacity 0.2s ease, transform 0.15s ease', flex: '1 1 auto', minWidth: 0, maxWidth: '100%', cursor: 'grab' }} data-testid={`day-detail-task-${task.id}`}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0, alignSelf: 'stretch' }}>
                 <GripVertical style={{ width: '14px', height: '14px', color: 'rgba(255,255,255,0.35)', cursor: 'grab' } as any} />
               </div>
@@ -18549,14 +18549,14 @@ export default function Dashboard() {
 
               <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'row', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent' }}>
                 {(() => {
-                  const ROW_H = 50;
+                  const ROW_H = 80;
                   const amHours = Array.from({ length: 12 }, (_, i) => i);
                   const pmHours = Array.from({ length: 12 }, (_, i) => i + 12);
                   const fmtHour = (h: number) => {
-                    if (h === 0) return '12:00 AM';
-                    if (h < 12) return `${h}:00 AM`;
-                    if (h === 12) return '12:00 PM';
-                    return `${h - 12}:00 PM`;
+                    if (h === 0) return '12 AM';
+                    if (h < 12) return `${h} AM`;
+                    if (h === 12) return '12 PM';
+                    return `${h - 12} PM`;
                   };
                   const getTaskStartHourMin = (task: any): [number, number] => {
                     if (task.eventStartTime) { const p = task.eventStartTime.split(':').map(Number); return [p[0], p[1] || 0]; }
@@ -18593,7 +18593,7 @@ export default function Dashboard() {
                             );
                           })}
                         </div>
-                        <div style={{ flex: 1, minWidth: 0, position: 'relative', height: `${hours.length * ROW_H}px` }}>
+                        <div style={{ flex: 1, minWidth: 0, position: 'relative', height: `${hours.length * ROW_H}px`, overflow: 'hidden' }}>
                           {hours.map(h => (
                             <div key={h} onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)'; }} onDragLeave={(e) => { (e.currentTarget as HTMLElement).style.background = ''; }} onDrop={(e) => { e.preventDefault(); (e.currentTarget as HTMLElement).style.background = ''; const taskId = parseInt(e.dataTransfer.getData('text/plain')); if (!taskId) return; const hh = String(h).padStart(2, '0'); const newStart = `${hh}:00`; const newEnd = `${String(h + 1).padStart(2, '0')}:00`; fetch(`/api/tasks/${taskId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ eventStartTime: newStart, eventEndTime: newEnd }) }).then(() => { queryClient.invalidateQueries({ queryKey: ['/api/tasks'] }); }); }} style={{ position: 'absolute', top: `${(h - colStart) * ROW_H}px`, left: 0, right: 0, height: `${ROW_H}px`, borderBottom: '1px solid rgba(255,255,255,0.15)', transition: 'background 0.15s ease' }} />
                           ))}
@@ -18609,7 +18609,7 @@ export default function Dashboard() {
                             const widthPct = 100 / totalAtHour;
                             const leftPct = taskIdx * widthPct;
                             return (
-                              <div key={task.id} style={{ position: 'absolute', top: `${startPx}px`, left: `calc(${leftPct}% + 4px)`, width: `calc(${widthPct}% - 8px)`, height: `${heightPx}px`, zIndex: 10, overflow: 'hidden' }}>
+                              <div key={task.id} style={{ position: 'absolute', top: `${startPx}px`, left: `calc(${leftPct}% + 4px)`, width: `calc(${widthPct}% - 8px)`, minHeight: `${heightPx}px`, zIndex: 10 }}>
                                 {renderDetailTask(task)}
                               </div>
                             );
