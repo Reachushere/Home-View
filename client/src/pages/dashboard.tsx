@@ -27399,99 +27399,88 @@ export default function Dashboard() {
                           {/* Countdown bars on main calendar */}
                           {(() => {
                             const today = startOfDayET(new Date());
-                            const cellDate = startOfDayET(day);
                             const todayDayIdx = weekDays.findIndex(wd => isSameDayET(wd, today));
                             const twoWeeksOut = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
                             const endDayIdx = todayDayIdx >= 0 ? todayDayIdx + 1 : 0;
-                            const countdownTasks = (allTasks || []).filter(t => {
+                            if (endDayIdx < 0 || endDayIdx >= weekDays.length) return null;
+                            const lastDayInWeek = startOfDayET(weekDays[weekDays.length - 1]);
+                            const allCountdown = (allTasks || []).filter(t => {
                               if (t.showCountdownBar === false || t.showCountdownBarMain === false || t.isCompleted) return false;
                               const tDue = startOfDayET(new Date(t.dueDate));
                               if (tDue <= today || tDue > twoWeeksOut) return false;
-                              const tDueHour = (() => {
-                                if (t.eventStartTime) {
-                                  const [h] = t.eventStartTime.split(':').map(Number);
-                                  return h;
-                                }
-                                const d = new Date(t.dueDate);
-                                const h = getETHours(d);
-                                return h === 0 ? 18 : h;
-                              })();
                               let tDueDayIdx = weekDays.findIndex(wd => isSameDayET(wd, tDue));
-                              const lastDayInWeek = startOfDayET(weekDays[weekDays.length - 1]);
-                              if (tDueDayIdx < 0) {
-                                if (tDue > lastDayInWeek) {
-                                  tDueDayIdx = weekDays.length - 1;
-                                } else {
-                                  return false;
-                                }
-                              }
-                              if (endDayIdx < 0 || endDayIdx >= weekDays.length) return false;
+                              if (tDueDayIdx < 0) { if (tDue > lastDayInWeek) tDueDayIdx = weekDays.length - 1; else return false; }
                               if (tDueDayIdx <= endDayIdx) return false;
-                              if (hour !== tDueHour) return false;
-                              return dayIdx >= endDayIdx && dayIdx <= tDueDayIdx;
-                            });
-                            if (countdownTasks.length === 0) return null;
-                            return countdownTasks.map((t, tIdx) => {
+                              return true;
+                            }).map(t => {
                               const tDue = startOfDayET(new Date(t.dueDate));
-                              const daysLeft = Math.max(0, Math.round((tDue.getTime() - today.getTime()) / (1000*60*60*24)));
-                              const courseCode = t.courseName?.split(' - ')[0]?.trim() || '';
-                              const barColor = t.countdownBarColor || (daysLeft <= 1 ? '#ef4444' : daysLeft === 2 ? '#f97316' : daysLeft <= 4 ? '#f59e0b' : '#22c55e');
-                              const lastDayInWeekR = startOfDayET(weekDays[weekDays.length - 1]);
                               let tDueDayIdx = weekDays.findIndex(wd => isSameDayET(wd, tDue));
-                              const taskBeyondWeek = tDueDayIdx < 0 && tDue > lastDayInWeekR;
-                              if (taskBeyondWeek) tDueDayIdx = weekDays.length - 1;
-                              const isTaskCell = !taskBeyondWeek && dayIdx === tDueDayIdx;
-                              const isEndCell = dayIdx === endDayIdx;
-                              const barY = 50 + tIdx * 5;
+                              const beyond = tDueDayIdx < 0;
+                              if (beyond) tDueDayIdx = weekDays.length - 1;
+                              const tDueHour = (() => { if (t.eventStartTime) { const [h] = t.eventStartTime.split(':').map(Number); return h; } const d = new Date(t.dueDate); const h = getETHours(d); return h === 0 ? 18 : h; })();
+                              const daysLeft = Math.max(0, Math.round((tDue.getTime() - today.getTime()) / (1000*60*60*24)));
+                              return { task: t, tDue, tDueDayIdx, tDueHour, beyond, daysLeft, startDay: endDayIdx, endDay: tDueDayIdx };
+                            }).sort((a, b) => a.tDueDayIdx - b.tDueDayIdx || a.tDueHour - b.tDueHour);
+                            const barH = 4;
+                            const barGap = 8;
+                            const lanes: { startDay: number; endDay: number }[] = [];
+                            const taskLanes: number[] = [];
+                            allCountdown.forEach(cd => {
+                              let lane = 0;
+                              while (lanes[lane] && !(cd.startDay > lanes[lane].endDay || cd.endDay < lanes[lane].startDay)) {
+                                lane++;
+                              }
+                              if (!lanes[lane]) lanes[lane] = { startDay: cd.startDay, endDay: cd.endDay };
+                              else { lanes[lane].startDay = Math.min(lanes[lane].startDay, cd.startDay); lanes[lane].endDay = Math.max(lanes[lane].endDay, cd.endDay); }
+                              taskLanes.push(lane);
+                            });
+                            const matchingBars = allCountdown.map((cd, idx) => ({ ...cd, lane: taskLanes[idx] })).filter(cd => {
+                              if (hour !== cd.tDueHour) return false;
+                              return dayIdx >= cd.startDay && dayIdx <= cd.endDay;
+                            });
+                            if (matchingBars.length === 0) return null;
+                            return matchingBars.map(cd => {
+                              const t = cd.task;
+                              const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
+                              const isTaskCell = !cd.beyond && dayIdx === cd.tDueDayIdx;
+                              const isEndCell = dayIdx === cd.startDay;
+                              const baseBottom = 50;
+                              const laneBottom = baseBottom - cd.lane * barGap;
                               const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
-                              const needsPulse = isNotStarted && daysLeft <= 2 && !t.isCompleted;
+                              const needsPulse = isNotStarted && cd.daysLeft <= 2 && !t.isCompleted;
                               const labelText = (t.title || '').replace(/[\[\]]/g, '').replace(/^\s+/, '').substring(0, 20);
+                              const needsElbow = cd.lane > 0 && dayIdx === cd.endDay;
+                              const elbowDropPx = cd.lane * barGap;
                               return (
-                                <div
-                                  key={`cbar-main-${t.id}`}
-                                  className={needsPulse ? 'countdown-bar-pulse' : ''}
-                                  style={{
-                                    position: 'absolute',
-                                    left: 0,
-                                    right: 0,
-                                    bottom: `${barY}%`,
-                                    height: needsPulse ? '5px' : '4px',
-                                    background: barColor,
-                                    opacity: 0.8,
-                                    zIndex: 4,
-                                    pointerEvents: 'none',
-                                    borderRadius: isEndCell && isTaskCell ? '2px' : isEndCell ? '2px 0 0 2px' : isTaskCell ? '0 2px 2px 0' : '0',
-                                    boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined,
-                                  }}
-                                  data-testid={`countdown-span-main-${t.id}-day-${dayIdx}`}
-                                >
-                                  {isEndCell && (
-                                    <div style={{
-                                      position: 'absolute',
-                                      left: '2px',
-                                      top: '-12px',
-                                      display: 'flex',
-                                      alignItems: 'baseline',
-                                      gap: '3px',
-                                      whiteSpace: 'nowrap',
-                                      lineHeight: 1,
-                                    }}>
-                                      <span style={{
-                                        fontSize: '9px',
-                                        fontWeight: 800,
-                                        color: barColor,
-                                        textShadow: '0 0 3px rgba(255,255,255,0.8)',
-                                      }}>{daysLeft}d</span>
-                                      <span style={{
-                                        fontSize: '8px',
-                                        fontWeight: 600,
-                                        color: 'rgba(0,0,0,0.5)',
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        maxWidth: '80px',
-                                      }}>{labelText}</span>
-                                    </div>
+                                <div key={`cbar-main-${t.id}`} style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, pointerEvents: 'none', zIndex: 4 + cd.lane }}>
+                                  {needsElbow && (
+                                    <>
+                                      <div style={{ position: 'absolute', right: 0, bottom: `${baseBottom}%`, width: barH, height: elbowDropPx, background: barColor, opacity: 0.8, borderRadius: '2px 2px 0 0' }} />
+                                    </>
                                   )}
+                                  <div
+                                    className={needsPulse ? 'countdown-bar-pulse' : ''}
+                                    style={{
+                                      position: 'absolute',
+                                      left: needsElbow ? 0 : 0,
+                                      right: needsElbow ? 0 : 0,
+                                      bottom: `${laneBottom}%`,
+                                      height: needsPulse ? '5px' : `${barH}px`,
+                                      background: barColor,
+                                      opacity: 0.8,
+                                      pointerEvents: 'none',
+                                      borderRadius: isEndCell && isTaskCell ? '2px' : isEndCell ? '2px 0 0 2px' : isTaskCell ? '0 2px 2px 0' : '0',
+                                      boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined,
+                                    }}
+                                    data-testid={`countdown-span-main-${t.id}-day-${dayIdx}`}
+                                  >
+                                    {isEndCell && (
+                                      <div style={{ position: 'absolute', left: '2px', top: '-12px', display: 'flex', alignItems: 'baseline', gap: '3px', whiteSpace: 'nowrap', lineHeight: 1 }}>
+                                        <span style={{ fontSize: '9px', fontWeight: 800, color: barColor, textShadow: '0 0 3px rgba(255,255,255,0.8)' }}>{cd.daysLeft}d</span>
+                                        <span style={{ fontSize: '8px', fontWeight: 600, color: 'rgba(0,0,0,0.5)', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '80px' }}>{labelText}</span>
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
                               );
                             });
