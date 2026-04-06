@@ -135,6 +135,7 @@ import {
   Sun,
   Home,
   Cloud,
+  CloudSun,
   ArrowLeft,
   Repeat2,
   Settings,
@@ -906,13 +907,13 @@ function WeatherDateGroup({ dateStr, records, defaultOpen }: { dateStr: string; 
             const tempColor = r.temperature <= 0 ? '#93c5fd' : r.temperature <= 10 ? '#60a5fa' : r.temperature <= 20 ? '#fbbf24' : r.temperature <= 30 ? '#f97316' : '#ef4444';
             return (
               <div key={r.id} className="flex items-center gap-3 text-[11px] py-[3px] px-2 rounded" style={{ background: 'rgba(255,255,255,0.05)' }} data-testid={`weather-record-${r.id}`}>
-                <span className="text-white/60 w-[70px] shrink-0">{timeStr}</span>
+                <span className="text-white w-[70px] shrink-0">{timeStr}</span>
                 <span className="font-bold w-[45px] shrink-0" style={{ color: tempColor }}>{Math.round(r.temperature)}°C</span>
-                <span className="text-white/50 w-[55px] shrink-0">{r.feelsLike != null ? `${Math.round(r.feelsLike)}°C` : '--'}</span>
-                <span className="text-white/70 w-[100px] shrink-0">{r.condition || '--'}</span>
-                <span className="text-white/50 w-[75px] shrink-0">{r.windSpeed != null ? `${Math.round(r.windSpeed)} km/h` : '--'}</span>
-                <span className="text-white/40 w-[55px] shrink-0">{r.humidity != null ? `${r.humidity}%` : '--'}</span>
-                <span className="text-white/40 w-[50px] shrink-0">{r.precipitation > 0 ? `${r.precipitation}mm` : '--'}</span>
+                <span className="text-white w-[55px] shrink-0">{r.feelsLike != null ? `${Math.round(r.feelsLike)}°C` : '--'}</span>
+                <span className="text-white w-[100px] shrink-0">{r.condition || '--'}</span>
+                <span className="text-white w-[75px] shrink-0">{r.windSpeed != null ? `${Math.round(r.windSpeed)} km/h` : '--'}</span>
+                <span className="text-white w-[55px] shrink-0">{r.humidity != null ? `${r.humidity}%` : '--'}</span>
+                <span className="text-white w-[50px] shrink-0">{r.precipitation > 0 ? `${r.precipitation}mm` : '--'}</span>
               </div>
             );
           })}
@@ -15895,7 +15896,7 @@ export default function Dashboard() {
             data-testid="button-weather-history"
             title="Weather History"
           >
-            <Cloud className="text-white" style={{ height: '22px', width: '22px' }} />
+            <CloudSun className="text-white" style={{ height: '22px', width: '22px' }} />
           </div>
 
           {/* Email Management Button */}
@@ -22101,15 +22102,15 @@ export default function Dashboard() {
             return (
             <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 99999 }} onClick={() => setShowWeatherHistoryPanel(false)} data-testid="weather-history-overlay">
               <div className="absolute inset-0 bg-black/50" />
-              <div className="relative w-[720px] max-h-[80vh] rounded-lg overflow-hidden" onClick={e => e.stopPropagation()} style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
-                <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+              <div className="relative w-[720px] max-h-[80vh] rounded-lg flex flex-col" onClick={e => e.stopPropagation()} style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
+                <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 rounded-t-lg shrink-0" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                   <div className="flex items-center gap-2">
                     <Cloud className="h-4 w-4 text-white" />
                     <span className="text-white font-semibold text-[13px]">Toronto Weather History</span>
                   </div>
                   <div />
                 </div>
-                <div className="overflow-y-auto max-h-[calc(80vh-50px)] p-4">
+                <div className="overflow-y-auto flex-1 min-h-0 p-4">
                   {weatherHistoryLoading ? (
                     <div className="text-white/70 text-center py-8 text-[12px]">Loading weather history...</div>
                   ) : weatherHistoryData.length === 0 ? (
@@ -22124,7 +22125,7 @@ export default function Dashboard() {
                     });
                     return (
                       <>
-                        <div className="flex items-center gap-3 text-[10px] text-white/40 font-medium px-2 mb-2 uppercase tracking-wide">
+                        <div className="flex items-center gap-3 text-[10px] text-white font-medium px-2 mb-2 uppercase tracking-wide">
                           <span className="w-[70px] shrink-0">Time</span>
                           <span className="w-[45px] shrink-0">Temp</span>
                           <span className="w-[55px] shrink-0">Feels</span>
@@ -22144,7 +22145,7 @@ export default function Dashboard() {
                     );
                   })()}
                 </div>
-                <div className="flex justify-end px-4 py-3 border-t border-white/15">
+                <div className="flex justify-end px-4 py-3 border-t border-white/15 shrink-0 rounded-b-lg" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground}ee 0%, ${colorSettings.mainBackground} 100%)` }}>
                   <button onClick={() => setShowWeatherHistoryPanel(false)} className="px-4 py-[5px] rounded text-[12px] font-medium text-white bg-white/15 hover:bg-white/25 transition-colors" data-testid="button-close-weather-history">Close</button>
                 </div>
               </div>
