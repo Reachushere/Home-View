@@ -27504,7 +27504,7 @@ export default function Dashboard() {
                                     data-testid={`countdown-span-main-${t.id}-day-${dayIdx}`}
                                   >
                                     {isEndCell && (
-                                      <div style={{ position: 'absolute', left: '1px', top: `${barH + 1}px`, display: 'flex', alignItems: 'center', gap: '3px', whiteSpace: 'nowrap', lineHeight: 1 }}>
+                                      <div style={{ position: 'absolute', left: '1px', top: `-5px`, display: 'flex', alignItems: 'center', gap: '3px', whiteSpace: 'nowrap', lineHeight: 1, height: `${barGap - 1}px` }}>
                                         <span style={{ fontSize: '11px', fontWeight: 500, color: barColor, letterSpacing: '-0.2px', textShadow: '0 0 3px rgba(255,255,255,0.9)' }}>{cd.daysLeft}d</span>
                                         <span style={{ fontSize: '9px', fontWeight: 500, color: 'rgba(0,0,0,0.55)', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100px' }}>{labelText}</span>
                                       </div>
