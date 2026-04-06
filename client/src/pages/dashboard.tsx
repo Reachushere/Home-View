@@ -30121,13 +30121,22 @@ export default function Dashboard() {
                 key={task.id} 
                 className={`mb-1.5 rounded transition-colors ${draggedFile ? 'hover:bg-white/20 hover:ring-2 hover:ring-white/50' : ''}`} 
                 data-box-task-id={task.id} 
-                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
+                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", position: 'relative', overflow: 'visible' }}
                 onMouseEnter={() => setHoveredCountdownTaskIdDebounced(task.id)}
                 onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                 onDragOver={(e) => { if (draggedFile) { e.preventDefault(); e.stopPropagation(); } }}
                 onDrop={(e) => handleFileDropOnTask(e, task.id)}
                 data-testid={`droppable-task-${task.id}`}
               >
+                {task.showCountdownBarMain !== false && !task.isCompleted && (() => {
+                  const dueDateObj = new Date(task.dueDate);
+                  const nowCd = new Date();
+                  const daysLeft = Math.max(0, Math.ceil((dueDateObj.getTime() - nowCd.getTime()) / (1000 * 60 * 60 * 24)));
+                  const cdBarColor = task.countdownBarColor || (daysLeft <= 1 ? '#ef4444' : daysLeft === 2 ? '#f97316' : daysLeft <= 4 ? '#f59e0b' : '#22c55e');
+                  return (
+                    <div style={{ position: 'absolute', left: '-5px', top: '1px', bottom: '1px', width: '4px', background: cdBarColor, borderRadius: '2px 0 0 2px', zIndex: 1, opacity: 0.9 }} data-testid={`homework-countdown-nub-${task.id}`} />
+                  );
+                })()}
                 <div style={{ display: 'flex', alignItems: 'center', marginLeft: '-17px', gap: '0px', width: 'calc(100% + 17px)' }}>
                   {/* Col 1: Checkbox */}
                   <div style={{ width: '16px', flexShrink: 0 }}>
