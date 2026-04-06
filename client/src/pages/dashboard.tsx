@@ -5364,7 +5364,6 @@ export default function Dashboard() {
     hoveredCountdownTaskIdRef.current = id;
     setHoveredCountdownTaskId(id);
   }, []);
-  const [hoveredCalTaskId, setHoveredCalTaskId] = useState<number | null>(null);
   
   // Pomodoro Timer State
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -15341,7 +15340,7 @@ export default function Dashboard() {
           
 
 
-          {/* Up arrow + grab handle */}
+          {/* Up arrow + grab handle + redock button */}
           <div style={{ position: 'relative', zIndex: 1, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', marginRight: '-4px', marginLeft: '12px', gap: '0px' }}>
             <div
               style={{ width: '31px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', marginTop: '-7px' }}
@@ -15352,15 +15351,28 @@ export default function Dashboard() {
             >
               <ChevronUp className="h-[19px] w-[19px] text-white/70" />
             </div>
-            <div
-              className="cursor-grab active:cursor-grabbing"
-              style={{ width: '20px', height: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.5, marginTop: '7px' }}
-              onMouseDown={handleTopPillGrabStart}
-              onTouchStart={handleTopPillGrabStart}
-              title="Drag to undock"
-              data-testid="grab-undock-top-pill"
-            >
-              <svg width="14" height="10" viewBox="0 0 14 10"><circle cx="3" cy="1.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="7" cy="1.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="11" cy="1.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="3" cy="5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="7" cy="5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="11" cy="5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="3" cy="8.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="7" cy="8.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="11" cy="8.5" r="1" fill="rgba(255,255,255,0.6)"/></svg>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '7px' }}>
+              <div
+                className="cursor-grab active:cursor-grabbing"
+                style={{ width: '20px', height: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.5 }}
+                onMouseDown={handleTopPillGrabStart}
+                onTouchStart={handleTopPillGrabStart}
+                title="Drag to undock"
+                data-testid="grab-undock-top-pill"
+              >
+                <svg width="14" height="10" viewBox="0 0 14 10"><circle cx="3" cy="1.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="7" cy="1.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="11" cy="1.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="3" cy="5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="7" cy="5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="11" cy="5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="3" cy="8.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="7" cy="8.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="11" cy="8.5" r="1" fill="rgba(255,255,255,0.6)"/></svg>
+              </div>
+              {topPillUndocked && (
+                <div
+                  style={{ width: '18px', height: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', opacity: 0.7, borderRadius: '3px', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)' }}
+                  className="pill-button-hover"
+                  onClick={(e) => { e.stopPropagation(); redockTopPill(); }}
+                  title="Snap back to top"
+                  data-testid="button-redock-top-pill"
+                >
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 8V2M5 2L2 5M5 2L8 5" stroke="rgba(255,255,255,0.8)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </div>
+              )}
             </div>
           </div>
 
