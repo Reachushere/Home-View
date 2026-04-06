@@ -1,0 +1,45 @@
+../dist/public/assets/Music_BG20_1774006032495-CxhBg4I3.png                               2,114.88 kB
+../dist/public/assets/style-DHgAkI1K.css                                                    256.49 kB │ gzip:  41.58 kB
+../dist/public/assets/index-tQJlmcwn.js                                                   2,913.50 kB │ gzip: 737.64 kB
+✓ built in 46.80s
+building server...
+✘ [ERROR] No matching export in "server/onedrive.ts" for import "startDeviceCodeFlow"
+
+    server/routes.ts:26:286:
+      26 │ ...redNotebookSections, getPagesBySectionId, startDeviceCodeFlow, pollDeviceCodeAuth, isOneDriveConnected ...
+         ╵                                              ~~~~~~~~~~~~~~~~~~~
+
+✘ [ERROR] No matching export in "server/onedrive.ts" for import "pollDeviceCodeAuth"
+
+    server/routes.ts:26:307:
+      26 │ ...ns, getPagesBySectionId, startDeviceCodeFlow, pollDeviceCodeAuth, isOneDriveConnected } from "./onedrive";
+         ╵                                                  ~~~~~~~~~~~~~~~~~~
+
+✘ [ERROR] No matching export in "server/onedrive.ts" for import "isOneDriveConnected"
+
+    server/routes.ts:26:327:
+      26 │ ...ns, getPagesBySectionId, startDeviceCodeFlow, pollDeviceCodeAuth, isOneDriveConnected } from "./onedrive";
+         ╵                                                                      ~~~~~~~~~~~~~~~~~~~
+
+3 errors
+Error: Build failed with 3 errors:
+server/routes.ts:26:286: ERROR: No matching export in "server/onedrive.ts" for import "startDeviceCodeFlow"
+server/routes.ts:26:307: ERROR: No matching export in "server/onedrive.ts" for import "pollDeviceCodeAuth"
+server/routes.ts:26:327: ERROR: No matching export in "server/onedrive.ts" for import "isOneDriveConnected"
+    at failureErrorWithLog (/home/byhomeyyz/Home-View/node_modules/esbuild/lib/main.js:1467:15)
+    at /home/byhomeyyz/Home-View/node_modules/esbuild/lib/main.js:926:25
+    at /home/byhomeyyz/Home-View/node_modules/esbuild/lib/main.js:878:52
+    at buildResponseToResult (/home/byhomeyyz/Home-View/node_modules/esbuild/lib/main.js:924:7)
+    at /home/byhomeyyz/Home-View/node_modules/esbuild/lib/main.js:951:16
+    at responseCallbacks.<computed> (/home/byhomeyyz/Home-View/node_modules/esbuild/lib/main.js:603:9)
+    at handleIncomingPacket (/home/byhomeyyz/Home-View/node_modules/esbuild/lib/main.js:658:12)
+    at Socket.readFromStdout (/home/byhomeyyz/Home-View/node_modules/esbuild/lib/main.js:581:7)
+    at Socket.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+    at Pipe.onStreamRead (node:internal/stream_base_commons:191:23) {
+  errors: [Getter/Setter],
+  warnings: [Getter/Setter]
+}
+byhomeyyz@raspberrypi:~/Home-View $
