@@ -2455,6 +2455,7 @@ export default function Dashboard() {
   const redockTopPill = useCallback(() => {
     setTopPillUndocked(false);
     setTopPillPos({ x: 0, y: 0 });
+    setIsTopPillOpen(true);
   }, []);
   useEffect(() => {
     if (!isTopPillOpen) return;
