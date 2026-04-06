@@ -22145,8 +22145,8 @@ export default function Dashboard() {
                     );
                   })()}
                 </div>
-                <div className="flex justify-end px-4 py-3 border-t border-white/15 shrink-0 rounded-b-lg" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground}ee 0%, ${colorSettings.mainBackground} 100%)` }}>
-                  <button onClick={() => setShowWeatherHistoryPanel(false)} className="px-4 py-[5px] rounded text-[12px] font-medium text-white bg-white/15 hover:bg-white/25 transition-colors" data-testid="button-close-weather-history">Close</button>
+                <div className="flex justify-end px-4 py-[10px] border-t border-white/40 shrink-0 rounded-b-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, ${colorSettings.headerBar}bb 0%, ${colorSettings.headerBar}cc 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15), 0 -2px 8px rgba(0,0,0,0.08)' }}>
+                  <button onClick={() => setShowWeatherHistoryPanel(false)} className="px-5 py-[5px] rounded text-[11px] font-medium text-white/80 hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)' }} data-testid="button-close-weather-history">Close</button>
                 </div>
               </div>
             </div>
@@ -25449,7 +25449,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`flex flex-col items-center justify-center h-full relative`}
-                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'visible' } : day.getDay() === 6 ? { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)' } : { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', borderLeft: '1.5px dotted rgba(255,255,255,0.35)' }}
+                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'visible' } : day.getDay() === 6 ? { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', borderLeft: '3px solid #000' } : { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', borderLeft: '1.5px dotted rgba(255,255,255,0.35)' }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     
@@ -27492,7 +27492,7 @@ export default function Dashboard() {
                           key={dayIdx} 
                           className={`relative p-0.5 ${dragOverSlot && isSameDayET(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "ring-2 ring-primary ring-inset" : ""}`}
                           style={{
-                            borderLeft: isSameDayET(day, new Date()) ? 'none' : '1.5px dotted rgba(0,0,0,0.25)',
+                            borderLeft: isSameDayET(day, new Date()) ? 'none' : day.getDay() === 6 ? '3px solid #000' : '1.5px dotted rgba(0,0,0,0.25)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined,
                             backgroundColor: (() => {
                               if (isToday || isCurrentHour) return '#e4ecf5';
@@ -27566,7 +27566,8 @@ export default function Dashboard() {
                             const todayDayIdx = weekDays.findIndex(wd => isSameDayET(wd, today));
                             const twoWeeksOut = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
                             const endDayIdx = todayDayIdx >= 0 ? Math.min(todayDayIdx + 2, weekDays.length - 1) : 0;
-                            if (endDayIdx < 0 || endDayIdx >= weekDays.length) return null;
+                            const barStartIdx = todayDayIdx >= 0 ? todayDayIdx + 1 : 0;
+                            if (barStartIdx < 0 || barStartIdx >= weekDays.length) return null;
                             const lastDayInWeek = startOfDayET(weekDays[weekDays.length - 1]);
                             const allCountdown = (allTasks || []).filter(t => {
                               if (t.showCountdownBar === false || t.showCountdownBarMain === false || t.isCompleted) return false;
@@ -27583,7 +27584,8 @@ export default function Dashboard() {
                               if (beyond) tDueDayIdx = weekDays.length - 1;
                               const tDueHour = (() => { if (t.eventStartTime) { const [h] = t.eventStartTime.split(':').map(Number); return Math.min(h, 22); } const d = new Date(t.dueDate); const h = getETHours(d); return h === 0 ? 18 : Math.min(h, 22); })();
                               const daysLeft = Math.max(0, Math.round((tDue.getTime() - today.getTime()) / (1000*60*60*24)));
-                              return { task: t, tDue, tDueDayIdx, tDueHour, beyond, daysLeft, startDay: endDayIdx, endDay: tDueDayIdx };
+                              const barStart = todayDayIdx >= 0 ? todayDayIdx + 1 : 0;
+                              return { task: t, tDue, tDueDayIdx, tDueHour, beyond, daysLeft, startDay: barStart, endDay: tDueDayIdx };
                             }).sort((a, b) => a.tDue.getTime() - b.tDue.getTime() || a.tDueHour - b.tDueHour);
                             const seenNames = new Map<string, number>();
                             const deduped = allCountdown.filter(cd => {
