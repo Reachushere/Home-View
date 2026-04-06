@@ -27666,9 +27666,9 @@ export default function Dashboard() {
                               const barHPx = needsPulse ? 4 : barH;
                               if (isFirstCell) {
                                 return (
-                                  <div key={`cbar-main-${t.id}`} style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, pointerEvents: 'none', zIndex: 2 }} data-testid={`countdown-span-main-${t.id}-day-${dayIdx}`}>
+                                  <div key={`cbar-main-${t.id}`} style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, pointerEvents: 'none', zIndex: 2, overflow: 'visible' }} data-testid={`countdown-span-main-${t.id}-day-${dayIdx}`}>
                                     <div style={{ position: 'absolute', left: '0px', width: '10px', top: `${topPx}px`, height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px' }} />
-                                    <div ref={el => { if (el) el.setAttribute('data-label-w', String(el.offsetWidth)); }} style={{ position: 'absolute', left: '10px', top: `${topPx - 5}px`, display: 'flex', alignItems: 'center', gap: '3px', whiteSpace: 'nowrap', lineHeight: 1, height: '13px', padding: '0 3px', maxWidth: 'calc(200% - 10px)', overflow: 'hidden' }}>
+                                    <div style={{ position: 'absolute', left: '10px', top: `${topPx - 5}px`, display: 'flex', alignItems: 'center', gap: '3px', whiteSpace: 'nowrap', lineHeight: 1, height: '13px', padding: '0 3px', maxWidth: 'calc(100% - 10px)', overflow: 'hidden' }}>
                                       <span style={{ fontSize: '11px', fontWeight: 300, color: barColor, letterSpacing: '-0.2px', flexShrink: 0 }}>{cd.daysLeft}d</span>
                                       <span style={{ fontSize: '9px', fontWeight: 600, color: 'rgba(0,0,0,0.55)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{labelText}</span>
                                     </div>
@@ -27918,11 +27918,10 @@ export default function Dashboard() {
                                     top: `${topOffset}px`,
                                     left: (() => { const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return hasNextDueBox ? `calc(${taskIdx * columnWidth / 2}% + 2px)` : `calc(${taskIdx * columnWidth}% + 2px)`; })(),
                                     width: (() => { const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return hasNextDueBox ? `calc(${columnWidth / 2}% - 4px)` : `calc(${columnWidth}% - 4px)`; })(),
-                                    height: `${taskHeight}px`,
-                                    zIndex: hoveredCountdownTaskId === task.id ? 55 : (selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43)),
+                                    minHeight: `${taskHeight}px`,
+                                    zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43),
                                     background: bgGradient,
                                     border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1.5px solid ${borderColor}`,
-                                    boxShadow: hoveredCountdownTaskId === task.id ? '0 4px 16px rgba(0,0,0,0.25)' : undefined,
                                     transformOrigin: 'center center',
                                     display: 'flex',
                                     flexDirection: 'column' as const,
@@ -27975,8 +27974,8 @@ export default function Dashboard() {
                                     checked={task.isCompleted || false}
                                     onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
                                     onClick={(e) => e.stopPropagation()}
-                                    className="shrink-0 bg-white data-[state=checked]:bg-white data-[state=checked]:text-black"
-                                    style={{ width: '10px', height: '10px', border: '1px solid black', marginLeft: '-1px' }}
+                                    className="h-3.5 w-3.5 shrink-0 bg-white data-[state=checked]:bg-white data-[state=checked]:text-black"
+                                    style={{ border: '1px solid black' }}
                                     data-testid={`checkbox-time-${task.id}`}
                                   />
                                   {(() => { const hasAtt = (task.attachments?.length && task.attachments.some((att: any) => { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; return !!url; })) || task.referenceLink; return hasAtt ? <img src={pdfAttachIconPath} alt="PDF" style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0 }} data-testid={`attachment-icon-time-${task.id}`} /> : null; })()}
