@@ -13015,28 +13015,33 @@ document.body.removeChild(a);
       const immediatePromptPromise = (async () => {
         try {
           await Promise.allSettled([
-            haServiceCallSafe('media_player/volume_set', { entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.35 }, 'Cat Lights Vol'),
+            haServiceCallSafe('media_player/volume_set', { entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.50 }, 'Cat Lights HA Vol'),
             haServiceCallSafe('input_boolean/turn_off', { entity_id: MODULE_READING_CONFIRMED }, 'Cat Lights Bool'),
             haServiceCallSafe('input_boolean/turn_on', { entity_id: MODULE_READING_PENDING }, 'Cat Lights Bool'),
           ]);
           let ackPlayed = false;
           try {
-            const ackPath = await generateAndSaveTTSAudio("One moment, checking your readings.", `cat-lights-ack-${Date.now()}`);
-            const ackResult = await playOnNestSpeaker(`${DEPLOYED_APP_URL}${ackPath}`);
-            if (ackResult.success) {
-              ackPlayed = true;
-              console.log(`[Cat Lights] Quick acknowledgment played on Nest speaker`);
-            }
-          } catch (ackErr: any) {
-            console.warn(`[Cat Lights] Nest ack failed: ${ackErr.message}`);
-          }
-          if (!ackPlayed) {
             await haServiceCall('tts/speak', {
               entity_id: HA_CLOUD_TTS_ENTITY,
               media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
               message: "One moment, checking your readings."
-            }, 'Cat Lights Quick TTS');
-            console.log(`[Cat Lights] Quick acknowledgment played via HA Cloud TTS (fallback)`);
+            }, 'Cat Lights HA Ack');
+            ackPlayed = true;
+            console.log(`[Cat Lights] Quick acknowledgment played via HA Cloud TTS (primary)`);
+          } catch (ackErr: any) {
+            console.warn(`[Cat Lights] HA ack failed: ${ackErr.message}`);
+          }
+          if (!ackPlayed) {
+            try {
+              const ackPath = await generateAndSaveTTSAudio("One moment, checking your readings.", `cat-lights-ack-${Date.now()}`);
+              const ackResult = await playOnNestSpeaker(`${DEPLOYED_APP_URL}${ackPath}`);
+              if (ackResult.success) {
+                ackPlayed = true;
+                console.log(`[Cat Lights] Quick acknowledgment played on Nest speaker (fallback)`);
+              }
+            } catch (e: any) {
+              console.warn(`[Cat Lights] Nest ack fallback also failed: ${e.message}`);
+            }
           }
         } catch (e: any) {
           console.warn(`[Cat Lights] Quick acknowledgment failed: ${e.message}`);
@@ -13107,7 +13112,7 @@ document.body.removeChild(a);
           console.warn(`[Cat Lights] Pre-prompt media stop error (non-fatal): ${e.message}`);
         }
 
-        await haServiceCallSafe('media_player/volume_set', { entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.35 }, 'Cat Lights HA Vol');
+        await haServiceCallSafe('media_player/volume_set', { entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.50 }, 'Cat Lights HA Vol');
 
         let ttsPlayed = false;
         try {
