@@ -18501,37 +18501,29 @@ export default function Dashboard() {
               </div>
 
               <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent' }}>
-                <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
-                  {[{ label: 'Morning', hours: amHours }, { label: 'Afternoon', hours: pmHours }].map((half, halfIdx) => (
-                    <div key={half.label} style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: halfIdx === 0 ? '2px solid rgba(255,255,255,0.25)' : 'none' }}>
-                      <div style={{ padding: '4px 0', textAlign: 'center', borderBottom: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.06)', flexShrink: 0 }}>
-                        <span style={{ fontSize: '11px', fontWeight: 400, color: '#ffffff', letterSpacing: '2.5px', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textTransform: 'uppercase' }}>{half.label}</span>
+                <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+                  {Array.from({ length: 24 }, (_, i) => i).map(hour => {
+                    const tasks = tasksByHour[hour] || [];
+                    const hasTask = tasks.length > 0;
+                    const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+                    const ampm = hour < 12 ? 'AM' : 'PM';
+                    return (
+                      <div key={hour} style={{ minHeight: hasTask ? '28px' : '22px', display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
+                        <div style={{ width: '52px', flexShrink: 0, display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end', paddingRight: '6px', paddingTop: '3px', borderRight: '1px solid rgba(255,255,255,0.25)', position: 'relative' }}>
+                          <span style={{ fontSize: '10px', fontWeight: hasTask ? 700 : 500, color: hasTask ? '#ffffff' : 'rgba(255,255,255,0.5)', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{displayHour}:00</span>
+                          {hasTask && <div style={{ position: 'absolute', right: '-3px', top: '8px', width: '5px', height: '5px', borderRadius: '50%', background: '#60a5fa', zIndex: 1 }} />}
+                        </div>
+                        <div
+                          onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)'; }}
+                          onDragLeave={(e) => { (e.currentTarget as HTMLElement).style.background = ''; }}
+                          onDrop={(e) => { e.preventDefault(); (e.currentTarget as HTMLElement).style.background = ''; const taskId = parseInt(e.dataTransfer.getData('text/plain')); if (!taskId) return; const hh = String(hour).padStart(2, '0'); const newStart = `${hh}:00`; const newEnd = `${String((hour + 1) % 24).padStart(2, '0')}:00`; fetch(`/api/tasks/${taskId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ eventStartTime: newStart, eventEndTime: newEnd }) }).then(() => { queryClient.invalidateQueries({ queryKey: ['/api/tasks'] }); }); }}
+                          style={{ flex: 1, minWidth: 0, padding: hasTask ? '1px 4px' : '0 4px', display: 'flex', flexDirection: 'column', gap: '2px', justifyContent: 'center', overflow: 'hidden', transition: 'background 0.15s ease' }}
+                        >
+                          {tasks.map(t => renderDetailTask(t))}
+                        </div>
                       </div>
-                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                        {half.hours.map(hour => {
-                          const tasks = tasksByHour[hour] || [];
-                          const hasTask = tasks.length > 0;
-                          const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-                          return (
-                            <div key={hour} style={{ flex: 1, minHeight: '28px', display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.25)' }}>
-                              <div style={{ width: '42px', flexShrink: 0, display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end', paddingRight: '6px', paddingTop: '3px', borderRight: '1px solid rgba(255,255,255,0.25)', position: 'relative' }}>
-                                <span style={{ fontSize: '10px', fontWeight: hasTask ? 700 : 500, color: '#ffffff', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{displayHour}:00</span>
-                                {hasTask && <div style={{ position: 'absolute', right: '-3px', top: '8px', width: '5px', height: '5px', borderRadius: '50%', background: '#60a5fa', zIndex: 1 }} />}
-                              </div>
-                              <div
-                                onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)'; }}
-                                onDragLeave={(e) => { (e.currentTarget as HTMLElement).style.background = ''; }}
-                                onDrop={(e) => { e.preventDefault(); (e.currentTarget as HTMLElement).style.background = ''; const taskId = parseInt(e.dataTransfer.getData('text/plain')); if (!taskId) return; const hh = String(hour).padStart(2, '0'); const newStart = `${hh}:00`; const newEnd = `${String((hour + 1) % 24).padStart(2, '0')}:00`; fetch(`/api/tasks/${taskId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ eventStartTime: newStart, eventEndTime: newEnd }) }).then(() => { queryClient.invalidateQueries({ queryKey: ['/api/tasks'] }); }); }}
-                                style={{ flex: 1, minWidth: 0, padding: hasTask ? '1px 4px' : '0 4px', display: 'flex', flexDirection: 'column', gap: '2px', justifyContent: 'center', overflow: 'hidden', transition: 'background 0.15s ease' }}
-                              >
-                                {tasks.map(t => renderDetailTask(t))}
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
                 {unscheduledTasks.length > 0 && (
                   <div style={{ borderTop: '1px solid rgba(255,255,255,0.2)', padding: '8px 12px', flexShrink: 0 }}>
