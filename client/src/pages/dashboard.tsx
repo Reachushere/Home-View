@@ -26623,7 +26623,7 @@ export default function Dashboard() {
                           handleCourseRowDrop(e, course.name, day);
                         }}
                       >
-                        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', borderLeft: '1.5px dotted rgba(0,0,0,0.25)', zIndex: 5, pointerEvents: 'none' }} />
+                        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', borderLeft: day.getDay() === 6 ? '3px solid #000' : '1.5px dotted rgba(0,0,0,0.25)', zIndex: 5, pointerEvents: 'none' }} />
                         {isDayToday && (() => {
                           const cCode2 = course.name;
                           const nextTask = (allTasks || []).filter(t => {
@@ -27152,7 +27152,7 @@ export default function Dashboard() {
                           style={{ backgroundColor: otherCellBg, padding: isOtherToday ? '2px 1px 2px 3px' : '2px 1px 2px 1px', borderBottom: isOtherToday ? '1px dotted #666' : `1.5px dotted ${otherRowColors.borderColor}`, overflowY: otherHasScroll ? 'auto' : 'hidden', overflowX: 'hidden', scrollbarWidth: 'thin', maxHeight: `${otherRowHeight}px` }}
                           data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
                         >
-                          <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', borderLeft: '1.5px dotted rgba(0,0,0,0.25)', zIndex: 5, pointerEvents: 'none' }} />
+                          <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', borderLeft: day.getDay() === 6 ? '3px solid #000' : '1.5px dotted rgba(0,0,0,0.25)', zIndex: 5, pointerEvents: 'none' }} />
                           {dayOtherTasks.map(task => {
                             const today = startOfDayET(new Date());
                             const tomorrow = addDays(today, 1);
@@ -27247,7 +27247,7 @@ export default function Dashboard() {
                     key={dayIdx} 
                     className={`relative p-0.5 flex flex-col gap-0.5 min-w-0 ${isSameDayET(day, new Date()) ? 'border-b border-black' : 'border-b border-border/50'}`}
                     style={{ 
-                      borderLeft: isSameDayET(day, new Date()) ? 'none' : '1.5px dotted rgba(0,0,0,0.25)',
+                      borderLeft: isSameDayET(day, new Date()) ? 'none' : day.getDay() === 6 ? '3px solid #000' : '1.5px dotted rgba(0,0,0,0.25)',
                       backgroundColor: (() => {
                         if (isSameDayET(day, new Date())) return colorSettings.headerBar;
                         if (calendarWeekMode === 'current') {
@@ -27565,7 +27565,6 @@ export default function Dashboard() {
                             const today = startOfDayET(new Date());
                             const todayDayIdx = weekDays.findIndex(wd => isSameDayET(wd, today));
                             const twoWeeksOut = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
-                            const endDayIdx = todayDayIdx >= 0 ? Math.min(todayDayIdx + 2, weekDays.length - 1) : 0;
                             const barStartIdx = todayDayIdx >= 0 ? todayDayIdx + 1 : 0;
                             if (barStartIdx < 0 || barStartIdx >= weekDays.length) return null;
                             const lastDayInWeek = startOfDayET(weekDays[weekDays.length - 1]);
@@ -27575,7 +27574,7 @@ export default function Dashboard() {
                               if (tDue <= today || tDue > twoWeeksOut) return false;
                               let tDueDayIdx = weekDays.findIndex(wd => isSameDayET(wd, tDue));
                               if (tDueDayIdx < 0) { if (tDue > lastDayInWeek) tDueDayIdx = weekDays.length - 1; else return false; }
-                              if (tDueDayIdx <= endDayIdx) return false;
+                              if (tDueDayIdx <= barStartIdx) return false;
                               return true;
                             }).map(t => {
                               const tDue = startOfDayET(new Date(t.dueDate));
