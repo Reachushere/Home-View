@@ -2416,6 +2416,39 @@ export default function Dashboard() {
   const closeTopPill = useCallback(() => {
     setIsTopPillOpen(false);
   }, []);
+  const handleTopPillGrabStart = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    topPillDragRef.current = { startX: clientX, startY: clientY, origX: topPillPos.x, origY: topPillPos.y };
+    const onMove = (ev: MouseEvent | TouchEvent) => {
+      if (!topPillDragRef.current) return;
+      const cx = 'touches' in ev ? ev.touches[0].clientX : ev.clientX;
+      const cy = 'touches' in ev ? ev.touches[0].clientY : ev.clientY;
+      const dx = cx - topPillDragRef.current.startX;
+      const dy = cy - topPillDragRef.current.startY;
+      if (!topPillUndocked && Math.abs(dy) > 8) {
+        setTopPillUndocked(true);
+      }
+      setTopPillPos({ x: topPillDragRef.current.origX + dx, y: topPillDragRef.current.origY + dy });
+    };
+    const onUp = () => {
+      topPillDragRef.current = null;
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      document.removeEventListener('touchmove', onMove);
+      document.removeEventListener('touchend', onUp);
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+    document.addEventListener('touchmove', onMove, { passive: false });
+    document.addEventListener('touchend', onUp);
+  }, [topPillPos, topPillUndocked]);
+  const redockTopPill = useCallback(() => {
+    setTopPillUndocked(false);
+    setTopPillPos({ x: 0, y: 0 });
+  }, []);
   useEffect(() => {
     if (!isTopPillOpen) return;
     const handleClickOutside = (e: MouseEvent) => {
@@ -2704,6 +2737,9 @@ export default function Dashboard() {
   const topPillTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const topPillInitDoneRef = useRef(false);
   const topPillHoveredRef = useRef(false);
+  const [topPillUndocked, setTopPillUndocked] = useState(false);
+  const [topPillPos, setTopPillPos] = useState<{x: number; y: number}>({ x: 0, y: 0 });
+  const topPillDragRef = useRef<{startX: number; startY: number; origX: number; origY: number} | null>(null);
   const openTopPill = useCallback(() => {
     if (!topPillInitDoneRef.current) return;
     setIsTopPillOpen(true);
@@ -15173,20 +15209,21 @@ export default function Dashboard() {
       })()}
 
       {/* Top Pill - Slide up/down container for toolbar buttons */}
-      <div style={{ position: 'fixed', top: `${d2lTickerHeight}px`, left: 0, right: 0, bottom: 0, zIndex: editingTask ? 1 : 110, pointerEvents: 'none', overflow: 'hidden', display: isQuickAddOpen ? 'none' : undefined }}>
+      <div style={{ position: 'fixed', top: `${d2lTickerHeight}px`, left: 0, right: 0, bottom: 0, zIndex: editingTask ? 1 : 110, pointerEvents: 'none', overflow: topPillUndocked ? 'visible' : 'hidden', display: isQuickAddOpen ? 'none' : undefined }}>
       <div 
         ref={topPillRef}
         id="top-pill-container"
         style={{
-          position: 'absolute',
+          position: topPillUndocked ? 'fixed' : 'absolute',
           zIndex: 110,
-          left: '19px',
-          right: '18px',
+          left: topPillUndocked ? undefined : '19px',
+          right: topPillUndocked ? undefined : '18px',
           pointerEvents: editingTask || !isTopPillOpen ? 'none' : 'auto',
-          transform: `translateY(${isTopPillOpen ? '21px' : '-83px'})`,
-          transition: topPillMounted ? 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
-          animation: (!isTopPillOpen && topPillMounted) ? 'top-pill-container-nudge 6s ease-in-out 1s infinite' : 'none',
-          top: '0px',
+          transform: topPillUndocked ? `translate(${topPillPos.x}px, ${topPillPos.y}px)` : `translateY(${isTopPillOpen ? '21px' : '-83px'})`,
+          transition: topPillUndocked ? 'none' : (topPillMounted ? 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)' : 'none'),
+          animation: (!isTopPillOpen && topPillMounted && !topPillUndocked) ? 'top-pill-container-nudge 6s ease-in-out 1s infinite' : 'none',
+          top: topPillUndocked ? `${d2lTickerHeight + 21}px` : '0px',
+          ...(topPillUndocked ? { left: '19px' } : {}),
           height: '57px',
           paddingTop: '1px',
           paddingBottom: '1px',
@@ -15290,15 +15327,27 @@ export default function Dashboard() {
           
 
 
-          {/* Up arrow to hide pill */}
-          <div
-            style={{ position: 'relative', zIndex: 1, flexShrink: 0, width: '31px', height: '31px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', marginRight: '-4px', marginLeft: '12px' }}
-            className="pill-button-hover"
-            onClick={() => closeTopPill()}
-            title="Hide toolbar"
-            data-testid="button-hide-top-pill"
-          >
-            <ChevronUp className="h-[19px] w-[19px] text-white/70" />
+          {/* Up arrow + grab handle */}
+          <div style={{ position: 'relative', zIndex: 1, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', marginRight: '-4px', marginLeft: '12px', gap: '0px' }}>
+            <div
+              style={{ width: '31px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', marginTop: '-7px' }}
+              className="pill-button-hover"
+              onClick={() => { if (topPillUndocked) { redockTopPill(); } else { closeTopPill(); } }}
+              title={topPillUndocked ? "Re-dock toolbar" : "Hide toolbar"}
+              data-testid="button-hide-top-pill"
+            >
+              <ChevronUp className="h-[19px] w-[19px] text-white/70" />
+            </div>
+            <div
+              className="cursor-grab active:cursor-grabbing"
+              style={{ width: '20px', height: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.5, marginTop: '-2px' }}
+              onMouseDown={handleTopPillGrabStart}
+              onTouchStart={handleTopPillGrabStart}
+              title="Drag to undock"
+              data-testid="grab-undock-top-pill"
+            >
+              <svg width="14" height="6" viewBox="0 0 14 6"><circle cx="3" cy="1.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="7" cy="1.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="11" cy="1.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="3" cy="4.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="7" cy="4.5" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="11" cy="4.5" r="1" fill="rgba(255,255,255,0.6)"/></svg>
+            </div>
           </div>
 
           {/* ── Tasks ── */}
