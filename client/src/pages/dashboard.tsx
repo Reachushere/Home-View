@@ -26172,7 +26172,7 @@ export default function Dashboard() {
                     const semCourseRowColor = semPrefix ? (semSettings as any)[`${semPrefix}CourseRowColor`] : '';
                     const semTaskBgColor = semPrefix ? (semSettings as any)[`${semPrefix}TaskBgColor`] : '';
                     const semCourseFontColor = semPrefix ? (semSettings as any)[`${semPrefix}CourseFontColor`] : '';
-                    const fullName = sc.fullName || matchedCourse?.name?.split(' - ').slice(1).join(' - ') || '';
+                    const fullName = sc.fullName || matchedCourse?.name?.split(' - ').slice(1).join(' - ') || (() => { for (const defs of Object.values(defaultSemesterCourses)) { const found = defs.find(d => d.code.replace(/\s/g, '').toUpperCase() === codeNorm); if (found?.fullName) return found.fullName; } return ''; })();
                     allDisplayCourses.push({
                       name: fullName ? `${codeNorm} - ${fullName}` : codeNorm,
                       color: semColor || matchedCourse?.color || '#6b7280',
@@ -26181,7 +26181,7 @@ export default function Dashboard() {
                       borderColor: semBorderColor || matchedCourse?.borderColor || '',
                       courseRowColor: semCourseRowColor || matchedCourse?.courseRowColor || '',
                       taskBgColor: semTaskBgColor || matchedCourse?.taskBgColor || '',
-                      courseFontColor: semCourseFontColor || matchedCourse?.courseFontColor || '',
+                      courseFontColor: semCourseFontColor || '',
                       professor: matchedCourse?.professor || '',
                       professorEmail: matchedCourse?.professorEmail || '',
                       _semKey: semKey,
@@ -30419,8 +30419,8 @@ export default function Dashboard() {
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, borderRadius: '6px', overflow: 'hidden', gap: '2px' }}>
                       {[
-                        { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `play-module-${pd.courseCode.toLowerCase()}`, testUpload: `upload-module-${pd.courseCode.toLowerCase()}`, bg: pd.progressStartColor || getCourseGradientColors(pd.courseCode).start, dark: true, fontOverride: '#fff' },
-                        { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, bg: pd.progressEndColor || getCourseGradientColors(pd.courseCode).end, dark: true, fontOverride: '#fff' },
+                        { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `play-module-${pd.courseCode.toLowerCase()}`, testUpload: `upload-module-${pd.courseCode.toLowerCase()}`, bg: pd.progressStartColor || getCourseGradientColors(pd.courseCode).start, dark: true, fontOverride: pd.courseFontColor || '#fff' },
+                        { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, bg: pd.progressEndColor || getCourseGradientColors(pd.courseCode).end, dark: true, fontOverride: pd.courseFontColor || '#fff' },
                       ].map(item => {
                         const circleSize = 34;
                         const strokeWidth = 3;
@@ -30468,6 +30468,7 @@ export default function Dashboard() {
                               const remainMin = isModule ? pd.moduleRemainingMin : pd.readingRemainingMin;
                               const pData = isModule ? pd.moduleP : pd.readingP;
                               if (pData.percent >= 100) return null;
+                              if (!pData.hasFiles && (!remainMin || remainMin <= 0)) return null;
                               const now = new Date();
                               const dayOfWeek = now.getDay();
                               const daysUntilFri = dayOfWeek <= 5 ? 5 - dayOfWeek : 6;
@@ -30491,8 +30492,8 @@ export default function Dashboard() {
                                     </div>
                                   )}
                                   <div style={{ display: 'flex', justifyContent: hasTime ? 'space-between' : 'center', alignItems: 'center', marginTop: '1px' }}>
-                                    {remainLabel && <span style={{ fontSize: '7px', fontWeight: 600, color: '#ffffff', fontFamily: "system-ui, sans-serif" }}>{remainLabel} left</span>}
-                                    <span style={{ fontSize: '6.5px', color: '#ffffff', fontFamily: "system-ui, sans-serif" }}>Fri {hoursLeftLabel}</span>
+                                    {remainLabel && <span style={{ fontSize: '7px', fontWeight: 600, color: textColor, fontFamily: "system-ui, sans-serif" }}>{remainLabel} left</span>}
+                                    <span style={{ fontSize: '6.5px', color: textColor, fontFamily: "system-ui, sans-serif" }}>Fri {hoursLeftLabel}</span>
                                   </div>
                                 </div>
                               );
@@ -31618,8 +31619,8 @@ export default function Dashboard() {
                       ) : (
                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, borderRadius: '6px', overflow: 'hidden' }}>
                           {[
-                            { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `float-play-module-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-module-${pd.courseCode.toLowerCase()}`, bg: pd.progressStartColor || getCourseGradientColors(pd.courseCode).start, dark: true, fontOverride: '#fff' },
-                            { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `float-play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-reading-${pd.courseCode.toLowerCase()}`, bg: pd.progressEndColor || getCourseGradientColors(pd.courseCode).end, dark: true, fontOverride: '#fff' },
+                            { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `float-play-module-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-module-${pd.courseCode.toLowerCase()}`, bg: pd.progressStartColor || getCourseGradientColors(pd.courseCode).start, dark: true, fontOverride: pd.courseFontColor || '#fff' },
+                            { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `float-play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-reading-${pd.courseCode.toLowerCase()}`, bg: pd.progressEndColor || getCourseGradientColors(pd.courseCode).end, dark: true, fontOverride: pd.courseFontColor || '#fff' },
                           ].map(item => {
                             const circleSize = 44;
                             const strokeWidth = 3.5;
