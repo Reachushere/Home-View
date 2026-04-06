@@ -1,0 +1,32 @@
+byhomeyyz@raspberrypi:~/Home-View $ sudo journalctl -u unical --since "2 minutes ago" | grep -E "Cat Lights|Nest|TTS|tts|error|Error|ack" | tail -30|ack" | tail -30
+Apr 06 08:57:17 raspberrypi node[9039]: OpenAI TTS completed in 835ms, 391392 bytes
+Apr 06 08:57:17 raspberrypi node[9039]: TTS audio saved locally: /tts-audio/prep-134-chunk-22-1775480237103.mp3
+Apr 06 08:57:17 raspberrypi node[9039]: Generating OpenAI TTS for 1422 chars, file: prep-134-chunk-23
+Apr 06 08:57:17 raspberrypi node[9039]: [TTS] Using Edge TTS fallback (voice: en-US-AndrewMultilingualNeural)
+Apr 06 08:57:18 raspberrypi node[9039]: OpenAI TTS completed in 1060ms, 581760 bytes
+Apr 06 08:57:18 raspberrypi node[9039]: TTS audio saved locally: /tts-audio/prep-134-chunk-23-1775480238965.mp3
+Apr 06 08:57:19 raspberrypi node[9039]: Generating OpenAI TTS for 1149 chars, file: prep-134-chunk-24
+Apr 06 08:57:19 raspberrypi node[9039]: [TTS] Using Edge TTS fallback (voice: en-US-AndrewMultilingualNeural)
+Apr 06 08:57:20 raspberrypi node[9039]: OpenAI TTS completed in 783ms, 420768 bytes
+Apr 06 08:57:20 raspberrypi node[9039]: TTS audio saved locally: /tts-audio/prep-134-chunk-24-1775480240551.mp3
+Apr 06 08:57:21 raspberrypi node[9039]: Generating OpenAI TTS for 896 chars, file: prep-134-chunk-25
+Apr 06 08:57:21 raspberrypi node[9039]: [TTS] Using Edge TTS fallback (voice: en-US-AndrewMultilingualNeural)
+Apr 06 08:57:22 raspberrypi node[9039]: OpenAI TTS completed in 1011ms, 377424 bytes
+Apr 06 08:57:22 raspberrypi node[9039]: TTS audio saved locally: /tts-audio/prep-134-chunk-25-1775480242364.mp3
+Apr 06 08:57:23 raspberrypi node[9039]: Generating OpenAI TTS for 1343 chars, file: prep-134-chunk-26
+Apr 06 08:57:23 raspberrypi node[9039]: [TTS] Using Edge TTS fallback (voice: en-US-AndrewMultilingualNeural)
+Apr 06 08:57:24 raspberrypi node[9039]: OpenAI TTS completed in 874ms, 512064 bytes
+Apr 06 08:57:24 raspberrypi node[9039]: TTS audio saved locally: /tts-audio/prep-134-chunk-26-1775480244039.mp3
+Apr 06 08:57:24 raspberrypi node[9039]: Generating OpenAI TTS for 767 chars, file: prep-134-chunk-27
+Apr 06 08:57:24 raspberrypi node[9039]: [TTS] Using Edge TTS fallback (voice: en-US-AndrewMultilingualNeural)
+Apr 06 08:57:25 raspberrypi node[9039]: OpenAI TTS completed in 587ms, 306288 bytes
+Apr 06 08:57:25 raspberrypi node[9039]: TTS audio saved locally: /tts-audio/prep-134-chunk-27-1775480245428.mp3
+Apr 06 08:57:26 raspberrypi node[9039]: Generating OpenAI TTS for 1376 chars, file: prep-134-chunk-28
+Apr 06 08:57:26 raspberrypi node[9039]: [TTS] Using Edge TTS fallback (voice: en-US-AndrewMultilingualNeural)
+Apr 06 08:57:27 raspberrypi node[9039]: OpenAI TTS completed in 794ms, 544032 bytes
+Apr 06 08:57:27 raspberrypi node[9039]: TTS audio saved locally: /tts-audio/prep-134-chunk-28-1775480247024.mp3
+Apr 06 08:57:27 raspberrypi node[9039]: Generating OpenAI TTS for 1218 chars, file: prep-134-chunk-29
+Apr 06 08:57:27 raspberrypi node[9039]: [TTS] Using Edge TTS fallback (voice: en-US-AndrewMultilingualNeural)
+Apr 06 08:57:28 raspberrypi node[9039]: OpenAI TTS completed in 747ms, 509616 bytes
+Apr 06 08:57:28 raspberrypi node[9039]: TTS audio saved locally: /tts-audio/prep-134-chunk-29-1775480248573.mp3
+byhomeyyz@raspberrypi:~/Home-View $
