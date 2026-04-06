@@ -2462,6 +2462,9 @@ export default function Dashboard() {
   const [skyMapPlanet, setSkyMapPlanet] = useState<string | null>(null);
   const [skyMapDate, setSkyMapDate] = useState<Date>(new Date());
   const [hwHeaderFlipped, setHwHeaderFlipped] = useState(false);
+  const [hwShowDaysOnly, setHwShowDaysOnly] = useState(() => {
+    return localStorage.getItem('hwShowDaysOnly') === 'true';
+  });
   const [earthquakeData, setEarthquakeData] = useState<{ place: string; mag: number; time: number; url: string }[]>([]);
   const hwHeaderFlipRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [selectedWeatherAlert, setSelectedWeatherAlert] = useState<{ title: string; summary: string; description: string; type: string; url: string } | null>(null);
@@ -24246,6 +24249,21 @@ export default function Dashboard() {
                       />
                       <span className="text-xs text-muted-foreground w-14 text-right">{blinkSettings.tallPillHeight}px</span>
                     </div>
+
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs font-medium">HW Tasks: Days Only (no mini-cals)</Label>
+                      <input
+                        type="checkbox"
+                        checked={hwShowDaysOnly}
+                        onChange={(e) => {
+                          const val = e.target.checked;
+                          setHwShowDaysOnly(val);
+                          localStorage.setItem('hwShowDaysOnly', String(val));
+                        }}
+                        className="w-3.5 h-3.5 rounded accent-blue-500"
+                        data-testid="toggle-hw-days-only"
+                      />
+                    </div>
                     
                   </div>
                 </div>
@@ -30318,6 +30336,14 @@ export default function Dashboard() {
                               const dd = new Date(nowDate);
                               dd.setDate(dd.getDate() + di);
                               days.push(dd);
+                            }
+                            if (hwShowDaysOnly) {
+                              const badgeColor = daysUntil <= 1 ? '#ef4444' : daysUntil <= 3 ? '#f59e0b' : 'rgba(255,255,255,0.5)';
+                              return (
+                                <div className="flex-shrink-0 flex items-center justify-end" style={{ marginLeft: 'auto' }}>
+                                  <span style={{ fontSize: '9px', fontWeight: 600, color: badgeColor, minWidth: '20px', textAlign: 'right' }}>{daysUntil}d</span>
+                                </div>
+                              );
                             }
                             return (
                               <div className="flex-shrink-0 flex items-center justify-end" style={{ marginLeft: 'auto' }}>
