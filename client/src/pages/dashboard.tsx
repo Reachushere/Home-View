@@ -26468,14 +26468,17 @@ export default function Dashboard() {
                                   if (activeSem.key.startsWith('w')) {
                                     const rwStart = isCurrentSem ? (semesterSettings?.readingWeekStart || null) : null;
                                     const wk = getWeekNumber(dayDate, semStartD, rwStart);
-                                    return wk === -1 ? 'Reading Week' : `Week ${Math.min(Math.max(wk, 1), activeSem.weeks)}`;
+                                    if (wk === -1) return 'Reading Week';
+                                    const clampedWk = Math.max(wk, 1);
+                                    return clampedWk > activeSem.weeks ? 'Break' : `Week ${clampedWk}`;
                                   }
                                   const calcDate = dayDate.getDay() === 0 ? new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate() + 1, 12, 0, 0) : dayDate;
                                   const daysDiff = Math.round((calcDate.getTime() - semStartD.getTime()) / (1000*60*60*24));
-                                  const semWeek = Math.max(1, Math.min(Math.floor(daysDiff / 7) + 1, activeSem.weeks));
+                                  const rawWeek = Math.max(1, Math.floor(daysDiff / 7) + 1);
+                                  if (rawWeek > activeSem.weeks) return 'Break';
                                   const isSS = activeSem.key.startsWith('ss');
-                                  const ssLabel = isSS && semWeek > 7 ? `/${semWeek - 7}` : '';
-                                  return `Week ${semWeek}${ssLabel}`;
+                                  const ssLabel = isSS && rawWeek > 7 ? `/${rawWeek - 7}` : '';
+                                  return `Week ${rawWeek}${ssLabel}`;
                                 }
                                 const nextSem = semDefs.find(s => dayDate < new Date(s.start + 'T00:00:00'));
                                 if (nextSem) return 'Break';
@@ -26517,14 +26520,16 @@ export default function Dashboard() {
                                     const rwStart = isCurrentSem2 ? (semesterSettings?.readingWeekStart || null) : null;
                                     const wk = getWeekNumber(dayDate, semStartD, rwStart);
                                     if (wk === -1) return 'Reading Week';
-                                    return `Week ${Math.min(Math.max(wk, 1), activeSem.weeks)}`;
+                                    const clampedWk = Math.max(wk, 1);
+                                    return clampedWk > activeSem.weeks ? 'Break' : `Week ${clampedWk}`;
                                   }
                                   const calcDate = dayDate.getDay() === 0 ? new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate() + 1, 12, 0, 0) : dayDate;
                                   const daysDiff = Math.round((calcDate.getTime() - semStartD.getTime()) / (1000*60*60*24));
-                                  const semWeek = Math.max(1, Math.min(Math.floor(daysDiff / 7) + 1, activeSem.weeks));
+                                  const rawWeek = Math.max(1, Math.floor(daysDiff / 7) + 1);
+                                  if (rawWeek > activeSem.weeks) return 'Break';
                                   const isSS = activeSem.key.startsWith('ss');
-                                  const ssLabel = isSS && semWeek > 7 ? `/${semWeek - 7}` : '';
-                                  return `Week ${semWeek}${ssLabel}`;
+                                  const ssLabel = isSS && rawWeek > 7 ? `/${rawWeek - 7}` : '';
+                                  return `Week ${rawWeek}${ssLabel}`;
                                 }
                                 const nextSem = semDefs.find(s => dayDate < new Date(s.start + 'T00:00:00'));
                                 if (nextSem) return 'Break';
