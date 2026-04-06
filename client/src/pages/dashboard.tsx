@@ -11267,6 +11267,8 @@ export default function Dashboard() {
   const calStart = 0;
   const timeSlots = Array.from({ length: 24 }, (_, i) => i);
   const calendarScrollRef = useRef<HTMLDivElement>(null);
+  const calScrollTopRef = useRef(0);
+  const countdownOverlayRef = useRef<HTMLDivElement>(null);
   const calendarContentRef = useRef<HTMLDivElement>(null);
   
   // Auto-scroll to current time by default
@@ -27784,7 +27786,16 @@ export default function Dashboard() {
             </div>)}
               
                           {/* Time Slots - Scrollable area */}
-            <div ref={calendarScrollRef} className="flex-1 overflow-y-auto relative" style={{ borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', scrollbarWidth: 'none' }}>
+            <div ref={calendarScrollRef} className="flex-1 overflow-y-auto relative" style={{ borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', scrollbarWidth: 'none' }} onScroll={(e) => {
+              const st = (e.target as HTMLDivElement).scrollTop;
+              calScrollTopRef.current = st;
+              const el = countdownOverlayRef.current;
+              if (el) {
+                const vh = calendarScrollRef.current?.clientHeight || 400;
+                const barsH = el.dataset.barsHeight ? parseInt(el.dataset.barsHeight) : 100;
+                el.style.top = `${st + Math.max(10, Math.round(vh / 2 - barsH / 2))}px`;
+              }
+            }}>
               <div style={{ backgroundColor: '#faf8f5', borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', position: 'relative' }}>
                 {/* Countdown bars overlay - sticky within visible scroll area */}
                 {(() => {
@@ -27822,9 +27833,11 @@ export default function Dashboard() {
                   const barH = 3;
                   const barGap = 14;
                   const totalBarsHeight = deduped.length * barGap;
-                  const stickyTop = Math.max(10, Math.round((calendarScrollRef.current?.clientHeight || 400) / 2 - totalBarsHeight / 2));
+                  const visibleHeight = calendarScrollRef.current?.clientHeight || 400;
+                  const currentScroll = calScrollTopRef.current;
+                  const centerTop = currentScroll + Math.max(10, Math.round(visibleHeight / 2 - totalBarsHeight / 2));
                   return (
-                    <div style={{ position: 'sticky', top: `${stickyTop}px`, left: `${fixedPx}px`, right: 0, zIndex: 1, pointerEvents: 'none', overflow: 'visible', height: 0, marginLeft: `${fixedPx}px` }} data-testid="countdown-bars-overlay">
+                    <div ref={countdownOverlayRef} data-bars-height={String(totalBarsHeight)} style={{ position: 'absolute', top: `${centerTop}px`, left: `${fixedPx}px`, right: 0, zIndex: 1, pointerEvents: 'none', overflow: 'visible', height: 0, marginLeft: `${fixedPx}px` }} data-testid="countdown-bars-overlay">
                       <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, top: 0, overflow: 'visible' }}>
                         {deduped.map((cd, idx) => {
                           const t = cd.task;
