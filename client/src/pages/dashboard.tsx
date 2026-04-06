@@ -30965,14 +30965,12 @@ export default function Dashboard() {
                       if (tType === 'module' || tType === 'reading') return false;
                       return true;
                     });
-                    const seenClassCourse = new Set<string>();
+                    const seenTitles = new Set<string>();
                     const dedupedTasks = nonModuleReadingTasks.filter(t => {
-                      const tType = (t.type || '').toLowerCase();
-                      if (tType === 'class') {
-                        const key = t.courseName || '';
-                        if (seenClassCourse.has(key)) return false;
-                        seenClassCourse.add(key);
-                      }
+                      const normalizedTitle = (t.title || '').replace(/\[[^\]]*\]\s*/g, '').trim();
+                      const key = `${cCode}:::${normalizedTitle}`;
+                      if (seenTitles.has(key)) return false;
+                      seenTitles.add(key);
                       return true;
                     });
                     const courseTasks = [
