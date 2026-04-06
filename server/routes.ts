@@ -4768,6 +4768,62 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     res.json({ connected: isOneDriveConnected() });
   });
 
+  app.get("/api/onedrive/auth", async (_req, res) => {
+    const connected = isOneDriveConnected();
+    res.send(`<!DOCTYPE html><html><head><title>OneDrive Connection</title>
+<style>body{font-family:system-ui;background:#0a1929;color:#e0e0e0;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0}
+.card{background:#132f4c;border-radius:12px;padding:40px;max-width:500px;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,.4)}
+h1{color:#90caf9;margin-bottom:8px}
+.status{margin:16px 0;padding:12px;border-radius:8px}
+.connected{background:#1b5e20;color:#a5d6a7}
+.disconnected{background:#b71c1c33;color:#ef9a9a}
+button{background:#1976d2;color:white;border:none;padding:14px 32px;border-radius:8px;font-size:16px;cursor:pointer;margin-top:16px}
+button:hover{background:#1565c0}
+#code-display{display:none;margin-top:24px;padding:20px;background:#0a1929;border-radius:8px}
+.user-code{font-size:36px;font-weight:bold;color:#90caf9;letter-spacing:4px;margin:16px 0}
+a{color:#64b5f6}
+.spinner{display:inline-block;width:20px;height:20px;border:3px solid #555;border-top-color:#90caf9;border-radius:50%;animation:spin 1s linear infinite;margin-left:8px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style></head><body><div class="card">
+<h1>OneDrive Connection</h1>
+<div class="status ${connected ? 'connected' : 'disconnected'}">${connected ? 'Connected' : 'Not connected'}</div>
+<p>Click below to connect your Microsoft account. You will get a code to enter at Microsoft's login page.</p>
+<button onclick="startAuth()" id="auth-btn">Connect OneDrive</button>
+<div id="code-display">
+<p>Go to:</p>
+<p><a href="https://microsoft.com/devicelogin" target="_blank" style="font-size:18px">microsoft.com/devicelogin</a></p>
+<p>Enter this code:</p>
+<div class="user-code" id="user-code"></div>
+<p>Waiting for you to complete sign-in<span class="spinner"></span></p>
+<p style="color:#888;font-size:13px">After signing in, this page will update automatically. You can also close this and check back later.</p>
+</div>
+<div id="result" style="display:none;margin-top:20px;padding:16px;border-radius:8px"></div>
+</div>
+<script>
+async function startAuth(){
+  document.getElementById('auth-btn').disabled=true;
+  document.getElementById('auth-btn').textContent='Starting...';
+  try{
+    const r=await fetch('/api/onedrive/auth',{method:'POST'});
+    const d=await r.json();
+    if(d.error){document.getElementById('result').style.display='block';document.getElementById('result').style.background='#b71c1c33';document.getElementById('result').textContent='Error: '+d.error;return}
+    document.getElementById('user-code').textContent=d.user_code;
+    document.getElementById('code-display').style.display='block';
+    document.getElementById('auth-btn').style.display='none';
+    pollStatus(d.expires_in);
+  }catch(e){alert('Error: '+e.message)}
+}
+async function pollStatus(timeout){
+  const end=Date.now()+timeout*1000;
+  while(Date.now()<end){
+    await new Promise(r=>setTimeout(r,5000));
+    try{const r=await fetch('/api/onedrive/status');const d=await r.json();
+    if(d.connected){document.getElementById('code-display').style.display='none';document.getElementById('result').style.display='block';document.getElementById('result').style.background='#1b5e20';document.getElementById('result').innerHTML='<b>Connected successfully!</b><br>You can close this page and refresh the app.';return}}catch{}
+  }
+}
+</script></body></html>`);
+  });
+
   app.post("/api/onedrive/auth", async (_req, res) => {
     try {
       const result = await startDeviceCodeFlow();
