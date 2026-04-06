@@ -27636,25 +27636,27 @@ export default function Dashboard() {
                             const barH = 3;
                             const barGap = 17;
                             const taskLanes: number[] = [];
-                            const occupied: { startDay: number; endDay: number; lane: number }[] = [];
+                            const occupied: { startDay: number; endDay: number; lane: number; tDueHour: number }[] = [];
                             deduped.forEach(cd => {
                               let lane = 0;
-                              while (occupied.some(o => o.lane === lane && !(cd.startDay > o.endDay || cd.endDay < o.startDay))) {
+                              while (occupied.some(o => o.lane === lane && o.tDueHour === cd.tDueHour && !(cd.startDay > o.endDay || cd.endDay < o.startDay))) {
                                 lane++;
                               }
-                              occupied.push({ startDay: cd.startDay, endDay: cd.endDay, lane });
+                              occupied.push({ startDay: cd.startDay, endDay: cd.endDay, lane, tDueHour: cd.tDueHour });
                               taskLanes.push(lane);
                             });
                             const matchingBars = deduped.map((cd, idx) => ({ ...cd, lane: taskLanes[idx] })).filter(cd => {
-                              if (hour !== 0) return false;
+                              if (hour !== cd.tDueHour) return false;
                               return dayIdx >= cd.startDay && dayIdx <= cd.endDay;
                             });
                             if (matchingBars.length === 0) return null;
                             return matchingBars.map(cd => {
                               const t = cd.task;
                               const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
+                              const isBarCell = dayIdx >= cd.startDay && dayIdx <= cd.startDay + 1 && dayIdx <= cd.endDay;
+                              if (!isBarCell) return null;
                               const isFirstCell = dayIdx === cd.startDay;
-                              const isLastCell = dayIdx === cd.endDay;
+                              const isLastCell = dayIdx === cd.startDay + 1 || dayIdx === cd.endDay;
                               const topPx = 2 + cd.lane * barGap;
                               const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
                               const needsPulse = isNotStarted && cd.daysLeft <= 2 && !t.isCompleted;
