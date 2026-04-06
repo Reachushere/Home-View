@@ -27438,7 +27438,7 @@ export default function Dashboard() {
                               let tDueDayIdx = weekDays.findIndex(wd => isSameDayET(wd, tDue));
                               const beyond = tDueDayIdx < 0;
                               if (beyond) tDueDayIdx = weekDays.length - 1;
-                              const tDueHour = (() => { if (t.eventStartTime) { const [h] = t.eventStartTime.split(':').map(Number); return h; } const d = new Date(t.dueDate); const h = getETHours(d); return h === 0 ? 18 : h; })();
+                              const tDueHour = (() => { if (t.eventStartTime) { const [h] = t.eventStartTime.split(':').map(Number); return Math.min(h, 22); } const d = new Date(t.dueDate); const h = getETHours(d); return h === 0 ? 18 : Math.min(h, 22); })();
                               const daysLeft = Math.max(0, Math.round((tDue.getTime() - today.getTime()) / (1000*60*60*24)));
                               return { task: t, tDue, tDueDayIdx, tDueHour, beyond, daysLeft, startDay: endDayIdx, endDay: tDueDayIdx };
                             }).sort((a, b) => a.tDueDayIdx - b.tDueDayIdx || a.tDueHour - b.tDueHour);
