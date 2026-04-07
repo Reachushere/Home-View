@@ -28312,6 +28312,8 @@ export default function Dashboard() {
               <div data-calendar-content style={{ backgroundColor: '#faf8f5', borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', position: 'relative', paddingBottom: '0px' }}>
                 {/* Countdown bars — at top of content div so sticky positioning works when scrolling down */}
                 {(() => {
+                  const currentWeekNum = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null;
+                  if (currentWeekNum !== null && currentWeekNum !== selectedWeek) { countdownBarsDataRef.current = []; return null; }
                   const twoWeeksOut = new Date(stableToday.getTime() + 14 * 24 * 60 * 60 * 1000);
                   const allCountdown = (allTasks || []).filter(t => {
                     if (t.showCountdownBar === false || t.showCountdownBarMain === false || t.isCompleted) return false;
