@@ -10915,6 +10915,15 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     await setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: lightsNavTimestamp }, true, 'master');
     console.log(`${logPrefix} tablet-nav set for master (TV nav deferred until Silk launches)`);
 
+    try {
+      const tabletEntity = 'media_player.tablet_cat';
+      const silkCmd = `am start --activity-clear-task -a android.intent.action.VIEW -d '${readerUrl}' com.amazon.cloud9`;
+      await haServiceCallSafe('androidtv/adb_command', { entity_id: tabletEntity, command: silkCmd }, 'Cat Tablet Launch Silk');
+      console.log(`${logPrefix} Silk launched on cat tablet with reader URL`);
+    } catch (e: any) {
+      console.warn(`${logPrefix} Cat tablet Silk launch failed (non-fatal): ${e.message}`);
+    }
+
     const textExtractionPromise = extractFileText(fileToPlay);
 
     try {
