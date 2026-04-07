@@ -11669,8 +11669,51 @@ export default function Dashboard() {
     });
   };
   
+  const getConflictExtraHeight = (h: number) => {
+    const taskHeight = 32;
+    let maxExtra = 0;
+    for (const day of weekDays) {
+      const dayKey = _etDateKey(day);
+      const dayTasks = tasksByDateKey.get(dayKey);
+      if (!dayTasks) continue;
+      const hasMultiHour = dayTasks.some(t => {
+        if (!t.eventStartTime || !t.eventEndTime) return false;
+        const [sH, sM] = t.eventStartTime.split(':').map(Number);
+        const [eH] = t.eventEndTime.split(':').map(Number);
+        if (eH <= sH) return false;
+        const tStart = sH * 60 + sM;
+        const tEnd = eH * 60;
+        const cellStart = h * 60;
+        const cellEnd = (h + 1) * 60;
+        return tStart < cellEnd && tEnd > cellStart;
+      });
+      if (!hasMultiHour) continue;
+      const singleHourTasks = dayTasks.filter(t => {
+        const [sH2] = (t.eventStartTime || '').split(':').map(Number);
+        if (t.eventStartTime && sH2 !== h) return false;
+        if (!t.eventStartTime) {
+          const dueDate = new Date(t.dueDate);
+          const isMidnightUTC = dueDate.getUTCHours() === 0 && dueDate.getUTCMinutes() === 0;
+          if (isMidnightUTC) return false;
+          if (getETHours(dueDate) !== h) return false;
+        }
+        if (t.eventStartTime && t.eventEndTime) {
+          const [sH3] = t.eventStartTime.split(':').map(Number);
+          const [eH3] = t.eventEndTime.split(':').map(Number);
+          if (eH3 > sH3) return false;
+        }
+        return true;
+      });
+      if (singleHourTasks.length > 0) {
+        const extra = singleHourTasks.length * taskHeight;
+        if (extra > maxExtra) maxExtra = extra;
+      }
+    }
+    return maxExtra;
+  };
+
   const getEffectiveRowHeight = (h: number) => {
-    return gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
+    return (gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight) + getConflictExtraHeight(h);
   };
 
   // Get all-day Google Calendar events for a day (only conflicting events)
@@ -29018,26 +29061,9 @@ export default function Dashboard() {
                       const visibleCalendarEvents = hourCalendarEvents.filter(e => !dismissedCalendarEvents.has(e.id));
                       const isFriday = day.getDay() === 5;
                       const isToday = isSameDayET(day, new Date());
-                      const multiHourCoversCell = (() => {
-                        const dayKey = _etDateKey(day);
-                        const dayTasks = tasksByDateKey.get(dayKey);
-                        if (!dayTasks) return false;
-                        return dayTasks.some(t => {
-                          if (!t.eventStartTime || !t.eventEndTime) return false;
-                          const [sH, sM] = t.eventStartTime.split(':').map(Number);
-                          const [eH, eM] = t.eventEndTime.split(':').map(Number);
-                          if (eH <= sH) return false;
-                          const tStart = sH * 60 + sM;
-                          const tEnd = eH * 60 + eM;
-                          const cellStart = hour * 60;
-                          const cellEnd = (hour + 1) * 60;
-                          return tStart < cellEnd && tEnd > cellStart;
-                        });
-                      })();
                       const totalItems = hourTasks.length + visibleCalendarEvents.length;
                       const hasAnyTasks = totalItems > 0 || continuingTasks.length > 0;
-                      const cellAvailablePct = multiHourCoversCell && totalItems > 0 ? 50 : 100;
-                      const columnWidth = totalItems > 0 ? cellAvailablePct / totalItems : 100;
+                      const columnWidth = totalItems > 0 ? 100 / totalItems : 100;
                       const cellDateStr = format(day, "yyyy-MM-dd");
                       const isYesterday = isSameDayET(day, subDays(new Date(), 1));
                       const cellShift = isYesterday ? undefined : localShiftMap[cellDateStr];
@@ -29276,21 +29302,28 @@ export default function Dashboard() {
                               return false;
                             })();
                             
-                            let taskHeight = rowHeight - 4;
+                            const conflictExtra = getConflictExtraHeight(hour);
+                            const stackInConflict = conflictExtra > 0;
+                            let taskHeight = stackInConflict ? 28 : rowHeight - 4;
                             let topOffset = 2;
                             
-                            if (task.eventStartTime) {
+                            if (stackInConflict) {
+                              topOffset = taskIdx * 32 + 2;
+                              taskHeight = 28;
+                            } else if (task.eventStartTime) {
                               const [, startMin] = task.eventStartTime.split(':').map(Number);
                               if (startMin > 0) {
                                 topOffset = (startMin / 60) * rowHeight;
                               }
+                              taskHeight = Math.max(20, rowHeight - topOffset - 2);
                             } else {
                               const dueMin = getETMinutes(new Date(task.dueDate));
                               if (dueMin > 0) {
                                 topOffset = (dueMin / 60) * rowHeight;
                               }
+                              taskHeight = Math.max(20, rowHeight - topOffset - 2);
                             }
-                            taskHeight = Math.max(20, rowHeight - topOffset - 2);
+                            if (!stackInConflict) taskHeight = Math.max(20, rowHeight - topOffset - 2);
                             
                             return (
                               <div
@@ -29346,8 +29379,8 @@ export default function Dashboard() {
                                   const borderColor = task.isCompleted ? '#d1d5db' : hasCourseGrad ? gradColors.start : otherRowColors.borderColor;
                                   return {
                                     top: `${topOffset}px`,
-                                    left: (() => { const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return hasNextDueBox ? `calc(${taskIdx * columnWidth / 2}% + 2px)` : `calc(${taskIdx * columnWidth}% + 2px)`; })(),
-                                    width: (() => { const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return hasNextDueBox ? `calc(${columnWidth / 2}% - 4px)` : `calc(${columnWidth}% - 4px)`; })(),
+                                    left: (() => { if (stackInConflict) return '2px'; const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return hasNextDueBox ? `calc(${taskIdx * columnWidth / 2}% + 2px)` : `calc(${taskIdx * columnWidth}% + 2px)`; })(),
+                                    width: (() => { if (stackInConflict) return 'calc(100% - 4px)'; const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return hasNextDueBox ? `calc(${columnWidth / 2}% - 4px)` : `calc(${columnWidth}% - 4px)`; })(),
                                     minHeight: `${taskHeight}px`,
                                     zIndex: selectedTaskId === task.id ? 55 : (draggedTask?.id === task.id ? 53 : 43),
                                     background: bgGradient,
@@ -29545,29 +29578,6 @@ export default function Dashboard() {
                       }
                     }
                   }
-                  for (const item of allMultiHour) {
-                    const oi = overlapInfo.get(item.task.id);
-                    if (!oi) continue;
-                    const day = weekDays[item.dayIdx];
-                    let hasSingleHourTasks = false;
-                    for (let h = item.startHour; h <= item.endHour && !hasSingleHourTasks; h++) {
-                      if (h === item.endHour && item.endMin === 0) break;
-                      const hTasks = getTasksForHour(day, h);
-                      const singleHour = hTasks.filter(t => {
-                        if (t.id === item.task.id) return false;
-                        if (t.eventStartTime && t.eventEndTime) {
-                          const [sH] = t.eventStartTime.split(':').map(Number);
-                          const [eH] = t.eventEndTime.split(':').map(Number);
-                          if (eH > sH) return false;
-                        }
-                        return true;
-                      });
-                      if (singleHour.length > 0) hasSingleHourTasks = true;
-                    }
-                    if (hasSingleHourTasks) {
-                      overlapInfo.set(item.task.id, { col: oi.col + 1, totalCols: oi.totalCols + 1 });
-                    }
-                  }
                   return allMultiHour.map(({ task, dayIdx, startHour, startMin, endHour, endMin }) => {
                   const oi = overlapInfo.get(task.id) || { col: 0, totalCols: 1 };
                   const calendarStartHour = 0;
@@ -29577,16 +29587,19 @@ export default function Dashboard() {
                   }
                   
                   const startHourHeight = getEffectiveRowHeight(startHour);
-                  topPx += (startMin / 60) * startHourHeight;
+                  const startHourConflictExtra = getConflictExtraHeight(startHour);
+                  topPx += startHourConflictExtra + (startMin / 60) * (startHourHeight - startHourConflictExtra);
                   
                   let heightPx = 0;
-                  heightPx += ((60 - startMin) / 60) * startHourHeight;
+                  heightPx += ((60 - startMin) / 60) * (startHourHeight - startHourConflictExtra);
                   for (let h = startHour + 1; h < endHour; h++) {
-                    heightPx += getEffectiveRowHeight(h);
+                    const hExtra = getConflictExtraHeight(h);
+                    heightPx += getEffectiveRowHeight(h) - hExtra;
                   }
                   if (endHour > startHour) {
                     const endHourHeight = getEffectiveRowHeight(endHour);
-                    heightPx += (endMin / 60) * endHourHeight;
+                    const endHourExtra = getConflictExtraHeight(endHour);
+                    heightPx += (endMin / 60) * (endHourHeight - endHourExtra);
                   }
                   
                   const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || (task.title?.match(/^\[([^\]\s]+)/)?.[1]?.toUpperCase() || (() => { const t = (task.title || '').toUpperCase(); const alpha = t.match(/^([A-Z]+)/)?.[1]; if (!alpha) return ''; return Object.keys(dynamicCourseColors).find(k => k.startsWith(alpha) && k.length > alpha.length) || ''; })());
