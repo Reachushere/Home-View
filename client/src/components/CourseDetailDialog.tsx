@@ -3778,8 +3778,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
 
           </>)}
 
-          <div className="border-t border-white/30 mt-4" />
           <div ref={modulesRef} className="mt-3">
+            <div style={{ border: '2px solid rgba(255,255,255,0.2)', borderRadius: '8px', padding: '12px' }}>
             <div
               className="flex items-center justify-between cursor-pointer select-none py-1.5 px-2 rounded-md hover:bg-white/5 transition-colors"
               onClick={() => { const next = !showModules; setShowModules(next); if (next) setTimeout(() => { const el = modulesRef.current; if (el) { const scrollParent = el.closest('.overflow-y-auto') as HTMLElement | null; if (scrollParent) { const elTop = (el as HTMLElement).offsetTop - scrollParent.offsetTop; scrollParent.scrollTo({ top: elTop - 4, behavior: 'smooth' }); } else { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } } }, 80); }}
@@ -3944,6 +3944,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 })()}
               </div>
             )}
+            </div>
           </div>
 
           </div>
