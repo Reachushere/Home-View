@@ -1,0 +1,19 @@
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs unical --lines 100 --nostream | grep -i "cat light\|webhook\|tablet-nav\|stop\|abort"cat light\|webhook\|tablet-nav\|stop\|abort"
+0|unical   | 6:45:30 AM [express] GET /api/tablet-nav 200 in 1ms :: {"action":null}
+0|unical   | [Toothbrush] Polling stopped
+0|unical   | [Nest Stop] Cleared persisted playback session
+0|unical   | [Tablet Nav DB] SET master: wrote {"action":"stop_playback","goodbyeText":"","keepOpen":false,"timestamp":17755587, verify rows=1
+0|unical   | [Tablet Nav DB] SET master: wrote {"action":"stop_playback","goodbyeText":"","timestamp":1775558731640}, verify rows=1
+0|unical   | [Tablet Nav] Command SET for master: stop_playback url=none ts=1775558731640 pending=["master","tv"]
+0|unical   | 6:45:31 AM [express] POST /api/tablet-nav/set 200 in 3ms :: {"ok":true}
+0|unical   | [Tablet Nav DB] SET tv: wrote {"action":"stop_playback","keepOpen":false,"timestamp":1775558731640}, verify rows=1
+0|unical   | [Tablet Nav DB] SET tv: wrote {"action":"stop_playback","timestamp":1775558731640}, verify rows=1
+0|unical   | [Tablet Nav] Command SET for tv: stop_playback url=none ts=1775558731640 pending=["master","tv"]
+0|unical   | 6:45:31 AM [express] POST /api/tablet-nav/set 200 in 3ms :: {"ok":true}
+0|unical   | [TRACE 6:45:31 AM] [TV] TURN OFF — Fire Stick + Samsung TV (reason=light_off) | state={"active":false,"sessionId":1,"file":null,"chunk":null,"lightsPrompt":false,"trigger":"lights","msSinceStop":26,"msSinceManualStop":null,"msSinceStart":null}
+0|unical   | 6:45:32 AM [express] GET /api/automation-cooldown 200 in 0ms :: {"active":true,"remaining":60,"reason":"post-stop"}
+0|unical   | [Tablet Nav GET] tv FOUND from memory: action=stop_playback age=1861ms
+0|unical   | 6:45:33 AM [express] GET /api/tablet-nav 200 in 2ms :: {"action":"stop_playback","timestamp":1775558731640}
+0|unical   | 6:45:33 AM [express] POST /api/tablet-nav/ack 200 in 5ms :: {"ok":true}
+0|unical   | 6:45:34 AM [express] GET /api/automation-cooldown 200 in 1ms :: {"active":true,"remaining":58,"reason":"post-stop"}
+byhomeyyz@raspberrypi:~/Home-View $
