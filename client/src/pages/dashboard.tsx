@@ -11713,16 +11713,60 @@ export default function Dashboard() {
         }
         return true;
       });
-      if (stackableTasks.length > 0) {
-        const extra = stackableTasks.length * taskHeight;
+      const calEventsAtHour = filteredCalendarEvents.filter(e => {
+        if (e.isAllDay) return false;
+        const eventDate = new Date(e.startDate);
+        if (!isSameDayET(eventDate, day) || getETHours(eventDate) !== h) return false;
+        if (new Date(e.endDate) < new Date()) return false;
+        if (dismissedCalendarEvents.has(e.id)) return false;
+        const titleClean = e.title.replace(/^\[PREP\]\s*/, '').replace(/^\[.*?\]\s*/g, '').toLowerCase().trim();
+        const isDup = dayTasks.some(t => {
+          if (t.calendarEventId === e.id || t.secondAccountCalendarEventId === e.id || t.prepCalendarEventId === e.id || t.secondAccountPrepEventId === e.id) return true;
+          const taskTitle = t.title.replace(/^\[.*?\]\s*/g, '').toLowerCase().trim();
+          if (taskTitle === titleClean) return true;
+          if (t.type === 'class' && titleClean.includes(taskTitle.substring(0, 15))) return true;
+          return false;
+        });
+        return !isDup;
+      });
+      const totalStackable = stackableTasks.length + calEventsAtHour.length;
+      if (totalStackable > 0) {
+        const extra = totalStackable * taskHeight;
         if (extra > maxExtra) maxExtra = extra;
       }
     }
     return maxExtra;
   };
 
+  const getMultiHourOverlayBuffer = (h: number) => {
+    const baseHeight = gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
+    const conflictExtra = getConflictExtraHeight(h);
+    if (conflictExtra === 0) return 0;
+    let maxStartMin = 0;
+    for (const day of weekDays) {
+      const dayKey = _etDateKey(day);
+      const dayTasks = tasksByDateKey.get(dayKey);
+      if (!dayTasks) continue;
+      for (const t of dayTasks) {
+        if (!isLongMultiHour(t)) continue;
+        const [sH, sM] = t.eventStartTime!.split(':').map(Number);
+        if (sH === h) {
+          if (sM > maxStartMin) maxStartMin = sM;
+        }
+      }
+    }
+    const overlayStart = conflictExtra + (maxStartMin / 60) * baseHeight;
+    const totalRowHeight = baseHeight + conflictExtra;
+    const visibleInRow = totalRowHeight - overlayStart;
+    const minVisible = 40;
+    if (visibleInRow < minVisible) {
+      return minVisible - visibleInRow;
+    }
+    return 0;
+  };
+
   const getEffectiveRowHeight = (h: number) => {
-    return (gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight) + getConflictExtraHeight(h);
+    return (gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight) + getConflictExtraHeight(h) + getMultiHourOverlayBuffer(h);
   };
 
   // Get all-day Google Calendar events for a day (only conflicting events)
@@ -27739,16 +27783,27 @@ export default function Dashboard() {
                 if (hasFullWeekTasks) {
                   return (
                     <div key={course.name} className="w-full flex-shrink-0 flex" style={{ borderBottom: `1.5px dotted ${courseData.color}dd` }}>
-                      <div className="px-1 py-0.5 text-[8px] font-medium tracking-normal flex flex-col items-center justify-center leading-tight cursor-pointer hover:brightness-110 flex-shrink-0" onClick={() => { if (selectedCertCourse) return; const cd = courseData; const code = cd.name.split(' - ')[0]?.trim(); const cName = cd.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code })); }} style={{ background: course.label, overflow: 'hidden', minWidth: 0, width: `${gridSizes.timeColumnWidth}px`, position: 'relative', color: course.fontColor || 'white' }} data-testid={`course-row-label-${course.name}`}>
+                      <div className="px-2 py-0.5 text-[8px] font-medium tracking-normal flex flex-col items-center justify-center leading-tight cursor-pointer hover:brightness-110 flex-shrink-0" onClick={() => { if (selectedCertCourse) return; const cd = courseData; const code = cd.name.split(' - ')[0]?.trim(); const cName = cd.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code })); }} style={{ background: course.label, overflow: 'hidden', minWidth: 0, width: `${gridSizes.timeColumnWidth}px`, position: 'relative', color: course.fontColor || 'white', wordBreak: 'break-word', textAlign: 'center' }} data-testid={`course-row-label-${course.name}`}>
                         {(() => {
                           const code = course.name.split(' - ')[0];
                           const fullName = course.name.split(' - ').slice(1).join(' - ');
                           const isTBDLabel = code.startsWith('TBD_SLOT') || code === 'TBD';
                           const displayCodeLabel = isTBDLabel ? 'TBD' : code;
                           const words = fullName.trim() ? fullName.trim().split(/\s+/) : [];
+                          if (words.length === 0 && displayCodeLabel.length > 6) {
+                            const mid = Math.ceil(displayCodeLabel.length / 2);
+                            const part1 = displayCodeLabel.slice(0, mid);
+                            const part2 = displayCodeLabel.slice(mid);
+                            return (
+                              <>
+                                <span className="font-[785] text-center" style={{ lineHeight: 1.2 }}>{part1}</span>
+                                <span className="font-[785] text-center" style={{ lineHeight: 1.2 }}>{part2}</span>
+                              </>
+                            );
+                          }
                           return (
                             <>
-                              <span className="font-[785]">{displayCodeLabel}</span>
+                              <span className="font-[785] text-center">{displayCodeLabel}</span>
                               {words.map((word, i) => <span key={i} className="text-center">{word}</span>)}
                             </>
                           );
@@ -27966,7 +28021,7 @@ export default function Dashboard() {
                 
                 return (
                 <div key={course.name} ref={el => { courseRowRefs.current[courseIdx] = el; }} className="grid w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${maxCourseRowHeight}px`, maxHeight: `${maxCourseRowHeight}px`, overflow: 'hidden' }}>
-                  <div className="px-1 py-0.5 text-[8px] font-medium tracking-normal flex flex-col items-center justify-center relative leading-tight cursor-pointer hover:brightness-110" onClick={() => { if (selectedCertCourse) return; const code = courseData.name.split(' - ')[0]?.trim(); const cName = courseData.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code })); }} style={{ background: course.label, borderBottom: `1.5px dotted ${courseData.color}dd`, overflow: 'hidden', minWidth: 0, color: course.fontColor || 'white' }} data-testid={`course-row-label-${course.name}`}>
+                  <div className="px-2 py-0.5 text-[8px] font-medium tracking-normal flex flex-col items-center justify-center relative leading-tight cursor-pointer hover:brightness-110" onClick={() => { if (selectedCertCourse) return; const code = courseData.name.split(' - ')[0]?.trim(); const cName = courseData.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code })); }} style={{ background: course.label, borderBottom: `1.5px dotted ${courseData.color}dd`, overflow: 'hidden', minWidth: 0, color: course.fontColor || 'white', wordBreak: 'break-word', textAlign: 'center' }} data-testid={`course-row-label-${course.name}`}>
                     {(() => {
                       const code = course.name.split(' - ')[0];
                       const fullName = course.name.split(' - ').slice(1).join(' - ');
@@ -27993,11 +28048,22 @@ export default function Dashboard() {
                       }
                       const isTBDLabel = code.startsWith('TBD_SLOT') || code === 'TBD';
                       const displayCodeLabel = isTBDLabel ? 'TBD' : code;
-                      const words = fullName.split(' ');
+                      const words = fullName.trim() ? fullName.trim().split(/\s+/) : [];
+                      if (words.length === 0 && displayCodeLabel.length > 6) {
+                        const mid = Math.ceil(displayCodeLabel.length / 2);
+                        const part1 = displayCodeLabel.slice(0, mid);
+                        const part2 = displayCodeLabel.slice(mid);
+                        return (
+                          <>
+                            <span className="font-[785] text-center" style={{ lineHeight: 1.2 }}>{part1}</span>
+                            <span className="font-[785] text-center" style={{ lineHeight: 1.2 }}>{part2}</span>
+                          </>
+                        );
+                      }
                       return (
                         <>
-                          <span className="font-[785]">{displayCodeLabel}</span>
-                          {words.map((word, i) => <span key={i}>{word}</span>)}
+                          <span className="font-[785] text-center">{displayCodeLabel}</span>
+                          {words.map((word, i) => <span key={i} className="text-center">{word}</span>)}
                         </>
                       );
                     })()}
@@ -29090,7 +29156,15 @@ export default function Dashboard() {
                         const eH = getETHours(new Date(e.endDate));
                         return eH > sH + 1;
                       });
-                      const calEventConflict = hasMultiHourCalEvent && (hourTasks.length > 0 || visibleCalendarEvents.length > 1);
+                      const hasMultiHourTask = hourTasks.some(t => {
+                        if (!t.eventStartTime || !t.eventEndTime) return false;
+                        const [sH] = t.eventStartTime.split(':').map(Number);
+                        const [eH] = t.eventEndTime.split(':').map(Number);
+                        return eH > sH + 1;
+                      });
+                      const hasContinuingMultiHour = continuingTasks.length > 0;
+                      const totalSlotItems = hourTasks.length + visibleCalendarEvents.length + continuingTasks.length;
+                      const calEventConflict = (hasMultiHourCalEvent || hasMultiHourTask || hasContinuingMultiHour) && totalSlotItems > 1;
                       const isFriday = day.getDay() === 5;
                       const isToday = isSameDayET(day, new Date());
                       const totalItems = hourTasks.length + visibleCalendarEvents.length;
@@ -29646,15 +29720,18 @@ export default function Dashboard() {
                   topPx += startHourConflictExtra + (startMin / 60) * (startHourHeight - startHourConflictExtra);
                   
                   let heightPx = 0;
-                  heightPx += ((60 - startMin) / 60) * (startHourHeight - startHourConflictExtra);
+                  const startHourBuffer = getMultiHourOverlayBuffer(startHour);
+                  heightPx += ((60 - startMin) / 60) * (startHourHeight - startHourConflictExtra - startHourBuffer);
                   for (let h = startHour + 1; h < endHour; h++) {
                     const hExtra = getConflictExtraHeight(h);
-                    heightPx += getEffectiveRowHeight(h) - hExtra;
+                    const hBuffer = getMultiHourOverlayBuffer(h);
+                    heightPx += getEffectiveRowHeight(h) - hExtra - hBuffer;
                   }
                   if (endHour > startHour) {
                     const endHourHeight = getEffectiveRowHeight(endHour);
                     const endHourExtra = getConflictExtraHeight(endHour);
-                    heightPx += (endMin / 60) * (endHourHeight - endHourExtra);
+                    const endHourBuffer = getMultiHourOverlayBuffer(endHour);
+                    heightPx += (endMin / 60) * (endHourHeight - endHourExtra - endHourBuffer);
                   }
                   
                   const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || (task.title?.match(/^\[([^\]\s]+)/)?.[1]?.toUpperCase() || (() => { const t = (task.title || '').toUpperCase(); const alpha = t.match(/^([A-Z]+)/)?.[1]; if (!alpha) return ''; return Object.keys(dynamicCourseColors).find(k => k.startsWith(alpha) && k.length > alpha.length) || ''; })());
