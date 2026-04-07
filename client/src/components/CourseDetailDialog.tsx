@@ -3736,11 +3736,11 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     const isCurrentWeek = weekNum === currentModuleWeek;
                     if (files.length === 0) {
                       return (
-                        <div key={weekNum} className={`flex items-center gap-2 px-2 py-1 rounded ${isCurrentWeek ? 'bg-blue-500/10 border border-blue-500/25' : 'bg-white/[0.03] border border-white/[0.06]'}`} data-testid={`module-week-${weekNum}`}>
-                          <div className="flex items-center justify-center border border-white/40 rounded-sm" style={{ width: '14px', height: '14px', flexShrink: 0, background: 'transparent' }} />
-                          <span className={`text-[10px] flex-1 ${isCurrentWeek ? 'text-white/80' : 'text-white/40'}`}>Week {weekNum}</span>
-                          {isCurrentWeek && <span className="text-[7px] text-white/60 font-medium uppercase mr-1">Current</span>}
-                          <span className={`text-[8px] ${isCurrentWeek ? 'text-white/40' : 'text-white/25'}`}>No file</span>
+                        <div key={weekNum} className={`flex items-center gap-2 px-2 py-1.5 rounded ${isCurrentWeek ? 'bg-white/[0.08] border-2 border-white/30' : 'bg-white/[0.03] border border-white/[0.06]'}`} data-testid={`module-week-${weekNum}`}>
+                          <div className="flex items-center justify-center border-2 border-white/60 rounded-sm" style={{ width: '18px', height: '18px', flexShrink: 0, background: 'transparent' }} />
+                          <span className={`text-[12px] flex-1 ${isCurrentWeek ? 'text-white font-medium' : 'text-white/50'}`}>Week {weekNum}</span>
+                          {isCurrentWeek && <span className="text-[9px] text-white font-semibold uppercase mr-1 bg-white/20 px-1.5 py-0.5 rounded">Current</span>}
+                          <span className={`text-[10px] ${isCurrentWeek ? 'text-white/50' : 'text-white/30'}`}>No file</span>
                         </div>
                       );
                     }
@@ -3764,24 +3764,24 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                       const actualListened = file.listened ? file.totalChunks : checkedSet.size;
                       const diff = actualListened - expectedByToday;
                       return (
-                        <div key={file.id} className={`rounded ${isCurrentWeek ? 'bg-blue-500/10 border border-blue-500/25' : 'bg-white/[0.04] border border-white/[0.08] hover:border-white/15'} transition-colors`} data-testid={`module-week-${weekNum}-file-${file.id}`}>
-                          <div className="flex items-center gap-2 px-2 py-1.5">
+                        <div key={file.id} className={`rounded ${isCurrentWeek ? 'bg-white/[0.08] border-2 border-white/30' : 'bg-white/[0.04] border border-white/[0.08] hover:border-white/15'} transition-colors`} data-testid={`module-week-${weekNum}-file-${file.id}`}>
+                          <div className="flex items-center gap-2 px-2 py-2">
                             <div
-                              className={`flex items-center justify-center border rounded-sm transition-colors ${isEditingInfo ? 'cursor-pointer hover:border-white/50' : ''}`}
-                              style={{ width: '14px', height: '14px', flexShrink: 0, background: complete ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'transparent', borderColor: complete ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'rgba(255,255,255,0.5)' }}
+                              className={`flex items-center justify-center border-2 rounded-sm transition-colors ${isEditingInfo ? 'cursor-pointer hover:border-white/80' : ''}`}
+                              style={{ width: '18px', height: '18px', flexShrink: 0, background: complete ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'transparent', borderColor: complete ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'rgba(255,255,255,0.6)' }}
                               onClick={() => { if (isEditingInfo) handleModuleCheckToggle(file, !complete); }}
                               data-testid={`module-check-${file.id}`}
                             >
-                              {complete && <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />}
+                              {complete && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
                             </div>
                             <svg width={circleSize} height={circleSize} style={{ flexShrink: 0, transform: 'rotate(-90deg)' }}>
-                              <circle cx={circleSize / 2} cy={circleSize / 2} r={radius} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth={strokeWidth} />
+                              <circle cx={circleSize / 2} cy={circleSize / 2} r={radius} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={strokeWidth} />
                               <circle cx={circleSize / 2} cy={circleSize / 2} r={radius} fill="none" stroke={progressColor} strokeWidth={strokeWidth} strokeDasharray={circumference} strokeDashoffset={offset} strokeLinecap="round" />
                             </svg>
                             <div className="flex flex-col flex-1 min-w-0">
-                              <span className="text-[10px] text-white truncate" title={fileName}>
-                                <span className={isCurrentWeek ? 'text-white/70' : 'text-white/50'}>W{weekNum}</span> {fileName}
-                                {isCurrentWeek && <span className="text-[7px] text-white/60 font-medium uppercase ml-1">Current</span>}
+                              <span className="text-[12px] text-white truncate" title={fileName}>
+                                <span className={isCurrentWeek ? 'text-white/80' : 'text-white/60'}>W{weekNum}</span> {fileName}
+                                {isCurrentWeek && <span className="text-[9px] text-white font-semibold uppercase ml-1.5 bg-white/20 px-1.5 py-0.5 rounded">Current</span>}
                               </span>
                               {isEditingInfo && file.totalChunks > 0 && (
                                 <div className="flex items-center gap-2 mt-0.5">
@@ -3795,20 +3795,20 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                                     style={{ cursor: 'pointer' }}
                                     data-testid={`module-slider-${file.id}`}
                                   />
-                                  <span className="text-[8px] text-white/40 flex-shrink-0 w-[45px] text-right">
+                                  <span className="text-[10px] text-white/60 flex-shrink-0 w-[45px] text-right">
                                     {file.lastChunkIndex || 0}/{file.totalChunks}
                                   </span>
                                 </div>
                               )}
                             </div>
-                            <span className={`text-[10px] font-semibold flex-shrink-0 ${progress >= 80 ? 'text-green-400' : progress > 0 ? 'text-orange-400' : 'text-white/40'}`} data-testid={`module-progress-${file.id}`}>
+                            <span className={`text-[12px] font-semibold flex-shrink-0 text-white`} data-testid={`module-progress-${file.id}`}>
                               {progress}%
                             </span>
                           </div>
                           {file.totalChunks > 0 && (() => {
                             const checked = getCheckedChunks(file);
                             return (
-                              <div className="flex flex-wrap gap-[2px] px-2 pb-1.5" data-testid={`module-chunks-${file.id}`}>
+                              <div className="flex flex-wrap gap-[3px] px-2 pb-2" data-testid={`module-chunks-${file.id}`}>
                                 {Array.from({ length: file.totalChunks }, (_, i) => {
                                   const isChecked = checked.has(i);
                                   return (
@@ -3816,10 +3816,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                                       key={i}
                                       className={`rounded-[2px] transition-colors ${isEditingInfo ? 'cursor-pointer hover:opacity-80' : ''}`}
                                       style={{
-                                        width: '6px',
-                                        height: '6px',
-                                        backgroundColor: isChecked ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'rgba(255,255,255,0.08)',
-                                        border: `1px solid ${isChecked ? 'transparent' : 'rgba(255,255,255,0.12)'}`,
+                                        width: '8px',
+                                        height: '8px',
+                                        backgroundColor: isChecked ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'rgba(255,255,255,0.15)',
+                                        border: `1px solid ${isChecked ? 'transparent' : 'rgba(255,255,255,0.3)'}`,
                                       }}
                                       onClick={() => { if (isEditingInfo) handleChunkToggle(file, i); }}
                                       title={`Chunk ${i + 1}${isChecked ? ' (listened)' : ''}`}
@@ -3827,7 +3827,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                                     />
                                   );
                                 })}
-                                <span className="text-[7px] text-white/50 ml-1 self-center">{checked.size}/{file.totalChunks}</span>
+                                <span className="text-[9px] text-white/70 ml-1 self-center">{checked.size}/{file.totalChunks}</span>
                               </div>
                             );
                           })()}
@@ -3835,25 +3835,25 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                             const pacePercent = file.totalChunks > 0 ? Math.round((expectedByToday / file.totalChunks) * 100) : 0;
                             const actualPercent = file.totalChunks > 0 ? Math.round((actualListened / file.totalChunks) * 100) : 0;
                             return (
-                              <div className="px-2 pb-2 space-y-1" data-testid={`module-pace-${file.id}`}>
-                                <div className="flex items-center justify-between text-[8px]">
-                                  <span className="text-white/70">{chunksPerDay} chunks/day to finish this week</span>
-                                  <span className={`font-semibold ${diff > 0 ? 'text-green-400' : diff < 0 ? 'text-red-400' : 'text-yellow-400'}`}>
+                              <div className="px-2 pb-2.5 space-y-1.5" data-testid={`module-pace-${file.id}`}>
+                                <div className="flex items-center justify-between text-[11px]">
+                                  <span className="text-white/90">{chunksPerDay} chunks/day to finish this week</span>
+                                  <span className={`font-bold ${diff > 0 ? 'text-green-400' : diff < 0 ? 'text-red-400' : 'text-yellow-400'}`}>
                                     {diff > 0 ? `+${diff} ahead` : diff < 0 ? `${diff} behind` : 'On track'}
                                   </span>
                                 </div>
-                                <div className="relative h-[6px] rounded-full bg-white/[0.06] overflow-hidden">
+                                <div className="relative h-[8px] rounded-full bg-white/[0.12] overflow-hidden">
                                   <div
                                     className="absolute top-0 left-0 h-full rounded-full transition-all"
                                     style={{ width: `${Math.min(100, actualPercent)}%`, backgroundColor: diff >= 0 ? '#22c55e' : '#f97316' }}
                                   />
                                   <div
-                                    className="absolute top-0 h-full border-r-2 border-blue-400/70"
+                                    className="absolute top-0 h-full border-r-2 border-white/80"
                                     style={{ left: `${Math.min(100, pacePercent)}%` }}
                                     title={`Expected: ${expectedByToday}/${file.totalChunks} by today (Day ${dayOfWeek + 1})`}
                                   />
                                 </div>
-                                <div className="flex items-center justify-between text-[7px] text-white/50">
+                                <div className="flex items-center justify-between text-[10px] text-white/70">
                                   <span>Actual: {actualListened}/{file.totalChunks}</span>
                                   <span>Expected by Day {dayOfWeek + 1}: {expectedByToday}/{file.totalChunks}</span>
                                 </div>
