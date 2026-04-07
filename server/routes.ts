@@ -11006,10 +11006,10 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       if (f.listened) return false;
       if (excludeFileId && f.id === excludeFileId) return false;
       const weekMatch = f.folder?.match(/week-(\d+)/i);
-      return weekMatch && parseInt(weekMatch[1], 10) >= 1 && parseInt(weekMatch[1], 10) <= currentWeekNumber;
+      return weekMatch && parseInt(weekMatch[1], 10) === currentWeekNumber;
     });
     if (allEligible.length === 0) {
-      console.log(`[FileOrder] No unlistened files found in weeks 1-${currentWeekNumber}`);
+      console.log(`[FileOrder] No unlistened files found for week ${currentWeekNumber}`);
       return null;
     }
 
@@ -13267,10 +13267,8 @@ document.body.removeChild(a);
       let nextFile = await findNextFileByPriority(allFilesBefore, currentWeekNumber);
 
       if (!nextFile) {
-        console.log(`[Shower Button] No cached files found — syncing OneDrive for weeks 1-${currentWeekNumber}`);
-        for (let w = 1; w <= currentWeekNumber; w++) {
-          await syncOneDriveFilesForWeek(semesterSettings, w, '[Shower Button]');
-        }
+        console.log(`[Shower Button] No cached files found — syncing OneDrive for week ${currentWeekNumber}`);
+        await syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Shower Button]');
         const allFilesAfter = await storage.getFiles();
         nextFile = await findNextFileByPriority(allFilesAfter, currentWeekNumber);
       } else {
@@ -13279,7 +13277,7 @@ document.body.removeChild(a);
       }
 
       if (!nextFile) {
-        console.log(`[Shower Button] No unlistened files for weeks 1-${currentWeekNumber} — playing CHUM FM`);
+        console.log(`[Shower Button] No unlistened files for week ${currentWeekNumber} — playing CHUM FM`);
         await playChumFmRadio(haUrl);
         return res.json({ action: "radio", reason: `All weeks 1-${currentWeekNumber} readings complete — playing CHUM FM 104.5` });
       }
@@ -13674,10 +13672,8 @@ document.body.removeChild(a);
       let nextFile = await findNextFileByPriority(allFilesBefore, currentWeekNumber);
 
       if (!nextFile) {
-        console.log(`[Cat Lights] No cached files found — syncing OneDrive for weeks 1-${currentWeekNumber}`);
-        for (let w = 1; w <= currentWeekNumber; w++) {
-          await syncOneDriveFilesForWeek(semesterSettings, w, '[Cat Lights]');
-        }
+        console.log(`[Cat Lights] No cached files found — syncing OneDrive for week ${currentWeekNumber}`);
+        await syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Lights]');
         const allFilesAfter = await storage.getFiles();
         nextFile = await findNextFileByPriority(allFilesAfter, currentWeekNumber);
       } else {
@@ -13700,7 +13696,7 @@ document.body.removeChild(a);
       } catch {}
 
       if (!nextFile) {
-        console.log(`[Cat Lights] No unlistened files for weeks 1-${currentWeekNumber} — playing CHUM FM on Echo speakers`);
+        console.log(`[Cat Lights] No unlistened files for week ${currentWeekNumber} — playing CHUM FM on Echo speakers`);
         catLightsPromptPending = false;
         await playChumFmRadio(haUrl);
         return;
