@@ -10268,8 +10268,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     res.json(semesterHalvesStore);
   });
 
-  function isInSpringSummerHalfA(): boolean {
-    const { toZonedTime } = require('date-fns-tz');
+  async function isInSpringSummerHalfA(): Promise<boolean> {
+    const { toZonedTime } = await import('date-fns-tz');
     const now = toZonedTime(new Date(), 'America/Toronto');
 
     for (const [key, halves] of Object.entries(semesterHalvesStore)) {
@@ -10297,14 +10297,14 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     return false;
   }
 
-  function getCoursePriorityForFile(f: any): number {
+  async function getCoursePriorityForFile(f: any): Promise<number> {
     const folder = (f.folder || '').toLowerCase();
     const name = (f.originalName || '').toLowerCase();
     const codeWithNum = folder.match(/([a-z]{3,5}\s?\d{3})/i)?.[1]?.toUpperCase().replace(/\s/g, '') ||
                         name.match(/([a-z]{3,5}\s?\d{3})/i)?.[1]?.toUpperCase().replace(/\s/g, '') || '';
     if (!codeWithNum) return 999;
 
-    const abSuffix = isInSpringSummerHalfA() ? 'A' : 'B';
+    const abSuffix = (await isInSpringSummerHalfA()) ? 'A' : 'B';
     for (const [key, priority] of Object.entries(coursePlayPriority)) {
       const parts = key.split(':');
       let keyCode: string;
@@ -10769,7 +10769,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     }
   }, 15000);
 
-  function findNextFileByPriority(allFiles: any[], currentWeekNumber: number, excludeFileId?: number): any | null {
+  async function findNextFileByPriority(allFiles: any[], currentWeekNumber: number, excludeFileId?: number): Promise<any | null> {
     for (let week = currentWeekNumber; week >= 1; week--) {
       const weekFiles = allFiles.filter((f: any) => {
         if (f.listened) return false;
@@ -10778,7 +10778,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         return weekMatch && parseInt(weekMatch[1], 10) === week;
       });
       if (weekFiles.length === 0) continue;
-      const ordered = orderFilesByCoursePriority(weekFiles);
+      const ordered = await orderFilesByCoursePriority(weekFiles);
       console.log(`[FileOrder] Found unlistened files in week ${week}: ${ordered.map((f: any) => `${f.originalName} (chunk=${f.lastChunkIndex||0})`).join(' → ')}`);
       return ordered[0] || null;
     }
@@ -11230,7 +11230,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     return `your ${fileType} for week ${weekNumber}`;
   }
 
-  function orderFilesByCoursePriority(files: any[]): any[] {
+  async function orderFilesByCoursePriority(files: any[]): Promise<any[]> {
     const isModule = (f: any) =>
       f.folder?.toLowerCase().includes('module') ||
       f.originalName?.toLowerCase().includes('module');
@@ -11249,11 +11249,11 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       return !hasAnyUnlistenedModule;
     });
 
-    const withPriority = eligible.map(f => ({
+    const withPriority = await Promise.all(eligible.map(async f => ({
       file: f,
-      coursePriority: getCoursePriorityForFile(f),
+      coursePriority: await getCoursePriorityForFile(f),
       isModule: isModule(f) ? 0 : 1,
-    }));
+    })));
 
     withPriority.sort((a, b) => {
       if (a.coursePriority !== b.coursePriority) return a.coursePriority - b.coursePriority;
@@ -11677,7 +11677,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
           const currentWeekNumber = getWeekNumber(torontoDate(), semStart, rwStart);
 
-          const nextFile = findNextFileByPriority(allFiles, currentWeekNumber, fileId);
+          const nextFile = await findNextFileByPriority(allFiles, currentWeekNumber, fileId);
           if (nextFile) {
             console.log(`[Nest Playback] Skipping to next file: ${nextFile.displayName || nextFile.originalName} (id=${nextFile.id})`);
             const nextText = await extractFileText(nextFile);
@@ -12025,7 +12025,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         const completedFileDesc = describeFileForTTS({ folder: catWashPlaybackState?.fileName || fileName, originalName: fileName }, currentWeekNumber);
 
         const allFilesNow = await storage.getFiles();
-        const nextFile = findNextFileByPriority(allFilesNow, currentWeekNumber, fileId);
+        const nextFile = await findNextFileByPriority(allFilesNow, currentWeekNumber, fileId);
 
         if (nextFile) {
           const nextFileDesc = describeFileForTTS(nextFile, currentWeekNumber);
@@ -12321,7 +12321,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
       currentWeekNumber = getWeekNumber(torontoDate(), semStart, rwStart);
       
-      const nextFile = findNextFileByPriority(allFiles, currentWeekNumber);
+      const nextFile = await findNextFileByPriority(allFiles, currentWeekNumber);
       
       if (!nextFile) {
         return res.json({ 
@@ -12423,14 +12423,16 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     });
 
     const allCandidates = [...filteredPartials, ...filteredUnlistened];
-    const orderedFiles = allCandidates.sort((a, b) => {
-      const aPri = getCoursePriorityForFile(a);
-      const bPri = getCoursePriorityForFile(b);
-      if (aPri !== bPri) return aPri - bPri;
-      const aModule = isModuleFile(a) ? 0 : 1;
-      const bModule = isModuleFile(b) ? 0 : 1;
-      return aModule - bModule;
+    const candidatesWithPri = await Promise.all(allCandidates.map(async f => ({
+      file: f,
+      pri: await getCoursePriorityForFile(f),
+      mod: isModuleFile(f) ? 0 : 1,
+    })));
+    candidatesWithPri.sort((a, b) => {
+      if (a.pri !== b.pri) return a.pri - b.pri;
+      return a.mod - b.mod;
     });
+    const orderedFiles = candidatesWithPri.map(c => c.file);
 
     console.log(`[CatWashFile] week=${w}, unlistened=${allWeekUnlistened.length}, modulesBlocked=${hasAnyUnlistenedModule}`);
 
@@ -12882,7 +12884,7 @@ document.body.removeChild(a);
       currentWeekNumber = getWeekNumber(today, semStart, rwStart);
 
       const allFilesBefore = await storage.getFiles();
-      let nextFile = findNextFileByPriority(allFilesBefore, currentWeekNumber);
+      let nextFile = await findNextFileByPriority(allFilesBefore, currentWeekNumber);
 
       if (!nextFile) {
         console.log(`[Shower Button] No cached files found — syncing OneDrive for weeks 1-${currentWeekNumber}`);
@@ -12890,7 +12892,7 @@ document.body.removeChild(a);
           await syncOneDriveFilesForWeek(semesterSettings, w, '[Shower Button]');
         }
         const allFilesAfter = await storage.getFiles();
-        nextFile = findNextFileByPriority(allFilesAfter, currentWeekNumber);
+        nextFile = await findNextFileByPriority(allFilesAfter, currentWeekNumber);
       } else {
         console.log(`[Shower Button] Using cached file — syncing OneDrive in background`);
         syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Shower Button]').catch(e => console.log(`[Shower Button] Background sync error: ${e.message}`));
@@ -13276,7 +13278,7 @@ document.body.removeChild(a);
       currentWeekNumber = getWeekNumber(today, semStart, rwStart);
 
       const allFilesBefore = await storage.getFiles();
-      let nextFile = findNextFileByPriority(allFilesBefore, currentWeekNumber);
+      let nextFile = await findNextFileByPriority(allFilesBefore, currentWeekNumber);
 
       if (!nextFile) {
         console.log(`[Cat Lights] No cached files found — syncing OneDrive for weeks 1-${currentWeekNumber}`);
@@ -13284,7 +13286,7 @@ document.body.removeChild(a);
           await syncOneDriveFilesForWeek(semesterSettings, w, '[Cat Lights]');
         }
         const allFilesAfter = await storage.getFiles();
-        nextFile = findNextFileByPriority(allFilesAfter, currentWeekNumber);
+        nextFile = await findNextFileByPriority(allFilesAfter, currentWeekNumber);
       } else {
         console.log(`[Cat Lights] Using cached file — syncing OneDrive in background`);
         syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Lights]').catch(e => console.log(`[Cat Lights] Background sync error: ${e.message}`));
@@ -14215,7 +14217,7 @@ document.body.removeChild(a);
         const currentWeekNumber = getWeekNumber(torontoDate(), semStart, rwStart);
 
         const allFiles = await storage.getFiles();
-        const nextFile = findNextFileByPriority(allFiles, currentWeekNumber, currentFileId);
+        const nextFile = await findNextFileByPriority(allFiles, currentWeekNumber, currentFileId);
 
         if (!nextFile) {
           console.log(`[Voice Command] No more files for week ${currentWeekNumber}`);
@@ -14503,7 +14505,7 @@ document.body.removeChild(a);
         targetFile = allFiles.find((f: any) => f.id === fileId);
       }
       if (!targetFile) {
-        targetFile = findNextFileByPriority(allFiles, currentWeek);
+        targetFile = await findNextFileByPriority(allFiles, currentWeek);
       }
 
       if (!targetFile) {
@@ -15472,7 +15474,7 @@ document.body.removeChild(a);
         return fileWeek === currentWeekNumber;
       });
       
-      const orderedFiles = orderFilesByCoursePriority(
+      const orderedFiles = await orderFilesByCoursePriority(
         weekFiles.filter((f: any) => {
           const folder = (f.folder || '').toLowerCase();
           return !folder.includes('casl') && !folder.includes('asl');
