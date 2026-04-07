@@ -28652,14 +28652,15 @@ export default function Dashboard() {
                 const baseOtherRowHeight = Math.max(57, gridSizes.otherRowHeight || 57);
                 const otherRowHeight = baseOtherRowHeight + missingRows * courseRowH;
                 return (
-                  <div ref={otherRowRef} className="grid w-full flex-shrink-0 relative z-[43] group/otherrow" style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${otherRowHeight}px`, overflow: 'hidden' }}>
-                    <div className="px-1 py-0.5 text-[8px] font-[785] tracking-wide flex items-center justify-center text-white/80 relative cursor-pointer hover:brightness-110" onClick={() => setOtherRowEditOpen(true)} style={{ background: (() => { const stops = otherRowColors.labelStops ? (() => { try { return JSON.parse(otherRowColors.labelStops); } catch { return []; } })() : []; const allStops = [{ position: 0, color: otherRowColors.labelStart }, ...stops, { position: 100, color: otherRowColors.labelEnd }]; return `linear-gradient(180deg, ${allStops.map((s: any) => `${s.color} ${s.position}%`).join(', ')})`; })(), borderBottom: `1px dotted ${otherRowColors.borderColor || '#999'}`, overflow: 'hidden' }} data-testid="other-row-label">
+                  <div ref={otherRowRef} className="w-full flex-shrink-0 relative z-[43] group/otherrow flex" style={{ height: `${otherRowHeight}px` }}>
+                    <div className="px-1 py-0.5 text-[8px] font-[785] tracking-wide flex items-center justify-center text-white/80 relative cursor-pointer hover:brightness-110 flex-shrink-0" onClick={() => setOtherRowEditOpen(true)} style={{ width: `${gridSizes.timeColumnWidth}px`, background: (() => { const stops = otherRowColors.labelStops ? (() => { try { return JSON.parse(otherRowColors.labelStops); } catch { return []; } })() : []; const allStops = [{ position: 0, color: otherRowColors.labelStart }, ...stops, { position: 100, color: otherRowColors.labelEnd }]; return `linear-gradient(180deg, ${allStops.map((s: any) => `${s.color} ${s.position}%`).join(', ')})`; })(), borderBottom: `1px dotted ${otherRowColors.borderColor || '#999'}`, overflow: 'hidden' }} data-testid="other-row-label">
                       OTHER
                       <div style={{ position: 'absolute', top: '1px', right: '1px', zIndex: 2 }} onClick={(e) => { e.stopPropagation(); setOtherRowEditOpen(true); }} data-testid="pencil-edit-other-row"><Pencil className="w-[9px] h-[9px] text-white" strokeWidth={3} /></div>
                     </div>
                     {gridSizes.moduleColumnWidth > 0 && (
-                      <div style={{ backgroundColor: otherRowColors.courseRowColor || otherRowColors.cellBg }} />
+                      <div className="flex-shrink-0" style={{ width: `${gridSizes.moduleColumnWidth + 9}px`, backgroundColor: otherRowColors.courseRowColor || otherRowColors.cellBg }} />
                     )}
+                    <div className="flex flex-1 min-w-0 relative" style={{ overflow: 'hidden' }}>
                     {weekDays.map((day, dayIdx) => {
                       const cellDate = startOfDayET(day);
                       const isOtherToday = isSameDayET(day, stableToday);
@@ -28691,7 +28692,7 @@ export default function Dashboard() {
                         <div
                           key={dayIdx}
                           className="relative flex flex-col gap-0.5 pt-0.5 course-cell-scroll"
-                          style={{ backgroundColor: otherCellBg, padding: isOtherToday ? '2px 1px 2px 3px' : '2px 1px 2px 1px', borderBottom: isOtherToday ? '1px dotted #666' : `1.5px dotted ${otherRowColors.borderColor}`, overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'thin', maxHeight: `${otherRowHeight}px` }}
+                          style={{ flex: `${gridSizes.dayColumnWidths[dayIdx]} 0 0%`, backgroundColor: otherCellBg, padding: isOtherToday ? '2px 1px 2px 3px' : '2px 1px 2px 1px', borderBottom: isOtherToday ? '1px dotted #666' : `1.5px dotted ${otherRowColors.borderColor}`, overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'thin', maxHeight: `${otherRowHeight}px` }}
                           data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
                         >
                           <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', borderLeft: day.getDay() === 6 ? '3px solid #000' : '1.5px dotted rgba(0,0,0,0.25)', zIndex: 5, pointerEvents: 'none' }} />
@@ -28781,7 +28782,7 @@ export default function Dashboard() {
                       const barH = 3;
                       const barGap = 14;
                       return (
-                        <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 5 }}>
+                        <div style={{ position: 'absolute', left: 0, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 5 }}>
                           <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, top: 0, overflowY: 'auto', overflowX: 'hidden', pointerEvents: 'none', scrollbarWidth: 'none' as any }}>
                             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', minHeight: '100%' }}>
                               {otherBars.filter(cd => cd.daysLeft > 0).map((cd, idx) => {
@@ -28810,6 +28811,7 @@ export default function Dashboard() {
                         </div>
                       );
                     })()}
+                    </div>
                     <div
                       className="absolute bottom-0 left-0 right-0 h-[3px] cursor-row-resize z-[50] opacity-0 group-hover/otherrow:opacity-100 hover:bg-blue-400/50 transition-opacity"
                       onMouseDown={(e) => handleRowResizeStart(e, 'other')}
