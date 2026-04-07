@@ -6990,14 +6990,22 @@ export default function Dashboard() {
       const bDue = new Date(b.task.dueDate).getTime();
       return aDue - bDue || (a.task.title || '').localeCompare(b.task.title || '');
     });
-    const seenNames = new Map<string, number>();
-    const deduped = allCountdown.filter(cd => {
+    const seenNames = new Map<string, {idx: number; hasCourse: boolean}>();
+    const dedupedArr: Array<{task: Task; daysLeft: number}> = [];
+    for (const cd of allCountdown) {
       const name = (cd.task.title || '').trim().toLowerCase();
-      if (!name) return true;
-      if (seenNames.has(name)) return false;
-      seenNames.set(name, 1);
-      return true;
-    });
+      if (!name) { dedupedArr.push(cd); continue; }
+      const hasCourse = !!(cd.task.courseName);
+      const existing = seenNames.get(name);
+      if (!existing) {
+        seenNames.set(name, { idx: dedupedArr.length, hasCourse });
+        dedupedArr.push(cd);
+      } else if (hasCourse && !existing.hasCourse) {
+        dedupedArr[existing.idx] = cd;
+        existing.hasCourse = true;
+      }
+    }
+    const deduped = dedupedArr.filter(Boolean);
     const byCourse: Record<string, Array<{task: Task; daysLeft: number}>> = {};
     const other: Array<{task: Task; daysLeft: number}> = [];
     for (const cd of deduped) {
@@ -22789,8 +22797,8 @@ export default function Dashboard() {
 
           {/* System Health Dialog */}
           <Dialog open={isSystemHealthOpen && desktopIsFull} onOpenChange={(open) => { setIsSystemHealthOpen(open); if (!open) { setHealthFolderBrowse(null); } }}>
-            <DialogContent className="text-[11px] text-white [&_*:not(input)]:text-white p-0 [&>button.absolute]:hidden" style={{ top: 'calc(50% - 30px)', maxWidth: healthTab === 'folders' ? '640px' : '440px', maxHeight: '80vh', display: 'flex', flexDirection: 'column', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, transition: 'max-width 0.2s ease' }}>
-              <div className="flex items-center px-4 py-3 border-b border-white/40 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+            <DialogContent className="sys-health-root text-[11px] text-white [&_*:not(input)]:text-white p-0 [&>button.absolute]:hidden" style={{ top: 'calc(50% - 30px)', maxWidth: healthTab === 'folders' ? '640px' : '440px', maxHeight: '80vh', display: 'flex', flexDirection: 'column', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, transition: 'max-width 0.2s ease', overflow: 'hidden' }}>
+              <div className="flex items-center px-4 py-3 border-b border-white/40" style={{ flexShrink: 0, margin: 0, backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                 <div className="flex items-center gap-2">
                   <Activity className="h-3 w-3 text-white" />
                   <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
@@ -22798,7 +22806,7 @@ export default function Dashboard() {
                   </h2>
                 </div>
               </div>
-              <div className="flex border-b border-white/10 px-4" style={{ gap: '0' }}>
+              <div className="flex border-b border-white/10 px-4" style={{ gap: '0', flexShrink: 0 }}>
                 <button
                   onClick={() => setHealthTab('services')}
                   className="text-[10px] font-medium py-2 px-3 transition-colors"

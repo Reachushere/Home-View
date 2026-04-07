@@ -2623,3 +2623,9 @@ input[type="date"]::-webkit-datetime-edit-year-field {
 .wizard-white-text option {
   color: white;
 }
+.sys-health-root > div.flex-1 {
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
