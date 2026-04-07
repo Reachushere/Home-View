@@ -5747,6 +5747,13 @@ export default function Dashboard() {
             return merged;
           });
         }
+        if (data.courseFolderLinks) {
+          setCourseFolderLinks(prev => {
+            const merged = { ...prev, ...data.courseFolderLinks };
+            localStorage.setItem('courseFolderLinks', JSON.stringify(merged));
+            return merged;
+          });
+        }
         if (data.otherRowColors) {
           setOtherRowColors(prev => {
             const merged = { ...prev, ...data.otherRowColors };
