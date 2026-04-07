@@ -16231,28 +16231,40 @@ document.body.removeChild(a);
       const objectStorage = new ObjectStorageService();
 
       const allSemesters = await storage.getAllSemesterSettings();
-      const springSummer = allSemesters.find(s => s.semesterType === 'spring_summer' && s.semesterName?.includes('2026'));
-      if (!springSummer) {
-        return res.json({ success: true, message: 'No Spring/Summer 2026 semester found', synced: [] });
+      if (!allSemesters || allSemesters.length === 0) {
+        return res.json({ success: true, message: 'No semesters configured', synced: [] });
       }
-
-      const courseCodes = [springSummer.course1Code, springSummer.course2Code, springSummer.course3Code].filter(Boolean);
-      const basePath = `/School/1. TMU/Courses/2026/Spring_Summer`;
 
       const existingFiles = await storage.getFiles();
       const existingFileKeys = new Set(
         existingFiles.map((f: any) => `${f.originalName}|||${f.folder}`)
       );
 
-      let baseFolders: any[] = [];
-      try {
-        baseFolders = await listOneDriveItems(basePath);
-      } catch (e: any) {
-        return res.json({ success: true, message: 'OneDrive Spring_Summer folder not found yet', synced: [] });
-      }
-
       const syncedFiles: any[] = [];
       const errors: any[] = [];
+
+      const semesterFolderMap: Record<string, string> = {
+        'fall': 'Fall',
+        'winter': 'Winter',
+        'spring_summer': 'Spring_Summer',
+      };
+
+      for (const semester of allSemesters) {
+        const courseCodes = [semester.course1Code, semester.course2Code, semester.course3Code].filter(Boolean) as string[];
+        if (courseCodes.length === 0) continue;
+
+        const yearMatch = semester.semesterName?.match(/\d{4}/);
+        const year = yearMatch ? yearMatch[0] : new Date().getFullYear().toString();
+        const folderType = semesterFolderMap[semester.semesterType] || semester.semesterType;
+        const basePath = `/School/1. TMU/Courses/${year}/${folderType}`;
+
+        let baseFolders: any[] = [];
+        try {
+          baseFolders = await listOneDriveItems(basePath);
+        } catch (e: any) {
+          console.log(`[Monitor Sync] OneDrive folder not found: ${basePath} — skipping`);
+          continue;
+        }
 
       for (const courseCode of courseCodes) {
         try {
@@ -16369,6 +16381,7 @@ document.body.removeChild(a);
           errors.push({ course: courseCode, error: courseError.message });
         }
       }
+      }
 
       res.json({
         success: true,
@@ -16377,8 +16390,8 @@ document.body.removeChild(a);
         errors: errors.length > 0 ? errors : undefined,
       });
     } catch (error: any) {
-      console.error("[Monitor] Error syncing Spring/Summer files:", error);
-      res.status(500).json({ error: "Failed to monitor Spring/Summer files", details: error.message });
+      console.error("[Monitor] Error syncing files:", error);
+      res.status(500).json({ error: "Failed to monitor files", details: error.message });
     }
   });
 
