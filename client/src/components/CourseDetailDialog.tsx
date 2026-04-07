@@ -679,6 +679,48 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     }
   }, [toast]);
 
+  const getCheckedChunks = useCallback((file: ModuleFile): Set<number> => {
+    if (file.listened) {
+      const s = new Set<number>();
+      for (let i = 0; i < (file.totalChunks || 0); i++) s.add(i);
+      return s;
+    }
+    if (file.checkedChunks && file.checkedChunks !== 'null' && file.checkedChunks !== '[]') {
+      try {
+        const arr = JSON.parse(file.checkedChunks);
+        if (Array.isArray(arr)) return new Set(arr);
+      } catch {}
+    }
+    if (file.lastChunkIndex != null && file.lastChunkIndex > 0) {
+      const s = new Set<number>();
+      for (let i = 0; i < file.lastChunkIndex; i++) s.add(i);
+      return s;
+    }
+    return new Set();
+  }, []);
+
+  const handleChunkToggle = useCallback(async (file: ModuleFile, chunkIndex: number) => {
+    try {
+      const current = getCheckedChunks(file);
+      if (current.has(chunkIndex)) {
+        current.delete(chunkIndex);
+      } else {
+        current.add(chunkIndex);
+      }
+      const arr = Array.from(current).sort((a, b) => a - b);
+      const newLastChunk = arr.length > 0 ? Math.max(...arr) + 1 : 0;
+      const allChecked = file.totalChunks > 0 && arr.length >= file.totalChunks;
+      await apiRequest("PATCH", `/api/files/${file.id}`, {
+        checkedChunks: JSON.stringify(arr),
+        lastChunkIndex: newLastChunk,
+        listened: allChecked,
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/files"] });
+    } catch {
+      toast({ title: "Failed to update chunk", variant: "destructive" });
+    }
+  }, [getCheckedChunks, toast]);
+
   const courseTasks = useMemo(() => {
     const codeUpper = courseInfo.courseCode.toUpperCase().replace(/\s/g, '');
     const codeNoC = codeUpper.replace(/^C(?=[A-Z]{2,})/, '');
@@ -3709,44 +3751,72 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                       const progressColor = progress >= 80 ? '#22c55e' : progress > 0 ? '#f97316' : '#ef4444';
                       const fileName = (file.displayName || file.originalName || '').replace(/\.pdf$/i, '');
                       return (
-                        <div key={file.id} className="flex items-center gap-2 px-2 py-1.5 rounded bg-white/[0.04] border border-white/[0.08] hover:border-white/15 transition-colors" data-testid={`module-week-${weekNum}-file-${file.id}`}>
-                          <div
-                            className={`flex items-center justify-center border rounded-sm transition-colors ${isEditingInfo ? 'cursor-pointer hover:border-white/50' : ''}`}
-                            style={{ width: '14px', height: '14px', flexShrink: 0, background: complete ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'transparent', borderColor: complete ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'rgba(255,255,255,0.25)' }}
-                            onClick={() => { if (isEditingInfo) handleModuleCheckToggle(file, !complete); }}
-                            data-testid={`module-check-${file.id}`}
-                          >
-                            {complete && <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />}
-                          </div>
-                          <svg width={circleSize} height={circleSize} style={{ flexShrink: 0, transform: 'rotate(-90deg)' }}>
-                            <circle cx={circleSize / 2} cy={circleSize / 2} r={radius} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth={strokeWidth} />
-                            <circle cx={circleSize / 2} cy={circleSize / 2} r={radius} fill="none" stroke={progressColor} strokeWidth={strokeWidth} strokeDasharray={circumference} strokeDashoffset={offset} strokeLinecap="round" />
-                          </svg>
-                          <div className="flex flex-col flex-1 min-w-0">
-                            <span className="text-[10px] text-white/80 truncate" title={fileName}>
-                              <span className="text-white/40">W{weekNum}</span> {fileName}
+                        <div key={file.id} className="rounded bg-white/[0.04] border border-white/[0.08] hover:border-white/15 transition-colors" data-testid={`module-week-${weekNum}-file-${file.id}`}>
+                          <div className="flex items-center gap-2 px-2 py-1.5">
+                            <div
+                              className={`flex items-center justify-center border rounded-sm transition-colors ${isEditingInfo ? 'cursor-pointer hover:border-white/50' : ''}`}
+                              style={{ width: '14px', height: '14px', flexShrink: 0, background: complete ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'transparent', borderColor: complete ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'rgba(255,255,255,0.25)' }}
+                              onClick={() => { if (isEditingInfo) handleModuleCheckToggle(file, !complete); }}
+                              data-testid={`module-check-${file.id}`}
+                            >
+                              {complete && <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />}
+                            </div>
+                            <svg width={circleSize} height={circleSize} style={{ flexShrink: 0, transform: 'rotate(-90deg)' }}>
+                              <circle cx={circleSize / 2} cy={circleSize / 2} r={radius} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth={strokeWidth} />
+                              <circle cx={circleSize / 2} cy={circleSize / 2} r={radius} fill="none" stroke={progressColor} strokeWidth={strokeWidth} strokeDasharray={circumference} strokeDashoffset={offset} strokeLinecap="round" />
+                            </svg>
+                            <div className="flex flex-col flex-1 min-w-0">
+                              <span className="text-[10px] text-white/80 truncate" title={fileName}>
+                                <span className="text-white/40">W{weekNum}</span> {fileName}
+                              </span>
+                              {isEditingInfo && file.totalChunks > 0 && (
+                                <div className="flex items-center gap-2 mt-0.5">
+                                  <input
+                                    type="range"
+                                    min={0}
+                                    max={file.totalChunks}
+                                    value={file.lastChunkIndex || 0}
+                                    onChange={(e) => handleModuleSliderChange(file, parseInt(e.target.value, 10))}
+                                    className="flex-1 h-1 accent-white/60"
+                                    style={{ cursor: 'pointer' }}
+                                    data-testid={`module-slider-${file.id}`}
+                                  />
+                                  <span className="text-[8px] text-white/40 flex-shrink-0 w-[45px] text-right">
+                                    {file.lastChunkIndex || 0}/{file.totalChunks}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                            <span className={`text-[10px] font-semibold flex-shrink-0 ${progress >= 80 ? 'text-green-400' : progress > 0 ? 'text-orange-400' : 'text-white/20'}`} data-testid={`module-progress-${file.id}`}>
+                              {progress}%
                             </span>
-                            {isEditingInfo && file.totalChunks > 0 && (
-                              <div className="flex items-center gap-2 mt-0.5">
-                                <input
-                                  type="range"
-                                  min={0}
-                                  max={file.totalChunks}
-                                  value={file.lastChunkIndex || 0}
-                                  onChange={(e) => handleModuleSliderChange(file, parseInt(e.target.value, 10))}
-                                  className="flex-1 h-1 accent-white/60"
-                                  style={{ cursor: 'pointer' }}
-                                  data-testid={`module-slider-${file.id}`}
-                                />
-                                <span className="text-[8px] text-white/40 flex-shrink-0 w-[45px] text-right">
-                                  {file.lastChunkIndex || 0}/{file.totalChunks}
-                                </span>
-                              </div>
-                            )}
                           </div>
-                          <span className={`text-[10px] font-semibold flex-shrink-0 ${progress >= 80 ? 'text-green-400' : progress > 0 ? 'text-orange-400' : 'text-white/20'}`} data-testid={`module-progress-${file.id}`}>
-                            {progress}%
-                          </span>
+                          {file.totalChunks > 0 && (() => {
+                            const checked = getCheckedChunks(file);
+                            return (
+                              <div className="flex flex-wrap gap-[2px] px-2 pb-1.5" data-testid={`module-chunks-${file.id}`}>
+                                {Array.from({ length: file.totalChunks }, (_, i) => {
+                                  const isChecked = checked.has(i);
+                                  return (
+                                    <div
+                                      key={i}
+                                      className={`rounded-[2px] transition-colors ${isEditingInfo ? 'cursor-pointer hover:opacity-80' : ''}`}
+                                      style={{
+                                        width: file.totalChunks > 30 ? '6px' : '8px',
+                                        height: file.totalChunks > 30 ? '6px' : '8px',
+                                        backgroundColor: isChecked ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'rgba(255,255,255,0.08)',
+                                        border: `1px solid ${isChecked ? 'transparent' : 'rgba(255,255,255,0.12)'}`,
+                                      }}
+                                      onClick={() => { if (isEditingInfo) handleChunkToggle(file, i); }}
+                                      title={`Chunk ${i + 1}${isChecked ? ' (listened)' : ''}`}
+                                      data-testid={`chunk-${file.id}-${i}`}
+                                    />
+                                  );
+                                })}
+                                <span className="text-[7px] text-white/25 ml-1 self-center">{checked.size}/{file.totalChunks}</span>
+                              </div>
+                            );
+                          })()}
                         </div>
                       );
                     });
