@@ -1,0 +1,26 @@
+byhomeyyz@raspberrypi:~/Home-View $ [200~curl -s http://localhost:5000/api/semester-settings | python3 -c "import sys,json; sems=json.load(sys.stdin); [print(f'{s.get(\"semesterName\",\"\")} | {s.get(\"semesterType\",\"\")} | courses: {s.get(\"course1Code\",\"-\")}, {s.get(\"course2Code\",\"-\")}, {s.get(\"course3Code\",\"-\")}') for s in sems]"~
+-bash: [200~curl: command not found
+  File "<string>", line 1
+    import sys,json; sems=json.load(sys.stdin); [print(f'{s.get("semesterName","")} | {s.get("semesterType","")} | courses: {s.get("course1Code","-")}, {s.get("course2Code","-")}, {s.get("course3Code","-")}') for s in sems]~
+                                                                                                                                                                                                                               ^
+SyntaxError: invalid syntax
+byhomeyyz@raspberrypi:~/Home-View $ curl -s http://localhost:5000/api/semester-settings | python3 -c "import sys,json; sems=json.load(sys.stdin); [print(f'{s.get(\"semesterName\",\"\")} | {s.get(\"semesterType\",\"\")} | courses: {s.get(\"course1Code\",\"-\")}, {s.get(\"course2Code\",\"-\")}, {s.get(\"course3Code\",\"-\")}') for s in sems]"
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import sys,json; sems=json.load(sys.stdin); [print(f'{s.get("semesterName","")} | {s.get("semesterType","")} | courses: {s.get("course1Code","-")}, {s.get("course2Code","-")}, {s.get("course3Code","-")}') for s in sems]
+                          ~~~~~~~~~^^^^^^^^^^^
+  File "/usr/lib/python3.13/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+        cls=cls, object_hook=object_hook,
+        parse_float=parse_float, parse_int=parse_int,
+        parse_constant=parse_constant, object_pairs_hook=object_pairs_hook, **kw)
+  File "/usr/lib/python3.13/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 363, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+byhomeyyz@raspberrypi:~/Home-View $
