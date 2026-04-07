@@ -28238,9 +28238,8 @@ export default function Dashboard() {
               calScrollTopRef.current = st;
             }} onMouseMove={(e) => {
               const overlayEl = countdownOverlayRef.current;
-              if (!overlayEl) return;
               const barsData = countdownBarsDataRef.current;
-              if (barsData.length === 0) return;
+              if (!overlayEl || barsData.length === 0) return;
               const overlayRect = overlayEl.getBoundingClientRect();
               const barGap = 18;
               const relY = e.clientY - overlayRect.top;
@@ -28251,6 +28250,8 @@ export default function Dashboard() {
                 activeBarIdxRef.current = -1;
                 return;
               }
+              const barScreenTop = overlayRect.top + barIdx * barGap;
+              const barScreenBot = barScreenTop + barGap;
               const wrapper = overlayEl.querySelector(`.countdown-bar-wrapper[data-bar-idx="${barIdx}"]`) as HTMLElement;
               if (!wrapper) return;
               const wrapperRect = wrapper.getBoundingClientRect();
@@ -28266,7 +28267,7 @@ export default function Dashboard() {
               let intersects = false;
               for (const el of allEls) {
                 const r = el.getBoundingClientRect();
-                if (r.height > 0 && wrapperRect.bottom >= r.top && wrapperRect.top <= r.bottom) { intersects = true; break; }
+                if (r.height > 0 && barScreenBot >= r.top && barScreenTop <= r.bottom) { intersects = true; break; }
               }
               if (!intersects) {
                 const tip = document.getElementById('cbar-tooltip');
