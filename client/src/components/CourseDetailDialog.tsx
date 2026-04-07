@@ -3705,7 +3705,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
 
           </>)}
 
-          <div className="border-t border-white/10 mt-4" />
+          <div className="border-t border-white/30 mt-4" />
           <div ref={modulesRef} className="mt-3">
             <div
               className="flex items-center justify-between cursor-pointer select-none py-1.5 px-2 rounded-md hover:bg-white/5 transition-colors"
