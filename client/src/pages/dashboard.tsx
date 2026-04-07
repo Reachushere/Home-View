@@ -15238,7 +15238,7 @@ export default function Dashboard() {
               <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                 <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', position: 'relative', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderRadius: '12px', padding: '10px 14px 4px 14px', width: '605px', border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)', boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", gap: '8px' }}>
                   {selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK && (
-                    <span className="font-semibold" style={{ position: 'absolute', top: '1px', left: '50%', transform: 'translateX(-50%)', color: '#ffffff', fontSize: '10px', letterSpacing: '0.3px', whiteSpace: 'nowrap', textAlign: 'center', background: '#000000', padding: '1px 8px', borderRadius: '3px', zIndex: 2, lineHeight: '14px' }} data-testid="text-week-number">Week {selectedWeek}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek ? <span style={{ fontSize: '9px', fontWeight: 400, marginLeft: '4px', color: '#ffffff' }}>(current)</span> : null; })()}</span>
+                    <span className="font-semibold" style={{ position: 'absolute', top: '1px', left: '50%', transform: 'translateX(-50%)', color: '#ffffff', fontSize: '10px', letterSpacing: '0.3px', whiteSpace: 'nowrap', textAlign: 'center', background: '#000000', padding: '1px 8px', borderRadius: '3px', zIndex: 2, lineHeight: '14px', fontFamily: "'Raleway', sans-serif" }} data-testid="text-week-number">Week {selectedWeek}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek ? <span style={{ fontSize: '9px', fontWeight: 400, marginLeft: '4px', color: '#ffffff' }}>(current)</span> : null; })()}</span>
                   )}
                   {/* Analogue clock in countdown pill */}
                   <div style={{ display: 'flex', alignItems: 'center', marginLeft: '-3px', marginRight: '10px', marginTop: '-5px', flexShrink: 0, gap: '6px' }}>
@@ -15337,7 +15337,7 @@ export default function Dashboard() {
             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
               <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', position: 'relative', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderRadius: '12px', padding: '10px 14px 4px 14px', width: '605px', border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)', boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", gap: '8px' }}>
               {selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK && (
-                <span className="font-semibold" style={{ position: 'absolute', top: '1px', left: '50%', transform: 'translateX(-50%)', color: '#ffffff', fontSize: '10px', letterSpacing: '0.3px', whiteSpace: 'nowrap', textAlign: 'center', background: '#000000', padding: '1px 8px', borderRadius: '3px', zIndex: 2, lineHeight: '14px' }} data-testid="text-week-number">Week {selectedWeek}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek ? <span style={{ fontSize: '9px', fontWeight: 400, marginLeft: '4px', color: '#ffffff' }}>(current)</span> : null; })()}</span>
+                <span className="font-semibold" style={{ position: 'absolute', top: '1px', left: '50%', transform: 'translateX(-50%)', color: '#ffffff', fontSize: '10px', letterSpacing: '0.3px', whiteSpace: 'nowrap', textAlign: 'center', background: '#000000', padding: '1px 8px', borderRadius: '3px', zIndex: 2, lineHeight: '14px', fontFamily: "'Raleway', sans-serif" }} data-testid="text-week-number">Week {selectedWeek}{(() => { const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null; return cw === selectedWeek ? <span style={{ fontSize: '9px', fontWeight: 400, marginLeft: '4px', color: '#ffffff' }}>(current)</span> : null; })()}</span>
               )}
                 {/* Analogue clock + digital clock in countdown pill */}
                 <div style={{ display: 'flex', alignItems: 'center', marginLeft: '-6px', marginRight: '13px', marginTop: '-5px', flexShrink: 0, gap: '6px' }}>
@@ -27791,13 +27791,16 @@ export default function Dashboard() {
                           const displayCodeLabel = isTBDLabel ? 'TBD' : code;
                           const words = fullName.trim() ? fullName.trim().split(/\s+/) : [];
                           if (words.length === 0 && displayCodeLabel.length > 6) {
-                            const mid = Math.ceil(displayCodeLabel.length / 2);
-                            const part1 = displayCodeLabel.slice(0, mid);
-                            const part2 = displayCodeLabel.slice(mid);
+                            const label = displayCodeLabel;
+                            const ucBoundaries = [];
+                            for (let ci = 1; ci < label.length; ci++) {
+                              if (label[ci] >= 'A' && label[ci] <= 'Z' && label[ci - 1] >= 'a' && label[ci - 1] <= 'z') ucBoundaries.push(ci);
+                            }
+                            const splitAt = ucBoundaries.length > 0 ? ucBoundaries.reduce((best, b) => Math.abs(b - label.length / 2) < Math.abs(best - label.length / 2) ? b : best) : Math.ceil(label.length / 2);
                             return (
                               <>
-                                <span className="font-[785] text-center" style={{ lineHeight: 1.2 }}>{part1}</span>
-                                <span className="font-[785] text-center" style={{ lineHeight: 1.2 }}>{part2}</span>
+                                <span className="font-[785] text-center" style={{ lineHeight: 1.2 }}>{label.slice(0, splitAt)}</span>
+                                <span className="font-[785] text-center" style={{ lineHeight: 1.2 }}>{label.slice(splitAt)}</span>
                               </>
                             );
                           }
@@ -28050,13 +28053,16 @@ export default function Dashboard() {
                       const displayCodeLabel = isTBDLabel ? 'TBD' : code;
                       const words = fullName.trim() ? fullName.trim().split(/\s+/) : [];
                       if (words.length === 0 && displayCodeLabel.length > 6) {
-                        const mid = Math.ceil(displayCodeLabel.length / 2);
-                        const part1 = displayCodeLabel.slice(0, mid);
-                        const part2 = displayCodeLabel.slice(mid);
+                        const label = displayCodeLabel;
+                        const ucBoundaries: number[] = [];
+                        for (let ci = 1; ci < label.length; ci++) {
+                          if (label[ci] >= 'A' && label[ci] <= 'Z' && label[ci - 1] >= 'a' && label[ci - 1] <= 'z') ucBoundaries.push(ci);
+                        }
+                        const splitAt = ucBoundaries.length > 0 ? ucBoundaries.reduce((best, b) => Math.abs(b - label.length / 2) < Math.abs(best - label.length / 2) ? b : best) : Math.ceil(label.length / 2);
                         return (
                           <>
-                            <span className="font-[785] text-center" style={{ lineHeight: 1.2 }}>{part1}</span>
-                            <span className="font-[785] text-center" style={{ lineHeight: 1.2 }}>{part2}</span>
+                            <span className="font-[785] text-center" style={{ lineHeight: 1.2 }}>{label.slice(0, splitAt)}</span>
+                            <span className="font-[785] text-center" style={{ lineHeight: 1.2 }}>{label.slice(splitAt)}</span>
                           </>
                         );
                       }
