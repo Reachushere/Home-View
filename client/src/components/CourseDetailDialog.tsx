@@ -332,8 +332,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   }, [courseInfo.courseCode]);
   const [showWeekMappings, setShowWeekMappings] = useState(false);
   const [showAssignments, setShowAssignments] = useState(!initialEditMode);
+  const [showModules, setShowModules] = useState(true);
   const weekMappingsRef = useRef<HTMLDivElement>(null);
   const assignmentsRef = useRef<HTMLDivElement>(null);
+  const modulesRef = useRef<HTMLDivElement>(null);
   const [weekMappingEdits, setWeekMappingEdits] = useState<Record<number, { confirmed: boolean; courseWeekLabel: string; notes: string }>>({});
   const [weekStyleChoice, setWeekStyleChoice] = useState<string | null>(null);
   const [showWeekCalendar, setShowWeekCalendar] = useState(false);
@@ -584,6 +586,98 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   const { data: allTasks = [] } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
   });
+
+  interface ModuleFile {
+    id: number;
+    originalName: string;
+    displayName: string;
+    folder: string;
+    listened: boolean;
+    lastChunkIndex: number;
+    totalChunks: number;
+    checkedChunks: string | null;
+  }
+
+  const { data: allFiles = [] } = useQuery<ModuleFile[]>({
+    queryKey: ["/api/files"],
+  });
+
+  const courseModuleFiles = useMemo(() => {
+    const codeUpper = courseInfo.courseCode.toUpperCase().replace(/\s/g, '');
+    const codeLower = codeUpper.toLowerCase();
+    return allFiles.filter(f => {
+      if (!f.folder) return false;
+      const folderLower = f.folder.toLowerCase();
+      return folderLower.includes(codeLower) && folderLower.includes('module');
+    });
+  }, [allFiles, courseInfo.courseCode]);
+
+  const modulesByWeek = useMemo(() => {
+    const map: Record<number, ModuleFile[]> = {};
+    for (let w = FIRST_WEEK; w <= LAST_WEEK; w++) map[w] = [];
+    for (const f of courseModuleFiles) {
+      const weekMatch = f.folder?.match(/week-(\d+)/i);
+      if (weekMatch) {
+        const weekNum = parseInt(weekMatch[1], 10);
+        if (weekNum >= FIRST_WEEK && weekNum <= LAST_WEEK) {
+          if (!map[weekNum]) map[weekNum] = [];
+          map[weekNum].push(f);
+        }
+      }
+    }
+    return map;
+  }, [courseModuleFiles]);
+
+  const getModuleProgress = useCallback((file: ModuleFile): number => {
+    if (file.listened) return 100;
+    if (!file.totalChunks || file.totalChunks === 0) return 0;
+    if (file.checkedChunks && file.checkedChunks !== 'null' && file.checkedChunks !== '[]') {
+      try {
+        const checked = JSON.parse(file.checkedChunks);
+        if (Array.isArray(checked) && checked.length > 0) {
+          return Math.round((checked.length / file.totalChunks) * 100);
+        }
+      } catch {}
+    }
+    if (file.lastChunkIndex != null && file.lastChunkIndex > 0) {
+      return Math.round((file.lastChunkIndex / file.totalChunks) * 100);
+    }
+    return 0;
+  }, []);
+
+  const isModuleComplete = useCallback((file: ModuleFile): boolean => {
+    if (file.listened) return true;
+    return getModuleProgress(file) >= 80;
+  }, [getModuleProgress]);
+
+  const handleModuleCheckToggle = useCallback(async (file: ModuleFile, checked: boolean) => {
+    try {
+      if (checked) {
+        await apiRequest("PATCH", `/api/files/${file.id}`, { listened: true });
+      } else {
+        await apiRequest("PATCH", `/api/files/${file.id}`, { listened: false, lastChunkIndex: 0, checkedChunks: '[]' });
+      }
+      queryClient.invalidateQueries({ queryKey: ["/api/files"] });
+    } catch {
+      toast({ title: "Failed to update module", variant: "destructive" });
+    }
+  }, [toast]);
+
+  const handleModuleSliderChange = useCallback(async (file: ModuleFile, newChunkIndex: number) => {
+    try {
+      const updates: any = { lastChunkIndex: newChunkIndex };
+      if (newChunkIndex === 0) {
+        updates.listened = false;
+        updates.checkedChunks = '[]';
+      } else if (file.totalChunks && newChunkIndex >= file.totalChunks) {
+        updates.listened = true;
+      }
+      await apiRequest("PATCH", `/api/files/${file.id}`, updates);
+      queryClient.invalidateQueries({ queryKey: ["/api/files"] });
+    } catch {
+      toast({ title: "Failed to update progress", variant: "destructive" });
+    }
+  }, [toast]);
 
   const courseTasks = useMemo(() => {
     const codeUpper = courseInfo.courseCode.toUpperCase().replace(/\s/g, '');
@@ -3568,6 +3662,100 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             )}
 
           </>)}
+
+          <div ref={modulesRef} className="mt-3 px-2">
+            <div
+              className="flex items-center justify-between cursor-pointer select-none py-1.5 px-2 rounded-md hover:bg-white/5 transition-colors"
+              onClick={() => { const next = !showModules; setShowModules(next); if (next) setTimeout(() => { const el = modulesRef.current; if (el) { const scrollParent = el.closest('.overflow-y-auto') as HTMLElement | null; if (scrollParent) { const elTop = (el as HTMLElement).offsetTop - scrollParent.offsetTop; scrollParent.scrollTo({ top: elTop - 4, behavior: 'smooth' }); } else { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } } }, 80); }}
+              data-testid="toggle-modules-section"
+            >
+              <div className="flex items-center gap-1.5">
+                <BookOpen className="h-3.5 w-3.5 text-white/60" />
+                <h3 className="text-[11px] font-medium text-white uppercase">Module Progress</h3>
+                <span className="text-[8px] text-white/30 ml-1">(not counted in GPA)</span>
+              </div>
+              {showModules ? <ChevronDown className="h-3 w-3 text-white/50" /> : <ChevronRight className="h-3 w-3 text-white/50" />}
+            </div>
+            {showModules && (
+              <div className="mt-1 space-y-1" data-testid="modules-list">
+                {(() => {
+                  const hasAnyModules = Object.values(modulesByWeek).some(files => files.length > 0);
+                  if (!hasAnyModules) {
+                    return (
+                      <div className="text-[10px] text-white/30 text-center py-3">
+                        No module files found for this course
+                      </div>
+                    );
+                  }
+                  return Array.from({ length: LAST_WEEK - FIRST_WEEK + 1 }, (_, i) => FIRST_WEEK + i).map(weekNum => {
+                    const files = modulesByWeek[weekNum] || [];
+                    if (files.length === 0) {
+                      return (
+                        <div key={weekNum} className="flex items-center gap-2 px-2 py-1 rounded bg-white/[0.03] border border-white/[0.06]" data-testid={`module-week-${weekNum}`}>
+                          <div className="flex items-center justify-center border border-white/20 rounded-sm" style={{ width: '14px', height: '14px', flexShrink: 0, background: 'transparent', opacity: 0.3 }} />
+                          <span className="text-[10px] text-white/25 flex-1">Week {weekNum}</span>
+                          <span className="text-[8px] text-white/15">No file</span>
+                        </div>
+                      );
+                    }
+                    return files.map(file => {
+                      const progress = getModuleProgress(file);
+                      const complete = isModuleComplete(file);
+                      const circleSize = 24;
+                      const strokeWidth = 2.5;
+                      const radius = (circleSize - strokeWidth) / 2;
+                      const circumference = 2 * Math.PI * radius;
+                      const offset = circumference - (progress / 100) * circumference;
+                      const progressColor = progress >= 80 ? '#22c55e' : progress > 0 ? '#f97316' : '#ef4444';
+                      const fileName = (file.displayName || file.originalName || '').replace(/\.pdf$/i, '');
+                      return (
+                        <div key={file.id} className="flex items-center gap-2 px-2 py-1.5 rounded bg-white/[0.04] border border-white/[0.08] hover:border-white/15 transition-colors" data-testid={`module-week-${weekNum}-file-${file.id}`}>
+                          <div
+                            className={`flex items-center justify-center border rounded-sm transition-colors ${isEditingInfo ? 'cursor-pointer hover:border-white/50' : ''}`}
+                            style={{ width: '14px', height: '14px', flexShrink: 0, background: complete ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'transparent', borderColor: complete ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'rgba(255,255,255,0.25)' }}
+                            onClick={() => { if (isEditingInfo) handleModuleCheckToggle(file, !complete); }}
+                            data-testid={`module-check-${file.id}`}
+                          >
+                            {complete && <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />}
+                          </div>
+                          <svg width={circleSize} height={circleSize} style={{ flexShrink: 0, transform: 'rotate(-90deg)' }}>
+                            <circle cx={circleSize / 2} cy={circleSize / 2} r={radius} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth={strokeWidth} />
+                            <circle cx={circleSize / 2} cy={circleSize / 2} r={radius} fill="none" stroke={progressColor} strokeWidth={strokeWidth} strokeDasharray={circumference} strokeDashoffset={offset} strokeLinecap="round" />
+                          </svg>
+                          <div className="flex flex-col flex-1 min-w-0">
+                            <span className="text-[10px] text-white/80 truncate" title={fileName}>
+                              <span className="text-white/40">W{weekNum}</span> {fileName}
+                            </span>
+                            {isEditingInfo && file.totalChunks > 0 && (
+                              <div className="flex items-center gap-2 mt-0.5">
+                                <input
+                                  type="range"
+                                  min={0}
+                                  max={file.totalChunks}
+                                  value={file.lastChunkIndex || 0}
+                                  onChange={(e) => handleModuleSliderChange(file, parseInt(e.target.value, 10))}
+                                  className="flex-1 h-1 accent-white/60"
+                                  style={{ cursor: 'pointer' }}
+                                  data-testid={`module-slider-${file.id}`}
+                                />
+                                <span className="text-[8px] text-white/40 flex-shrink-0 w-[45px] text-right">
+                                  {file.lastChunkIndex || 0}/{file.totalChunks}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                          <span className={`text-[10px] font-semibold flex-shrink-0 ${progress >= 80 ? 'text-green-400' : progress > 0 ? 'text-orange-400' : 'text-white/20'}`} data-testid={`module-progress-${file.id}`}>
+                            {progress}%
+                          </span>
+                        </div>
+                      );
+                    });
+                  });
+                })()}
+              </div>
+            )}
+          </div>
+
           </div>
           </div>
           </div>
