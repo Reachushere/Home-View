@@ -25,7 +25,7 @@ import { getSchedulerStatus } from "./reminderScheduler";
 import { fetchTMUCalendarEvents } from "./tmuCalendar";
 import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder, getOneDriveFileContentAsText, getOneDriveItemByPath, createOneDriveTextFile, updateOneDriveFileContent, deleteOneDriveItem, resolveSharedNotebookUrl, getSharedNotebookSections, getPagesBySectionId, startDeviceCodeFlow, pollDeviceCodeAuth, isOneDriveConnected } from "./onedrive";
 import * as spotifyApi from "./spotify";
-import { hasReplitOpenAI, hasPersonalOpenAI, getApprovedOpenAIConfig, resolveApproval, getPendingApprovals, getRecentApprovals, subscribeToApprovals, getReplitOpenAIConfig } from "./openai-approval";
+import { hasOpenAI, getApprovedOpenAIConfig, resolveApproval, getPendingApprovals, getRecentApprovals, subscribeToApprovals } from "./openai-approval";
 
 // Helper function to generate repeated task due dates
 function generateRepeatDates(
@@ -10172,11 +10172,10 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       checks.oneDrive = { status: 'down', message: e.message || 'Connection failed' };
     }
 
-    const hasReplitAI = hasReplitOpenAI();
-    const hasPersonalAI = hasPersonalOpenAI();
+    const hasAI = hasOpenAI();
     checks.openAI = {
-      status: hasReplitAI ? 'ok' : (hasPersonalAI ? 'degraded' : 'unconfigured'),
-      message: hasReplitAI ? 'Replit integration' : (hasPersonalAI ? 'Personal key (approval required)' : 'Missing API key'),
+      status: hasAI ? 'ok' : 'unconfigured',
+      message: hasAI ? 'API key configured (approval required)' : 'Missing API key',
     };
 
     try {
@@ -11103,16 +11102,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
     const lightsNavTimestamp = Date.now();
     await setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: lightsNavTimestamp }, true, 'master');
-    console.log(`${logPrefix} tablet-nav set for master (TV nav deferred until Silk launches)`);
-
-    try {
-      const tabletEntity = 'media_player.tablet_cat';
-      const silkCmd = `am start --activity-clear-task -a android.intent.action.VIEW -d '${readerUrl}' com.amazon.cloud9`;
-      await haServiceCallSafe('androidtv/adb_command', { entity_id: tabletEntity, command: silkCmd }, 'Cat Tablet Launch Silk');
-      console.log(`${logPrefix} Silk launched on cat tablet with reader URL`);
-    } catch (e: any) {
-      console.warn(`${logPrefix} Cat tablet Silk launch failed (non-fatal): ${e.message}`);
-    }
+    console.log(`${logPrefix} tablet-nav set for master — tablet picks up via polling`);
 
     const textExtractionPromise = extractFileText(fileToPlay);
 
@@ -13399,7 +13389,6 @@ document.body.removeChild(a);
         }
         await Promise.allSettled([
           haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'am force-stop com.amazon.cloud9' }, 'Stop Silk on FireStick'),
-          haServiceCallSafe('androidtv/adb_command', { entity_id: 'media_player.tablet_cat', command: 'am force-stop com.amazon.cloud9' }, 'Stop Silk on Cat Tablet'),
           haServiceCallSafe('media_player/turn_off', { entity_id: FIRE_STICK_ADB_ENTITY }, 'Stop TV FireStick'),
           haServiceCallSafe('media_player/turn_off', { entity_id: CAT_TV_ENTITY }, 'Stop TV Samsung'),
         ]);

@@ -16,33 +16,16 @@ emitter.setMaxListeners(50);
 
 let approvalCounter = 0;
 
-export function hasReplitOpenAI(): boolean {
-  return !!(process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL);
-}
-
-export function hasPersonalOpenAI(): boolean {
+export function hasOpenAI(): boolean {
   return !!process.env.OPENAI_API_KEY;
-}
-
-export function getReplitOpenAIConfig(): { apiKey: string; baseURL: string } | null {
-  if (hasReplitOpenAI()) {
-    return {
-      apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY!,
-      baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL!,
-    };
-  }
-  return null;
 }
 
 export async function getApprovedOpenAIConfig(
   feature: string,
   detail: string,
   estimatedCost: string = "~$0.01-0.05"
-): Promise<{ apiKey: string; baseURL?: string } | null> {
-  const replitConfig = getReplitOpenAIConfig();
-  if (replitConfig) return replitConfig;
-
-  if (!hasPersonalOpenAI()) return null;
+): Promise<{ apiKey: string } | null> {
+  if (!hasOpenAI()) return null;
 
   const id = `approval-${++approvalCounter}-${Date.now()}`;
   const approval: PendingApproval = {

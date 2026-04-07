@@ -8,8 +8,7 @@ import { join } from "path";
 import { EdgeTTS } from "node-edge-tts";
 
 export const openai = new OpenAI({
-  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY || 'dummy-key-not-configured',
-  ...(process.env.AI_INTEGRATIONS_OPENAI_BASE_URL ? { baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL } : {}),
+  apiKey: process.env.OPENAI_API_KEY || 'dummy-key-not-configured',
 });
 
 let useEdgeTTSFallback = false;
