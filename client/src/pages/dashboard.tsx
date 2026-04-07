@@ -31221,7 +31221,7 @@ export default function Dashboard() {
                               const hrsLeft = Math.round(hoursLeft % 24);
                               const timeLeftStr = daysLeft > 0 ? `${daysLeft}d, ${hrsLeft}h` : `${hrsLeft}h`;
                               return (
-                                <div style={{ width: '100%', padding: '0 3px', marginTop: '1px', textAlign: 'center' }} data-testid={`${item.type}-time-remaining-${pd.courseCode.toLowerCase()}`}>
+                                <div style={{ width: '100%', padding: '0 3px', marginTop: '-9px', textAlign: 'center' }} data-testid={`${item.type}-time-remaining-${pd.courseCode.toLowerCase()}`}>
                                   <span style={{ fontSize: '7px', fontWeight: 600, color: '#ffffff', fontFamily: "system-ui, sans-serif" }}>{timeLeftStr}</span>
                                 </div>
                               );
