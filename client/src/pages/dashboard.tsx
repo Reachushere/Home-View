@@ -28241,8 +28241,15 @@ export default function Dashboard() {
               if (!overlayEl) return;
               const barsData = countdownBarsDataRef.current;
               if (barsData.length === 0) return;
+              const overlayRect = overlayEl.getBoundingClientRect();
+              const barGap = 18;
+              const relY = e.clientY - overlayRect.top;
+              const barIdx = Math.floor(relY / barGap);
               const target = e.target as HTMLElement;
               const isOverTask = !!target.closest('[data-testid^="time-task-"], [data-testid^="gcal-event-"]');
+              if (barIdx >= 0 && barIdx < barsData.length && relY >= 0) {
+                console.log('[CBAR] bar', barIdx, 'isOverTask=', isOverTask, 'target=', target.tagName + '.' + target.className?.toString().slice(0,30));
+              }
               if (isOverTask) {
                 if (activeBarIdxRef.current >= 0) {
                   overlayEl.removeAttribute('data-cbar-active');
@@ -28252,10 +28259,6 @@ export default function Dashboard() {
                 }
                 return;
               }
-              const overlayRect = overlayEl.getBoundingClientRect();
-              const barGap = 18;
-              const relY = e.clientY - overlayRect.top;
-              const barIdx = Math.floor(relY / barGap);
               if (barIdx < 0 || barIdx >= barsData.length || relY < 0) {
                 if (activeBarIdxRef.current >= 0) {
                   overlayEl.removeAttribute('data-cbar-active');
@@ -28283,6 +28286,7 @@ export default function Dashboard() {
               activeBarIdxRef.current = barIdx;
               overlayEl.setAttribute('data-cbar-active', String(barIdx));
               wrapper.setAttribute('data-cbar-highlight', '');
+              console.log('[CBAR] ACTIVATED bar', barIdx, 'overlay has data-cbar-active=', overlayEl.getAttribute('data-cbar-active'), 'wrapper has highlight=', wrapper.hasAttribute('data-cbar-highlight'), 'overlayZIndex computed=', getComputedStyle(overlayEl).zIndex);
               const barRect = wrapper.getBoundingClientRect();
               const midY = barRect.top + barRect.height / 2;
               const allTaskEls = document.querySelectorAll('[data-testid^="time-task-"], [data-testid^="gcal-event-"]');
