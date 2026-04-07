@@ -1,0 +1,60 @@
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs unical --lines 200 --nostream | grep -i "webhook\|automation\|cat.*light\|lights-on\|cooldown"
+0|unical   | [TRACE 6:22:01 AM] [CatLights] WEBHOOK RECEIVED | state={"active":false,"sessionId":0,"file":null,"chunk":null,"lightsPrompt":false,"trigger":null,"msSinceStop":null,"msSinceManualStop":null,"msSinceStart":null} | {"body":{"state":"on"}}
+0|unical   | [Cat Lights] ====== WEBHOOK TRIGGERED ======
+0|unical   | [Cat Lights] Timestamp: 4/7/2026, 6:22:01 AM
+0|unical   | [Cat Lights] Request body: {"state":"on"}
+0|unical   | [Cat Lights] Body parsing: state="on", action="", rawToState=undefined, trigger="none"
+0|unical   | [Cat Lights] Using body state directly: on
+0|unical   | [TRACE 6:22:01 AM] [CatLights] STATE RESOLVED: on | state={"active":false,"sessionId":0,"file":null,"chunk":null,"lightsPrompt":false,"trigger":null,"msSinceStop":null,"msSinceManualStop":null,"msSinceStart":null} | {"bodyState":"on","bodyAction":"","method":"body"}
+0|unical   | [Cat Lights] Light state: on (body state: on)
+0|unical   | [Cat Lights] Architecture: server-side TTS → Google Nest speaker (media_player.play_media)
+0|unical   | 6:22:01 AM [express] POST /api/webhook/cat-lights 200 in 157ms :: {"action":"processing","reason":"Light on — processing in background"}
+0|unical   | [Cat Lights] Using cached file — syncing OneDrive in background
+0|unical   | [Cat Lights] Syncing OneDrive for 3 courses, week 12
+0|unical   | [Cat Lights] Early device wake: tablet wake + brightness sent (TV deferred until confirmation)
+0|unical   | [Cat Lights] Quick acknowledgment played via HA Cloud TTS (primary)
+0|unical   | [Cat Lights] OneDrive sync complete
+0|unical   | [Cat Lights] Found next file: your CPPA Module for week 12 — CPPA122, Module 12 - Introduction.pdf (id=231)
+0|unical   | [Cat Lights] Sending TTS prompt: "Would you like to play your CPPA Module for week 12?"
+0|unical   | [Cat Lights] TTS prompt played via HA Cloud TTS (primary)
+0|unical   | [Cat Lights] Waiting up to 23s for confirmation (webhook-primary, backup poll every 10s)...
+0|unical   | [Cat Lights Confirm] ====== CONFIRMATION RECEIVED ======
+0|unical   | [Cat Lights Confirm] Stopped media on cat washroom Echos
+0|unical   | 6:22:13 AM [express] POST /api/webhook/cat-lights-confirm 200 in 187ms :: {"action":"confirmed","message":"Module reading confirmed — starting playback"}
+0|unical   | [TRACE 6:22:13 AM] [CatLights] CONFIRMATION RECEIVED — starting playback | state={"active":false,"sessionId":0,"file":null,"chunk":null,"lightsPrompt":true,"trigger":null,"msSinceStop":null,"msSinceManualStop":null,"msSinceStart":null}
+0|unical   | [Cat Lights] Confirmation received — starting playback
+0|unical   | [TRACE 6:22:13 AM] [PlaybackFlow] STARTING file=CPPA122, Module 12 - Introduction.pdf id=231 | state={"active":false,"sessionId":0,"file":null,"chunk":null,"lightsPrompt":false,"trigger":"lights","msSinceStop":null,"msSinceManualStop":null,"msSinceStart":null} | {"logPrefix":"[Cat Lights]","voice":"echo"}
+0|unical   | [Cat Lights] Paused audio preparation for live playback
+0|unical   | [Cat Lights] Will resume from chunk 12 (saved: 13)
+0|unical   | [Cat Lights] Removed checkmark from context chunk 12 for replay
+0|unical   | [Cat Lights] tablet-nav set for master (TV nav deferred until Silk launches)
+0|unical   | [Cat Lights] Set HA Voice volume to 0.45
+0|unical   | [Cat Lights] Text extraction ready (0 chars)
+0|unical   | [Cat Lights] Persisted playback session to DB (file=231, chunk=12/0)
+0|unical   | [Cat Lights] ====== TABLET SETUP START (tablet-nav polling) ======
+0|unical   | [Cat Lights] ====== TV SETUP START ======
+0|unical   | [Cat Lights] tablet-nav set for master — tablet will navigate via polling
+0|unical   | [Cat Lights] ====== TABLET SETUP COMPLETE ======
+0|unical   | [Cat Lights] Fire Stick current state: off
+0|unical   | [Cat Lights] Samsung TV turn_on sent (WoL)
+0|unical   | [Cat Lights] Fire Stick is off/standby — just turning ON (preserves Silk if backgrounded)
+0|unical   | [Cat Lights] Fire Stick turn_on: OK (attempt 1) — CEC should turn on Samsung TV
+0|unical   | [Cat Lights] Fire Stick WAKEUP sent
+0|unical   | [Cat Lights] Waiting 8s for TV + Fire Stick boot...
+0|unical   | [Cat Lights] Confirm TTS played on Nest speaker via OpenAI/Edge TTS (actuallyPlaying=false)
+0|unical   | [Cat Lights] Confirm TTS playing, waiting 6s
+0|unical   | [Cat Lights] Samsung TV state check 1/3: off
+0|unical   | [Cat Lights] Samsung TV still off — sending another WoL + CEC kick
+0|unical   | [Cat Lights] Confirm TTS finished
+0|unical   | 6:22:32 AM [express] GET /api/automation-cooldown 304 in 1ms :: {"active":false,"remaining":0,"reason":null}
+0|unical   | [Cat Lights] Samsung TV state check 2/3: on
+0|unical   | [Cat Lights] Samsung TV is ON — proceeding
+0|unical   | [Cat Lights] Waiting 5s before Silk launch to let Fire Stick UI fully boot...
+0|unical   | [Cat Lights] Extra WAKEUP sent before Silk launch
+0|unical   | [Cat Lights] Force-stopped Silk before fresh launch
+0|unical   | [Cat Lights] Silk launched with wrapper URL (attempt 1)
+0|unical   | [Cat Lights] Setting TV tablet-nav command now that Silk is launched
+0|unical   | [Cat Lights] Fire Stick immersive mode set
+0|unical   | [Cat Lights] ====== TV SETUP COMPLETE ======
+0|unical   | [Cat Lights] Nest volume set to 0.75 for playback
+byhomeyyz@raspberrypi:~/Home-View $
