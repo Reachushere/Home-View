@@ -10183,6 +10183,16 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   let catLightsLateConfirmWeek: number | null = null;
   let catLightsLateConfirmExpiry: number = 0;
   let coursePlayPriority: Record<string, number> = {};
+  const COURSE_PRIORITY_FILE = path.join(process.cwd(), 'persistent-uploads', 'course-play-priority.json');
+  try {
+    const fs = await import('fs');
+    if (fs.existsSync(COURSE_PRIORITY_FILE)) {
+      coursePlayPriority = JSON.parse(fs.readFileSync(COURSE_PRIORITY_FILE, 'utf-8'));
+      console.log(`[Course Priority] Loaded from disk: ${JSON.stringify(coursePlayPriority)}`);
+    }
+  } catch (e: any) {
+    console.log(`[Course Priority] Could not load from disk: ${e.message}`);
+  }
   const CAT_LIGHTS_PROMPT_COOLDOWN_MS = 3 * 60 * 1000;
   let catLightsBypassCooldown = false;
   let lastPlaybackStoppedAt: number = 0;
@@ -14514,6 +14524,14 @@ document.body.removeChild(a);
   app.post("/api/course-play-priority", (req, res) => {
     coursePlayPriority = req.body || {};
     console.log(`[Course Priority] Updated: ${JSON.stringify(coursePlayPriority)}`);
+    try {
+      const fs = require('fs');
+      fs.mkdirSync(path.dirname(COURSE_PRIORITY_FILE), { recursive: true });
+      fs.writeFileSync(COURSE_PRIORITY_FILE, JSON.stringify(coursePlayPriority, null, 2));
+      console.log(`[Course Priority] Saved to disk`);
+    } catch (e: any) {
+      console.log(`[Course Priority] Failed to save to disk: ${e.message}`);
+    }
     res.json({ success: true });
   });
 
