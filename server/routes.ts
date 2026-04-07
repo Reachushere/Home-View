@@ -1924,6 +1924,9 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) return res.status(400).json({ error: "Invalid ID" });
+
+      const existing = (await storage.getAllSemesterSettings()).find(s => s.id === id);
+
       const dateFields = ['semesterStartDate', 'semesterEndDate', 'course1StartDate', 'course1EndDate', 'course2StartDate', 'course2EndDate', 'course3StartDate', 'course3EndDate', 'readingWeekStart', 'createdAt'];
       const body = { ...req.body };
       for (const field of dateFields) {
@@ -1932,6 +1935,58 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
         }
       }
       const updated = await storage.updateSemesterSettings(id, body);
+
+      if (existing) {
+        const courseSlots = [
+          { oldCode: existing.course1Code, oldName: existing.course1Name, newCode: updated.course1Code, newName: updated.course1Name },
+          { oldCode: existing.course2Code, oldName: existing.course2Name, newCode: updated.course2Code, newName: updated.course2Name },
+          { oldCode: existing.course3Code, oldName: existing.course3Name, newCode: updated.course3Code, newName: updated.course3Name },
+        ];
+        for (const slot of courseSlots) {
+          const oldIsTBD = !slot.oldCode || slot.oldCode.toUpperCase().startsWith('TBD');
+          const newIsTBD = !slot.newCode || slot.newCode.toUpperCase().startsWith('TBD');
+          if (oldIsTBD && !newIsTBD && slot.newCode && slot.newName) {
+            try {
+              const { renameOneDriveFolder } = await import("./onedrive");
+              const yearMatch = existing.semesterName?.match(/\d{4}/);
+              const year = yearMatch ? yearMatch[0] : new Date().getFullYear().toString();
+              const semFolderMap: Record<string, string[]> = {
+                'fall': ['Fall'], 'winter': ['Winter'],
+                'spring_summer': ['Spring & Summer', 'Spring_Summer', 'Spring Summer', 'Spring-Summer'],
+              };
+              const folderNames = semFolderMap[existing.semesterType || ''] || [existing.semesterType || ''];
+              const springSummerSubs = ['Full', 'Spring - First Half', 'Summer - Second Half'];
+              const oldFolderName = `${slot.oldCode} - ${slot.oldName === 'To Be Determined' || slot.oldName === 'TBD' ? 'To Be Determined' : slot.oldName}`;
+              const newFolderName = `${slot.newCode} - ${slot.newName}`;
+
+              for (const fn of folderNames) {
+                const basePath = `/School/1. TMU/Courses/${year}/${fn}`;
+                try {
+                  const result = await renameOneDriveFolder(`${basePath}/${oldFolderName}`, newFolderName);
+                  if (result.renamed) {
+                    console.log(`[Semester] Renamed OneDrive folder: ${oldFolderName} -> ${newFolderName}`);
+                    break;
+                  }
+                } catch {}
+                if (existing.semesterType === 'spring_summer') {
+                  for (const sub of springSummerSubs) {
+                    try {
+                      const result = await renameOneDriveFolder(`${basePath}/${sub}/${oldFolderName}`, newFolderName);
+                      if (result.renamed) {
+                        console.log(`[Semester] Renamed OneDrive folder in ${sub}: ${oldFolderName} -> ${newFolderName}`);
+                        break;
+                      }
+                    } catch {}
+                  }
+                }
+              }
+            } catch (e: any) {
+              console.error(`[Semester] Failed to rename OneDrive folder:`, e.message);
+            }
+          }
+        }
+      }
+
       res.json(updated);
     } catch (err) {
       console.error("Error updating semester settings by ID:", err);
@@ -16250,10 +16305,10 @@ document.body.removeChild(a);
       };
 
       for (const semester of allSemesters) {
-        const courseCodes = [semester.course1Code, semester.course2Code, semester.course3Code]
+        const allCourseCodes = [semester.course1Code, semester.course2Code, semester.course3Code];
+        const courseCodes = allCourseCodes
           .filter(Boolean)
           .filter(c => !c!.toUpperCase().startsWith('TBD')) as string[];
-        if (courseCodes.length === 0) continue;
 
         const yearMatch = semester.semesterName?.match(/\d{4}/);
         const year = yearMatch ? yearMatch[0] : new Date().getFullYear().toString();
@@ -16277,6 +16332,61 @@ document.body.removeChild(a);
         }
 
       const springSummerSubFolders = ['Full', 'Spring - First Half', 'Summer - Second Half'];
+
+      const tbdSlots = [
+        { idx: 0, code: allCourseCodes[0], prefix: 'course1' },
+        { idx: 1, code: allCourseCodes[1], prefix: 'course2' },
+        { idx: 2, code: allCourseCodes[2], prefix: 'course3' },
+      ].filter(s => s.code && s.code.toUpperCase().startsWith('TBD'));
+
+      if (tbdSlots.length > 0) {
+        let allCourseFolders: any[] = [];
+
+        const directFolders = baseFolders.filter((f: any) =>
+          f.type === 'folder' && /^[A-Z]{3,5}\d{3}/i.test(f.name) && !f.name.toUpperCase().startsWith('TBD')
+        );
+        allCourseFolders.push(...directFolders);
+
+        if (semester.semesterType === 'spring_summer') {
+          for (const subName of springSummerSubFolders) {
+            const subFolder = baseFolders.find((f: any) => f.type === 'folder' && f.name === subName);
+            if (!subFolder) continue;
+            try {
+              const subContents = await listOneDriveItems(subFolder.path);
+              const subCourses = subContents.filter((f: any) =>
+                f.type === 'folder' && /^[A-Z]{3,5}\d{3}/i.test(f.name) && !f.name.toUpperCase().startsWith('TBD')
+              );
+              allCourseFolders.push(...subCourses);
+            } catch {}
+          }
+        }
+
+        const knownCodes = new Set(allCourseCodes.filter(Boolean).map(c => c!.toUpperCase()));
+        const newFolders = allCourseFolders.filter(f => {
+          const codeMatch = f.name.match(/^([A-Z]{3,5}\d{3})/i);
+          return codeMatch && !knownCodes.has(codeMatch[1].toUpperCase());
+        });
+
+        for (const newFolder of newFolders) {
+          if (tbdSlots.length === 0) break;
+          const codeMatch = newFolder.name.match(/^([A-Z]{3,5}\d{3})\s*-\s*(.+)/i);
+          if (!codeMatch) continue;
+          const newCode = codeMatch[1].toUpperCase();
+          const newName = codeMatch[2].trim();
+          const slot = tbdSlots.shift()!;
+
+          try {
+            const updates: any = {};
+            updates[`${slot.prefix}Code`] = newCode;
+            updates[`${slot.prefix}Name`] = newName;
+            await storage.updateSemesterSettings(semester.id, updates);
+            courseCodes.push(newCode);
+            console.log(`[Monitor Sync] Auto-detected renamed folder: ${slot.code} -> ${newCode} (${newName}) for ${semester.semesterName}`);
+          } catch (e: any) {
+            console.error(`[Monitor Sync] Failed to update semester with renamed folder:`, e.message);
+          }
+        }
+      }
 
       for (const courseCode of courseCodes) {
         try {
