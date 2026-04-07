@@ -10641,8 +10641,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   }
 
   setTimeout(() => monitorOneDriveFolderRenames(), 30000);
-  setInterval(monitorOneDriveFolderRenames, 5 * 60 * 1000);
-  console.log('=== [OneDrive Monitor] Folder rename sync started (checking every 5 minutes) ===');
+  setInterval(monitorOneDriveFolderRenames, 30 * 1000);
+  console.log('=== [OneDrive Monitor] Folder rename sync started (checking every 30 seconds) ===');
 
   const recordWeatherHourly = async () => {
     try {
