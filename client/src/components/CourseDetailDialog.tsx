@@ -3754,7 +3754,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                       const circumference = 2 * Math.PI * radius;
                       const offset = circumference - (progress / 100) * circumference;
                       const progressColor = progress >= 80 ? '#22c55e' : progress > 0 ? '#f97316' : '#ef4444';
-                      const fileName = (file.displayName || file.originalName || '').replace(/\.pdf$/i, '');
+                      const fileNameRaw = (file.displayName || file.originalName || '').replace(/\.pdf$/i, '');
+                      const courseCode = course?.name?.split(' - ')[0]?.trim() || '';
+                      const fileName = courseCode ? fileNameRaw.replace(new RegExp(`^${courseCode}[,\\s]*`, 'i'), '').replace(/^[,\\s]+/, '') : fileNameRaw;
                       const chunksPerDay = file.totalChunks > 0 ? Math.ceil(file.totalChunks / 7) : 0;
                       const weekDates = getWeekDates(weekNum, semesterStart, readingWeekStart);
                       const weekStartDate = new Date(weekDates.start);
@@ -3781,7 +3783,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                             </svg>
                             <div className="flex flex-col flex-1 min-w-0">
                               <span className="text-[12px] text-white truncate" title={fileName}>
-                                <span className={isCurrentWeek ? 'text-white/80' : 'text-white/60'}>W{weekNum}</span> {fileName}
+                                <span className={isCurrentWeek ? 'text-white/80' : 'text-white/60'}>Week {weekNum}</span> - {fileName}
                                 {isCurrentWeek && <span className="text-[9px] text-white font-semibold uppercase ml-1.5 bg-white/20 px-1.5 py-0.5 rounded">Current</span>}
                               </span>
                               {isEditingInfo && file.totalChunks > 0 && (
