@@ -30342,7 +30342,7 @@ export default function Dashboard() {
           data-testid="section-coming-up"
         >
           <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', border: '1.5px solid rgba(255,255,255,0.5)', pointerEvents: 'none', zIndex: 9999 }} />
-          {(cooldownSeconds !== null || true) && (
+          {cooldownSeconds !== null && (
             <div
               className="absolute z-[60]"
               style={{ top: '-15px', right: '7px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '15px', pointerEvents: 'none', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.2s ease' }}
