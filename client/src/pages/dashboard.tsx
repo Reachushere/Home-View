@@ -28066,7 +28066,7 @@ export default function Dashboard() {
                       <div 
                         key={dayIdx} 
                         className="relative pt-0.5"
-                        style={{ backgroundColor: cellBgColor, padding: isDayToday ? '2px 1px 2px 3px' : '2px 1px 2px 1px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', zIndex: 3 }}
+                        style={{ backgroundColor: cellBgColor, padding: isDayToday ? '2px 1px 2px 3px' : '2px 1px 2px 1px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
                           e.preventDefault();
@@ -28097,7 +28097,7 @@ export default function Dashboard() {
                           );
                         })()}
                         
-                        <div className={`flex flex-col gap-0.5${cellHasScroll ? ' course-cell-scroll' : ''}`} style={{ overflowY: cellHasScroll ? 'auto' : 'hidden', overflowX: 'hidden', flex: 1, minHeight: 0, ...(isDayToday ? { paddingTop: '18px' } : {}) }}>
+                        <div className={`flex flex-col gap-0.5${cellHasScroll ? ' course-cell-scroll' : ''}`} style={{ overflowY: cellHasScroll ? 'auto' : 'hidden', overflowX: 'hidden', flex: 1, minHeight: 0, position: 'relative', zIndex: 6, ...(isDayToday ? { paddingTop: '18px' } : {}) }}>
                         {/* Course-associated projects */}
                         {allProjects.filter(proj => {
                           if (!proj.courseName) return false;
@@ -28515,7 +28515,7 @@ export default function Dashboard() {
                     const barH = 3;
                     const barGap = 14;
                     return (
-                      <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 2 }}>
+                      <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 5 }}>
                         <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, top: 0, overflowY: 'auto', overflowX: 'hidden', pointerEvents: 'none', scrollbarWidth: 'none' as any }}>
                           <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', minHeight: '100%' }}>
                             {courseBars.filter(cd => cd.daysLeft > 0).map((cd, idx) => {
@@ -28733,7 +28733,7 @@ export default function Dashboard() {
                       const barH = 3;
                       const barGap = 14;
                       return (
-                        <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 2 }}>
+                        <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 5 }}>
                           <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, top: 0, overflowY: 'auto', overflowX: 'hidden', pointerEvents: 'none', scrollbarWidth: 'none' as any }}>
                             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', minHeight: '100%' }}>
                               {otherBars.filter(cd => cd.daysLeft > 0).map((cd, idx) => {
