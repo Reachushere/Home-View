@@ -16250,7 +16250,9 @@ document.body.removeChild(a);
       };
 
       for (const semester of allSemesters) {
-        const courseCodes = [semester.course1Code, semester.course2Code, semester.course3Code].filter(Boolean) as string[];
+        const courseCodes = [semester.course1Code, semester.course2Code, semester.course3Code]
+          .filter(Boolean)
+          .filter(c => !c!.toUpperCase().startsWith('TBD')) as string[];
         if (courseCodes.length === 0) continue;
 
         const yearMatch = semester.semesterName?.match(/\d{4}/);
