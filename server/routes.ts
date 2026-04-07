@@ -3623,9 +3623,24 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         fileBuffer = contentStream;
       } else if (contentStream instanceof ArrayBuffer) {
         fileBuffer = Buffer.from(contentStream);
+      } else if (typeof ReadableStream !== 'undefined' && contentStream instanceof ReadableStream) {
+        const reader = contentStream.getReader();
+        const chunks: Uint8Array[] = [];
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          chunks.push(value);
+        }
+        fileBuffer = Buffer.concat(chunks);
       } else if (contentStream.arrayBuffer) {
         fileBuffer = Buffer.from(await contentStream.arrayBuffer());
       } else if (contentStream.pipe) {
+        const chunks: Buffer[] = [];
+        for await (const chunk of contentStream) {
+          chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+        }
+        fileBuffer = Buffer.concat(chunks);
+      } else if (contentStream[Symbol.asyncIterator]) {
         const chunks: Buffer[] = [];
         for await (const chunk of contentStream) {
           chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
@@ -3727,7 +3742,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         const code = activeSemester[`course${i}Code` as keyof typeof activeSemester];
         const name = activeSemester[`course${i}Name` as keyof typeof activeSemester];
         if (String(code || "").toUpperCase() === courseCode.toUpperCase()) {
-          courseFullName = `${code} - ${name}`;
+          const nameStr = String(name || "");
+          const codeStr = String(code || "");
+          if (nameStr.toUpperCase().startsWith(codeStr.toUpperCase())) {
+            courseFullName = nameStr;
+          } else {
+            courseFullName = `${codeStr} - ${nameStr}`;
+          }
           break;
         }
       }
