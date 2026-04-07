@@ -13166,11 +13166,13 @@ document.body.removeChild(a);
           console.warn(`[Cat Lights] Failed to stop Echo speakers: ${e.message}`);
         }
         await Promise.allSettled([
+          haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'am force-stop com.amazon.cloud9' }, 'Stop Silk on FireStick'),
+          haServiceCallSafe('androidtv/adb_command', { entity_id: 'media_player.tablet_cat', command: 'am force-stop com.amazon.cloud9' }, 'Stop Silk on Cat Tablet'),
           haServiceCallSafe('media_player/turn_off', { entity_id: FIRE_STICK_ADB_ENTITY }, 'Stop TV FireStick'),
           haServiceCallSafe('media_player/turn_off', { entity_id: CAT_TV_ENTITY }, 'Stop TV Samsung'),
         ]);
         stopped.push("tv");
-        console.log(`[Cat Lights] Fire Stick + Samsung TV turn-off sent`);
+        console.log(`[Cat Lights] Silk force-stopped + Fire Stick + Samsung TV turn-off sent`);
         if (catLightsPromptSession === offSession) {
           catLightsPromptPending = false;
           console.log(`[Cat Lights] Cleared promptPending (session ${offSession} still current)`);
