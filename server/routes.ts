@@ -10511,7 +10511,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       const { listOneDriveItems } = await import("./onedrive");
       const fs = await import("fs");
       const path = await import("path");
-      const localUploadsDir = path.join(process.cwd(), 'dist', 'public', 'uploads');
+      const localUploadsDir = path.join(process.cwd(), 'persistent-uploads');
       if (!fs.existsSync(localUploadsDir)) fs.mkdirSync(localUploadsDir, { recursive: true });
       const courses = await getSemesterOneDriveCourses(semesterSettings);
       console.log(`${logPrefix} Syncing OneDrive for ${courses.length} courses, week ${currentWeekNumber}`);
@@ -12135,12 +12135,52 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         const fs = await import("fs");
         const path = await import("path");
         const localFileName = file.objectPath.replace('/local/uploads/', '');
-        const localFilePath = path.join(process.cwd(), 'dist', 'public', 'uploads', localFileName);
+        const persistentPath = path.join(process.cwd(), 'persistent-uploads', localFileName);
+        const legacyPath = path.join(process.cwd(), 'dist', 'public', 'uploads', localFileName);
+        const localFilePath = fs.existsSync(persistentPath) ? persistentPath : legacyPath;
         if (fs.existsSync(localFilePath)) {
           buffer = fs.readFileSync(localFilePath);
           console.log(`[ExtractText] Read ${buffer.length} bytes from local file: ${localFileName}`);
         } else {
-          console.error(`[ExtractText] Local file not found: ${localFilePath}`);
+          console.log(`[ExtractText] Local file not found, attempting OneDrive re-download for: ${file.originalName}`);
+          try {
+            const folder = file.folder || '';
+            const weekMatch = folder.match(/week-(\d+)-([a-z0-9]+)-(module|reading)/i);
+            if (weekMatch) {
+              const weekNum = parseInt(weekMatch[1], 10);
+              const courseCode = weekMatch[2].toUpperCase();
+              const subType = weekMatch[3];
+              const semesterSettings = await storage.getActiveSemesterSettings();
+              const courses = await getSemesterOneDriveCourses(semesterSettings);
+              const matchingCourse = courses.find((c: any) => c.code.replace(/\s/g, '').toUpperCase() === courseCode);
+              if (matchingCourse) {
+                const { listOneDriveItems } = await import("./onedrive");
+                const weekFolders = await listOneDriveItems(matchingCourse.path);
+                const weekFolder = weekFolders.find((f: any) => f.type === 'folder' && f.name.match(/Week\s+(\d+)/i)?.[1] && parseInt(f.name.match(/Week\s+(\d+)/i)![1], 10) === weekNum);
+                if (weekFolder) {
+                  const weekContents = await listOneDriveItems(weekFolder.path);
+                  const subFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase() === subType);
+                  if (subFolder) {
+                    const subFiles = await listOneDriveItems(subFolder.path);
+                    const target = subFiles.find((sf: any) => sf.type === 'file' && sf.name === file.originalName);
+                    if (target?.downloadUrl) {
+                      const dlRes = await fetch(target.downloadUrl);
+                      if (dlRes.ok) {
+                        buffer = Buffer.from(await dlRes.arrayBuffer());
+                        const persistDir = path.join(process.cwd(), 'persistent-uploads');
+                        if (!fs.existsSync(persistDir)) fs.mkdirSync(persistDir, { recursive: true });
+                        fs.writeFileSync(path.join(persistDir, localFileName), buffer);
+                        console.log(`[ExtractText] Re-downloaded ${buffer.length} bytes from OneDrive and saved to persistent-uploads`);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          } catch (redownloadErr: any) {
+            console.error(`[ExtractText] OneDrive re-download failed: ${redownloadErr.message}`);
+          }
+          if (!buffer) console.error(`[ExtractText] Local file not found and re-download failed: ${localFileName}`);
         }
       } else if (file.objectPath?.startsWith('/School/')) {
         console.log(`[ExtractText] Downloading from OneDrive path: ${file.objectPath}`);
