@@ -28274,7 +28274,7 @@ export default function Dashboard() {
                   const barGap = 18;
                   const totalBarsHeight = deduped.length * barGap;
                   return (
-                    <div ref={countdownOverlayRef} data-bars-height={String(totalBarsHeight)} style={{ position: 'sticky', top: `calc(50% - ${Math.round(totalBarsHeight / 2)}px)`, zIndex: 50, pointerEvents: 'none', overflow: 'visible', height: 0 }} data-testid="countdown-bars-overlay">
+                    <div ref={countdownOverlayRef} data-bars-height={String(totalBarsHeight)} style={{ position: 'sticky', top: `calc(50% - ${Math.round(totalBarsHeight / 2)}px)`, zIndex: 1, pointerEvents: 'none', overflow: 'visible', height: 0 }} data-testid="countdown-bars-overlay">
                       <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, top: 0, overflow: 'visible' }}>
                         <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, top: 0, overflow: 'visible' }}>
                         {deduped.map((cd, idx) => {
@@ -28286,7 +28286,7 @@ export default function Dashboard() {
                           const barHPx = needsPulse ? 4 : barH;
                           const yOff = idx * barGap;
                           return (
-                            <div key={`cbar-main-${t.id}`} className="countdown-bar-wrapper" style={{ position: 'absolute', left: '0px', right: 0, top: `${yOff}px`, height: `${barGap}px`, pointerEvents: 'auto', cursor: 'default', overflow: 'visible' }} onDoubleClick={() => setEditingTask(t as any)} data-testid={`countdown-bar-${t.id}`}>
+                            <div key={`cbar-main-${t.id}`} className="countdown-bar-wrapper" style={{ position: 'absolute', left: '0px', right: 0, top: `${yOff}px`, height: `${barGap}px`, pointerEvents: 'auto', cursor: 'default', overflow: 'visible', zIndex: 1 }} onMouseEnter={(e) => { const overlay = e.currentTarget.closest('[data-testid="countdown-bars-overlay"]') as HTMLElement; if (overlay) overlay.style.zIndex = '60'; }} onMouseLeave={(e) => { const overlay = e.currentTarget.closest('[data-testid="countdown-bars-overlay"]') as HTMLElement; if (overlay) overlay.style.zIndex = '1'; }} onDoubleClick={() => setEditingTask(t as any)} data-testid={`countdown-bar-${t.id}`}>
                               <div style={{ position: 'absolute', left: '0px', top: '2px', right: 0, height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
                                 <div style={{ width: '10px', minWidth: '10px', height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
                                 <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
