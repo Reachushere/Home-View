@@ -29528,6 +29528,29 @@ export default function Dashboard() {
                       }
                     }
                   }
+                  for (const item of allMultiHour) {
+                    const oi = overlapInfo.get(item.task.id);
+                    if (!oi) continue;
+                    const day = weekDays[item.dayIdx];
+                    let hasSingleHourTasks = false;
+                    for (let h = item.startHour; h <= item.endHour && !hasSingleHourTasks; h++) {
+                      if (h === item.endHour && item.endMin === 0) break;
+                      const hTasks = getTasksForHour(day, h);
+                      const singleHour = hTasks.filter(t => {
+                        if (t.id === item.task.id) return false;
+                        if (t.eventStartTime && t.eventEndTime) {
+                          const [sH] = t.eventStartTime.split(':').map(Number);
+                          const [eH] = t.eventEndTime.split(':').map(Number);
+                          if (eH > sH) return false;
+                        }
+                        return true;
+                      });
+                      if (singleHour.length > 0) hasSingleHourTasks = true;
+                    }
+                    if (hasSingleHourTasks) {
+                      overlapInfo.set(item.task.id, { col: oi.col + 1, totalCols: oi.totalCols + 1 });
+                    }
+                  }
                   return allMultiHour.map(({ task, dayIdx, startHour, startMin, endHour, endMin }) => {
                   const oi = overlapInfo.get(task.id) || { col: 0, totalCols: 1 };
                   const calendarStartHour = 0;
