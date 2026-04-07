@@ -23815,7 +23815,7 @@ export default function Dashboard() {
                     return now <= w2026End && ['CPPA122', 'CFNF400', 'CASL101'].includes(code.toUpperCase().replace(/\s/g, ''));
                   };
 
-                  const renderCourseRow = (semCourse: { code: string; name: string; fullName?: string; period: string }, semKey: string, totalInSem: number) => {
+                  const renderCourseRow = (semCourse: { code: string; name: string; fullName?: string; period: string }, semKey: string, totalInSem: number, coursePositionInSem: number = 0) => {
                     const codeNorm = semCourse.code.toUpperCase().replace(/\s/g, '');
                     const currentCourse = currentCoursesMap.get(codeNorm);
                     const pastEntry = allPastEntries.get(codeNorm);
@@ -23830,15 +23830,57 @@ export default function Dashboard() {
                       if (currentCourse) {
                         return currentCourse.colorEnd ? `linear-gradient(to right, ${currentCourse.color}, ${currentCourse.colorEnd})` : currentCourse.color;
                       }
+                      const semDefaultDotColors: Record<string, string[]> = {
+                        'ss2025': ['#e67e22', '#2ecc71', '#9b59b6'],
+                        'f2025': ['#e74c3c', '#3498db', '#f1c40f'],
+                        'w2026': ['#22c55e', '#3b82f6', '#a855f7'],
+                        'ss2026': ['#f97316', '#06b6d4', '#ec4899'],
+                        'f2026': ['#dc2626', '#8b5cf6', '#14b8a6'],
+                        'w2027': ['#0ea5e9', '#f59e0b', '#d946ef'],
+                        'ss2027': ['#84cc16', '#6366f1', '#f43f5e'],
+                        'f2027': ['#f472b6', '#10b981', '#7c3aed'],
+                        'w2028': ['#eab308', '#0891b2', '#be185d'],
+                        'ss2028': ['#4ade80', '#e11d48', '#2563eb'],
+                        'f2028': ['#c084fc', '#ea580c', '#059669'],
+                        'w2029': ['#38bdf8', '#e879f9', '#65a30d'],
+                      };
                       if (allSemesterSettings) {
-                        const cc = semCourse.code.replace(/\s/g, '');
-                        for (const sem of allSemesterSettings) {
-                          for (let i = 1; i <= 3; i++) {
-                            const sc = ((sem as any)[`course${i}Code`] || '').replace(/\s/g, '');
-                            if (sc.toUpperCase() === cc.toUpperCase()) {
-                              const c = (sem as any)[`course${i}Color`];
-                              const ce = (sem as any)[`course${i}ColorEnd`];
-                              if (c) return ce ? `linear-gradient(to right, ${c}, ${ce})` : c;
+                        const semKeyToDbType: Record<string, { type: string; year: number }> = {
+                          'ss2025': { type: 'spring_summer', year: 2025 }, 'f2025': { type: 'fall', year: 2025 },
+                          'w2026': { type: 'winter', year: 2026 }, 'ss2026': { type: 'spring_summer', year: 2026 },
+                          'f2026': { type: 'fall', year: 2026 }, 'w2027': { type: 'winter', year: 2027 },
+                          'ss2027': { type: 'spring_summer', year: 2027 }, 'f2027': { type: 'fall', year: 2027 },
+                          'w2028': { type: 'winter', year: 2028 }, 'ss2028': { type: 'spring_summer', year: 2028 },
+                          'f2028': { type: 'fall', year: 2028 }, 'w2029': { type: 'winter', year: 2029 },
+                        };
+                        const dbMapping = semKeyToDbType[semKey];
+                        if (dbMapping) {
+                          const thisSem = allSemesterSettings.find((s: any) => {
+                            const yearMatch = s.semesterName?.match(/\d{4}/);
+                            const semYear = yearMatch ? parseInt(yearMatch[0]) : 0;
+                            return s.semesterType === dbMapping.type && semYear === dbMapping.year;
+                          });
+                          if (thisSem) {
+                            const cc = semCourse.code.replace(/\s/g, '').toUpperCase();
+                            const isTBDCourse = cc.startsWith('TBD');
+                            if (isTBDCourse) {
+                              const slotIdx = coursePositionInSem + 1;
+                              if (slotIdx >= 1 && slotIdx <= 3) {
+                                const c = (thisSem as any)[`course${slotIdx}Color`];
+                                const ce = (thisSem as any)[`course${slotIdx}ColorEnd`];
+                                if (c) return ce ? `linear-gradient(to right, ${c}, ${ce})` : c;
+                              }
+                            } else {
+                              for (let i = 1; i <= 3; i++) {
+                                const sc = ((thisSem as any)[`course${i}Code`] || '').replace(/\s/g, '').toUpperCase();
+                                if (sc === cc) {
+                                  const c = (thisSem as any)[`course${i}Color`];
+                                  const ce = (thisSem as any)[`course${i}ColorEnd`];
+                                  if (c) return ce ? `linear-gradient(to right, ${c}, ${ce})` : c;
+                                  const palette = semDefaultDotColors[semKey] || ['#6b7280', '#9ca3af', '#d1d5db'];
+                                  return palette[(i - 1) % palette.length];
+                                }
+                              }
                             }
                           }
                         }
@@ -23854,7 +23896,8 @@ export default function Dashboard() {
                           }
                         }
                       } catch {}
-                      return isCurrentCourse ? '#22c55e' : '#1e40af';
+                      const palette = semDefaultDotColors[semKey] || ['#6b7280', '#9ca3af', '#d1d5db'];
+                      return palette[coursePositionInSem % palette.length] || '#6b7280';
                     })();
                     const isSS = semKey.startsWith('ss');
                     const courseSSterm = (() => {
@@ -24065,7 +24108,7 @@ export default function Dashboard() {
                           const isCurrentSem = sem.key === currentSemKey;
                           const colMap: Record<string, number> = { 'ss2025': 2, 'f2025': 3 };
                           return (
-                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'transparent', borderColor: isCurrentSem ? '#1e90ff' : 'rgba(255,255,255,0.45)', borderWidth: isCurrentSem ? '3px' : '1px', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + 12 + 3 * 40}px`, alignSelf: 'stretch' }}
+                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(10,15,30,0.85)' : 'rgba(255,255,255,0.45)', borderWidth: isCurrentSem ? '3px' : '1px', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + 12 + 3 * 40}px`, alignSelf: 'stretch' }}
                               onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; e.currentTarget.style.boxShadow = '0 0 8px rgba(255,255,255,0.5)'; }}
                               onDragLeave={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
                               onDrop={(e) => {
@@ -24101,23 +24144,9 @@ export default function Dashboard() {
                                 const semHasStarted = semDef ? new Date() >= new Date(semDef.start) : false;
                                 const allCoursesAdded = semDef ? semDef.codes.every(c => allAssignmentsAddedMap[c] || allAssignmentsAddedMap[c.toUpperCase()]) : true;
                                 const needsRedBorder = isCurrentSem && semHasStarted && !allCoursesAdded;
-                                const borderCol = isCurrentSem ? (needsRedBorder ? '#ef4444' : '#1e90ff') : isPast || isEnded ? 'rgba(150,150,150,0.5)' : 'rgba(255,255,255,0.3)';
-                                const semGradients: Record<string, string> = {
-                                  'w2026': 'linear-gradient(180deg, rgba(30,60,120,0.55) 0%, rgba(15,30,60,0.35) 100%)',
-                                  'ss2026': 'linear-gradient(180deg, rgba(120,80,30,0.55) 0%, rgba(60,40,15,0.35) 100%)',
-                                  'f2026': 'linear-gradient(180deg, rgba(120,40,20,0.55) 0%, rgba(60,20,10,0.35) 100%)',
-                                  'w2027': 'linear-gradient(180deg, rgba(20,80,100,0.55) 0%, rgba(10,40,50,0.35) 100%)',
-                                  'ss2027': 'linear-gradient(180deg, rgba(100,60,120,0.55) 0%, rgba(50,30,60,0.35) 100%)',
-                                  'f2027': 'linear-gradient(180deg, rgba(100,80,20,0.55) 0%, rgba(50,40,10,0.35) 100%)',
-                                  'w2028': 'linear-gradient(180deg, rgba(20,100,60,0.55) 0%, rgba(10,50,30,0.35) 100%)',
-                                  'ss2028': 'linear-gradient(180deg, rgba(80,30,100,0.55) 0%, rgba(40,15,50,0.35) 100%)',
-                                  'f2028': 'linear-gradient(180deg, rgba(120,60,40,0.55) 0%, rgba(60,30,20,0.35) 100%)',
-                                  'w2029': 'linear-gradient(180deg, rgba(40,80,120,0.55) 0%, rgba(20,40,60,0.35) 100%)',
-                                  'ss2025': 'linear-gradient(180deg, rgba(60,100,40,0.55) 0%, rgba(30,50,20,0.35) 100%)',
-                                  'f2025': 'linear-gradient(180deg, rgba(100,50,80,0.55) 0%, rgba(50,25,40,0.35) 100%)',
-                                };
-                                const bgCol = isCurrentSem ? 'rgba(10,15,30,0.85)' : isPast || isEnded ? 'rgba(160,160,160,0.35)' : (semGradients[sem.key] || 'transparent');
-                                const shadow = isCurrentSem ? (needsRedBorder ? { boxShadow: '0 0 6px rgba(239,68,68,0.6), 0 0 12px rgba(239,68,68,0.4), 0 0 18px rgba(239,68,68,0.3)' } : { boxShadow: '0 0 6px rgba(30,144,255,0.5), 0 0 12px rgba(30,144,255,0.3), 0 0 18px rgba(30,144,255,0.2)' }) : {};
+                                const borderCol = isCurrentSem ? (needsRedBorder ? '#ef4444' : 'rgba(10,15,30,0.85)') : isPast || isEnded ? 'rgba(150,150,150,0.5)' : 'rgba(255,255,255,0.3)';
+                                const bgCol = isCurrentSem ? 'rgba(10,15,30,0.85)' : isPast || isEnded ? 'rgba(160,160,160,0.35)' : 'transparent';
+                                const shadow = isCurrentSem ? (needsRedBorder ? { boxShadow: '0 0 6px rgba(239,68,68,0.6), 0 0 12px rgba(239,68,68,0.4), 0 0 18px rgba(239,68,68,0.3)' } : {}) : {};
                                 return { background: bgCol, borderColor: borderCol, ...shadow, position: 'relative' as const, borderWidth: isCurrentSem ? '2px' : undefined };
                               })()}>
                                 <div className="px-2 py-1.5 flex items-center justify-between">
@@ -24247,7 +24276,7 @@ export default function Dashboard() {
                                   if (sa === 'A' && sb === 'B') return -1;
                                   if (sa === 'B' && sb === 'A') return 1;
                                   return 0;
-                                }).map(c => renderCourseRow(c, sem.key, sem.courses.length))}
+                                }).map((c, idx) => renderCourseRow(c, sem.key, sem.courses.length, idx))}
                                 {sem.courses.length === 0 && <div className="text-[9px] text-white/40 text-center py-3">No courses yet</div>}
                               </div>
                             </div>
@@ -27449,11 +27478,12 @@ export default function Dashboard() {
                         if (assignedCourses.some(ac => ac.code?.replace(/\s/g, '').toUpperCase() === codeNorm)) continue;
                         const isTBD = codeNorm.startsWith('TBD');
                         dbCourses.push({
-                          code,
+                          code: isTBD ? `TBD_SLOT${ci}` : code,
                           name: isTBD ? 'TBD' : code,
                           fullName: (dbSem as any)[`course${ci}Name`] || 'To Be Determined',
                           period: '',
-                        });
+                          _dbSlot: ci,
+                        } as any);
                       }
                     }
                   }
@@ -27469,38 +27499,57 @@ export default function Dashboard() {
                       ? new Date(ssCourseOverrides[overrideKey].endDate + 'T23:59:59')
                       : semEndDate;
                     if (currentWeekEnd < courseStart || currentWeekStart > courseEndRaw) continue;
-                    if (allDisplayCourses.some(c => c.name.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') === codeNorm)) continue;
+                    const isTBDSlot = codeNorm.startsWith('TBD_SLOT') || codeNorm.startsWith('TBD');
+                    const actualCodeNorm = isTBDSlot ? 'TBD' : codeNorm;
+                    if (!isTBDSlot && allDisplayCourses.some(c => c.name.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') === codeNorm)) continue;
                     const matchedCourse = coursesData.courses.find(c => {
                       const cc = c.name?.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '');
-                      return cc === codeNorm;
+                      return cc === actualCodeNorm;
                     });
                     const semSettings = (allSemesterSettingsRef.current || []).find((s: any) => {
                       for (let ci = 1; ci <= 3; ci++) {
                         const cField = ((s as any)[`course${ci}Code`] || '').replace(/\s/g, '').toUpperCase();
-                        if (cField === codeNorm) return true;
+                        if (cField === actualCodeNorm) return true;
                       }
                       return false;
                     });
-                    const semCourseIdx = semSettings ? (() => {
+                    const semCourseIdx = (sc as any)._dbSlot ? (sc as any)._dbSlot : semSettings ? (() => {
                       for (let ci = 1; ci <= 3; ci++) {
                         const cField = ((semSettings as any)[`course${ci}Code`] || '').replace(/\s/g, '').toUpperCase();
-                        if (cField === codeNorm) return ci;
+                        if (cField === actualCodeNorm) return ci;
                       }
                       return 0;
                     })() : 0;
                     const semPrefix = semCourseIdx > 0 ? `course${semCourseIdx}` : '';
-                    const semColor = semPrefix ? (semSettings as any)[`${semPrefix}Color`] : '';
-                    const semColorEnd = semPrefix ? (semSettings as any)[`${semPrefix}ColorEnd`] : '';
-                    const semColorStops = semPrefix ? (semSettings as any)[`${semPrefix}ColorStops`] : '';
-                    const semBorderColor = semPrefix ? (semSettings as any)[`${semPrefix}BorderColor`] : '';
-                    const semCourseRowColor = semPrefix ? (semSettings as any)[`${semPrefix}CourseRowColor`] : '';
-                    const semTaskBgColor = semPrefix ? (semSettings as any)[`${semPrefix}TaskBgColor`] : '';
-                    const semCourseFontColor = semPrefix ? (semSettings as any)[`${semPrefix}CourseFontColor`] : '';
-                    const fullName = sc.fullName || matchedCourse?.name?.split(' - ').slice(1).join(' - ') || (() => { for (const defs of Object.values(defaultSemesterCourses)) { const found = defs.find(d => d.code.replace(/\s/g, '').toUpperCase() === codeNorm); if (found?.fullName) return found.fullName; } return ''; })();
+                    const semColor = semPrefix && semSettings ? (semSettings as any)[`${semPrefix}Color`] : '';
+                    const semColorEnd = semPrefix && semSettings ? (semSettings as any)[`${semPrefix}ColorEnd`] : '';
+                    const semColorStops = semPrefix && semSettings ? (semSettings as any)[`${semPrefix}ColorStops`] : '';
+                    const semBorderColor = semPrefix && semSettings ? (semSettings as any)[`${semPrefix}BorderColor`] : '';
+                    const semCourseRowColor = semPrefix && semSettings ? (semSettings as any)[`${semPrefix}CourseRowColor`] : '';
+                    const semTaskBgColor = semPrefix && semSettings ? (semSettings as any)[`${semPrefix}TaskBgColor`] : '';
+                    const semCourseFontColor = semPrefix && semSettings ? (semSettings as any)[`${semPrefix}CourseFontColor`] : '';
+                    const fullName = sc.fullName || matchedCourse?.name?.split(' - ').slice(1).join(' - ') || (() => { for (const defs of Object.values(defaultSemesterCourses)) { const found = defs.find(d => d.code.replace(/\s/g, '').toUpperCase() === actualCodeNorm); if (found?.fullName) return found.fullName; } return ''; })();
+                    const semDefaultPalettes: Record<string, Array<{ start: string; end: string }>> = {
+                      'ss2025': [{ start: '#e67e22', end: '#f0b778' }, { start: '#2ecc71', end: '#a3e4b8' }, { start: '#9b59b6', end: '#d2a8e0' }],
+                      'f2025': [{ start: '#e74c3c', end: '#f1a09a' }, { start: '#3498db', end: '#89c4e8' }, { start: '#f1c40f', end: '#f7dc6f' }],
+                      'w2026': [{ start: '#22c55e', end: '#AACD9F' }, { start: '#3b82f6', end: '#FFC3C6' }, { start: '#a855f7', end: '#E9C6F0' }],
+                      'ss2026': [{ start: '#f97316', end: '#fdba74' }, { start: '#06b6d4', end: '#67e8f9' }, { start: '#ec4899', end: '#f9a8d4' }],
+                      'f2026': [{ start: '#dc2626', end: '#fca5a5' }, { start: '#8b5cf6', end: '#c4b5fd' }, { start: '#14b8a6', end: '#5eead4' }],
+                      'w2027': [{ start: '#0ea5e9', end: '#7dd3fc' }, { start: '#f59e0b', end: '#fcd34d' }, { start: '#d946ef', end: '#f0abfc' }],
+                      'ss2027': [{ start: '#84cc16', end: '#bef264' }, { start: '#6366f1', end: '#a5b4fc' }, { start: '#f43f5e', end: '#fda4af' }],
+                      'f2027': [{ start: '#f472b6', end: '#fbcfe8' }, { start: '#10b981', end: '#6ee7b7' }, { start: '#7c3aed', end: '#c4b5fd' }],
+                      'w2028': [{ start: '#eab308', end: '#fde047' }, { start: '#0891b2', end: '#67e8f9' }, { start: '#be185d', end: '#f9a8d4' }],
+                      'ss2028': [{ start: '#4ade80', end: '#bbf7d0' }, { start: '#e11d48', end: '#fda4af' }, { start: '#2563eb', end: '#93c5fd' }],
+                      'f2028': [{ start: '#c084fc', end: '#e9d5ff' }, { start: '#ea580c', end: '#fdba74' }, { start: '#059669', end: '#6ee7b7' }],
+                      'w2029': [{ start: '#38bdf8', end: '#bae6fd' }, { start: '#e879f9', end: '#f5d0fe' }, { start: '#65a30d', end: '#bef264' }],
+                    };
+                    const courseIdxInSem = courses.indexOf(sc);
+                    const semPalette = semDefaultPalettes[semKey] || [{ start: '#6b7280', end: '#9ca3af' }];
+                    const defaultPair = semPalette[courseIdxInSem >= 0 ? courseIdxInSem % semPalette.length : 0] || { start: '#6b7280', end: '#9ca3af' };
                     allDisplayCourses.push({
-                      name: fullName ? `${codeNorm} - ${fullName}` : codeNorm,
-                      color: semColor || matchedCourse?.color || '#6b7280',
-                      colorEnd: semColorEnd || matchedCourse?.colorEnd || '#9ca3af',
+                      name: fullName ? `${actualCodeNorm} - ${fullName}` : actualCodeNorm,
+                      color: semColor || matchedCourse?.color || defaultPair.start,
+                      colorEnd: semColorEnd || matchedCourse?.colorEnd || defaultPair.end,
                       colorStops: semColorStops || matchedCourse?.colorStops || '',
                       borderColor: semBorderColor || matchedCourse?.borderColor || '',
                       courseRowColor: semCourseRowColor || matchedCourse?.courseRowColor || '',
