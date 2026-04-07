@@ -2582,6 +2582,12 @@ input[type="date"]::-webkit-datetime-edit-year-field {
   z-index: 46 !important;
 }
 
+[data-testid="countdown-bars-overlay"].bars-hovered .countdown-bar-wrapper > div:first-child {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 3px;
+  box-shadow: 0 0 3px rgba(0,0,0,0.08);
+}
+
 .side-tab-hover-left:hover {
   left: 0px !important;
 }
