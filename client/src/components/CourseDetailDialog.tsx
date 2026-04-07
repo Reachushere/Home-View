@@ -3558,6 +3558,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                               ? 'bg-green-500/30 border-green-500/50 text-green-300'
                               : 'bg-white/5 border-white/20 text-white/30 hover:border-white/40'
                           }`}
+                          title={isConfirmed ? 'Week confirmed — click to unconfirm' : 'Click to confirm week'}
                           data-testid={`button-confirm-week-${weekNum}`}
                         >
                           {isConfirmed && <Check className="h-3 w-3" />}
@@ -3718,6 +3719,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                                       complete ? "bg-green-500 border-green-500" : "border-white/30 hover:border-white/50"
                                     } ${isEditingInfo ? 'cursor-pointer' : ''}`}
                                     onClick={() => { if (isEditingInfo) handleModuleCheckToggle(file, !complete); }}
+                                    title={complete ? 'Listened — click to mark incomplete' : 'Click to mark as listened'}
                                     data-testid={`module-inline-check-${file.id}`}
                                   >
                                     {complete && <Check className="h-3 w-3 text-white" />}
@@ -3854,6 +3856,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                               ? 'bg-green-500/30 border-green-500/50 text-green-300'
                               : 'bg-white/5 border-white/20 text-white/30 hover:border-white/40'
                           }`}
+                          title={isConfirmed ? 'Week confirmed — click to unconfirm' : 'Click to confirm week'}
                           data-testid={`button-confirm-week-${weekNum}`}
                         >
                           {isConfirmed && <Check className="h-3 w-3" />}
