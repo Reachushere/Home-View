@@ -27424,7 +27424,40 @@ export default function Dashboard() {
                   const semStartDate = new Date(semStart + 'T00:00:00');
                   const semEndDate = new Date(semEnd + 'T23:59:59');
                   if (currentWeekEnd < semStartDate || currentWeekStart > semEndDate) continue;
-                  const courses = semesterCourseAssignments[semKey] || [];
+                  const assignedCourses = semesterCourseAssignments[semKey] || [];
+                  const dbCourses: typeof assignedCourses = [];
+                  const semKeyToDbTypeLocal: Record<string, { type: string; year: number }> = {
+                    'ss2025': { type: 'spring_summer', year: 2025 }, 'f2025': { type: 'fall', year: 2025 },
+                    'w2026': { type: 'winter', year: 2026 }, 'ss2026': { type: 'spring_summer', year: 2026 },
+                    'f2026': { type: 'fall', year: 2026 }, 'w2027': { type: 'winter', year: 2027 },
+                    'ss2027': { type: 'spring_summer', year: 2027 }, 'f2027': { type: 'fall', year: 2027 },
+                    'w2028': { type: 'winter', year: 2028 }, 'ss2028': { type: 'spring_summer', year: 2028 },
+                    'f2028': { type: 'fall', year: 2028 }, 'w2029': { type: 'winter', year: 2029 },
+                  };
+                  const dbMapping = semKeyToDbTypeLocal[semKey];
+                  if (dbMapping && allSemesterSettingsRef.current) {
+                    const dbSem = allSemesterSettingsRef.current.find((s: any) => {
+                      const yearMatch = s.semesterName?.match(/\d{4}/);
+                      const semYear = yearMatch ? parseInt(yearMatch[0]) : 0;
+                      return s.semesterType === dbMapping.type && semYear === dbMapping.year;
+                    });
+                    if (dbSem) {
+                      for (let ci = 1; ci <= 3; ci++) {
+                        const code = ((dbSem as any)[`course${ci}Code`] || '').trim();
+                        if (!code) continue;
+                        const codeNorm = code.replace(/\s/g, '').toUpperCase();
+                        if (assignedCourses.some(ac => ac.code?.replace(/\s/g, '').toUpperCase() === codeNorm)) continue;
+                        const isTBD = codeNorm.startsWith('TBD');
+                        dbCourses.push({
+                          code,
+                          name: isTBD ? 'TBD' : code,
+                          fullName: (dbSem as any)[`course${ci}Name`] || 'To Be Determined',
+                          period: '',
+                        });
+                      }
+                    }
+                  }
+                  const courses = [...assignedCourses, ...dbCourses];
                   for (const sc of courses) {
                     if (!sc.code) continue;
                     const codeNorm = sc.code.replace(/\s/g, '').toUpperCase();
@@ -31748,7 +31781,7 @@ export default function Dashboard() {
                       <span className="text-[9px] font-bold text-black/60 text-center" style={{ lineHeight: '1.6' }}>N/A</span>
                     </div>
                   ) : (
-                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, borderRadius: '6px', overflow: 'hidden', gap: '2px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, overflow: 'hidden', gap: '0px' }}>
                       {[
                         { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `play-module-${pd.courseCode.toLowerCase()}`, testUpload: `upload-module-${pd.courseCode.toLowerCase()}`, bg: pd.progressStartColor || getCourseGradientColors(pd.courseCode).start, dark: true, fontOverride: pd.courseFontColor || '#fff' },
                         { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, bg: pd.progressEndColor || getCourseGradientColors(pd.courseCode).end, dark: false, fontOverride: '#000' },
@@ -31769,7 +31802,7 @@ export default function Dashboard() {
                             onDragEnter={(e) => { e.preventDefault(); e.stopPropagation(); setHwDragOverTarget(dragKey); }}
                             onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); if (hwDragOverTarget === dragKey) setHwDragOverTarget(null); }}
                             onDrop={(e) => { e.preventDefault(); e.stopPropagation(); setHwDragOverTarget(null); const file = e.dataTransfer.files?.[0]; if (file) item.drop(file); }}
-                            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', gap: '1px', position: 'relative', flex: '1 1 0', alignSelf: 'stretch', minWidth: 0, backgroundColor: item.bg, padding: '4px 1px 3px', borderRadius: '6px', overflow: 'visible', outline: isDragOver ? '2px solid rgba(255,255,255,0.8)' : 'none', outlineOffset: '-2px', transition: 'outline 0.15s ease', opacity: 1, isolation: 'isolate' }}
+                            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', gap: '1px', position: 'relative', flex: '1 1 0', alignSelf: 'stretch', minWidth: 0, backgroundColor: item.bg, padding: '4px 1px 3px', borderRadius: '0px', overflow: 'visible', outline: isDragOver ? '2px solid rgba(255,255,255,0.8)' : 'none', outlineOffset: '-2px', transition: 'outline 0.15s ease', opacity: 1, isolation: 'isolate', borderRight: item.type === 'module' ? '0.5px solid rgba(0,0,0,0.15)' : 'none' }}
                             data-testid={`drop-${item.type}-${pd.courseCode.toLowerCase()}`}>
                             <div style={{ position: 'absolute', top: '2px', left: 0, right: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2px', zIndex: 5, flexWrap: 'nowrap', overflow: 'hidden' }}>
                               <span style={{ fontSize: '10px', fontWeight: 400, color: textColor, letterSpacing: '0.5px', fontFamily: "'Raleway', sans-serif", whiteSpace: 'nowrap', flexShrink: 0 }}>{item.label}</span>
@@ -32945,7 +32978,7 @@ export default function Dashboard() {
                           <span className="text-[9px] font-bold text-black/60">N/A</span>
                         </div>
                       ) : (
-                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, borderRadius: '6px', overflow: 'hidden' }}>
+                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, overflow: 'hidden', gap: '0px' }}>
                           {[
                             { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `float-play-module-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-module-${pd.courseCode.toLowerCase()}`, bg: pd.progressStartColor || getCourseGradientColors(pd.courseCode).start, dark: true, fontOverride: pd.courseFontColor || '#fff' },
                             { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `float-play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-reading-${pd.courseCode.toLowerCase()}`, bg: pd.progressEndColor || getCourseGradientColors(pd.courseCode).end, dark: false, fontOverride: '#000' },
@@ -32965,7 +32998,7 @@ export default function Dashboard() {
                                 onDragEnter={(e) => { e.preventDefault(); e.stopPropagation(); setHwDragOverTarget(dragKey); }}
                                 onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); if (hwDragOverTarget === dragKey) setHwDragOverTarget(null); }}
                                 onDrop={(e) => { e.preventDefault(); e.stopPropagation(); setHwDragOverTarget(null); const file = e.dataTransfer.files?.[0]; if (file) item.drop(file); }}
-                                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', position: 'relative', flex: 1, minWidth: 0, backgroundColor: item.bg, padding: '5px 3px 4px', borderRadius: '6px', outline: isDragOver ? '2px solid rgba(255,255,255,0.8)' : 'none', outlineOffset: '-2px', transition: 'outline 0.15s ease', opacity: 1, isolation: 'isolate' }}
+                                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', position: 'relative', flex: 1, minWidth: 0, backgroundColor: item.bg, padding: '5px 3px 4px', borderRadius: '0px', outline: isDragOver ? '2px solid rgba(255,255,255,0.8)' : 'none', outlineOffset: '-2px', transition: 'outline 0.15s ease', opacity: 1, isolation: 'isolate', borderRight: item.type === 'module' ? '0.5px solid rgba(0,0,0,0.15)' : 'none' }}
                                 data-testid={`float-drop-${item.type}-${pd.courseCode.toLowerCase()}`}>
                                 <span style={{ position: 'absolute', top: '3px', left: 0, right: 0, textAlign: 'center', fontSize: '10px', fontWeight: 400, color: textColor, letterSpacing: '0.5px', fontFamily: "'Raleway', sans-serif", zIndex: 5, whiteSpace: 'nowrap' }}>{item.label}</span>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '8px' }}>
