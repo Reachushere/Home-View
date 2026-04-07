@@ -27912,7 +27912,7 @@ export default function Dashboard() {
                 const otherRowHeight = baseOtherRowHeight + missingRows * courseRowH;
                 return (
                   <div ref={otherRowRef} className="grid w-full flex-shrink-0 relative z-[43] group/otherrow" style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${otherRowHeight}px` }}>
-                    <div className="px-1 py-0.5 text-[8px] font-[785] tracking-wide flex items-center justify-start text-white/80 relative cursor-pointer hover:brightness-110" onClick={() => setOtherRowEditOpen(true)} style={{ background: (() => { const stops = otherRowColors.labelStops ? (() => { try { return JSON.parse(otherRowColors.labelStops); } catch { return []; } })() : []; const allStops = [{ position: 0, color: otherRowColors.labelStart }, ...stops, { position: 100, color: otherRowColors.labelEnd }]; return `linear-gradient(180deg, ${allStops.map((s: any) => `${s.color} ${s.position}%`).join(', ')})`; })(), borderBottom: `1px dotted ${otherRowColors.borderColor || '#999'}` }} data-testid="other-row-label">
+                    <div className="px-1 py-0.5 text-[8px] font-[785] tracking-wide flex items-center justify-center text-white/80 relative cursor-pointer hover:brightness-110" onClick={() => setOtherRowEditOpen(true)} style={{ background: (() => { const stops = otherRowColors.labelStops ? (() => { try { return JSON.parse(otherRowColors.labelStops); } catch { return []; } })() : []; const allStops = [{ position: 0, color: otherRowColors.labelStart }, ...stops, { position: 100, color: otherRowColors.labelEnd }]; return `linear-gradient(180deg, ${allStops.map((s: any) => `${s.color} ${s.position}%`).join(', ')})`; })(), borderBottom: `1px dotted ${otherRowColors.borderColor || '#999'}` }} data-testid="other-row-label">
                       OTHER
                       <div style={{ position: 'absolute', top: '1px', right: '1px', zIndex: 2 }} onClick={(e) => { e.stopPropagation(); setOtherRowEditOpen(true); }} data-testid="pencil-edit-other-row"><Pencil className="w-[9px] h-[9px] text-white" strokeWidth={3} /></div>
                     </div>
@@ -30871,7 +30871,7 @@ export default function Dashboard() {
                     e.preventDefault();
                   }}
                 >
-                  <span className="text-[8px] font-[785] uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.8)', position: 'absolute', top: '2px', left: `calc(${effectiveDividerPct}% - 6px)` }}>Other</span>
+                  <span className="text-[8px] font-[785] uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.8)', position: 'absolute', top: '50%', left: '4px', transform: 'translateY(-50%)' }}>Other</span>
                   {otherProgressTasks.length === 0 && (
                     <span className="text-[10px] italic" style={{ color: 'rgba(255,255,255,0.4)', textAlign: 'center', pointerEvents: 'none', paddingLeft: `${effectiveDividerPct}%` }}>No upcoming items</span>
                   )}
@@ -30890,7 +30890,7 @@ export default function Dashboard() {
                       days.push(dd);
                     }
                     return (
-                      <div key={t.id} className="flex items-center gap-1.5 min-w-0 cursor-pointer hover:brightness-125" style={{ lineHeight: '1.5', marginBottom: '0px', padding: '1px 0', marginTop: '1px', marginLeft: `${effectiveDividerPct}%` }}
+                      <div key={t.id} className="flex items-center gap-1.5 min-w-0 cursor-pointer hover:brightness-125" style={{ lineHeight: '1.5', marginBottom: '0px', padding: '1px 4px 1px 0', marginTop: '1px', marginLeft: `calc(${effectiveDividerPct}% + 4px)` }}
                         onClick={() => setEditingTask(t)}
                         onMouseEnter={() => setHoveredCountdownTaskIdDebounced(t.id)}
                         onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
@@ -31302,7 +31302,7 @@ export default function Dashboard() {
                         e.preventDefault();
                       }}
                     >
-                    <span className="text-[8px] font-[785] uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.8)', position: 'absolute', top: '2px', left: `calc(${effectiveDividerPct}% - 6px)` }}>Other</span>
+                    <span className="text-[8px] font-[785] uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.8)', position: 'absolute', top: '50%', left: '4px', transform: 'translateY(-50%)' }}>Other</span>
                     {otherProgressTasks.length === 0 && (
                       <span className="text-[10px] italic" style={{ color: 'rgba(255,255,255,0.4)', textAlign: 'center', pointerEvents: 'none' }}>No upcoming items</span>
                     )}
@@ -31315,7 +31315,7 @@ export default function Dashboard() {
                         <div
                           key={t.id}
                           className="flex items-center gap-1.5 min-w-0 cursor-pointer hover:brightness-125"
-                          style={{ lineHeight: '1.5', marginBottom: '0px', padding: '1px 0', marginTop: '1px', marginLeft: `calc(${effectiveDividerPct}% - 6px)` }}
+                          style={{ lineHeight: '1.5', marginBottom: '0px', padding: '1px 4px 1px 0', marginTop: '1px', marginLeft: `calc(${effectiveDividerPct}% + 4px)` }}
                           onMouseEnter={() => setHoveredCountdownTaskIdDebounced(t.id)}
                           onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                           onClick={() => setEditingTask(t)}
