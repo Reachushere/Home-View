@@ -22789,17 +22789,14 @@ export default function Dashboard() {
 
           {/* System Health Dialog */}
           <Dialog open={isSystemHealthOpen && desktopIsFull} onOpenChange={(open) => { setIsSystemHealthOpen(open); if (!open) { setHealthFolderBrowse(null); } }}>
-            <DialogContent className="text-[11px] text-white [&_*:not(input)]:text-white p-0 [&>button.absolute]:hidden" style={{ top: 'calc(50% - 30px)', maxWidth: healthTab === 'folders' ? '640px' : '440px', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, transition: 'max-width 0.2s ease' }}>
-              <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+            <DialogContent className="text-[11px] text-white [&_*:not(input)]:text-white p-0 [&>button.absolute]:hidden" style={{ top: 'calc(50% - 30px)', maxWidth: healthTab === 'folders' ? '640px' : '440px', maxHeight: '80vh', display: 'flex', flexDirection: 'column', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, transition: 'max-width 0.2s ease' }}>
+              <div className="flex items-center px-4 py-3 border-b border-white/10">
                 <div className="flex items-center gap-2">
                   <Activity className="h-3 w-3 text-white" />
-                  <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
+                  <h2 className="font-semibold text-white" style={{ fontSize: '12px', letterSpacing: '0.5px' }}>
                     SYSTEM HEALTH
                   </h2>
                 </div>
-                <button onClick={() => setIsSystemHealthOpen(false)} className="text-white/60 hover:text-white" data-testid="button-close-system-health">
-                  <X className="h-4 w-4" />
-                </button>
               </div>
               <div className="flex border-b border-white/10 px-4" style={{ gap: '0' }}>
                 <button
@@ -22824,7 +22821,7 @@ export default function Dashboard() {
               </div>
 
               {healthTab === 'services' ? (
-              <div className="px-4 py-3" style={{ maxHeight: '420px', overflowY: 'auto' }}>
+              <div className="px-4 py-3" style={{ flex: 1, overflowY: 'auto' }}>
                 {systemHealthLoading ? (
                   <div className="flex items-center justify-center py-8">
                     <Loader2 className="h-5 w-5 animate-spin text-white/60" />
@@ -22895,7 +22892,7 @@ export default function Dashboard() {
                 ) : null}
               </div>
               ) : (
-              <div className="px-4 py-3" style={{ maxHeight: '500px', overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent' }}>
+              <div className="px-4 py-3" style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent' }}>
                 {allSemestersForHealth.length === 0 ? (
                   <div className="flex items-center justify-center py-8">
                     <Loader2 className="h-5 w-5 animate-spin text-white/60" />
@@ -22926,8 +22923,8 @@ export default function Dashboard() {
                                 <div className="flex items-center gap-2 mb-1">
                                   <div style={{ width: '16px', height: '10px', borderRadius: '3px', background: `linear-gradient(135deg, ${c.color || '#555'}, ${c.colorEnd || '#777'})`, flexShrink: 0 }} />
                                   <span className="text-[10px] font-semibold" style={{ color: c.color || '#fff' }}>{c.code || 'TBD'}</span>
-                                  <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.5)' }}>{c.name || 'To Be Determined'}</span>
-                                  {termLabel && <span className="text-[8px]" style={{ color: 'rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.06)', padding: '0 4px', borderRadius: '3px' }}>{termLabel}</span>}
+                                  <span className="text-[10px]" style={{ color: '#fff' }}>{c.name || 'To Be Determined'}</span>
+                                  {termLabel && <span className="text-[8px]" style={{ color: '#fff', background: 'rgba(255,255,255,0.1)', padding: '0 4px', borderRadius: '3px' }}>{termLabel}</span>}
                                   <div className="flex items-center gap-1 ml-auto">
                                     {linked ? (
                                       <div className="flex items-center gap-1">
@@ -22943,13 +22940,13 @@ export default function Dashboard() {
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-1 mt-1">
-                                  <span className="text-[8px]" style={{ color: 'rgba(255,255,255,0.3)', width: '48px', flexShrink: 0 }}>Module:</span>
-                                  <span className="text-[8px] flex-1 truncate" style={{ color: hasModFolder ? 'rgba(255,255,255,0.5)' : '#ef4444' }} title={c.modFolder || 'Not set'}>
+                                  <span className="text-[9px]" style={{ color: '#fff', width: '48px', flexShrink: 0 }}>Module:</span>
+                                  <span className="text-[9px] flex-1 truncate" style={{ color: hasModFolder ? '#fff' : '#ef4444' }} title={c.modFolder || 'Not set'}>
                                     {hasModFolder ? c.modFolder!.split('/').slice(-2).join('/') : 'Not set'}
                                   </span>
                                   <button
-                                    className="text-[8px] hover:text-white/80 transition-colors"
-                                    style={{ color: 'rgba(96,165,250,0.7)', padding: '0 4px', cursor: 'pointer', background: 'none', border: 'none', flexShrink: 0 }}
+                                    className="text-[9px] hover:text-white/80 transition-colors"
+                                    style={{ color: '#fff', padding: '0 4px', cursor: 'pointer', background: 'none', border: 'none', flexShrink: 0 }}
                                     onClick={() => {
                                       const startPath = hasModFolder ? c.modFolder! : '/School/1. TMU/Courses';
                                       setHealthFolderBrowse({ semId: sem.id, courseIdx: c.idx, field: 'module' });
@@ -22964,13 +22961,13 @@ export default function Dashboard() {
                                   >Browse</button>
                                 </div>
                                 <div className="flex items-center gap-1">
-                                  <span className="text-[8px]" style={{ color: 'rgba(255,255,255,0.3)', width: '48px', flexShrink: 0 }}>Reading:</span>
-                                  <span className="text-[8px] flex-1 truncate" style={{ color: hasReadFolder ? 'rgba(255,255,255,0.5)' : '#ef4444' }} title={c.readFolder || 'Not set'}>
+                                  <span className="text-[9px]" style={{ color: '#fff', width: '48px', flexShrink: 0 }}>Reading:</span>
+                                  <span className="text-[9px] flex-1 truncate" style={{ color: hasReadFolder ? '#fff' : '#ef4444' }} title={c.readFolder || 'Not set'}>
                                     {hasReadFolder ? c.readFolder!.split('/').slice(-2).join('/') : 'Not set'}
                                   </span>
                                   <button
-                                    className="text-[8px] hover:text-white/80 transition-colors"
-                                    style={{ color: 'rgba(96,165,250,0.7)', padding: '0 4px', cursor: 'pointer', background: 'none', border: 'none', flexShrink: 0 }}
+                                    className="text-[9px] hover:text-white/80 transition-colors"
+                                    style={{ color: '#fff', padding: '0 4px', cursor: 'pointer', background: 'none', border: 'none', flexShrink: 0 }}
                                     onClick={() => {
                                       const startPath = hasReadFolder ? c.readFolder! : '/School/1. TMU/Courses';
                                       setHealthFolderBrowse({ semId: sem.id, courseIdx: c.idx, field: 'reading' });
@@ -22986,8 +22983,8 @@ export default function Dashboard() {
                                 </div>
                                 {linked && (
                                   <button
-                                    className="text-[8px] hover:text-white/60 transition-colors mt-1"
-                                    style={{ color: 'rgba(255,255,255,0.25)', cursor: 'pointer', background: 'none', border: 'none' }}
+                                    className="text-[8px] hover:text-white/80 transition-colors mt-1"
+                                    style={{ color: '#fff', cursor: 'pointer', background: 'none', border: 'none' }}
                                     onClick={() => {
                                       setHealthFolderVerify(prev => ({ ...prev, [sem.id]: { ...(prev[sem.id] || {}), [c.idx]: { checking: true, exists: null } } }));
                                       fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(c.modFolder!)}`).then(r => {
@@ -23025,7 +23022,7 @@ export default function Dashboard() {
                         Select {healthFolderBrowse.field === 'module' ? 'Module' : 'Reading'} Folder
                       </span>
                     </div>
-                    <div style={{ padding: '8px 16px', fontSize: '10px', color: 'rgba(255,255,255,0.5)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <div style={{ padding: '8px 16px', fontSize: '10px', color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {healthBrowsePath}
                     </div>
                     <div style={{ flex: 1, overflowY: 'auto', padding: '0 16px 12px' }}>
@@ -23044,14 +23041,14 @@ export default function Dashboard() {
                           }}
                           data-testid="health-browser-back"
                         >
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>
-                          <span style={{ color: 'rgba(255,255,255,0.6)' }}>..</span>
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>
+                          <span style={{ color: '#fff' }}>..</span>
                         </div>
                       )}
                       {healthBrowseLoading ? (
-                        <div style={{ textAlign: 'center', padding: '20px', color: 'rgba(255,255,255,0.4)' }}>Loading...</div>
+                        <div style={{ textAlign: 'center', padding: '20px', color: '#fff' }}>Loading...</div>
                       ) : healthBrowseItems.length === 0 ? (
-                        <div style={{ textAlign: 'center', padding: '20px', color: 'rgba(255,255,255,0.4)' }}>No folders found</div>
+                        <div style={{ textAlign: 'center', padding: '20px', color: '#fff' }}>No folders found</div>
                       ) : (
                         healthBrowseItems.map((item: any) => (
                           <div
@@ -23102,6 +23099,14 @@ export default function Dashboard() {
                   </div>
                 </div>
               )}
+              <div className="px-4 py-3 border-t border-white/10" style={{ flexShrink: 0 }}>
+                <button
+                  onClick={() => setIsSystemHealthOpen(false)}
+                  className="w-full text-[11px] font-medium py-2 rounded-md transition-colors"
+                  style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', cursor: 'pointer' }}
+                  data-testid="button-close-system-health"
+                >Close</button>
+              </div>
             </DialogContent>
           </Dialog>
 
