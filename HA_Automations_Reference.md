@@ -1,6 +1,6 @@
 # Home Assistant Automations — Complete Reference
-**Generated:** March 25, 2026
-**App URL:** https://home-view--bkh416.replit.app
+**Generated:** April 7, 2026 (Updated)
+**App URL:** http://172.24.1.204:5000 (Pi self-hosted)
 
 ---
 
@@ -23,7 +23,7 @@ When you turn on the cat washroom lights, the system checks if you have unlisten
 ```yaml
 rest_command:
   cat_lights_webhook:                                    # Name you call from HA automations
-    url: "https://home-view--bkh416.replit.app/api/webhook/cat-lights"
+    url: "http://172.24.1.204:5000/api/webhook/cat-lights"
     method: POST
     headers:
       Content-Type: "application/json"
@@ -154,7 +154,7 @@ When you say "yes" (or press a button) to confirm you want to hear the reading, 
 ```yaml
 rest_command:
   cat_lights_confirm_webhook:
-    url: "https://home-view--bkh416.replit.app/api/webhook/cat-lights-confirm"
+    url: "http://172.24.1.204:5000/api/webhook/cat-lights-confirm"
     method: POST
     headers:
       Content-Type: "application/json"
@@ -210,14 +210,10 @@ startConfirmedPlaybackFlow(file, logPrefix, voice='echo', confirmationTTS)
 │   │   │   Wakes the tablet screen
 │   │   ├── androidtv/adb_command: settings put system screen_brightness 255
 │   │   │   Sets brightness to maximum
-│   │   ├── Wait 1.5 seconds
-│   │   ├── androidtv/adb_command: am start --activity-clear-task -a VIEW -d "{readerUrl}" com.amazon.cloud9
-│   │   │   Opens the PDF reader URL in Silk browser
-│   │   ├── Wait 1 second
-│   │   ├── androidtv/adb_command: settings put global policy_control immersive.full=com.amazon.cloud9
-│   │   │   Sets immersive mode (hides status/nav bars)
-│   │   └── androidtv/adb_command: input keyevent KEYCODE_F11
-│   │       Toggles fullscreen
+│   │   └── setTabletCommand("master", readerUrl)
+│   │       Sets tablet-nav polling target — tablet's /tablet wrapper page
+│   │       polls /api/tablet-nav and navigates to the PDF reader URL
+│   │       (NO ADB Silk browser launch — tablet uses polling only)
 │   │
 │   ├── TV SETUP:
 │   │   ├── media_player/turn_on → media_player.fire_tv_172_24_0_88
@@ -298,7 +294,7 @@ When you press the physical knob/button in the cat washroom, everything stops im
 ```yaml
 rest_command:
   cat_knob_press_webhook:
-    url: "https://home-view--bkh416.replit.app/api/webhook/cat-knob-press"
+    url: "http://172.24.1.204:5000/api/webhook/cat-knob-press"
     method: POST
     headers:
       Content-Type: "application/json"
@@ -337,7 +333,7 @@ When you press the shower button, it skips the "would you like to play?" prompt 
 ```yaml
 rest_command:
   cat_wash_webhook:
-    url: "https://home-view--bkh416.replit.app/api/webhook/cat-wash"
+    url: "http://172.24.1.204:5000/api/webhook/cat-wash"
     method: POST
     headers:
       Content-Type: "application/json"
@@ -383,7 +379,7 @@ When you turn the rotary encoder in the cat washroom, it adjusts the volume on w
 ```yaml
 rest_command:
   cat_volume_webhook:
-    url: "https://home-view--bkh416.replit.app/api/webhook/cat-volume"
+    url: "http://172.24.1.204:5000/api/webhook/cat-volume"
     method: POST
     headers:
       Content-Type: "application/json"
@@ -494,7 +490,7 @@ The HA voice assistant (or a custom intent) should call:
 ```yaml
 rest_command:
   voice_command_webhook:
-    url: "https://home-view--bkh416.replit.app/api/webhook/voice-command"
+    url: "http://172.24.1.204:5000/api/webhook/voice-command"
     method: POST
     headers:
       Content-Type: "application/json"
@@ -688,7 +684,7 @@ When called from HA (via a script, button, or automation), immediately finds and
 ```yaml
 rest_command:
   play_urgent_pdf:
-    url: "https://home-view--bkh416.replit.app/api/webhook/play-urgent-pdf"
+    url: "http://172.24.1.204:5000/api/webhook/play-urgent-pdf"
     method: POST
     content_type: "application/json"
     headers:
