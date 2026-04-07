@@ -30372,7 +30372,7 @@ export default function Dashboard() {
           <div
             onClick={(e) => { e.stopPropagation(); const next = !timelineSyncCalendar; setTimelineSyncCalendar(next); localStorage.setItem('timelineSyncCalendar', String(next)); fetch('/api/ui-settings/timelineSyncCalendar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: next }) }).catch(() => {}); }}
             className="absolute z-[71]"
-            style={{ top: '-12px', left: '1px', display: 'flex', alignItems: 'center', gap: '3px', cursor: 'pointer', padding: '1px 4px 1px 2px', borderRadius: '4px 4px 0 0' }}
+            style={{ top: '-13px', left: '1px', display: 'flex', alignItems: 'center', gap: '3px', cursor: 'pointer', padding: '1px 4px 1px 2px', borderRadius: '4px 4px 0 0' }}
             data-testid="timeline-sync-toggle-container"
           >
             <div
@@ -30381,7 +30381,7 @@ export default function Dashboard() {
             >
               <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#fff', position: 'absolute', top: '2px', left: timelineSyncCalendar ? '12px' : '2px', transition: 'left 0.2s ease', boxShadow: '0 1px 2px rgba(0,0,0,0.3)' }} />
             </div>
-            <span style={{ fontSize: '9px', color: '#ffffff', fontWeight: 500, letterSpacing: '0.3px', whiteSpace: 'nowrap', lineHeight: 1 }}>Pair Scroll</span>
+            <span style={{ fontSize: '9px', color: '#ffffff', fontWeight: 500, letterSpacing: '0.3px', whiteSpace: 'nowrap', lineHeight: 1, position: 'relative', top: '1px' }}>Pair Scroll</span>
           </div>
           {!hwFloating.detached ? (
             <button
