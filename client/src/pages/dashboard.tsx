@@ -11669,6 +11669,20 @@ export default function Dashboard() {
     });
   };
   
+  const isLongMultiHour = (t: Task) => {
+    if (!t.eventStartTime || !t.eventEndTime) return false;
+    const [sH] = t.eventStartTime.split(':').map(Number);
+    const [eH] = t.eventEndTime.split(':').map(Number);
+    return eH > sH + 1;
+  };
+
+  const isShortMultiHour = (t: Task) => {
+    if (!t.eventStartTime || !t.eventEndTime) return false;
+    const [sH] = t.eventStartTime.split(':').map(Number);
+    const [eH] = t.eventEndTime.split(':').map(Number);
+    return eH === sH + 1;
+  };
+
   const getConflictExtraHeight = (h: number) => {
     const taskHeight = 32;
     let maxExtra = 0;
@@ -11676,36 +11690,31 @@ export default function Dashboard() {
       const dayKey = _etDateKey(day);
       const dayTasks = tasksByDateKey.get(dayKey);
       if (!dayTasks) continue;
-      const hasMultiHour = dayTasks.some(t => {
-        if (!t.eventStartTime || !t.eventEndTime) return false;
-        const [sH, sM] = t.eventStartTime.split(':').map(Number);
-        const [eH] = t.eventEndTime.split(':').map(Number);
-        if (eH <= sH) return false;
+      const hasLongMultiHour = dayTasks.some(t => {
+        if (!isLongMultiHour(t)) return false;
+        const [sH, sM] = t.eventStartTime!.split(':').map(Number);
+        const [eH] = t.eventEndTime!.split(':').map(Number);
         const tStart = sH * 60 + sM;
         const tEnd = eH * 60;
         const cellStart = h * 60;
         const cellEnd = (h + 1) * 60;
         return tStart < cellEnd && tEnd > cellStart;
       });
-      if (!hasMultiHour) continue;
-      const singleHourTasks = dayTasks.filter(t => {
-        const [sH2] = (t.eventStartTime || '').split(':').map(Number);
-        if (t.eventStartTime && sH2 !== h) return false;
-        if (!t.eventStartTime) {
+      if (!hasLongMultiHour) continue;
+      const stackableTasks = dayTasks.filter(t => {
+        if (t.eventStartTime && t.eventEndTime && isLongMultiHour(t)) return false;
+        const startH = t.eventStartTime ? parseInt(t.eventStartTime.split(':')[0]) : null;
+        if (startH !== null && startH !== h) return false;
+        if (startH === null) {
           const dueDate = new Date(t.dueDate);
           const isMidnightUTC = dueDate.getUTCHours() === 0 && dueDate.getUTCMinutes() === 0;
           if (isMidnightUTC) return false;
           if (getETHours(dueDate) !== h) return false;
         }
-        if (t.eventStartTime && t.eventEndTime) {
-          const [sH3] = t.eventStartTime.split(':').map(Number);
-          const [eH3] = t.eventEndTime.split(':').map(Number);
-          if (eH3 > sH3) return false;
-        }
         return true;
       });
-      if (singleHourTasks.length > 0) {
-        const extra = singleHourTasks.length * taskHeight;
+      if (stackableTasks.length > 0) {
+        const extra = stackableTasks.length * taskHeight;
         if (extra > maxExtra) maxExtra = extra;
       }
     }
@@ -29276,11 +29285,13 @@ export default function Dashboard() {
                           />}
                           {/* Multi-hour tasks are now rendered at scroll container level as single elements */}
                           {hourTasks.filter(task => {
-                            // Skip multi-hour tasks - they're rendered at scroll container level
                             if (task.eventStartTime && task.eventEndTime) {
                               const [startHour] = task.eventStartTime.split(':').map(Number);
                               const [endHour] = task.eventEndTime.split(':').map(Number);
-                              if (endHour > startHour) return false;
+                              if (endHour > startHour + 1) return false;
+                              if (endHour === startHour + 1) {
+                                return getConflictExtraHeight(startHour) > 0;
+                              }
                             }
                             return true;
                           }).map((task, taskIdx) => {
@@ -29534,7 +29545,12 @@ export default function Dashboard() {
                 
                 {/* Multi-hour tasks overlay - rendered as single absolute positioned elements */}
                 {(() => {
-                  const allMultiHour = getMultiHourTasksForWeek();
+                  const allMultiHour = getMultiHourTasksForWeek().filter(item => {
+                    if (item.endHour === item.startHour + 1) {
+                      return getConflictExtraHeight(item.startHour) === 0;
+                    }
+                    return true;
+                  });
                   const overlapInfo = new Map<number, { col: number; totalCols: number }>();
                   const dayGroups = new Map<number, typeof allMultiHour>();
                   for (const item of allMultiHour) {

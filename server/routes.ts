@@ -10510,9 +10510,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           if (!slot.code) continue;
           const isTBD = slot.code.toLowerCase().startsWith('tbd');
 
-          const expectedFolderName = isTBD
-            ? `${slot.code.toUpperCase()} - To Be Determined`
-            : `${slot.code} - ${slot.name}`;
+          const expectedFolderName = `${slot.code} - ${slot.name}`;
 
           const subFolders: string[] = [];
           if (isSpSu && slot.term) {
@@ -10552,14 +10550,40 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
                   foundFolder = tbdMatch;
                   break;
                 }
+                const allSlotCodes = courseSlots.map(s => (s.code || '').toUpperCase());
+                const knownFolderNames = new Set<string>();
+                for (const sc of allSlotCodes) {
+                  if (!sc) continue;
+                  knownFolderNames.add(`${sc} - TBD`);
+                  knownFolderNames.add(`${sc} - To Be Determined`);
+                  knownFolderNames.add(sc);
+                  const otherSlot = courseSlots.find(s => s.code?.toUpperCase() === sc && !sc.startsWith('TBD'));
+                  if (otherSlot) {
+                    knownFolderNames.add(`${otherSlot.code} - ${otherSlot.name}`);
+                  }
+                }
+                const unrecognized = folders.filter((f: any) => !knownFolderNames.has(f.name.trim()));
+                const tbdNum = parseInt(slot.code.replace(/\D/g, '')) || 1;
+                const allTbdCodes = courseSlots.filter(s => s.code?.toLowerCase().startsWith('tbd')).map(s => s.code!.toUpperCase()).sort();
+                const tbdIdx = allTbdCodes.indexOf(slot.code.toUpperCase());
+                if (unrecognized.length > 0 && tbdIdx >= 0 && tbdIdx < unrecognized.length) {
+                  foundFolder = unrecognized[tbdIdx];
+                  break;
+                }
               }
 
-              const codeMatch = folders.find((f: any) => {
+              const codeMatches = folders.filter((f: any) => {
                 const parts = f.name.split(' - ');
                 if (parts.length < 2) return false;
                 const folderCode = parts[0].trim();
                 return folderCode.toUpperCase() === slot.code.toUpperCase() && f.name !== expectedFolderName;
               });
+              const codeMatch = codeMatches.length > 1
+                ? codeMatches.find((f: any) => {
+                    const namePart = f.name.split(' - ').slice(1).join(' - ').trim();
+                    return !namePart.toUpperCase().startsWith(slot.code.toUpperCase());
+                  }) || codeMatches[0]
+                : codeMatches[0] || null;
               if (codeMatch) {
                 foundFolder = codeMatch;
                 break;
@@ -10571,8 +10595,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           if (foundFolder && foundFolder.name !== expectedFolderName) {
             const parts = foundFolder.name.split(' - ');
             const newCode = parts[0].trim();
-            const newName = parts.slice(1).join(' - ').trim();
-            if (!newCode || !newName) continue;
+            const newName = parts.length >= 2 ? parts.slice(1).join(' - ').trim() : parts[0].trim();
+            if (!newCode) continue;
 
             const updates: Record<string, string> = {};
             if (newCode !== slot.code) updates[`course${slot.idx}Code`] = newCode;
