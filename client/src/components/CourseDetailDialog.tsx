@@ -3395,7 +3395,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   return (
                     <div
                       key={weekNum}
-                      className={`rounded-lg border overflow-hidden ${isCurrent ? 'bg-blue-500/8 border-blue-500/30' : 'bg-white/[0.08] border-white/20 hover:border-white/30'} transition-colors`}
+                      className={`rounded-lg border overflow-hidden ${isCurrent ? 'bg-blue-500/8 border-white' : 'bg-white/[0.08] border-white'} transition-colors`}
                       data-testid={`week-mapping-row-${weekNum}`}
                     >
                       <div className={`flex items-center gap-2 px-2.5 py-2 ${isCurrent ? 'bg-blue-500/10' : 'bg-white/[0.06]'}`}>
@@ -3691,7 +3691,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   return (
                     <div
                       key={weekNum}
-                      className="rounded-lg border overflow-hidden bg-white/[0.08] border-white/20 hover:border-white/30 transition-colors"
+                      className="rounded-lg border overflow-hidden bg-white/[0.08] border-white transition-colors"
                       data-testid={`week-mapping-row-${weekNum}`}
                     >
                       <div className="flex items-center gap-2 px-2.5 py-2 bg-white/[0.06]">
