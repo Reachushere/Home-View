@@ -48,6 +48,15 @@ declare module "http" {
 
 app.use(cookieParser());
 
+app.use("/tts-audio", (_req: Request, res: Response, next: NextFunction) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Range, Content-Type");
+  res.setHeader("Access-Control-Expose-Headers", "Content-Length, Content-Range");
+  if (_req.method === "OPTIONS") return res.sendStatus(200);
+  next();
+});
+
 app.use((req: any, res: any, next: any) => {
   if (req.path === '/api/uploads/direct') {
     return next();

@@ -11441,7 +11441,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     console.log(`[Nest] Playing audio: ${fullUrl}`);
     try {
       await haServiceCall('media_player/play_media', {
-        entity_id: NEST_SPEAKER_ENTITY, media_content_id: fullUrl, media_content_type: "music"
+        entity_id: NEST_SPEAKER_ENTITY, media_content_id: fullUrl, media_content_type: "audio/mpeg"
       }, 'Nest Play Direct');
     } catch (e: any) {
       console.error(`[Nest] play_media failed: ${e.message}`);
