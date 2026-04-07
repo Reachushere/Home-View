@@ -3453,6 +3453,13 @@ export default function Dashboard() {
   const [isSystemHealthOpen, setIsSystemHealthOpen] = useState(false);
   const [systemHealthData, setSystemHealthData] = useState<any>(null);
   const [systemHealthLoading, setSystemHealthLoading] = useState(false);
+  const [healthTab, setHealthTab] = useState<'services' | 'folders'>('services');
+  const [allSemestersForHealth, setAllSemestersForHealth] = useState<any[]>([]);
+  const [healthFolderVerify, setHealthFolderVerify] = useState<Record<number, Record<number, { checking: boolean; exists: boolean | null }>>>({});
+  const [healthFolderBrowse, setHealthFolderBrowse] = useState<{ semId: number; courseIdx: number; field: 'module' | 'reading' } | null>(null);
+  const [healthBrowsePath, setHealthBrowsePath] = useState('/School/1. TMU/Courses');
+  const [healthBrowseItems, setHealthBrowseItems] = useState<Array<{ name: string; type: string; path: string }>>([]);
+  const [healthBrowseLoading, setHealthBrowseLoading] = useState(false);
   const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(() => {
     return localStorage.getItem('profilePhotoUrl');
   });
@@ -3607,20 +3614,6 @@ export default function Dashboard() {
     return missing;
   }, [semesterCourseAssignments, courseFolderLinks]);
   const folderLinkDismissedRef = useRef(false);
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('catWashFollow') || params.get('followOnly') || params.get('fullscreen')) return;
-    if (folderLinkMissingCourses.length > 0 && desktopIsFull && !folderLinkDismissedRef.current) {
-      const dismissedKey = 'folderLinkDismissed';
-      const dismissed = localStorage.getItem(dismissedKey);
-      if (dismissed) {
-        const dismissedTime = parseInt(dismissed, 10);
-        if (Date.now() - dismissedTime < 24 * 60 * 60 * 1000) return;
-      }
-      const timer = setTimeout(() => setFolderLinkDialogOpen(true), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [folderLinkMissingCourses.length, desktopIsFull]);
   const browseForFolderLink = useCallback(async (path: string) => {
     setFolderLinkBrowseLoading(true);
     try {
@@ -16220,6 +16213,7 @@ export default function Dashboard() {
                 setSystemHealthLoading(true);
                 setSystemHealthData(null);
                 setIsSystemHealthOpen(true);
+                setHealthTab('services');
                 fetch('/api/system-health').then(r => r.json()).then(data => {
                   setSystemHealthData(data);
                   setSystemHealthLoading(false);
@@ -16227,6 +16221,9 @@ export default function Dashboard() {
                   setSystemHealthData({ overall: 'issues', checks: { server: { status: 'down', message: 'Failed to reach server' } } });
                   setSystemHealthLoading(false);
                 });
+                fetch('/api/semesters').then(r => r.json()).then(data => {
+                  setAllSemestersForHealth(Array.isArray(data) ? data.sort((a: any, b: any) => new Date(a.semesterStartDate).getTime() - new Date(b.semesterStartDate).getTime()) : []);
+                }).catch(() => {});
               }}
             >
               <Activity className="text-white" style={{ height: '22px', width: '22px' }} />
@@ -18209,10 +18206,11 @@ export default function Dashboard() {
                                     const isDay2 = day2Num >= 0 && current.getDay() === day2Num;
                                     const sTime = isDay2 && updates.classTime2 ? updates.classTime2 : updates.classTime!;
                                     const eTime = isDay2 && updates.classEndTime2 ? updates.classEndTime2 : updates.classEndTime!;
+                                    const [sH, sM] = sTime.split(':').map(Number);
                                     tasksToCreate.push({
                                       title: classTitle,
                                       type: 'class',
-                                      dueDate: `${current.getFullYear()}-${(current.getMonth()+1).toString().padStart(2,'0')}-${current.getDate().toString().padStart(2,'0')}T12:00:00`,
+                                      dueDate: `${current.getFullYear()}-${(current.getMonth()+1).toString().padStart(2,'0')}-${current.getDate().toString().padStart(2,'0')}T${String(sH).padStart(2,'0')}:${String(sM).padStart(2,'0')}:00`,
                                       courseName,
                                       eventStartTime: sTime,
                                       eventEndTime: eTime,
@@ -22789,9 +22787,9 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
 
-          {/* Profile Dialog */}
-          <Dialog open={isSystemHealthOpen && desktopIsFull} onOpenChange={setIsSystemHealthOpen}>
-            <DialogContent className="max-w-md text-[11px] text-white [&_*:not(input)]:text-white p-0 [&>button.absolute]:hidden" style={{ top: 'calc(50% - 30px)', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
+          {/* System Health Dialog */}
+          <Dialog open={isSystemHealthOpen && desktopIsFull} onOpenChange={(open) => { setIsSystemHealthOpen(open); if (!open) { setHealthFolderBrowse(null); } }}>
+            <DialogContent className="text-[11px] text-white [&_*:not(input)]:text-white p-0 [&>button.absolute]:hidden" style={{ top: 'calc(50% - 30px)', maxWidth: healthTab === 'folders' ? '640px' : '440px', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, transition: 'max-width 0.2s ease' }}>
               <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                 <div className="flex items-center gap-2">
                   <Activity className="h-3 w-3 text-white" />
@@ -22803,6 +22801,29 @@ export default function Dashboard() {
                   <X className="h-4 w-4" />
                 </button>
               </div>
+              <div className="flex border-b border-white/10 px-4" style={{ gap: '0' }}>
+                <button
+                  onClick={() => setHealthTab('services')}
+                  className="text-[10px] font-medium py-2 px-3 transition-colors"
+                  style={{ color: healthTab === 'services' ? '#fff' : 'rgba(255,255,255,0.45)', borderBottom: healthTab === 'services' ? '2px solid #60a5fa' : '2px solid transparent' }}
+                  data-testid="health-tab-services"
+                >Services</button>
+                <button
+                  onClick={() => {
+                    setHealthTab('folders');
+                    if (allSemestersForHealth.length === 0) {
+                      fetch('/api/semesters').then(r => r.json()).then(data => {
+                        setAllSemestersForHealth(Array.isArray(data) ? data.sort((a: any, b: any) => new Date(a.semesterStartDate).getTime() - new Date(b.semesterStartDate).getTime()) : []);
+                      }).catch(() => {});
+                    }
+                  }}
+                  className="text-[10px] font-medium py-2 px-3 transition-colors"
+                  style={{ color: healthTab === 'folders' ? '#fff' : 'rgba(255,255,255,0.45)', borderBottom: healthTab === 'folders' ? '2px solid #60a5fa' : '2px solid transparent' }}
+                  data-testid="health-tab-folders"
+                >Folder Links</button>
+              </div>
+
+              {healthTab === 'services' ? (
               <div className="px-4 py-3" style={{ maxHeight: '420px', overflowY: 'auto' }}>
                 {systemHealthLoading ? (
                   <div className="flex items-center justify-center py-8">
@@ -22873,6 +22894,214 @@ export default function Dashboard() {
                   </div>
                 ) : null}
               </div>
+              ) : (
+              <div className="px-4 py-3" style={{ maxHeight: '500px', overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent' }}>
+                {allSemestersForHealth.length === 0 ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-5 w-5 animate-spin text-white/60" />
+                    <span className="ml-2 text-white/60 text-[11px]">Loading semesters...</span>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-3">
+                    {allSemestersForHealth.map((sem: any) => {
+                      const courses = [
+                        { idx: 1, code: sem.course1Code, name: sem.course1Name, color: sem.course1Color, colorEnd: sem.course1ColorEnd, modFolder: sem.course1ModuleFolder, readFolder: sem.course1ReadingFolder, term: sem.course1SpringSummerTerm },
+                        { idx: 2, code: sem.course2Code, name: sem.course2Name, color: sem.course2Color, colorEnd: sem.course2ColorEnd, modFolder: sem.course2ModuleFolder, readFolder: sem.course2ReadingFolder, term: sem.course2SpringSummerTerm },
+                        { idx: 3, code: sem.course3Code, name: sem.course3Name, color: sem.course3Color, colorEnd: sem.course3ColorEnd, modFolder: sem.course3ModuleFolder, readFolder: sem.course3ReadingFolder, term: sem.course3SpringSummerTerm },
+                      ];
+                      return (
+                        <div key={sem.id} style={{ padding: '10px 12px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }} data-testid={`health-semester-${sem.id}`}>
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-[11px] font-semibold">{sem.semesterName}</span>
+                            {sem.isActive && <span style={{ fontSize: '8px', background: '#059669', color: '#fff', padding: '1px 6px', borderRadius: '4px', fontWeight: 600 }}>ACTIVE</span>}
+                          </div>
+                          {courses.map((c) => {
+                            const hasModFolder = !!(c.modFolder && c.modFolder.trim());
+                            const hasReadFolder = !!(c.readFolder && c.readFolder.trim());
+                            const linked = hasModFolder && hasReadFolder;
+                            const verifyState = healthFolderVerify[sem.id]?.[c.idx];
+                            const termLabel = sem.semesterType === 'spring_summer' && c.term ? (c.term === 'full' ? 'Full' : c.term === 'first_half' ? 'Spring' : 'Summer') : null;
+                            return (
+                              <div key={c.idx} style={{ marginBottom: '6px', padding: '6px 8px', borderRadius: '6px', background: 'rgba(255,255,255,0.03)', borderLeft: `3px solid ${c.color || '#555'}` }} data-testid={`health-course-${sem.id}-${c.idx}`}>
+                                <div className="flex items-center gap-2 mb-1">
+                                  <div style={{ width: '16px', height: '10px', borderRadius: '3px', background: `linear-gradient(135deg, ${c.color || '#555'}, ${c.colorEnd || '#777'})`, flexShrink: 0 }} />
+                                  <span className="text-[10px] font-semibold" style={{ color: c.color || '#fff' }}>{c.code || 'TBD'}</span>
+                                  <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.5)' }}>{c.name || 'To Be Determined'}</span>
+                                  {termLabel && <span className="text-[8px]" style={{ color: 'rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.06)', padding: '0 4px', borderRadius: '3px' }}>{termLabel}</span>}
+                                  <div className="flex items-center gap-1 ml-auto">
+                                    {linked ? (
+                                      <div className="flex items-center gap-1">
+                                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: verifyState?.exists === true ? '#22c55e' : verifyState?.exists === false ? '#ef4444' : '#22c55e', boxShadow: `0 0 3px ${verifyState?.exists === false ? '#ef4444' : '#22c55e'}` }} />
+                                        <span className="text-[8px]" style={{ color: verifyState?.exists === false ? '#ef4444' : '#22c55e' }}>{verifyState?.checking ? 'Checking...' : verifyState?.exists === false ? 'Not Found' : 'Linked'}</span>
+                                      </div>
+                                    ) : (
+                                      <div className="flex items-center gap-1">
+                                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#ef4444', boxShadow: '0 0 3px #ef4444' }} />
+                                        <span className="text-[8px]" style={{ color: '#ef4444' }}>Not Linked</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-1 mt-1">
+                                  <span className="text-[8px]" style={{ color: 'rgba(255,255,255,0.3)', width: '48px', flexShrink: 0 }}>Module:</span>
+                                  <span className="text-[8px] flex-1 truncate" style={{ color: hasModFolder ? 'rgba(255,255,255,0.5)' : '#ef4444' }} title={c.modFolder || 'Not set'}>
+                                    {hasModFolder ? c.modFolder!.split('/').slice(-2).join('/') : 'Not set'}
+                                  </span>
+                                  <button
+                                    className="text-[8px] hover:text-white/80 transition-colors"
+                                    style={{ color: 'rgba(96,165,250,0.7)', padding: '0 4px', cursor: 'pointer', background: 'none', border: 'none', flexShrink: 0 }}
+                                    onClick={() => {
+                                      const startPath = hasModFolder ? c.modFolder! : '/School/1. TMU/Courses';
+                                      setHealthFolderBrowse({ semId: sem.id, courseIdx: c.idx, field: 'module' });
+                                      setHealthBrowsePath(startPath);
+                                      setHealthBrowseLoading(true);
+                                      fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(startPath)}`).then(r => r.json()).then(items => {
+                                        setHealthBrowseItems(Array.isArray(items) ? items : []);
+                                        setHealthBrowseLoading(false);
+                                      }).catch(() => setHealthBrowseLoading(false));
+                                    }}
+                                    data-testid={`browse-module-${sem.id}-${c.idx}`}
+                                  >Browse</button>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <span className="text-[8px]" style={{ color: 'rgba(255,255,255,0.3)', width: '48px', flexShrink: 0 }}>Reading:</span>
+                                  <span className="text-[8px] flex-1 truncate" style={{ color: hasReadFolder ? 'rgba(255,255,255,0.5)' : '#ef4444' }} title={c.readFolder || 'Not set'}>
+                                    {hasReadFolder ? c.readFolder!.split('/').slice(-2).join('/') : 'Not set'}
+                                  </span>
+                                  <button
+                                    className="text-[8px] hover:text-white/80 transition-colors"
+                                    style={{ color: 'rgba(96,165,250,0.7)', padding: '0 4px', cursor: 'pointer', background: 'none', border: 'none', flexShrink: 0 }}
+                                    onClick={() => {
+                                      const startPath = hasReadFolder ? c.readFolder! : '/School/1. TMU/Courses';
+                                      setHealthFolderBrowse({ semId: sem.id, courseIdx: c.idx, field: 'reading' });
+                                      setHealthBrowsePath(startPath);
+                                      setHealthBrowseLoading(true);
+                                      fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(startPath)}`).then(r => r.json()).then(items => {
+                                        setHealthBrowseItems(Array.isArray(items) ? items : []);
+                                        setHealthBrowseLoading(false);
+                                      }).catch(() => setHealthBrowseLoading(false));
+                                    }}
+                                    data-testid={`browse-reading-${sem.id}-${c.idx}`}
+                                  >Browse</button>
+                                </div>
+                                {linked && (
+                                  <button
+                                    className="text-[8px] hover:text-white/60 transition-colors mt-1"
+                                    style={{ color: 'rgba(255,255,255,0.25)', cursor: 'pointer', background: 'none', border: 'none' }}
+                                    onClick={() => {
+                                      setHealthFolderVerify(prev => ({ ...prev, [sem.id]: { ...(prev[sem.id] || {}), [c.idx]: { checking: true, exists: null } } }));
+                                      fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(c.modFolder!)}`).then(r => {
+                                        if (r.ok) return r.json();
+                                        throw new Error('not found');
+                                      }).then(() => {
+                                        setHealthFolderVerify(prev => ({ ...prev, [sem.id]: { ...(prev[sem.id] || {}), [c.idx]: { checking: false, exists: true } } }));
+                                      }).catch(() => {
+                                        setHealthFolderVerify(prev => ({ ...prev, [sem.id]: { ...(prev[sem.id] || {}), [c.idx]: { checking: false, exists: false } } }));
+                                      });
+                                    }}
+                                    data-testid={`verify-folder-${sem.id}-${c.idx}`}
+                                  >Verify</button>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+              )}
+              {healthFolderBrowse && (
+                <div className="fixed inset-0 z-[10005] flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.5)' }}>
+                  <div
+                    className="flex flex-col text-[11px] text-white rounded-lg overflow-hidden"
+                    style={{ width: '440px', maxHeight: '60vh', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}
+                    data-testid="health-folder-browser"
+                  >
+                    <div style={{ padding: '12px 16px 10px', borderBottom: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                      <span style={{ fontWeight: 600, fontSize: '12px' }}>
+                        Select {healthFolderBrowse.field === 'module' ? 'Module' : 'Reading'} Folder
+                      </span>
+                    </div>
+                    <div style={{ padding: '8px 16px', fontSize: '10px', color: 'rgba(255,255,255,0.5)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {healthBrowsePath}
+                    </div>
+                    <div style={{ flex: 1, overflowY: 'auto', padding: '0 16px 12px' }}>
+                      {healthBrowsePath !== '/' && (
+                        <div
+                          style={{ padding: '6px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: '4px', marginBottom: '2px' }}
+                          className="hover:bg-white/10"
+                          onClick={() => {
+                            const parent = healthBrowsePath.split('/').slice(0, -1).join('/') || '/';
+                            setHealthBrowsePath(parent);
+                            setHealthBrowseLoading(true);
+                            fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(parent)}`).then(r => r.json()).then(items => {
+                              setHealthBrowseItems(Array.isArray(items) ? items : []);
+                              setHealthBrowseLoading(false);
+                            }).catch(() => setHealthBrowseLoading(false));
+                          }}
+                          data-testid="health-browser-back"
+                        >
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>
+                          <span style={{ color: 'rgba(255,255,255,0.6)' }}>..</span>
+                        </div>
+                      )}
+                      {healthBrowseLoading ? (
+                        <div style={{ textAlign: 'center', padding: '20px', color: 'rgba(255,255,255,0.4)' }}>Loading...</div>
+                      ) : healthBrowseItems.length === 0 ? (
+                        <div style={{ textAlign: 'center', padding: '20px', color: 'rgba(255,255,255,0.4)' }}>No folders found</div>
+                      ) : (
+                        healthBrowseItems.map((item: any) => (
+                          <div
+                            key={item.path || item.name}
+                            style={{ padding: '6px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: '4px', marginBottom: '2px' }}
+                            className="hover:bg-white/10"
+                            onClick={() => {
+                              const newPath = item.path || `${healthBrowsePath}/${item.name}`;
+                              setHealthBrowsePath(newPath);
+                              setHealthBrowseLoading(true);
+                              fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(newPath)}`).then(r => r.json()).then(items => {
+                                setHealthBrowseItems(Array.isArray(items) ? items : []);
+                                setHealthBrowseLoading(false);
+                              }).catch(() => setHealthBrowseLoading(false));
+                            }}
+                            data-testid={`health-folder-item-${item.name}`}
+                          >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#facc15" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                            <span>{item.name}</span>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                    <div style={{ padding: '10px 16px', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between' }}>
+                      <button
+                        onClick={() => setHealthFolderBrowse(null)}
+                        style={{ fontSize: '10px', padding: '4px 12px', borderRadius: '4px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', color: 'white' }}
+                        data-testid="health-browser-cancel"
+                      >Cancel</button>
+                      <button
+                        onClick={() => {
+                          if (!healthFolderBrowse) return;
+                          const { semId, courseIdx, field } = healthFolderBrowse;
+                          const fieldKey = field === 'module' ? `course${courseIdx}ModuleFolder` : `course${courseIdx}ReadingFolder`;
+                          fetch(`/api/semesters/${semId}`, {
+                            method: 'PATCH',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ [fieldKey]: healthBrowsePath }),
+                          }).then(r => r.json()).then(updated => {
+                            setAllSemestersForHealth(prev => prev.map(s => s.id === semId ? updated : s));
+                            setHealthFolderBrowse(null);
+                          }).catch(() => setHealthFolderBrowse(null));
+                        }}
+                        style={{ fontSize: '10px', padding: '4px 16px', borderRadius: '4px', background: 'rgba(59,130,246,0.5)', border: '1px solid rgba(59,130,246,0.7)', cursor: 'pointer', color: 'white', fontWeight: 600 }}
+                        data-testid="health-browser-select"
+                      >Select This Folder</button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </DialogContent>
           </Dialog>
 
@@ -23085,8 +23314,8 @@ export default function Dashboard() {
           </Dialog>
           
           {/* Courses Dialog - All past + current courses organized by semester */}
-          {/* OneDrive Folder Links Blocking Dialog */}
-          {folderLinkDialogOpen && desktopIsFull && folderLinkMissingCourses.length > 0 && createPortal(
+          {/* OneDrive Folder Links Blocking Dialog - REMOVED (moved to System Health flyout) */}
+          {false && createPortal(
             <div>
             <div className="fixed inset-0 z-[10003] bg-black/60" />
             <div

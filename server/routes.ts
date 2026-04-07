@@ -1949,14 +1949,17 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
 
       if (existing) {
         const courseSlots = [
-          { oldCode: existing.course1Code, oldName: existing.course1Name, newCode: updated.course1Code, newName: updated.course1Name },
-          { oldCode: existing.course2Code, oldName: existing.course2Name, newCode: updated.course2Code, newName: updated.course2Name },
-          { oldCode: existing.course3Code, oldName: existing.course3Name, newCode: updated.course3Code, newName: updated.course3Name },
+          { idx: 1, oldCode: existing.course1Code, oldName: existing.course1Name, newCode: updated.course1Code, newName: updated.course1Name },
+          { idx: 2, oldCode: existing.course2Code, oldName: existing.course2Name, newCode: updated.course2Code, newName: updated.course2Name },
+          { idx: 3, oldCode: existing.course3Code, oldName: existing.course3Name, newCode: updated.course3Code, newName: updated.course3Name },
         ];
         for (const slot of courseSlots) {
-          const oldIsTBD = !slot.oldCode || slot.oldCode.toUpperCase().startsWith('TBD');
-          const newIsTBD = !slot.newCode || slot.newCode.toUpperCase().startsWith('TBD');
-          if (oldIsTBD && !newIsTBD && slot.newCode && slot.newName) {
+          const oldDisplayName = slot.oldName === 'To Be Determined' || slot.oldName === 'TBD' ? 'To Be Determined' : (slot.oldName || 'To Be Determined');
+          const oldFolderSuffix = `${slot.oldCode || 'TBD'} - ${oldDisplayName}`;
+          const codeChanged = slot.oldCode !== slot.newCode;
+          const nameChanged = slot.oldName !== slot.newName;
+          if ((codeChanged || nameChanged) && slot.newCode && slot.newName) {
+            const newFolderName = `${slot.newCode} - ${slot.newName}`;
             try {
               const { renameOneDriveFolder } = await import("./onedrive");
               const yearMatch = existing.semesterName?.match(/\d{4}/);
@@ -1967,32 +1970,54 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
               };
               const folderNames = semFolderMap[existing.semesterType || ''] || [existing.semesterType || ''];
               const springSummerSubs = ['Full', 'Spring - First Half', 'Summer - Second Half'];
-              const oldFolderName = `${slot.oldCode} - ${slot.oldName === 'To Be Determined' || slot.oldName === 'TBD' ? 'To Be Determined' : slot.oldName}`;
-              const newFolderName = `${slot.newCode} - ${slot.newName}`;
 
+              let renamed = false;
               for (const fn of folderNames) {
                 const basePath = `/School/1. TMU/Courses/${year}/${fn}`;
                 try {
-                  const result = await renameOneDriveFolder(`${basePath}/${oldFolderName}`, newFolderName);
+                  const result = await renameOneDriveFolder(`${basePath}/${oldFolderSuffix}`, newFolderName);
                   if (result.renamed) {
-                    console.log(`[Semester] Renamed OneDrive folder: ${oldFolderName} -> ${newFolderName}`);
+                    console.log(`[Semester] Renamed OneDrive folder: ${oldFolderSuffix} -> ${newFolderName}`);
+                    renamed = true;
                     break;
                   }
                 } catch {}
                 if (existing.semesterType === 'spring_summer') {
                   for (const sub of springSummerSubs) {
                     try {
-                      const result = await renameOneDriveFolder(`${basePath}/${sub}/${oldFolderName}`, newFolderName);
+                      const result = await renameOneDriveFolder(`${basePath}/${sub}/${oldFolderSuffix}`, newFolderName);
                       if (result.renamed) {
-                        console.log(`[Semester] Renamed OneDrive folder in ${sub}: ${oldFolderName} -> ${newFolderName}`);
+                        console.log(`[Semester] Renamed OneDrive folder in ${sub}: ${oldFolderSuffix} -> ${newFolderName}`);
+                        renamed = true;
                         break;
                       }
                     } catch {}
                   }
+                  if (renamed) break;
                 }
               }
             } catch (e: any) {
               console.error(`[Semester] Failed to rename OneDrive folder:`, e.message);
+            }
+
+            const modKey = `course${slot.idx}ModuleFolder` as keyof typeof updated;
+            const readKey = `course${slot.idx}ReadingFolder` as keyof typeof updated;
+            const oldMod = (updated as any)[modKey] as string | null;
+            const oldRead = (updated as any)[readKey] as string | null;
+            const folderPathUpdates: Record<string, string> = {};
+            if (oldMod && oldMod.includes(oldFolderSuffix)) {
+              folderPathUpdates[modKey] = oldMod.replace(oldFolderSuffix, newFolderName);
+            }
+            if (oldRead && oldRead.includes(oldFolderSuffix)) {
+              folderPathUpdates[readKey] = oldRead.replace(oldFolderSuffix, newFolderName);
+            }
+            if (Object.keys(folderPathUpdates).length > 0) {
+              try {
+                await storage.updateSemesterSettings(id, folderPathUpdates);
+                console.log(`[Semester] Updated folder paths for course ${slot.idx}: ${JSON.stringify(folderPathUpdates)}`);
+              } catch (e: any) {
+                console.error(`[Semester] Failed to update folder paths:`, e.message);
+              }
             }
           }
         }
@@ -3987,11 +4012,23 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         const [startHour, startMinute] = classTime.split(':').map(Number);
         const [endHour, endMinute] = classEndTime.split(':').map(Number);
 
+        const classTime2 = (activeSemester as any)[`${config.prefix}ClassTime2`] || classTime;
+        const classEndTime2 = (activeSemester as any)[`${config.prefix}ClassEndTime2`] || classEndTime;
+        const classDay2Num = classDay2 && dayToNumber[classDay2] !== undefined ? dayToNumber[classDay2] : -1;
+
         const current = new Date(semesterStart);
         while (current <= semesterEnd) {
           if (classDays.includes(current.getDay())) {
+            const isDay2 = classDay2Num >= 0 && current.getDay() === classDay2Num;
+            const effectiveClassTime = isDay2 ? classTime2 : classTime;
+            const effectiveClassEndTime = isDay2 ? classEndTime2 : classEndTime;
+            const [effStartHour, effStartMinute] = effectiveClassTime.split(':').map(Number);
             const taskDate = new Date(current);
-            taskDate.setHours(12, 0, 0, 0);
+            const etDateStr = `${taskDate.getFullYear()}-${String(taskDate.getMonth()+1).padStart(2,'0')}-${String(taskDate.getDate()).padStart(2,'0')}T${String(effStartHour).padStart(2,'0')}:${String(effStartMinute).padStart(2,'0')}:00`;
+            const probe = new Date(etDateStr + 'Z');
+            const probeETHour = parseInt(probe.toLocaleString('en-US', { timeZone: 'America/Toronto', hour: 'numeric', hour12: false }), 10) % 24;
+            const offsetHours = probeETHour - probe.getUTCHours();
+            const utcTaskDate = new Date(probe.getTime() - offsetHours * 3600000);
 
             const weekNum = getWeekNumber(taskDate, undefined, activeSemester?.readingWeekStart);
             if (weekNum >= FIRST_WEEK && weekNum <= LAST_WEEK) {
@@ -4001,7 +4038,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
                 const existingDateStr = formatLocalDate(new Date(t.dueDate));
                 return existingDateStr === dateStr 
                   && t.courseName === courseName 
-                  && t.eventStartTime === classTime;
+                  && t.eventStartTime === effectiveClassTime;
               });
 
               if (isDuplicate) {
@@ -4011,9 +4048,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
                   title: classTitle,
                   type: "class",
                   courseName,
-                  dueDate: taskDate,
-                  eventStartTime: classTime,
-                  eventEndTime: classEndTime,
+                  dueDate: utcTaskDate,
+                  eventStartTime: effectiveClassTime,
+                  eventEndTime: effectiveClassEndTime,
                   weekNumber: weekNum,
                   priority: "medium",
                   reminder1: DEFAULT_REMINDER_1,
@@ -10857,20 +10894,47 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   }, 15000);
 
   async function findNextFileByPriority(allFiles: any[], currentWeekNumber: number, excludeFileId?: number): Promise<any | null> {
-    for (let week = currentWeekNumber; week >= 1; week--) {
-      const weekFiles = allFiles.filter((f: any) => {
-        if (f.listened) return false;
-        if (excludeFileId && f.id === excludeFileId) return false;
-        const weekMatch = f.folder?.match(/week-(\d+)/i);
-        return weekMatch && parseInt(weekMatch[1], 10) === week;
-      });
-      if (weekFiles.length === 0) continue;
-      const ordered = await orderFilesByCoursePriority(weekFiles);
-      console.log(`[FileOrder] Found unlistened files in week ${week}: ${ordered.map((f: any) => `${f.originalName} (chunk=${f.lastChunkIndex||0})`).join(' → ')}`);
-      return ordered[0] || null;
+    const allEligible = allFiles.filter((f: any) => {
+      if (f.listened) return false;
+      if (excludeFileId && f.id === excludeFileId) return false;
+      const weekMatch = f.folder?.match(/week-(\d+)/i);
+      return weekMatch && parseInt(weekMatch[1], 10) >= 1 && parseInt(weekMatch[1], 10) <= currentWeekNumber;
+    });
+    if (allEligible.length === 0) {
+      console.log(`[FileOrder] No unlistened files found in weeks 1-${currentWeekNumber}`);
+      return null;
     }
-    console.log(`[FileOrder] No unlistened files found in weeks 1-${currentWeekNumber}`);
-    return null;
+
+    const isModule = (f: any) =>
+      f.folder?.toLowerCase().includes('module') ||
+      f.originalName?.toLowerCase().includes('module');
+    const hasAnyUnlistenedModule = allEligible.some(f => isModule(f));
+    const eligible = allEligible.filter(f => {
+      if (isModule(f)) return true;
+      return !hasAnyUnlistenedModule;
+    });
+
+    const withMeta = await Promise.all(eligible.map(async f => {
+      const weekMatch = f.folder?.match(/week-(\d+)/i);
+      const weekNum = weekMatch ? parseInt(weekMatch[1], 10) : 0;
+      return {
+        file: f,
+        coursePriority: await getCoursePriorityForFile(f),
+        weekNum,
+        isModule: isModule(f) ? 0 : 1,
+      };
+    }));
+
+    withMeta.sort((a, b) => {
+      if (a.coursePriority !== b.coursePriority) return a.coursePriority - b.coursePriority;
+      if (a.weekNum !== b.weekNum) return b.weekNum - a.weekNum;
+      return a.isModule - b.isModule;
+    });
+
+    const picked = withMeta[0];
+    console.log(`[FileOrder] ${allEligible.length} unlistened files (${eligible.length} eligible, modulesBlock=${hasAnyUnlistenedModule}), picking: ${picked.file.originalName} (course=${picked.coursePriority}, week=${picked.weekNum})`);
+    console.log(`[FileOrder] Top candidates: ${withMeta.slice(0, 5).map(w => `${w.file.originalName}(p=${w.coursePriority},w=${w.weekNum})`).join(' → ')}`);
+    return picked.file;
   }
 
   function isSpotifyPlayingOnEverywhere(): boolean {
@@ -11265,16 +11329,29 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         } catch (e: any) { console.warn(`${logPrefix} Pre-confirm volume set error (non-fatal): ${e.message}`); }
         let confirmPlayed = false;
         try {
-          const confirmPath = await generateAndSaveTTSAudio(confirmationTTS, `confirm-${Date.now()}`);
-          const nestResult = await playOnNestSpeaker(`${appUrl}${confirmPath}`);
-          if (nestResult.success) {
-            confirmPlayed = true;
-            console.log(`${logPrefix} Confirm TTS played on Nest speaker via OpenAI/Edge TTS (actuallyPlaying=${nestResult.actuallyPlaying})`);
-          } else {
-            console.warn(`${logPrefix} Nest speaker confirm failed — falling back to HA Voice`);
-          }
+          await haServiceCall('tts/speak', {
+            entity_id: HA_CLOUD_TTS_ENTITY,
+            media_player_entity_id: NEST_SPEAKER_ENTITY,
+            message: confirmationTTS
+          }, 'Confirm HA Cloud TTS Nest');
+          confirmPlayed = true;
+          console.log(`${logPrefix} Confirm TTS played via HA Cloud TTS on Nest speaker (primary)`);
         } catch (e: any) {
-          console.warn(`${logPrefix} Nest speaker confirm failed: ${e.message} — falling back to HA Voice`);
+          console.warn(`${logPrefix} HA Cloud TTS on Nest failed: ${e.message} — trying generated audio`);
+        }
+        if (!confirmPlayed) {
+          try {
+            const confirmPath = await generateAndSaveTTSAudio(confirmationTTS, `confirm-${Date.now()}`);
+            const nestResult = await playOnNestSpeaker(`${appUrl}${confirmPath}`);
+            if (nestResult.success && nestResult.actuallyPlaying) {
+              confirmPlayed = true;
+              console.log(`${logPrefix} Confirm TTS played on Nest speaker via generated audio`);
+            } else {
+              console.warn(`${logPrefix} Nest speaker generated audio not confirmed playing — trying HA Voice`);
+            }
+          } catch (e: any) {
+            console.warn(`${logPrefix} Nest speaker confirm failed: ${e.message} — falling back to HA Voice`);
+          }
         }
         if (!confirmPlayed) {
           try {
@@ -11282,8 +11359,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
               entity_id: HA_CLOUD_TTS_ENTITY,
               media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
               message: confirmationTTS
-            }, 'Confirm HA Cloud TTS');
-            console.log(`${logPrefix} Confirm TTS played via HA Cloud TTS on HA Voice speaker (fallback)`);
+            }, 'Confirm HA Cloud TTS HA Voice');
+            confirmPlayed = true;
+            console.log(`${logPrefix} Confirm TTS played via HA Cloud TTS on HA Voice speaker (final fallback)`);
           } catch (e: any) {
             console.warn(`${logPrefix} HA Voice confirm also failed: ${e.message}`);
           }
@@ -11969,15 +12047,38 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
           let chunkPlaying = false;
           const playResult = await playOnNestSpeaker(`${appUrl}${audioPath}`);
-          if (playResult.success) {
+          if (playResult.success && playResult.actuallyPlaying) {
             chunkPlaying = true;
             consecutivePlayFailures = 0;
-            if (!playResult.actuallyPlaying) {
-              console.log(`[Nest Playback] Nest state unconfirmed for chunk ${i + 1} — trusting play_media succeeded`);
+          } else if (playResult.success && !playResult.actuallyPlaying) {
+            console.warn(`[Nest Playback] Nest state unconfirmed for chunk ${i + 1} — trying HA Cloud TTS fallback`);
+            const haCloudPlayed = await playChunkViaHACloudTTS(chunkText, sessionId, NEST_SPEAKER_ENTITY);
+            if (haCloudPlayed) {
+              chunkPlaying = true;
+              consecutivePlayFailures = 0;
+              console.log(`[Nest Playback] Chunk ${i + 1} played via HA Cloud TTS on Nest (fallback)`);
+            } else {
+              const haVoicePlayed = await playChunkViaHACloudTTS(chunkText, sessionId, CAT_WR_HA_VOICE_ENTITY);
+              if (haVoicePlayed) {
+                chunkPlaying = true;
+                consecutivePlayFailures = 0;
+                console.log(`[Nest Playback] Chunk ${i + 1} played via HA Cloud TTS on HA Voice (2nd fallback)`);
+              } else {
+                consecutivePlayFailures++;
+                console.error(`[Nest Playback] Chunk ${i + 1} all playback methods FAILED (${consecutivePlayFailures}/${MAX_PLAY_FAILURES})`);
+              }
             }
           } else {
-            consecutivePlayFailures++;
-            console.error(`[Nest Playback] Chunk ${i + 1} play_media FAILED (${consecutivePlayFailures}/${MAX_PLAY_FAILURES})`);
+            console.warn(`[Nest Playback] Nest play_media failed for chunk ${i + 1} — trying HA Cloud TTS fallback`);
+            const haCloudPlayed = await playChunkViaHACloudTTS(chunkText, sessionId, NEST_SPEAKER_ENTITY);
+            if (haCloudPlayed) {
+              chunkPlaying = true;
+              consecutivePlayFailures = 0;
+              console.log(`[Nest Playback] Chunk ${i + 1} played via HA Cloud TTS on Nest (fallback after play_media fail)`);
+            } else {
+              consecutivePlayFailures++;
+              console.error(`[Nest Playback] Chunk ${i + 1} play_media + HA Cloud TTS both FAILED (${consecutivePlayFailures}/${MAX_PLAY_FAILURES})`);
+            }
           }
           if (consecutivePlayFailures >= MAX_PLAY_FAILURES) {
             if (!haHealth.connected) {
@@ -13254,6 +13355,18 @@ document.body.removeChild(a);
         ]);
         stopped.push("tv");
         console.log(`[Cat Lights] Silk force-stopped + Fire Stick + Samsung TV turn-off sent`);
+        setTimeout(async () => {
+          try {
+            await Promise.allSettled([
+              haServiceCallSafe('media_player/turn_off', { entity_id: FIRE_STICK_ADB_ENTITY }, 'Stop TV FireStick retry'),
+              haServiceCallSafe('media_player/turn_off', { entity_id: CAT_TV_ENTITY }, 'Stop TV Samsung retry'),
+              haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_SLEEP' }, 'FireStick SLEEP'),
+            ]);
+            console.log(`[Cat Lights] TV turn-off retry sent (2nd attempt + SLEEP key)`);
+          } catch (e: any) {
+            console.warn(`[Cat Lights] TV turn-off retry failed (non-fatal): ${e.message}`);
+          }
+        }, 3000);
         if (catLightsPromptSession === offSession) {
           catLightsPromptPending = false;
           console.log(`[Cat Lights] Cleared promptPending (session ${offSession} still current)`);
@@ -18489,6 +18602,63 @@ Return ONLY the JSON object, no markdown formatting.`;
     }
   } catch (e) {
     // Ignore if task doesn't exist on this environment
+  }
+
+  // Startup fix: correct class tasks whose eventStartTime doesn't match semester settings
+  try {
+    const activeSem = await storage.getActiveSemesterSettings();
+    if (activeSem) {
+      const allTasksFix = await storage.getTasks();
+      const classTasks = allTasksFix.filter(t => t.type === 'class');
+      const courseTimeMap: Record<string, { time: string; endTime: string; time2?: string; endTime2?: string; day2?: string }> = {};
+      for (let i = 1; i <= 3; i++) {
+        const code = (activeSem as any)[`course${i}Code`];
+        const name = (activeSem as any)[`course${i}Name`];
+        if (!code) continue;
+        const fullName = name?.startsWith(code) ? name : `${code} - ${name}`;
+        courseTimeMap[fullName] = {
+          time: (activeSem as any)[`course${i}ClassTime`] || '09:00',
+          endTime: (activeSem as any)[`course${i}ClassEndTime`] || '10:00',
+          time2: (activeSem as any)[`course${i}ClassTime2`] || '',
+          endTime2: (activeSem as any)[`course${i}ClassEndTime2`] || '',
+          day2: (activeSem as any)[`course${i}ClassDay2`] || '',
+        };
+      }
+      let fixedCount = 0;
+      for (const task of classTasks) {
+        const courseInfo = courseTimeMap[task.courseName || ''];
+        if (!courseInfo) continue;
+        const titleLower = (task.title || '').toLowerCase();
+        const isGenericClassTask = /class$/i.test(titleLower.replace(/[\[\]]/g, '').trim()) || /^online\s+.*class$/i.test(titleLower.replace(/[\[\]]/g, '').trim());
+        if (!isGenericClassTask) continue;
+        const correctTime = courseInfo.time;
+        const correctEndTime = courseInfo.endTime;
+        if (task.eventStartTime !== correctTime || task.eventEndTime !== correctEndTime) {
+          const updates: any = { eventStartTime: correctTime, eventEndTime: correctEndTime };
+          if (task.dueDate) {
+            const [ch, cm] = correctTime.split(':').map(Number);
+            const dd = new Date(task.dueDate);
+            const fmt = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Toronto', year: 'numeric', month: '2-digit', day: '2-digit' });
+            const parts = fmt.formatToParts(dd);
+            const yy = Number(parts.find(p => p.type === 'year')!.value);
+            const mm = Number(parts.find(p => p.type === 'month')!.value);
+            const ddd = Number(parts.find(p => p.type === 'day')!.value);
+            const etStr = `${yy}-${String(mm).padStart(2,'0')}-${String(ddd).padStart(2,'0')}T${String(ch).padStart(2,'0')}:${String(cm).padStart(2,'0')}:00`;
+            const probe = new Date(etStr + 'Z');
+            const probeETHour = parseInt(probe.toLocaleString('en-US', { timeZone: 'America/Toronto', hour: 'numeric', hour12: false }), 10) % 24;
+            const offsetH = probeETHour - probe.getUTCHours();
+            updates.dueDate = new Date(probe.getTime() - offsetH * 3600000);
+          }
+          await storage.updateTask(task.id, updates);
+          fixedCount++;
+        }
+      }
+      if (fixedCount > 0) {
+        console.log(`[Startup Fix] Corrected ${fixedCount} class tasks to match semester settings times`);
+      }
+    }
+  } catch (e) {
+    console.error('[Startup Fix] Error fixing class task times:', e);
   }
 
   // Auto-sync CRCU shifts on startup
