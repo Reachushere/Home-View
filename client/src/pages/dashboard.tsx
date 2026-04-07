@@ -29190,7 +29190,8 @@ export default function Dashboard() {
                                 onTouchStart={(e) => handleTouchStart(e, task.id, task.title)}
                                 onTouchEnd={handleTouchEnd}
                                 onTouchMove={handleTouchMove}
-                                onMouseEnter={(e) => { if (totalItems > 1) { const el = e.currentTarget as HTMLElement; el.style.transition = 'none'; el.style.width = 'calc(100% - 4px)'; el.style.left = '2px'; el.style.zIndex = '55'; el.style.boxShadow = '0 4px 16px rgba(0,0,0,0.25)'; } }}
+                                title={(task.title || '').replace(/\[[^\]]*\]\s*/g, '').trim() + (task.dueDate ? ` — ${format(new Date(task.dueDate), 'MMM d, h:mm a')}` : '')}
+                                onMouseEnter={(e) => { if (totalItems > 1) { const el = e.currentTarget as HTMLElement; el.style.transition = 'none'; el.style.width = 'calc(100% - 4px)'; el.style.left = '2px'; el.style.zIndex = '55'; el.style.boxShadow = '0 4px 16px rgba(0,0,0,0.35)'; } }}
                                 onMouseLeave={(e) => { if (totalItems > 1) { const el = e.currentTarget as HTMLElement; const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); el.style.transition = 'none'; el.style.width = hasNextDueBox ? `calc(${columnWidth / 2}% - 4px)` : `calc(${columnWidth}% - 4px)`; el.style.left = hasNextDueBox ? `calc(${taskIdx * columnWidth / 2}% + 2px)` : `calc(${taskIdx * columnWidth}% + 2px)`; el.style.zIndex = selectedTaskId === task.id ? '50' : (draggedTask?.id === task.id ? '45' : '43'); el.style.boxShadow = ''; } }}
                                 className={`absolute shadow-sm cursor-grab active:cursor-grabbing rounded overflow-visible ${
                                   draggedTask?.id === task.id ? "opacity-50" : ""
@@ -29442,8 +29443,9 @@ export default function Dashboard() {
                       draggable
                       onDragStart={(e) => handleDragStart(e, task)}
                       onDragEnd={handleDragEnd}
-                      onMouseEnter={(e) => { if (oi.totalCols > 1) { const el = e.currentTarget as HTMLElement; el.style.left = el.dataset.hoverLeft || el.style.left; el.style.width = el.dataset.hoverWidth || el.style.width; el.style.zIndex = '48'; el.style.transition = 'left 0.15s ease, width 0.15s ease'; el.style.boxShadow = '0 4px 16px rgba(0,0,0,0.25)'; } }}
-                      onMouseLeave={(e) => { if (oi.totalCols > 1) { const el = e.currentTarget as HTMLElement; el.style.left = el.dataset.origLeft || el.style.left; el.style.width = el.dataset.origWidth || el.style.width; el.style.zIndex = selectedTaskId === task.id ? '50' : (draggedTask?.id === task.id ? '45' : '43'); el.style.transition = 'left 0.15s ease, width 0.15s ease'; el.style.boxShadow = ''; } }}
+                      title={(task.title || '').replace(/\[[^\]]*\]\s*/g, '').trim() + (task.dueDate ? ` — ${format(new Date(task.dueDate), 'MMM d, h:mm a')}` : '')}
+                      onMouseEnter={(e) => { if (oi.totalCols > 1) { const el = e.currentTarget as HTMLElement; el.style.zIndex = '55'; el.style.transition = 'width 0.15s ease, left 0.15s ease'; el.style.boxShadow = '0 4px 16px rgba(0,0,0,0.35)'; el.style.width = el.dataset.hoverWidth || el.style.width; if (oi.col > 0) el.style.left = el.dataset.hoverLeft || el.style.left; } }}
+                      onMouseLeave={(e) => { if (oi.totalCols > 1) { const el = e.currentTarget as HTMLElement; el.style.left = el.dataset.origLeft || el.style.left; el.style.width = el.dataset.origWidth || el.style.width; el.style.zIndex = selectedTaskId === task.id ? '50' : (draggedTask?.id === task.id ? '45' : String(42 + oi.col)); el.style.transition = 'left 0.15s ease, width 0.15s ease'; el.style.boxShadow = ''; } }}
                       onClick={(e) => {
                         e.stopPropagation();
                         setSelectedTaskId(task.id);
@@ -29481,7 +29483,7 @@ export default function Dashboard() {
                           left: (() => { const sidebarPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0); const dayFrac = `(${gridSizes.dayColumnWidths.slice(0, dayIdx).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)})`; if (oi.totalCols > 1) { const dayW = `(${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${sidebarPx}px)`; return `calc(${sidebarPx}px + ${dayFrac} * (100% - ${sidebarPx}px) + (${dayW}) * ${oi.col} / ${oi.totalCols} + 2px)`; } return `calc(${sidebarPx}px + ${dayFrac} * (100% - ${sidebarPx}px) + 2px)`; })(),
                           width: (() => { const sidebarPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0); const dayW = `(${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${sidebarPx}px)`; const now = new Date(); const currentHourNow = now.getHours(); const taskDay2 = weekDays[dayIdx]; const isTodayCol = isSameDayET(taskDay2, now); const taskCoversCurrentHour = startHour <= currentHourNow && (endHour > currentHourNow || (endHour === currentHourNow && endMin > 0)); const isCurrentHourOverlap = isTodayCol && taskCoversCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); const colDivisor = oi.totalCols > 1 ? oi.totalCols : (isCurrentHourOverlap ? 2 : 1); return `calc((${dayW}) / ${colDivisor} - 4px)`; })(),
                           height: `${heightPx}px`,
-                          zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43),
+                          zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : (42 + oi.col)),
                           transition: 'left 0.15s ease, width 0.15s ease',
                           background: bgGradient,
                           border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1.5px solid ${borderColor}`,
