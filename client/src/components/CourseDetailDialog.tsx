@@ -3738,7 +3738,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     if (files.length === 0) {
                       return (
                         <div key={weekNum} className={`flex items-center gap-2 px-2 py-1.5 rounded ${isCurrentWeek ? 'bg-white/[0.08] border-2 border-white/30' : 'bg-white/[0.03] border border-white/[0.06]'}`} data-testid={`module-week-${weekNum}`}>
-                          <div className="flex items-center justify-center border-2 border-white/60 rounded-sm" style={{ width: '18px', height: '18px', flexShrink: 0, background: 'transparent' }} />
+                          <div className="flex items-center justify-center rounded" style={{ width: '16px', height: '16px', flexShrink: 0, background: 'transparent', border: '1.5px solid rgba(255,255,255,0.35)' }} />
                           <span className={`text-[12px] flex-1 ${isCurrentWeek ? 'text-white font-medium' : 'text-white/50'}`}>Week {weekNum}</span>
                           {isCurrentWeek && <span className="text-[9px] text-white font-semibold uppercase mr-1 bg-white/20 px-1.5 py-0.5 rounded">Current</span>}
                           <span className={`text-[10px] ${isCurrentWeek ? 'text-white/50' : 'text-white/30'}`}>No file</span>
@@ -3768,12 +3768,12 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         <div key={file.id} className={`rounded ${isCurrentWeek ? 'bg-white/[0.08] border-2 border-white/30' : 'bg-white/[0.04] border border-white/[0.08] hover:border-white/15'} transition-colors`} data-testid={`module-week-${weekNum}-file-${file.id}`}>
                           <div className="flex items-center gap-2 px-2 py-2">
                             <div
-                              className={`flex items-center justify-center border-2 rounded-sm transition-colors ${isEditingInfo ? 'cursor-pointer hover:border-white/80' : ''}`}
-                              style={{ width: '18px', height: '18px', flexShrink: 0, background: complete ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'transparent', borderColor: complete ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'rgba(255,255,255,0.6)' }}
+                              className={`flex items-center justify-center rounded transition-colors ${isEditingInfo ? 'cursor-pointer hover:border-white/80' : ''}`}
+                              style={{ width: '16px', height: '16px', flexShrink: 0, background: complete ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'transparent', border: complete ? `1.5px solid ${courseInfo.colorEnd || courseInfo.color || '#22c55e'}` : '1.5px solid rgba(255,255,255,0.35)' }}
                               onClick={() => { if (isEditingInfo) handleModuleCheckToggle(file, !complete); }}
                               data-testid={`module-check-${file.id}`}
                             >
-                              {complete && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
+                              {complete && <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />}
                             </div>
                             <svg width={circleSize} height={circleSize} style={{ flexShrink: 0, transform: 'rotate(-90deg)' }}>
                               <circle cx={circleSize / 2} cy={circleSize / 2} r={radius} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={strokeWidth} />
@@ -3815,12 +3815,12 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                                   return (
                                     <div
                                       key={i}
-                                      className={`rounded-[2px] transition-colors ${isEditingInfo ? 'cursor-pointer hover:opacity-80' : ''}`}
+                                      className={`rounded transition-colors ${isEditingInfo ? 'cursor-pointer hover:opacity-80' : ''}`}
                                       style={{
-                                        width: '8px',
-                                        height: '8px',
-                                        backgroundColor: isChecked ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'rgba(255,255,255,0.15)',
-                                        border: `1px solid ${isChecked ? 'transparent' : 'rgba(255,255,255,0.3)'}`,
+                                        width: '11px',
+                                        height: '11px',
+                                        backgroundColor: isChecked ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'transparent',
+                                        border: `1.5px solid ${isChecked ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'rgba(255,255,255,0.3)'}`,
                                       }}
                                       onClick={() => { if (isEditingInfo) handleChunkToggle(file, i); }}
                                       title={`Chunk ${i + 1}${isChecked ? ' (listened)' : ''}`}
