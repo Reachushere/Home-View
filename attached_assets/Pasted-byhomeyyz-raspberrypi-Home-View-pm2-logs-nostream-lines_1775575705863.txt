@@ -1,0 +1,35 @@
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs --nostream --lines 500 --out | grep -i "Cat Light\|FileOrder\|week=\|Found next\|confirm\|TTS.*prompt\|acknowledgment\|Nest.*chunk\|tablet.*set\|tablet.*nav\|Silk.*launch"
+0|unical   | [Tablet Nav DB] GET tv: no rows found
+0|unical   | 11:20:16 AM [express] GET /api/tablet-nav 200 in 2ms :: {"action":null}
+0|unical   | [Tablet Nav DB] GET tv: no rows found
+0|unical   | 11:20:19 AM [express] GET /api/tablet-nav 200 in 2ms :: {"action":null}
+0|unical   | [Cat Lights] ====== WEBHOOK TRIGGERED ======
+0|unical   | [Cat Lights] Timestamp: 4/7/2026, 11:20:20 AM
+0|unical   | [Cat Lights] Request body: {"state":"off"}
+0|unical   | [Cat Lights] Body parsing: state="off", action="", rawToState=undefined, trigger="none"
+0|unical   | [Cat Lights] Using body state directly: off
+0|unical   | [Cat Lights] Light state: off (body state: off)
+0|unical   | [Cat Lights] Architecture: server-side TTS → Google Nest speaker (media_player.play_media)
+0|unical   | [Cat Lights] Light off — stopping all playback and saving progress
+0|unical   | [Tablet Nav DB] GET tv: no rows found
+0|unical   | 11:20:22 AM [express] GET /api/tablet-nav 200 in 2ms :: {"action":null}
+0|unical   | [Tablet Nav DB] SET master: wrote {"action":"stop_playback","goodbyeText":"","keepOpen":false,"timestamp":17755752, verify rows=1
+0|unical   | [Tablet Nav DB] SET master: wrote {"action":"stop_playback","goodbyeText":"","timestamp":1775575224695}, verify rows=1
+0|unical   | [Tablet Nav] Command SET for master: stop_playback url=none ts=1775575224695 pending=["master","tv"]
+0|unical   | 11:20:24 AM [express] POST /api/tablet-nav/set 200 in 4ms :: {"ok":true}
+0|unical   | [Tablet Nav DB] SET tv: wrote {"action":"stop_playback","keepOpen":false,"timestamp":1775575224695}, verify rows=1
+0|unical   | [Tablet Nav DB] SET tv: wrote {"action":"stop_playback","timestamp":1775575224695}, verify rows=1
+0|unical   | [Tablet Nav] Command SET for tv: stop_playback url=none ts=1775575224695 pending=["master","tv"]
+0|unical   | 11:20:24 AM [express] POST /api/tablet-nav/set 200 in 4ms :: {"ok":true}
+0|unical   | [Tablet Nav GET] tv FOUND from memory: action=stop_playback age=914ms
+0|unical   | 11:20:25 AM [express] GET /api/tablet-nav 200 in 1ms :: {"action":"stop_playback","timestamp":1775575224695}
+0|unical   | [Tablet Nav] Command acknowledged and cleared for tv
+0|unical   | 11:20:25 AM [express] POST /api/tablet-nav/ack 200 in 6ms :: {"ok":true}
+0|unical   | [Nest Playback] Aborted at chunk 1
+0|unical   | [Nest Playback] Saved progress on abort: chunk 1
+0|unical   | [TRACE 11:20:30 AM] [NestPlayback] FINALLY BLOCK — cleaning up session 1 | state={"active":false,"sessionId":1,"file":null,"chunk":null,"lightsPrompt":false,"trigger":"lights","msSinceStop":5343,"msSinceManualStop":null,"msSinceStart":null}
+0|unical   | [Cat Lights] Silk force-stopped + Fire Stick + Samsung TV turn-off sent
+0|unical   | [Cat Lights] Cleared promptPending (session 0 still current)
+0|unical   | [Cat Lights] Stopped: playback:CPPA122, Module 10 - Introduction.pdf, echoSpeakers, tv
+0|unical   | [Cat Lights] TV turn-off retry sent (2nd attempt + SLEEP key)
+byhomeyyz@raspberrypi:~/Home-View $
