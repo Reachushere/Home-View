@@ -11465,13 +11465,17 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
     try {
       const localPath = audioPath.startsWith('/') ? audioPath : `/${audioPath}`;
-      const fullLocalUrl = `http://localhost:${process.env.PORT || 5000}${localPath}`;
-      const audioResp = await fetch(fullLocalUrl);
-      if (!audioResp.ok) {
-        console.error(`[HA Upload] Failed to fetch local audio: ${audioResp.status}`);
+      const diskPath = pathMod.join(process.cwd(), 'dist', 'public', localPath);
+      const fsMod = await import('fs');
+      if (!fsMod.existsSync(diskPath)) {
+        console.error(`[HA Upload] Audio file not found on disk: ${diskPath}`);
         return null;
       }
-      const audioBuffer = Buffer.from(await audioResp.arrayBuffer());
+      const audioBuffer = fsMod.readFileSync(diskPath);
+      if (audioBuffer.length < 10000) {
+        console.error(`[HA Upload] Audio file too small (${audioBuffer.length} bytes), likely corrupted: ${diskPath}`);
+        return null;
+      }
       const fileName = `tts_${Date.now()}.mp3`;
 
       const boundary = `----HAUpload${Date.now()}`;
