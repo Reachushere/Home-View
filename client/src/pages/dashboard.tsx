@@ -6986,7 +6986,7 @@ export default function Dashboard() {
     if (currentWeekNum !== null && currentWeekNum !== selectedWeek) return { byCourse: {} as Record<string, Array<{task: Task; daysLeft: number}>>, other: [] as Array<{task: Task; daysLeft: number}> };
     const twoWeeksOut = new Date(stableToday.getTime() + 14 * 24 * 60 * 60 * 1000);
     const allCountdown = (allTasks || []).filter(t => {
-      if (t.showCountdownBar === false || t.showCountdownBarMain === false || t.isCompleted) return false;
+      if (t.showCountdownBarMain === false || t.isCompleted) return false;
       const tDue = startOfDayET(new Date(t.dueDate));
       if (tDue <= stableToday || tDue > twoWeeksOut) return false;
       return true;
@@ -11651,7 +11651,6 @@ export default function Dashboard() {
       const eventDate = new Date(e.startDate);
       const eventEndDate = new Date(e.endDate);
       if (eventEndDate < now) return false;
-      if (!eventConflictsWithTask(e)) return false;
       if (!isSameDayET(eventDate, day) || getETHours(eventDate) !== hour) return false;
       const titleClean = e.title.replace(/^\[PREP\]\s*/, '').replace(/^\[.*?\]\s*/g, '').toLowerCase().trim();
       const isDupOfExistingTask = dayTasks.some(t => {
@@ -11683,7 +11682,6 @@ export default function Dashboard() {
       const eventDate = new Date(yr, mo - 1, dy, 12, 0, 0);
       const eventDayStart = new Date(yr, mo - 1, dy);
       if (eventDayStart < todayStart) return false;
-      if (!eventConflictsWithTask(e)) return false;
       if (!isSameDayET(eventDate, day)) return false;
       const titleClean = e.title.replace(/^\[PREP\]\s*/, '').replace(/^\[.*?\]\s*/g, '').toLowerCase().trim();
       const isDupOfExistingTask = dayTasks.some(t => {
@@ -38382,7 +38380,7 @@ function TaskForm({
         hideFromSummary: data.hideFromSummary ?? false,
         hideFromCountdown: data.hideFromCountdown ?? false,
         flagged: data.flagged ?? false,
-        showCountdownBar: data.showCountdownBar ?? false,
+        showCountdownBar: data.showCountdownBar ?? true,
         showCountdownBarMain: data.showCountdownBarMain ?? true,
         showCountdownBarSummary: data.showCountdownBarSummary ?? true,
         countdownBarDays: data.countdownBarDays ?? 0,
@@ -38522,7 +38520,7 @@ function TaskForm({
         hideFromSummary: data.hideFromSummary ?? false,
         hideFromCountdown: data.hideFromCountdown ?? false,
         flagged: data.flagged ?? false,
-        showCountdownBar: data.showCountdownBar ?? false,
+        showCountdownBar: data.showCountdownBar ?? true,
         showCountdownBarMain: data.showCountdownBarMain ?? true,
         showCountdownBarSummary: data.showCountdownBarSummary ?? true,
         countdownBarDays: data.countdownBarDays ?? 0,
