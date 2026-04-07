@@ -10119,6 +10119,20 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     req.on("close", unsub);
   });
 
+  const btStormAlerts: Array<{ mac: string; name: string; count: number; window: number; threshold: number; timestamp: string; receivedAt: number }> = [];
+  app.post("/api/bt-storm-alert", (req, res) => {
+    const { mac, name, count, window, threshold, timestamp } = req.body;
+    const alert = { mac, name, count, window, threshold, timestamp, receivedAt: Date.now() };
+    btStormAlerts.push(alert);
+    if (btStormAlerts.length > 100) btStormAlerts.shift();
+    console.log(`[BT Storm] ALERT: ${mac} (${name}) — ${count} advertisements in ${window}s`);
+    res.json({ received: true });
+  });
+
+  app.get("/api/bt-storm-alerts", (_req, res) => {
+    res.json(btStormAlerts.slice(-50));
+  });
+
   app.get("/api/system-health", async (_req, res) => {
     const uptimeSeconds = Math.round((Date.now() - SERVER_START_TIME) / 1000);
     const checks: Record<string, { status: 'ok' | 'degraded' | 'down' | 'unconfigured'; message: string; details?: any }> = {};
