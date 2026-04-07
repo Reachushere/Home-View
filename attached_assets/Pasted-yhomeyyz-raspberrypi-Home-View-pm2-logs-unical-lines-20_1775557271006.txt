@@ -1,0 +1,38 @@
+yhomeyyz@raspberrypi:~/Home-View $ pm2 logs unical --lines 200 --nostream | grep -i "webhook\|automation\|cat.*light\|lights-on\|cooldown"
+0|unical   | [Cat Lights] Timestamp: 4/7/2026, 6:19:29 AM
+0|unical   | [Cat Lights] Request body: {"state":"on"}
+0|unical   | [Cat Lights] Body parsing: state="on", action="", rawToState=undefined, trigger="none"
+0|unical   | [Cat Lights] Using body state directly: on
+0|unical   | [TRACE 6:19:29 AM] [CatLights] STATE RESOLVED: on | state={"active":false,"sessionId":0,"file":null,"chunk":null,"lightsPrompt":false,"trigger":null,"msSinceStop":null,"msSinceManualStop":null,"msSinceStart":null} | {"bodyState":"on","bodyAction":"","method":"body"}
+0|unical   | [Cat Lights] Light state: on (body state: on)
+0|unical   | [Cat Lights] Architecture: server-side TTS → Google Nest speaker (media_player.play_media)
+0|unical   | 6:19:29 AM [express] POST /api/webhook/cat-lights 200 in 318ms :: {"action":"processing","reason":"Light on — processing in background"}
+0|unical   | [Cat Lights] Using cached file — syncing OneDrive in background
+0|unical   | [Cat Lights] Syncing OneDrive for 3 courses, week 12
+0|unical   | [Cat Lights] Early device wake: tablet wake + brightness sent (TV deferred until confirmation)
+0|unical   | [Cat Lights] Quick acknowledgment played via HA Cloud TTS (primary)
+0|unical   | 6:19:30 AM [express] GET /api/automation-cooldown 304 in 1ms :: {"active":false,"remaining":0,"reason":null}
+0|unical   | [Cat Lights] Found next file: your CPPA Module for week 12 — CPPA122, Module 12 - Introduction.pdf (id=231)
+0|unical   | [Cat Lights] Sending TTS prompt: "Would you like to play your CPPA Module for week 12?"
+0|unical   | [Cat Lights] OneDrive sync complete
+0|unical   | [Cat Lights] TTS prompt played via HA Cloud TTS (primary)
+0|unical   | 6:19:35 AM [express] GET /api/automation-cooldown 304 in 1ms :: {"active":false,"remaining":0,"reason":null}
+0|unical   | [Cat Lights] Waiting up to 23s for confirmation (webhook-primary, backup poll every 10s)...
+0|unical   | [Cat Lights] No confirmation received — playing CHUM FM on Echo speakers
+0|unical   | [Cat Lights] Late confirmation window open for 10 minutes (file: CPPA122, Module 12 - Introduction.pdf)
+0|unical   | [TRACE 6:20:14 AM] [CatLights] WEBHOOK RECEIVED | state={"active":false,"sessionId":0,"file":null,"chunk":null,"lightsPrompt":false,"trigger":null,"msSinceStop":null,"msSinceManualStop":null,"msSinceStart":null} | {"body":{"state":"off"}}
+0|unical   | [Cat Lights] ====== WEBHOOK TRIGGERED ======
+0|unical   | [Cat Lights] Timestamp: 4/7/2026, 6:20:14 AM
+0|unical   | [Cat Lights] Request body: {"state":"off"}
+0|unical   | [Cat Lights] Body parsing: state="off", action="", rawToState=undefined, trigger="none"
+0|unical   | [Cat Lights] Using body state directly: off
+0|unical   | [TRACE 6:20:14 AM] [CatLights] STATE RESOLVED: off | state={"active":false,"sessionId":0,"file":null,"chunk":null,"lightsPrompt":false,"trigger":null,"msSinceStop":null,"msSinceManualStop":null,"msSinceStart":null} | {"bodyState":"off","bodyAction":"","method":"body"}
+0|unical   | [Cat Lights] Light state: off (body state: off)
+0|unical   | [Cat Lights] Architecture: server-side TTS → Google Nest speaker (media_player.play_media)
+0|unical   | [TRACE 6:20:14 AM] [CatLights] LIGHT OFF — stopping all playback | state={"active":false,"sessionId":0,"file":null,"chunk":null,"lightsPrompt":false,"trigger":null,"msSinceStop":null,"msSinceManualStop":null,"msSinceStart":null}
+0|unical   | [Cat Lights] Light off — stopping all playback and saving progress
+0|unical   | [Cat Lights] Fire Stick + Samsung TV turn-off sent
+0|unical   | [Cat Lights] Cleared promptPending (session 0 still current)
+0|unical   | [Cat Lights] Stopped: echoSpeakers, tv
+0|unical   | 6:20:32 AM [express] GET /api/automation-cooldown 304 in 1ms :: {"active":false,"remaining":0,"reason":null}
+byhomeyyz@raspberrypi:~/Home-View $
