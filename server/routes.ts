@@ -11506,6 +11506,36 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     await setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: lightsNavTimestamp }, true, 'master');
     console.log(`${logPrefix} tablet-nav set for master — tablet picks up via polling`);
 
+    // Direct push to tablet via browser_mod + notify (in case tablet page isn't actively polling)
+    (async () => {
+      try {
+        const tabletBrowserIds = ['browser_mod_0da8b0a7_fd42ec2e'];
+        const tabletUrl = `${appUrl}/tablet?target=${encodeURIComponent(readerUrl)}&auth=${authParam}`;
+        const opened = await openUrlOnFireDevice(haUrl, tabletBrowserIds, readerUrl, 'tablet_cat_wall');
+        console.log(`${logPrefix} browser_mod direct push: ${opened ? 'SUCCESS' : 'FAILED (tablet browser not connected)'}`);
+        if (!opened) {
+          const notifyServices = ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat', 'mobile_app_tablet_cat_wall'];
+          for (const svc of notifyServices) {
+            try {
+              const resp = await fetch(`${haUrl}/api/services/notify/${svc}`, {
+                method: 'POST',
+                headers: haHeaders,
+                body: JSON.stringify({ message: "command_webview", data: { url: tabletUrl } }),
+              });
+              if (resp.ok) {
+                console.log(`${logPrefix} notify/${svc} command_webview: SUCCESS`);
+                break;
+              }
+            } catch (e: any) {
+              console.log(`${logPrefix} notify/${svc} command_webview: ${e.message}`);
+            }
+          }
+        }
+      } catch (e: any) {
+        console.log(`${logPrefix} Tablet direct push error (non-fatal): ${e.message}`);
+      }
+    })();
+
     const textExtractionPromise = extractFileText(fileToPlay);
 
     try {
@@ -11577,6 +11607,30 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         const tabletEntity = 'media_player.tablet_cat';
         await setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: Date.now() }, true, 'master');
         console.log(`${logPrefix} tablet-nav set for master — polling fallback ready`);
+
+        // Direct push via browser_mod + notify
+        const tabletBrowserIds = ['browser_mod_0da8b0a7_fd42ec2e'];
+        const tabletPushUrl = `${appUrl}/tablet?target=${encodeURIComponent(readerUrl)}&auth=${authParam}`;
+        const browserOpened = await openUrlOnFireDevice(haUrl, tabletBrowserIds, readerUrl, 'tablet_cat_wall');
+        console.log(`${logPrefix} browser_mod direct push: ${browserOpened ? 'SUCCESS' : 'FAILED'}`);
+        if (!browserOpened) {
+          const notifyServices = ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat', 'mobile_app_tablet_cat_wall'];
+          for (const svc of notifyServices) {
+            try {
+              const resp = await fetch(`${haUrl}/api/services/notify/${svc}`, {
+                method: 'POST',
+                headers: haHeaders,
+                body: JSON.stringify({ message: "command_webview", data: { url: tabletPushUrl } }),
+              });
+              if (resp.ok) {
+                console.log(`${logPrefix} notify/${svc} command_webview: SUCCESS`);
+                break;
+              }
+            } catch (e: any) {
+              console.log(`${logPrefix} notify/${svc} command_webview: ${e.message}`);
+            }
+          }
+        }
 
         await new Promise(r => setTimeout(r, 1500));
 
