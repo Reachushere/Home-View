@@ -1,0 +1,95 @@
+byhomeyyz@raspberrypi:~/Home-View $ cd ~/Home-View && git pull && pm2 restart all --update-env
+From https://github.com/Reachushere/Home-View
+   d2accbc00..5437723cf  main       -> origin/main
+Already up to date.
+[PM2] Applying action restartProcessId on app [all](ids: [ 0 ])
+[PM2] [unical](0) ✓
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
+│ 0  │ unical             │ fork     │ 117… │ online    │ 0%       │ 24.8mb   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+byhomeyyz@raspberrypi:~/Home-View $ grep -n 'require.*date-fns-tz' ~/Home-View/server/routes.ts
+10272:    const { toZonedTime } = require('date-fns-tz');
+byhomeyyz@raspberrypi:~/Home-View $ cd ~/Home-View && git pull && pm2 restart all --update-env
+remote: Enumerating objects: 148, done.
+remote: Counting objects: 100% (148/148), done.
+remote: Compressing objects: 100% (35/35), done.
+remote: Total 140 (delta 106), reused 139 (delta 105), pack-reused 0 (from 0)
+Receiving objects: 100% (140/140), 5.66 MiB | 4.57 MiB/s, done.
+Resolving deltas: 100% (106/106), completed with 8 local objects.
+From https://github.com/Reachushere/Home-View
+   5437723cf..5e36106b3  main       -> origin/main
+Updating 5437723cf..5e36106b3
+Fast-forward
+ attached_assets/IMG_2678_1775555478677.png | Bin 0 -> 425086 bytes
+ attached_assets/IMG_2679_1775555478677.png | Bin 0 -> 398604 bytes
+ attached_assets/IMG_2680_1775555478677.png | Bin 0 -> 418748 bytes
+ attached_assets/IMG_2681_1775555478677.png | Bin 0 -> 426575 bytes
+ attached_assets/IMG_2682_1775555478677.png | Bin 0 -> 396343 bytes
+ attached_assets/IMG_2683_1775555478677.png | Bin 0 -> 341274 bytes
+ attached_assets/IMG_2684_1775555478677.png | Bin 0 -> 394802 bytes
+ attached_assets/IMG_2685_1775555478677.png | Bin 0 -> 429792 bytes
+ attached_assets/IMG_2686_1775555478677.png | Bin 0 -> 443566 bytes
+ attached_assets/IMG_2687_1775555478677.png | Bin 0 -> 438307 bytes
+ attached_assets/IMG_2688_1775555478677.png | Bin 0 -> 412076 bytes
+ attached_assets/IMG_2689_1775555602654.png | Bin 0 -> 292023 bytes
+ attached_assets/IMG_2690_1775555602654.png | Bin 0 -> 205659 bytes
+ attached_assets/IMG_2691_1775555602654.png | Bin 0 -> 217124 bytes
+ attached_assets/IMG_2692_1775555602654.png | Bin 0 -> 195886 bytes
+ attached_assets/IMG_2693_1775555602654.png | Bin 0 -> 182629 bytes
+ attached_assets/IMG_2694_1775555602654.png | Bin 0 -> 198427 bytes
+ attached_assets/IMG_2695_1775555684695.png | Bin 0 -> 182186 bytes
+ attached_assets/IMG_2696_1775555684695.png | Bin 0 -> 216740 bytes
+ attached_assets/IMG_2697_1775555684695.png | Bin 0 -> 189233 bytes
+ attached_assets/image_1775552997065.png    | Bin 0 -> 5873 bytes
+ attached_assets/image_1775553017805.png    | Bin 0 -> 1509 bytes
+ attached_assets/image_1775553245575.png    | Bin 0 -> 6854 bytes
+ attached_assets/image_1775553418344.png    | Bin 0 -> 5192 bytes
+ attached_assets/image_1775554448585.png    | Bin 0 -> 64634 bytes
+ attached_assets/image_1775555883272.png    | Bin 0 -> 23675 bytes
+ attached_assets/image_1775556101349.png    | Bin 0 -> 19944 bytes
+ attached_assets/image_1775556253044.png    | Bin 0 -> 59055 bytes
+ attached_assets/image_1775556907263.png    | Bin 0 -> 82577 bytes
+ attached_assets/image_1775556946281.png    | Bin 0 -> 22836 bytes
+ client/src/pages/dashboard.tsx             | 301 +++++++++++++++++++++++++++++++++++++--------------------------------
+ server/routes.ts                           |  56 ++++++-------
+ 32 files changed, 191 insertions(+), 166 deletions(-)
+ create mode 100644 attached_assets/IMG_2678_1775555478677.png
+ create mode 100644 attached_assets/IMG_2679_1775555478677.png
+ create mode 100644 attached_assets/IMG_2680_1775555478677.png
+ create mode 100644 attached_assets/IMG_2681_1775555478677.png
+ create mode 100644 attached_assets/IMG_2682_1775555478677.png
+ create mode 100644 attached_assets/IMG_2683_1775555478677.png
+ create mode 100644 attached_assets/IMG_2684_1775555478677.png
+ create mode 100644 attached_assets/IMG_2685_1775555478677.png
+ create mode 100644 attached_assets/IMG_2686_1775555478677.png
+ create mode 100644 attached_assets/IMG_2687_1775555478677.png
+ create mode 100644 attached_assets/IMG_2688_1775555478677.png
+ create mode 100644 attached_assets/IMG_2689_1775555602654.png
+ create mode 100644 attached_assets/IMG_2690_1775555602654.png
+ create mode 100644 attached_assets/IMG_2691_1775555602654.png
+ create mode 100644 attached_assets/IMG_2692_1775555602654.png
+ create mode 100644 attached_assets/IMG_2693_1775555602654.png
+ create mode 100644 attached_assets/IMG_2694_1775555602654.png
+ create mode 100644 attached_assets/IMG_2695_1775555684695.png
+ create mode 100644 attached_assets/IMG_2696_1775555684695.png
+ create mode 100644 attached_assets/IMG_2697_1775555684695.png
+ create mode 100644 attached_assets/image_1775552997065.png
+ create mode 100644 attached_assets/image_1775553017805.png
+ create mode 100644 attached_assets/image_1775553245575.png
+ create mode 100644 attached_assets/image_1775553418344.png
+ create mode 100644 attached_assets/image_1775554448585.png
+ create mode 100644 attached_assets/image_1775555883272.png
+ create mode 100644 attached_assets/image_1775556101349.png
+ create mode 100644 attached_assets/image_1775556253044.png
+ create mode 100644 attached_assets/image_1775556907263.png
+ create mode 100644 attached_assets/image_1775556946281.png
+[PM2] Applying action restartProcessId on app [all](ids: [ 0 ])
+[PM2] [unical](0) ✓
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
+│ 0  │ unical             │ fork     │ 117… │ online    │ 0%       │ 18.7mb   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+byhomeyyz@raspberrypi:~/Home-View $
