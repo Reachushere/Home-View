@@ -10211,6 +10211,62 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     res.json({ overall, checks, timestamp: new Date().toISOString() });
   });
 
+  app.get("/api/automations-reference", async (_req, res) => {
+    try {
+      const fsPromises = await import("fs/promises");
+      const pathMod = await import("path");
+      const mdPath = pathMod.join(process.cwd(), "HA_Automations_Reference.md");
+      const content = await fsPromises.readFile(mdPath, "utf-8");
+      const automations: Array<{
+        id: number;
+        title: string;
+        summary: string;
+        haYaml: string;
+        appFlows: string[];
+        webhookEndpoint: string | null;
+        body: string;
+      }> = [];
+
+      const sections = content.split(/^## AUTOMATION /gm).slice(1);
+      for (const section of sections) {
+        const lines = section.split("\n");
+        const headerMatch = lines[0]?.match(/^(\d+):\s*(.+)/);
+        if (!headerMatch) continue;
+        const id = parseInt(headerMatch[1]);
+        const title = headerMatch[2].trim();
+
+        const fullText = lines.slice(1).join("\n");
+
+        const whatMatch = fullText.match(/### What it does\n([\s\S]*?)(?=\n###|\n---)/);
+        const summary = whatMatch ? whatMatch[1].trim() : "";
+
+        const haYamlMatch = fullText.match(/```yaml\n([\s\S]*?)```/);
+        const haYaml = haYamlMatch ? haYamlMatch[1].trim() : "";
+
+        const appFlows: string[] = [];
+        const appFlowMatches = fullText.matchAll(/### App Side[^\n]*\n```\n([\s\S]*?)```/g);
+        for (const m of appFlowMatches) {
+          appFlows.push(m[1].trim());
+        }
+        if (appFlows.length === 0) {
+          const altMatches = fullText.matchAll(/```\n(POST \/api\/[\s\S]*?)```/g);
+          for (const m of altMatches) {
+            appFlows.push(m[1].trim());
+          }
+        }
+
+        const webhookMatch = fullText.match(/POST (\/api\/webhook\/[^\s"]+)/);
+        const webhookEndpoint = webhookMatch ? webhookMatch[1] : null;
+
+        automations.push({ id, title, summary, haYaml, appFlows, webhookEndpoint, body: fullText.trim() });
+      }
+
+      res.json({ automations, rawLength: content.length, parsed: automations.length });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
   async function checkAndActivateSemester(): Promise<void> {
     try {
       const now = new Date();

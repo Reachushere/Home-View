@@ -209,6 +209,7 @@ import {
   Wrench,
   AlertTriangle,
   Tag,
+  Zap,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
@@ -3453,9 +3454,13 @@ export default function Dashboard() {
   const [isSystemHealthOpen, setIsSystemHealthOpen] = useState(false);
   const [systemHealthData, setSystemHealthData] = useState<any>(null);
   const [systemHealthLoading, setSystemHealthLoading] = useState(false);
-  const [healthTab, setHealthTab] = useState<'services' | 'folders'>('services');
+  const [healthTab, setHealthTab] = useState<'services' | 'folders' | 'automations'>('services');
   const [allSemestersForHealth, setAllSemestersForHealth] = useState<any[]>([]);
   const [healthFolderVerify, setHealthFolderVerify] = useState<Record<number, Record<number, { checking: boolean; exists: boolean | null }>>>({});
+  const [automationsData, setAutomationsData] = useState<any[]>([]);
+  const [automationsLoading, setAutomationsLoading] = useState(false);
+  const [expandedAutomation, setExpandedAutomation] = useState<number | null>(null);
+  const [automationPullStatus, setAutomationPullStatus] = useState<Record<number, 'idle' | 'pulling' | 'success' | 'error'>>({});
   const [healthFolderBrowse, setHealthFolderBrowse] = useState<{ semId: number; courseIdx: number; field: 'module' | 'reading' } | null>(null);
   const [healthBrowsePath, setHealthBrowsePath] = useState('/School/1. TMU/Courses');
   const [healthBrowseItems, setHealthBrowseItems] = useState<Array<{ name: string; type: string; path: string }>>([]);
@@ -22808,7 +22813,7 @@ export default function Dashboard() {
 
           {/* System Health Dialog */}
           <Dialog open={isSystemHealthOpen && desktopIsFull} onOpenChange={(open) => { setIsSystemHealthOpen(open); if (!open) { setHealthFolderBrowse(null); } }}>
-            <DialogContent className="sys-health-root text-[11px] text-white [&_*:not(input)]:text-white p-0 [&>button.absolute]:hidden" style={{ top: 'calc(50% - 30px)', maxWidth: healthTab === 'folders' ? '640px' : '440px', maxHeight: '80vh', display: 'flex', flexDirection: 'column', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, transition: 'max-width 0.2s ease', overflow: 'hidden' }}>
+            <DialogContent className="sys-health-root text-[11px] text-white [&_*:not(input)]:text-white p-0 [&>button.absolute]:hidden" style={{ top: 'calc(50% - 30px)', maxWidth: healthTab === 'automations' ? '820px' : healthTab === 'folders' ? '640px' : '440px', maxHeight: '80vh', display: 'flex', flexDirection: 'column', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, transition: 'max-width 0.2s ease', overflow: 'hidden' }}>
               <div className="flex items-center px-4 py-3 border-b border-white/40" style={{ flexShrink: 0, margin: 0, backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                 <div className="flex items-center gap-2">
                   <Activity className="h-3 w-3 text-white" />
@@ -22837,6 +22842,21 @@ export default function Dashboard() {
                   style={{ color: healthTab === 'folders' ? '#fff' : 'rgba(255,255,255,0.45)', borderBottom: healthTab === 'folders' ? '2px solid #60a5fa' : '2px solid transparent' }}
                   data-testid="health-tab-folders"
                 >Folder Links</button>
+                <button
+                  onClick={() => {
+                    setHealthTab('automations');
+                    if (automationsData.length === 0 && !automationsLoading) {
+                      setAutomationsLoading(true);
+                      fetch('/api/automations-reference').then(r => r.json()).then(data => {
+                        setAutomationsData(data.automations || []);
+                        setAutomationsLoading(false);
+                      }).catch(() => setAutomationsLoading(false));
+                    }
+                  }}
+                  className="text-[10px] font-medium py-2 px-3 transition-colors"
+                  style={{ color: healthTab === 'automations' ? '#fff' : 'rgba(255,255,255,0.45)', borderBottom: healthTab === 'automations' ? '2px solid #60a5fa' : '2px solid transparent' }}
+                  data-testid="health-tab-automations"
+                >Automations</button>
               </div>
 
               {healthTab === 'services' ? (
@@ -23117,6 +23137,139 @@ export default function Dashboard() {
                     </div>
                   </div>
                 </div>
+              )}
+              {healthTab === 'automations' && (
+              <div className="px-4 py-3" style={{ flex: 1, overflowY: 'auto' }}>
+                {automationsLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-5 w-5 animate-spin text-white/60" />
+                    <span className="ml-2 text-white/60 text-[11px]">Loading automations...</span>
+                  </div>
+                ) : automationsData.length === 0 ? (
+                  <div className="text-center text-white/40 py-8 text-[11px]">No automations reference found</div>
+                ) : (
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2 mb-2 pb-2 border-b border-white/20">
+                      <Zap className="h-3 w-3 text-amber-400" />
+                      <span className="text-[11px] font-semibold">{automationsData.length} Automations</span>
+                      <span className="text-[9px] text-white/40 ml-auto">HA_Automations_Reference.md</span>
+                    </div>
+                    {automationsData.map((auto: any) => {
+                      const isExpanded = expandedAutomation === auto.id;
+                      const pullStatus = automationPullStatus[auto.id] || 'idle';
+                      const categoryColor = auto.title.toLowerCase().includes('cat washroom') || auto.title.toLowerCase().includes('cat ') ? '#a78bfa'
+                        : auto.title.toLowerCase().includes('kitchen') ? '#f59e0b'
+                        : auto.title.toLowerCase().includes('spotify') ? '#1db954'
+                        : auto.title.toLowerCase().includes('voice') ? '#60a5fa'
+                        : auto.title.toLowerCase().includes('toothbrush') ? '#f472b6'
+                        : auto.title.toLowerCase().includes('ticker') ? '#34d399'
+                        : auto.title.toLowerCase().includes('partner') ? '#fb923c'
+                        : auto.title.toLowerCase().includes('alexa') ? '#38bdf8'
+                        : '#94a3b8';
+                      return (
+                        <div key={auto.id} data-testid={`automation-item-${auto.id}`}>
+                          <button
+                            onClick={() => setExpandedAutomation(isExpanded ? null : auto.id)}
+                            className="w-full text-left flex items-center gap-2 py-2 px-2 rounded-md transition-colors"
+                            style={{ background: isExpanded ? 'rgba(255,255,255,0.08)' : 'transparent', cursor: 'pointer', border: 'none' }}
+                            data-testid={`automation-toggle-${auto.id}`}
+                          >
+                            <div style={{ width: '4px', height: '20px', borderRadius: '2px', background: categoryColor, flexShrink: 0 }} />
+                            <span className="text-[10px] font-bold" style={{ color: categoryColor, minWidth: '20px' }}>#{auto.id}</span>
+                            <span className="text-[10px] font-medium flex-1" style={{ color: '#fff' }}>{auto.title}</span>
+                            {auto.webhookEndpoint && (
+                              <span className="text-[8px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(96,165,250,0.2)', color: '#93c5fd', fontFamily: 'monospace', flexShrink: 0 }}>
+                                {auto.webhookEndpoint.replace('/api/webhook/', '')}
+                              </span>
+                            )}
+                            <ChevronDown className="h-3 w-3 text-white/40 transition-transform" style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)', flexShrink: 0 }} />
+                          </button>
+                          {isExpanded && (
+                            <div className="mt-1 mb-2 rounded-lg" style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', minHeight: '200px' }}>
+                                <div style={{ borderRight: '1px solid rgba(255,255,255,0.08)', padding: '12px', overflowY: 'auto', maxHeight: '400px' }}>
+                                  <div className="flex items-center gap-1.5 mb-2">
+                                    <FileText className="h-3 w-3 text-white/50" />
+                                    <span className="text-[9px] font-semibold text-white/70">REFERENCE DOC</span>
+                                  </div>
+                                  <div className="text-[10px] text-white/80 mb-3" style={{ lineHeight: '1.5' }}>
+                                    {auto.summary}
+                                  </div>
+                                  {auto.haYaml && (
+                                    <div className="mb-3">
+                                      <span className="text-[8px] font-semibold text-amber-400/80 mb-1 block">HA YAML</span>
+                                      <pre className="text-[8px] p-2 rounded" style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.06)', whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: '#e2e8f0', fontFamily: "'SF Mono', 'Fira Code', monospace', monospace", lineHeight: '1.6', maxHeight: '150px', overflowY: 'auto' }}>{auto.haYaml}</pre>
+                                    </div>
+                                  )}
+                                  {auto.appFlows.length > 0 && auto.appFlows.map((flow: string, fi: number) => (
+                                    <div key={fi} className="mb-2">
+                                      <span className="text-[8px] font-semibold text-blue-400/80 mb-1 block">APP FLOW{auto.appFlows.length > 1 ? ` ${fi + 1}` : ''}</span>
+                                      <pre className="text-[8px] p-2 rounded" style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.06)', whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: '#e2e8f0', fontFamily: "'SF Mono', 'Fira Code', monospace", lineHeight: '1.6', maxHeight: '200px', overflowY: 'auto' }}>{flow}</pre>
+                                    </div>
+                                  ))}
+                                </div>
+                                <div style={{ padding: '12px', display: 'flex', flexDirection: 'column' }}>
+                                  <div className="flex items-center gap-1.5 mb-3">
+                                    <RefreshCw className="h-3 w-3 text-white/50" />
+                                    <span className="text-[9px] font-semibold text-white/70">LIVE STATUS</span>
+                                  </div>
+                                  {auto.webhookEndpoint && (
+                                    <div className="mb-3 p-2 rounded" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                                      <span className="text-[8px] text-white/50 block mb-1">Endpoint</span>
+                                      <code className="text-[9px]" style={{ color: '#93c5fd', fontFamily: "'SF Mono', 'Fira Code', monospace" }}>POST {auto.webhookEndpoint}</code>
+                                    </div>
+                                  )}
+                                  <button
+                                    onClick={async () => {
+                                      setAutomationPullStatus(prev => ({ ...prev, [auto.id]: 'pulling' }));
+                                      try {
+                                        const resp = await fetch('/api/automations-reference');
+                                        const data = await resp.json();
+                                        const updated = data.automations?.find((a: any) => a.id === auto.id);
+                                        if (updated) {
+                                          setAutomationsData(prev => prev.map(a => a.id === auto.id ? updated : a));
+                                        }
+                                        setAutomationPullStatus(prev => ({ ...prev, [auto.id]: 'success' }));
+                                        setTimeout(() => setAutomationPullStatus(prev => ({ ...prev, [auto.id]: 'idle' })), 2000);
+                                      } catch {
+                                        setAutomationPullStatus(prev => ({ ...prev, [auto.id]: 'error' }));
+                                        setTimeout(() => setAutomationPullStatus(prev => ({ ...prev, [auto.id]: 'idle' })), 3000);
+                                      }
+                                    }}
+                                    disabled={pullStatus === 'pulling'}
+                                    className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-md text-[10px] font-medium transition-colors mb-3"
+                                    style={{
+                                      background: pullStatus === 'success' ? 'rgba(34,197,94,0.2)' : pullStatus === 'error' ? 'rgba(239,68,68,0.2)' : 'rgba(96,165,250,0.15)',
+                                      border: `1px solid ${pullStatus === 'success' ? 'rgba(34,197,94,0.4)' : pullStatus === 'error' ? 'rgba(239,68,68,0.4)' : 'rgba(96,165,250,0.3)'}`,
+                                      color: pullStatus === 'success' ? '#4ade80' : pullStatus === 'error' ? '#f87171' : '#93c5fd',
+                                      cursor: pullStatus === 'pulling' ? 'wait' : 'pointer',
+                                    }}
+                                    data-testid={`automation-pull-${auto.id}`}
+                                  >
+                                    {pullStatus === 'pulling' ? (
+                                      <><Loader2 className="h-3 w-3 animate-spin" /> Pulling...</>
+                                    ) : pullStatus === 'success' ? (
+                                      <><Check className="h-3 w-3" /> Up to date</>
+                                    ) : pullStatus === 'error' ? (
+                                      <><X className="h-3 w-3" /> Pull failed</>
+                                    ) : (
+                                      <><RefreshCw className="h-3 w-3" /> Pull Latest</>
+                                    )}
+                                  </button>
+                                  <div className="flex-1 rounded p-2" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', overflowY: 'auto', maxHeight: '280px' }}>
+                                    <span className="text-[8px] font-semibold text-white/50 block mb-2">FULL REFERENCE</span>
+                                    <pre className="text-[8px]" style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: '#cbd5e1', fontFamily: "'SF Mono', 'Fira Code', monospace", lineHeight: '1.5' }}>{auto.body}</pre>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
               )}
               <div className="px-4 py-3 border-t border-white/10" style={{ flexShrink: 0 }}>
                 <button
