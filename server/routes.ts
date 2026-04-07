@@ -11384,7 +11384,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         }
 
         let silkLaunched = false;
-        const tvWrapperUrl = `${appUrl}/api/cat-wash/tv-follow`;
+        const tvWrapperUrl = `${appUrl}/api/cat-wash/tv-follow?_cb=${Date.now()}`;
         for (let silkAttempt = 1; silkAttempt <= 3; silkAttempt++) {
           try {
             const silkCmd = `am start --activity-clear-task -a android.intent.action.VIEW -d '${tvWrapperUrl}' com.amazon.cloud9`;
@@ -13043,7 +13043,7 @@ document.body.removeChild(a);
 
     currentTvFollowUrl = url;
     const appUrl = DEPLOYED_APP_URL;
-    const redirectUrl = `${appUrl}/api/cat-wash/tv-follow`;
+    const redirectUrl = `${appUrl}/api/cat-wash/tv-follow?_cb=${Date.now()}`;
     console.log(`[Cat Wash] TV redirect URL stored. Opening: ${redirectUrl}`);
     console.log(`[Cat Wash] TV will redirect to: ${url}`);
 

@@ -1,0 +1,19 @@
+ id  |                                                     original_name                                                      |                                                      display_name                                                      |         folder
+-----+------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------+-------------------------
+ 219 | Units 3,6 - 3,13.pdf                                                                                                   | Units 3,6 - 3,13.pdf                                                                                                   | week-10-casl101-module
+ 218 | CFNF400, Module 10 - Learning Objectives.pdf                                                                           | CFNF400, Module 10 - Learning Objectives.pdf                                                                           | week-10-cfnf400-module
+ 213 | CPPA122, Module 10 - Introduction.pdf                                                                                  | CPPA122, Module 10 - Introduction.pdf                                                                                  | week-10-cppa122-module
+ 214 | 156CBEBA.pdf                                                                                                           | 156CBEBA.pdf                                                                                                           | week-10-cppa122-reading
+ 215 | 26929898.pdf                                                                                                           | 26929898.pdf                                                                                                           | week-10-cppa122-reading
+ 216 | AUMA-UP42-ResPapr-CommEngageLocalComm.Jones_.Oct11.pdf                                                                 | AUMA-UP42-ResPapr-CommEngageLocalComm.Jones_.Oct11.pdf                                                                 | week-10-cppa122-reading
+ 217 | The Paradox of Participation_ An Overview of Public Participation and Local Government in Canada_26_01_13_02_25_03.pdf | The Paradox of Participation_ An Overview of Public Participation and Local Government in Canada_26_01_13_02_25_03.pdf | week-10-cppa122-reading
+ 232 | CFNF400, Module 12 - Learning Objectives.pdf                                                                           | CFNF400, Module 12 - Learning Objectives.pdf                                                                           | week-12-cfnf400-module
+ 231 | CPPA122, Module 12 - Introduction.pdf                                                                                  | CPPA122, Module 12 - Introduction.pdf                                                                                  | week-12-cppa122-module
+(9 rows)
+
+~
+~
+~
+~
+~
+~
