@@ -3695,7 +3695,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
 
             <div className="flex flex-col overflow-y-auto" style={{ gap: '5px', maxHeight: 'none', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent' }} data-testid="assignments-list">
               {allGroups.map(groupName => {
-                const tasks = (groupedTasks[groupName] || []).filter(t => !t.excludeFromGpa && t.type !== 'discussion');
+                const tasks = (groupedTasks[groupName] || []).filter(t => !t.excludeFromGpa);
                 if (tasks.length === 0) return null;
                 const isCollapsed = collapsedGroups.has(groupName);
                 const groupWeight = tasks.reduce((s, t) => s + (t.gradeWeight || 0), 0);
@@ -3724,7 +3724,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 );
               })}
 
-              {ungroupedTasks.filter(t => !t.excludeFromGpa && t.type !== 'discussion').map(task => (
+              {ungroupedTasks.filter(t => !t.excludeFromGpa).map(task => (
                 <div key={`ungrouped-${task.id}`} style={{ padding: '0 4px' }}>
                   {renderAssignmentRow(task, null)}
                 </div>
@@ -3761,7 +3761,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             )}
 
           {(() => {
-            const ungradedAll = courseTasks.filter(t => t.excludeFromGpa || t.type === 'discussion');
+            const ungradedAll = courseTasks.filter(t => t.excludeFromGpa);
             if (ungradedAll.length === 0) return null;
             return (
               <div className="mt-3" data-testid="ungraded-section">
