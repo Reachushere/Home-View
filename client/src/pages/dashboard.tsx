@@ -27466,15 +27466,16 @@ export default function Dashboard() {
                     'f2028': { type: 'fall', year: 2028 }, 'w2029': { type: 'winter', year: 2029 },
                   };
                   const dbMapping = semKeyToDbTypeLocal[semKey];
+                  let dbSemForKey: any = null;
                   if (dbMapping && allSemesterSettingsRef.current) {
-                    const dbSem = allSemesterSettingsRef.current.find((s: any) => {
+                    dbSemForKey = allSemesterSettingsRef.current.find((s: any) => {
                       const yearMatch = s.semesterName?.match(/\d{4}/);
                       const semYear = yearMatch ? parseInt(yearMatch[0]) : 0;
                       return s.semesterType === dbMapping.type && semYear === dbMapping.year;
-                    });
-                    if (dbSem) {
+                    }) || null;
+                    if (dbSemForKey) {
                       for (let ci = 1; ci <= 3; ci++) {
-                        const code = ((dbSem as any)[`course${ci}Code`] || '').trim();
+                        const code = ((dbSemForKey as any)[`course${ci}Code`] || '').trim();
                         if (!code) continue;
                         const codeNorm = code.replace(/\s/g, '').toUpperCase();
                         if (assignedCourses.some(ac => ac.code?.replace(/\s/g, '').toUpperCase() === codeNorm)) continue;
@@ -27482,7 +27483,7 @@ export default function Dashboard() {
                         dbCourses.push({
                           code: isTBD ? `TBD_SLOT${ci}` : code,
                           name: isTBD ? 'TBD' : code,
-                          fullName: (dbSem as any)[`course${ci}Name`] || 'To Be Determined',
+                          fullName: (dbSemForKey as any)[`course${ci}Name`] || 'To Be Determined',
                           period: '',
                           _dbSlot: ci,
                         } as any);
@@ -27508,7 +27509,7 @@ export default function Dashboard() {
                       const cc = c.name?.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '');
                       return cc === actualCodeNorm;
                     });
-                    const semSettings = (allSemesterSettingsRef.current || []).find((s: any) => {
+                    const semSettings = isTBDSlot && dbSemForKey ? dbSemForKey : (allSemesterSettingsRef.current || []).find((s: any) => {
                       for (let ci = 1; ci <= 3; ci++) {
                         const cField = ((s as any)[`course${ci}Code`] || '').replace(/\s/g, '').toUpperCase();
                         if (cField === actualCodeNorm) return true;
