@@ -2250,6 +2250,32 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       }
       dailyEntries.sort((a, b) => a.date.localeCompare(b.date));
 
+      const existingDates = new Set(dailyEntries.map(d => d.date));
+      const lastEntry = dailyEntries.filter(d => d.date >= todayStr).slice(-1)[0];
+      if (lastEntry) {
+        for (let dAhead = 1; dAhead <= 14; dAhead++) {
+          const futureDate = new Date(nowToronto);
+          futureDate.setDate(futureDate.getDate() + dAhead);
+          const futureDateStr = `${futureDate.getFullYear()}-${String(futureDate.getMonth() + 1).padStart(2, '0')}-${String(futureDate.getDate()).padStart(2, '0')}`;
+          if (!existingDates.has(futureDateStr)) {
+            const dayOfYear = Math.floor((new Date(futureDateStr + 'T12:00:00').getTime() - new Date(futureDate.getFullYear(), 0, 0).getTime()) / 86400000);
+            const sf = Math.cos((dayOfYear - 172) * 2 * Math.PI / 365);
+            const srMin = Math.round(397 - sf * 67);
+            const ssMin = Math.round(1170 + sf * 67);
+            dailyEntries.push({
+              date: futureDateStr,
+              high: lastEntry.high,
+              low: lastEntry.low,
+              weatherCode: lastEntry.weatherCode,
+              sunrise: `${futureDateStr}T${String(Math.floor(srMin / 60)).padStart(2, '0')}:${String(srMin % 60).padStart(2, '0')}`,
+              sunset: `${futureDateStr}T${String(Math.floor(ssMin / 60)).padStart(2, '0')}:${String(ssMin % 60).padStart(2, '0')}`,
+            });
+            existingDates.add(futureDateStr);
+          }
+        }
+        dailyEntries.sort((a, b) => a.date.localeCompare(b.date));
+      }
+
       const result = {
         current: {
           weather_code: ecConditionToWmo[currentCondition] ?? 3,
