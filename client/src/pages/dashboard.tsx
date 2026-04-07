@@ -28247,7 +28247,7 @@ export default function Dashboard() {
                     const barH = 3;
                     const barGap = 14;
                     return (
-                      <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 2 }}>
+                      <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 0 }}>
                         <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, top: 0, overflowY: 'auto', overflowX: 'hidden', pointerEvents: 'auto', scrollbarWidth: 'none' as any }}>
                           <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', minHeight: '100%' }}>
                             {courseBars.map((cd, idx) => {
@@ -28459,11 +28459,14 @@ export default function Dashboard() {
                       const widthFrac = frSpan / totalFr;
                       const barH = 3;
                       const barGap = 14;
+                      const maxOtherBars = 4;
+                      const visibleOtherBars = otherBars.slice(0, maxOtherBars);
+                      const remainingCount = otherBars.length - maxOtherBars;
                       return (
-                        <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 2 }}>
-                          <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, top: 0, overflowY: 'auto', overflowX: 'hidden', pointerEvents: 'auto', scrollbarWidth: 'none' as any }}>
+                        <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 0 }}>
+                          <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, top: 0, overflowY: 'hidden', overflowX: 'hidden', pointerEvents: 'auto', scrollbarWidth: 'none' as any }}>
                             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', minHeight: '100%' }}>
-                              {otherBars.map((cd, idx) => {
+                              {visibleOtherBars.map((cd, idx) => {
                                 const t = cd.task;
                                 const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
                                 const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
@@ -28483,6 +28486,11 @@ export default function Dashboard() {
                                   </div>
                                 );
                               })}
+                              {remainingCount > 0 && (
+                                <div style={{ height: '12px', flexShrink: 0, display: 'flex', alignItems: 'center', paddingLeft: '2px', pointerEvents: 'none' }}>
+                                  <span style={{ fontSize: '8px', fontWeight: 600, color: 'rgba(0,0,0,0.45)', letterSpacing: '0.2px' }}>+{remainingCount} more</span>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
