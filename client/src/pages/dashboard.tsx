@@ -1427,6 +1427,9 @@ export default function Dashboard() {
       const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
       const hour = eastern.getHours();
       if (hour < 9) return;
+      const localDismiss = localStorage.getItem('morning_review_dismiss_until');
+      if (localDismiss && Date.now() < Number(localDismiss)) return;
+      if (sessionStorage.getItem('morning_review_shown_this_session') === 'true') return;
       try {
         const dismissRes = await fetch('/api/morning-review/dismiss-until');
         if (dismissRes.ok) {
@@ -1442,6 +1445,7 @@ export default function Dashboard() {
           if (lastShownData.date === todayStr) return;
         }
       } catch (_) {}
+      sessionStorage.setItem('morning_review_shown_this_session', 'true');
       try {
         const syncRes = await fetch('/api/morning-review/sync-all', { method: 'POST' });
         if (syncRes.ok) {
