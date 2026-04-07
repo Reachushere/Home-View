@@ -16359,7 +16359,7 @@ export default function Dashboard() {
                   fetch('/api/google/calendar/events').catch(() => {}),
                   fetch('/api/tasks').catch(() => {}),
                   fetch('/api/announcements').catch(() => {}),
-                  fetch('/api/weather').then(r => r.json()).then(data => { if (data) setWeatherData(data); }).catch(() => {}),
+                  fetch('/api/weather').then(r => r.json()).then(data => { if (data?.current) { const daily = data.daily ? data.daily.time.map((d: string, i: number) => ({ date: d, high: Math.round(data.daily.temperature_2m_max[i]), low: Math.round(data.daily.temperature_2m_min[i]), weatherCode: data.daily.weather_code?.[i] ?? undefined, sunrise: data.daily.sunrise?.[i] ?? undefined, sunset: data.daily.sunset?.[i] ?? undefined })) : []; const nowET = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' })); const todayStr = `${nowET.getFullYear()}-${String(nowET.getMonth() + 1).padStart(2, '0')}-${String(nowET.getDate()).padStart(2, '0')}`; const todayDaily = daily.find((d: any) => d.date === todayStr); const hourly = data.hourly ? data.hourly.time.map((t: string, i: number) => ({ time: t, temp: Math.round(data.hourly.temperature_2m[i]), weatherCode: data.hourly.weather_code[i] ?? 0 })) : []; setWeatherData({ code: data.current.weather_code, temp: data.current.temperature_2m, windSpeed: data.current.wind_speed_10m, isDay: data.current.is_day === 1, sunrise: todayDaily?.sunrise, sunset: todayDaily?.sunset, daily, hourly }); } }).catch(() => {}),
                   fetch('/api/spotify/now-playing').catch(() => {}),
                 ]);
                 refreshFileCounts();
