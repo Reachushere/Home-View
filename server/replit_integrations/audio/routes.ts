@@ -1,7 +1,7 @@
 import express, { type Express, type Request, type Response } from "express";
-import OpenAI from "openai";
 import { chatStorage } from "../chat/storage";
-import { openai, speechToText, ensureCompatibleFormat } from "./client";
+import { ensureCompatibleFormat } from "./client";
+import { getApprovedOpenAIConfig } from "../../openai-approval";
 
 const audioBodyParser = express.json({ limit: "50mb" });
 
@@ -62,10 +62,26 @@ export function registerAudioRoutes(app: Express): void {
         return res.status(400).json({ error: "Audio data (base64) is required" });
       }
 
+      const config = await getApprovedOpenAIConfig("Voice Chat", "Process voice message with AI", "~$0.05-0.15");
+      if (!config) {
+        return res.status(503).json({ error: "OpenAI not available — approval denied or timed out" });
+      }
+
       const rawBuffer = Buffer.from(audio, "base64");
       const { buffer: audioBuffer, format: inputFormat } = await ensureCompatibleFormat(rawBuffer);
 
-      const userTranscript = await speechToText(audioBuffer, inputFormat);
+      const OpenAI = (await import("openai")).default;
+      const { toFile } = await import("openai");
+      const cfgOpts: any = { apiKey: config.apiKey };
+      if (config.baseURL) cfgOpts.baseURL = config.baseURL;
+      const openai = new OpenAI(cfgOpts);
+
+      const file = await toFile(audioBuffer, `audio.${inputFormat}`);
+      const transcription = await openai.audio.transcriptions.create({
+        file,
+        model: "gpt-4o-mini-transcribe",
+      });
+      const userTranscript = transcription.text;
 
       await chatStorage.createMessage(conversationId, "user", userTranscript);
 
@@ -82,9 +98,7 @@ export function registerAudioRoutes(app: Express): void {
       res.write(`data: ${JSON.stringify({ type: "user_transcript", data: userTranscript })}\n\n`);
 
       const stream = await openai.chat.completions.create({
-          model: "gpt-audio",
-          modalities: ["text", "audio"],
-          audio: { voice, format: "pcm16" },
+          model: "gpt-4o-mini",
           messages: chatHistory,
           stream: true,
         });
@@ -95,13 +109,9 @@ export function registerAudioRoutes(app: Express): void {
         const delta = chunk.choices?.[0]?.delta as any;
         if (!delta) continue;
 
-        if (delta?.audio?.transcript) {
-          assistantTranscript += delta.audio.transcript;
-          res.write(`data: ${JSON.stringify({ type: "transcript", data: delta.audio.transcript })}\n\n`);
-        }
-
-        if (delta?.audio?.data) {
-          res.write(`data: ${JSON.stringify({ type: "audio", data: delta.audio.data })}\n\n`);
+        if (delta?.content) {
+          assistantTranscript += delta.content;
+          res.write(`data: ${JSON.stringify({ type: "transcript", data: delta.content })}\n\n`);
         }
       }
 

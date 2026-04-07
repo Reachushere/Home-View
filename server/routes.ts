@@ -404,11 +404,11 @@ async function generateAndSaveTTSAudio(text: string, fileId: string, voice: stri
     .trim()
     .slice(0, 4096); // OpenAI limit
 
-  console.log(`Generating OpenAI TTS for ${normalizedText.length} chars, file: ${fileId}`);
+  console.log(`Generating Edge TTS for ${normalizedText.length} chars, file: ${fileId}`);
 
   const ttsStart = Date.now();
   const audioBuffer = await textToSpeech(normalizedText, voice as "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer", "mp3", slowPace);
-  console.log(`OpenAI TTS completed in ${Date.now() - ttsStart}ms, ${audioBuffer.length} bytes`);
+  console.log(`Edge TTS completed in ${Date.now() - ttsStart}ms, ${audioBuffer.length} bytes`);
 
   if (audioBuffer.length === 0) {
     throw new Error(`TTS returned empty audio buffer for file: ${fileId}`);

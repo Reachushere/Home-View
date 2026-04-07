@@ -1,10 +1,6 @@
 import type { Express, Request, Response } from "express";
-import OpenAI from "openai";
 import { chatStorage } from "./storage";
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || 'dummy-key-not-configured',
-});
+import { getApprovedOpenAIConfig } from "../../openai-approval";
 
 export function registerChatRoutes(app: Express): void {
   app.get("/api/conversations", async (req: Request, res: Response) => {
@@ -59,6 +55,11 @@ export function registerChatRoutes(app: Express): void {
       const conversationId = parseInt(String(req.params.id));
       const { content } = req.body;
 
+      const config = await getApprovedOpenAIConfig("Chat", "Send a chat message", "~$0.01-0.05");
+      if (!config) {
+        return res.status(503).json({ error: "OpenAI not available — approval denied or timed out" });
+      }
+
       await chatStorage.createMessage(conversationId, "user", content);
 
       const messages = await chatStorage.getMessagesByConversation(conversationId);
@@ -71,8 +72,13 @@ export function registerChatRoutes(app: Express): void {
       res.setHeader("Cache-Control", "no-cache");
       res.setHeader("Connection", "keep-alive");
 
+      const OpenAI = (await import("openai")).default;
+      const cfgOpts: any = { apiKey: config.apiKey };
+      if (config.baseURL) cfgOpts.baseURL = config.baseURL;
+      const openai = new OpenAI(cfgOpts);
+
       const stream = await openai.chat.completions.create({
-          model: "gpt-5.1",
+          model: "gpt-4o-mini",
           messages: chatMessages,
           stream: true,
           max_completion_tokens: 2048,
