@@ -2114,7 +2114,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
         'exceptional': 0,
       };
 
-      const [stateRes, forecastRes, sunRes, hourlyRes] = await Promise.allSettled([
+      const [stateRes, forecastRes, sunRes, hourlyRes, haHourlyRes] = await Promise.allSettled([
         fetch(`${haUrl}/api/states/weather.toronto_forecast`, { headers }),
         fetch(`${haUrl}/api/services/weather/get_forecasts?return_response`, {
           method: 'POST', headers,
@@ -2122,12 +2122,39 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
         }),
         fetchWithRetry('https://api.open-meteo.com/v1/forecast?latitude=43.6275&longitude=-79.3962&daily=sunrise,sunset,weather_code,temperature_2m_max,temperature_2m_min&timezone=America/Toronto&forecast_days=10&past_days=7'),
         fetchWithRetry('https://api.open-meteo.com/v1/forecast?latitude=43.6275&longitude=-79.3962&hourly=temperature_2m,weather_code&timezone=America/Toronto&forecast_days=2'),
+        fetch(`${haUrl}/api/services/weather/get_forecasts?return_response`, {
+          method: 'POST', headers,
+          body: JSON.stringify({ entity_id: 'weather.toronto_forecast', type: 'hourly' }),
+        }),
       ]);
 
       const stateData = stateRes.status === 'fulfilled' && stateRes.value.ok ? await stateRes.value.json() : { state: 'cloudy', attributes: {} };
       const forecastData = forecastRes.status === 'fulfilled' && forecastRes.value.ok ? await forecastRes.value.json() : {};
       const sunData = sunRes.status === 'fulfilled' && sunRes.value.ok ? await sunRes.value.json() : { daily: { time: [], sunrise: [], sunset: [], weather_code: [], temperature_2m_max: [], temperature_2m_min: [] } };
-      const hourlyData = hourlyRes.status === 'fulfilled' && hourlyRes.value.ok ? await hourlyRes.value.json() : { hourly: { time: [], temperature_2m: [], weather_code: [] } };
+      let hourlyData = hourlyRes.status === 'fulfilled' && hourlyRes.value.ok ? await hourlyRes.value.json() : { hourly: { time: [], temperature_2m: [], weather_code: [] } };
+
+      if ((!hourlyData.hourly?.time?.length || hourlyData.hourly.time.length === 0) && haHourlyRes.status === 'fulfilled' && haHourlyRes.value.ok) {
+        try {
+          const haHourly = await haHourlyRes.value.json();
+          const haForecasts = haHourly?.service_response?.['weather.toronto_forecast']?.forecast || [];
+          if (haForecasts.length > 0) {
+            const times: string[] = [];
+            const temps: number[] = [];
+            const codes: number[] = [];
+            for (const fc of haForecasts) {
+              if (!fc.datetime) continue;
+              times.push(fc.datetime.replace(' ', 'T').substring(0, 16));
+              temps.push(fc.temperature ?? 0);
+              const wmo = ecConditionToWmo[fc.condition] ?? 3;
+              codes.push(wmo);
+            }
+            hourlyData = { hourly: { time: times, temperature_2m: temps, weather_code: codes } };
+            console.log(`[Weather] Using HA hourly forecast: ${times.length} entries`);
+          }
+        } catch (e) {
+          console.log("[Weather] Failed to parse HA hourly forecast");
+        }
+      }
 
       const haAvailable = stateRes.status === 'fulfilled' && stateRes.value.ok;
       if (!haAvailable) console.log("[Weather] HA unavailable, using Open-Meteo fallback for current conditions");
