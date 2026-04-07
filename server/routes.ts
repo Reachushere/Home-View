@@ -9773,6 +9773,26 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     }
   });
 
+  app.get("/api/automation-cooldown", (_req, res) => {
+    const now = Date.now();
+    const msSinceStop = now - lastPlaybackStoppedAt;
+    const msSinceManualStop = catWashManuallyStoppedAt ? now - catWashManuallyStoppedAt.getTime() : null;
+    const uptimeMs = now - SERVER_START_TIME;
+    let cooldownRemaining = 0;
+    let reason: string | null = null;
+    if (uptimeMs < SERVER_STARTUP_COOLDOWN_MS) {
+      cooldownRemaining = Math.ceil((SERVER_STARTUP_COOLDOWN_MS - uptimeMs) / 1000);
+      reason = 'startup';
+    } else if (msSinceManualStop !== null && msSinceManualStop < 120000) {
+      cooldownRemaining = Math.ceil((120000 - msSinceManualStop) / 1000);
+      reason = 'manual-stop';
+    } else if (lastPlaybackStoppedAt > 0 && msSinceStop < 60000) {
+      cooldownRemaining = Math.ceil((60000 - msSinceStop) / 1000);
+      reason = 'post-stop';
+    }
+    res.json({ active: cooldownRemaining > 0, remaining: cooldownRemaining, reason });
+  });
+
   app.get("/api/health", async (_req, res) => {
     const uptimeSeconds = Math.round((Date.now() - SERVER_START_TIME) / 1000);
     res.json({

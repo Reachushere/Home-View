@@ -1365,33 +1365,26 @@ export default function Dashboard() {
   const [cooldownFading, setCooldownFading] = useState(false);
   useEffect(() => {
     let interval: ReturnType<typeof setInterval> | null = null;
-    let fadeTimeout: ReturnType<typeof setTimeout> | null = null;
-    let hideTimeout: ReturnType<typeof setTimeout> | null = null;
     const check = async () => {
       try {
-        const res = await fetch('/api/health');
+        const res = await fetch('/api/automation-cooldown');
         if (res.ok) {
           const data = await res.json();
-          const uptime = data.uptime || 0;
-          if (uptime < 60) {
-            const remaining = 60 - uptime;
-            setCooldownSeconds(remaining);
+          if (data.active && data.reason !== 'startup') {
+            setCooldownSeconds(data.remaining);
             setCooldownFading(false);
             if (!interval) {
               interval = setInterval(async () => {
                 try {
-                  const r2 = await fetch('/api/health');
+                  const r2 = await fetch('/api/automation-cooldown');
                   if (r2.ok) {
                     const d2 = await r2.json();
-                    const rem = 60 - (d2.uptime || 0);
-                    if (rem <= 0) {
-                      setCooldownSeconds(0);
-                      setCooldownFading(true);
+                    if (!d2.active || d2.reason === 'startup') {
+                      setCooldownSeconds(null);
+                      setCooldownFading(false);
                       if (interval) { clearInterval(interval); interval = null; }
-                      fadeTimeout = setTimeout(() => {}, 0);
-                      hideTimeout = setTimeout(() => { setCooldownSeconds(null); setCooldownFading(false); }, 120000);
                     } else {
-                      setCooldownSeconds(rem);
+                      setCooldownSeconds(d2.remaining);
                     }
                   }
                 } catch {}
@@ -1404,7 +1397,8 @@ export default function Dashboard() {
       } catch {}
     };
     check();
-    return () => { if (interval) clearInterval(interval); if (fadeTimeout) clearTimeout(fadeTimeout); if (hideTimeout) clearTimeout(hideTimeout); };
+    const pollInterval = setInterval(check, 5000);
+    return () => { if (interval) clearInterval(interval); clearInterval(pollInterval); };
   }, []);
   const [processingReviewIds, setProcessingReviewIds] = useState<Set<number>>(new Set());
   const [reviewMode, setReviewMode] = useState<'all' | 'individual'>('all');
