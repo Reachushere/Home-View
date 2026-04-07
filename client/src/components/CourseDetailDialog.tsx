@@ -3418,7 +3418,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-1.5 flex-wrap">
                             <span className="text-[12px] font-semibold text-white">{dateRange}</span>
-                            {isCurrent && <span className="text-[9px] px-1.5 py-0.5 bg-blue-500/25 text-blue-200 rounded font-semibold uppercase">Current</span>}
+                            {isCurrent && <span className="text-[9px] px-1.5 py-0.5 bg-white/20 text-white rounded font-semibold uppercase">Current</span>}
                             {hasCustomLabel && (
                               <span className="text-[10px] px-1 py-0.5 bg-amber-500/15 text-amber-300 rounded">
                                 {edit.courseWeekLabel}
