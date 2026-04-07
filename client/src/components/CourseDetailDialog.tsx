@@ -351,6 +351,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     try { return localStorage.getItem(`discussionDeadline_${courseCodeClean}_time`) || '23:59'; } catch { return '23:59'; }
   });
   const [generatingDeadlines, setGeneratingDeadlines] = useState(false);
+  const [removingDeadlines, setRemovingDeadlines] = useState(false);
   const weekMappingsRef = useRef<HTMLDivElement>(null);
   const assignmentsRef = useRef<HTMLDivElement>(null);
   const modulesRef = useRef<HTMLDivElement>(null);
@@ -470,6 +471,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
       const result = await resp.json();
       if (resp.ok) {
         toast({ title: 'Deadlines generated', description: `Created ${result.created} tasks (${result.skipped} already existed)` });
+        queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
       } else {
         toast({ title: 'Error', description: result.error || 'Failed to generate deadlines', variant: 'destructive' });
       }
@@ -479,6 +481,28 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
       setGeneratingDeadlines(false);
     }
   }, [courseCodeClean, courseInfo.fullName, courseInfo.courseName, moduleDueDay, moduleDueTime, discussionEnabled, discussionDueDay, discussionDueTime, toast]);
+
+  const removeWeeklyDeadlines = useCallback(async () => {
+    setRemovingDeadlines(true);
+    try {
+      const resp = await fetch('/api/tasks/remove-weekly-deadlines', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ courseCode: courseCodeClean }),
+      });
+      const result = await resp.json();
+      if (resp.ok) {
+        toast({ title: 'Tasks removed', description: `Removed ${result.removed} generated tasks` });
+        queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+      } else {
+        toast({ title: 'Error', description: result.error || 'Failed to remove', variant: 'destructive' });
+      }
+    } catch (err: any) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setRemovingDeadlines(false);
+    }
+  }, [courseCodeClean, toast]);
 
   const { uploadFile, isUploading } = useUpload();
   const [editInfo, setEditInfo] = useState({
@@ -3100,18 +3124,39 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     />
                   </div>
                 )}
-                <div className="flex items-center gap-2 mt-1">
-                  <Button
-                    size="sm"
-                    onClick={generateWeeklyDeadlines}
-                    disabled={!moduleDueDay || generatingDeadlines}
-                    className="h-6 px-3 text-[10px] bg-green-500/20 hover:bg-green-500/30 text-green-300 border border-green-500/30 disabled:opacity-40"
-                    data-testid="button-generate-deadlines"
-                  >
-                    {generatingDeadlines ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Calendar className="h-3 w-3 mr-1" />}
-                    Generate Tasks for All Weeks
-                  </Button>
-                </div>
+                {(() => {
+                  const generatedTaskCount = allTasks.filter(t => {
+                    const tCode = (t.courseName || '').split(' - ')[0]?.replace(/\s/g, '').toUpperCase();
+                    return tCode === courseCodeClean.toUpperCase() && (t.type === 'module' || t.type === 'discussion') && t.weekNumber && t.weekNumber >= 1;
+                  }).length;
+                  const hasGenerated = generatedTaskCount > 0;
+                  return (
+                    <div className="flex items-center gap-2 mt-1">
+                      <Button
+                        size="sm"
+                        onClick={generateWeeklyDeadlines}
+                        disabled={!moduleDueDay || generatingDeadlines}
+                        className="h-7 px-4 text-[11px] font-semibold bg-green-600 hover:bg-green-700 text-white border border-green-400 disabled:opacity-40 shadow-md"
+                        data-testid="button-generate-deadlines"
+                      >
+                        {generatingDeadlines ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : <Calendar className="h-3.5 w-3.5 mr-1.5" />}
+                        Generate Tasks for All Weeks
+                      </Button>
+                      {hasGenerated && (
+                        <Button
+                          size="sm"
+                          onClick={removeWeeklyDeadlines}
+                          disabled={removingDeadlines}
+                          className="h-7 px-3 text-[11px] font-semibold bg-red-600 hover:bg-red-700 text-white border border-red-400 disabled:opacity-40 shadow-md"
+                          data-testid="button-remove-deadlines"
+                        >
+                          {removingDeadlines ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : <Undo2 className="h-3.5 w-3.5 mr-1.5" />}
+                          Remove All ({generatedTaskCount})
+                        </Button>
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
 
               <div className="mt-2 bg-white/5 border border-white/15 rounded-lg p-3 space-y-1" data-testid="week-mappings-panel">

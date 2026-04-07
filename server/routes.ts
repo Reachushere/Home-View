@@ -4029,6 +4029,30 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
+  app.post("/api/tasks/remove-weekly-deadlines", async (req, res) => {
+    try {
+      const { courseCode } = req.body;
+      if (!courseCode) {
+        return res.status(400).json({ error: "courseCode is required" });
+      }
+      const allTasks = await storage.getTasks({});
+      const toDelete = allTasks.filter(t => {
+        const tCode = (t.courseName || '').split(' - ')[0]?.replace(/\s/g, '').toUpperCase();
+        return tCode === courseCode.toUpperCase() && (t.type === 'module' || t.type === 'discussion') && t.weekNumber && t.weekNumber >= 1;
+      });
+      let removed = 0;
+      for (const t of toDelete) {
+        await storage.deleteTask(t.id);
+        removed++;
+      }
+      console.log(`[WeeklyDeadlines] Removed ${removed} tasks for ${courseCode}`);
+      res.json({ success: true, removed });
+    } catch (error: any) {
+      console.error("[WeeklyDeadlines] Remove error:", error);
+      res.status(500).json({ error: error.message || "Failed to remove deadlines" });
+    }
+  });
+
   // POST /api/tasks/auto-create-file-tasks - Auto-create tasks for module/reading files without corresponding tasks
   app.post("/api/tasks/auto-create-file-tasks", async (req, res) => {
     try {
