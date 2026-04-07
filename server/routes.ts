@@ -8318,9 +8318,9 @@ async function pollStatus(timeout){
       }
       if (toTranslate.length > 0) {
         const OpenAI = (await import("openai")).default;
-        const _tApiKey = process.env.OPENAI_API_KEY || process.env.AI_INTEGRATIONS_OPENAI_API_KEY;
+        const _tApiKey = process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY;
         const _tCfg: any = { apiKey: _tApiKey };
-        if (!process.env.OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL) {
+        if (process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL) {
           _tCfg.baseURL = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
         }
         const openai = new OpenAI(_tCfg);
