@@ -1965,7 +1965,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
           const codeChanged = slot.oldCode !== slot.newCode;
           const nameChanged = slot.oldName !== slot.newName;
           if ((codeChanged || nameChanged) && slot.newCode && slot.newName) {
-            const newFolderName = `${slot.newCode} - ${slot.newName}`;
+            const newFolderName = buildCourseFolderName(slot.newCode, slot.newName);
             try {
               const { renameOneDriveFolder } = await import("./onedrive");
               const yearMatch = existing.semesterName?.match(/\d{4}/);
@@ -3839,19 +3839,24 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         const code = activeSemester[`course${i}Code` as keyof typeof activeSemester];
         const name = activeSemester[`course${i}Name` as keyof typeof activeSemester];
         if (String(code || "").toUpperCase() === courseCode.toUpperCase()) {
-          const nameStr = String(name || "");
-          const codeStr = String(code || "");
-          if (nameStr.toUpperCase().startsWith(codeStr.toUpperCase())) {
-            courseFullName = nameStr;
-          } else {
-            courseFullName = `${codeStr} - ${nameStr}`;
-          }
+          courseFullName = buildCourseFolderName(String(code || ""), String(name || ""));
           break;
         }
       }
       if (!courseFullName) courseFullName = courseCode;
 
-      const courseFolderPath = `/School/1. TMU/Courses/${year}/${semType}/${courseFullName}`;
+      const semBasePath = `/School/1. TMU/Courses/${year}/${semType}`;
+      let courseFolderPath = `${semBasePath}/${courseFullName}`;
+
+      try {
+        const semChildren = await listOneDriveFolderChildren(semBasePath);
+        const matchingFolder = (semChildren || []).find((f: any) =>
+          f.folder && f.name.toUpperCase().startsWith(courseCode.toUpperCase())
+        );
+        if (matchingFolder) {
+          courseFolderPath = `${semBasePath}/${matchingFolder.name}`;
+        }
+      } catch (e) {}
 
       try {
         await createOneDriveFolder(courseFolderPath, "Essays");
@@ -5971,8 +5976,8 @@ async function pollStatus(timeout){
 
       const effectiveOldCode = (oldCode || '').replace(/\s/g, '');
       const effectiveNewCode = (newCode || '').replace(/\s/g, '');
-      const oldFolderName = oldName ? `${effectiveOldCode} - ${oldName}` : effectiveOldCode;
-      const newFolderName = newName ? `${effectiveNewCode} - ${newName}` : effectiveNewCode;
+      const oldFolderName = buildCourseFolderName(effectiveOldCode, oldName || '');
+      const newFolderName = buildCourseFolderName(effectiveNewCode, newName || '');
 
       if (oldFolderName === newFolderName) {
         return res.json({ success: true, action: 'no_change' });
@@ -10567,8 +10572,12 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
                   foundFolder = unrecognized[0];
                   break;
                 }
-                const allTbdCodes = courseSlots.filter(s => s.code?.toLowerCase().startsWith('tbd')).map(s => s.code!.toUpperCase()).sort();
-                const tbdIdx = allTbdCodes.indexOf(slot.code.toUpperCase());
+                const missingTbdCodes = courseSlots.filter(s => {
+                  if (!s.code?.toLowerCase().startsWith('tbd')) return false;
+                  const expName = `${s.code} - ${s.name || 'TBD'}`;
+                  return !folders.some((f: any) => f.name === expName);
+                }).map(s => s.code!.toUpperCase()).sort();
+                const tbdIdx = missingTbdCodes.indexOf(slot.code.toUpperCase());
                 if (unrecognized.length > 0 && tbdIdx >= 0 && tbdIdx < unrecognized.length) {
                   foundFolder = unrecognized[tbdIdx];
                   break;
@@ -10597,8 +10606,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
           if (foundFolder && foundFolder.name !== expectedFolderName) {
             const parts = foundFolder.name.split(' - ');
-            const newCode = parts[0].trim();
-            const newName = parts.length >= 2 ? parts.slice(1).join(' - ').trim() : parts[0].trim();
+            const hasCodeNameFormat = parts.length >= 2 && /^[A-Z]{3,5}\d{2,4}$/i.test(parts[0].trim());
+            const newCode = hasCodeNameFormat ? parts[0].trim() : foundFolder.name.trim();
+            const newName = hasCodeNameFormat ? parts.slice(1).join(' - ').trim() : foundFolder.name.trim();
             if (!newCode) continue;
 
             const updates: Record<string, string> = {};
@@ -16815,7 +16825,7 @@ document.body.removeChild(a);
       }
 
       const codeClean = courseCode.replace(/\s/g, '');
-      const courseFolderName = courseName ? `${codeClean} - ${courseName}` : codeClean;
+      const courseFolderName = buildCourseFolderName(codeClean, courseName || '');
       const weekFolderName = `Week ${weekNum} - ${weekDateRange}`;
       const subFolder = uploadType === 'module' ? 'Module' : 'Reading';
       const oneDrivePath = `/School/1. TMU/Courses/${year}/${semType}/${courseFolderName}/${weekFolderName}/${subFolder}`;

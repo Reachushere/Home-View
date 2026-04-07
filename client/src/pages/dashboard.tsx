@@ -23780,10 +23780,12 @@ export default function Dashboard() {
                     for (const slot of slots) {
                       if (slot.code) {
                         const isTBD = slot.code.toUpperCase().startsWith('TBD');
+                        const isStandardCode = /^[A-Z]{3,5}\d{2,4}$/i.test(slot.code.replace(/\s/g, ''));
+                        const codeAndNameSame = slot.code === slot.name;
                         courses.push({
                           code: slot.code,
-                          name: isTBD ? slot.code.toUpperCase() : slot.code,
-                          fullName: slot.name || 'To Be Determined',
+                          name: isTBD ? slot.code.toUpperCase() : (isStandardCode ? slot.code : (slot.name || slot.code)),
+                          fullName: codeAndNameSame ? '' : (isTBD ? 'TBD' : (slot.name || '')),
                           period: slot.period,
                         });
                       }
