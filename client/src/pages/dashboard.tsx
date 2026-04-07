@@ -23251,7 +23251,42 @@ export default function Dashboard() {
                     { key: 'f2028', year: 2028, label: 'Fall 2028', dates: 'September 11 – December 15, 2028' },
                     { key: 'w2029', year: 2029, label: 'Winter 2029', dates: 'January 8 – April 13, 2029' },
                   ];
-                  const semesterDefs = semesterMeta.map(m => ({ ...m, courses: semesterCourseAssignments[m.key] || [] }));
+                  const semKeyToDbType: Record<string, { type: string; year: number }> = {};
+                  semesterMeta.forEach(m => {
+                    const type = m.key.startsWith('ss') ? 'spring_summer' : m.key.startsWith('f') ? 'fall' : 'winter';
+                    semKeyToDbType[m.key] = { type, year: m.year };
+                  });
+
+                  const buildCoursesFromDb = (semKey: string): SemCourse[] => {
+                    const mapping = semKeyToDbType[semKey];
+                    if (!mapping || !allSemesterSettings) return semesterCourseAssignments[semKey] || [];
+                    const dbSem = allSemesterSettings.find((s: any) => {
+                      const yearMatch = s.semesterName?.match(/\d{4}/);
+                      const semYear = yearMatch ? parseInt(yearMatch[0]) : 0;
+                      return s.semesterType === mapping.type && semYear === mapping.year;
+                    });
+                    if (!dbSem) return semesterCourseAssignments[semKey] || [];
+                    const courses: SemCourse[] = [];
+                    const slots = [
+                      { code: dbSem.course1Code, name: dbSem.course1Name, period: '' },
+                      { code: dbSem.course2Code, name: dbSem.course2Name, period: '' },
+                      { code: dbSem.course3Code, name: dbSem.course3Name, period: '' },
+                    ];
+                    for (const slot of slots) {
+                      if (slot.code) {
+                        const isTBD = slot.code.toUpperCase().startsWith('TBD');
+                        courses.push({
+                          code: slot.code,
+                          name: isTBD ? 'TBD' : slot.code,
+                          fullName: slot.name || 'To Be Determined',
+                          period: slot.period,
+                        });
+                      }
+                    }
+                    return courses.length > 0 ? courses : (semesterCourseAssignments[semKey] || []);
+                  };
+
+                  const semesterDefs = semesterMeta.map(m => ({ ...m, courses: buildCoursesFromDb(m.key) }));
 
                   const allDefCodes = new Set(semesterDefs.flatMap(s => s.courses.map(c => c.code.toUpperCase().replace(/\s/g, ''))));
                   const currentSemKey = (() => {
@@ -23343,6 +23378,19 @@ export default function Dashboard() {
                     const dotColor = (() => {
                       if (currentCourse) {
                         return currentCourse.colorEnd ? `linear-gradient(to right, ${currentCourse.color}, ${currentCourse.colorEnd})` : currentCourse.color;
+                      }
+                      if (allSemesterSettings) {
+                        const cc = semCourse.code.replace(/\s/g, '');
+                        for (const sem of allSemesterSettings) {
+                          for (let i = 1; i <= 3; i++) {
+                            const sc = ((sem as any)[`course${i}Code`] || '').replace(/\s/g, '');
+                            if (sc.toUpperCase() === cc.toUpperCase()) {
+                              const c = (sem as any)[`course${i}Color`];
+                              const ce = (sem as any)[`course${i}ColorEnd`];
+                              if (c) return ce ? `linear-gradient(to right, ${c}, ${ce})` : c;
+                            }
+                          }
+                        }
                       }
                       try {
                         const cd = localStorage.getItem('certCourseData');
