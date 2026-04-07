@@ -11441,101 +11441,6 @@ export default function Dashboard() {
   }, []);
 
 
-  useEffect(() => {
-    const scrollEl = calendarScrollRef.current;
-    if (!scrollEl) return;
-    const clearBarHighlight = () => {
-      const overlayEl = countdownOverlayRef.current;
-      if (!overlayEl) return;
-      overlayEl.style.zIndex = '1';
-      overlayEl.querySelectorAll('.countdown-bar-wrapper').forEach(el => {
-        (el as HTMLElement).style.opacity = '';
-        (el as HTMLElement).style.pointerEvents = '';
-        (el as HTMLElement).style.zIndex = '1';
-      });
-      const bg = document.getElementById('cbar-hover-bg-portal');
-      if (bg) bg.remove();
-    };
-    const handleMouseMove = (e: MouseEvent) => {
-      const overlayEl = countdownOverlayRef.current;
-      if (!overlayEl) return;
-      const barsData = countdownBarsDataRef.current;
-      if (barsData.length === 0) return;
-      const target = e.target as HTMLElement;
-      const isOverTask = !!target.closest('[data-testid^="time-task-"], [data-testid^="gcal-event-"]');
-      if (isOverTask) {
-        if (activeBarIdxRef.current >= 0) { clearBarHighlight(); activeBarIdxRef.current = -1; }
-        return;
-      }
-      const overlayRect = overlayEl.getBoundingClientRect();
-      const barGap = 18;
-      const relY = e.clientY - overlayRect.top;
-      const barIdx = Math.floor(relY / barGap);
-      if (barIdx < 0 || barIdx >= barsData.length || relY < 0) {
-        if (activeBarIdxRef.current >= 0) { clearBarHighlight(); activeBarIdxRef.current = -1; }
-        return;
-      }
-      const wrappers = overlayEl.querySelectorAll('.countdown-bar-wrapper');
-      const wrapper = wrappers[barIdx] as HTMLElement;
-      if (!wrapper) return;
-      const wrapperRect = wrapper.getBoundingClientRect();
-      if (e.clientX < wrapperRect.left || e.clientX > wrapperRect.right) {
-        if (activeBarIdxRef.current >= 0) { clearBarHighlight(); activeBarIdxRef.current = -1; }
-        return;
-      }
-      if (barIdx === activeBarIdxRef.current) return;
-      clearBarHighlight();
-      activeBarIdxRef.current = barIdx;
-      overlayEl.style.zIndex = '200';
-      wrappers.forEach((el, i) => {
-        if (i !== barIdx) {
-          (el as HTMLElement).style.opacity = '0';
-          (el as HTMLElement).style.pointerEvents = 'none';
-        } else {
-          (el as HTMLElement).style.zIndex = '300';
-        }
-      });
-      const barRect = wrapper.getBoundingClientRect();
-      const midY = barRect.top + barRect.height / 2;
-      const allTaskEls = document.querySelectorAll('[data-testid^="time-task-"], [data-testid^="gcal-event-"]');
-      let taskEl: Element | null = null;
-      let bestDist = Infinity;
-      for (const el of allTaskEls) {
-        const r = el.getBoundingClientRect();
-        if (r.height === 0) continue;
-        if (midY >= r.top - 2 && midY <= r.bottom + 2) {
-          const dist = Math.abs(midY - (r.top + r.height / 2));
-          if (dist < bestDist) { bestDist = dist; taskEl = el; }
-        }
-      }
-      if (taskEl) {
-        const contentDiv = overlayEl.closest('[data-calendar-content]') as HTMLElement;
-        if (contentDiv) {
-          const bg = document.createElement('div');
-          bg.id = 'cbar-hover-bg-portal';
-          const contentRect = contentDiv.getBoundingClientRect();
-          const taskRect = taskEl.getBoundingClientRect();
-          const scrollTop = contentDiv.parentElement?.scrollTop || 0;
-          Object.assign(bg.style, {
-            position: 'absolute', background: 'rgba(255,255,255,0.97)', borderRadius: '3px',
-            boxShadow: '0 1px 4px rgba(0,0,0,0.12)', zIndex: '99', pointerEvents: 'none',
-            left: `${taskRect.left - contentRect.left}px`, top: `${taskRect.top - contentRect.top + scrollTop}px`,
-            width: `${taskRect.width}px`, height: `${taskRect.height}px`
-          });
-          contentDiv.appendChild(bg);
-        }
-      }
-    };
-    const handleMouseLeave = () => {
-      if (activeBarIdxRef.current >= 0) { clearBarHighlight(); activeBarIdxRef.current = -1; }
-    };
-    scrollEl.addEventListener('mousemove', handleMouseMove);
-    scrollEl.addEventListener('mouseleave', handleMouseLeave);
-    return () => {
-      scrollEl.removeEventListener('mousemove', handleMouseMove);
-      scrollEl.removeEventListener('mouseleave', handleMouseLeave);
-    };
-  }, []);
 
   // Current week dates (Week 2 = Jan 17-23, 2026)
   const currentWeekInfo = findCurrentWeekFromList(weeks, new Date()) || weeks.find(w => w.weekNumber === selectedWeek);
@@ -28331,6 +28236,96 @@ export default function Dashboard() {
             <div ref={calendarScrollRef} className="overflow-y-auto" style={{ height: '100%', scrollbarWidth: 'none' }} onScroll={(e) => {
               const st = (e.target as HTMLDivElement).scrollTop;
               calScrollTopRef.current = st;
+            }} onMouseMove={(e) => {
+              const overlayEl = countdownOverlayRef.current;
+              if (!overlayEl) { return; }
+              const barsData = countdownBarsDataRef.current;
+              if (barsData.length === 0) { return; }
+              const overlayRect = overlayEl.getBoundingClientRect();
+              const barGap = 18;
+              const relY = e.clientY - overlayRect.top;
+              const barIdx = Math.floor(relY / barGap);
+              if (barIdx >= 0 && barIdx < barsData.length && relY >= 0) {
+                console.log('[CBAR] mousemove hit bar', barIdx, 'relY=', Math.round(relY), 'overlayTop=', Math.round(overlayRect.top), 'clientY=', Math.round(e.clientY));
+              }
+              const target = e.target as HTMLElement;
+              const isOverTask = !!target.closest('[data-testid^="time-task-"], [data-testid^="gcal-event-"]');
+              if (isOverTask) {
+                if (activeBarIdxRef.current >= 0) {
+                  overlayEl.style.zIndex = '1';
+                  overlayEl.querySelectorAll('.countdown-bar-wrapper').forEach(el => { (el as HTMLElement).style.opacity = ''; (el as HTMLElement).style.pointerEvents = ''; (el as HTMLElement).style.zIndex = '1'; });
+                  const bg = document.getElementById('cbar-hover-bg-portal'); if (bg) bg.remove();
+                  activeBarIdxRef.current = -1;
+                }
+                return;
+              }
+              if (barIdx < 0 || barIdx >= barsData.length || relY < 0) {
+                if (activeBarIdxRef.current >= 0) {
+                  overlayEl.style.zIndex = '1';
+                  overlayEl.querySelectorAll('.countdown-bar-wrapper').forEach(el => { (el as HTMLElement).style.opacity = ''; (el as HTMLElement).style.pointerEvents = ''; (el as HTMLElement).style.zIndex = '1'; });
+                  const bg = document.getElementById('cbar-hover-bg-portal'); if (bg) bg.remove();
+                  activeBarIdxRef.current = -1;
+                }
+                return;
+              }
+              const wrappers = overlayEl.querySelectorAll('.countdown-bar-wrapper');
+              const wrapper = wrappers[barIdx] as HTMLElement;
+              if (!wrapper) return;
+              const wrapperRect = wrapper.getBoundingClientRect();
+              if (e.clientX < wrapperRect.left || e.clientX > wrapperRect.right) {
+                if (activeBarIdxRef.current >= 0) {
+                  overlayEl.style.zIndex = '1';
+                  overlayEl.querySelectorAll('.countdown-bar-wrapper').forEach(el => { (el as HTMLElement).style.opacity = ''; (el as HTMLElement).style.pointerEvents = ''; (el as HTMLElement).style.zIndex = '1'; });
+                  const bg = document.getElementById('cbar-hover-bg-portal'); if (bg) bg.remove();
+                  activeBarIdxRef.current = -1;
+                }
+                return;
+              }
+              if (barIdx === activeBarIdxRef.current) return;
+              overlayEl.style.zIndex = '1';
+              overlayEl.querySelectorAll('.countdown-bar-wrapper').forEach(el => { (el as HTMLElement).style.opacity = ''; (el as HTMLElement).style.pointerEvents = ''; (el as HTMLElement).style.zIndex = '1'; });
+              const oldBg = document.getElementById('cbar-hover-bg-portal'); if (oldBg) oldBg.remove();
+              activeBarIdxRef.current = barIdx;
+              overlayEl.style.zIndex = '200';
+              wrappers.forEach((el, i) => {
+                if (i !== barIdx) { (el as HTMLElement).style.opacity = '0'; (el as HTMLElement).style.pointerEvents = 'none'; }
+                else { (el as HTMLElement).style.zIndex = '300'; }
+              });
+              const barRect = wrapper.getBoundingClientRect();
+              const midY = barRect.top + barRect.height / 2;
+              const allTaskEls = document.querySelectorAll('[data-testid^="time-task-"], [data-testid^="gcal-event-"]');
+              let taskEl: Element | null = null;
+              let bestDist = Infinity;
+              for (const el of allTaskEls) {
+                const r = el.getBoundingClientRect();
+                if (r.height === 0) continue;
+                if (midY >= r.top - 2 && midY <= r.bottom + 2) {
+                  const dist = Math.abs(midY - (r.top + r.height / 2));
+                  if (dist < bestDist) { bestDist = dist; taskEl = el; }
+                }
+              }
+              if (taskEl) {
+                const contentDiv = overlayEl.closest('[data-calendar-content]') as HTMLElement;
+                if (contentDiv) {
+                  const bg = document.createElement('div');
+                  bg.id = 'cbar-hover-bg-portal';
+                  const contentRect = contentDiv.getBoundingClientRect();
+                  const taskRect = taskEl.getBoundingClientRect();
+                  const scrollTop = contentDiv.parentElement?.scrollTop || 0;
+                  Object.assign(bg.style, { position: 'absolute', background: 'rgba(255,255,255,0.97)', borderRadius: '3px', boxShadow: '0 1px 4px rgba(0,0,0,0.12)', zIndex: '99', pointerEvents: 'none', left: `${taskRect.left - contentRect.left}px`, top: `${taskRect.top - contentRect.top + scrollTop}px`, width: `${taskRect.width}px`, height: `${taskRect.height}px` });
+                  contentDiv.appendChild(bg);
+                }
+              }
+            }} onMouseLeave={() => {
+              if (activeBarIdxRef.current >= 0) {
+                const overlayEl = countdownOverlayRef.current;
+                if (overlayEl) {
+                  overlayEl.style.zIndex = '1';
+                  overlayEl.querySelectorAll('.countdown-bar-wrapper').forEach(el => { (el as HTMLElement).style.opacity = ''; (el as HTMLElement).style.pointerEvents = ''; (el as HTMLElement).style.zIndex = '1'; });
+                }
+                const bg = document.getElementById('cbar-hover-bg-portal'); if (bg) bg.remove();
+                activeBarIdxRef.current = -1;
+              }
             }}>
 
               <div data-calendar-content style={{ backgroundColor: '#faf8f5', borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', position: 'relative', paddingBottom: '0px' }}>
