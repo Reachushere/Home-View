@@ -28247,7 +28247,7 @@ export default function Dashboard() {
               const barIdx = Math.floor(relY / barGap);
               if (barIdx < 0 || barIdx >= barsData.length || relY < 0) {
                 const tip = document.getElementById('cbar-tooltip');
-                if (tip) tip.remove();
+                if (tip) tip.style.display = 'none';
                 activeBarIdxRef.current = -1;
                 return;
               }
@@ -28256,7 +28256,7 @@ export default function Dashboard() {
               const wrapperRect = wrapper.getBoundingClientRect();
               if (e.clientX < wrapperRect.left || e.clientX > wrapperRect.right) {
                 const tip = document.getElementById('cbar-tooltip');
-                if (tip) tip.remove();
+                if (tip) tip.style.display = 'none';
                 activeBarIdxRef.current = -1;
                 return;
               }
@@ -28270,7 +28270,7 @@ export default function Dashboard() {
               }
               if (!intersects) {
                 const tip = document.getElementById('cbar-tooltip');
-                if (tip) tip.remove();
+                if (tip) tip.style.display = 'none';
                 activeBarIdxRef.current = barIdx;
                 return;
               }
@@ -28284,7 +28284,8 @@ export default function Dashboard() {
                   border: '1px solid rgba(0,0,0,0.15)', borderRadius: '6px',
                   padding: '6px 10px', fontSize: '11px', fontWeight: '600',
                   boxShadow: '0 2px 8px rgba(0,0,0,0.18)', whiteSpace: 'nowrap',
-                  lineHeight: '1.3', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis'
+                  lineHeight: '1.3', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis',
+                  display: 'none'
                 });
                 document.body.appendChild(tip);
               }
@@ -28295,10 +28296,11 @@ export default function Dashboard() {
               const tipY = e.clientY - 30;
               tip.style.left = `${tipX}px`;
               tip.style.top = `${tipY}px`;
+              tip.style.display = '';
               activeBarIdxRef.current = barIdx;
             }} onMouseLeave={() => {
               const tip = document.getElementById('cbar-tooltip');
-              if (tip) tip.remove();
+              if (tip) tip.style.display = 'none';
               activeBarIdxRef.current = -1;
             }}>
 
@@ -28681,8 +28683,8 @@ export default function Dashboard() {
                                 onTouchStart={(e) => handleTouchStart(e, task.id, task.title)}
                                 onTouchEnd={handleTouchEnd}
                                 onTouchMove={handleTouchMove}
-                                onMouseEnter={(e) => { if (totalItems > 1) { const el = e.currentTarget as HTMLElement; el.style.zIndex = '55'; el.style.boxShadow = '0 4px 16px rgba(0,0,0,0.25)'; } }}
-                                onMouseLeave={(e) => { if (totalItems > 1) { const el = e.currentTarget as HTMLElement; el.style.zIndex = selectedTaskId === task.id ? '50' : (draggedTask?.id === task.id ? '45' : '43'); el.style.boxShadow = ''; } }}
+                                onMouseEnter={(e) => { if (totalItems > 1) { const el = e.currentTarget as HTMLElement; el.style.width = 'calc(100% - 4px)'; el.style.zIndex = '55'; el.style.boxShadow = '0 4px 16px rgba(0,0,0,0.25)'; } }}
+                                onMouseLeave={(e) => { if (totalItems > 1) { const el = e.currentTarget as HTMLElement; const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); el.style.width = hasNextDueBox ? `calc(${columnWidth / 2}% - 4px)` : `calc(${columnWidth}% - 4px)`; el.style.zIndex = selectedTaskId === task.id ? '50' : (draggedTask?.id === task.id ? '45' : '43'); el.style.boxShadow = ''; } }}
                                 className={`absolute shadow-sm cursor-grab active:cursor-grabbing rounded overflow-visible ${
                                   draggedTask?.id === task.id ? "opacity-50" : ""
                                 } ${
