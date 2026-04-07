@@ -29137,7 +29137,7 @@ export default function Dashboard() {
                   const isCompressedHour = compressedHours.includes(hour);
                   const eightAmH = gridSizes.timeSlotHeights[8] || gridSizes.timeSlotHeight;
                   const baseRowHeight = gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight;
-                  const rowHeight = baseRowHeight;
+                  const rowHeight = getEffectiveRowHeight(hour);
                   return (
                   <div 
                     key={hour} 
