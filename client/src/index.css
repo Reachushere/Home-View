@@ -1986,32 +1986,33 @@ input[type="range"]::-moz-range-thumb {
   cursor: pointer;
 }
 
-/* Settings dialog checkbox styling */
+/* Global checkbox styling - black outline, white fill, black X when checked */
 input[type="checkbox"] {
   -webkit-appearance: none;
   appearance: none;
   width: 12px !important;
   height: 12px !important;
-  border: 1px solid #9ca3af;
+  border: 1.5px solid #000;
   border-radius: 2px;
   cursor: pointer;
   position: relative;
-  background: transparent;
+  background: white;
 }
 
 input[type="checkbox"]:checked {
-  background: #3b82f6;
-  border-color: #3b82f6;
+  background: white;
+  border-color: #000;
 }
 
 input[type="checkbox"]:checked::after {
-  content: '✓';
+  content: '✕';
   position: absolute;
-  left: 1px;
-  top: -2px;
-  font-size: 8px;
-  font-weight: 300;
-  color: white;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 9px;
+  font-weight: 700;
+  color: #000;
   line-height: 1;
 }
 
