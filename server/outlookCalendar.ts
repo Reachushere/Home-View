@@ -221,22 +221,9 @@ export async function syncOutlookEventsToReview(): Promise<{ added: number; skip
     const endTime = event.isAllDay ? null : `${String(endDt.getHours()).padStart(2, '0')}:${String(endDt.getMinutes()).padStart(2, '0')}`;
 
     const classInfo = isClassEvent(event.subject || '');
-    if (classInfo.isClass && startTime && endTime) {
-      const dueDate = `${startDt.getFullYear()}-${String(startDt.getMonth() + 1).padStart(2, '0')}-${String(startDt.getDate()).padStart(2, '0')}T12:00:00`;
-      await storage.createTask({
-        title: `${event.subject || 'Class'}`,
-        type: 'class',
-        dueDate: new Date(dueDate),
-        courseName: classInfo.courseName,
-        eventStartTime: startTime,
-        eventEndTime: endTime,
-        priority: 'medium',
-        isCompleted: false,
-        calendarEventId: event.id,
-        weekNumber: 1,
-      });
-      console.log(`[Outlook Calendar] Auto-created class task: ${event.subject} on ${dateKey} ${startTime}-${endTime}`);
-      added++;
+    if (classInfo.isClass) {
+      console.log(`[Outlook Calendar] Skipping class event (managed via course details): ${event.subject} on ${dateKey}`);
+      skipped++;
       continue;
     }
 
@@ -244,7 +231,7 @@ export async function syncOutlookEventsToReview(): Promise<{ added: number; skip
       source: 'outlook_calendar',
       sourceEmail: event.organizer?.emailAddress?.address || null,
       externalId: event.id,
-      title: event.subject || 'Untitled Event',
+      title: (event.subject || 'Untitled Event').replace(/\[([^\]]+)\]\s*/g, '$1 - ').replace(/\s+-\s*$/, '').trim(),
       description: event.bodyPreview || null,
       startDate: startDt,
       endDate: endDt,
