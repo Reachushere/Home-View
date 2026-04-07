@@ -29072,6 +29072,13 @@ export default function Dashboard() {
                       const continuingTasks = getContinuingTasksForHour(day, hour);
                       const hourCalendarEvents = getCalendarEventsForHour(day, hour);
                       const visibleCalendarEvents = hourCalendarEvents.filter(e => !dismissedCalendarEvents.has(e.id));
+                      const hasMultiHourCalEvent = visibleCalendarEvents.some(e => {
+                        if (!e.endDate) return false;
+                        const sH = getETHours(new Date(e.startDate));
+                        const eH = getETHours(new Date(e.endDate));
+                        return eH > sH + 1;
+                      });
+                      const calEventConflict = hasMultiHourCalEvent && (hourTasks.length > 0 || visibleCalendarEvents.length > 1);
                       const isFriday = day.getDay() === 5;
                       const isToday = isSameDayET(day, new Date());
                       const totalItems = hourTasks.length + visibleCalendarEvents.length;
@@ -29318,7 +29325,7 @@ export default function Dashboard() {
                             })();
                             
                             const conflictExtra = getConflictExtraHeight(hour);
-                            const stackInConflict = conflictExtra > 0;
+                            const stackInConflict = conflictExtra > 0 || calEventConflict;
                             let taskHeight = stackInConflict ? 28 : rowHeight - 4;
                             let topOffset = 2;
                             
@@ -29480,9 +29487,24 @@ export default function Dashboard() {
                             );
                           })}
                           {/* Google Calendar Events */}
-                          {visibleCalendarEvents.map((event, eventIdx) => {
+                          {[...visibleCalendarEvents].sort((a, b) => {
+                            const aMulti = a.endDate ? (getETHours(new Date(a.endDate)) > getETHours(new Date(a.startDate)) + 1 ? 1 : 0) : 0;
+                            const bMulti = b.endDate ? (getETHours(new Date(b.endDate)) > getETHours(new Date(b.startDate)) + 1 ? 1 : 0) : 0;
+                            return aMulti - bMulti;
+                          }).map((event, eventIdx) => {
                             const eventMin = getETMinutes(new Date(event.startDate));
-                            const calTopOffset = eventMin > 0 ? (eventMin / 60) * rowHeight : 2;
+                            const conflictExtra = getConflictExtraHeight(hour);
+                            const stackInConflict = conflictExtra > 0 || calEventConflict;
+                            const isMultiHourEvent = event.endDate && getETHours(new Date(event.endDate)) > getETHours(new Date(event.startDate)) + 1;
+                            const stackedTaskCount = stackInConflict ? hourTasks.filter(task => {
+                              if (task.eventStartTime && task.eventEndTime) {
+                                const [sH] = task.eventStartTime.split(':').map(Number);
+                                const [eH] = task.eventEndTime.split(':').map(Number);
+                                if (eH > sH + 1) return false;
+                              }
+                              return true;
+                            }).length : 0;
+                            const calTopOffset = stackInConflict ? (stackedTaskCount + eventIdx) * 32 + 2 : (eventMin > 0 ? (eventMin / 60) * rowHeight : 2);
                             const gcalColor = otherRowColors.borderColor || '#6b7280';
                             const gcalBg = otherRowColors.taskBgColor || '#f3f4f6';
                             return (
@@ -29491,9 +29513,10 @@ export default function Dashboard() {
                               className={`absolute rounded hover:opacity-90 shadow-sm overflow-hidden`}
                               style={{
                                 top: `${calTopOffset}px`,
-                                left: `calc(${(hourTasks.length + eventIdx) * columnWidth}% + 2px)`,
-                                width: `calc(${columnWidth}% - 4px)`,
-                                zIndex: 3,
+                                left: stackInConflict ? '2px' : `calc(${(hourTasks.length + eventIdx) * columnWidth}% + 2px)`,
+                                width: stackInConflict ? 'calc(100% - 4px)' : `calc(${columnWidth}% - 4px)`,
+                                minHeight: stackInConflict ? '28px' : undefined,
+                                zIndex: stackInConflict ? 2 : 3,
                                 border: `1.5px solid ${gcalColor}`,
                                 backgroundColor: gcalBg,
                                 display: 'flex',
