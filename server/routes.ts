@@ -11401,9 +11401,75 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
     const tabletSetupPromise = (async () => {
       try {
-        console.log(`${logPrefix} ====== TABLET SETUP START (tablet-nav polling) ======`);
+        console.log(`${logPrefix} ====== TABLET SETUP START ======`);
+        const tabletEntity = 'media_player.tablet_cat';
         await setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: Date.now() }, true, 'master');
-        console.log(`${logPrefix} tablet-nav set for master — tablet will navigate via polling`);
+        console.log(`${logPrefix} tablet-nav set for master — polling fallback ready`);
+
+        await new Promise(r => setTimeout(r, 1500));
+
+        try {
+          await haServiceCallSafe('androidtv/adb_command', { entity_id: tabletEntity, command: 'input keyevent KEYCODE_WAKEUP' }, `${logPrefix} Tablet WAKEUP`);
+          console.log(`${logPrefix} Tablet WAKEUP sent`);
+        } catch (e: any) {
+          console.warn(`${logPrefix} Tablet WAKEUP failed (non-fatal): ${e.message}`);
+        }
+
+        await new Promise(r => setTimeout(r, 2000));
+
+        let browserLaunched = false;
+        const browsers = [
+          { pkg: 'com.android.chrome', name: 'Chrome' },
+          { pkg: 'org.mozilla.firefox', name: 'Firefox' },
+          { pkg: 'com.amazon.cloud9', name: 'Silk' },
+          { pkg: 'de.ozerov.fully', name: 'Fully Kiosk' },
+        ];
+        for (const browser of browsers) {
+          try {
+            const cmd = `am start -a android.intent.action.VIEW -d '${readerUrl}' ${browser.pkg}`;
+            await haServiceCall('androidtv/adb_command', { entity_id: tabletEntity, command: cmd }, `${logPrefix} Tablet Launch ${browser.name}`);
+            console.log(`${logPrefix} Tablet browser launched via ADB: ${browser.name}`);
+            browserLaunched = true;
+            break;
+          } catch (e: any) {
+            console.log(`${logPrefix} Tablet ADB ${browser.name} launch failed: ${e.message}`);
+          }
+        }
+
+        if (!browserLaunched) {
+          try {
+            const genericCmd = `am start -a android.intent.action.VIEW -d '${readerUrl}'`;
+            await haServiceCall('androidtv/adb_command', { entity_id: tabletEntity, command: genericCmd }, `${logPrefix} Tablet Launch Default Browser`);
+            console.log(`${logPrefix} Tablet browser launched via ADB: default handler`);
+            browserLaunched = true;
+          } catch (e: any) {
+            console.warn(`${logPrefix} Tablet default browser launch failed: ${e.message}`);
+          }
+        }
+
+        if (!browserLaunched) {
+          const notifyServices = ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat', 'mobile_app_tablet_cat_wall'];
+          for (const svc of notifyServices) {
+            try {
+              const resp = await fetch(`${haUrl}/api/services/notify/${svc}`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: "command_webview", data: { url: readerUrl } }),
+              });
+              if (resp.ok) {
+                console.log(`${logPrefix} Tablet navigate via notify/${svc} command_webview: OK`);
+                browserLaunched = true;
+                break;
+              }
+            } catch (e: any) {
+              console.log(`${logPrefix} notify/${svc} failed: ${e.message}`);
+            }
+          }
+        }
+
+        if (!browserLaunched) {
+          console.warn(`${logPrefix} All tablet navigation methods failed — relying on polling`);
+        }
         console.log(`${logPrefix} ====== TABLET SETUP COMPLETE ======`);
       } catch (e: any) {
         console.error(`${logPrefix} Tablet setup error: ${e.message}`);
