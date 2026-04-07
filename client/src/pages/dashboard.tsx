@@ -28269,6 +28269,20 @@ export default function Dashboard() {
               }
               const bd = barsData[barIdx];
               if (!bd) return;
+              const barRect = wrapper.getBoundingClientRect();
+              const barMidY = barRect.top + barRect.height / 2;
+              const allEls = document.querySelectorAll('[data-testid^="time-task-"], [data-testid^="gcal-event-"]');
+              let intersects = false;
+              for (const el of allEls) {
+                const r = el.getBoundingClientRect();
+                if (r.height > 0 && barMidY >= r.top && barMidY <= r.bottom) { intersects = true; break; }
+              }
+              if (!intersects) {
+                const tip = document.getElementById('cbar-tooltip');
+                if (tip) tip.remove();
+                activeBarIdxRef.current = barIdx;
+                return;
+              }
               let tip = document.getElementById('cbar-tooltip');
               if (!tip) {
                 tip = document.createElement('div');
