@@ -3394,10 +3394,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   return (
                     <div
                       key={weekNum}
-                      className={`rounded-lg border overflow-hidden ${isCurrent ? 'bg-blue-500/8 border-blue-500/30' : 'bg-white/[0.03] border-white/10 hover:border-white/15'} transition-colors`}
+                      className={`rounded-lg border overflow-hidden ${isCurrent ? 'bg-blue-500/8 border-blue-500/30' : 'bg-white/[0.08] border-white/20 hover:border-white/30'} transition-colors`}
                       data-testid={`week-mapping-row-${weekNum}`}
                     >
-                      <div className={`flex items-center gap-2 px-2.5 py-2 ${isCurrent ? 'bg-blue-500/10' : 'bg-white/[0.04]'}`}>
+                      <div className={`flex items-center gap-2 px-2.5 py-2 ${isCurrent ? 'bg-blue-500/10' : 'bg-white/[0.06]'}`}>
                         <button
                           onClick={() => {
                             const newState = { ...edit, confirmed: !isConfirmed };
@@ -3416,13 +3416,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
 
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-1.5 flex-wrap">
-                            <span className={`text-[11px] font-semibold ${isCurrent ? 'text-blue-300' : 'text-white'}`}>
-                              Week {weekNum}
-                            </span>
-                            <span className="text-[9px] text-white/60">{dateRange}</span>
-                            {isCurrent && <span className="text-[7px] px-1.5 py-0.5 bg-blue-500/25 text-blue-200 rounded font-semibold uppercase">Current</span>}
+                            <span className="text-[13px] font-semibold text-white">{dateRange}</span>
+                            {isCurrent && <span className="text-[9px] px-1.5 py-0.5 bg-blue-500/25 text-blue-200 rounded font-semibold uppercase">Current</span>}
                             {hasCustomLabel && (
-                              <span className="text-[8px] px-1 py-0.5 bg-amber-500/15 text-amber-300 rounded">
+                              <span className="text-[10px] px-1 py-0.5 bg-amber-500/15 text-amber-300 rounded">
                                 {edit.courseWeekLabel}
                               </span>
                             )}
@@ -3432,11 +3429,11 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         <div className="relative flex-shrink-0">
                           <button
                             onClick={() => { setCourseWeekCalendarOpen(courseWeekCalendarOpen === weekNum ? null : weekNum); setCourseWeekCalMonth(weekStart); }}
-                            className="h-5 px-1.5 text-[8px] bg-white/10 border border-white/25 rounded text-white hover:border-white/40 flex items-center gap-1 transition-colors"
+                            className="h-6 px-2 text-[10px] bg-white/10 border border-white/25 rounded text-white hover:border-white/40 flex items-center gap-1 transition-colors"
                             data-testid={`button-course-week-label-${weekNum}`}
                           >
-                            <Calendar className="h-2.5 w-2.5 flex-shrink-0 text-white/50" />
-                            <span className="truncate">{edit.courseWeekLabel || 'Label'}</span>
+                            <Calendar className="h-3 w-3 flex-shrink-0 text-white/50" />
+                            <span className="truncate">{edit.courseWeekLabel || `Week ${weekNum}`}</span>
                           </button>
                           {courseWeekCalendarOpen === weekNum && (
                             <div ref={weekCalendarRef} className="absolute right-0 top-6 z-50 bg-gray-900 border border-white/25 rounded-lg p-2 shadow-xl" style={{ width: '200px' }} onClick={(e) => e.stopPropagation()}>
@@ -3491,21 +3488,33 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                           )}
                         </div>
 
-                        <input
-                          type="text"
-                          placeholder="Notes"
-                          value={edit.notes}
-                          onChange={(e) => {
-                            setWeekMappingEdits(prev => ({ ...prev, [weekNum]: { ...edit, notes: e.target.value } }));
-                          }}
-                          onBlur={() => saveWeekMapping(weekNum, edit)}
-                          className="w-20 h-5 text-[8px] bg-white/10 border border-white/25 rounded px-1.5 text-white placeholder:text-white/70 focus:border-white/50 outline-none flex-shrink-0"
-                          data-testid={`input-week-notes-${weekNum}`}
-                        />
+                        <button
+                          onClick={() => setWeekMappingEdits(prev => ({ ...prev, [weekNum]: { ...edit, notesOpen: !(edit as any).notesOpen } }))}
+                          className="h-6 px-2 text-[10px] bg-white/10 border border-white/25 rounded text-white hover:border-white/40 flex items-center gap-1 transition-colors flex-shrink-0"
+                          data-testid={`button-week-notes-toggle-${weekNum}`}
+                        >
+                          Notes
+                        </button>
                       </div>
+                      {(edit as any).notesOpen && (
+                        <div className="px-2.5 pb-2">
+                          <textarea
+                            placeholder="Week notes..."
+                            value={edit.notes}
+                            onChange={(e) => {
+                              setWeekMappingEdits(prev => ({ ...prev, [weekNum]: { ...edit, notes: e.target.value } }));
+                            }}
+                            onBlur={() => saveWeekMapping(weekNum, edit)}
+                            rows={3}
+                            className="w-full text-[10px] bg-white border border-white/30 rounded px-2 py-1.5 text-black placeholder:text-black/40 focus:border-white/60 outline-none resize-y"
+                            style={{ minHeight: '60px' }}
+                            data-testid={`input-week-notes-${weekNum}`}
+                          />
+                        </div>
+                      )}
 
                       <div className="px-2.5 py-1.5 flex items-center gap-2 border-t border-white/[0.06]">
-                        <span className="text-[8px] text-white/40 uppercase tracking-wider font-medium">Uploads</span>
+                        <span className="text-[8px] text-white uppercase tracking-wider font-medium">Uploads</span>
                         <button
                           onClick={() => handleWeekFileUpload(weekNum, 'reading')}
                           disabled={weekUploadingState[`${weekNum}-reading`]}
@@ -3525,7 +3534,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                           Module
                         </button>
                         {weekFiles.length > 0 && (
-                          <span className="text-[8px] text-white/30 ml-auto">{weekFiles.length} file{weekFiles.length !== 1 ? 's' : ''}</span>
+                          <span className="text-[8px] text-white ml-auto">{weekFiles.length} file{weekFiles.length !== 1 ? 's' : ''}</span>
                         )}
                       </div>
 
@@ -3553,7 +3562,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                             const diff = actualListened - expectedByToday;
 
                             return (
-                              <div key={file.id} className="rounded bg-white/[0.04] border border-white/[0.08]" data-testid={`module-inline-week-${weekNum}-file-${file.id}`}>
+                              <div key={file.id} className="rounded bg-white/[0.08] border border-white/[0.15]" data-testid={`module-inline-week-${weekNum}-file-${file.id}`}>
                                 <div className="flex items-center gap-2 px-2 py-1.5">
                                   <button
                                     className={`flex-shrink-0 w-4 h-4 rounded-sm border-2 flex items-center justify-center transition-colors ${
@@ -3584,7 +3593,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                                           style={{ cursor: 'pointer' }}
                                           data-testid={`module-inline-slider-${file.id}`}
                                         />
-                                        <span className="text-[9px] text-white/60 flex-shrink-0 w-[45px] text-right">
+                                        <span className="text-[9px] text-white flex-shrink-0 w-[45px] text-right">
                                           {file.lastChunkIndex || 0}/{file.totalChunks}
                                         </span>
                                       </div>
@@ -3603,20 +3612,25 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                                         return (
                                           <div
                                             key={i}
-                                            className={`rounded transition-colors ${isEditingInfo ? 'cursor-pointer hover:opacity-80' : ''}`}
+                                            className={`rounded-sm transition-colors ${isEditingInfo ? 'cursor-pointer hover:opacity-80' : ''}`}
                                             style={{
-                                              width: '10px',
-                                              height: '10px',
-                                              backgroundColor: isChecked ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'transparent',
-                                              border: `1.5px solid ${isChecked ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'rgba(255,255,255,0.3)'}`,
+                                              width: '12px',
+                                              height: '12px',
+                                              backgroundColor: isChecked ? '#ffffff' : 'transparent',
+                                              border: `1.5px solid #ffffff`,
+                                              display: 'flex',
+                                              alignItems: 'center',
+                                              justifyContent: 'center',
                                             }}
                                             onClick={() => { if (isEditingInfo) handleChunkToggle(file, i); }}
                                             title={`Chunk ${i + 1}${isChecked ? ' (listened)' : ''}`}
                                             data-testid={`chunk-inline-${file.id}-${i}`}
-                                          />
+                                          >
+                                            {isChecked && <span style={{ fontSize: '9px', fontWeight: 900, color: '#000000', lineHeight: 1 }}>✕</span>}
+                                          </div>
                                         );
                                       })}
-                                      <span className="text-[8px] text-white/50 ml-1 self-center">{checked.size}/{file.totalChunks}</span>
+                                      <span className="text-[8px] text-white ml-1 self-center">{checked.size}/{file.totalChunks}</span>
                                     </div>
                                   );
                                 })()}
