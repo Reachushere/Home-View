@@ -31806,10 +31806,9 @@ export default function Dashboard() {
                         {(() => {
                           const dueStr = format(tDueDate, 'MMM d');
                           const daysUntilBadge = daysUntil;
-                          const badgeColor = daysUntilBadge <= 1 ? '#ef4444' : daysUntilBadge <= 3 ? '#f59e0b' : 'rgba(255,255,255,0.3)';
                           return (
                             <div className="flex-shrink-0 flex items-center gap-1.5" style={{ marginLeft: 'auto' }}>
-                              <span style={{ fontSize: '8px', color: badgeColor, fontWeight: 500, minWidth: '16px', textAlign: 'left' }}>{daysUntilBadge}d</span>
+                              <span style={{ fontSize: '8px', color: '#ffffff', fontWeight: 500, minWidth: '16px', textAlign: 'left' }}>{daysUntilBadge}d</span>
                               <span style={{ fontSize: '9px', color: '#ffffff', fontWeight: 400, minWidth: '42px', textAlign: 'right' }}>{dueStr}</span>
                             </div>
                           );
