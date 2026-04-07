@@ -9677,8 +9677,10 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     res.json({ results, testUrl });
   });
 
-  const SERVER_START_TIME = Date.now();
+  let SERVER_START_TIME = 0;
   const SERVER_STARTUP_COOLDOWN_MS = 60 * 1000;
+  app.once('mount', () => { SERVER_START_TIME = Date.now(); });
+  setTimeout(() => { if (SERVER_START_TIME === 0) { SERVER_START_TIME = Date.now(); } console.log(`[Startup] Cooldown timer started (${SERVER_STARTUP_COOLDOWN_MS / 1000}s)`); }, 3000);
 
   // ===== HA Connectivity Health Monitor =====
   interface HAHealthState {
@@ -9930,7 +9932,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const uptimeMs = now - SERVER_START_TIME;
     let cooldownRemaining = 0;
     let reason: string | null = null;
-    if (uptimeMs < SERVER_STARTUP_COOLDOWN_MS) {
+    if (SERVER_START_TIME > 0 && uptimeMs < SERVER_STARTUP_COOLDOWN_MS) {
       cooldownRemaining = Math.ceil((SERVER_STARTUP_COOLDOWN_MS - uptimeMs) / 1000);
       reason = 'startup';
     } else if (msSinceManualStop !== null && msSinceManualStop < 120000) {
@@ -12923,8 +12925,8 @@ document.body.removeChild(a);
       console.log(`[Shower Button] ====== WEBHOOK TRIGGERED ======`);
       console.log(`[Shower Button] Timestamp: ${new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' })}`);
 
-      const timeSinceStart = Date.now() - SERVER_START_TIME;
-      if (timeSinceStart < SERVER_STARTUP_COOLDOWN_MS) {
+      const timeSinceStart = SERVER_START_TIME > 0 ? Date.now() - SERVER_START_TIME : 0;
+      if (SERVER_START_TIME > 0 && timeSinceStart < SERVER_STARTUP_COOLDOWN_MS) {
         console.log(`[Shower Button] Ignoring — server started ${Math.round(timeSinceStart / 1000)}s ago (cooldown)`);
         return res.json({ action: "ignored", reason: "Server startup cooldown" });
       }
@@ -13072,8 +13074,8 @@ document.body.removeChild(a);
       console.log(`[Cat Lights] Timestamp: ${new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' })}`);
       console.log(`[Cat Lights] Request body: ${JSON.stringify(req.body)}`);
 
-      const timeSinceStart = Date.now() - SERVER_START_TIME;
-      if (timeSinceStart < SERVER_STARTUP_COOLDOWN_MS) {
+      const timeSinceStart = SERVER_START_TIME > 0 ? Date.now() - SERVER_START_TIME : 0;
+      if (SERVER_START_TIME > 0 && timeSinceStart < SERVER_STARTUP_COOLDOWN_MS) {
         console.log(`[Cat Lights] Ignoring — server started ${Math.round(timeSinceStart / 1000)}s ago (cooldown: ${SERVER_STARTUP_COOLDOWN_MS / 1000}s)`);
         return res.json({ action: "ignored", reason: "Server startup cooldown" });
       }
