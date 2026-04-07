@@ -3519,7 +3519,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         <button
                           onClick={() => handleWeekFileUpload(weekNum, 'reading')}
                           disabled={weekUploadingState[`${weekNum}-reading`]}
-                          className="h-5 px-2 text-[8px] font-medium bg-white/10 hover:bg-white/15 text-white border border-white/20 rounded flex items-center gap-1 transition-colors disabled:opacity-50"
+                          className="h-5 px-2 text-[8px] font-medium bg-white/10 hover:bg-white/15 text-white border border-white/40 rounded flex items-center gap-1 transition-colors disabled:opacity-50"
                           data-testid={`button-upload-reading-${weekNum}`}
                         >
                           {weekUploadingState[`${weekNum}-reading`] ? <Loader2 className="h-2.5 w-2.5 animate-spin" /> : <Upload className="h-2.5 w-2.5" />}
@@ -3528,7 +3528,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         <button
                           onClick={() => handleWeekFileUpload(weekNum, 'module')}
                           disabled={weekUploadingState[`${weekNum}-module`]}
-                          className="h-5 px-2 text-[8px] font-medium bg-white/10 hover:bg-white/15 text-white border border-white/20 rounded flex items-center gap-1 transition-colors disabled:opacity-50"
+                          className="h-5 px-2 text-[8px] font-medium bg-white/10 hover:bg-white/15 text-white border border-white/40 rounded flex items-center gap-1 transition-colors disabled:opacity-50"
                           data-testid={`button-upload-module-${weekNum}`}
                         >
                           {weekUploadingState[`${weekNum}-module`] ? <Loader2 className="h-2.5 w-2.5 animate-spin" /> : <Upload className="h-2.5 w-2.5" />}
@@ -3758,7 +3758,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         <button
                           onClick={() => handleWeekFileUpload(weekNum, 'reading')}
                           disabled={weekUploadingState[`${weekNum}-reading`]}
-                          className="h-5 px-2 text-[8px] font-medium bg-white/10 hover:bg-white/15 text-white border border-white/20 rounded flex items-center gap-1 transition-colors disabled:opacity-50"
+                          className="h-5 px-2 text-[8px] font-medium bg-white/10 hover:bg-white/15 text-white border border-white/40 rounded flex items-center gap-1 transition-colors disabled:opacity-50"
                           data-testid={`button-upload-reading-week-${weekNum}`}
                         >
                           {weekUploadingState[`${weekNum}-reading`] ? <Loader2 className="h-2.5 w-2.5 animate-spin" /> : <Upload className="h-2.5 w-2.5" />}
@@ -3767,7 +3767,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         <button
                           onClick={() => handleWeekFileUpload(weekNum, 'module')}
                           disabled={weekUploadingState[`${weekNum}-module`]}
-                          className="h-5 px-2 text-[8px] font-medium bg-white/10 hover:bg-white/15 text-white border border-white/20 rounded flex items-center gap-1 transition-colors disabled:opacity-50"
+                          className="h-5 px-2 text-[8px] font-medium bg-white/10 hover:bg-white/15 text-white border border-white/40 rounded flex items-center gap-1 transition-colors disabled:opacity-50"
                           data-testid={`button-upload-module-week-${weekNum}`}
                         >
                           {weekUploadingState[`${weekNum}-module`] ? <Loader2 className="h-2.5 w-2.5 animate-spin" /> : <Upload className="h-2.5 w-2.5" />}
