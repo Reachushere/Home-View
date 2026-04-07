@@ -28241,13 +28241,6 @@ export default function Dashboard() {
               if (!overlayEl) return;
               const barsData = countdownBarsDataRef.current;
               if (barsData.length === 0) return;
-              const target = e.target as HTMLElement;
-              if (target.closest('[data-testid^="time-task-"], [data-testid^="gcal-event-"]')) {
-                const tip = document.getElementById('cbar-tooltip');
-                if (tip) tip.remove();
-                activeBarIdxRef.current = -1;
-                return;
-              }
               const overlayRect = overlayEl.getBoundingClientRect();
               const barGap = 18;
               const relY = e.clientY - overlayRect.top;
