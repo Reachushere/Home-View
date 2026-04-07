@@ -28511,7 +28511,7 @@ export default function Dashboard() {
                     const barH = 3;
                     const barGap = 14;
                     return (
-                      <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 55 }}>
+                      <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 40 }}>
                         <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, top: 0, overflowY: 'auto', overflowX: 'hidden', pointerEvents: 'none', scrollbarWidth: 'none' as any }}>
                           <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', minHeight: '100%' }}>
                             {courseBars.map((cd, idx) => {
@@ -28523,7 +28523,7 @@ export default function Dashboard() {
                               const dueDate = t.dueDate ? format(new Date(t.dueDate), 'MMM d') : '';
                               const tooltipText = `${labelText} — due in ${cd.daysLeft}d (${dueDate})${isNotStarted ? ' — not started' : ''}`;
                               return (
-                                <div key={`cbar-cr-${t.id}`} className="countdown-bar-wrapper" style={{ height: `${barGap}px`, flexShrink: 0, pointerEvents: 'auto', cursor: 'default' }} title={tooltipText} data-testid={`countdown-bar-cr-${t.id}`}>
+                                <div key={`cbar-cr-${t.id}`} className="countdown-bar-wrapper" style={{ height: `${barGap}px`, flexShrink: 0, pointerEvents: 'auto', cursor: 'pointer' }} title={tooltipText} data-testid={`countdown-bar-cr-${t.id}`} onDoubleClick={(e) => { e.stopPropagation(); const taskToEdit = allTasks.find(at => at.id === t.id) || t; setEditingTask(taskToEdit); }}>
                                   <div style={{ paddingTop: '2px', height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
                                     <div style={{ width: '10px', minWidth: '10px', height: `${barH}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
                                     <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
@@ -28729,7 +28729,7 @@ export default function Dashboard() {
                       const barH = 3;
                       const barGap = 14;
                       return (
-                        <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 55 }}>
+                        <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 40 }}>
                           <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, top: 0, overflowY: 'auto', overflowX: 'hidden', pointerEvents: 'none', scrollbarWidth: 'none' as any }}>
                             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', minHeight: '100%' }}>
                               {otherBars.map((cd, idx) => {
@@ -28741,7 +28741,7 @@ export default function Dashboard() {
                                 const dueDate = t.dueDate ? format(new Date(t.dueDate), 'MMM d') : '';
                                 const tooltipText = `${labelText} — due in ${cd.daysLeft}d (${dueDate})${isNotStarted ? ' — not started' : ''}`;
                                 return (
-                                  <div key={`cbar-or-${t.id}`} className="countdown-bar-wrapper" style={{ height: `${barGap}px`, flexShrink: 0, pointerEvents: 'auto', cursor: 'default' }} title={tooltipText} data-testid={`countdown-bar-or-${t.id}`}>
+                                  <div key={`cbar-or-${t.id}`} className="countdown-bar-wrapper" style={{ height: `${barGap}px`, flexShrink: 0, pointerEvents: 'auto', cursor: 'pointer' }} title={tooltipText} data-testid={`countdown-bar-or-${t.id}`} onDoubleClick={(e) => { e.stopPropagation(); const taskToEdit = allTasks.find(at => at.id === t.id) || t; setEditingTask(taskToEdit); }}>
                                     <div style={{ paddingTop: '2px', height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
                                       <div style={{ width: '10px', minWidth: '10px', height: `${barH}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
                                       <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
