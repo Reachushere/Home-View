@@ -322,16 +322,16 @@ function ProjectCard({
       data-testid={`card-project-${project.id}`}
       className="rounded-lg overflow-hidden flex flex-col transition-all hover:translate-y-[-1px]"
       style={{ 
-        background: '#1a1f2e',
-        border: '1px solid rgba(255,255,255,0.08)',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+        background: 'linear-gradient(180deg, #1a2236 0%, #171d2e 100%)',
+        border: '1px solid rgba(59,130,246,0.12)',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(59,130,246,0.06)',
       }}
     >
       <div 
         style={{ 
           padding: '10px 14px',
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
-          background: 'rgba(255,255,255,0.03)',
+          borderBottom: '1px solid rgba(59,130,246,0.08)',
+          background: 'rgba(59,130,246,0.04)',
         }}
       >
         <div className="flex items-center justify-between gap-2">
@@ -813,16 +813,16 @@ export default function ProjectsPage() {
     <div 
       className="min-h-screen"
       style={{
-        background: '#0f1219',
+        background: 'linear-gradient(180deg, #0d1525 0%, #0f1a2e 30%, #0f1219 100%)',
         fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
       }}
     >
       <header 
         className="sticky top-0 z-10"
         style={{ 
-          background: 'linear-gradient(180deg, rgba(15,18,25,0.98) 0%, rgba(15,18,25,0.95) 100%)',
+          background: 'linear-gradient(180deg, rgba(13,21,40,0.98) 0%, rgba(13,18,30,0.95) 100%)',
           backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
+          borderBottom: '1px solid rgba(59,130,246,0.12)',
         }}
       >
         <div className="max-w-6xl mx-auto px-5 py-3">
@@ -895,8 +895,8 @@ export default function ProjectsPage() {
               className="flex items-center gap-2 px-3 py-1.5 rounded-md text-[11px] font-medium transition-all"
               onClick={() => setStatusFilter(item.key)}
               style={{
-                background: statusFilter === item.key ? 'rgba(255,255,255,0.08)' : 'transparent',
-                border: statusFilter === item.key ? '1px solid rgba(255,255,255,0.12)' : '1px solid transparent',
+                background: statusFilter === item.key ? 'rgba(59,130,246,0.1)' : 'transparent',
+                border: statusFilter === item.key ? '1px solid rgba(59,130,246,0.2)' : '1px solid transparent',
                 color: statusFilter === item.key ? '#fff' : 'rgba(255,255,255,0.4)',
               }}
               data-testid={`filter-${item.key.replace('_', '-')}`}
@@ -910,7 +910,7 @@ export default function ProjectsPage() {
         {overallProgress.totalTasks > 0 && (
           <div 
             className="mb-5 rounded-lg p-4"
-            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+            style={{ background: 'rgba(59,130,246,0.04)', border: '1px solid rgba(59,130,246,0.1)' }}
           >
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-3 flex-1">
