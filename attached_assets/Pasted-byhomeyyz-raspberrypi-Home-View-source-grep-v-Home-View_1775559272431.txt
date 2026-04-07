@@ -1,0 +1,28 @@
+byhomeyyz@raspberrypi:~/Home-View $ source <(grep -v '^#' ~/Home-View/.env | sed 's/^/export /') && curl -s -X POST -H "Authorization: Bearer $HOME_ASSISTANT_TOKEN" -H "Content-Type: application/json" "http://homeassistant.local:8123/api/services/rest_command/cat_lights_webhook" -d '{"state":"on"}' && echo " -> sent" && sleep 3 && pm2 logs unical --lines 10 --nostream
+[] -> sent
+[TAILING] Tailing last 10 lines for [unical] process (change the value with --lines option)
+/home/byhomeyyz/.pm2/logs/unical-error.log last 10 lines:
+0|unical   |     'request-id': '009b61c1-e28c-4d68-add9-64cc11dc22bc',
+0|unical   |     'client-request-id': '655b3c31-ac95-9a2d-5db3-45eee02ee170',
+0|unical   |     'x-ms-ags-diagnostic': '{"ServerInfo":{"DataCenter":"Canada East","Slice":"E","Ring":"3","ScaleUnit":"000","RoleInstance":"QB1PEPF00005785"}}',
+0|unical   |     splogid: 'd89b07a2-e08e-c000-9ebf-526094c12811',
+0|unical   |     date: 'Tue, 07 Apr 2026 10:50:29 GMT'
+0|unical   |   }
+0|unical   | }
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Unexpected server response: 503
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+
+/home/byhomeyyz/.pm2/logs/unical-out.log last 10 lines:
+0|unical   | 6:54:27 AM [express] GET /api/cat-wash/progress 304 in 1ms :: {"active":false}
+0|unical   | OpenAI TTS completed in 931ms, 477792 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-217-chunk-7-1775559267948.mp3
+0|unical   | [AudioPrep] Generating chunk 9/36 for The Paradox of Participation_ An Overview of Public Participation and Local Government in Canada_26_01_13_02_25_03.pdf (1496 chars)
+0|unical   | Generating OpenAI TTS for 1496 chars, file: prep-217-chunk-8
+0|unical   | [TTS] Using Edge TTS fallback (voice: en-US-AndrewMultilingualNeural)
+0|unical   | 6:54:28 AM [express] GET /api/cat-wash/progress 304 in 1ms :: {"active":false}
+0|unical   | 6:54:29 AM [express] GET /api/cat-wash/progress 304 in 1ms :: {"active":false}
+0|unical   | OpenAI TTS completed in 1151ms, 587232 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-217-chunk-8-1775559269905.mp3
+
+byhomeyyz@raspberrypi:~/Home-View $
