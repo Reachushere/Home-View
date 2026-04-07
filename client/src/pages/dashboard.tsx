@@ -30345,10 +30345,10 @@ export default function Dashboard() {
           {(cooldownSeconds !== null || true) && (
             <div
               className="absolute z-[60]"
-              style={{ top: '-16px', right: '7px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '15px', pointerEvents: 'none', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.2s ease' }}
+              style={{ top: '-15px', right: '7px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '15px', pointerEvents: 'none', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.2s ease' }}
               data-testid="cooldown-timer"
             >
-              <span style={{ fontSize: '9px', fontWeight: 600, fontFamily: 'monospace', color: cooldownFading ? 'rgba(150,150,150,0.8)' : (cooldownSeconds !== null && cooldownSeconds <= 10 ? '#ff4444' : '#ff6b6b'), transition: 'color 1s ease-out', lineHeight: 1 }}>
+              <span style={{ fontSize: '11px', fontWeight: 600, fontFamily: 'monospace', color: cooldownFading ? 'rgba(150,150,150,0.8)' : (cooldownSeconds !== null && cooldownSeconds <= 10 ? '#ff4444' : '#ff6b6b'), transition: 'color 1s ease-out', lineHeight: 1 }}>
                 {cooldownFading ? '0' : `${cooldownSeconds ?? 0}`}
               </span>
             </div>
