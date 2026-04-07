@@ -8569,8 +8569,10 @@ async function pollStatus(timeout){
       for (const action of actionsList) {
         if (action.type === 'call_service') {
           try {
-            const haUrl = process.env.HA_URL || 'http://homeassistant.local:8123';
-            const haToken = process.env.HA_TOKEN;
+            const haUrl = (process.env.HA_URL || process.env.HOME_ASSISTANT_URL || 'https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa').replace(/\/$/, '');
+            const tokenFromEnv = process.env.HOME_ASSISTANT_TOKEN || process.env.HA_TOKEN || '';
+            const urlFromEnv = process.env.HOME_ASSISTANT_URL || '';
+            const haToken = tokenFromEnv.startsWith("eyJ") ? tokenFromEnv : (urlFromEnv.startsWith("eyJ") ? urlFromEnv : tokenFromEnv);
             if (!haToken) { results.push({ action, error: 'No HA token configured' }); continue; }
             const resp = await fetch(`${haUrl}/api/services/${action.domain}/${action.service}`, {
               method: 'POST',
@@ -8595,8 +8597,10 @@ async function pollStatus(timeout){
 
   app.get("/api/ha/entities", async (_req, res) => {
     try {
-      const haUrl = process.env.HA_URL || 'http://homeassistant.local:8123';
-      const haToken = process.env.HA_TOKEN;
+      const haUrl = (process.env.HA_URL || process.env.HOME_ASSISTANT_URL || 'https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa').replace(/\/$/, '');
+      const _tokenFromEnv = process.env.HOME_ASSISTANT_TOKEN || process.env.HA_TOKEN || '';
+      const _urlFromEnv = process.env.HOME_ASSISTANT_URL || '';
+      const haToken = _tokenFromEnv.startsWith("eyJ") ? _tokenFromEnv : (_urlFromEnv.startsWith("eyJ") ? _urlFromEnv : _tokenFromEnv);
       if (!haToken) return res.json([]);
       const resp = await fetch(`${haUrl}/api/states`, {
         headers: { 'Authorization': `Bearer ${haToken}`, 'Content-Type': 'application/json' },
@@ -8616,8 +8620,10 @@ async function pollStatus(timeout){
 
   app.get("/api/ha/services", async (_req, res) => {
     try {
-      const haUrl = process.env.HA_URL || 'http://homeassistant.local:8123';
-      const haToken = process.env.HA_TOKEN;
+      const haUrl = (process.env.HA_URL || process.env.HOME_ASSISTANT_URL || 'https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa').replace(/\/$/, '');
+      const _sTokenFromEnv = process.env.HOME_ASSISTANT_TOKEN || process.env.HA_TOKEN || '';
+      const _sUrlFromEnv = process.env.HOME_ASSISTANT_URL || '';
+      const haToken = _sTokenFromEnv.startsWith("eyJ") ? _sTokenFromEnv : (_sUrlFromEnv.startsWith("eyJ") ? _sUrlFromEnv : _sTokenFromEnv);
       if (!haToken) return res.json([]);
       const resp = await fetch(`${haUrl}/api/services`, {
         headers: { 'Authorization': `Bearer ${haToken}`, 'Content-Type': 'application/json' },
