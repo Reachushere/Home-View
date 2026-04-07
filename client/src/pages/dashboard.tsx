@@ -29018,9 +29018,26 @@ export default function Dashboard() {
                       const visibleCalendarEvents = hourCalendarEvents.filter(e => !dismissedCalendarEvents.has(e.id));
                       const isFriday = day.getDay() === 5;
                       const isToday = isSameDayET(day, new Date());
+                      const multiHourCoversCell = (() => {
+                        const dayKey = _etDateKey(day);
+                        const dayTasks = tasksByDateKey.get(dayKey);
+                        if (!dayTasks) return false;
+                        return dayTasks.some(t => {
+                          if (!t.eventStartTime || !t.eventEndTime) return false;
+                          const [sH, sM] = t.eventStartTime.split(':').map(Number);
+                          const [eH, eM] = t.eventEndTime.split(':').map(Number);
+                          if (eH <= sH) return false;
+                          const tStart = sH * 60 + sM;
+                          const tEnd = eH * 60 + eM;
+                          const cellStart = hour * 60;
+                          const cellEnd = (hour + 1) * 60;
+                          return tStart < cellEnd && tEnd > cellStart;
+                        });
+                      })();
                       const totalItems = hourTasks.length + visibleCalendarEvents.length;
                       const hasAnyTasks = totalItems > 0 || continuingTasks.length > 0;
-                      const columnWidth = totalItems > 0 ? 100 / totalItems : 100;
+                      const cellAvailablePct = multiHourCoversCell && totalItems > 0 ? 50 : 100;
+                      const columnWidth = totalItems > 0 ? cellAvailablePct / totalItems : 100;
                       const cellDateStr = format(day, "yyyy-MM-dd");
                       const isYesterday = isSameDayET(day, subDays(new Date(), 1));
                       const cellShift = isYesterday ? undefined : localShiftMap[cellDateStr];
