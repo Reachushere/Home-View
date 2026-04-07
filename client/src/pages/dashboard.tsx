@@ -30716,16 +30716,18 @@ export default function Dashboard() {
             </Button>
           </div>
 
-          {/* Date navigation tab - month mode */}
+          {/* Date navigation tab - month mode (matches main page tab) */}
           <div
             className="absolute z-[60]"
             style={{ top: '-29px', right: '7px', left: '10px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '15px', pointerEvents: 'auto', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.2s ease' }}
             data-testid="date-nav-tab-month"
           >
             <div style={{ width: '225px', height: '15px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', padding: '0 2px' }}>
-              <div className="cursor-pointer hover:bg-white/20 rounded" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))} data-testid="button-month-prev"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>◀</span></div>
+              <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))} data-testid="button-month-prev"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000', letterSpacing: '-2px', marginRight: '1px' }}>◀◀</span></div>
+              <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))} data-testid="button-month-prev-single"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>◀</span></div>
               <span style={{ fontSize: '10px', fontWeight: 500, color: '#000', whiteSpace: 'nowrap', lineHeight: 1, letterSpacing: '0.3px', flex: 1, textAlign: 'center' }}>{format(currentMonth, "MMMM yyyy")}</span>
-              <div className="cursor-pointer hover:bg-white/20 rounded" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))} data-testid="button-month-next"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▶</span></div>
+              <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))} data-testid="button-month-next-single"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▶</span></div>
+              <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))} data-testid="button-month-next"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000', letterSpacing: '-2px', marginLeft: '1px' }}>▶▶</span></div>
             </div>
           </div>
 
@@ -30733,7 +30735,7 @@ export default function Dashboard() {
             <div className="overflow-hidden h-full" style={{ borderRadius: '8px', border: '1px solid rgba(255,255,255,0.3)' }}>
             <div className="p-0 h-full flex flex-col" style={{ overflow: 'hidden' }}>
               {/* Month Header */}
-              <div className="flex items-center justify-between px-3 py-1.5" style={{ background: 'rgba(0,0,0,0.6)', borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
+              <div className="flex items-center justify-between px-3 py-0" style={{ background: 'rgba(0,0,0,0.6)', borderBottom: '1px solid rgba(255,255,255,0.2)', height: '27px', minHeight: '27px' }}>
                 <Button variant="ghost" size="icon" className="h-6 w-6 text-white hover:bg-white/20" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}>
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
@@ -30773,7 +30775,7 @@ export default function Dashboard() {
                       const dayTasks = allTasks.filter(t => !t.isCompleted && isSameDayET(new Date(t.dueDate), day));
                       const monthDayStr = format(day, "yyyy-MM-dd");
                       const monthDayShift = localShiftMap[monthDayStr];
-                      const cellBg = monthDayShift === 'day' ? 'rgba(200,180,50,0.25)' : monthDayShift === 'night' ? 'rgba(180,100,200,0.2)' : isCurrentMonth ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.55)';
+                      const cellBg = monthDayShift === 'day' ? 'rgba(200,180,50,0.25)' : monthDayShift === 'night' ? 'rgba(180,100,200,0.2)' : isCurrentMonth ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.45)';
                       
                       return (
                         <div
@@ -30781,8 +30783,8 @@ export default function Dashboard() {
                           className="p-1 relative cursor-pointer hover:brightness-125"
                           style={{
                             backgroundColor: cellBg,
-                            borderRight: '1px solid rgba(255,255,255,0.08)',
-                            borderBottom: '1px solid rgba(255,255,255,0.08)',
+                            borderRight: '1px solid rgba(0,0,0,0.08)',
+                            borderBottom: '1px solid rgba(0,0,0,0.08)',
                             overflow: 'hidden'
                           }}
                           onClick={() => {
@@ -30799,7 +30801,7 @@ export default function Dashboard() {
                         >
                           {monthDayShift === 'day' && <SunIcon className="absolute top-0.5 right-0.5 h-3 w-3 text-yellow-500" fill="currentColor" strokeWidth={1.5} />}
                           {monthDayShift === 'night' && <MoonIcon className="absolute top-0.5 right-0.5 h-3 w-3 text-purple-400" fill="currentColor" strokeWidth={1.5} />}
-                          <div className="text-xs font-bold mb-0.5" style={{ color: isToday ? '#5979CC' : isCurrentMonth ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.35)' }}>
+                          <div className="text-xs font-bold mb-0.5" style={{ color: isToday ? '#5979CC' : isCurrentMonth ? 'rgba(0,0,0,0.8)' : 'rgba(0,0,0,0.35)' }}>
                             {isToday && <span style={{ background: '#5979CC', color: '#fff', borderRadius: '50%', width: '16px', height: '16px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}>{format(day, "d")}</span>}
                             {!isToday && format(day, "d")}
                           </div>
@@ -30823,7 +30825,7 @@ export default function Dashboard() {
                               );
                             })}
                             {dayTasks.length > 3 && (
-                              <div className="text-[7px] text-center" style={{ color: 'rgba(255,255,255,0.5)' }}>+{dayTasks.length - 3} more</div>
+                              <div className="text-[7px] text-center" style={{ color: 'rgba(0,0,0,0.4)' }}>+{dayTasks.length - 3} more</div>
                             )}
                           </div>
                         </div>
