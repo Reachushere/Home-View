@@ -30806,18 +30806,6 @@ export default function Dashboard() {
             </div>
             <div ref={homeworkSpacerRef} style={{ position: 'absolute', right: '4px', top: 0, width: '0px', height: '100%', minHeight: '14px', backgroundColor: 'transparent' }} />
           </div>
-          {cooldownSeconds !== null && (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '3px 12px', background: 'linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.3) 100%)', transition: 'opacity 2s ease-out', opacity: cooldownFading ? 0.35 : 1 }} data-testid="cooldown-timer">
-              <span style={{ fontSize: '9px', fontWeight: 600, letterSpacing: '1px', fontFamily: 'monospace', color: cooldownFading ? 'rgba(150,150,150,0.8)' : (cooldownSeconds <= 10 ? '#ff4444' : '#ff6b6b'), textShadow: cooldownFading ? 'none' : '0 0 6px rgba(255,80,80,0.4)', transition: 'color 1s ease-out, text-shadow 1s ease-out' }}>
-                {cooldownFading ? 'READY' : `COOLDOWN ${cooldownSeconds}s`}
-              </span>
-              {!cooldownFading && (
-                <div style={{ marginLeft: '8px', width: '60px', height: '3px', borderRadius: '2px', background: 'rgba(255,255,255,0.1)', overflow: 'hidden' }}>
-                  <div style={{ height: '100%', borderRadius: '2px', background: cooldownSeconds <= 10 ? '#ff4444' : '#ff6b6b', width: `${Math.max(0, (cooldownSeconds / 60) * 100)}%`, transition: 'width 1s linear, background 0.5s ease' }} />
-                </div>
-              )}
-            </div>
-          )}
           {courseRowRects.length === 0 && !otherRowRect && (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px 10px', minHeight: '60px' }}>
               <span className="text-[11px] text-white/50 italic text-center" data-testid="text-no-courses">No active courses this week</span>
