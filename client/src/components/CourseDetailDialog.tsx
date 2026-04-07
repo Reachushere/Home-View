@@ -3173,7 +3173,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   </Button>
                 </div>
 
-                <div className="mb-3 border border-white/15 rounded-lg p-2" style={{ background: 'rgba(255,255,255,0.03)' }}>
+                <div className="mb-3 border border-white rounded-lg p-2" style={{ background: 'rgba(255,255,255,0.08)' }}>
                   <button
                     className="flex items-center gap-1.5 text-[9px] font-medium text-white hover:text-white/80 transition-colors w-full"
                     onClick={() => setShowWeekCalendar(!showWeekCalendar)}
