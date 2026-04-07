@@ -24102,7 +24102,21 @@ export default function Dashboard() {
                                 const allCoursesAdded = semDef ? semDef.codes.every(c => allAssignmentsAddedMap[c] || allAssignmentsAddedMap[c.toUpperCase()]) : true;
                                 const needsRedBorder = isCurrentSem && semHasStarted && !allCoursesAdded;
                                 const borderCol = isCurrentSem ? (needsRedBorder ? '#ef4444' : '#ffffff') : isPast || isEnded ? 'rgba(150,150,150,0.5)' : 'rgba(255,255,255,0.3)';
-                                const bgCol = isCurrentSem ? 'rgba(10,15,30,0.85)' : isPast || isEnded ? 'rgba(160,160,160,0.35)' : 'transparent';
+                                const semGradients: Record<string, string> = {
+                                  'w2026': 'linear-gradient(180deg, rgba(30,60,120,0.55) 0%, rgba(15,30,60,0.35) 100%)',
+                                  'ss2026': 'linear-gradient(180deg, rgba(120,80,30,0.55) 0%, rgba(60,40,15,0.35) 100%)',
+                                  'f2026': 'linear-gradient(180deg, rgba(120,40,20,0.55) 0%, rgba(60,20,10,0.35) 100%)',
+                                  'w2027': 'linear-gradient(180deg, rgba(20,80,100,0.55) 0%, rgba(10,40,50,0.35) 100%)',
+                                  'ss2027': 'linear-gradient(180deg, rgba(100,60,120,0.55) 0%, rgba(50,30,60,0.35) 100%)',
+                                  'f2027': 'linear-gradient(180deg, rgba(100,80,20,0.55) 0%, rgba(50,40,10,0.35) 100%)',
+                                  'w2028': 'linear-gradient(180deg, rgba(20,100,60,0.55) 0%, rgba(10,50,30,0.35) 100%)',
+                                  'ss2028': 'linear-gradient(180deg, rgba(80,30,100,0.55) 0%, rgba(40,15,50,0.35) 100%)',
+                                  'f2028': 'linear-gradient(180deg, rgba(120,60,40,0.55) 0%, rgba(60,30,20,0.35) 100%)',
+                                  'w2029': 'linear-gradient(180deg, rgba(40,80,120,0.55) 0%, rgba(20,40,60,0.35) 100%)',
+                                  'ss2025': 'linear-gradient(180deg, rgba(60,100,40,0.55) 0%, rgba(30,50,20,0.35) 100%)',
+                                  'f2025': 'linear-gradient(180deg, rgba(100,50,80,0.55) 0%, rgba(50,25,40,0.35) 100%)',
+                                };
+                                const bgCol = isCurrentSem ? 'rgba(10,15,30,0.85)' : isPast || isEnded ? 'rgba(160,160,160,0.35)' : (semGradients[sem.key] || 'transparent');
                                 const shadow = isCurrentSem ? (needsRedBorder ? { boxShadow: '0 0 6px rgba(239,68,68,0.6), 0 0 12px rgba(239,68,68,0.4), 0 0 18px rgba(239,68,68,0.3)' } : { boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)' }) : {};
                                 return { background: bgCol, borderColor: borderCol, ...shadow, position: 'relative' as const, borderWidth: isCurrentSem ? '2px' : undefined };
                               })()}>
